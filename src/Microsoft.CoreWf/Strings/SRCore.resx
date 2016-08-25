@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="IncorrectValueType" xml:space="preserve">
+    <value>A value of the wrong type was retrieved from the instance store.  A value of type {0} was expected, but a value of type {1} was encountered instead.</value>
+  </data>
+  <data name="NullAssignedToValueType" xml:space="preserve">
+    <value>A value of the wrong type was retrieved from the instance store.  A value of type {0} was expected, but null was encountered instead.</value>
+  </data>
+  <data name="PersistenceInitializerThrew" xml:space="preserve">
+    <value>An IPersistenceContextInitializer implementation threw an exception. A durable service instance, such as a WorkflowServiceInstance, could not be loaded or created. The InnerException property contains the original exception.</value>
+  </data>
+  <data name="InvalidStateInAsyncResult" xml:space="preserve">
+    <value>The async result state context, which was provided, in invalid.</value>
+  </data>
+  <data name="ExtensionsCannotBeSetByIndex" xml:space="preserve">
+    <value>The extension collection does not support setting extensions by index. Please use the Add or Remove methods.</value>
+  </data>
+  <data name="CouldNotResolveNamespacePrefix" xml:space="preserve">
+    <value>Could not resolve namespace prefix '{0}'.</value>
+  </data>
+  <data name="CannotCreateContextWithNullId" xml:space="preserve">
+    <value>The instanceId argument to InstanceStore.CreateInstanceHandle cannot specify an all-zero ID, such as Guid.Empty.</value>
+  </data>
+  <data name="CannotReplaceTransaction" xml:space="preserve">
+    <value>The ambient transaction (System.Transactions.Transaction.Current) doesn't match the transaction in use for this execution episode.  Only one transaction may be used throughout an entire execution episode.</value>
+  </data>
+  <data name="CommandExecutionCannotOverlap" xml:space="preserve">
+    <value>Only one command at a time can be executed for a single InstanceHandle. Do not call the method Execute or BeginExecute on InstanceStore until the previous command executing for this InstanceHandle has completed.</value>
+  </data>
+  <data name="CompletedMustNotHaveAssociatedKeys" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported loading an instance with InstanceState.Completed that has associated keys which are not completed.</value>
+  </data>
+  <data name="ContextAlreadyBoundToInstance" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called BindInstance to set the instance ID of an InstanceHandle which is already bound to an instance. An InstanceHandle may only be bound to a single instance over its lifetime.</value>
+  </data>
+  <data name="ContextAlreadyBoundToLock" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called BindAcquiredLock to set the locked instance version of an InstanceHandle which is already bound to a lock. An InstanceHandle may only be bound to a single lock over its lifetime.</value>
+  </data>
+  <data name="ContextAlreadyBoundToOwner" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called BindOwner to set the owner of an InstanceHandle which is already bound to an owner. An InstanceHandle may only be bound to a single owner over its lifetime.</value>
+  </data>
+  <data name="ContextMustBeBoundToInstance" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called BindAcquiredLock, BindReclaimedLock, BeginBindReclaimedLock, or CreateBindReclaimedLockException to bind the InstanceHandle to an instance lock version, but the InstanceHandle is not bound to an instance. An InstanceHandle must first be bound to an instance in order to bind it to a lock.</value>
+  </data>
+  <data name="ContextMustBeBoundToOwner" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called BindAcquiredLock, BindReclaimedLock, BeginBindReclaimedLock, or CreateBindReclaimedLockException to bind the InstanceHandle to an instance lock version, but the InstanceHandle is not bound to an owner. An InstanceHandle must first be bound to an owner in order to bind it to a lock.</value>
+  </data>
+  <data name="ContextNotFromThisStore" xml:space="preserve">
+    <value>The handle argument to InstanceStore.Execute or InstanceStore.BeginExecute must have been created by a call to CreateInstanceHandle on the same InstanceStore instance.</value>
+  </data>
+  <data name="GenericInstanceCommand" xml:space="preserve">
+    <value>The execution of the InstancePersistenceCommand named {0} was interrupted by an error.</value>
+  </data>
+  <data name="GenericInstanceCommandNull" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted by an error.</value>
+  </data>
+  <data name="GetParameterTypeMismatch" xml:space="preserve">
+    <value>The parameter at index {0} requested from the InstancePersistenceAction named {1} was requested using an incorrect generic type argument. When calling GetParameter&lt;T&gt;, the type specified for T must match the documented type for the parameter.</value>
+  </data>
+  <data name="HandleFreed" xml:space="preserve">
+    <value>The execution of InstancePersistenceCommands has been canceled because the InstanceHandle was freed.</value>
+  </data>
+  <data name="HandleFreedBeforeInitialized" xml:space="preserve">
+    <value>The Free method on InstanceHandle may not be called while OnNewInstanceHandle is executing for that handle.</value>
+  </data>
+  <data name="InitialMetadataCannotBeDeleted" xml:space="preserve">
+    <value>The persistence value named {0} is being provided as an initial metadata value, so it must have a valid InstanceValue other than InstanceValue.DeletedValue.</value>
+  </data>
+  <data name="InstanceOperationRequiresInstance" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported performing an operation which requires an instance, but no instance is bound to the operation.</value>
+  </data>
+  <data name="InstanceOperationRequiresLock" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported performing an operation which requires the lock on an instance to be held, but the lock is not held.</value>
+  </data>
+  <data name="InstanceOperationRequiresNotCompleted" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported performing an operation which requires the instance to be in a state other than InstanceState.Completed, but the instance is in that state.</value>
+  </data>
+  <data name="InstanceOperationRequiresNotUninitialized" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported performing an operation which requires the instance to be in a state other than InstanceState.Uninitialized, but the instance is in that state.</value>
+  </data>
+  <data name="InstanceOperationRequiresOwner" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported performing an operation which requires an instance owner, but no owner is bound to the operation.</value>
+  </data>
+  <data name="InvalidInstanceState" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported loading an instance with an invalid InstanceState value.</value>
+  </data>
+  <data name="InvalidKeyArgument" xml:space="preserve">
+    <value>An invalid key of all zeroes, such as Guid.Empty, was passed as an argument.</value>
+  </data>
+  <data name="InvalidLockToken" xml:space="preserve">
+    <value>The instanceVersion passed to InstancePersistenceContext.BindAcquiredLock must be zero if the persistence provider doesn't implement lock versioning, or greater than zero if it does.</value>
+  </data>
+  <data name="KeyAlreadyAssociated" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported associating a key to an instance which already had the key associated to it.</value>
+  </data>
+  <data name="KeyAlreadyCompleted" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported completing a key which was already completed.</value>
+  </data>
+  <data name="KeyAlreadyUnassociated" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported disassociating a key which was associated to the present instance nor completed.</value>
+  </data>
+  <data name="KeyNotAssociated" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported completing or modifying a key which is not associated to the present instance.</value>
+  </data>
+  <data name="KeyNotCompleted" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported disassociating a key which was not yet completed.</value>
+  </data>
+  <data name="LoadedWriteOnlyValue" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported loading an InstanceValue with InstanceValueOptions.WriteOnly set. Write-only values should not be loaded.</value>
+  </data>
+  <data name="MetadataCannotContainNullKey" xml:space="preserve">
+    <value>A null name was provided in a named collection (dictionary) of InstanceValues. Null is not a valid name for an InstanceValue.</value>
+  </data>
+  <data name="MetadataCannotContainNullValue" xml:space="preserve">
+    <value>A null value was provided in a named collection (dictionary) of InstanceValues. The name provided for the null value was {0}. Null is not a valid InstanceValue. To specify a null value, use an instance of InstanceValue with null data by passing null to the InstanceValue constructor. To indicate that a named value should be deleted, use InstanceValue.DeletedValue.</value>
+  </data>
+  <data name="MustSetTransactionOnFirstCall" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. An ambient transaction (System.Transactions.Transaction.Current) is set on the thread calling InstancePersistenceContext.Execute or InstancePersistenceContext.BeginExecute, but commands have already executed during this execution episode with no transaction set. An ambient transaction can only be set on the first call to Execute or BeginExecute (and only if no other transaction is already set for the episode).</value>
+  </data>
+  <data name="OnFreeInstanceHandleThrew" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. Its implementation of OnFreeInstanceHandle threw an exception.</value>
+  </data>
+  <data name="OutsideInstanceExecutionScope" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. The {0} method can only be called during the processing of a command. Do not attempt to preserve an instance of InstancePersistenceContext for later use. The InstancePersistenceContext provided to TryCommand and BeginTryCommand can only be used during the processing of that command.</value>
+  </data>
+  <data name="OutsideTransactionalCommand" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called the method {0} on InstancePersistenceContext, which requires transactional consistency, as part of performing a command that should not require transactional consistency. This can result in data corruption. This error indicates an invalid persistence provider implementation.</value>
+  </data>
+  <data name="ProviderDoesNotSupportCommand" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore doesn't support the command named {0}. Either choose a different provider, or ensure that this persistence command isn't attempted.</value>
+  </data>
+  <data name="TransactionInDoubtNonHost" xml:space="preserve">
+    <value>Although no ambient transaction was present when InstanceStore.Execute or BeginExecute was invoked, an internal transaction was used in the processing of the command. The internal transaction entered the InDoubt state.</value>
+  </data>
+  <data name="TransactionRolledBackNonHost" xml:space="preserve">
+    <value>Although no ambient transaction was present when InstanceStore.Execute or BeginExecute was invoked, an internal transaction was used in the processing of the command. The internal transaction was aborted.</value>
+  </data>
+  <data name="UninitializedCannotHaveData" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported loading an instance with InstanceState.Uninitialized that contained instance data. Uninitialized instances may not contain instance data.</value>
+  </data>
+  <data name="CannotCompleteWithKeys" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported completing an instance with active keys associated to it. All keys associated to an instance must be completed before the instance can be completed.</value>
+  </data>
+  <data name="OnCancelRequestedThrew" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. Its handler for cancel threw an exception. The handler was specified through the InstancePersistenceContext.SetCancellationHandler method.</value>
+  </data>
+  <data name="AlreadyBoundToInstance" xml:space="preserve">
+    <value>The instance persistence system is unable to process an invalid InstancePersistenceCommand.  The command requires an unbound handle, but the InstanceHandle is already bound to an instance.</value>
+  </data>
+  <data name="AlreadyBoundToOwner" xml:space="preserve">
+    <value>The instance persistence system is unable to process an invalid InstancePersistenceCommand.  The command requires an unbound handle, but the InstanceHandle is already bound to an instance owner.</value>
+  </data>
+  <data name="InstanceRequired" xml:space="preserve">
+    <value>The instance persistence system is unable to process an invalid InstancePersistenceCommand. The command requires an instance, but no instance was bound to the InstanceHandle.</value>
+  </data>
+  <data name="LoadOpAssociateKeysCannotContainLookupKey" xml:space="preserve">
+    <value>If LoadWorkflowByInstanceKeyCommand.AssociateLookupKeyToInstanceId is not specified, the LookupInstanceKey must already be associated to an instance, or the LoadWorkflowByInstanceKeyCommand will fail. For this reason, it is invalid to also specify the LookupInstanceKey in the InstanceKeysToAssociate collection if AssociateLookupKeyToInstanceId isn't set.</value>
+  </data>
+  <data name="LoadOpFreeKeyRequiresAcceptUninitialized" xml:space="preserve">
+    <value>If LoadByKeyOperation.InstanceIdForFreeKey is specified, AcceptUninitializedInstance must be set to true. If the key is free, it will be associated to an uninitialized instance with the instance ID provided.</value>
+  </data>
+  <data name="LoadOpKeyMustBeValid" xml:space="preserve">
+    <value>The key used to look up an instance, LoadByKeyOperation.LookupKey, must not be all-zeros, such as Guid.Empty.</value>
+  </data>
+  <data name="OwnerRequired" xml:space="preserve">
+    <value>The instance persistence system is unable to process an invalid InstancePersistenceCommand. The command requires an instance owner, but no owner was bound to the InstanceHandle.</value>
+  </data>
+  <data name="ValidateUnlockInstance" xml:space="preserve">
+    <value>The instance persistence system is unable to process an invalid InstancePersistenceCommand. The command requires the UnlockInstance property to be set to be true if CompleteInstance property is set to true.</value>
+  </data>
+  <data name="InstanceKeyRequiresValidGuid" xml:space="preserve">
+    <value>An InstanceKey cannot be created with an all-zero value, such as Guid.Empty. Use InstanceKey.InvalidKey to obtain an InstanceKey with an all-zero value.</value>
+  </data>
+  <data name="AsyncTransactionException" xml:space="preserve">
+    <value>An exception was thrown from a TransactionScope used to flow a transaction into an asynchronous operation.</value>
+  </data>
+  <data name="ExecuteMustBeNested" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore is invalid. It attempted to execute multiple nested commands concurrently. Only one call to InstancePersistenceContext.Execute (or BeginExecute) may be issued at a time for each call to InstanceStore.TryCommand (or BeginTryCommand). This error indicates an invalid persistence provider implementation.</value>
+  </data>
+  <data name="TryCommandCannotExecuteSubCommandsAndReduce" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It returned false from TryCommand (or EndTryCommand) after executing a nested command using InstancePersistenceContext.Execute (or BeginExecute). If a persistence provider understands and acts upon a command, it must return true.</value>
+  </data>
+  <data name="CannotAcquireLockDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance is locked by a different instance owner. This error usually occurs because a different host has the instance loaded.</value>
+  </data>
+  <data name="CannotAcquireLockSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance '{0}' is locked by a different instance owner. This error usually occurs because a different host has the instance loaded.</value>
+  </data>
+  <data name="InstanceNotReadyDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance has not yet been persisted to the instance store.</value>
+  </data>
+  <data name="InstanceNotReadySpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance '{0}' has not yet been persisted to the instance store.</value>
+  </data>
+  <data name="KeyNotReadyDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance key was not associated to an instance. This can occur because the instance or key has been cleaned up, or because the key is invalid. The key may be invalid if the message it was generated from was sent at the wrong time or contained incorrect correlation data.</value>
+  </data>
+  <data name="KeyNotReadySpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance key '{0}' was not associated to an instance. This can occur because the instance or key has been cleaned up, or because the key is invalid. The key may be invalid if the message it was generated from was sent at the wrong time or contained incorrect correlation data.</value>
+  </data>
+  <data name="KeyCollisionDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted by a key collision.</value>
+  </data>
+  <data name="KeyCollisionSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted by a key collision. The instance key with value '{1}' could not be associated to instance '{0}' because it is already associated to a different instance, '{2}'.</value>
+  </data>
+  <data name="NameCollisionOnCollect" xml:space="preserve">
+    <value>A name collision was detected for the name '{0}' provided by a persistence participant of type '{1}'. A value provided by the participant's CollectValues implementation uses the same name as another value provided by this participant or a different persistence participant. Fix the participant to use a different name to avoid the collision, or remove the participant from the workflow's extensions collection.</value>
+  </data>
+  <data name="NameCollisionOnMap" xml:space="preserve">
+    <value>A name collision was detected for the name '{0}' provided by a persistence participant of type '{1}'. A value provided by the participant's MapValues implementation uses the same name as another value provided by this participant or a different persistence participant.  ix the participant to use a different name to avoid the collision, or remove the participant from the workflow's extensions collection.</value>
+  </data>
+  <data name="PersistencePipelineAbortThrew" xml:space="preserve">
+    <value>The Abort implementation of a persistence participant of type '{0}' threw an exception. Exceptions should not be thrown from Abort implementations.</value>
+  </data>
+  <data name="KeyCollisionSpecificKeyOnly" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted by a key collision. The instance key with value '{0}' could not be associated to the instance because it is already associated to a different instance.</value>
+  </data>
+  <data name="KeyCompleteDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance key has already been completed.</value>
+  </data>
+  <data name="KeyCompleteSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance key '{0}' has already been completed.</value>
+  </data>
+  <data name="InstanceCompleteDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance is already complete.</value>
+  </data>
+  <data name="InstanceCompleteSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance '{0}' is already complete.</value>
+  </data>
+  <data name="CannotAcquireLockSpecificWithOwner" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance '{0}' is locked by a different instance owner. This error usually occurs because a different host has the instance loaded. The instance owner ID of the owner or host with a lock on the instance is '{1}'.</value>
+  </data>
+  <data name="InstanceCollisionDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance has already been persisted to the instance store.</value>
+  </data>
+  <data name="InstanceCollisionSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance '{0}' has already been persisted to the instance store.</value>
+  </data>
+  <data name="InstanceLockLostDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance has become unlocked. This error indicates that the in-memory copy of the instance has become stale and should be discarded, along with the InstanceHandle.</value>
+  </data>
+  <data name="InstanceLockLostSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance '{0}' has become unlocked. This error indicates that the in-memory copy of the instance has become stale and should be discarded, along with the InstanceHandle.</value>
+  </data>
+  <data name="InstanceOwnerDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance owner registration has become invalid. This error indicates that the in-memory copy of all instances locked by this owner have become stale and should be discarded, along with the InstanceHandles. Typically, this error is best handled by restarting the host.</value>
+  </data>
+  <data name="InstanceOwnerSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because the instance owner registration for owner ID '{0}' has become invalid. This error indicates that the in-memory copy of all instances locked by this owner have become stale and should be discarded, along with the InstanceHandles. Typically, this error is best handled by restarting the host.</value>
+  </data>
+  <data name="InstanceHandleConflictDefault" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because another valid InstanceHandle holds a lock on the instance, indicating that a non-stale copy of the instance is already loaded. The loaded copy of the instance and its associated InstanceHandle should be used or unloaded.</value>
+  </data>
+  <data name="InstanceHandleConflictSpecific" xml:space="preserve">
+    <value>The execution of an InstancePersistenceCommand was interrupted because another valid InstanceHandle holds a lock on instance '{0}', indicating that a non-stale copy of the instance is already loaded. The loaded copy of the instance and its associated InstanceHandle should be used or unloaded.</value>
+  </data>
+  <data name="BindLockRequiresCommandFlag" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called BindAcquiredLock, BindReclaimedLock, BeginBindReclaimedLock, or CreateBindReclaimedLockException at an invalid time. These methods may only be called while processing a command which may acquire a lock on an instance. Either switch to a valid persistence provider, or override the InstancePersistenceCommand implementation to return true from AutomaticallyAcquiringLock.</value>
+  </data>
+  <data name="CannotInvokeBindingFromNonBinding" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It attempted to execute a potentially lock-acquiring command while processing a non-lock-acquiring command. This exception can occur when InstancePersistenceContext.Execute or InstancePersistenceContext.BeginExecute is called with a command that returns true from InstancePersistenceCommand.AutomaticallyAcquiringLock while processing a command which returns false. Either use a persistence provider which does not do so, or override AutomaticallyAcquiringLock on one of the commands to return the correct value.</value>
+  </data>
+  <data name="CannotInvokeTransactionalFromNonTransactional" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It attempted to execute transactional command while processing a non-transactional command. This exception can occur when InstancePersistenceContext.Execute or InstancePersistenceContext.BeginExecute is called with a command that returns false from InstancePersistenceCommand.IsTransactionEnlistmentOptional while processing a command which returns true. Either use a persistence provider which does not do so, or override IsTransactionEnlistmentOptional on one of the commands to return the correct value.</value>
+  </data>
+  <data name="DoNotCompleteTryCommandWithPendingReclaim" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It completed processing a TryCommand request while an attempt to reclaim a lock was in progress. Use a persistence provider which does not return or throw from TryCommand, complete the IAsyncResult returned from BeginTryCommand before the IAsyncResult returned from BeginBindReclaimedLock is complete, or complete before throwing the exception returned from CreateBindReclaimedLockException.</value>
+  </data>
+  <data name="GuidCannotBeEmpty" xml:space="preserve">
+    <value>The argument must be a non-zero Guid.</value>
+  </data>
+  <data name="InstanceStoreBoundSameVersionTwice" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It reported acquiring and committing the same version of a lock on the same instance twice. Each time a lock is acquired on an instance, the lock version must be incremented; or else zero should always be reported as the lock version. When a provider detects an attempt by an instance owner to lock an instance already locked by itself, the provider should call BindReclaimedLock, BeginBindReclaimedLock, or CreateBeginBindReclaimedLockException instead of BindAcquiredLock.</value>
+  </data>
+  <data name="MayBindLockCommandShouldValidateOwner" xml:space="preserve">
+    <value>An InstancePersistenceCommand which returns true from AutomaticallyAcquiringLock must also override Validate to throw an InvalidOperationException if the command is executed using an InstanceHandle not bound to an InstanceOwner.</value>
+  </data>
+  <data name="StoreReportedConflictingLockTokens" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore in use is invalid. It called BindInstanceOwner twice with the same instanceOwnerId value but different lockToken values. Use a persistence provider which always uses the same lockToken for a single instance owner.</value>
+  </data>
+  <data name="TimedOutWaitingForLockResolution" xml:space="preserve">
+    <value>The persistence provider was unable to reclaim the lock within the timeout provided. This may indicate a deadlock in the pattern of commands simultaneously being executed on different InstanceHandles owned by the same InstanceOwner. This can be alleviated by using multiple InstanceOwners or by ensuring that InstancePersistenceCommand.AutomaticallyAcquiringLock returns false for commands which do not potentially acquire a lock the instance.</value>
+  </data>
+  <data name="BindReclaimedLockException" xml:space="preserve">
+    <value>This exception does not represent an error and should not be caught.  It can be thrown from a persistence provider implementation of InstanceStore.TryCommand, BeginTryCommand, or EndTryCommand to indicate that an attempt should be made to reclaim the lock at the version specified in the call to InstancePersistenceContext.CreateBindReclaimedLockException.</value>
+  </data>
+  <data name="BindReclaimSucceeded" xml:space="preserve">
+    <value>The persistence provider implementation of InstanceStore successfully canceled the command. An orphaned lock was reclaimed and the command canceled via InstancePersistenceContext.CreateBindReclaimedLockException.</value>
+  </data>
+  <data name="OwnerBelongsToWrongStore" xml:space="preserve">
+    <value>An incorrect InstanceOwner was provided. The InstanceOwner provided to an InstanceStore method must belong to the InstanceStore. Only use an InstanceOwner object with the InstanceStore that created it.</value>
+  </data>
+  <data name="WaitAlreadyInProgress" xml:space="preserve">
+    <value>An InstanceHandle can have at most one outstanding WaitForEvents or BeginWaitForEvents operation in progress at a time. A second operation was attempted. Only call WaitForEvents / BeginWaitForEvents once the previous operation has completed.</value>
+  </data>
+  <data name="WaitForEventsTimedOut" xml:space="preserve">
+    <value>A WaitForEvents or BeginWaitForEvents operation timed out after {0}. The time allotted to this operation may have been a portion of a longer timeout.</value>
+  </data>
+</root>
