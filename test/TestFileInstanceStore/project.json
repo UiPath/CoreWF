@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0-*",
+  "description": "TestFileInstanceStore test class library for WF on Core",
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.0",
+    "Microsoft.CoreWf": { "target": "project" },
+    "System.Runtime.Serialization.Xml": "4.1.1"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {}
+  }
+}

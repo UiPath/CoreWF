@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-*",
+  "description": "BookmarkConsoleApp test application for WF on Core",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.0"
+    },
+    "Microsoft.CoreWf": { "target": "project" },
+    "JsonFileInstanceStore": { "target": "project" }
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {}
+  }
+}

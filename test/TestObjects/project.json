@@ -1,0 +1,26 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "Test Objects class library for WF on Core",
+
+  "dependencies": {
+    "Microsoft.CoreWf": { "target": "project" },
+    "NETStandard.Library": "1.6.0",
+    "System.Collections.NonGeneric": "4.0.1",
+    "System.Data.SqlClient": "4.1.0",
+    "System.Diagnostics.TraceSource": "4.0.0",
+    "System.Runtime.Serialization.Xml": "4.1.1",
+    "System.Threading.Thread": "4.0.0",
+    "System.Threading.ThreadPool": "4.0.10",
+    "System.Xml.XPath": "4.0.1",
+    "xunit": "2.1.0"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+      "imports": [
+        "dnxcore50",
+        "portable-net45+win8"
+      ]
+    }
+  }
+}

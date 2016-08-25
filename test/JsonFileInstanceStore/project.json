@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0-*",
+  "description": "JsonFileInstanceStore for WF on Core",
+  "packOptions": {
+    "summary": "https://github.com/dotnet/wf"
+  },
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.0",
+    "Microsoft.CoreWf": { "target": "project" },
+    "Newtonsoft.Json": "9.0.1"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {}
+  }
+}

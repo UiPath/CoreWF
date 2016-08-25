@@ -1,0 +1,29 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Microsoft.CoreWf;
+using Test.Common.TestObjects.CustomActivities;
+
+namespace Test.Common.TestObjects.Activities
+{
+    public class TestExpressionEvaluator<T> : TestActivity
+    {
+        public TestExpressionEvaluator()
+        {
+            this.ProductActivity = new ExpressionEvaluator<T>();
+        }
+
+        public TestExpressionEvaluator(T constValue)
+        {
+            this.ProductActivity = new ExpressionEvaluator<T>(constValue);
+        }
+
+        public T ExpressionResult
+        {
+            set
+            {
+                ((ExpressionEvaluator<T>)this.ProductActivity).ExpressionResult = new InArgument<T>(value);
+            }
+        }
+    }
+}

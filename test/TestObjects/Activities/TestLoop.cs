@@ -1,0 +1,41 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System.Collections.Generic;
+using Test.Common.TestObjects.Activities.Tracing;
+
+namespace Test.Common.TestObjects.Activities
+{
+    public class TestLoop : TestActivity
+    {
+        private int _hintIterationCount = -1;
+
+        public Outcome ConditionOutcome = Outcome.Completed;
+
+        public int HintIterationCount
+        {
+            get
+            {
+                return _hintIterationCount;
+            }
+            set
+            {
+                _hintIterationCount = value;
+            }
+        }
+
+        protected TestActivity body;
+
+        public TestLoop()
+        {
+        }
+
+        internal override IEnumerable<TestActivity> GetChildren()
+        {
+            if (this.body != null)
+            {
+                yield return this.body;
+            }
+        }
+    }
+}
