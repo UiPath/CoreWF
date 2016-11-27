@@ -1,12 +1,11 @@
 # Core WF
-The Windows Workflow Foundation (WF) runtime ported to work on .NET Core
+The Windows Workflow Foundation (WF) runtime ported to the .NET Standard
 
 __This is not an official Microsoft release of WF on .NET Core.__
 
-The team that owns WF at Microsoft experimented with porting WF to .NET Core. However, the project did not gain much traction and will not be released officially. There are also several components not available in .NET Core 1.0, and not planned for future releases, that would be required for feature parity with the .NET Framework version. This project only ports the WF runtime and ETW tracking provider.
+The team that owns WF at Microsoft experimented with porting WF to .NET Core. However, the project did not gain much traction and will not be released officially. .NET Core 1.0 lacks several components required to enable WF on Core to have feature parity with the .NET Framework version. This project only ports the WF runtime and ETW tracking provider to .NET Standard 1.3. 
 
-## Features Removed
-Due to limitations with .NET Core, several features have been cut from the .NET Framework version of WF.
+## Features Not Available
 
 |Feature|Reason|
 |:--------|:----------|
