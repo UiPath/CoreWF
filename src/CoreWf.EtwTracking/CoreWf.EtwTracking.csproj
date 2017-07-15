@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <Title>Core WF ETW Tracking Provider</Title>
+    <Description>Unofficial port of the Windows Workflow Foundation (WF) ETW tracking provider to the .NET Standard</Description>
+    <Authors>Dustin Metzgar,Jim Carley</Authors>
+    <Copyright>Copyright &#169; Dustin Metzgar 2017</Copyright> 
+    <PackageTags>.NET Core workflow</PackageTags>
+    <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
   </PropertyGroup>
   
   <ItemGroup>
