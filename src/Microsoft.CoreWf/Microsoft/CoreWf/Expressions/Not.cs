@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords,
     //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [Not])")]

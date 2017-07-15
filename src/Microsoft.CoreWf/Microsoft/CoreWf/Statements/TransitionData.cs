@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     /// <summary>
     /// TransitionData is used by InternalTransition to store data from Transition.

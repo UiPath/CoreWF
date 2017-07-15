@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Internals;
+using CoreWf.Internals;
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract]
     internal class CallbackWrapper
@@ -147,7 +147,7 @@ namespace Microsoft.CoreWf.Runtime
 
             if (!_callback.Equals(GenerateCallback(delegateType, parameterTypes, genericParameter)))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.GetMethodInfo(), null)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.GetMethodInfo(), null)));
             }
         }
 
@@ -333,7 +333,7 @@ namespace Microsoft.CoreWf.Runtime
         protected virtual void OnSerializingGenericCallback()
         {
             // Generics are invalid by default
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.GetMethodInfo(), null)));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.GetMethodInfo(), null)));
         }
     }
 }

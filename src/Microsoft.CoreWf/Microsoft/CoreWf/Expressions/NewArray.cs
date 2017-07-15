@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime.Collections;
+using CoreWf.Runtime.Collections;
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[ContentProperty("Bounds")]
     public sealed class NewArray<TResult> : CodeActivity<TResult>
@@ -27,7 +27,7 @@ namespace Microsoft.CoreWf.Expressions
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         }
                     };

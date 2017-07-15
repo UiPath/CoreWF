@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Tracking
+namespace CoreWf.Tracking
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
@@ -21,11 +21,11 @@ namespace Microsoft.CoreWf.Tracking
         {
             if (string.IsNullOrEmpty(activityDefinitionId))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("activityDefinitionId");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("activityDefinitionId");
             }
             if (string.IsNullOrEmpty(state))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("state");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("state");
             }
             this.ActivityDefinitionId = activityDefinitionId;
             this.State = state;
@@ -36,11 +36,11 @@ namespace Microsoft.CoreWf.Tracking
         {
             if (string.IsNullOrEmpty(activityDefinitionId))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("activityDefinitionId");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("activityDefinitionId");
             }
             if (string.IsNullOrEmpty(state))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("state");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("state");
             }
             this.ActivityDefinitionId = activityDefinitionId;
             this.State = state;

@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // Wrapper over instance data retrieved from the Instance Store but not yet loaded into a WorkflowApplication.
     // Once this instance is loaded into a WFApp using WFApp.Load(), this object is stale and trying to abort or reload it wil throw.
@@ -105,7 +105,7 @@ namespace Microsoft.CoreWf
         //{
         //    if (updateMap == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("updateMap");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("updateMap");
         //    }
 
         //    activitiesBlockingUpdate = WorkflowApplication.GetActivitiesBlockingUpdate(this, updateMap);
@@ -128,12 +128,12 @@ namespace Microsoft.CoreWf
         {
             if (oldState == State.Loaded)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceLoaded));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceLoaded));
             }
 
             if (oldState == State.Aborted)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceAbandoned));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceAbandoned));
             }
         }
     }

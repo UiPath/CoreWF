@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     public sealed class ValueTypeFieldReference<TOperand, TResult> : CodeActivity<Location<TResult>>
     {

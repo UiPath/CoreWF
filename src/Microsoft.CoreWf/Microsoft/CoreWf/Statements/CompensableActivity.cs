@@ -1,17 +1,17 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.Collections;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
+using CoreWf.Runtime.Collections;
+using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
 
     //[ContentProperty("Body")]
@@ -50,7 +50,7 @@ namespace Microsoft.CoreWf.Statements
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         }
                     };
@@ -339,7 +339,7 @@ namespace Microsoft.CoreWf.Statements
             {
                 if (compensationExtension.Get(parentToken.CompensationId).IsTokenValidInSecondaryRoot)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.NoCAInSecondaryRoot));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.NoCAInSecondaryRoot));
                 }
 
                 parentCompensationId = parentToken.CompensationId;

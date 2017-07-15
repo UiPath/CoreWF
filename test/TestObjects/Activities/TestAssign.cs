@@ -3,11 +3,11 @@
 
 using System;
 using System.Linq.Expressions;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using Test.Common.TestObjects.Utilities.Validation;
 using System.Collections.Generic;
-using Microsoft.CoreWf.Expressions;
+using CoreWf.Expressions;
 using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities

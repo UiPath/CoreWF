@@ -3,7 +3,7 @@
 
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     public interface ITextExpression
     {

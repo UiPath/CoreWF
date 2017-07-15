@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     //An AsyncResult that completes as soon as it is instantiated.
     internal class CompletedAsyncResult : AsyncResult

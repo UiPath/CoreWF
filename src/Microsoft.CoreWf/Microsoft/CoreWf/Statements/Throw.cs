@@ -5,7 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Exception")]
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [Throw])")]
@@ -32,10 +32,10 @@ namespace Microsoft.CoreWf.Statements
 
             if (exception == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Exception", this.GetType().Name, this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Exception", this.GetType().Name, this.DisplayName)));
             }
 
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(exception);
+            throw CoreWf.Internals.FxTrace.Exception.AsError(exception);
         }
     }
 }

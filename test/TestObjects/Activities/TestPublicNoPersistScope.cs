@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using Test.Common.TestObjects.Activities.Collections;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Utilities.Validation;
@@ -12,7 +12,7 @@ namespace Test.Common.TestObjects.Activities
 {
     // There are two NoPersistScope activities. 
     // The one in System.ServiceModel.Activities is internal and used by messaging activity. Its test object is TestNoPersistScope. 
-    // The one in Microsoft.CoreWf.Statements is public. Its test object is TestPublicNoPersistScope. 
+    // The one in CoreWf.Statements is public. Its test object is TestPublicNoPersistScope. 
     public class TestPublicNoPersistScope : TestActivity
     {
         public TestPublicNoPersistScope()

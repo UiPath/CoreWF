@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Utilities.Validation;
 

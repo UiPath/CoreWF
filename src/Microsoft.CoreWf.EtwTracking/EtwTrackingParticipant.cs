@@ -3,10 +3,10 @@
 
 using Newtonsoft.Json;
 using System;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Tracking;
 using System.Diagnostics.Tracing;
 
-namespace Microsoft.CoreWf.EtwTracking
+namespace CoreWf.EtwTracking
 {
     public sealed class EtwTrackingParticipant : TrackingParticipant
     {

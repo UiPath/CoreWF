@@ -5,7 +5,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Security;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     // can't add FuncCompletionCallbackWrapper<T> since we don't know what to close the generic with
     [KnownType(typeof(ActivityCompletionCallbackWrapper))]

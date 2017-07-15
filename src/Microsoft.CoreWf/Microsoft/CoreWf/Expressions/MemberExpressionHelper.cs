@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     internal static class MemberExpressionHelper
     {
@@ -73,7 +73,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             if (result == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MemberNotFound(memberName, typeof(TOperand).Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MemberNotFound(memberName, typeof(TOperand).Name)));
             }
             return result;
         }

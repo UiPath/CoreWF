@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System.Threading;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal class ProcessActivityTreeOptions
     {

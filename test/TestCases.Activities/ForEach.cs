@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
+using CoreWf;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
@@ -426,7 +426,7 @@ namespace TestCases.Activities
         //        Name = "valuesArray",
         //        Default = new VisualBasicValue<int[]>("New Integer() {1, 2, 3}")
         //    };
-        //    Microsoft.CoreWf.Statements.ForEach<int> a = new Microsoft.CoreWf.Statements.ForEach<int>
+        //    CoreWf.Statements.ForEach<int> a = new CoreWf.Statements.ForEach<int>
         //    {
         //        Values = new VisualBasicValue<IEnumerable<int>>("values"),
         //    };
@@ -1113,35 +1113,35 @@ namespace TestCases.Activities
         //               {
         //                   Argument = delegateInArgument,
         //                   Result = delegateOutArgument,
-        //                   Handler = new Microsoft.CoreWf.Statements.Sequence
+        //                   Handler = new CoreWf.Statements.Sequence
         //                   {
         //                       DisplayName = "Sequence1",
         //                       Activities =
         //                        {
-        //                            new Microsoft.CoreWf.Statements.ForEach<int>
+        //                            new CoreWf.Statements.ForEach<int>
         //                            {
         //                                DisplayName = "ForEach1",
         //                                Values = delegateInArgument,
         //                                Body = new ActivityAction<int>
         //                                {
         //                                    Argument = new DelegateInArgument<int>("arg1"),
-        //                                    Handler =  new Microsoft.CoreWf.Statements.WriteLine{DisplayName = "W1", Text = new InArgument<string>( new VisualBasicValue<string>("arg1 & \"\" ") ) },
+        //                                    Handler =  new CoreWf.Statements.WriteLine{DisplayName = "W1", Text = new InArgument<string>( new VisualBasicValue<string>("arg1 & \"\" ") ) },
         //                                }
         //                            },
-        //                            new Microsoft.CoreWf.Statements.Assign<IEnumerable<int>>
+        //                            new CoreWf.Statements.Assign<IEnumerable<int>>
         //                            {
         //                                DisplayName = "Assign1",
         //                                Value = delegateInArgument,
         //                                To = delegateOutArgument,
         //                            },
-        //                            new Microsoft.CoreWf.Statements.ForEach<int>
+        //                            new CoreWf.Statements.ForEach<int>
         //                            {
         //                                DisplayName = "ForEach2",
         //                                Values = delegateOutArgument,
         //                                Body = new ActivityAction<int>
         //                                {
         //                                    Argument = new DelegateInArgument<int>("arg2"),
-        //                                    Handler =  new Microsoft.CoreWf.Statements.WriteLine{ DisplayName = "W2", Text = new InArgument<string>( new VisualBasicValue<string>("arg2 & \"\" ") ) },
+        //                                    Handler =  new CoreWf.Statements.WriteLine{ DisplayName = "W2", Text = new InArgument<string>( new VisualBasicValue<string>("arg2 & \"\" ") ) },
         //                                }
         //                            }
         //                        }

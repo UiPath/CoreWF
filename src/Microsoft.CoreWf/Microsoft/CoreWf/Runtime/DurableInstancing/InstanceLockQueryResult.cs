@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class InstanceLockQueryResult : InstanceStoreQueryResult

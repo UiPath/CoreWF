@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Tracking
+namespace CoreWf.Tracking
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
@@ -26,15 +26,15 @@ namespace Microsoft.CoreWf.Tracking
         {
             if (string.IsNullOrEmpty(activityDefinitionId))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("activityDefinitionId");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("activityDefinitionId");
             }
             if (exception == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("exception");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("exception");
             }
             if (faultSource == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("faultSource");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("faultSource");
             }
             this.FaultSource = faultSource;
             this.UnhandledException = exception;

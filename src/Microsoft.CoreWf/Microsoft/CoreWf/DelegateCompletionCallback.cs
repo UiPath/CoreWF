@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public delegate void DelegateCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance, IDictionary<string, object> outArguments);
 }

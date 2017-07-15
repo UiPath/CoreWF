@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
 
     public abstract class InOutArgument : Argument
@@ -23,12 +23,12 @@ namespace Microsoft.CoreWf
         {
             if (argumentToReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
             }
 
             return (InOutArgument)ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, ArgumentDirection.InOut, referencedArgumentName);
@@ -139,7 +139,7 @@ namespace Microsoft.CoreWf
         {
             if (expression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
             }
 
             return new InOutArgument<T>
@@ -155,7 +155,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();
@@ -175,7 +175,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();

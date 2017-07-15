@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public abstract class ActivityWithResult : Activity
     {

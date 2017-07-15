@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Body")]
     public sealed class ForEach<T> : NativeActivity
@@ -68,7 +68,7 @@ namespace Microsoft.CoreWf.Statements
             IEnumerable<T> values = this.Values.Get(context);
             if (values == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ForEachRequiresNonNullValues(this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ForEachRequiresNonNullValues(this.DisplayName)));
             }
 
             IEnumerator<T> valueEnumerator = values.GetEnumerator();

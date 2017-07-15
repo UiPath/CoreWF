@@ -6,8 +6,8 @@
 using JsonFileInstanceStore;
 using Newtonsoft.Json;
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using System.IO;
 using System.Reflection;
 using System.Threading;

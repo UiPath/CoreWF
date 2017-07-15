@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract]
     internal abstract class ActivityExecutionWorkItem : WorkItem

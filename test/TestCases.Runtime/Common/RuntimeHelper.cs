@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Tracking;
+using CoreWf;
+using CoreWf.Hosting;
+using CoreWf.Tracking;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;

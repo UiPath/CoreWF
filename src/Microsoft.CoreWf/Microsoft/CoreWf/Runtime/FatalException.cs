@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     //[Serializable]
     internal class FatalException : Exception

@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Persistence;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Hosting;
+using CoreWf.Persistence;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     public class CompensationExtension : PersistenceParticipant, IWorkflowInstanceExtension
     {
-        private static readonly XNamespace s_compensationNamespace = XNamespace.Get("urn:schemas-microsoft-com:Microsoft.CoreWf/4.0/compensation");
+        private static readonly XNamespace s_compensationNamespace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/compensation");
         private static readonly XName s_compensationExtensionData = s_compensationNamespace.GetName("Data");
         [Fx.Tag.SynchronizationObject(Blocking = false)]
 
@@ -130,7 +130,7 @@ namespace Microsoft.CoreWf.Statements
             }
             else
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkNotRegistered(compensationBookmark)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkNotRegistered(compensationBookmark)));
             }
         }
 

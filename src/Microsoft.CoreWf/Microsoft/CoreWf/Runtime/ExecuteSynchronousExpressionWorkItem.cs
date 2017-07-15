@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Tracking;
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     /// <summary>
     /// Evaluates a new-fast-path (SkipArgumentsResolution and Not UseOldFastPath) expression
@@ -164,7 +164,7 @@ namespace Microsoft.CoreWf.Runtime
             ActivityWithResult activityWithResult = activity as ActivityWithResult;
             if (activityWithResult == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new ValidationException(SR.ActivityTypeMismatch(activity.DisplayName, typeof(ActivityWithResult).Name)));
             }
 

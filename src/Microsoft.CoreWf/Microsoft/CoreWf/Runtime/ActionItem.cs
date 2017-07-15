@@ -6,7 +6,7 @@ using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     internal abstract class ActionItem
     {

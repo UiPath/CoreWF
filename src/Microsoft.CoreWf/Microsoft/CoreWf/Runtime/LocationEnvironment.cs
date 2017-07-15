@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract]
     internal sealed class LocationEnvironment : ActivityInstanceMap.IActivityReference/*WithEnvironment*/
@@ -513,7 +513,7 @@ namespace Microsoft.CoreWf.Runtime
         {
             if (_isDisposed)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new ObjectDisposedException(this.GetType().FullName, SR.EnvironmentDisposed));
             }
         }
@@ -530,7 +530,7 @@ namespace Microsoft.CoreWf.Runtime
         //        map.NewPrivateVariableCount != activity.ImplementationVariables.Count ||
         //        map.RuntimeDelegateArgumentCount != actualRuntimeDelegateArgumentCount)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
         //            SR.WrongEnvironmentCount(activity, map.NewArgumentCount, map.NewVariableCount, map.NewPrivateVariableCount, map.RuntimeDelegateArgumentCount,
         //                activity.RuntimeArguments.Count, activity.RuntimeVariables.Count, activity.ImplementationVariables.Count, actualRuntimeDelegateArgumentCount))));
         //    }
@@ -562,7 +562,7 @@ namespace Microsoft.CoreWf.Runtime
 
         //    if (expectedLocationCount != actualLocationCount)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
         //            SR.WrongOriginalEnvironmentCount(activity, map.OldArgumentCount, map.OldVariableCount, map.OldPrivateVariableCount, map.RuntimeDelegateArgumentCount,
         //                expectedLocationCount, actualLocationCount))));
         //    }

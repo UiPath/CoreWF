@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract]
     internal abstract class WorkItem
@@ -124,7 +124,7 @@ namespace Microsoft.CoreWf.Runtime
 
         public void Dispose(ActivityExecutor executor)
         {
-            if (Microsoft.CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+            if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
             {
                 TraceCompleted();
             }

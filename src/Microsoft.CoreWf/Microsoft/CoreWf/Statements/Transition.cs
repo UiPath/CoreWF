@@ -3,7 +3,7 @@
 
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     /// <summary>
     /// This class represents a Transition of a State.

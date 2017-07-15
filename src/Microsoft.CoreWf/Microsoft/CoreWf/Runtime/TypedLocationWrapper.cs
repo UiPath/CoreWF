@@ -3,7 +3,7 @@
 
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     // Users of this class need to be VERY careful because TypedLocationWrapper

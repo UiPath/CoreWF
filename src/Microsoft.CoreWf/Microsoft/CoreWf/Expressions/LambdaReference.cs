@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     // consciously not XAML-friendly since Linq Expressions aren't create-set-use
     [Fx.Tag.XamlVisible(false)]
@@ -21,7 +21,7 @@ namespace Microsoft.CoreWf.Expressions
         {
             if (locationExpression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationExpression");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationExpression");
             }
             _locationExpression = locationExpression;
             this.UseOldFastPath = true;
@@ -85,7 +85,7 @@ namespace Microsoft.CoreWf.Expressions
         //    // In order to make your workflow XAML-serializable, 
         //    // use either VisualBasicValue/Reference or ExpressionServices.Convert  
         //    // This will convert your lambda expressions into expression activities.
-        //    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new LambdaSerializationException());
+        //    throw CoreWf.Internals.FxTrace.Exception.AsError(new LambdaSerializationException());
         //}
     }
 }

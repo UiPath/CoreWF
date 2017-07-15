@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //using System.Xaml;
 
@@ -29,16 +29,16 @@ namespace Microsoft.CoreWf.Expressions
             "System",
             "System.Collections",
             "System.Collections.Generic",
-            "Microsoft.CoreWf",
-            "Microsoft.CoreWf.Expressions",
-            "Microsoft.CoreWf.Statements"
+            "CoreWf",
+            "CoreWf.Expressions",
+            "CoreWf.Statements"
         });
 
         private static readonly ReadOnlyCollection<AssemblyReference> s_defaultReferences = new ReadOnlyCollection<AssemblyReference>(new AssemblyReference[]
         {
             new AssemblyName("mscorlib"),
             new AssemblyName("System"),
-            new AssemblyName("Microsoft.CoreWf"),
+            new AssemblyName("CoreWf"),
             new AssemblyName("System.Core")
         });
 
@@ -190,7 +190,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (activity.MemberOf == null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityIsUncached);
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityIsUncached);
                 }
 
                 LocationReferenceEnvironment environment = activity.GetParentEnvironment();

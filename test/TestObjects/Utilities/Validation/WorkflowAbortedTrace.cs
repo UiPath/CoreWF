@@ -75,7 +75,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
         public static void Trace(Guid workflowInstanceId, Exception abortReason)
         {
             WorkflowAbortedTrace trace = new WorkflowAbortedTrace(workflowInstanceId, abortReason);
-            TraceSource ts = new TraceSource("Microsoft.CoreWf.Tracking", SourceLevels.Information);
+            TraceSource ts = new TraceSource("CoreWf.Tracking", SourceLevels.Information);
             ts.TraceData(TraceEventType.Information, 1, trace);
         }
     }

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     // An AsyncResult that schedules work for later on the IOThreadScheduler
     internal abstract class ScheduleActionItemAsyncResult : AsyncResult

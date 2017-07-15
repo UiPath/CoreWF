@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.FlagsEnumsShouldHavePluralNames, //Justification = "Consistency is an adjective.")]
     [Flags]

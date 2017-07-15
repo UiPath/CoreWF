@@ -6,7 +6,7 @@ using System.Diagnostics.Tracing;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract(Name = XD.Runtime.Scheduler, Namespace = XD.Runtime.Namespace)]
     internal class Scheduler
@@ -170,7 +170,7 @@ namespace Microsoft.CoreWf.Runtime
         {
             Fx.Assert(_isRunning, "We should still be processing work - we just don't have a thread");
 
-            bool isTracingEnabled = Microsoft.CoreWf.Internals.FxTrace.ShouldTraceInformation;
+            bool isTracingEnabled = CoreWf.Internals.FxTrace.ShouldTraceInformation;
             bool notifiedCompletion = false;
             bool isInstanceComplete = false;
 
@@ -352,7 +352,7 @@ namespace Microsoft.CoreWf.Runtime
             // To avoid the virt call on EVERY work item we check
             // the Verbose flag.  All of our Schedule traces are
             // verbose.
-            if (Microsoft.CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+            if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
             {
                 workItem.TraceScheduled();
             }
@@ -374,7 +374,7 @@ namespace Microsoft.CoreWf.Runtime
                 _workItemQueue.Enqueue(workItem);
             }
 
-            if (Microsoft.CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+            if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
             {
                 workItem.TraceScheduled();
             }
@@ -554,7 +554,7 @@ namespace Microsoft.CoreWf.Runtime
 
                 // We check the Verbose flag to avoid the 
                 // virt call if possible
-                if (Microsoft.CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+                if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
                 {
                     workItem.TraceStarting();
                 }

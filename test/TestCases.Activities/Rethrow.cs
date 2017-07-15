@@ -335,7 +335,7 @@ namespace TestCases.Activities
 
             JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
 
-            using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(root, null, jsonStore, Microsoft.CoreWf.PersistableIdleAction.None))
+            using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(root, null, jsonStore, CoreWf.PersistableIdleAction.None))
             {
                 testWorkflowRuntime.ExecuteWorkflow();
                 testWorkflowRuntime.WaitForActivityStatusChange("Blocking1", TestActivityInstanceState.Executing);
@@ -441,8 +441,8 @@ namespace TestCases.Activities
             {
                 ExpectedOutcome = Outcome.UncaughtException(),
             };
-            rethrowAct.CustomActivityTraces.Add(new ActivityTrace("Rethrow", Microsoft.CoreWf.ActivityInstanceState.Executing));
-            rethrowAct.CustomActivityTraces.Add(new ActivityTrace("Rethrow", Microsoft.CoreWf.ActivityInstanceState.Faulted));
+            rethrowAct.CustomActivityTraces.Add(new ActivityTrace("Rethrow", CoreWf.ActivityInstanceState.Executing));
+            rethrowAct.CustomActivityTraces.Add(new ActivityTrace("Rethrow", CoreWf.ActivityInstanceState.Faulted));
 
             TestTryCatch ttc = new TestTryCatch("parent TryCatch")
             {
@@ -578,15 +578,15 @@ namespace TestCases.Activities
         }
     }
 
-    internal class TestRethrowInPrivateChildren : Microsoft.CoreWf.NativeActivity
+    internal class TestRethrowInPrivateChildren : CoreWf.NativeActivity
     {
-        private Microsoft.CoreWf.Statements.Rethrow _body = new Microsoft.CoreWf.Statements.Rethrow() { DisplayName = "Rethrow" };
-        protected override void CacheMetadata(Microsoft.CoreWf.NativeActivityMetadata metadata)
+        private CoreWf.Statements.Rethrow _body = new CoreWf.Statements.Rethrow() { DisplayName = "Rethrow" };
+        protected override void CacheMetadata(CoreWf.NativeActivityMetadata metadata)
         {
             metadata.AddImplementationChild(_body);
         }
 
-        protected override void Execute(Microsoft.CoreWf.NativeActivityContext context)
+        protected override void Execute(CoreWf.NativeActivityContext context)
         {
             context.ScheduleActivity(_body);
         }

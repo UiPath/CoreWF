@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Body")]
     public sealed class HandleScope<THandle> : NativeActivity
@@ -81,7 +81,7 @@ namespace Microsoft.CoreWf.Statements
 
             if (scopedHandle == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("Handle");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("Handle");
             }
 
             context.Properties.Add(scopedHandle.ExecutionPropertyName, scopedHandle);

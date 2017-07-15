@@ -5,7 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     internal static class IndexerHelper
     {

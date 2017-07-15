@@ -3,11 +3,11 @@ set quoted_identifier on
 set nocount on
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[InsertRunnableInstanceEntry]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[InsertRunnableInstanceEntry]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[InsertRunnableInstanceEntry]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[InsertRunnableInstanceEntry]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[InsertRunnableInstanceEntry]
+create procedure [CoreWf.DurableInstancing].[InsertRunnableInstanceEntry]
 	@surrogateInstanceId bigint,
 	@workflowHostType uniqueidentifier,
 	@serviceDeploymentId bigint, 
@@ -43,11 +43,11 @@ begin
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[RecoverInstanceLocks]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[RecoverInstanceLocks]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[RecoverInstanceLocks]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[RecoverInstanceLocks]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[RecoverInstanceLocks]
+create procedure [CoreWf.DurableInstancing].[RecoverInstanceLocks]
 as
 begin
 	set nocount on;
@@ -80,17 +80,17 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[RecoverInstanceLocks] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers]
+grant execute on [CoreWf.DurableInstancing].[RecoverInstanceLocks] to [CoreWf.DurableInstancing.InstanceStoreUsers]
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[RecoverInstanceLocks] to [Microsoft.CoreWf.DurableInstancing.WorkflowActivationUsers]
+grant execute on [CoreWf.DurableInstancing].[RecoverInstanceLocks] to [CoreWf.DurableInstancing.WorkflowActivationUsers]
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[ParseBinaryPropertyValue]') and type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
-	drop function [Microsoft.CoreWf.DurableInstancing].[ParseBinaryPropertyValue]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[ParseBinaryPropertyValue]') and type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+	drop function [CoreWf.DurableInstancing].[ParseBinaryPropertyValue]
 go
 
-create function [Microsoft.CoreWf.DurableInstancing].[ParseBinaryPropertyValue] (@startPosition int, @length int, @concatenatedKeyProperties varbinary(max))
+create function [CoreWf.DurableInstancing].[ParseBinaryPropertyValue] (@startPosition int, @length int, @concatenatedKeyProperties varbinary(max))
 returns varbinary(max)
 as
 begin
@@ -100,11 +100,11 @@ begin
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[GetExpirationTime]') and type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
-	drop function [Microsoft.CoreWf.DurableInstancing].[GetExpirationTime]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[GetExpirationTime]') and type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+	drop function [CoreWf.DurableInstancing].[GetExpirationTime]
 go
 
-create function [Microsoft.CoreWf.DurableInstancing].[GetExpirationTime] (@offsetInMilliseconds bigint)
+create function [CoreWf.DurableInstancing].[GetExpirationTime] (@offsetInMilliseconds bigint)
 returns datetime
 as
 begin
@@ -132,11 +132,11 @@ begin
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[CreateLockOwner]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[CreateLockOwner]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[CreateLockOwner]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[CreateLockOwner]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[CreateLockOwner]
+create procedure [CoreWf.DurableInstancing].[CreateLockOwner]
 	@lockOwnerId uniqueidentifier,
 	@lockTimeout int,
 	@workflowHostType uniqueidentifier,
@@ -200,17 +200,17 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[CreateLockOwner] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[CreateLockOwner] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[CreateLockOwner] to [Microsoft.CoreWf.DurableInstancing.WorkflowActivationUsers] 
+grant execute on [CoreWf.DurableInstancing].[CreateLockOwner] to [CoreWf.DurableInstancing.WorkflowActivationUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[DeleteLockOwner]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[DeleteLockOwner]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[DeleteLockOwner]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[DeleteLockOwner]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[DeleteLockOwner]
+create procedure [CoreWf.DurableInstancing].[DeleteLockOwner]
 	@surrogateLockOwnerId bigint
 as
 begin
@@ -253,16 +253,16 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[DeleteLockOwner] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[DeleteLockOwner] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[DeleteLockOwner] to [Microsoft.CoreWf.DurableInstancing.WorkflowActivationUsers] 
+grant execute on [CoreWf.DurableInstancing].[DeleteLockOwner] to [CoreWf.DurableInstancing.WorkflowActivationUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[ExtendLock]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[ExtendLock]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[ExtendLock]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[ExtendLock]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[ExtendLock]
+create procedure [CoreWf.DurableInstancing].[ExtendLock]
 	@surrogateLockOwnerId bigint,
 	@lockTimeout int	
 as
@@ -294,7 +294,7 @@ begin
 	begin
 		if exists (select * from [LockOwnersTable] where ([SurrogateLockOwnerId] = @surrogateLockOwnerId))
 		begin
-			exec [Microsoft.CoreWf.DurableInstancing].[DeleteLockOwner] @surrogateLockOwnerId
+			exec [CoreWf.DurableInstancing].[DeleteLockOwner] @surrogateLockOwnerId
 			set @result = 11
 		end
 		else
@@ -306,16 +306,16 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[ExtendLock] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[ExtendLock] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[ExtendLock] to [Microsoft.CoreWf.DurableInstancing.WorkflowActivationUsers] 
+grant execute on [CoreWf.DurableInstancing].[ExtendLock] to [CoreWf.DurableInstancing.WorkflowActivationUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[AssociateKeys]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[AssociateKeys]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[AssociateKeys]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[AssociateKeys]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[AssociateKeys]
+create procedure [CoreWf.DurableInstancing].[AssociateKeys]
 	@surrogateInstanceId bigint,
 	@keysToAssociate xml = null,
 	@concatenatedKeyProperties varbinary(max) = null,
@@ -338,7 +338,7 @@ begin
 	begin
 		insert into @keys
 		select T.Item.value('@KeyId', 'uniqueidentifier') as [KeyId],
-			   [Microsoft.CoreWf.DurableInstancing].[ParseBinaryPropertyValue](T.Item.value('@StartPosition', 'int'), T.Item.value('@BinaryLength', 'int'), @concatenatedKeyProperties) as [Properties]
+			   [CoreWf.DurableInstancing].[ParseBinaryPropertyValue](T.Item.value('@StartPosition', 'int'), T.Item.value('@BinaryLength', 'int'), @concatenatedKeyProperties) as [Properties]
 	    from @keysToAssociate.nodes('/CorrelationKeys/CorrelationKey') as T(Item)
 		option (maxdop 1)
 
@@ -396,10 +396,10 @@ InsertSingleKey:
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[CompleteKeys]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[CompleteKeys]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[CompleteKeys]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[CompleteKeys]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[CompleteKeys]
+create procedure [CoreWf.DurableInstancing].[CompleteKeys]
 	@surrogateInstanceId bigint,
 	@keysToComplete xml = null
 as
@@ -446,10 +446,10 @@ begin
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[FreeKeys]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[FreeKeys]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[FreeKeys]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[FreeKeys]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[FreeKeys]
+create procedure [CoreWf.DurableInstancing].[FreeKeys]
 	@surrogateInstanceId bigint,
 	@keysToFree xml = null
 as
@@ -494,10 +494,10 @@ begin
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[CreateInstance]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[CreateInstance]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[CreateInstance]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[CreateInstance]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[CreateInstance]
+create procedure [CoreWf.DurableInstancing].[CreateInstance]
 	@instanceId uniqueidentifier,
 	@surrogateLockOwnerId bigint,
 	@workflowHostType uniqueidentifier,
@@ -529,10 +529,10 @@ begin
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[LockInstance]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[LockInstance]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[LockInstance]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[LockInstance]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[LockInstance]
+create procedure [CoreWf.DurableInstancing].[LockInstance]
 	@instanceId uniqueidentifier,
 	@surrogateLockOwnerId bigint,
 	@handleInstanceVersion bigint,
@@ -641,10 +641,10 @@ TryLockInstance:
 end
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[UnlockInstance]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[UnlockInstance]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[UnlockInstance]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[UnlockInstance]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[UnlockInstance]
+create procedure [CoreWf.DurableInstancing].[UnlockInstance]
 	@surrogateLockOwnerId bigint,
 	@instanceId uniqueidentifier,
 	@handleInstanceVersion bigint
@@ -678,20 +678,20 @@ begin
 		  [SurrogateLockOwnerId] = @surrogateLockOwnerId and
 		  [Version] = @handleInstanceVersion
 	
-	exec [Microsoft.CoreWf.DurableInstancing].[InsertRunnableInstanceEntry] @surrogateInstanceId, @workflowHostType, @serviceDeploymentId, @isSuspended, @isReadyToRun, @pendingTimer    
+	exec [CoreWf.DurableInstancing].[InsertRunnableInstanceEntry] @surrogateInstanceId, @workflowHostType, @serviceDeploymentId, @isSuspended, @isReadyToRun, @pendingTimer    
 	
 	commit transaction
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[UnlockInstance] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[UnlockInstance] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[DetectRunnableInstances]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[DetectRunnableInstances]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[DetectRunnableInstances]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[DetectRunnableInstances]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[DetectRunnableInstances]
+create procedure [CoreWf.DurableInstancing].[DetectRunnableInstances]
 	@workflowHostType uniqueidentifier
 as
 begin
@@ -711,14 +711,14 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[DetectRunnableInstances] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[DetectRunnableInstances] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters]
+create procedure [CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters]
 	@machineName nvarchar(128)
 as
 begin
@@ -749,16 +749,16 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers]
+grant execute on [CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters] to [CoreWf.DurableInstancing.InstanceStoreUsers]
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters] to [Microsoft.CoreWf.DurableInstancing.WorkflowActivationUsers]
+grant execute on [CoreWf.DurableInstancing].[GetActivatableWorkflowsActivationParameters] to [CoreWf.DurableInstancing.WorkflowActivationUsers]
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[LoadInstance]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[LoadInstance]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[LoadInstance]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[LoadInstance]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[LoadInstance]
+create procedure [CoreWf.DurableInstancing].[LoadInstance]
 	@surrogateLockOwnerId bigint,
 	@operationType tinyint,
 	@handleInstanceVersion bigint,
@@ -848,7 +848,7 @@ MapKeyToInstanceId:
 	if (@result = 0)
 	begin
 LockOrCreateInstance:
-		exec [Microsoft.CoreWf.DurableInstancing].[LockInstance] @instanceId, @surrogateLockOwnerId, @handleInstanceVersion, @handleIsBoundToLock, @surrogateInstanceId output, null, @result output
+		exec [CoreWf.DurableInstancing].[LockInstance] @instanceId, @surrogateLockOwnerId, @handleInstanceVersion, @handleIsBoundToLock, @surrogateInstanceId output, null, @result output
 														  
 		if (@result = 0 and @surrogateInstanceId = 0)
 		begin
@@ -862,7 +862,7 @@ LockOrCreateInstance:
 			end
 			else
 			begin				
-				exec [Microsoft.CoreWf.DurableInstancing].[CreateInstance] @instanceId, @surrogateLockOwnerId, null, null, @surrogateInstanceId output, @result output
+				exec [CoreWf.DurableInstancing].[CreateInstance] @instanceId, @surrogateLockOwnerId, null, null, @surrogateInstanceId output, @result output
 			
 				if (@result = 0 and @surrogateInstanceId = 0)
 					goto LockOrCreateInstance
@@ -926,7 +926,7 @@ LockOrCreateInstance:
 		end
 		
 		if (@result = 0)
-			exec @result = [Microsoft.CoreWf.DurableInstancing].[AssociateKeys] @surrogateInstanceId, @keysToAssociate, @concatenatedKeyProperties, @encodingOption, @singleKeyId
+			exec @result = [CoreWf.DurableInstancing].[AssociateKeys] @surrogateInstanceId, @keysToAssociate, @concatenatedKeyProperties, @encodingOption, @singleKeyId
 		
 		-- Ensure that this key's data will never be overwritten.
 		if (@result = 0 and @createKey = 1)
@@ -989,14 +989,14 @@ LockOrCreateInstance:
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[LoadInstance] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[LoadInstance] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[TryLoadRunnableInstance]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[TryLoadRunnableInstance]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[TryLoadRunnableInstance]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[TryLoadRunnableInstance]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[TryLoadRunnableInstance]
+create procedure [CoreWf.DurableInstancing].[TryLoadRunnableInstance]
 	@surrogateLockOwnerId bigint,
 	@workflowHostType uniqueidentifier,
 	@operationType tinyint,
@@ -1027,7 +1027,7 @@ begin
     if (@@rowcount = 1)
     begin
 		select 0 as 'Result', cast(1 as bit)				
-		exec [Microsoft.CoreWf.DurableInstancing].[LoadInstance] @surrogateLockOwnerId, @operationType, @handleInstanceVersion, @handleIsBoundToLock, null, @instanceId, null, @encodingOption, null, null, @operationTimeout
+		exec [CoreWf.DurableInstancing].[LoadInstance] @surrogateLockOwnerId, @operationType, @handleInstanceVersion, @handleIsBoundToLock, null, @instanceId, null, @encodingOption, null, null, @operationTimeout
     end	
     else
     begin
@@ -1041,13 +1041,13 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[TryLoadRunnableInstance] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[TryLoadRunnableInstance] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[DeleteInstance]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[DeleteInstance]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[DeleteInstance]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[DeleteInstance]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[DeleteInstance]
+create procedure [CoreWf.DurableInstancing].[DeleteInstance]
 	@surrogateInstanceId bigint = null
 as
 begin	
@@ -1073,14 +1073,14 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[DeleteInstance] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[DeleteInstance] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-if exists (select * from sys.triggers where object_id = OBJECT_ID(N'[Microsoft.CoreWf.DurableInstancing].[DeleteInstanceTrigger]'))
-	drop trigger [Microsoft.CoreWf.DurableInstancing].[DeleteInstanceTrigger]
+if exists (select * from sys.triggers where object_id = OBJECT_ID(N'[CoreWf.DurableInstancing].[DeleteInstanceTrigger]'))
+	drop trigger [CoreWf.DurableInstancing].[DeleteInstanceTrigger]
 go
 
-create trigger [Microsoft.CoreWf.DurableInstancing].[DeleteInstanceTrigger] on [Microsoft.CoreWf.DurableInstancing].[Instances]
+create trigger [CoreWf.DurableInstancing].[DeleteInstanceTrigger] on [CoreWf.DurableInstancing].[Instances]
 instead of delete
 as
 begin	
@@ -1100,30 +1100,30 @@ begin
 	
 	delete [InstancePromotedPropertiesTable]
 	from @surrogateInstanceIds as [InstancesToDelete]
-	inner merge join [Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTable] on [InstancePromotedPropertiesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
+	inner merge join [CoreWf.DurableInstancing].[InstancePromotedPropertiesTable] on [InstancePromotedPropertiesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
 	
 	delete [KeysTable]
 	from @surrogateInstanceIds as [InstancesToDelete]
-	inner loop join [Microsoft.CoreWf.DurableInstancing].[KeysTable] on [KeysTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
+	inner loop join [CoreWf.DurableInstancing].[KeysTable] on [KeysTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
 	
 	delete from [InstanceMetadataChangesTable]
 	from @surrogateInstanceIds as [InstancesToDelete]
-	inner merge join [Microsoft.CoreWf.DurableInstancing].[InstanceMetadataChangesTable] on [InstanceMetadataChangesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
+	inner merge join [CoreWf.DurableInstancing].[InstanceMetadataChangesTable] on [InstanceMetadataChangesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
 	
 	delete [RunnableInstancesTable]
 	from @surrogateInstanceIds as [InstancesToDelete]
-	inner loop join [Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable] on [RunnableInstancesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
+	inner loop join [CoreWf.DurableInstancing].[RunnableInstancesTable] on [RunnableInstancesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
 	
 	delete [InstancesTable]
 	from @surrogateInstanceIds as [InstancesToDelete]
-	inner merge join [Microsoft.CoreWf.DurableInstancing].[InstancesTable] on [InstancesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
+	inner merge join [CoreWf.DurableInstancing].[InstancesTable] on [InstancesTable].[SurrogateInstanceId] = [InstancesToDelete].[SurrogateInstanceId]
 end
 go	
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[CreateServiceDeployment]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[CreateServiceDeployment]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[CreateServiceDeployment]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[CreateServiceDeployment]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[CreateServiceDeployment]	
+create procedure [CoreWf.DurableInstancing].[CreateServiceDeployment]	
 	@serviceDeploymentHash uniqueIdentifier,
 	@siteName nvarchar(max),
 	@relativeServicePath nvarchar(max),
@@ -1157,13 +1157,13 @@ begin
 end	
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[CreateServiceDeployment] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[CreateServiceDeployment] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[SaveInstance]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[SaveInstance]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[SaveInstance]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[SaveInstance]
 go
-create procedure [Microsoft.CoreWf.DurableInstancing].[SaveInstance]
+create procedure [CoreWf.DurableInstancing].[SaveInstance]
 	@instanceId uniqueidentifier,
 	@surrogateLockOwnerId bigint,
 	@handleInstanceVersion bigint,
@@ -1229,11 +1229,11 @@ begin
 LockOrCreateInstance:
 	if (@result = 0)
 	begin
-		exec [Microsoft.CoreWf.DurableInstancing].[LockInstance] @instanceId, @surrogateLockOwnerId, @handleInstanceVersion, @handleIsBoundToLock, @surrogateInstanceId output, @currentInstanceVersion output, @result output
+		exec [CoreWf.DurableInstancing].[LockInstance] @instanceId, @surrogateLockOwnerId, @handleInstanceVersion, @handleIsBoundToLock, @surrogateInstanceId output, @currentInstanceVersion output, @result output
 															  
 		if (@result = 0 and @surrogateInstanceId = 0)
 		begin
-			exec [Microsoft.CoreWf.DurableInstancing].[CreateInstance] @instanceId, @surrogateLockOwnerId, @workflowHostType, @serviceDeploymentId, @surrogateInstanceId output, @result output
+			exec [CoreWf.DurableInstancing].[CreateInstance] @instanceId, @surrogateLockOwnerId, @workflowHostType, @serviceDeploymentId, @surrogateInstanceId output, @result output
 			
 			if (@result = 0 and @surrogateInstanceId = 0)
 				goto LockOrCreateInstance
@@ -1251,7 +1251,7 @@ LockOrCreateInstance:
 		
 		if (@isCompleted = 1 and @deleteInstanceOnCompletion = 1)
 		begin
-			exec [Microsoft.CoreWf.DurableInstancing].[DeleteInstance] @surrogateInstanceId
+			exec [CoreWf.DurableInstancing].[DeleteInstance] @surrogateInstanceId
 			goto Finally
 		end
 		
@@ -1270,7 +1270,7 @@ LockOrCreateInstance:
 			@pendingTimer = [PendingTimer] = 
 					case when (@metadataUpdateOnly = 1)
 						then [PendingTimer]
-						else [Microsoft.CoreWf.DurableInstancing].[GetExpirationTime](@timerDurationMilliseconds)
+						else [CoreWf.DurableInstancing].[GetExpirationTime](@timerDurationMilliseconds)
 					end,
 			@isReadyToRun = [IsReadyToRun] = 
 					case when (@metadataUpdateOnly = 1)
@@ -1353,13 +1353,13 @@ LockOrCreateInstance:
 		else
 		begin
 			if (@keysToAssociate is not null or @singleKeyId is not null)
-				exec @result = [Microsoft.CoreWf.DurableInstancing].[AssociateKeys] @surrogateInstanceId, @keysToAssociate, @concatenatedKeyProperties, @encodingOption, @singleKeyId
+				exec @result = [CoreWf.DurableInstancing].[AssociateKeys] @surrogateInstanceId, @keysToAssociate, @concatenatedKeyProperties, @encodingOption, @singleKeyId
 			
 			if (@result = 0 and @keysToComplete is not null)
-				exec @result = [Microsoft.CoreWf.DurableInstancing].[CompleteKeys] @surrogateInstanceId, @keysToComplete
+				exec @result = [CoreWf.DurableInstancing].[CompleteKeys] @surrogateInstanceId, @keysToComplete
 			
 			if (@result = 0 and @keysToFree is not null)
-				exec @result = [Microsoft.CoreWf.DurableInstancing].[FreeKeys] @surrogateInstanceId, @keysToFree
+				exec @result = [CoreWf.DurableInstancing].[FreeKeys] @surrogateInstanceId, @keysToFree
 			
 			if (@result = 0) and (@metadataUpdateOnly = 0)
 			begin
@@ -1382,7 +1382,7 @@ LockOrCreateInstance:
 			end
 			
 			if (@result = 0 and @unlockInstance = 1 and @isCompleted = 0)
-				exec [Microsoft.CoreWf.DurableInstancing].[InsertRunnableInstanceEntry] @surrogateInstanceId, @workflowHostType, @serviceDeploymentId, @isSuspended, @isReadyToRun, @pendingTimer				
+				exec [CoreWf.DurableInstancing].[InsertRunnableInstanceEntry] @surrogateInstanceId, @workflowHostType, @serviceDeploymentId, @isSuspended, @isReadyToRun, @pendingTimer				
 		end
 	end
 
@@ -1397,14 +1397,14 @@ Finally:
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[SaveInstance] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers] 
+grant execute on [CoreWf.DurableInstancing].[SaveInstance] to [CoreWf.DurableInstancing.InstanceStoreUsers] 
 go
 
-if exists (select * from sys.triggers where object_id = OBJECT_ID(N'[Microsoft.CoreWf.DurableInstancing].[DeleteServiceDeploymentTrigger]'))
-	drop trigger [Microsoft.CoreWf.DurableInstancing].[DeleteServiceDeploymentTrigger]
+if exists (select * from sys.triggers where object_id = OBJECT_ID(N'[CoreWf.DurableInstancing].[DeleteServiceDeploymentTrigger]'))
+	drop trigger [CoreWf.DurableInstancing].[DeleteServiceDeploymentTrigger]
 go
 
-create trigger [Microsoft.CoreWf.DurableInstancing].[DeleteServiceDeploymentTrigger] on [Microsoft.CoreWf.DurableInstancing].[ServiceDeployments]
+create trigger [CoreWf.DurableInstancing].[DeleteServiceDeploymentTrigger] on [CoreWf.DurableInstancing].[ServiceDeployments]
 instead of delete
 as
 begin	
@@ -1436,11 +1436,11 @@ begin
 end
 go	
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[InsertPromotedProperties]') and type in (N'P', N'PC'))
-	drop procedure [Microsoft.CoreWf.DurableInstancing].[InsertPromotedProperties]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[InsertPromotedProperties]') and type in (N'P', N'PC'))
+	drop procedure [CoreWf.DurableInstancing].[InsertPromotedProperties]
 go
 
-create procedure [Microsoft.CoreWf.DurableInstancing].[InsertPromotedProperties]
+create procedure [CoreWf.DurableInstancing].[InsertPromotedProperties]
 	@instanceId uniqueidentifier,
 	@promotionName nvarchar(400),
 	@value1 sql_variant = null,
@@ -1519,7 +1519,7 @@ begin
 	from [InstancesTable]
 	where [Id] = @instanceId
 
-	insert into [Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
+	insert into [CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
 	values (@surrogateInstanceId, @promotionName, @value1, @value2, @value3, @value4, @value5, @value6, @value7, @value8,
 			@value9, @value10, @value11, @value12, @value13, @value14, @value15, @value16, @value17, @value18, @value19,
 			@value20, @value21, @value22, @value23, @value24, @value25, @value26, @value27, @value28, @value29, @value30,
@@ -1530,5 +1530,5 @@ begin
 end
 go
 
-grant execute on [Microsoft.CoreWf.DurableInstancing].[InsertPromotedProperties] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers]
+grant execute on [CoreWf.DurableInstancing].[InsertPromotedProperties] to [CoreWf.DurableInstancing.InstanceStoreUsers]
 go

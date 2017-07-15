@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
+using CoreWf.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract(Name = XD.Runtime.BookmarkManager, Namespace = XD.Runtime.Namespace)]
     internal class BookmarkManager
@@ -94,7 +94,7 @@ namespace Microsoft.CoreWf.Runtime
 
             if (_bookmarks != null && _bookmarks.ContainsKey(toAdd))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkAlreadyExists(name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkAlreadyExists(name)));
             }
 
             AddBookmark(toAdd, callback, owningInstance, options);
@@ -200,7 +200,7 @@ namespace Microsoft.CoreWf.Runtime
         {
             if (_nextId == long.MaxValue)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInternalBookmarks));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInternalBookmarks));
             }
 
             long result = _nextId;
@@ -312,7 +312,7 @@ namespace Microsoft.CoreWf.Runtime
             {
                 if (callbackWrapper.ActivityInstance != instanceAttemptingRemove)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyBookmarkOwnerCanRemove));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyBookmarkOwnerCanRemove));
                 }
 
                 Remove(internalBookmark, callbackWrapper);

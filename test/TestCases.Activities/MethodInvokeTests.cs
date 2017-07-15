@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Expressions;
+using CoreWf;
+using CoreWf.Expressions;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -186,7 +186,7 @@ namespace TestCases.Activities
                         new TestArgument<string>(Direction.In, "value", "dangerous... dangerous... ")
                     },
                 };
-                throw new TestCaseFailedException("Expecting Microsoft.CoreWf.ValidationException, but exception is not thrown");
+                throw new TestCaseFailedException("Expecting CoreWf.ValidationException, but exception is not thrown");
             }
             catch (Exception exception)
             {
@@ -244,7 +244,7 @@ namespace TestCases.Activities
                 TestRuntime.RunAndValidateWorkflow(simpleMethodInvoke);
 
                 // expecting an exception, but exception not received.
-                throw new TestCaseFailedException("Expecting Microsoft.CoreWf.ValidationException, but exception is not thrown");
+                throw new TestCaseFailedException("Expecting CoreWf.ValidationException, but exception is not thrown");
             }
             catch (Exception exception)
             {
@@ -738,7 +738,7 @@ namespace TestCases.Activities
                 };
 
                 // expecting an exception, but exception not received.
-                throw new TestCaseFailedException("Expecting Microsoft.CoreWf.ValidationException, but exception is not thrown");
+                throw new TestCaseFailedException("Expecting CoreWf.ValidationException, but exception is not thrown");
             }
             catch (Exception exception)
             {
@@ -1315,7 +1315,7 @@ namespace TestCases.Activities
         //             {
         //                 Argument = delegateInArgument,
         //                 Result = delegateOutArgument,
-        //                 Handler = new Microsoft.CoreWf.Statements.Sequence
+        //                 Handler = new CoreWf.Statements.Sequence
         //                 {
         //                     DisplayName = "Sequence1",
         //                     Activities =

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf;
+using CoreWf;
 using System.Collections.Generic;
 
 namespace Test.Common.TestObjects.CustomActivities
@@ -49,7 +49,7 @@ namespace Test.Common.TestObjects.CustomActivities
             context.ScheduleActivity(this.Body);
         }
 
-        // protected override void OnCreateDynamicUpdateMap(Microsoft.CoreWf.DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        // protected override void OnCreateDynamicUpdateMap(CoreWf.DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         // {
         //     metadata.AllowUpdateInsideThisActivity();
         // }

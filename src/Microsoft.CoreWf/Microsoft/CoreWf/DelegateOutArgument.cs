@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public abstract class DelegateOutArgument : DelegateArgument
     {
@@ -42,7 +42,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             return context.GetValue<T>((LocationReference)this);
@@ -55,7 +55,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             return context.GetLocation<T>(this);
@@ -65,7 +65,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             context.SetValue((LocationReference)this, value);

@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     [DataContract]
     /// <summary>

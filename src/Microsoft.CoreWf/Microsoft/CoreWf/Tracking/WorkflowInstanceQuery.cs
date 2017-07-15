@@ -3,7 +3,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Tracking
+namespace CoreWf.Tracking
 {
     public class WorkflowInstanceQuery : TrackingQuery
     {

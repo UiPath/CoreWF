@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
+using CoreWf;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -76,7 +76,7 @@ namespace TestCases.Activities
             //  weird characters using random string generators and several punctuations,   have dots in it, multiple
             //  dots following each other,   set to null,   set to empty  add multiple spaces.     2. if activty has an
             //  integer property, test the max value, min value, max+1,    3. if activity has a list, have an empty
-            //  list, null list, perform other list operations on it   â€?will be added more cases when meta-data
+            //  list, null list, perform other list operations on it   ï¿½ï¿½?will be added more cases when meta-data
             //  properties will be finalized to see if there are
 
             TestSequence sequence = new TestSequence("seq");

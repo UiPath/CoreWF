@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     public abstract class InstancePersistenceEvent : IEquatable<InstancePersistenceEvent>
     {

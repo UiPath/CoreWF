@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Expressions;
+using CoreWf;
+using CoreWf.Expressions;
 using System.Collections.Generic;
 using System.IO;
 using Test.Common.TestObjects.Activities;

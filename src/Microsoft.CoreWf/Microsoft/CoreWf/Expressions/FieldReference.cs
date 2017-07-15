@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     public sealed class FieldReference<TOperand, TResult> : CodeActivity<Location<TResult>>
     {
@@ -98,11 +98,11 @@ namespace Microsoft.CoreWf.Expressions
                     //    // The field is non-static, and obj is a null reference 
                     //    if (this.fieldInfo.DeclaringType != null)
                     //    {
-                    //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
+                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
                     //    }
                     //    else
                     //    {
-                    //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
+                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
                     //    }
                     //}
                     return (TResult)_fieldInfo.GetValue(_owner);
@@ -114,11 +114,11 @@ namespace Microsoft.CoreWf.Expressions
                     //    if (this.fieldInfo.DeclaringType != null)
                     //    {
                     //        // The field is non-static, and obj is a null reference 
-                    //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
+                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
                     //    }
                     //    else
                     //    {
-                    //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
+                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
                     //    }
                     //}
                     _fieldInfo.SetValue(_owner, value);

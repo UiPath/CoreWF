@@ -2,13 +2,13 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
+using CoreWf;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
-using Microsoft.CoreWf.Expressions;
+using CoreWf.Expressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -350,20 +350,20 @@ namespace TestCases.Activities
         //                {
         //                    Argument = delegateInArgument,
         //                    Result = delegateOutArgument,
-        //                    Handler = new Microsoft.CoreWf.Statements.Sequence
+        //                    Handler = new CoreWf.Statements.Sequence
         //                    {
         //                        DisplayName = "sequence1",
         //                        Activities =
         //                        {
-        //                            new Microsoft.CoreWf.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W1"},
-        //                            new Microsoft.CoreWf.Statements.Assign<string>
+        //                            new CoreWf.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W1"},
+        //                            new CoreWf.Statements.Assign<string>
         //                            {
         //                                DisplayName = "Assign1",
         //                                To = delegateInArgument,
         //                                Value = new VisualBasicValue<string>("Input & \"_VB\"")  ,
         //                            },
-        //                            new Microsoft.CoreWf.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W2"},
-        //                            new Microsoft.CoreWf.Statements.Assign<string>
+        //                            new CoreWf.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W2"},
+        //                            new CoreWf.Statements.Assign<string>
         //                            {
         //                                DisplayName = "Assign2",
         //                                To = delegateOutArgument,

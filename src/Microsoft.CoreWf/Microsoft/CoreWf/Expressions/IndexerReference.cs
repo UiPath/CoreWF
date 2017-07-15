@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.Collections;
+using CoreWf.Runtime;
+using CoreWf.Runtime.Collections;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[ContentProperty("Indices")]
     public sealed class IndexerReference<TOperand, TItem> : CodeActivity<Location<TItem>>
@@ -48,7 +48,7 @@ namespace Microsoft.CoreWf.Expressions
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         },
                     };
@@ -106,7 +106,7 @@ namespace Microsoft.CoreWf.Expressions
             TOperand operandValue = this.Operand.Get(context);
             if (operandValue == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
             }
 
             return new IndexerLocation(operandValue, indicesValue, _getMethod, _setMethod, _getFunc, _setFunc);
@@ -155,7 +155,7 @@ namespace Microsoft.CoreWf.Expressions
                     {
                         return (TItem)_getMethod.Invoke(_operand, _indices);
                     }
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SpecialMethodNotFound("get_Item", typeof(TOperand).Name)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SpecialMethodNotFound("get_Item", typeof(TOperand).Name)));
                 }
                 set
                 {

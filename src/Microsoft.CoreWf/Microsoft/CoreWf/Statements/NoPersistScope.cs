@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Body")]
     public sealed class NoPersistScope : NativeActivity

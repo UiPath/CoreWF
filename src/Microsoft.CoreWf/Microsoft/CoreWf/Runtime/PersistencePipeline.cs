@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     internal class PersistencePipeline
     {

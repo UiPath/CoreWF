@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public abstract class DelegateArgument : LocationReference
     {
@@ -72,7 +72,7 @@ namespace Microsoft.CoreWf
         {
             if (!this.IsInTree)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentMustBeReferenced(this.Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentMustBeReferenced(this.Name)));
             }
         }
 
@@ -106,7 +106,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             return context.GetValue<object>((LocationReference)this);
@@ -116,20 +116,20 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();
 
             if (!context.AllowChainedEnvironmentAccess)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
             }
 
             Location location;
             if (!context.Environment.TryGetLocation(this.Id, this.Owner, out location))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
             }
 
             return location;
@@ -143,7 +143,7 @@ namespace Microsoft.CoreWf
             Location location;
             if (!environment.TryGetLocation(this.Id, this.Owner, out location))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
             }
             return location;
         }

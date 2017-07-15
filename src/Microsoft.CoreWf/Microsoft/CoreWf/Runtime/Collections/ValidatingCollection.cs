@@ -4,7 +4,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Runtime.Collections
+namespace CoreWf.Runtime.Collections
 {
     // simple helper class to allow passing in a func that performs validations of
     // acceptible values

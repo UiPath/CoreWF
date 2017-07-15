@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Validation
+namespace CoreWf.Validation
 {
     public abstract class Constraint : NativeActivity
     {
-        public const string ValidationErrorListPropertyName = "Microsoft.CoreWf.Validation.Constraint.ValidationErrorList";
+        public const string ValidationErrorListPropertyName = "CoreWf.Validation.Constraint.ValidationErrorList";
 
         internal const string ToValidateArgumentName = "ToValidate";
         internal const string ValidationErrorListArgumentName = "ViolationList";
@@ -32,7 +32,7 @@ namespace Microsoft.CoreWf.Validation
 
             if (validationErrorList == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AddValidationErrorMustBeCalledFromConstraint(typeof(Constraint).Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AddValidationErrorMustBeCalledFromConstraint(typeof(Constraint).Name)));
             }
 
             validationErrorList.Add(error);
@@ -56,12 +56,12 @@ namespace Microsoft.CoreWf.Validation
 
             if (objectToValidate == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotValidateNullObject(typeof(Constraint).Name, this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotValidateNullObject(typeof(Constraint).Name, this.DisplayName)));
             }
 
             if (objectToValidateContext == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ValidationContextCannotBeNull(typeof(Constraint).Name, this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ValidationContextCannotBeNull(typeof(Constraint).Name, this.DisplayName)));
             }
 
             List<ValidationError> validationErrorList = new List<ValidationError>(1);

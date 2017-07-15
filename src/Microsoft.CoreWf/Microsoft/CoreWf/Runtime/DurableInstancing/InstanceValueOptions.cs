@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     [Flags]
     [DataContract]

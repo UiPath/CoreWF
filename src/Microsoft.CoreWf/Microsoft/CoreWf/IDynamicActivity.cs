@@ -3,7 +3,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal interface IDynamicActivity
     {

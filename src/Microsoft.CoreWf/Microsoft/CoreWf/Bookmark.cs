@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
@@ -36,7 +36,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
 
             _externalName = name;

@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Statements;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.Collections;
+using CoreWf.Statements;
+using CoreWf.Runtime;
+using CoreWf.Runtime.Collections;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[ContentProperty("Parameters")]
     public sealed class InvokeMethod<TResult> : AsyncCodeActivity<TResult>
@@ -39,7 +39,7 @@ namespace Microsoft.CoreWf.Expressions
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         }
                     };
@@ -67,7 +67,7 @@ namespace Microsoft.CoreWf.Expressions
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         }
                     };

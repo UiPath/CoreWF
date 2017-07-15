@@ -3,9 +3,9 @@
 
 using System;
 using System.Linq.Expressions;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Expressions;
+using CoreWf.Statements;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
 using System.Collections.Generic;

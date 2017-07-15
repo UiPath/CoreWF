@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     internal struct TimeoutHelper
     {

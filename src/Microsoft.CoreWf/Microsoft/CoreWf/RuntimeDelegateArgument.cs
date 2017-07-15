@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // DelegateArgument is the XAML-based construct. RuntimeDelegateArgument is a binding construct to store the value
     [Fx.Tag.XamlVisible(false)]
@@ -14,12 +14,12 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
 
             if (type == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
             }
 
             ArgumentDirectionHelper.Validate(direction, "direction");

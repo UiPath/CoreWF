@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract]
     internal class BookmarkScopeManager
@@ -131,7 +131,7 @@ namespace Microsoft.CoreWf.Runtime
 
             if (!_bookmarkManagers.TryGetValue(lookupScope, out manager))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RegisteredBookmarkScopeRequired));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RegisteredBookmarkScopeRequired));
             }
 
             return manager.CreateBookmark(name, callback, owningInstance, options);
@@ -379,14 +379,14 @@ namespace Microsoft.CoreWf.Runtime
 
             if (_uninitializedScopes == null || !_uninitializedScopes.Contains(lookupScope))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForInitialize));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForInitialize));
             }
 
             Fx.Assert(_bookmarkManagers != null, "This is never null if uninitializedScopes is non-null.");
 
             if (_bookmarkManagers.ContainsKey(new BookmarkScope(id)))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeWithIdAlreadyExists(id)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeWithIdAlreadyExists(id)));
             }
 
             BookmarkManager bookmarks = _bookmarkManagers[lookupScope];
@@ -490,12 +490,12 @@ namespace Microsoft.CoreWf.Runtime
 
             if (_bookmarkManagers == null || !_bookmarkManagers.ContainsKey(scope))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForUnregister));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForUnregister));
             }
 
             if (_bookmarkManagers[scope].HasBookmarks)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeHasBookmarks));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeHasBookmarks));
             }
 
             _bookmarkManagers.Remove(scope);

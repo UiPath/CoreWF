@@ -5,7 +5,7 @@ using System;
 using System.Reflection;
 using System.Resources;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal class InternalSR : StringResourceBase
     {
@@ -19,7 +19,7 @@ namespace Microsoft.CoreWf
             {
                 if (_resourceManager == null)
                 {
-                    _resourceManager = new ResourceManager("Microsoft.CoreWf.Strings.InternalSR", typeof(InternalSR).GetTypeInfo().Assembly);
+                    _resourceManager = new ResourceManager("CoreWf.Strings.InternalSR", typeof(InternalSR).GetTypeInfo().Assembly);
                 }
                 return _resourceManager;
             }

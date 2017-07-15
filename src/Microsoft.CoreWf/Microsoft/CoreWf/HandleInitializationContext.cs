@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class HandleInitializationContext
@@ -104,7 +104,7 @@ namespace Microsoft.CoreWf
         {
             if (_isDiposed)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(SR.HandleInitializationContextDisposed));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(SR.HandleInitializationContextDisposed));
             }
         }
 

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf;
+using CoreWf;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Utilities;

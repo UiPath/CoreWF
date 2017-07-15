@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix, //Justification = "Optimizing for XAML naming.")]
     //[ContentProperty("Collection")]
@@ -49,7 +49,7 @@ namespace Microsoft.CoreWf.Statements
             ICollection<T> collection = this.Collection.Get(context);
             if (collection == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CollectionActivityRequiresCollection(this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CollectionActivityRequiresCollection(this.DisplayName)));
             }
             T item = this.Item.Get(context);
 

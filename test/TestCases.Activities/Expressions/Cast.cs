@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Expressions;
+using CoreWf;
+using CoreWf.Expressions;
 using System.Collections.Generic;
 using Test.Common.TestObjects;
 using Test.Common.TestObjects.Activities;

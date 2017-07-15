@@ -3,7 +3,7 @@
 
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     public class NoPersistHandle : Handle

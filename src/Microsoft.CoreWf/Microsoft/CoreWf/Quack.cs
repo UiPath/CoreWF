@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // A mostly output-restricted double-ended queue. You can add an item to both ends
     // and it is optimized for removing from the front.  The list can be scanned and

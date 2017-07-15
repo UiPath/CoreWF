@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract(Name = XD.Runtime.ActivityInstanceMap, Namespace = XD.Runtime.Namespace)]
     internal class ActivityInstanceMap
@@ -269,7 +269,7 @@ namespace Microsoft.CoreWf.Runtime
         //            int[] oldIdArray = oldQualifiedId.AsIDArray();
         //            if (oldIdArray.Length == 1 && oldIdArray[0] != 1)
         //            {
-        //                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidImplementationAsWorkflowRootForRuntimeState));
+        //                throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidImplementationAsWorkflowRootForRuntimeState));
         //            }
         //        }
 
@@ -477,7 +477,7 @@ namespace Microsoft.CoreWf.Runtime
         //                        throw;
         //                    }
 
-        //                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.NativeActivityUpdateInstanceThrewException(e.Message), e));
+        //                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.NativeActivityUpdateInstanceThrewException(e.Message), e));
         //                }
         //                finally
         //                {
@@ -583,7 +583,7 @@ namespace Microsoft.CoreWf.Runtime
                 Activity activity;
                 if (!QualifiedId.TryGetElementFromRoot(rootActivity, list.ActivityId, out activity))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityInstanceFixupFailed));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityInstanceFixupFailed));
                 }
                 _instanceMapping.Add(activity, list);
                 list.Load(activity, this);

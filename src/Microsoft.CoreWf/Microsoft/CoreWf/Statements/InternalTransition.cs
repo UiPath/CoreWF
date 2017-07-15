@@ -3,7 +3,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     /// <summary>
     /// InternalTransition is internal representation of transition.

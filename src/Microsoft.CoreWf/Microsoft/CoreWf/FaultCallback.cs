@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public delegate void FaultCallback(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom);
 }

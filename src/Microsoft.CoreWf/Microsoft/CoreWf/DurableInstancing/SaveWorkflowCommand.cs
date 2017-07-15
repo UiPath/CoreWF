@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.DurableInstancing
+namespace CoreWf.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class SaveWorkflowCommand : InstancePersistenceCommand
@@ -128,12 +128,12 @@ namespace Microsoft.CoreWf.DurableInstancing
         {
             if (!view.IsBoundToInstance)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.InstanceRequired));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.InstanceRequired));
             }
 
             if (!view.IsBoundToInstanceOwner)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.OwnerRequired));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.OwnerRequired));
             }
 
             if (_keysToAssociate != null)
@@ -154,7 +154,7 @@ namespace Microsoft.CoreWf.DurableInstancing
 
             if (this.CompleteInstance && !this.UnlockInstance)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.ValidateUnlockInstance));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.ValidateUnlockInstance));
             }
 
             InstancePersistence.ValidatePropertyBag(_instanceMetadataChanges, true);

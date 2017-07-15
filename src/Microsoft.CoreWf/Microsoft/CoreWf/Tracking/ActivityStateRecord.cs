@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Tracking
+namespace CoreWf.Tracking
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
@@ -59,11 +59,11 @@ namespace Microsoft.CoreWf.Tracking
         {
             if (activity == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
             }
             if (string.IsNullOrEmpty(state))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("state");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("state");
             }
 
             this.Activity = activity;

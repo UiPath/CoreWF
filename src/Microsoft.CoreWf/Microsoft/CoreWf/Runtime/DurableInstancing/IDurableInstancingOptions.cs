@@ -3,7 +3,7 @@
 
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     //This sole purpose of this interface is to avoid adding S.SM.Activation as a friend of S.SM.Activities
     internal interface IDurableInstancingOptions

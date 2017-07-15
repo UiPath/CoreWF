@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf.Statements;
+using CoreWf.Statements;
 using System.Collections.Generic;
-using Act = Microsoft.CoreWf.Statements;
+using Act = CoreWf.Statements;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;

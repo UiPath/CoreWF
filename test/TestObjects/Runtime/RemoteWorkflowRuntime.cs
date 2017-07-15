@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.DurableInstancing;
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
-using Microsoft.CoreWf.Tracking;
+using CoreWf;
+using CoreWf.DurableInstancing;
+using CoreWf.Hosting;
+using CoreWf.Runtime.DurableInstancing;
+using CoreWf.Tracking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

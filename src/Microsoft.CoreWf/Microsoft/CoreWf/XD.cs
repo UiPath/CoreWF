@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // NOTE: This may get generated from 'xd.xml' if we get extra performance from XML Dictionary strings,
     // which would entail elevating the most common strings into a "Main" dictionary
@@ -10,7 +10,7 @@ namespace Microsoft.CoreWf
         public static class Runtime
         {
             // commonly used pieces of data
-            public const string Namespace = "http://schemas.datacontract.org/2010/02/Microsoft.CoreWf";
+            public const string Namespace = "http://schemas.datacontract.org/2010/02/CoreWf";
             public const string BookmarkManager = "BookmarkManager";
             public const string ActivityInstanceMap = "InstanceMap";
             public const string Scheduler = "Scheduler";

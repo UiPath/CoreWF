@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System.Diagnostics.Tracing;
 
-namespace Microsoft.CoreWf.Internals
+namespace CoreWf.Internals
 {
     internal static partial class FxTrace
     {

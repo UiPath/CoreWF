@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     public sealed class Confirm : NativeActivity
     {
@@ -182,7 +182,7 @@ namespace Microsoft.CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             if (compensationExtension == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ConfirmWithoutCompensableActivity(this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ConfirmWithoutCompensableActivity(this.DisplayName)));
             }
 
             if (Target.IsEmpty)
@@ -200,7 +200,7 @@ namespace Microsoft.CoreWf.Statements
                 }
                 else
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidConfirmActivityUsage(this.DisplayName)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidConfirmActivityUsage(this.DisplayName)));
                 }
             }
             else
@@ -210,7 +210,7 @@ namespace Microsoft.CoreWf.Statements
 
                 if (compensationToken == null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(this.DisplayName));
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(this.DisplayName));
                 }
 
                 if (compensationToken.ConfirmCalled)
@@ -221,7 +221,7 @@ namespace Microsoft.CoreWf.Statements
 
                 if (tokenData == null || tokenData.CompensationState != CompensationState.Completed)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
                 }
 
                 // A valid in-arg was passed...     

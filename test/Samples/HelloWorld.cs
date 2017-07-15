@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.IO;
@@ -126,17 +126,17 @@ namespace Samples
 2024	5	1152921504623624192	InternalCacheMetadata	win:Start	InternalCacheMetadataStart	0:21:26:44.222141	8	18152	9636			InternalCacheMetadata started on activity '3'.
 2025	5	1152921504623624192	InternalCacheMetadata	win:Stop	InternalCacheMetadataStop	0:21:26:44.226348	4	18152	9636			InternalCacheMetadata stopped on activity '3'.
 2028	5	1152921504623624192	CacheRootMetadata	win:Stop	CacheRootMetadataStop	0:21:26:44.227547	1	18152	9636			CacheRootMetadata stopped on activity Hello World Sequence.
-1009	4	1152921504623624192	ScheduleActivity	win:Info	ActivityScheduled	0:21:26:44.239023	11	18152	9636			Parent Activity '', DisplayName: '', InstanceId: '' scheduled child Activity 'Microsoft.CoreWf.Statements.Sequence', DisplayName: 'Hello World Sequence', InstanceId: '1'.
+1009	4	1152921504623624192	ScheduleActivity	win:Info	ActivityScheduled	0:21:26:44.239023	11	18152	9636			Parent Activity '', DisplayName: '', InstanceId: '' scheduled child Activity 'CoreWf.Statements.Sequence', DisplayName: 'Hello World Sequence', InstanceId: '1'.
 2021	5	1152921504623624192	ExecuteWorkItem	win:Start	ExecuteWorkItemStart	0:21:26:44.248136	9	18152	9636			Execute work item start
-1009	4	1152921504623624192	ScheduleActivity	win:Info	ActivityScheduled	0:21:26:44.294120	46	18152	9636			Parent Activity 'Microsoft.CoreWf.Statements.Sequence', DisplayName: 'Hello World Sequence', InstanceId: '1' scheduled child Activity 'Microsoft.CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2'.
+1009	4	1152921504623624192	ScheduleActivity	win:Info	ActivityScheduled	0:21:26:44.294120	46	18152	9636			Parent Activity 'CoreWf.Statements.Sequence', DisplayName: 'Hello World Sequence', InstanceId: '1' scheduled child Activity 'CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2'.
 2022	5	1152921504623624192	ExecuteWorkItem	win:Stop	ExecuteWorkItemStop	0:21:26:44.299800	6	18152	9636			Execute work item stop
 2021	5	1152921504623624192	ExecuteWorkItem	win:Start	ExecuteWorkItemStart	0:21:26:44.299803	0	18152	9636			Execute work item start
-1040	5	1152921504640401408	ExecuteActivity	win:Info	InArgumentBound	0:21:26:44.305561	0	18152	9636			In argument 'TextWriter' on Activity 'Microsoft.CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2' has been bound with value: <Null>.
-1040	5	1152921504640401408	ExecuteActivity	win:Info	InArgumentBound	0:21:26:44.305556	6	18152	9636			In argument 'Text' on Activity 'Microsoft.CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2' has been bound with value: 'Hello World!'.
-1010	4	1152921504623624192	CompleteActivity	win:Info	ActivityCompleted	0:21:26:44.321114	16	18152	9636			Activity 'Microsoft.CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2' has completed in the 'Closed' state.
+1040	5	1152921504640401408	ExecuteActivity	win:Info	InArgumentBound	0:21:26:44.305561	0	18152	9636			In argument 'TextWriter' on Activity 'CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2' has been bound with value: <Null>.
+1040	5	1152921504640401408	ExecuteActivity	win:Info	InArgumentBound	0:21:26:44.305556	6	18152	9636			In argument 'Text' on Activity 'CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2' has been bound with value: 'Hello World!'.
+1010	4	1152921504623624192	CompleteActivity	win:Info	ActivityCompleted	0:21:26:44.321114	16	18152	9636			Activity 'CoreWf.Statements.WriteLine', DisplayName: 'Display greeting', InstanceId: '2' has completed in the 'Closed' state.
 2022	5	1152921504623624192	ExecuteWorkItem	win:Stop	ExecuteWorkItemStop	0:21:26:44.321488	0	18152	9636			Execute work item stop
 2021	5	1152921504623624192	ExecuteWorkItem	win:Start	ExecuteWorkItemStart	0:21:26:44.321490	0	18152	9636			Execute work item start
-1010	4	1152921504623624192	CompleteActivity	win:Info	ActivityCompleted	0:21:26:44.325847	4	18152	9636			Activity 'Microsoft.CoreWf.Statements.Sequence', DisplayName: 'Hello World Sequence', InstanceId: '1' has completed in the 'Closed' state.
+1010	4	1152921504623624192	CompleteActivity	win:Info	ActivityCompleted	0:21:26:44.325847	4	18152	9636			Activity 'CoreWf.Statements.Sequence', DisplayName: 'Hello World Sequence', InstanceId: '1' has completed in the 'Closed' state.
 2022	5	1152921504623624192	ExecuteWorkItem	win:Stop	ExecuteWorkItemStop	0:21:26:44.326194	0	18152	9636			Execute work item stop
 1001	4	1152921504623624192	WFApplicationStateChange	Completed	WorkflowApplicationCompleted	0:21:26:44.340843	15	18152	9636			WorkflowInstance Id: '' has completed in the Closed state.
 ";

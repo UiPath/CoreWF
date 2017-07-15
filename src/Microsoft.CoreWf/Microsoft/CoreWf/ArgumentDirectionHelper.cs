@@ -3,7 +3,7 @@
 
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal static class ArgumentDirectionHelper
     {
@@ -16,7 +16,7 @@ namespace Microsoft.CoreWf
         {
             if (!IsDefined(direction))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new InvalidEnumArgumentException(argumentName, (int)direction, typeof(ArgumentDirection)));
             }
         }

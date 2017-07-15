@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract]
     internal class ExecutionPropertyManager
@@ -526,7 +526,7 @@ namespace Microsoft.CoreWf.Runtime
             {
                 if (_properties.ContainsKey(name))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("name", SR.ExecutionPropertyAlreadyDefined(name));
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("name", SR.ExecutionPropertyAlreadyDefined(name));
                 }
             }
         }

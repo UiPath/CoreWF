@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : class
@@ -101,7 +101,7 @@ namespace Microsoft.CoreWf
         {
             if (key == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("key");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("key");
             }
 
             if (_singleItemKey == null && _singleItemValue == null && _dictionary == null)
@@ -133,7 +133,7 @@ namespace Microsoft.CoreWf
         {
             if (key == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("key");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("key");
             }
 
             if (_singleItemKey != null)

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     internal class MruCache<TKey, TValue>
         where TKey : class

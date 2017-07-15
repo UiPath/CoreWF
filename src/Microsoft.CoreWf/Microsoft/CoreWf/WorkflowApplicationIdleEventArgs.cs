@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public class WorkflowApplicationIdleEventArgs : WorkflowApplicationEventArgs

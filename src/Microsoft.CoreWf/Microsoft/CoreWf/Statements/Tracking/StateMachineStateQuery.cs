@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Tracking;
 
-namespace Microsoft.CoreWf.Statements.Tracking
+namespace CoreWf.Statements.Tracking
 {
     /// <summary>
     /// When added to the Queries, subscribes to state machine state execution records.

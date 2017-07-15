@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
+using CoreWf;
 using System.Collections.Generic;
 using System.IO;
 using Test.Common.TestObjects.Activities;
@@ -10,7 +10,7 @@ using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Utilities;
 using TestCases.Activities.Common;
-using Microsoft.CoreWf.Expressions;
+using CoreWf.Expressions;
 using Xunit;
 
 namespace TestCases.Activities
@@ -330,26 +330,26 @@ namespace TestCases.Activities
         //           {
         //               Argument = delegateInArgument,
         //               Result = delegateOutArgument,
-        //               Handler = new Microsoft.CoreWf.Statements.TryCatch
+        //               Handler = new CoreWf.Statements.TryCatch
         //               {
         //                   DisplayName = "TryCatch2",
-        //                   Try = new Microsoft.CoreWf.Statements.Sequence
+        //                   Try = new CoreWf.Statements.Sequence
         //                   {
         //                       DisplayName = "Sequence1",
         //                       Activities =
         //                         {
-        //                             new Microsoft.CoreWf.Statements.TryCatch
+        //                             new CoreWf.Statements.TryCatch
         //                             {
         //                                 DisplayName = "TryCatch1",
-        //                                 Try = new Microsoft.CoreWf.Statements.Throw{ DisplayName = "Throw1",Exception = delegateInArgument},
+        //                                 Try = new CoreWf.Statements.Throw{ DisplayName = "Throw1",Exception = delegateInArgument},
         //                                 Catches = 
         //                                 {
-        //                                     new Microsoft.CoreWf.Statements.Catch<Exception>
+        //                                     new CoreWf.Statements.Catch<Exception>
         //                                     { 
         //                                         Action = new ActivityAction<Exception>
         //                                         {
         //                                             Argument = new DelegateInArgument<Exception>("arg1"),
-        //                                             Handler = new Microsoft.CoreWf.Statements.Assign<Exception>
+        //                                             Handler = new CoreWf.Statements.Assign<Exception>
         //                                                     {
         //                                                         DisplayName = "Assign1",
         //                                                         Value = new VisualBasicValue<Exception>("New ApplicationException(\"TestException2\")"),
@@ -359,12 +359,12 @@ namespace TestCases.Activities
         //                                     }
         //                                 }
         //                             },
-        //                             new Microsoft.CoreWf.Statements.Throw{ DisplayName = "Throw2", Exception = delegateOutArgument},
+        //                             new CoreWf.Statements.Throw{ DisplayName = "Throw2", Exception = delegateOutArgument},
         //                         }
         //                   },
         //                   Catches = 
         //                   {
-        //                        new Microsoft.CoreWf.Statements.Catch<ApplicationException>()
+        //                        new CoreWf.Statements.Catch<ApplicationException>()
         //                   }
         //               }
         //           }

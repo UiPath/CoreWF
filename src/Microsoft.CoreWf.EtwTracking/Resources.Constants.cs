@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 
-namespace Microsoft.CoreWf.EtwTracking
+namespace CoreWf.EtwTracking
 {
     internal class Resources
     {
@@ -96,7 +96,7 @@ namespace Microsoft.CoreWf.EtwTracking
             {
                 if (_resourceManager == null)
                 {
-                    _resourceManager = new ResourceManager("Microsoft.CoreWf.EtwTracking.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    _resourceManager = new ResourceManager("CoreWf.EtwTracking.Resources", typeof(Resources).GetTypeInfo().Assembly);
                 }
                 return _resourceManager;
             }

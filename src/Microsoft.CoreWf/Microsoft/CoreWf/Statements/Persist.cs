@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     public sealed class Persist : NativeActivity
     {
@@ -25,7 +25,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (context.IsInNoPersistScope)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPersistInsideNoPersist));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPersistInsideNoPersist));
             }
 
             if (s_onPersistCompleteCallback == null)

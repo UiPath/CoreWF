@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DebuggerDisplay("Name = {Name}, Type = {Type}")]
     public abstract class Variable : LocationReference
@@ -171,7 +171,7 @@ namespace Microsoft.CoreWf
         {
             if (!this.IsInTree)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableNotOpen(this.Name, this.Type)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableNotOpen(this.Name, this.Type)));
             }
         }
 
@@ -179,7 +179,7 @@ namespace Microsoft.CoreWf
         {
             if (this.IsHandle)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
             }
         }
 
@@ -187,7 +187,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             // No need to call context.ThrowIfDisposed explicitly since all
@@ -200,12 +200,12 @@ namespace Microsoft.CoreWf
             {
                 if (this.IsPublic || !object.ReferenceEquals(this.Owner, context.Activity))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableOnlyAccessibleAtScopeOfDeclaration(context.Activity, this.Owner)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableOnlyAccessibleAtScopeOfDeclaration(context.Activity, this.Owner)));
                 }
 
                 if (!context.Environment.TryGetLocation(this.Id, out location))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
                 }
             }
             else
@@ -214,7 +214,7 @@ namespace Microsoft.CoreWf
 
                 if (!context.Environment.TryGetLocation(this.Id, this.Owner, out location))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
                 }
             }
 
@@ -228,7 +228,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             return context.GetValue<object>((LocationReference)this);
@@ -238,7 +238,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             context.SetValue((LocationReference)this, value);
@@ -254,7 +254,7 @@ namespace Microsoft.CoreWf
             Location location;
             if (!environment.TryGetLocation(this.Id, this.Owner, out location))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
             }
             return location;
         }
@@ -367,7 +367,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             return context.GetLocation<T>(this);
@@ -380,7 +380,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             return context.GetValue<T>((LocationReference)this);
@@ -390,7 +390,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             context.SetValue((LocationReference)this, value);
@@ -538,13 +538,13 @@ namespace Microsoft.CoreWf
                         // We only allow sets on null or uninitialized handles
                         if (currentValue != null && currentValue.IsInitialized)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
                         }
 
                         // We only allow setting it to null
                         if (value != null)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
                         }
                     }
 
@@ -556,7 +556,7 @@ namespace Microsoft.CoreWf
                         }
                         else
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(
                                 new InvalidOperationException(SR.ConstVariableCannotBeSet));
                         }
                     }

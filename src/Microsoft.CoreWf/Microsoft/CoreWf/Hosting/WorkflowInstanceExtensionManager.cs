@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Runtime;
+using CoreWf.Tracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.CoreWf.Hosting
+namespace CoreWf.Hosting
 {
     // One workflow host should have one manager, and one manager should have one catalog.
     // One workflow instance should have one container as the instance itself would be
@@ -88,7 +88,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (singletonExtension == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("singletonExtension");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("singletonExtension");
             }
 
             ThrowIfReadOnly();
@@ -97,7 +97,7 @@ namespace Microsoft.CoreWf.Hosting
             {
                 if (this.SymbolResolver != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("singletonExtension", SR.SymbolResolverAlreadyExists);
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("singletonExtension", SR.SymbolResolverAlreadyExists);
                 }
                 this.SymbolResolver = (SymbolResolver)singletonExtension;
             }
@@ -130,7 +130,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (extensionCreationFunction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionCreationFunction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionCreationFunction");
             }
             ThrowIfReadOnly();
 
@@ -286,7 +286,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (_isReadonly)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExtensionsCannotBeModified));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExtensionsCannotBeModified));
             }
         }
     }

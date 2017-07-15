@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal static class ActivityUtilities
     {
@@ -623,7 +623,7 @@ namespace Microsoft.CoreWf
 
             if (options.CancellationToken.IsCancellationRequested)
             {
-                //throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(options.CancellationToken));
+                //throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(options.CancellationToken));
                 throw new OperationCanceledException(options.CancellationToken);
             }
 
@@ -819,7 +819,7 @@ namespace Microsoft.CoreWf
                     {
                         if (activity.HasBeenAssociatedWithAnInstance)
                         {
-                            //throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(activity.DisplayName)));
+                            //throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(activity.DisplayName)));
                             throw new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(activity.DisplayName));
                         }
 

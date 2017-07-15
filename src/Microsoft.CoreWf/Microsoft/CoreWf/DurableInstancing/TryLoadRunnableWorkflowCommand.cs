@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 
-namespace Microsoft.CoreWf.DurableInstancing
+namespace CoreWf.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class TryLoadRunnableWorkflowCommand : InstancePersistenceCommand
@@ -35,11 +35,11 @@ namespace Microsoft.CoreWf.DurableInstancing
         {
             if (!view.IsBoundToInstanceOwner)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.OwnerRequired));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.OwnerRequired));
             }
             if (view.IsBoundToInstance)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.AlreadyBoundToInstance));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.AlreadyBoundToInstance));
             }
         }
     }

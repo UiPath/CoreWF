@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     //[Serializable]
@@ -78,7 +78,7 @@ namespace Microsoft.CoreWf
         {
             if (identity == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("identity");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("identity");
             }
             return IdentityParser.Parse(identity, true);
         }
@@ -188,26 +188,26 @@ namespace Microsoft.CoreWf
         // SerializationException with an InnerException is the pattern that DCS follows when values aren't convertible.
         private static void WrapInSerializationException(Exception exception)
         {
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new SerializationException(exception.Message, exception));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new SerializationException(exception.Message, exception));
         }
 
         private static string ValidateName(string name, string paramName)
         {
             if (name == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull(paramName);
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull(paramName);
             }
             if (name.Contains(";"))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityNameSemicolon);
+                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityNameSemicolon);
             }
             if (HasControlCharacter(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
+                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
             }
             if (HasLeadingOrTrailingWhitespace(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
+                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
             }
             return Normalize(name, paramName);
         }
@@ -221,11 +221,11 @@ namespace Microsoft.CoreWf
 
             if (HasControlCharacter(package))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
+                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
             }
             if (HasLeadingOrTrailingWhitespace(package))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
+                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
             }
             return Normalize(package, paramName);
         }
@@ -267,7 +267,7 @@ namespace Microsoft.CoreWf
             //{
             //    if (throwOnError)
             //    {
-            //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentException(ex.Message, paramName, ex));
+            //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentException(ex.Message, paramName, ex));
             //    }
             //    else
             //    {
@@ -292,7 +292,7 @@ namespace Microsoft.CoreWf
                 {
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
+                        throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
                     }
                     return null;
                 }
@@ -307,7 +307,7 @@ namespace Microsoft.CoreWf
                 }
                 else if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.BadWorkflowIdentityFormat);
+                    throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.BadWorkflowIdentityFormat);
                 }
                 else
                 {

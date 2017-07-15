@@ -1,6 +1,6 @@
 {
   "version": "1.0.0-*",
-  "description": "Microsoft.CoreWf",
+  "description": "CoreWf",
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",

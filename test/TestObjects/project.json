@@ -3,7 +3,7 @@
   "description": "Test Objects class library for WF on Core",
 
   "dependencies": {
-    "Microsoft.CoreWf": { "target": "project" },
+    "CoreWf": { "target": "project" },
     "NETStandard.Library": "1.6.0",
     "System.Collections.NonGeneric": "4.0.1",
     "System.Data.SqlClient": "4.1.0",

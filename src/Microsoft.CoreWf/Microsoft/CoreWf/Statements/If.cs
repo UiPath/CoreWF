@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [If])")]
     public sealed class If : NativeActivity
@@ -21,7 +21,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (condition == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
             }
 
             this.Condition = new InArgument<bool>(condition);
@@ -32,7 +32,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (condition == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
             }
 
             this.Condition = new InArgument<bool>(condition);
@@ -43,7 +43,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (condition == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
             }
 
             this.Condition = condition;

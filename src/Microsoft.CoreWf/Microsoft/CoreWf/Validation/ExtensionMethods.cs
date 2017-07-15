@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.CoreWf.Validation
+namespace CoreWf.Validation
 {
     internal static class ExtensionMethods
     {

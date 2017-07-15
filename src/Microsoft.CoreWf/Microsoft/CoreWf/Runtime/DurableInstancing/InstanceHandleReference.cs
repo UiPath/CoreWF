@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     // This class serves as a reference back to an InstanceHandle from the perspective of an InstanceOwner for tracking lock binds in progress.
     // It works in two modes, one as a pure cancelable handle reference (where cancelling means nulling out the reference) and the

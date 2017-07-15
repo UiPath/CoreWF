@@ -5,7 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     public sealed class TerminateWorkflow : NativeActivity
     {

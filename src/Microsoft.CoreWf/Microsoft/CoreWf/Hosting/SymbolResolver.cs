@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf.Hosting
+namespace CoreWf.Hosting
 {
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldHaveCorrectSuffix,
     //Justification = "Approved name")]
@@ -74,7 +74,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (type == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
             }
 
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
@@ -85,12 +85,12 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (type == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
             }
 
             if (!TypeHelper.AreTypesCompatible(value, type))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("value", SR.ValueMustBeAssignableToType);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("value", SR.ValueMustBeAssignableToType);
             }
 
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
@@ -141,22 +141,22 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (array == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("array");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("array");
             }
 
             if (arrayIndex < 0)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("arrayIndex", arrayIndex, SR.CopyToIndexOutOfRange);
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("arrayIndex", arrayIndex, SR.CopyToIndexOutOfRange);
             }
 
             if (array.Rank > 1)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("array", SR.CopyToRankMustBeOne);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("array", SR.CopyToRankMustBeOne);
             }
 
             if (_symbols.Count > array.Length - arrayIndex)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("array", SR.CopyToNotEnoughSpaceInArray);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("array", SR.CopyToNotEnoughSpaceInArray);
             }
 
             foreach (KeyValuePair<string, ExternalLocationReference> pair in _symbols)
@@ -274,7 +274,7 @@ namespace Microsoft.CoreWf.Hosting
                 }
             }
 
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverDoesNotHaveSymbol(name, type)));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverDoesNotHaveSymbol(name, type)));
         }
 
         public LocationReferenceEnvironment AsLocationReferenceEnvironment()
@@ -303,7 +303,7 @@ namespace Microsoft.CoreWf.Hosting
             {
                 if (locationReference == null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
                 }
 
                 return _symbolResolver.IsVisible(locationReference);
@@ -313,7 +313,7 @@ namespace Microsoft.CoreWf.Hosting
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
                 }
 
                 return _symbolResolver.TryGetLocationReference(name, out result);
@@ -381,7 +381,7 @@ namespace Microsoft.CoreWf.Hosting
 
                 if (resolver == null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanNotFindSymbolResolverInWorkflowInstanceExtensions));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanNotFindSymbolResolverInWorkflowInstanceExtensions));
                 }
 
                 return resolver.GetLocation(this.Name, this.Type);
@@ -414,7 +414,7 @@ namespace Microsoft.CoreWf.Hosting
                     }
                     set
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExternalLocationsGetOnly));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExternalLocationsGetOnly));
                     }
                 }
             }

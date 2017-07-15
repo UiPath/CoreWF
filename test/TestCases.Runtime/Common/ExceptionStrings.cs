@@ -12,7 +12,7 @@ namespace TestCases.Runtime.Common
 
         static ExceptionStrings()
         {
-            s_activitiesResourceManager = new ResourceManager("Microsoft.CoreWf.Strings.SR", typeof(Microsoft.CoreWf.Activity).GetTypeInfo().Assembly);
+            s_activitiesResourceManager = new ResourceManager("CoreWf.Strings.SR", typeof(CoreWf.Activity).GetTypeInfo().Assembly);
         }
 
         public static string ActivityAlreadyOpenInOtherWorkflow { get { return s_activitiesResourceManager.GetString("ActivityAlreadyOpenInOtherWorkflow"); } }

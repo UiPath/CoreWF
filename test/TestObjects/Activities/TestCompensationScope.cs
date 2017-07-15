@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.CustomActivities;
 using Test.Common.TestObjects.Utilities.Validation;

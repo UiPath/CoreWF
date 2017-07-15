@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     public abstract class TimerExtension
     {

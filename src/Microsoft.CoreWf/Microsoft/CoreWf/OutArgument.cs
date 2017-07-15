@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public abstract class OutArgument : Argument
     {
@@ -22,12 +22,12 @@ namespace Microsoft.CoreWf
         {
             if (argumentToReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
             }
 
             return (OutArgument)ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, ArgumentDirection.Out, referencedArgumentName);
@@ -39,12 +39,12 @@ namespace Microsoft.CoreWf
         {
             if (argumentToReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
             }
 
             // Note that we explicitly pass Out since we want an OutArgument created
@@ -149,7 +149,7 @@ namespace Microsoft.CoreWf
         {
             if (variable == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
             }
             return new OutArgument<T>(variable);
         }
@@ -158,7 +158,7 @@ namespace Microsoft.CoreWf
         {
             if (delegateArgument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("delegateArgument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("delegateArgument");
             }
             return new OutArgument<T>(delegateArgument);
         }
@@ -167,7 +167,7 @@ namespace Microsoft.CoreWf
         {
             if (expression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
             }
 
             return new OutArgument<T>(expression);
@@ -180,7 +180,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();
@@ -200,7 +200,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();

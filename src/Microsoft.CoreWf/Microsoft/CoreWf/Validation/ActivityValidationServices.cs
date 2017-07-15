@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Microsoft.CoreWf.Validation
+namespace CoreWf.Validation
 {
     public static class ActivityValidationServices
     {
@@ -26,22 +26,22 @@ namespace Microsoft.CoreWf.Validation
         {
             if (toValidate == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("toValidate");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("toValidate");
             }
 
             if (settings == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("settings");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("settings");
             }
 
             if (toValidate.HasBeenAssociatedWithAnInstance)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(toValidate.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(toValidate.DisplayName)));
             }
 
             if (settings.PrepareForRuntime && (settings.SingleLevel || settings.SkipValidatingRootConfiguration || settings.OnlyUseAdditionalConstraints))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("settings", SR.InvalidPrepareForRuntimeValidationSettings);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("settings", SR.InvalidPrepareForRuntimeValidationSettings);
             }
 
             InternalActivityValidationServices validator = new InternalActivityValidationServices(settings, toValidate);
@@ -59,7 +59,7 @@ namespace Microsoft.CoreWf.Validation
 
             if (exception != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(exception);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(exception);
             }
         }
 
@@ -175,7 +175,7 @@ namespace Microsoft.CoreWf.Validation
 
                 if (exceptionString != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument(parameterName, exceptionString);
+                    throw CoreWf.Internals.FxTrace.Exception.Argument(parameterName, exceptionString);
                 }
             }
         }

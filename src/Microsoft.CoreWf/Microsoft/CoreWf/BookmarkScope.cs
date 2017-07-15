@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
@@ -125,17 +125,17 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             if (id == Guid.Empty)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("id");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("id");
             }
 
             if (this.IsInitialized)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeAlreadyInitialized));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeAlreadyInitialized));
             }
 
             context.InitializeBookmarkScope(this, id);

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     public abstract class FlowNode
     {

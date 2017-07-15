@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf.Tracking
+namespace CoreWf.Tracking
 {
     public abstract class TrackingQuery
     {

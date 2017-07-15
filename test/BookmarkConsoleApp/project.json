@@ -10,7 +10,7 @@
       "type": "platform",
       "version": "1.0.0"
     },
-    "Microsoft.CoreWf": { "target": "project" },
+    "CoreWf": { "target": "project" },
     "JsonFileInstanceStore": { "target": "project" }
   },
 

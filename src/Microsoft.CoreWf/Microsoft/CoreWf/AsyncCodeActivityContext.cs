@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class AsyncCodeActivityContext : CodeActivityContext
@@ -47,7 +47,7 @@ namespace Microsoft.CoreWf
             // This is valid to be called while aborting or while canceling
             if (!this.CurrentInstance.IsCancellationRequested && !_asyncContext.IsAborting)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
             }
 
             this.CurrentInstance.MarkCanceled();

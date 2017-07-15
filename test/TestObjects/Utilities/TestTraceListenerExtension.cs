@@ -3,7 +3,7 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.CoreWf;
+using CoreWf;
 using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.Utilities

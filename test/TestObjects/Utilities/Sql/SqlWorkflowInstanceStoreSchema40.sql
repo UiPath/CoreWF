@@ -3,31 +3,31 @@ set quoted_identifier on
 set nocount on
 go
 
-if not exists( select 1 from [dbo].[sysusers] where name=N'Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers' and issqlrole=1 )
-	create role [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers]
+if not exists( select 1 from [dbo].[sysusers] where name=N'CoreWf.DurableInstancing.InstanceStoreUsers' and issqlrole=1 )
+	create role [CoreWf.DurableInstancing.InstanceStoreUsers]
 go
 
-if not exists( select 1 from [dbo].[sysusers] where name=N'Microsoft.CoreWf.DurableInstancing.WorkflowActivationUsers' and issqlrole=1 )
-	create role [Microsoft.CoreWf.DurableInstancing.WorkflowActivationUsers]
+if not exists( select 1 from [dbo].[sysusers] where name=N'CoreWf.DurableInstancing.WorkflowActivationUsers' and issqlrole=1 )
+	create role [CoreWf.DurableInstancing.WorkflowActivationUsers]
 go
 
-if not exists( select 1 from [dbo].[sysusers] where name=N'Microsoft.CoreWf.DurableInstancing.InstanceStoreObservers' and issqlrole=1 )
-	create role [Microsoft.CoreWf.DurableInstancing.InstanceStoreObservers]
+if not exists( select 1 from [dbo].[sysusers] where name=N'CoreWf.DurableInstancing.InstanceStoreObservers' and issqlrole=1 )
+	create role [CoreWf.DurableInstancing.InstanceStoreObservers]
 go
 
-if not exists (select * from sys.schemas where name = N'Microsoft.CoreWf.DurableInstancing')
-	exec ('create schema [Microsoft.CoreWf.DurableInstancing]')
+if not exists (select * from sys.schemas where name = N'CoreWf.DurableInstancing')
+	exec ('create schema [CoreWf.DurableInstancing]')
 go
 
-if exists (select * from sys.views where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[InstancePromotedProperties]'))
-      drop view [Microsoft.CoreWf.DurableInstancing].[InstancePromotedProperties]
+if exists (select * from sys.views where object_id = object_id(N'[CoreWf.DurableInstancing].[InstancePromotedProperties]'))
+      drop view [CoreWf.DurableInstancing].[InstancePromotedProperties]
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[InstancesTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[InstancesTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[InstancesTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[InstancesTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[InstancesTable]
+create table [CoreWf.DurableInstancing].[InstancesTable]
 (
 	[Id] uniqueidentifier not null,
 	[SurrogateInstanceId] bigint identity not null,
@@ -58,51 +58,51 @@ create table [Microsoft.CoreWf.DurableInstancing].[InstancesTable]
 go
 
 create unique clustered index [CIX_InstancesTable]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([SurrogateInstanceId])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([SurrogateInstanceId])
 	with (allow_page_locks = off)
 go
 
 create unique nonclustered index [NCIX_InstancesTable_Id]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([Id])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([Id])
 	include ([Version], [SurrogateLockOwnerId], [IsCompleted])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_InstancesTable_SurrogateLockOwnerId]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([SurrogateLockOwnerId])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([SurrogateLockOwnerId])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index NCIX_InstancesTable_LastUpdated
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([LastUpdated])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([LastUpdated])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_InstancesTable_CreationTime]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([CreationTime])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([CreationTime])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_InstancesTable_SuspensionExceptionName]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([SuspensionExceptionName])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([SuspensionExceptionName])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_InstancesTable_ServiceDeploymentId]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([ServiceDeploymentId])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([ServiceDeploymentId])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_InstancesTable_WorkflowHostType]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancesTable] ([WorkflowHostType])
+	on [CoreWf.DurableInstancing].[InstancesTable] ([WorkflowHostType])
 	with (allow_page_locks = off)
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[RunnableInstancesTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[RunnableInstancesTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable]
+create table [CoreWf.DurableInstancing].[RunnableInstancesTable]
 (
 	[SurrogateInstanceId] bigint not null,		
 	[WorkflowHostType] uniqueidentifier null,
@@ -112,25 +112,25 @@ create table [Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable]
 go
 
 create unique clustered index [CIX_RunnableInstancesTable_SurrogateInstanceId]
-	on [Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable] ([SurrogateInstanceId])
+	on [CoreWf.DurableInstancing].[RunnableInstancesTable] ([SurrogateInstanceId])
 	with (ignore_dup_key = on, allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_RunnableInstancesTable]
-	on [Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable] ([WorkflowHostType], [RunnableTime])
+	on [CoreWf.DurableInstancing].[RunnableInstancesTable] ([WorkflowHostType], [RunnableTime])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_RunnableInstancesTable_RunnableTime]
-	on [Microsoft.CoreWf.DurableInstancing].[RunnableInstancesTable] ([RunnableTime]) include ([WorkflowHostType], [ServiceDeploymentId])
+	on [CoreWf.DurableInstancing].[RunnableInstancesTable] ([RunnableTime]) include ([WorkflowHostType], [ServiceDeploymentId])
 	with (allow_page_locks = off)
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[KeysTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[KeysTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[KeysTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[KeysTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[KeysTable]
+create table [CoreWf.DurableInstancing].[KeysTable]
 (
 	[Id] uniqueidentifier not null,
 	[SurrogateKeyId] bigint identity not null,
@@ -142,20 +142,20 @@ create table [Microsoft.CoreWf.DurableInstancing].[KeysTable]
 go
 
 create unique clustered index [CIX_KeysTable]
-	on [Microsoft.CoreWf.DurableInstancing].[KeysTable] ([Id])	
+	on [CoreWf.DurableInstancing].[KeysTable] ([Id])	
 	with (ignore_dup_key = on, allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_KeysTable_SurrogateInstanceId]
-	on [Microsoft.CoreWf.DurableInstancing].[KeysTable] ([SurrogateInstanceId])
+	on [CoreWf.DurableInstancing].[KeysTable] ([SurrogateInstanceId])
 	with (allow_page_locks = off)
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[LockOwnersTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[LockOwnersTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[LockOwnersTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable]
+create table [CoreWf.DurableInstancing].[LockOwnersTable]
 (
 	[Id] uniqueidentifier not null,
 	[SurrogateLockOwnerId] bigint identity not null,
@@ -173,29 +173,29 @@ create table [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable]
 go
 
 create unique clustered index [CIX_LockOwnersTable]
-	on [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable] ([SurrogateLockOwnerId])
+	on [CoreWf.DurableInstancing].[LockOwnersTable] ([SurrogateLockOwnerId])
 	with (allow_page_locks = off)
 go
 
 create unique nonclustered index [NCIX_LockOwnersTable_Id]
-	on [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable] ([Id])
+	on [CoreWf.DurableInstancing].[LockOwnersTable] ([Id])
 	with (ignore_dup_key = on, allow_page_locks = off)
 
 create nonclustered index [NCIX_LockOwnersTable_LockExpiration]
-	on [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable] ([LockExpiration]) include ([WorkflowHostType], [MachineName])
+	on [CoreWf.DurableInstancing].[LockOwnersTable] ([LockExpiration]) include ([WorkflowHostType], [MachineName])
 	with (allow_page_locks = off)
 go
 
 create nonclustered index [NCIX_LockOwnersTable_WorkflowHostType]
-	on [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable] ([WorkflowHostType])
+	on [CoreWf.DurableInstancing].[LockOwnersTable] ([WorkflowHostType])
 	with (allow_page_locks = off)
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[InstanceMetadataChangesTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[InstanceMetadataChangesTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[InstanceMetadataChangesTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[InstanceMetadataChangesTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[InstanceMetadataChangesTable]
+create table [CoreWf.DurableInstancing].[InstanceMetadataChangesTable]
 (
 	[SurrogateInstanceId] bigint not null,
 	[ChangeTime] bigint identity,
@@ -205,14 +205,14 @@ create table [Microsoft.CoreWf.DurableInstancing].[InstanceMetadataChangesTable]
 go
 
 create unique clustered index [CIX_InstanceMetadataChangesTable]
-	on [Microsoft.CoreWf.DurableInstancing].[InstanceMetadataChangesTable] ([SurrogateInstanceId], [ChangeTime])
+	on [CoreWf.DurableInstancing].[InstanceMetadataChangesTable] ([SurrogateInstanceId], [ChangeTime])
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[ServiceDeploymentsTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[ServiceDeploymentsTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[ServiceDeploymentsTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[ServiceDeploymentsTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[ServiceDeploymentsTable]
+create table [CoreWf.DurableInstancing].[ServiceDeploymentsTable]
 (
 	[Id] bigint identity not null,
 	[ServiceDeploymentHash] uniqueidentifier not null,
@@ -225,20 +225,20 @@ create table [Microsoft.CoreWf.DurableInstancing].[ServiceDeploymentsTable]
 go
 
 create unique clustered index [CIX_ServiceDeploymentsTable]
-	on [Microsoft.CoreWf.DurableInstancing].[ServiceDeploymentsTable] ([Id])
+	on [CoreWf.DurableInstancing].[ServiceDeploymentsTable] ([Id])
 	with (allow_page_locks = off)
 go
 
 create unique nonclustered index [NCIX_ServiceDeploymentsTable_ServiceDeploymentHash]
-	on [Microsoft.CoreWf.DurableInstancing].[ServiceDeploymentsTable] ([ServiceDeploymentHash])
+	on [CoreWf.DurableInstancing].[ServiceDeploymentsTable] ([ServiceDeploymentHash])
 	with (ignore_dup_key = on, allow_page_locks = off)
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
+create table [CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
 (
 	  [SurrogateInstanceId] bigint not null,
       [PromotionName] nvarchar(400) not null,
@@ -310,15 +310,15 @@ create table [Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTab
 go
 
 create unique clustered index [CIX_InstancePromotedPropertiesTable]
-	on [Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTable] ([SurrogateInstanceId], [PromotionName])
+	on [CoreWf.DurableInstancing].[InstancePromotedPropertiesTable] ([SurrogateInstanceId], [PromotionName])
 	with (allow_page_locks = off)
 go
 
-if exists (select * from sys.objects where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]') and type in (N'U'))
-	drop table [Microsoft.CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]
+if exists (select * from sys.objects where object_id = object_id(N'[CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]') and type in (N'U'))
+	drop table [CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]
 go
 
-create table [Microsoft.CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]
+create table [CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]
 (
 	[Major] bigint,
 	[Minor] bigint,
@@ -329,17 +329,17 @@ create table [Microsoft.CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersi
 go
 
 create unique clustered index [CIX_SqlWorkflowInstanceStoreVersionTable]
-	on [Microsoft.CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable] ([Major], [Minor], [Build], [Revision])
+	on [CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable] ([Major], [Minor], [Build], [Revision])
 go
 
-insert into [Microsoft.CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]
+insert into [CoreWf.DurableInstancing].[SqlWorkflowInstanceStoreVersionTable]
 values (4, 0, 0, 0, getutcdate())
 
-if exists (select * from sys.views where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[Instances]'))
-      drop view [Microsoft.CoreWf.DurableInstancing].[Instances]
+if exists (select * from sys.views where object_id = object_id(N'[CoreWf.DurableInstancing].[Instances]'))
+      drop view [CoreWf.DurableInstancing].[Instances]
 go
 
-create view [Microsoft.CoreWf.DurableInstancing].[Instances] as
+create view [CoreWf.DurableInstancing].[Instances] as
       select [InstancesTable].[Id] as [InstanceId],
              [PendingTimer],
              [CreationTime],
@@ -362,38 +362,38 @@ create view [Microsoft.CoreWf.DurableInstancing].[Instances] as
              [WriteOnlyPrimitiveDataProperties],
              [ComplexDataProperties] as [ReadWriteComplexDataProperties],
              [WriteOnlyComplexDataProperties]
-      from [Microsoft.CoreWf.DurableInstancing].[InstancesTable]
-      left outer join [Microsoft.CoreWf.DurableInstancing].[LockOwnersTable]
+      from [CoreWf.DurableInstancing].[InstancesTable]
+      left outer join [CoreWf.DurableInstancing].[LockOwnersTable]
       on [InstancesTable].[SurrogateLockOwnerId] = [LockOwnersTable].[SurrogateLockOwnerId]
 go
 
-grant select on object::[Microsoft.CoreWf.DurableInstancing].[Instances] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreObservers]
+grant select on object::[CoreWf.DurableInstancing].[Instances] to [CoreWf.DurableInstancing.InstanceStoreObservers]
 go
 
-grant delete on object::[Microsoft.CoreWf.DurableInstancing].[Instances] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers]
+grant delete on object::[CoreWf.DurableInstancing].[Instances] to [CoreWf.DurableInstancing.InstanceStoreUsers]
 go
 
-if exists (select * from sys.views where object_id = object_id(N'[Microsoft.CoreWf.DurableInstancing].[ServiceDeployments]'))
-      drop view [Microsoft.CoreWf.DurableInstancing].[ServiceDeployments]
+if exists (select * from sys.views where object_id = object_id(N'[CoreWf.DurableInstancing].[ServiceDeployments]'))
+      drop view [CoreWf.DurableInstancing].[ServiceDeployments]
 go
 
-create view [Microsoft.CoreWf.DurableInstancing].[ServiceDeployments] as
+create view [CoreWf.DurableInstancing].[ServiceDeployments] as
       select [Id] as [ServiceDeploymentId],
              [SiteName],
              [RelativeServicePath],
              [RelativeApplicationPath],
              [ServiceName],
              [ServiceNamespace]
-      from [Microsoft.CoreWf.DurableInstancing].[ServiceDeploymentsTable]
+      from [CoreWf.DurableInstancing].[ServiceDeploymentsTable]
 go
 
-grant select on object::[Microsoft.CoreWf.DurableInstancing].[ServiceDeployments] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreObservers]
+grant select on object::[CoreWf.DurableInstancing].[ServiceDeployments] to [CoreWf.DurableInstancing.InstanceStoreObservers]
 go
 
-grant delete on object::[Microsoft.CoreWf.DurableInstancing].[ServiceDeployments] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreUsers]
+grant delete on object::[CoreWf.DurableInstancing].[ServiceDeployments] to [CoreWf.DurableInstancing.InstanceStoreUsers]
 go
 
-create view [Microsoft.CoreWf.DurableInstancing].[InstancePromotedProperties] with schemabinding as
+create view [CoreWf.DurableInstancing].[InstancePromotedProperties] with schemabinding as
       select [InstancesTable].[Id] as [InstanceId],
 			 [InstancesTable].[DataEncodingOption] as [EncodingOption],
 			 [PromotionName],
@@ -461,10 +461,10 @@ create view [Microsoft.CoreWf.DurableInstancing].[InstancePromotedProperties] wi
 			 [Value62],
 			 [Value63],
 			 [Value64]
-    from [Microsoft.CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
-    join [Microsoft.CoreWf.DurableInstancing].[InstancesTable]
+    from [CoreWf.DurableInstancing].[InstancePromotedPropertiesTable]
+    join [CoreWf.DurableInstancing].[InstancesTable]
     on [InstancePromotedPropertiesTable].[SurrogateInstanceId] = [InstancesTable].[SurrogateInstanceId]
 go
 
-grant select on object::[Microsoft.CoreWf.DurableInstancing].[InstancePromotedProperties] to [Microsoft.CoreWf.DurableInstancing.InstanceStoreObservers]
+grant select on object::[CoreWf.DurableInstancing].[InstancePromotedProperties] to [CoreWf.DurableInstancing.InstanceStoreObservers]
 go

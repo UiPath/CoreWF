@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     [DataContract]
     internal sealed class ExecutionTracker

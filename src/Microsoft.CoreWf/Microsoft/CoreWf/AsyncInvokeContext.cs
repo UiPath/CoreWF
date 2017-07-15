@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal class AsyncInvokeContext
     {

@@ -7,7 +7,7 @@
       "type": "platform",
       "version": "1.0.0"
     },
-    "Microsoft.CoreWf": { "target": "project" },
+    "CoreWf": { "target": "project" },
     "JsonFileInstanceStore": { "target": "project" },
     "TestObjects": { "target": "project" },
     "xunit": "2.1.0",

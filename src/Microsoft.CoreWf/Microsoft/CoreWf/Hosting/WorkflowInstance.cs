@@ -1,16 +1,16 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
-using Microsoft.CoreWf.Tracking;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
+using CoreWf.Tracking;
+using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Hosting
+namespace CoreWf.Hosting
 {
     [Fx.Tag.XamlVisible(false)]
     public abstract class WorkflowInstance
@@ -49,7 +49,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (workflowDefinition == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflowDefinition");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflowDefinition");
             }
 
             this.WorkflowDefinition = workflowDefinition;
@@ -146,7 +146,7 @@ namespace Microsoft.CoreWf.Hosting
             {
                 if (!_isInitialized)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ControllerInvalidBeforeInitialize));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ControllerInvalidBeforeInitialize));
                 }
 
                 return _controller;
@@ -204,11 +204,11 @@ namespace Microsoft.CoreWf.Hosting
         //    ActivityExecutor executor = deserializedRuntimeState as ActivityExecutor;
         //    if (executor == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
+        //        throw CoreWf.Internals.FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
         //    }
         //    if (updateMap == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("updateMap");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("updateMap");
         //    }
 
         //    DynamicUpdateMap rootMap = updateMap;
@@ -252,7 +252,7 @@ namespace Microsoft.CoreWf.Hosting
 
             if (_executor == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
             }
             _executor.ThrowIfNonSerializable();
 
@@ -276,7 +276,7 @@ namespace Microsoft.CoreWf.Hosting
             //        }
             //        else
             //        {
-            //            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidImplementationAsWorkflowRoot));
+            //            throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidImplementationAsWorkflowRoot));
             //        }
             //    }
 
@@ -336,7 +336,7 @@ namespace Microsoft.CoreWf.Hosting
         //        // update error found
         //        // exit early
 
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(updateErrors));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(updateErrors));
         //    }
         //}
 
@@ -441,7 +441,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (_isInitialized)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceIsReadOnly(this.Id)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceIsReadOnly(this.Id)));
             }
         }
 
@@ -548,7 +548,7 @@ namespace Microsoft.CoreWf.Hosting
             // we don't have to worry about this changing under us
             if (_executor.IsRunning)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeRunning));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeRunning));
             }
         }
 
@@ -570,7 +570,7 @@ namespace Microsoft.CoreWf.Hosting
 
             if (wasPerformingOperation)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeOperationInProgress));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeOperationInProgress));
             }
         }
 
@@ -628,7 +628,7 @@ namespace Microsoft.CoreWf.Hosting
             ThrowIfAborted();
             if (!this.Controller.IsPersistable)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.PrepareForSerializationRequiresPersistability));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.PrepareForSerializationRequiresPersistability));
             }
         }
 
@@ -653,7 +653,7 @@ namespace Microsoft.CoreWf.Hosting
             ThrowIfAborted();
             if (this.Controller.IsPersistable)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.PauseWhenPersistableInvalidIfPersistable));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.PauseWhenPersistableInvalidIfPersistable));
             }
         }
 
@@ -760,7 +760,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (_isAborted || (_executor != null && _executor.IsAbortPending))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceAborted(this.Id)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceAborted(this.Id)));
             }
         }
 
@@ -768,7 +768,7 @@ namespace Microsoft.CoreWf.Hosting
         {
             if (!_executor.IsIdle)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarksOnlyResumableWhileIdle));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarksOnlyResumableWhileIdle));
             }
         }
 

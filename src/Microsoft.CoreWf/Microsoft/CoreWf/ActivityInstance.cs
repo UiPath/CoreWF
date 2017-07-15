@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Runtime;
+using CoreWf.Tracking;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // Added IsReference to avoid circular reference problem for DataContractSerializer.
     [DataContract(Name = XD.ActivityInstance.Name, Namespace = XD.Runtime.Namespace, IsReference = true)]
@@ -709,7 +709,7 @@ namespace Microsoft.CoreWf
         {
             if (_initializationIncomplete)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InitializationIncomplete));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InitializationIncomplete));
             }
 
             MarkExecuted();
@@ -755,7 +755,7 @@ namespace Microsoft.CoreWf
 
             if (this.Activity == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityInstanceFixupFailed));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityInstanceFixupFailed));
             }
 
             _parent = parent;
@@ -1108,13 +1108,13 @@ namespace Microsoft.CoreWf
         {
             if (activity.GetType().Name != this.OwnerName)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new ValidationException(SR.ActivityTypeMismatch(activity.DisplayName, this.OwnerName)));
             }
 
             if (activity.ImplementationVersion != this.ImplementationVersion)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new VersionMismatchException(SR.ImplementationVersionMismatch(this.ImplementationVersion, activity.ImplementationVersion, activity)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new VersionMismatchException(SR.ImplementationVersionMismatch(this.ImplementationVersion, activity.ImplementationVersion, activity)));
             }
 
             this.Activity = activity;

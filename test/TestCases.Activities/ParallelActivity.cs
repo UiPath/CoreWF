@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
+using CoreWf;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
@@ -542,47 +542,47 @@ namespace TestCases.Activities
         //           {
         //               Argument = delegateInArgument,
         //               Result = delegateOutArgument,
-        //               Handler = new Microsoft.CoreWf.Statements.Sequence
+        //               Handler = new CoreWf.Statements.Sequence
         //               {
         //                   DisplayName = "Sequence1",
         //                   Activities =
         //                    {
-        //                        new Microsoft.CoreWf.Statements.Parallel
+        //                        new CoreWf.Statements.Parallel
         //                        {
         //                            DisplayName = "Parallel1",
         //                            CompletionCondition =  ExpressionServices.Convert<bool>( ctx=> delegateInArgument.Get(ctx) ),
         //                            Branches =
         //                            {
-        //                                new Microsoft.CoreWf.Statements.WriteLine{ DisplayName = "W1", Text = new InArgument<string>( new VisualBasicValue<string>("Condition & \"\" ") ) },
-        //                                new Microsoft.CoreWf.Statements.Assign<bool>
+        //                                new CoreWf.Statements.WriteLine{ DisplayName = "W1", Text = new InArgument<string>( new VisualBasicValue<string>("Condition & \"\" ") ) },
+        //                                new CoreWf.Statements.Assign<bool>
         //                                {
         //                                    DisplayName = "Assign1",
         //                                    Value = true,
         //                                    To = delegateInArgument,
         //                                },
-        //                                new Microsoft.CoreWf.Statements.Delay { DisplayName = "Delay1", Duration = new TimeSpan(0, 0, 1) }
+        //                                new CoreWf.Statements.Delay { DisplayName = "Delay1", Duration = new TimeSpan(0, 0, 1) }
         //                            }
         //                        },
-        //                        new Microsoft.CoreWf.Statements.Assign<bool>
+        //                        new CoreWf.Statements.Assign<bool>
         //                                {
         //                                    DisplayName = "Assign2",
         //                                    Value = false,
         //                                    To = delegateOutArgument,
         //                                },
-        //                        new Microsoft.CoreWf.Statements.Parallel
+        //                        new CoreWf.Statements.Parallel
         //                        {
         //                            DisplayName = "Parallel2",
         //                            CompletionCondition =  ExpressionServices.Convert<bool>( ctx=> delegateOutArgument.Get(ctx) ),
         //                            Branches =
         //                            {
-        //                                new Microsoft.CoreWf.Statements.WriteLine{ DisplayName = "W2", Text = new InArgument<string>( new VisualBasicValue<string>("Output & \"\" ") ) },
-        //                                new Microsoft.CoreWf.Statements.Assign<bool>
+        //                                new CoreWf.Statements.WriteLine{ DisplayName = "W2", Text = new InArgument<string>( new VisualBasicValue<string>("Output & \"\" ") ) },
+        //                                new CoreWf.Statements.Assign<bool>
         //                                {
         //                                    DisplayName = "Assign3",
         //                                    Value = true,
         //                                    To = delegateOutArgument,
         //                                },
-        //                                new Microsoft.CoreWf.Statements.Delay { DisplayName = "Delay2", Duration = new TimeSpan(0, 0, 1) }
+        //                                new CoreWf.Statements.Delay { DisplayName = "Delay2", Duration = new TimeSpan(0, 0, 1) }
         //                            }
         //                        }
         //                    },

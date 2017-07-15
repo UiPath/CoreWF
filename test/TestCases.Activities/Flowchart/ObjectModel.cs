@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using System.Collections.Generic;
 using System.Threading;
 using Test.Common.TestObjects.Activities;
@@ -48,7 +48,7 @@ namespace TestCases.Activities.Flowchart
             FlowStep flowStep2 = new FlowStep { Action = writeLine2, Next = flowStep1 };
             FlowStep flowStep3 = new FlowStep { Action = writeLine3, Next = flowStep2 };
 
-            Microsoft.CoreWf.Statements.Flowchart flowchart = new Microsoft.CoreWf.Statements.Flowchart
+            CoreWf.Statements.Flowchart flowchart = new CoreWf.Statements.Flowchart
             {
                 Nodes =
                 {
@@ -295,10 +295,10 @@ namespace TestCases.Activities.Flowchart
         {
             TestFlowchart flowchart = new TestFlowchart();
 
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new Microsoft.CoreWf.Statements.FlowStep { Action = new Delay() });
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new Microsoft.CoreWf.Statements.FlowStep { Action = new Delay() });
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new CoreWf.Statements.FlowStep { Action = new Delay() });
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new CoreWf.Statements.FlowStep { Action = new Delay() });
 
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -326,8 +326,8 @@ namespace TestCases.Activities.Flowchart
             FlowStep step = new FlowStep() { Action = new Delay() };
 
             flowchart.Elements.Add(new TestFlowStep() { ActionActivity = new TestWriteLine("Start", "Start") });
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(step);
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Remove(step);
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(step);
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Remove(step);
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -787,7 +787,7 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.AddStartLink(new TestWriteLine("Hello", "Hello"));
 
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -802,7 +802,7 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.AddLink(new TestWriteLine("One", "One"), new TestWriteLine("Two", "Two"));
 
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).StartNode = null;
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).StartNode = null;
 
             List<TestConstraintViolation> constraints = new List<TestConstraintViolation>();
             constraints.Add(new TestConstraintViolation(string.Format(ErrorStrings.FlowchartMissingStartNode, flowchart.DisplayName), flowchart.ProductActivity));
@@ -831,7 +831,7 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.AddLink(new TestWriteLine("One", "One"), new TestWriteLine("Two", "Two"));
 
-            ((Microsoft.CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
+            ((CoreWf.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }

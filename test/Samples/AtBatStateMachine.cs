@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Expressions;
+using CoreWf.Statements;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;

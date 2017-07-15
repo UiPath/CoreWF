@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Action")]
     public sealed class FlowStep : FlowNode

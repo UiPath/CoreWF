@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     internal class AssemblyNameEqualityComparer : IEqualityComparer, IEqualityComparer<AssemblyName>
     {

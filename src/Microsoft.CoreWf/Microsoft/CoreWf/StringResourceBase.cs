@@ -5,7 +5,7 @@ using System;
 using System.Resources;
 using System.Runtime.CompilerServices;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal abstract class StringResourceBase
     {

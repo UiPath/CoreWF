@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // This wrapper is used to make our "new Expression" and "new Default" APIs
     // work correctly even if the expression set on the base class doesn't

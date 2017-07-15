@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class RequiredArgumentAttribute : Attribute

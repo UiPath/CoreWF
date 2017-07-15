@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefineAccessorsForAttributeArguments,
     //Justification = "The setter is needed to enable XAML serialization of the attribute object.")]
@@ -20,7 +20,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(groupName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("groupName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("groupName");
             }
 
             _groupName = groupName;
@@ -37,7 +37,7 @@ namespace Microsoft.CoreWf
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("value");
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("value");
                 }
                 _groupName = value;
             }

@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Expressions;
+using CoreWf;
+using CoreWf.Expressions;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
@@ -233,7 +233,7 @@ namespace TestCases.Activities
                 Body = new TestSequence("innerseq"),
                 HintIterationCount = 0,
             };
-            ((Microsoft.CoreWf.Statements.While)whileAct.ProductActivity).Condition = null;
+            ((CoreWf.Statements.While)whileAct.ProductActivity).Condition = null;
 
             TestRuntime.ValidateInstantiationException(whileAct, String.Format(ErrorStrings.WhileRequiresCondition, whileAct.DisplayName));
         }
@@ -585,7 +585,7 @@ namespace TestCases.Activities
             };
 
             ExceptionThrowingActivitiy<bool> throwFromCondition = new ExceptionThrowingActivitiy<bool>();
-            ((Microsoft.CoreWf.Statements.While)whileAct.ProductActivity).Condition = throwFromCondition;
+            ((CoreWf.Statements.While)whileAct.ProductActivity).Condition = throwFromCondition;
             increment.ToVariable = counter;
             increment.ValueExpression = ((env) => (((int)counter.Get(env))) + 1);
             innerSequence.Activities.Add(increment);
@@ -800,37 +800,37 @@ namespace TestCases.Activities
                    {
                        Argument = delegateInArgument,
                        Result = delegateOutArgument,
-                       Handler = new Microsoft.CoreWf.Statements.Sequence
+                       Handler = new CoreWf.Statements.Sequence
                        {
                            DisplayName = "Sequence1",
                            Activities =
                                     {
-                                        new Microsoft.CoreWf.Statements.While
+                                        new CoreWf.Statements.While
                                         {
                                             DisplayName = "While1",
                                             Condition =  ExpressionServices.Convert<bool>( ctx=> delegateInArgument.Get(ctx) ),
-                                            Body = new Microsoft.CoreWf.Statements.Assign<bool>
+                                            Body = new CoreWf.Statements.Assign<bool>
                                             {
                                                 DisplayName = "Assign1",
                                                 To = delegateInArgument,
-                                                Value =  new Microsoft.CoreWf.Expressions.Not<bool, bool>{ Operand = delegateInArgument, DisplayName = "Not<Boolean,Boolean>"}
+                                                Value =  new CoreWf.Expressions.Not<bool, bool>{ Operand = delegateInArgument, DisplayName = "Not<Boolean,Boolean>"}
                                             },
                                         },
-                                        new Microsoft.CoreWf.Statements.Assign<bool>
+                                        new CoreWf.Statements.Assign<bool>
                                         {
                                             DisplayName = "Assign2",
                                             To = delegateOutArgument,
-                                            Value =  new Microsoft.CoreWf.Expressions.Not<bool, bool>{ Operand = delegateInArgument, DisplayName = "Not<Boolean,Boolean>"},
+                                            Value =  new CoreWf.Expressions.Not<bool, bool>{ Operand = delegateInArgument, DisplayName = "Not<Boolean,Boolean>"},
                                         },
-                                        new Microsoft.CoreWf.Statements.While
+                                        new CoreWf.Statements.While
                                         {
                                             DisplayName = "While2",
                                             Condition =  ExpressionServices.Convert<bool>( ctx=> delegateOutArgument.Get(ctx) ),
-                                            Body = new Microsoft.CoreWf.Statements.Assign<bool>
+                                            Body = new CoreWf.Statements.Assign<bool>
                                             {
                                                 DisplayName = "Assign3",
                                                 To = delegateOutArgument,
-                                                Value =  new Microsoft.CoreWf.Expressions.Not<bool, bool>{ Operand = delegateOutArgument, DisplayName = "Not<Boolean,Boolean>"}
+                                                Value =  new CoreWf.Expressions.Not<bool, bool>{ Operand = delegateOutArgument, DisplayName = "Not<Boolean,Boolean>"}
                                             },
                                         },
                                     },

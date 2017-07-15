@@ -4,7 +4,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[ContentProperty("Func")]
     public sealed class InvokeFunc<TResult> : NativeActivity<TResult>

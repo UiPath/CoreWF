@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Runtime;
+using CoreWf.Tracking;
 using System;
 using System.Globalization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public class ActivityContext
@@ -171,7 +171,7 @@ namespace Microsoft.CoreWf
 
             if (locationReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
             }
 
             Location location = locationReference.GetLocation(this);
@@ -192,7 +192,7 @@ namespace Microsoft.CoreWf
                 }
                 else
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LocationTypeMismatch(locationReference.Name, typeof(T), locationReference.Type)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LocationTypeMismatch(locationReference.Name, typeof(T), locationReference.Type)));
                 }
             }
         }
@@ -206,7 +206,7 @@ namespace Microsoft.CoreWf
 
             if (locationReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
             }
 
             return GetValueCore<T>(locationReference);
@@ -237,7 +237,7 @@ namespace Microsoft.CoreWf
 
             if (locationReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
             }
 
             SetValueCore<T>(locationReference, value);
@@ -258,7 +258,7 @@ namespace Microsoft.CoreWf
             {
                 if (!TypeHelper.AreTypesCompatible(value, locationReference.Type))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotSetValueToLocation(value != null ? value.GetType() : typeof(T), locationReference.Name, locationReference.Type)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotSetValueToLocation(value != null ? value.GetType() : typeof(T), locationReference.Name, locationReference.Type)));
                 }
 
                 location.Value = value;
@@ -276,7 +276,7 @@ namespace Microsoft.CoreWf
 
             if (argument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
             }
 
             argument.ThrowIfNotInTree();
@@ -295,7 +295,7 @@ namespace Microsoft.CoreWf
 
             if (argument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
             }
 
             argument.ThrowIfNotInTree();
@@ -314,7 +314,7 @@ namespace Microsoft.CoreWf
 
             if (argument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
             }
 
             argument.ThrowIfNotInTree();
@@ -331,7 +331,7 @@ namespace Microsoft.CoreWf
 
             if (argument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
             }
 
             argument.ThrowIfNotInTree();
@@ -350,7 +350,7 @@ namespace Microsoft.CoreWf
 
             if (runtimeArgument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("runtimeArgument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("runtimeArgument");
             }
 
             return GetValueCore<object>(runtimeArgument);
@@ -413,7 +413,7 @@ namespace Microsoft.CoreWf
 
             if (argument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
             }
 
             argument.ThrowIfNotInTree();
@@ -438,7 +438,7 @@ namespace Microsoft.CoreWf
         {
             if (_isDisposed)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new ObjectDisposedException(this.GetType().FullName, SR.AECDisposed));
             }
         }

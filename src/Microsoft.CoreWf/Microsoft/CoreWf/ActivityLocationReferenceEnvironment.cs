@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEnvironment
@@ -58,7 +58,7 @@ namespace Microsoft.CoreWf
         {
             if (locationReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
             }
 
             LocationReferenceEnvironment currentScope = this;

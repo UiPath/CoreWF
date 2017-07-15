@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Validation
+namespace CoreWf.Validation
 {
     [Fx.Tag.XamlVisible(false)]
     public class ValidationSettings

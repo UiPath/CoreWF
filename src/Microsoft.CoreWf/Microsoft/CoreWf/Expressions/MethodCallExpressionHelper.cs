@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     internal static class MethodCallExpressionHelper
     {

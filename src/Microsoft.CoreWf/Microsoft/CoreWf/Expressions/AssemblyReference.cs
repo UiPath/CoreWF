@@ -4,7 +4,7 @@
 using System;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[TypeConverter(typeof(AssemblyReferenceConverter))]
     public class AssemblyReference
@@ -284,7 +284,7 @@ namespace Microsoft.CoreWf.Expressions
         {
             if (_isImmutable)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.AssemblyReferenceIsImmutable));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.AssemblyReferenceIsImmutable));
             }
         }
     }

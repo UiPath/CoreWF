@@ -4,15 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using Test.Common.TestObjects.Utilities;
 using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.CustomActivities
 {
     // Allows variable declaration and activity scheduling, as well as extension points (OnSequenceComplete and Execute)
-    // for other test code to hook into. Based on Microsoft.CoreWf.Sequence.
+    // for other test code to hook into. Based on CoreWf.Sequence.
     //[ContentProperty("Activities")]    
     public class CustomSequenceBase : NativeActivity
     {

@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.Collections;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Runtime.Collections;
+using CoreWf.Validation;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Branches")]
     public sealed class Pick : NativeActivity
     {
-        private const string pickStateProperty = "Microsoft.CoreWf.Statements.Pick.PickState";
+        private const string pickStateProperty = "CoreWf.Statements.Pick.PickState";
 
         private Collection<PickBranch> _branches;
         private Variable<PickState> _pickStateVariable;
@@ -44,7 +44,7 @@ namespace Microsoft.CoreWf.Statements
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         }
                     };

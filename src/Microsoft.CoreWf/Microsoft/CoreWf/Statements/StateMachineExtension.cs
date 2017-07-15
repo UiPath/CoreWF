@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     /// <summary>
     /// StateMachineExtension is used to resume a bookmark outside StateMachine.

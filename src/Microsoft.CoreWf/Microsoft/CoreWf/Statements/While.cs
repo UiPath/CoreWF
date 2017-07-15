@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.Collections;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
+using CoreWf.Runtime.Collections;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [While])")]
     //[ContentProperty("Body")]
@@ -30,7 +30,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (condition == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
             }
 
             this.Condition = new LambdaValue<bool>(condition);
@@ -41,7 +41,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (condition == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
             }
 
             this.Condition = condition;
@@ -60,7 +60,7 @@ namespace Microsoft.CoreWf.Statements
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         }
                     };

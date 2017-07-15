@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.Collections;
+using CoreWf.Runtime;
+using CoreWf.Runtime.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Cases")]
     public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch

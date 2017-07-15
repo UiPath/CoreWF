@@ -87,7 +87,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
         public static void Trace(Guid instanceId, string message)
         {
             SynchronizeTrace synchronizeTrace = new SynchronizeTrace(instanceId, message);
-            TraceSource ts = new TraceSource("Microsoft.CoreWf.Tracking", SourceLevels.Information);
+            TraceSource ts = new TraceSource("CoreWf.Tracking", SourceLevels.Information);
             ts.TraceData(TraceEventType.Information, 1, synchronizeTrace);
         }
         #endregion

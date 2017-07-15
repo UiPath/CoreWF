@@ -4,7 +4,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Tracking
+namespace CoreWf.Tracking
 {
     //[ContentProperty("Queries")]
     public class TrackingProfile

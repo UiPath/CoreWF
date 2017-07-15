@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal class QualifiedId : IEquatable<QualifiedId>
     {
@@ -108,7 +108,7 @@ namespace Microsoft.CoreWf
             QualifiedId result;
             if (!TryParse(value, out result))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new FormatException(SR.InvalidActivityIdFormat));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new FormatException(SR.InvalidActivityIdFormat));
             }
 
             return result;

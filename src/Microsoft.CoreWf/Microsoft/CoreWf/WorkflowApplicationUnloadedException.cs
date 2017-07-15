@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     //[Serializable]
     public class WorkflowApplicationUnloadedException : WorkflowApplicationException

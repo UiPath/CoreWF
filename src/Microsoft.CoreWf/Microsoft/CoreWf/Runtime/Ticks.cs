@@ -4,7 +4,7 @@
 using System;
 using System.Security;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     internal static class Ticks
     {

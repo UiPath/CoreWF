@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Expressions;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +13,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     //[ContentProperty("Implementation")]
     public abstract class Activity
@@ -1744,11 +1744,11 @@ namespace Microsoft.CoreWf
         //                if (value == null)
         //                {
         //                    string argName = (key == null) ? "<null>" : key;
-        //                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MissingArgument(argName, propertyName)));
+        //                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MissingArgument(argName, propertyName)));
         //                }
         //                if (string.IsNullOrEmpty(key))
         //                {
-        //                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MissingNameProperty(value.ArgumentType)));
+        //                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MissingNameProperty(value.ArgumentType)));
         //                }
 
         //                RuntimeArgument runtimeArgument = new RuntimeArgument(key, value.ArgumentType, value.Direction, false, null, value);
@@ -1841,7 +1841,7 @@ namespace Microsoft.CoreWf
 
                 if (this.Result == null && value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("value", SR.ResultArgumentMustBeSpecificType(typeof(TResult)));
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("value", SR.ResultArgumentMustBeSpecificType(typeof(TResult)));
                 }
             }
         }
@@ -1870,7 +1870,7 @@ namespace Microsoft.CoreWf
         {
             if (variable == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
             }
 
             if (TypeHelper.AreTypesCompatible(variable.Type, typeof(TResult)))
@@ -1889,7 +1889,7 @@ namespace Microsoft.CoreWf
                 }
             }
 
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("variable", SR.ConvertVariableToValueExpressionFailed(variable.GetType().FullName, typeof(Activity<TResult>).FullName));
+            throw CoreWf.Internals.FxTrace.Exception.Argument("variable", SR.ConvertVariableToValueExpressionFailed(variable.GetType().FullName, typeof(Activity<TResult>).FullName));
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
@@ -1898,7 +1898,7 @@ namespace Microsoft.CoreWf
         {
             if (variable == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
             }
 
             return new VariableValue<TResult>(variable);

@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
+using CoreWf.Tracking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +13,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract(Name = XD.Executor.Name, Namespace = XD.Runtime.Namespace)]
     internal class ActivityExecutor /*: IEnlistmentNotification*/
@@ -313,7 +313,7 @@ namespace Microsoft.CoreWf.Runtime
                         {
                             throw;
                         }
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(this.WorkflowInstanceId), e));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(this.WorkflowInstanceId), e));
                     }
                 }
 
@@ -366,7 +366,7 @@ namespace Microsoft.CoreWf.Runtime
                     WorkflowInstanceId = _host.Id;
                     if (!_instanceIdSet)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyIdReturnedFromHost(_host.GetType())));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyIdReturnedFromHost(_host.GetType())));
                     }
                 }
 
@@ -830,7 +830,7 @@ namespace Microsoft.CoreWf.Runtime
         {
             if (_throwDuringSerialization)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.StateCannotBeSerialized(this.WorkflowInstanceId)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.StateCannotBeSerialized(this.WorkflowInstanceId)));
             }
         }
 
@@ -1539,7 +1539,7 @@ namespace Microsoft.CoreWf.Runtime
                 {
                     throw;
                 }
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostAbort(this.WorkflowInstanceId), e));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostAbort(this.WorkflowInstanceId), e));
             }
         }
 
@@ -1753,7 +1753,7 @@ namespace Microsoft.CoreWf.Runtime
 
             if (!object.Equals(workflowInstance.DefinitionIdentity, this.WorkflowIdentity))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new VersionMismatchException(workflowInstance.DefinitionIdentity, this.WorkflowIdentity));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new VersionMismatchException(workflowInstance.DefinitionIdentity, this.WorkflowIdentity));
             }
 
             _rootElement = workflow;
@@ -1761,11 +1761,11 @@ namespace Microsoft.CoreWf.Runtime
 
             if (!_instanceIdSet)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyGuidOnDeserializedInstance));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyGuidOnDeserializedInstance));
             }
             if (_host.Id != _instanceId)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.HostIdDoesNotMatchInstance(_host.Id, _instanceId)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.HostIdDoesNotMatchInstance(_host.Id, _instanceId)));
             }
 
             if (_host.HasTrackingParticipant)
@@ -1823,7 +1823,7 @@ namespace Microsoft.CoreWf.Runtime
                 {
                     throw;
                 }
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(this.WorkflowInstanceId), e));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(this.WorkflowInstanceId), e));
             }
 
             return extension;
@@ -2346,7 +2346,7 @@ namespace Microsoft.CoreWf.Runtime
                         Location location = _rootEnvironment.GetSpecificLocation(argument.BoundArgument.Id);
                         if (location == null)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
                         }
                         _workflowOutputs.Add(argument.Name, location.Value);
                     }
@@ -2866,7 +2866,7 @@ namespace Microsoft.CoreWf.Runtime
         {
             if (_lastInstanceId == long.MaxValue)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInstanceIds));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInstanceIds));
             }
             _lastInstanceId++;
         }
@@ -2899,7 +2899,7 @@ namespace Microsoft.CoreWf.Runtime
 
             if (!activity.IsMetadataCached || activity.CacheId != parent.Activity.CacheId)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
             }
 
             if (activity.SkipArgumentResolution)
@@ -2985,7 +2985,7 @@ namespace Microsoft.CoreWf.Runtime
         {
             if (_activeOperations != null && _activeOperations.ContainsKey(owningActivity))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyOneOperationPerActivity));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyOneOperationPerActivity));
             }
 
             this.EnterNoPersist();

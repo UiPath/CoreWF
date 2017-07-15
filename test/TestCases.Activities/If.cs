@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
+using CoreWf;
 using System.Collections.Generic;
 using Test.Common.TestObjects;
 using Test.Common.TestObjects.Activities;
@@ -13,7 +13,7 @@ using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
 using Test.Common.TestObjects.Utilities.Validation;
-using Microsoft.CoreWf.Expressions;
+using CoreWf.Expressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -929,31 +929,31 @@ namespace TestCases.Activities
                    {
                        Argument = delegateInArgument,
                        Result = delegateOutArgument,
-                       Handler = new Microsoft.CoreWf.Statements.Sequence
+                       Handler = new CoreWf.Statements.Sequence
                        {
                            DisplayName = "Sequence1",
                            Activities =
                             {
-                                new Microsoft.CoreWf.Statements.If
+                                new CoreWf.Statements.If
                                 {
                                     DisplayName = "If1",
                                     Condition = delegateInArgument,
-                                    Then = new Microsoft.CoreWf.Statements.Sequence
+                                    Then = new CoreWf.Statements.Sequence
                                     {
                                         DisplayName = "Sequence2",
                                         Activities =
                                         {
-                                            new Microsoft.CoreWf.Statements.Assign<bool>
+                                            new CoreWf.Statements.Assign<bool>
                                             {
                                                 DisplayName = "Assign1",
                                                 Value = delegateInArgument,
                                                 To = delegateOutArgument,
                                             },
-                                            new Microsoft.CoreWf.Statements.If
+                                            new CoreWf.Statements.If
                                             {
                                                 DisplayName = "If2",
                                                 Condition = delegateOutArgument,
-                                                Then = new Microsoft.CoreWf.Statements.WriteLine
+                                                Then = new CoreWf.Statements.WriteLine
                                                 {
                                                     DisplayName = "W1",
                                                     Text = "Tested DelegateIn and DelegateOut arguments in If condition"

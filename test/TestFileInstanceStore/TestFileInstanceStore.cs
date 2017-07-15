@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.DurableInstancing;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf;
+using CoreWf.DurableInstancing;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.IO;

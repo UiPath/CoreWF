@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.Collections;
+using CoreWf.Runtime;
+using CoreWf.Runtime.Collections;
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords,
     //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [New])")]
@@ -39,7 +39,7 @@ namespace Microsoft.CoreWf.Expressions
                         {
                             if (item == null)
                             {
-                                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
                             }
                         }
                     };

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     //[Serializable]
     public class LambdaSerializationException : Exception

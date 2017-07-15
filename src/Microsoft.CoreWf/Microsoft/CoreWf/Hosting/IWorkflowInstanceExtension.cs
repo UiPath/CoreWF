@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf.Hosting
+namespace CoreWf.Hosting
 {
     // overriden by extensions that want to contribute additional
     // extensions and/or get notified when they are being used with a WorkflowInstance

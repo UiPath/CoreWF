@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     // Inverted Template Method pattern. MethodExecutor is the base class for executing a method; created by MethodResolver.
     // Private concrete implementations are created by MethodResolver, but this is the "public" API used by InvokeMethod.
@@ -108,7 +108,7 @@ namespace Microsoft.CoreWf.Statements
                 targetInstance = _targetObject.Get(context);
                 if (targetInstance == null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("TargetObject");
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("TargetObject");
                 }
             }
 
@@ -134,7 +134,7 @@ namespace Microsoft.CoreWf.Statements
                 {
                     TD.InvokedMethodThrewException(this.invokingActivity.DisplayName, e.ToString());
                 }
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(e);
             }
         }
 

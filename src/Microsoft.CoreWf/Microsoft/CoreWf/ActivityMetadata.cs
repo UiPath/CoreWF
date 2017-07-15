@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Validation;
+using CoreWf.Validation;
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public struct ActivityMetadata
     {
@@ -254,7 +254,7 @@ namespace Microsoft.CoreWf
         {
             if (extensionProvider == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionProvider");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionProvider");
             }
             _activity.AddDefaultExtensionProvider(extensionProvider);
         }
@@ -269,11 +269,11 @@ namespace Microsoft.CoreWf
         {
             if (extensionType == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionType");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionType");
             }
             if (extensionType.GetTypeInfo().IsValueType)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("extensionType", SR.RequireExtensionOnlyAcceptsReferenceTypes(extensionType.FullName));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("extensionType", SR.RequireExtensionOnlyAcceptsReferenceTypes(extensionType.FullName));
             }
             _activity.RequireExtension(extensionType);
         }
@@ -287,7 +287,7 @@ namespace Microsoft.CoreWf
         {
             if (_activity == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
             }
         }
     }

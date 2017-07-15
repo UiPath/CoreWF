@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     internal sealed class WorkflowCompensationBehavior : NativeActivity
     {

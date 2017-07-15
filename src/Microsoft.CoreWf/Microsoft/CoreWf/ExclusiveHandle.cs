@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     public class ExclusiveHandle : Handle
@@ -97,19 +97,19 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             context.ThrowIfDisposed();
 
             if (bookmarkScopeHandle == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmarkScopeHandle");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmarkScopeHandle");
             }
 
             if ((this.ImportantBookmarks != null && this.ImportantBookmarks.Count != 0) || (this.UnimportantBookmarks != null && this.UnimportantBookmarks.Count != 0))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleRegisterBookmarkScopeFailed));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleRegisterBookmarkScopeFailed));
             }
 
             if (_bookmarkScopesListIsDefault)
@@ -128,14 +128,14 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             context.ThrowIfDisposed();
 
             if ((this.ImportantBookmarks != null && this.ImportantBookmarks.Count != 0) || (this.UnimportantBookmarks != null && this.UnimportantBookmarks.Count != 0))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleReinitializeFailed));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleReinitializeFailed));
             }
             _bookmarkScopes.Clear();
             _readOnlyBookmarkScopeCollection = null;

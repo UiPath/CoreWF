@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
-using Microsoft.CoreWf.Tracking;
+using CoreWf;
+using CoreWf.Statements;
+using CoreWf.Tracking;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -162,16 +162,16 @@ namespace TestCases.Activities
         {
             AutoResetEvent waitForWorkflow = new AutoResetEvent(false);
 
-            Microsoft.CoreWf.Statements.Sequence seq = new Microsoft.CoreWf.Statements.Sequence()
+            CoreWf.Statements.Sequence seq = new CoreWf.Statements.Sequence()
             {
                 Activities =
                 {
-                    new Microsoft.CoreWf.Statements.TerminateWorkflow
+                    new CoreWf.Statements.TerminateWorkflow
                     {
                         Exception = new InArgument<Exception>(context => new TAC.ApplicationException()),
                         Reason = new InArgument<string>("just because"),
                     },
-                    new Microsoft.CoreWf.Statements.WriteLine()
+                    new CoreWf.Statements.WriteLine()
                     {
                         Text = "Hello"
                     },

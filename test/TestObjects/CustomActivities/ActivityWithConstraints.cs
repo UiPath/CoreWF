@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
-using Microsoft.CoreWf.Validation;
+using CoreWf;
+using CoreWf.Statements;
+using CoreWf.Validation;
 
 namespace Test.Common.TestObjects.CustomActivities
 {

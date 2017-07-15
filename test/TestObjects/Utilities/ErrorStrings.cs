@@ -7,7 +7,7 @@ using System.Resources;
 namespace Test.Common.TestObjects.Utilities
 {
     /// <remarks>
-    /// This class returned strings from resources in Microsoft.CoreWf, System.Workflow.Runtime, and mscorlib.
+    /// This class returned strings from resources in CoreWf, System.Workflow.Runtime, and mscorlib.
     /// mscorlib does not exist in .NET Core and it appears that the same resource strings are not available in the new code.
     /// System.Workflow.Runtime is for WF3 activities, so it is not included.
     /// </remarks>
@@ -17,7 +17,7 @@ namespace Test.Common.TestObjects.Utilities
 
         static ErrorStrings()
         {
-            s_activitiesResourceManager = new ResourceManager("Microsoft.CoreWf.Strings.SR", typeof(Microsoft.CoreWf.Activity).GetTypeInfo().Assembly);
+            s_activitiesResourceManager = new ResourceManager("CoreWf.Strings.SR", typeof(CoreWf.Activity).GetTypeInfo().Assembly);
         }
 
         public static string WhileRequiresCondition { get { return s_activitiesResourceManager.GetString("WhileRequiresCondition"); } }

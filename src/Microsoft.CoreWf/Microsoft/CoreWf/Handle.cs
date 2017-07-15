@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     public abstract class Handle
@@ -102,7 +102,7 @@ namespace Microsoft.CoreWf
         {
             if (_isUninitialized)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.HandleNotInitialized));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.HandleNotInitialized));
             }
         }
     }

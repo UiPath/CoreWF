@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class WorkflowDataContext : /*CustomTypeDescriptor,*/ INotifyPropertyChanged, IDisposable
@@ -178,7 +178,7 @@ namespace Microsoft.CoreWf
         {
             if (_activityInstance == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new ObjectDisposedException(this.GetType().FullName, SR.WDCDisposed));
             }
         }
@@ -252,14 +252,14 @@ namespace Microsoft.CoreWf
 
         //    public override void ResetValue(object component)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.CannotResetPropertyInDataContext));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.CannotResetPropertyInDataContext));
         //    }
 
         //    public override void SetValue(object component, object value)
         //    {
         //        if (IsReadOnly)
         //        {
-        //            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.PropertyReadOnlyInWorkflowDataContext(this.Name)));
+        //            throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.PropertyReadOnlyInWorkflowDataContext(this.Name)));
         //        }
 
         //        WorkflowDataContext dataContext = (WorkflowDataContext)component;

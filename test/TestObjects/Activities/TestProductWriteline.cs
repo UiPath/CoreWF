@@ -4,8 +4,8 @@
 using System;
 using System.IO;
 using System.Linq.Expressions;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Statements;
+using CoreWf;
+using CoreWf.Statements;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
 

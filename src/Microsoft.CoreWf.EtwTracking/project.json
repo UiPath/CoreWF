@@ -1,10 +1,10 @@
 {
   "version": "1.0.0-*",
-  "description": "Microsoft.CoreWf.EtwTracking for WF on core",
+  "description": "CoreWf.EtwTracking for WF on core",
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "Microsoft.CoreWf": { "target": "project" },
+    "CoreWf": { "target": "project" },
     "Newtonsoft.Json": "9.0.1"
   },
 

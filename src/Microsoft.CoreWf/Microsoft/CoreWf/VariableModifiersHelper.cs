@@ -3,7 +3,7 @@
 
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal static class VariableModifiersHelper
     {
@@ -27,7 +27,7 @@ namespace Microsoft.CoreWf
         {
             if (!IsDefined(modifiers))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new InvalidEnumArgumentException(argumentName, (int)modifiers, typeof(VariableModifiers)));
             }
         }

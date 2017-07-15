@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
+using CoreWf.Expressions;
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal class InlinedLocationReference : LocationReference, ILocationReferenceWrapper
     {
@@ -51,12 +51,12 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
             ValidateAccessor(context);
             if (!_allowGetLocation)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetLocationOnPublicAccessReference(context.Activity)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetLocationOnPublicAccessReference(context.Activity)));
             }
             return GetLocationCore(context);
         }
@@ -66,7 +66,7 @@ namespace Microsoft.CoreWf
             ValidateAccessor(context);
             if (!_allowReads)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadAccessToWriteOnlyPublicReference(context.Activity)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadAccessToWriteOnlyPublicReference(context.Activity)));
             }
             return GetLocationCore(context);
         }
@@ -77,7 +77,7 @@ namespace Microsoft.CoreWf
             ValidateAccessor(context);
             if (!_allowWrites)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteAccessToReadOnlyPublicReference(context.Activity)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteAccessToReadOnlyPublicReference(context.Activity)));
             }
             return GetLocationCore(context);
         }
@@ -90,7 +90,7 @@ namespace Microsoft.CoreWf
 
             if (!object.ReferenceEquals(context.Activity, _validAccessor))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InlinedLocationReferenceOnlyAccessibleByOwner(context.Activity, _validAccessor)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InlinedLocationReferenceOnlyAccessibleByOwner(context.Activity, _validAccessor)));
             }
         }
 

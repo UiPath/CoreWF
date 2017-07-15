@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // shared interface by AsyncCodeActivity and AsyncCodeActivity<TResult> to facilitate internal code sharing
     internal interface IAsyncCodeActivity

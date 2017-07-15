@@ -3,13 +3,13 @@
 
 using System;
 using System.Diagnostics.Tracing;
-using Keywords = Microsoft.CoreWf.WfEventSource.Keywords;
-using Opcodes = Microsoft.CoreWf.WfEventSource.Opcodes;
-using Tasks = Microsoft.CoreWf.WfEventSource.Tasks;
+using Keywords = CoreWf.WfEventSource.Keywords;
+using Opcodes = CoreWf.WfEventSource.Opcodes;
+using Tasks = CoreWf.WfEventSource.Tasks;
 
-namespace Microsoft.CoreWf.EtwTracking
+namespace CoreWf.EtwTracking
 {
-    [EventSource(Name = "WF ETW Tracking Participant", Guid = "71346678-F84B-45B6-AD09-36658D8239CE", LocalizationResources = "Microsoft.CoreWf.Strings.EventSource")]
+    [EventSource(Name = "WF ETW Tracking Participant", Guid = "71346678-F84B-45B6-AD09-36658D8239CE", LocalizationResources = "CoreWf.Strings.EventSource")]
     public sealed class WfEtwTrackingEventSource : EventSource
     {
         public static WfEtwTrackingEventSource Instance = new WfEtwTrackingEventSource();

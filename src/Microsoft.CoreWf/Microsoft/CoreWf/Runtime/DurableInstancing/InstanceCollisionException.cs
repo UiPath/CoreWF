@@ -4,7 +4,7 @@
 using System;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     //[Serializable]
     public class InstanceCollisionException : InstancePersistenceCommandException

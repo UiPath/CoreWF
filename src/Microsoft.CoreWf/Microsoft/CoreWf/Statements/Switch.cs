@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime.Collections;
+using CoreWf.Runtime.Collections;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Cases")]
     public sealed class Switch<T> : NativeActivity
@@ -24,7 +24,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (expression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
             }
 
             this.Expression = new InArgument<T>(expression);
@@ -35,7 +35,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (expression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
             }
 
             this.Expression = new InArgument<T>(expression);
@@ -46,7 +46,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (expression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
             }
 
             this.Expression = expression;

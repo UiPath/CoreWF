@@ -4,7 +4,7 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public sealed class ActivityAction : ActivityDelegate
     {

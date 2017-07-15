@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class ExecutionProperties : IEnumerable<KeyValuePair<string, object>>
@@ -68,12 +68,12 @@ namespace Microsoft.CoreWf
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
                 }
 
                 if (property == null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("property");
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("property");
                 }
 
                 ThrowIfActivityExecutionContextDisposed();
@@ -124,7 +124,7 @@ namespace Microsoft.CoreWf
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
                 }
 
                 ThrowIfActivityExecutionContextDisposed();
@@ -166,7 +166,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
 
             if (_properties == null)
@@ -221,7 +221,7 @@ namespace Microsoft.CoreWf
         {
             if (_scope.HasChildren)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotAddOrRemoveWithChildren));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotAddOrRemoveWithChildren));
             }
         }
 
@@ -229,7 +229,7 @@ namespace Microsoft.CoreWf
         {
             if (_context.IsDisposed)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AECForPropertiesHasBeenDisposed));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AECForPropertiesHasBeenDisposed));
             }
         }
     }

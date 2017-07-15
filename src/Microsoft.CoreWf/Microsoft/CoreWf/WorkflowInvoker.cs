@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class WorkflowInvoker
@@ -24,7 +24,7 @@ namespace Microsoft.CoreWf
         {
             if (workflow == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
             }
 
             _workflow = workflow;
@@ -188,7 +188,7 @@ namespace Microsoft.CoreWf
         {
             if (userState == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("userState");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("userState");
             }
 
             AsyncInvokeContext context = this.RemoveFromPendingInvokes(userState);
@@ -284,7 +284,7 @@ namespace Microsoft.CoreWf
         {
             if (inputs == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -296,7 +296,7 @@ namespace Microsoft.CoreWf
         {
             if (workflow == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
@@ -318,12 +318,12 @@ namespace Microsoft.CoreWf
         {
             if (workflow == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
             }
 
             if (inputs == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
@@ -346,7 +346,7 @@ namespace Microsoft.CoreWf
             {
                 if (this.PendingInvokes.ContainsKey(context.UserState))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SameUserStateUsedForMultipleInvokes));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SameUserStateUsedForMultipleInvokes));
                 }
                 this.PendingInvokes.Add(context.UserState, context);
             }
@@ -357,7 +357,7 @@ namespace Microsoft.CoreWf
         {
             if (inputs == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);

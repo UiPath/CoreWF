@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Expressions;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Expressions;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Microsoft.CoreWf.Internals;
+using CoreWf.Internals;
 using System.Threading;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     // Helper class for InvokeMethod.
     // Factory for MethodExecutor strategies. Conceptually, resolves to the correct MethodInfo based on target type,
@@ -429,22 +429,22 @@ namespace Microsoft.CoreWf.Statements
 
         //    public override FieldInfo BindToField(BindingFlags bindingAttr, FieldInfo[] match, object value, CultureInfo culture)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
         //    }
 
         //    public override MethodBase BindToMethod(BindingFlags bindingAttr, MethodBase[] match, ref object[] args, ParameterModifier[] modifiers, CultureInfo culture, string[] names, out object state)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
         //    }
 
         //    public override object ChangeType(object value, Type type, CultureInfo culture)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
         //    }
 
         //    public override void ReorderArgumentArray(ref object[] args, object state)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
         //    }
 
         //    public override MethodBase SelectMethod(BindingFlags bindingAttr, MethodBase[] match, Type[] types, ParameterModifier[] modifiers)
@@ -545,7 +545,7 @@ namespace Microsoft.CoreWf.Statements
         //                        string type = newFound.ReflectedType.Name;
         //                        string name = newFound.Name;
         //                        string bindingType = bindingAttr == staticBindingFlags ? staticString : instanceString;
-        //                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new AmbiguousMatchException(SR.DuplicateMethodFound(type, bindingType, name, this.parentActivity.DisplayName)));
+        //                        throw CoreWf.Internals.FxTrace.Exception.AsError(new AmbiguousMatchException(SR.DuplicateMethodFound(type, bindingType, name, this.parentActivity.DisplayName)));
         //                    }
         //                    else
         //                    {
@@ -559,7 +559,7 @@ namespace Microsoft.CoreWf.Statements
 
         //    public override PropertyInfo SelectProperty(BindingFlags bindingAttr, PropertyInfo[] match, Type returnType, Type[] indexes, ParameterModifier[] modifiers)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotImplementedException());
         //    }
         //}
 
@@ -727,7 +727,7 @@ namespace Microsoft.CoreWf.Statements
                 InvokeMethodInstanceData instance = ExecuteAsyncResult.End(result);
                 if (instance.ExceptionWasThrown)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(instance.Exception);
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(instance.Exception);
                 }
                 else
                 {

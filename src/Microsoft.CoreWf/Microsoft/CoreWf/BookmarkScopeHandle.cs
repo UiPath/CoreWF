@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [DataContract]
     public sealed class BookmarkScopeHandle : Handle
@@ -62,7 +62,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             context.ThrowIfDisposed();
@@ -73,7 +73,7 @@ namespace Microsoft.CoreWf
             this.ThrowIfContextIsNullOrDisposed(context);
             if (_bookmarkScope != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
             }
 
             this.ThrowIfUninitialized();
@@ -86,7 +86,7 @@ namespace Microsoft.CoreWf
             this.ThrowIfContextIsNullOrDisposed(context);
             if (_bookmarkScope != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
             }
 
             this.ThrowIfUninitialized();

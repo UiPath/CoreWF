@@ -3,7 +3,7 @@
 
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal static class BookmarkOptionsHelper
     {
@@ -16,7 +16,7 @@ namespace Microsoft.CoreWf
         {
             if (!IsDefined(options))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new InvalidEnumArgumentException(argumentName, (int)options, typeof(BookmarkOptions)));
             }
         }

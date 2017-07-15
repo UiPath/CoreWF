@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -53,7 +53,7 @@ namespace Test.Common.TestObjects.Runtime
 
         #region Properties
 
-        public Microsoft.CoreWf.Hosting.WorkflowInstanceExtensionManager Extensions
+        public CoreWf.Hosting.WorkflowInstanceExtensionManager Extensions
         {
             get { return _remoteWorkflowRuntime.Extensions; }
         }
@@ -751,12 +751,12 @@ namespace Test.Common.TestObjects.Runtime
         }
 
         #region GetBookmarks
-        public ReadOnlyCollection<Microsoft.CoreWf.Hosting.BookmarkInfo> GetBookmarks()
+        public ReadOnlyCollection<CoreWf.Hosting.BookmarkInfo> GetBookmarks()
         {
             return _remoteWorkflowRuntime.GetBookmarks();
         }
 
-        public ReadOnlyCollection<Microsoft.CoreWf.Hosting.BookmarkInfo> GetBookmarks(TimeSpan timeout)
+        public ReadOnlyCollection<CoreWf.Hosting.BookmarkInfo> GetBookmarks(TimeSpan timeout)
         {
             return _remoteWorkflowRuntime.GetBookmarks(timeout);
         }

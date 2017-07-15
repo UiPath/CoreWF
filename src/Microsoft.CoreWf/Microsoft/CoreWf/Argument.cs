@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Validation;
+using CoreWf.Runtime;
+using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public abstract class Argument
     {
@@ -55,7 +55,7 @@ namespace Microsoft.CoreWf
             {
                 if (value < 0 && value != Argument.UnspecifiedEvaluationOrder)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("EvaluationOrder", value, SR.InvalidEvaluationOrderValue);
+                    throw CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("EvaluationOrder", value, SR.InvalidEvaluationOrderValue);
                 }
                 _evaluationOrder = value;
             }
@@ -128,12 +128,12 @@ namespace Microsoft.CoreWf
         {
             if (argumentToReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
             }
 
             return ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, argumentToReference.Direction, referencedArgumentName);
@@ -188,7 +188,7 @@ namespace Microsoft.CoreWf
         {
             if (argument == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
             }
 
             bool passedValidations = true;
@@ -238,7 +238,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();
@@ -250,7 +250,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();
@@ -311,7 +311,7 @@ namespace Microsoft.CoreWf
         {
             if (context == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
             }
 
             ThrowIfNotInTree();
@@ -323,7 +323,7 @@ namespace Microsoft.CoreWf
         {
             if (!this.IsInTree)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentNotInTree(this.ArgumentType)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentNotInTree(this.ArgumentType)));
             }
         }
 

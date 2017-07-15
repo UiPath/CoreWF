@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public abstract class NativeActivity : Activity/*, IInstanceUpdatable*/
     {
@@ -24,7 +24,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -41,7 +41,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace Microsoft.CoreWf
         {
             if (!context.IsCancellationRequested)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DefaultCancelationRequiresCancelHasBeenRequested));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DefaultCancelationRequiresCancelHasBeenRequested));
             }
             context.Cancel();
         }
@@ -86,7 +86,7 @@ namespace Microsoft.CoreWf
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForNativeActivity));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForNativeActivity));
         }
 
         //protected virtual void CacheMetadata(NativeActivityMetadata metadata)
@@ -117,7 +117,7 @@ namespace Microsoft.CoreWf
 
         //protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
         //{
-        //    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongOnCreateDynamicUpdateMapForNativeActivity));
+        //    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongOnCreateDynamicUpdateMapForNativeActivity));
         //}
 
         ////[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
@@ -211,7 +211,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -228,7 +228,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -259,7 +259,7 @@ namespace Microsoft.CoreWf
         {
             if (!context.IsCancellationRequested)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DefaultCancelationRequiresCancelHasBeenRequested));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DefaultCancelationRequiresCancelHasBeenRequested));
             }
             context.Cancel();
         }
@@ -273,7 +273,7 @@ namespace Microsoft.CoreWf
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForNativeActivity));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForNativeActivity));
         }
 
         //protected virtual void CacheMetadata(NativeActivityMetadata metadata)
@@ -304,7 +304,7 @@ namespace Microsoft.CoreWf
 
         //protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
         //{
-        //    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongOnCreateDynamicUpdateMapForNativeActivity));
+        //    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongOnCreateDynamicUpdateMapForNativeActivity));
         //}
 
         ////[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,

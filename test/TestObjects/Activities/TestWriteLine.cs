@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Microsoft.CoreWf;
+using CoreWf;
 using Test.Common.TestObjects.CustomActivities;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;

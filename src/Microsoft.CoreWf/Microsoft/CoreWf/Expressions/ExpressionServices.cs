@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     public static class ExpressionServices
     {
@@ -27,7 +27,7 @@ namespace Microsoft.CoreWf.Expressions
             Activity<TResult> result;
             if (expression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("expression", SR.ExpressionRequiredForConversion));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("expression", SR.ExpressionRequiredForConversion));
             }
             TryConvert<TResult>(expression.Body, true, out result);
             return result;
@@ -132,7 +132,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(body.NodeType)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(body.NodeType)));
             }
             else
             {
@@ -147,7 +147,7 @@ namespace Microsoft.CoreWf.Expressions
             Activity<Location<TResult>> result;
             if (expression == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("expression", SR.ExpressionRequiredForConversion));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("expression", SR.ExpressionRequiredForConversion));
             }
 
             TryConvertReference<TResult>(expression.Body, true, out result);
@@ -223,7 +223,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedReferenceExpressionType(body.NodeType)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedReferenceExpressionType(body.NodeType)));
             }
             else
             {
@@ -240,7 +240,7 @@ namespace Microsoft.CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
                     }
                     else
                     {
@@ -255,7 +255,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -312,7 +312,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
                 }
                 else
                 {
@@ -412,7 +412,7 @@ namespace Microsoft.CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -433,7 +433,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
                 }
                 else
                 {
@@ -446,7 +446,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerReferenceWithDifferentArrayTypeAndResultType(leftType, typeof(TResult))));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerReferenceWithDifferentArrayTypeAndResultType(leftType, typeof(TResult))));
                 }
                 else
                 {
@@ -457,7 +457,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
                 }
                 else
                 {
@@ -554,7 +554,7 @@ namespace Microsoft.CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -609,7 +609,7 @@ namespace Microsoft.CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -664,7 +664,7 @@ namespace Microsoft.CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -710,7 +710,7 @@ namespace Microsoft.CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.RuntimeArgumentNotCreated));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.RuntimeArgumentNotCreated));
                     }
                     else
                     {
@@ -729,7 +729,7 @@ namespace Microsoft.CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
                 }
                 else
                 {
@@ -754,7 +754,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
             }
             else
             {
@@ -774,7 +774,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -788,7 +788,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
                 }
                 else
                 {
@@ -799,7 +799,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerValueWithIncompatibleArrayTypeAndResultType(leftType, typeof(TResult))));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerValueWithIncompatibleArrayTypeAndResultType(leftType, typeof(TResult))));
                 }
                 else
                 {
@@ -810,7 +810,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
                 }
                 else
                 {
@@ -935,7 +935,7 @@ namespace Microsoft.CoreWf.Expressions
                 default:
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(binaryExpressionBody.NodeType)));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(binaryExpressionBody.NodeType)));
                     }
                     else
                     {
@@ -958,7 +958,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -995,7 +995,7 @@ namespace Microsoft.CoreWf.Expressions
                 default:
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(unaryExpressionBody.NodeType)));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(unaryExpressionBody.NodeType)));
                     }
                     else
                     {
@@ -1018,7 +1018,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -1061,7 +1061,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
             }
             else
             {
@@ -1081,7 +1081,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -1165,7 +1165,7 @@ namespace Microsoft.CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
             }
             else
             {
@@ -1180,7 +1180,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
                 }
                 else
                 {
@@ -1204,7 +1204,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
                 }
                 else
                 {
@@ -1230,7 +1230,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MethodInfoRequired(methodCallExpression.GetType().Name)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MethodInfoRequired(methodCallExpression.GetType().Name)));
                 }
                 else
                 {
@@ -1241,7 +1241,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MethodNameRequired(methodInfo.GetType().Name)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MethodNameRequired(methodInfo.GetType().Name)));
                 }
                 else
                 {
@@ -1258,7 +1258,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(methodCallExpression.GetType().Name)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(methodCallExpression.GetType().Name)));
                 }
                 else
                 {
@@ -1278,7 +1278,7 @@ namespace Microsoft.CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidGenericTypeInfo(methodCallExpression.GetType().Name)));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidGenericTypeInfo(methodCallExpression.GetType().Name)));
                     }
                     else
                     {
@@ -1297,7 +1297,7 @@ namespace Microsoft.CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
                     }
                     else
                     {
@@ -1325,7 +1325,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidExpressionProperty(invocationExpression.GetType().Name)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidExpressionProperty(invocationExpression.GetType().Name)));
                 }
                 else
                 {
@@ -1358,7 +1358,7 @@ namespace Microsoft.CoreWf.Expressions
             return null;
         }
 
-        private static string TryConvertArgumentExpressionWorker<TArgument>(Expression expression, bool isByRef, bool throwOnError, out Microsoft.CoreWf.Argument result)
+        private static string TryConvertArgumentExpressionWorker<TArgument>(Expression expression, bool isByRef, bool throwOnError, out CoreWf.Argument result)
         {
             result = null;
 
@@ -1403,7 +1403,7 @@ namespace Microsoft.CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(newExpression.GetType().Name)));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(newExpression.GetType().Name)));
                     }
                     else
                     {
@@ -1449,7 +1449,7 @@ namespace Microsoft.CoreWf.Expressions
                     {
                         if (throwOnError)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidParameterInfo(i, expressionType.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidParameterInfo(i, expressionType.Name)));
                         }
                         else
                         {
@@ -1480,7 +1480,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(
                         SR.UnexpectedExpressionNodeType(ExpressionType.Constant.ToString(), expression.NodeType.ToString())));
                 }
                 else
@@ -1518,7 +1518,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
                 }
                 else
                 {
@@ -1538,7 +1538,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(
                         SR.UnexpectedExpressionNodeType(ExpressionType.Constant.ToString(), expression.NodeType.ToString())));
                 }
                 else
@@ -1576,7 +1576,7 @@ namespace Microsoft.CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
                 }
                 else
                 {

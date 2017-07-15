@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public struct CodeActivityPublicEnvironmentAccessor
     {
@@ -51,7 +51,7 @@ namespace Microsoft.CoreWf
         {
             if (publicLocation == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("publicLocation");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("publicLocation");
             }
             ThrowIfUninitialized();
 
@@ -63,7 +63,7 @@ namespace Microsoft.CoreWf
         {
             if (publicReference == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("publicReference");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("publicReference");
             }
             ThrowIfUninitialized();
 
@@ -153,7 +153,7 @@ namespace Microsoft.CoreWf
             if (_metadata.CurrentActivity == null)
             {
                 // Using ObjectDisposedException for consistency with the other metadata structs
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
             }
         }
 

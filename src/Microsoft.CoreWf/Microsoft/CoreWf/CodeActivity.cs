@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     public abstract class CodeActivity : Activity
     {
@@ -23,7 +23,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -40,7 +40,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace Microsoft.CoreWf
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
         //protected virtual void CacheMetadata(CodeActivityMetadata metadata)
@@ -122,7 +122,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace Microsoft.CoreWf
             {
                 if (value != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -204,7 +204,7 @@ namespace Microsoft.CoreWf
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
         //protected virtual void CacheMetadata(CodeActivityMetadata metadata)

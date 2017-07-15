@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Internals;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Internals;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     [DataContract]
     // This class won't be thread safe, it relies on the callers to synchronize addTimer and removeTimer

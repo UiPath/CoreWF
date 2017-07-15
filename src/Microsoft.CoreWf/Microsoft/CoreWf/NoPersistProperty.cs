@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // This does not need to be data contract since we'll never persist while one of these is active
     internal class NoPersistProperty : IPropertyRegistrationCallback
     {
-        public const string Name = "Microsoft.CoreWf.NoPersistProperty";
+        public const string Name = "CoreWf.NoPersistProperty";
 
         private ActivityExecutor _executor;
         private int _refCount;

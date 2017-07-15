@@ -4,7 +4,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Validation
+namespace CoreWf.Validation
 {
     public sealed class AssertValidation : NativeActivity
     {

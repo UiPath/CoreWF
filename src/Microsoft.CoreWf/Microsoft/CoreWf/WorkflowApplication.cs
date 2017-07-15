@@ -1,18 +1,18 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.DurableInstancing;
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.DurableInstancing;
+using CoreWf.Hosting;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
+using CoreWf.Tracking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     // WorkflowApplication is free-threaded. It is responsible for the correct locking and usage of the ActivityExecutor.
     // Given that there are two simultaneous users of ActivityExecutor (WorkflowApplication and NativeActivityContext),
@@ -117,7 +117,7 @@ namespace Microsoft.CoreWf
         {
             if (inputs == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
             }
             _initialWorkflowArguments = inputs;
         }
@@ -501,7 +501,7 @@ namespace Microsoft.CoreWf
             {
                 if (Remove(operation))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(timeout)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(timeout)));
                 }
             }
             return true;
@@ -1009,7 +1009,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(reason))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("reason");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("reason");
             }
 
             Terminate(new WorkflowApplicationTerminatedException(reason, this.Id), timeout);
@@ -1019,7 +1019,7 @@ namespace Microsoft.CoreWf
         {
             if (reason == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("reason");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("reason");
             }
 
             ThrowIfHandlerThread();
@@ -1066,7 +1066,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(reason))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("reason");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("reason");
             }
 
             return BeginTerminate(new WorkflowApplicationTerminatedException(reason, this.Id), timeout, callback, state);
@@ -1076,7 +1076,7 @@ namespace Microsoft.CoreWf
         {
             if (reason == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("reason");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("reason");
             }
 
             ThrowIfHandlerThread();
@@ -1272,7 +1272,7 @@ namespace Microsoft.CoreWf
 
             if (completionException != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(completionException);
+                throw CoreWf.Internals.FxTrace.Exception.AsError(completionException);
             }
 
             return outputs;
@@ -1418,7 +1418,7 @@ namespace Microsoft.CoreWf
                     return result;
                 }
             }
-            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstancePersistenceException(SR.WorkflowInstanceNotFoundInStore(instanceId)));
+            throw CoreWf.Internals.FxTrace.Exception.AsError(new InstancePersistenceException(SR.WorkflowInstanceNotFoundInStore(instanceId)));
         }
 
         public static void CreateDefaultInstanceOwner(InstanceStore instanceStore, WorkflowIdentity definitionIdentity, WorkflowIdentityFilter identityFilter)
@@ -1430,11 +1430,11 @@ namespace Microsoft.CoreWf
         {
             if (instanceStore == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
             }
             if (instanceStore.DefaultInstanceOwner != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("instanceStore", SR.InstanceStoreHasDefaultOwner);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("instanceStore", SR.InstanceStoreHasDefaultOwner);
             }
 
             CreateWorkflowOwnerWithIdentityCommand command = GetCreateOwnerCommand(definitionIdentity, identityFilter);
@@ -1453,11 +1453,11 @@ namespace Microsoft.CoreWf
         //{
         //    if (instanceStore == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
         //    }
         //    if (instanceStore.DefaultInstanceOwner != null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("instanceStore", SR.InstanceStoreHasDefaultOwner);
+        //        throw CoreWf.Internals.FxTrace.Exception.Argument("instanceStore", SR.InstanceStoreHasDefaultOwner);
         //    }
 
         //    CreateWorkflowOwnerWithIdentityCommand command = GetCreateOwnerCommand(definitionIdentity, identityFilter);
@@ -1481,7 +1481,7 @@ namespace Microsoft.CoreWf
         //{
         //    if (instanceStore == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
         //    }
         //    if (instanceStore.DefaultInstanceOwner == null)
         //    {
@@ -1502,7 +1502,7 @@ namespace Microsoft.CoreWf
         //{
         //    if (instanceStore == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
         //    }
         //    if (instanceStore.DefaultInstanceOwner == null)
         //    {
@@ -1549,13 +1549,13 @@ namespace Microsoft.CoreWf
         {
             if (!identityFilter.IsValid())
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentOutOfRangeException("identityFilter"));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentOutOfRangeException("identityFilter"));
             }
             if (definitionIdentity == null && identityFilter != WorkflowIdentityFilter.Any)
             {
                 // This API isn't useful for null identity, because WFApp only adds a default WorkflowHostType
                 // to instances with non-null identity.
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("definitionIdentity", SR.CannotCreateOwnerWithoutIdentity);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("definitionIdentity", SR.CannotCreateOwnerWithoutIdentity);
             }
             return new CreateWorkflowOwnerWithIdentityCommand
             {
@@ -1577,12 +1577,12 @@ namespace Microsoft.CoreWf
         {
             if (instanceStore == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
             if (instanceStore.DefaultInstanceOwner == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
             }
 
             PersistenceManager newManager = new PersistenceManager(instanceStore, null);
@@ -1598,12 +1598,12 @@ namespace Microsoft.CoreWf
         //   {
         //       if (instanceStore == null)
         //       {
-        //           throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+        //           throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
         //       }
         //       TimeoutHelper.ThrowIfNegativeArgument(timeout);
         //       if (instanceStore.DefaultInstanceOwner == null)
         //       {
-        //           throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
+        //           throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
         //       }
 
         //       PersistenceManager newManager = new PersistenceManager(instanceStore, null);
@@ -1624,11 +1624,11 @@ namespace Microsoft.CoreWf
         {
             if (instanceId == Guid.Empty)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
             }
             if (instanceStore == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -1645,11 +1645,11 @@ namespace Microsoft.CoreWf
         //{
         //    if (instanceId == Guid.Empty)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
         //    }
         //    if (instanceStore == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
         //    }
         //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -1683,22 +1683,22 @@ namespace Microsoft.CoreWf
             ThrowIfReadOnly(); // only allow a single Load() or Run()
             if (instance == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instance");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instance");
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
             if (_instanceIdSet)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
             if (_initialWorkflowArguments != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
             }
             if (this.InstanceStore != null && this.InstanceStore != instance.InstanceStore)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
             }
 
             instance.MarkAsLoaded();
@@ -1744,19 +1744,19 @@ namespace Microsoft.CoreWf
 
             if (this.InstanceStore == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
             }
             if (_instanceIdSet)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
             if (_initialWorkflowArguments != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
             }
             if (_persistenceManager != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
             }
 
             InstanceOperation operation = new InstanceOperation { RequiresInitialized = false };
@@ -1773,7 +1773,7 @@ namespace Microsoft.CoreWf
 
                 if (!_persistenceManager.IsInitialized)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
                 }
 
                 LoadCore(/*null,*/ timeoutHelper, true);
@@ -1795,22 +1795,22 @@ namespace Microsoft.CoreWf
             ThrowIfReadOnly(); // only allow a single Load() or Run()
             if (instanceId == Guid.Empty)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
             if (this.InstanceStore == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
             }
             if (_instanceIdSet)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
             if (_initialWorkflowArguments != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
             }
 
             InstanceOperation operation = new InstanceOperation { RequiresInitialized = false };
@@ -1865,7 +1865,7 @@ namespace Microsoft.CoreWf
                     {
                         if (_instanceIdSet)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
                         }
 
                         _instanceId = _persistenceManager.InstanceId;
@@ -1884,7 +1884,7 @@ namespace Microsoft.CoreWf
                         // Need to ensure that either we see the Aborted state, AbortInstance sees us, or both.
                         if (_state == WorkflowApplicationState.Aborted)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
                         }
 
                         pipeline.EndLoad(pipeline.BeginLoad(timeoutHelper.RemainingTime(), null, null));
@@ -2033,7 +2033,7 @@ namespace Microsoft.CoreWf
             {
                 if (!persistenceManager.TryLoad(timeoutHelper.RemainingTime(), out values))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
                 }
             }
             else
@@ -2103,25 +2103,25 @@ namespace Microsoft.CoreWf
 
         //    if (this.InstanceStore == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
         //    }
         //    if (this.instanceIdSet)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
         //    }
         //    if (this.initialWorkflowArguments != null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
         //    }
         //    if (this.persistenceManager != null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
         //    }
 
         //    PersistenceManager newManager = new PersistenceManager(InstanceStore, GetInstanceMetadata());
         //    if (!newManager.IsInitialized)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
         //    }
 
         //    return new LoadAsyncResult(this, newManager, true, timeout, callback, state);
@@ -2138,22 +2138,22 @@ namespace Microsoft.CoreWf
         //    ThrowIfReadOnly(); // only allow a single Load() or Run()
         //    if (instanceId == Guid.Empty)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
         //    }
 
         //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
         //    if (this.InstanceStore == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
         //    }
         //    if (this.instanceIdSet)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
         //    }
         //    if (this.initialWorkflowArguments != null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
         //    }
 
         //    PersistenceManager newManager = new PersistenceManager(this.InstanceStore, GetInstanceMetadata(), instanceId);
@@ -2185,22 +2185,22 @@ namespace Microsoft.CoreWf
         //    ThrowIfReadOnly(); // only allow a single Load() or Run()
         //    if (instance == null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("instance");
+        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instance");
         //    }
 
         //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
         //    if (this.instanceIdSet)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
         //    }
         //    if (this.initialWorkflowArguments != null)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
         //    }
         //    if (this.InstanceStore != null && this.InstanceStore != instance.InstanceStore)
         //    {
-        //        throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
+        //        throw CoreWf.Internals.FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
         //    }
 
         //    instance.MarkAsLoaded();
@@ -2360,7 +2360,7 @@ namespace Microsoft.CoreWf
 
                         if (_state == WorkflowApplicationState.Aborted)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
                         }
 
                         pipeline.EndSave(pipeline.BeginSave(timeoutHelper.RemainingTime(), null, null));
@@ -2545,7 +2545,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
             }
 
             return ResumeBookmark(new Bookmark(bookmarkName), value);
@@ -2562,7 +2562,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
             }
 
             return ResumeBookmark(new Bookmark(bookmarkName), value, timeout);
@@ -2649,7 +2649,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
             }
 
             return BeginResumeBookmark(new Bookmark(bookmarkName), value, callback, state);
@@ -2660,7 +2660,7 @@ namespace Microsoft.CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
             }
 
             return BeginResumeBookmark(new Bookmark(bookmarkName), value, timeout, callback, state);
@@ -2902,7 +2902,7 @@ namespace Microsoft.CoreWf
         {
             if (value != null && value.GetInvocationList().Length > 1)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("value", SR.OnlySingleCastDelegatesAllowed);
+                throw CoreWf.Internals.FxTrace.Exception.Argument("value", SR.OnlySingleCastDelegatesAllowed);
             }
         }
 
@@ -2910,7 +2910,7 @@ namespace Microsoft.CoreWf
         {
             if (_state == WorkflowApplicationState.Aborted)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationAbortedException(SR.WorkflowApplicationAborted(this.Id), this.Id));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationAbortedException(SR.WorkflowApplicationAborted(this.Id), this.Id));
             }
         }
 
@@ -2922,11 +2922,11 @@ namespace Microsoft.CoreWf
                 this.Controller.GetCompletionState(out completionException);
                 if (completionException != null)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationTerminatedException(SR.WorkflowApplicationTerminated(this.Id), this.Id, completionException));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationTerminatedException(SR.WorkflowApplicationTerminated(this.Id), this.Id, completionException));
                 }
                 else
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationCompletedException(SR.WorkflowApplicationCompleted(this.Id), this.Id));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationCompletedException(SR.WorkflowApplicationCompleted(this.Id), this.Id));
                 }
             }
         }
@@ -2935,7 +2935,7 @@ namespace Microsoft.CoreWf
         {
             if (_state == WorkflowApplicationState.Unloaded)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationUnloadedException(SR.WorkflowApplicationUnloaded(this.Id), this.Id));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationUnloadedException(SR.WorkflowApplicationUnloaded(this.Id), this.Id));
             }
         }
 
@@ -2943,7 +2943,7 @@ namespace Microsoft.CoreWf
         {
             if (!HasPersistenceProvider)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InstanceStoreRequiredToPersist));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InstanceStoreRequiredToPersist));
             }
         }
 
@@ -2951,7 +2951,7 @@ namespace Microsoft.CoreWf
         {
             if (this.IsHandlerThread)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationFromHandlerThread));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationFromHandlerThread));
             }
         }
 
@@ -2988,7 +2988,7 @@ namespace Microsoft.CoreWf
             ThrowIfReadOnly(); // only allow a single Load() or Run()
             if (_instanceIdSet)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
         }
 
@@ -3095,7 +3095,7 @@ namespace Microsoft.CoreWf
                     {
                         if (_completionException != null)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(_completionException);
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(_completionException);
                         }
                         else
                         {
@@ -3791,7 +3791,7 @@ namespace Microsoft.CoreWf
                         //Thread.MemoryBarrier();
                         if (_instance._state == WorkflowApplicationState.Aborted)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
                         }
 
                         //using (PrepareTransactionalCall(this.context.PublicTransaction))
@@ -4572,13 +4572,13 @@ namespace Microsoft.CoreWf
         //                {
         //                    if (!this.persistenceManager.EndTryLoad(result, out this.values))
         //                    {
-        //                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
+        //                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
         //                    }
         //                    if (this.application != null)
         //                    {
         //                        if (this.application.instanceIdSet)
         //                        {
-        //                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+        //                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
         //                        }
 
         //                        this.application.instanceId = this.persistenceManager.InstanceId;
@@ -4603,7 +4603,7 @@ namespace Microsoft.CoreWf
         //                    Thread.MemoryBarrier();
         //                    if (this.application.state == WorkflowApplicationState.Aborted)
         //                    {
-        //                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+        //                        throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
         //                    }
 
         //                    using (this.PrepareTransactionalCall(this.context.PublicTransaction))
@@ -4797,7 +4797,7 @@ namespace Microsoft.CoreWf
 
             public override void Send(SendOrPostCallback d, object state)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.SendNotSupported));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.SendNotSupported));
             }
 
             // Since tracking can go async this may or may not be called directly
@@ -4861,7 +4861,7 @@ namespace Microsoft.CoreWf
             {
                 if (!WaitOne(_queueWaiter, _timeoutHelper.RemainingTime()))
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(_timeoutHelper.OriginalTimeout)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(_timeoutHelper.OriginalTimeout)));
                 }
 
                 // We need to check this after the wait as well in 
@@ -5031,7 +5031,7 @@ namespace Microsoft.CoreWf
                                 }
                                 else if (action != PersistableIdleAction.Unload)
                                 {
-                                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidIdleAction));
+                                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidIdleAction));
                                 }
 
                                 application.EventData.NextCallback = this.Stage2Callback;
@@ -5304,7 +5304,7 @@ namespace Microsoft.CoreWf
                         instance.TerminateCore(exception);
                         break;
                     default:
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidUnhandledExceptionAction));
+                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidUnhandledExceptionAction));
                 }
 
                 return true;
@@ -5956,7 +5956,7 @@ namespace Microsoft.CoreWf
 
                 if (!_handle.IsValid)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
                 }
 
                 data = view.InstanceData;
@@ -5976,7 +5976,7 @@ namespace Microsoft.CoreWf
 
                 if (!_handle.IsValid)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
                 }
 
                 return view.InstanceData;
@@ -6011,7 +6011,7 @@ namespace Microsoft.CoreWf
 
                 if (!_handle.IsValid)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
                 }
 
                 return view.InstanceData;

@@ -4,7 +4,7 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "Microsoft.CoreWf": { "target": "project" },
+    "CoreWf": { "target": "project" },
     "System.Runtime.Serialization.Xml": "4.1.1"
   },
 

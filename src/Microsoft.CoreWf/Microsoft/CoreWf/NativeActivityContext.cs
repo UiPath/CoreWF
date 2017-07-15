@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Runtime;
+using CoreWf.Tracking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     [Fx.Tag.XamlVisible(false)]
     public class NativeActivityContext : ActivityContext
@@ -100,7 +100,7 @@ namespace Microsoft.CoreWf
 
             if (variable == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
             }
 
             return GetValueCore<T>(variable);
@@ -114,7 +114,7 @@ namespace Microsoft.CoreWf
 
             if (variable == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
             }
 
             return GetValueCore<object>(variable);
@@ -128,7 +128,7 @@ namespace Microsoft.CoreWf
 
             if (variable == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
             }
 
             SetValueCore(variable, value);
@@ -142,7 +142,7 @@ namespace Microsoft.CoreWf
 
             if (variable == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
             }
 
             SetValueCore(variable, value);
@@ -173,7 +173,7 @@ namespace Microsoft.CoreWf
 
             if (activity == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
             }
 
             if (activity.IsCompleted)
@@ -186,7 +186,7 @@ namespace Microsoft.CoreWf
 
             if (!object.ReferenceEquals(activity.Parent, this.CurrentInstance))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyAbortDirectChildren));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyAbortDirectChildren));
             }
 
             _executor.AbortActivityInstance(activity, reason);
@@ -214,7 +214,7 @@ namespace Microsoft.CoreWf
 
             if (record == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("record");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("record");
             }
 
             base.TrackCore(record);
@@ -225,7 +225,7 @@ namespace Microsoft.CoreWf
             ThrowIfDisposed();
             if (activityInstance == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityInstance");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityInstance");
             }
 
             if (activityInstance.IsCompleted)
@@ -238,7 +238,7 @@ namespace Microsoft.CoreWf
 
             if (!object.ReferenceEquals(activityInstance.Parent, this.CurrentInstance))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(
+                throw CoreWf.Internals.FxTrace.Exception.AsError(
                     new InvalidOperationException(SR.CanOnlyCancelDirectChildren));
             }
 
@@ -261,7 +261,7 @@ namespace Microsoft.CoreWf
 
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
 
             return _bookmarkManager.CreateBookmark(name, null, this.CurrentInstance, BookmarkOptions.None);
@@ -278,17 +278,17 @@ namespace Microsoft.CoreWf
             ThrowIfCanInduceIdleNotSet();
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
 
             if (callback == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("callback");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("callback");
             }
 
             if (!CallbackWrapper.IsValidCallback(callback, this.CurrentInstance))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
             }
 
             BookmarkOptionsHelper.Validate(options, "options");
@@ -308,17 +308,17 @@ namespace Microsoft.CoreWf
 
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
 
             if (!CallbackWrapper.IsValidCallback(callback, this.CurrentInstance))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
             }
 
             if (scope == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("scope");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("scope");
             }
 
             BookmarkOptionsHelper.Validate(options, "options");
@@ -345,7 +345,7 @@ namespace Microsoft.CoreWf
 
             if (callback != null && !CallbackWrapper.IsValidCallback(callback, this.CurrentInstance))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
             }
 
             BookmarkOptionsHelper.Validate(options, "options");
@@ -369,7 +369,7 @@ namespace Microsoft.CoreWf
 
             if (scopeId != Guid.Empty && !_executor.KeysAllowed)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
             }
 
             return _executor.BookmarkScopeManager.CreateAndRegisterScope(scopeId, scopeHandle);
@@ -391,7 +391,7 @@ namespace Microsoft.CoreWf
             ThrowIfDisposed();
             if (!_executor.KeysAllowed)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
             }
 
             _executor.BookmarkScopeManager.InitializeScope(scope, id);
@@ -417,7 +417,7 @@ namespace Microsoft.CoreWf
 
             if (!this.CurrentInstance.IsCancellationRequested)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
             }
 
             this.CurrentInstance.MarkCanceled();
@@ -428,7 +428,7 @@ namespace Microsoft.CoreWf
             ThrowIfDisposed();
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("name");
             }
 
             return RemoveBookmark(new Bookmark(name));
@@ -439,7 +439,7 @@ namespace Microsoft.CoreWf
             ThrowIfDisposed();
             if (bookmark == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmark");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmark");
             }
             return _bookmarkManager.Remove(bookmark, this.CurrentInstance);
         }
@@ -450,12 +450,12 @@ namespace Microsoft.CoreWf
 
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
 
             if (scope == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("scope");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("scope");
             }
 
             return _executor.BookmarkScopeManager.RemoveBookmark(new Bookmark(name), scope, this.CurrentInstance);
@@ -466,7 +466,7 @@ namespace Microsoft.CoreWf
             ThrowIfDisposed();
             if (bookmark == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmark");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmark");
             }
             return _executor.TryResumeUserBookmark(bookmark, value, false);
         }
@@ -508,7 +508,7 @@ namespace Microsoft.CoreWf
 
             if (activity == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
             }
             CompletionBookmark completionBookmark = null;
             FaultBookmark faultBookmark = null;
@@ -521,7 +521,7 @@ namespace Microsoft.CoreWf
                 }
                 else
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, this.Activity.ToString()));
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, this.Activity.ToString()));
                 }
             }
 
@@ -533,7 +533,7 @@ namespace Microsoft.CoreWf
                 }
                 else
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, this.Activity.ToString()));
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, this.Activity.ToString()));
                 }
             }
 
@@ -546,22 +546,22 @@ namespace Microsoft.CoreWf
 
             if (!activity.IsMetadataCached || activity.CacheId != parent.Activity.CacheId)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
             }
 
             if (!activity.CanBeScheduledBy(parent.Activity))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activity.DisplayName, activity.Parent.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activity.DisplayName, activity.Parent.DisplayName)));
             }
 
             if (activity.HandlerOf != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateHandlersCannotBeScheduledDirectly(parent.Activity.DisplayName, activity.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateHandlersCannotBeScheduledDirectly(parent.Activity.DisplayName, activity.DisplayName)));
             }
 
             if (parent.WaitingForTransactionContext)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
             }
 
             if (parent.IsPerformingDefaultCancelation)
@@ -585,17 +585,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             return InternalScheduleDelegate(activityAction, ActivityUtilities.EmptyParameters,
@@ -614,17 +614,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(1)
@@ -648,17 +648,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(2)
@@ -683,17 +683,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(3)
@@ -720,17 +720,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(4)
@@ -760,17 +760,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(5)
@@ -801,17 +801,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(6)
@@ -843,17 +843,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(7)
@@ -886,17 +886,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(8)
@@ -931,17 +931,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(9)
@@ -977,17 +977,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(10)
@@ -1024,17 +1024,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(11)
@@ -1072,17 +1072,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(12)
@@ -1121,17 +1121,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(13)
@@ -1171,17 +1171,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(14)
@@ -1222,17 +1222,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(15)
@@ -1274,17 +1274,17 @@ namespace Microsoft.CoreWf
 
             if (activityAction == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(16)
@@ -1323,17 +1323,17 @@ namespace Microsoft.CoreWf
 
             if (activity == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             return InternalScheduleActivity(activity, ActivityUtilities.CreateCompletionBookmark(onCompleted, parent), ActivityUtilities.CreateFaultBookmark(onFaulted, parent));
@@ -1350,17 +1350,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             return InternalScheduleDelegate(activityFunc, ActivityUtilities.EmptyParameters,
@@ -1379,17 +1379,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(1)
@@ -1414,17 +1414,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(2)
@@ -1450,17 +1450,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(3)
@@ -1487,17 +1487,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(4)
@@ -1527,17 +1527,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(5)
@@ -1568,17 +1568,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(6)
@@ -1610,17 +1610,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(7)
@@ -1653,17 +1653,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(8)
@@ -1698,17 +1698,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(9)
@@ -1744,17 +1744,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(10)
@@ -1791,17 +1791,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(11)
@@ -1839,17 +1839,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(12)
@@ -1888,17 +1888,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(13)
@@ -1938,17 +1938,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(14)
@@ -1989,17 +1989,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(15)
@@ -2041,17 +2041,17 @@ namespace Microsoft.CoreWf
 
             if (activityFunc == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(16)
@@ -2089,17 +2089,17 @@ namespace Microsoft.CoreWf
 
             if (activityDelegate == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityDelegate");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityDelegate");
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             // Check if the inputParameters collection matches the expected inputs for activityDelegate
@@ -2108,7 +2108,7 @@ namespace Microsoft.CoreWf
             if ((inputParameters == null && expectedParameterCount > 0) ||
                 (inputParameters != null && inputParameters.Count != expectedParameterCount))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersCountMismatch(inputParameters == null ? 0 : inputParameters.Count, expectedParameterCount));
+                throw CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersCountMismatch(inputParameters == null ? 0 : inputParameters.Count, expectedParameterCount));
             }
             else if (expectedParameterCount > 0)
             {
@@ -2120,12 +2120,12 @@ namespace Microsoft.CoreWf
                     {
                         if (!TypeHelper.AreTypesCompatible(inputParameterValue, expectedParameter.Type))
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersTypeMismatch(expectedParameter.Type, parameterName));
+                            throw CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersTypeMismatch(expectedParameter.Type, parameterName));
                         }
                     }
                     else
                     {
-                        throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersMissing(expectedParameter.Name));
+                        throw CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersMissing(expectedParameter.Name));
                     }
                 }
             }
@@ -2145,23 +2145,23 @@ namespace Microsoft.CoreWf
 
                 if (!activity.IsMetadataCached || activity.CacheId != parent.Activity.CacheId)
                 {
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
+                    throw CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
                 }
             }
 
             if (activityDelegate.Owner == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityDelegateOwnerMissing(activityDelegate)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityDelegateOwnerMissing(activityDelegate)));
             }
 
             if (!activityDelegate.CanBeScheduledBy(parent.Activity))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activityDelegate.DisplayName, activityDelegate.Owner.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activityDelegate.DisplayName, activityDelegate.Owner.DisplayName)));
             }
 
             if (parent.WaitingForTransactionContext)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
             }
 
             ActivityInstance declaringActivityInstance = this.FindDeclaringActivityInstance(this.CurrentInstance, activityDelegate.Owner);
@@ -2225,7 +2225,7 @@ namespace Microsoft.CoreWf
 
             if (property == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.UnmatchedNoPersistExit));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.UnmatchedNoPersistExit));
             }
 
             if (property.Exit())
@@ -2282,7 +2282,7 @@ namespace Microsoft.CoreWf
             Activity associatedActivity = this.Activity;
             if (!associatedActivity.InternalCanInduceIdle)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanInduceIdleNotSpecified(associatedActivity.GetType().FullName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanInduceIdleNotSpecified(associatedActivity.GetType().FullName)));
             }
         }
     }

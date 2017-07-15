@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,9 +9,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
-using Microsoft.CoreWf.Internals;
+using CoreWf.Internals;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal static class ExpressionUtilities
     {
@@ -188,7 +188,7 @@ namespace Microsoft.CoreWf
                         return new PropertyLocationFactory<T>(expression);
                     }
 
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException("Lvalues must be fields or properties"));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException("Lvalues must be fields or properties"));
                 //// This also handles variables, which are emitted as "context.GetLocation<T>("v").Value"
                 //MemberTypes memberType = ((MemberExpression)body).Member.MemberType;
                 //if (memberType == MemberTypes.Field)
@@ -201,7 +201,7 @@ namespace Microsoft.CoreWf
                 //}
                 //else
                 //{
-                //    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException("Lvalues of member type " + memberType));
+                //    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException("Lvalues of member type " + memberType));
                 //}
 
                 case ExpressionType.Call:
@@ -236,10 +236,10 @@ namespace Microsoft.CoreWf
                         }
                     }
 
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
 
                 default:
-                    throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
             }
         }
 
@@ -428,7 +428,7 @@ namespace Microsoft.CoreWf
                     {
                         if (_owner == null && !_fieldInfo.IsStatic)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_fieldInfo.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_fieldInfo.Name)));
                         }
 
                         return (T)_fieldInfo.GetValue(_owner);
@@ -437,7 +437,7 @@ namespace Microsoft.CoreWf
                     {
                         if (_owner == null && !_fieldInfo.IsStatic)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_fieldInfo.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_fieldInfo.Name)));
                         }
 
                         _fieldInfo.SetValue(_owner, value);
@@ -611,7 +611,7 @@ namespace Microsoft.CoreWf
                     {
                         if (_targetObject == null && !_getItemMethod.IsStatic)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_getItemMethod.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_getItemMethod.Name)));
                         }
 
                         return (T)_getItemMethod.Invoke(_targetObject, _setItemArguments);
@@ -622,13 +622,13 @@ namespace Microsoft.CoreWf
                         if (_setItemMethod == null)
                         {
                             string targetObjectTypeName = _targetObject.GetType().Name;
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(
                                 SR.MissingSetAccessorForIndexer(_indexerName, targetObjectTypeName)));
                         }
 
                         if (_targetObject == null && !_setItemMethod.IsStatic)
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_setItemMethod.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_setItemMethod.Name)));
                         }
 
                         object[] localSetItemArguments = new object[_setItemArguments.Length + 1];
@@ -828,12 +828,12 @@ namespace Microsoft.CoreWf
                         MethodInfo getMethodInfo = _propertyInfo.GetGetMethod();
                         if (getMethodInfo == null && !TypeHelper.AreTypesCompatible(_propertyInfo.DeclaringType, typeof(Location)))
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteonlyPropertyCannotBeRead(_propertyInfo.DeclaringType, _propertyInfo.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteonlyPropertyCannotBeRead(_propertyInfo.DeclaringType, _propertyInfo.Name)));
                         }
 
                         if (_owner == null && (getMethodInfo == null || !getMethodInfo.IsStatic))
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_propertyInfo.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_propertyInfo.Name)));
                         }
 
                         // Okay, it's public
@@ -849,12 +849,12 @@ namespace Microsoft.CoreWf
                         MethodInfo setMethodInfo = _propertyInfo.GetSetMethod();
                         if (setMethodInfo == null && !TypeHelper.AreTypesCompatible(_propertyInfo.DeclaringType, typeof(Location)))
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadonlyPropertyCannotBeSet(_propertyInfo.DeclaringType, _propertyInfo.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadonlyPropertyCannotBeSet(_propertyInfo.DeclaringType, _propertyInfo.Name)));
                         }
 
                         if (_owner == null && (setMethodInfo == null || !setMethodInfo.IsStatic))
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_propertyInfo.Name)));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_propertyInfo.Name)));
                         }
 
                         // Okay, it's public

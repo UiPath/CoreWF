@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics.Tracing;
 
-namespace Microsoft.CoreWf
+namespace CoreWf
 {
     internal partial class TD
     {

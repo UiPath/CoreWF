@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Persistence;
+using CoreWf;
+using CoreWf.Persistence;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;

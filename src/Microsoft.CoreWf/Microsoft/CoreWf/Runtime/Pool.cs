@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     // Pool<T> defined below is a LIFO pool of Pool.IClearable objects.
     // It is strongly typed to make the Acquire/Release methods more user

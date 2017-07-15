@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     //[ContentProperty("Duration")]
     public sealed class Delay : NativeActivity
@@ -55,7 +55,7 @@ namespace Microsoft.CoreWf.Statements
             TimeSpan duration = this.Duration.Get(context);
             if (duration < TimeSpan.Zero)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("Duration", duration, SR.DurationIsNegative(this.DisplayName));
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("Duration", duration, SR.DurationIsNegative(this.DisplayName));
             }
 
             if (duration == TimeSpan.Zero)

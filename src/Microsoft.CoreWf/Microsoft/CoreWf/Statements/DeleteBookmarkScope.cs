@@ -4,7 +4,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     public sealed class DeleteBookmarkScope : NativeActivity
     {
@@ -32,12 +32,12 @@ namespace Microsoft.CoreWf.Statements
 
             if (toUnregister == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterNullBookmarkScope));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterNullBookmarkScope));
             }
 
             if (toUnregister.Equals(context.DefaultBookmarkScope))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterDefaultBookmarkScope));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterDefaultBookmarkScope));
             }
 
             context.UnregisterBookmarkScope(toUnregister);

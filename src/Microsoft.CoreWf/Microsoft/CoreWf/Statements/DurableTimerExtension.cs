@@ -1,14 +1,14 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Hosting;
-using Microsoft.CoreWf.Persistence;
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Hosting;
+using CoreWf.Persistence;
+using CoreWf.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     [Fx.Tag.XamlVisible(false)]
     public class DurableTimerExtension : TimerExtension, IWorkflowInstanceExtension, IDisposable, ICancelable
@@ -19,8 +19,8 @@ namespace Microsoft.CoreWf.Statements
         private TimerPersistenceParticipant _timerPersistenceParticipant;
         private static AsyncCallback s_onResumeBookmarkComplete = Fx.ThunkCallback(new AsyncCallback(OnResumeBookmarkComplete));
 
-        private static readonly XName s_timerTableName = XNamespace.Get("urn:schemas-microsoft-com:Microsoft.CoreWf/4.0/properties").GetName("RegisteredTimers");
-        private static readonly XName s_timerExpirationTimeName = XNamespace.Get("urn:schemas-microsoft-com:Microsoft.CoreWf/4.0/properties").GetName("TimerExpirationTime");
+        private static readonly XName s_timerTableName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("RegisteredTimers");
+        private static readonly XName s_timerExpirationTimeName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("TimerExpirationTime");
         private bool _isDisposed;
         [Fx.Tag.SynchronizationObject()]
 
@@ -72,7 +72,7 @@ namespace Microsoft.CoreWf.Statements
         {
             if (_instance != null && instance != null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TimerExtensionAlreadyAttached));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TimerExtensionAlreadyAttached));
             }
 
             _instance = instance;

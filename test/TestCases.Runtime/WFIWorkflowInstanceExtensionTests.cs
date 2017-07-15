@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Hosting;
+using CoreWf;
+using CoreWf.Hosting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Test.Common.TestObjects.Activities;

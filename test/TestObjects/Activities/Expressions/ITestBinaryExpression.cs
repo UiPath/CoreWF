@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq.Expressions;
-using Microsoft.CoreWf;
+using CoreWf;
 
 namespace Test.Common.TestObjects.Activities.Expressions
 {

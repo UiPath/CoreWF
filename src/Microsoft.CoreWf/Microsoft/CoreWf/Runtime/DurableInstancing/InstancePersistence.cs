@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.Runtime.DurableInstancing
+namespace CoreWf.Runtime.DurableInstancing
 {
     internal static class InstancePersistence
     {
-        private static readonly XNamespace s_activitiesCommandNamespace = XNamespace.Get("urn:schemas-microsoft-com:Microsoft.CoreWf.Persistence/command");
-        private static readonly XNamespace s_activitiesEventNamespace = XNamespace.Get("urn:schemas-microsoft-com:Microsoft.CoreWf.Persistence/event");
+        private static readonly XNamespace s_activitiesCommandNamespace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf.Persistence/command");
+        private static readonly XNamespace s_activitiesEventNamespace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf.Persistence/event");
 
         public static XNamespace ActivitiesCommandNamespace
         {

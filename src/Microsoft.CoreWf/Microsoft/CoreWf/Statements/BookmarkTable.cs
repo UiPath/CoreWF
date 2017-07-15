@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Statements
+namespace CoreWf.Statements
 {
     [DataContract]
     internal class BookmarkTable

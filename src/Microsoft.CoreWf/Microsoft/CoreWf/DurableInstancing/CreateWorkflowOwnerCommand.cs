@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf.Runtime;
+using CoreWf.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Microsoft.CoreWf.DurableInstancing
+namespace CoreWf.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class CreateWorkflowOwnerCommand : InstancePersistenceCommand
@@ -43,7 +43,7 @@ namespace Microsoft.CoreWf.DurableInstancing
         {
             if (view.IsBoundToInstanceOwner)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.AlreadyBoundToOwner));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.AlreadyBoundToOwner));
             }
             InstancePersistence.ValidatePropertyBag(_instanceOwnerMetadata);
         }

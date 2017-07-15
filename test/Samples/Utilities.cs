@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Runtime.DurableInstancing;
+using CoreWf;
+using CoreWf.Runtime.DurableInstancing;
 using System.Collections.Generic;
 using System.Threading;
 

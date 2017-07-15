@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     internal abstract class TypedAsyncResult<T> : AsyncResult
     {

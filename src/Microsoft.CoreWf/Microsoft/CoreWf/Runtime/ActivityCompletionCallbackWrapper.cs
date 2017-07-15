@@ -5,7 +5,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Security;
 
-namespace Microsoft.CoreWf.Runtime
+namespace CoreWf.Runtime
 {
     [DataContract]
     internal class ActivityCompletionCallbackWrapper : CompletionCallbackWrapper

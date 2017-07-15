@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
+using CoreWf.Runtime;
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Tracking
+namespace CoreWf.Tracking
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
@@ -22,19 +22,19 @@ namespace Microsoft.CoreWf.Tracking
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
             }
             if (string.IsNullOrEmpty(id))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("id");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("id");
             }
             if (string.IsNullOrEmpty(instanceId))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
             }
             if (string.IsNullOrEmpty(typeName))
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("typeName");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("typeName");
             }
             this.Name = name;
             this.Id = id;

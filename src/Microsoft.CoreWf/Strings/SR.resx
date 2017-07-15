@@ -1274,7 +1274,7 @@ Troubleshooting details: {0}</value>
     <value>Argument '{0}' of activity '{1}' is bound to an expression that contains activity '{2}'. '{2}' can cause the expression to idle during evaluation. If the argument expressions of activity '{1}' modify shared state then going idle during expression evaluation can produce unexpected values for the arguments.</value>
   </data>
   <data name="CanInduceIdleNotSpecified" xml:space="preserve">
-    <value>Activity '{0}' is invalid. NativeActivity derived activities that do asynchronous operations by calling one of the CreateBookmark overloads defined on Microsoft.CoreWf.NativeActivityContext must override the CanInduceIdle property and return true.</value>
+    <value>Activity '{0}' is invalid. NativeActivity derived activities that do asynchronous operations by calling one of the CreateBookmark overloads defined on CoreWf.NativeActivityContext must override the CanInduceIdle property and return true.</value>
   </data>
   <data name="DuplicateEvaluationOrderValues" xml:space="preserve">
     <value>Activity '{0}' has multiple runtime arguments with evaluation order set to '{1}'. Runtime argument evaluation order values must be unique.</value>

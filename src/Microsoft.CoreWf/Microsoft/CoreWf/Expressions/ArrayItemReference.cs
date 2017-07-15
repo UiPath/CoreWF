@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace Microsoft.CoreWf.Expressions
+namespace CoreWf.Expressions
 {
     public sealed class ArrayItemReference<TItem> : CodeActivity<Location<TItem>>
     {
@@ -57,7 +57,7 @@ namespace Microsoft.CoreWf.Expressions
             TItem[] items = this.Array.Get(context);
             if (items == null)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Array", this.GetType().Name, this.DisplayName)));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Array", this.GetType().Name, this.DisplayName)));
             }
             int itemIndex = this.Index.Get(context);
             return new ArrayLocation(items, itemIndex);

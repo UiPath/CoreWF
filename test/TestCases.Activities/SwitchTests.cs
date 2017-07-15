@@ -2,8 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using Microsoft.CoreWf;
-using Microsoft.CoreWf.Expressions;
+using CoreWf;
+using CoreWf.Expressions;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
@@ -341,7 +341,7 @@ namespace TestCases.Activities
             TestSwitch<string> switchAct = new TestSwitch<string>();
             switchAct.Hints.Add(-1);
             switchAct.AddCase("1", new TestProductWriteline { Text = "in case 1" });
-            ((Microsoft.CoreWf.Statements.Switch<string>)switchAct.ProductActivity).Expression = null;
+            ((CoreWf.Statements.Switch<string>)switchAct.ProductActivity).Expression = null;
 
             string exceptionMessage = string.Format(ErrorStrings.RequiredArgumentValueNotSupplied, "Expression");
             TestRuntime.ValidateWorkflowErrors(switchAct, new List<TestConstraintViolation>(), typeof(ArgumentException), exceptionMessage);
@@ -367,12 +367,12 @@ namespace TestCases.Activities
                    {
                        Argument = delegateInArgument,
                        Result = delegateOutArgument,
-                       Handler = new Microsoft.CoreWf.Statements.Sequence
+                       Handler = new CoreWf.Statements.Sequence
                        {
                            DisplayName = "Sequence1",
                            Activities =
                              {
-                                 new Microsoft.CoreWf.Statements.Switch<string>
+                                 new CoreWf.Statements.Switch<string>
                                  {
                                      DisplayName = "Switch1",
                                      Expression = delegateInArgument,
@@ -380,7 +380,7 @@ namespace TestCases.Activities
                                      {
                                          {
                                              "PassedInValue",
-                                             new Microsoft.CoreWf.Statements.Assign<string>
+                                             new CoreWf.Statements.Assign<string>
                                              {
                                                  DisplayName = "Assign1",
                                                  To = delegateOutArgument,
@@ -390,7 +390,7 @@ namespace TestCases.Activities
                                      } ,
                                     Default = new Test.Common.TestObjects.CustomActivities.WriteLine{ DisplayName = "W1", Message = "This should not be printed" },
                                  },
-                                 new Microsoft.CoreWf.Statements.Switch<string>
+                                 new CoreWf.Statements.Switch<string>
                                  {
                                      DisplayName = "Switch2",
                                      Expression = delegateOutArgument,

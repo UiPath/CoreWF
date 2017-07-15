@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.CoreWf.Runtime;
-using Microsoft.CoreWf.Tracking;
+using CoreWf.Runtime;
+using CoreWf.Tracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.CoreWf.Hosting
+namespace CoreWf.Hosting
 {
     internal class WorkflowInstanceExtensionCollection
     {
@@ -123,7 +123,7 @@ namespace Microsoft.CoreWf.Hosting
                     {
                         if (!TypeHelper.ContainsCompatibleType(allExtensionTypes, requiredType))
                         {
-                            throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.RequiredExtensionTypeNotFound(requiredType.ToString())));
+                            throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.RequiredExtensionTypeNotFound(requiredType.ToString())));
                         }
                     }
                 }
@@ -160,7 +160,7 @@ namespace Microsoft.CoreWf.Hosting
             object newExtension = extensionProvider.ProvideValue();
             if (newExtension is SymbolResolver)
             {
-                throw Microsoft.CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverMustBeSingleton));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverMustBeSingleton));
             }
 
             // for IWorkflowInstance we key off the type of the value, not the declared type
