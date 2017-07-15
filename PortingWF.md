@@ -39,12 +39,12 @@ the [x:Class directive](https://docs.microsoft.com/en-us/dotnet/framework/xaml-s
 The magic all starts with a class called 
 [`ActivityXamlServices`](http://referencesource.microsoft.com/#System.Activities/System/Activities/XamlIntegration/ActivityXamlServices.cs), 
 which uses a custom [`XamlReader`](http://referencesource.microsoft.com/#System.Xaml/System/Xaml/XamlReader.cs) and 
-['XamlServices'](http://referencesource.microsoft.com/#System.Xaml/System/Xaml/XamlServices.cs) to turn the XAML into a 
+[`XamlServices`](http://referencesource.microsoft.com/#System.Xaml/System/Xaml/XamlServices.cs) to turn the XAML into a 
 [`DynamicActivity`](http://referencesource.microsoft.com/#System.Activities/System/Activities/DynamicActivity.cs) object. 
 
 `DynamicActivity` was not part of our initial port of WF because of some missing parts in 
 [System.ComponentModel](https://github.com/dotnet/corefx/tree/master/src/System.ComponentModel). More of this namespace 
-has been filled out since .NET Core 1.0 so it is possible that there is enough there to implement `DynamicActivity`.  
+has been filled out since .NET Core 1.0 so it is possible that there is enough there to implement `DynamicActivity`. 
 Implementing `DynamicActivity` is the first foundational task that the community could help with 
 ([issue link](https://github.com/dmetzgar/corewf/issues/3)).
 
@@ -75,7 +75,7 @@ also need to be integrated with the XAML parser.
 
 Workflow services
 -------------------
-Many WF users are hosting their activities via web services. The built-in host is a subclass of 
+WF services can host workflows via web services. The built-in host is a subclass of 
 [`ServiceHost`](http://referencesource.microsoft.com/#System.ServiceModel/System/ServiceModel/ServiceHost.cs)
 called 
 [`WorkflowServiceHost`](http://referencesource.microsoft.com/#System.ServiceModel.Activities/System/ServiceModel/Activities/WorkflowServiceHost.cs),
