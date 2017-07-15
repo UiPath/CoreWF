@@ -1,20 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-// experiment with serializing definition to json.net
-
-using JsonFileInstanceStore;
-using Newtonsoft.Json;
-using System;
-using CoreWf;
-using CoreWf.Statements;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using Newtonsoft.Json;
+using CoreWf;
+using CoreWf.Statements;
+using JsonFileInstanceStore;
 //using TestFileInstanceStore;
 
 namespace BookmarkConsoleApp
 {
+    // experiment with serializing definition to json.net
     public static class Program
     {
         private static string s_fileInstanceStorePath;
@@ -174,6 +170,7 @@ namespace BookmarkConsoleApp
             result.InstanceStore = s_fileStore;
             return result;
         }
+        
         public static Activity CreateWorkflow()
         {
             Sequence workflow = new Sequence();
@@ -194,7 +191,7 @@ namespace BookmarkConsoleApp
             {
                 // using TypeNameHandling.All to get all the types into the serialized data.
                 TypeNameHandling = TypeNameHandling.All,
-                TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
                 // NOT using ObjectCreationHandling.Replace so we can [de]serialize as Activity
             };

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/CoreWf/CoreWf.csproj" />
+    <ProjectReference Include="../JsonFileInstanceStore/JsonFileInstanceStore.csproj" />
+  </ItemGroup>
+
+</Project>
