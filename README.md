@@ -112,3 +112,11 @@ could instead use an existing designer that can produce BPML. That's assuming th
 This leaves us with two more possible tasks for the community: 
 [create a HTML workflow designer using ASP.NET Core](https://github.com/dmetzgar/corewf/issues/9) or 
 [create a BPML to WF converter](https://github.com/dmetzgar/corewf/issues/10).
+
+### Instance stores 
+The .NET Framework shipped with the SQL Workflow Instance Store (SWIS). This should be a straightforward port to 
+the .NET Standard ([issue link](https://github.com/dmetzgar/corewf/issues/15)).
+
+It is possible to implement your own instance store by implementing the abstract 
+[InstanceStore](https://msdn.microsoft.com/en-us/library/system.runtime.durableinstancing.instancestore(v=vs.110).aspx) 
+class. There are other implementations out there and it would be great to port them.
