@@ -50,7 +50,7 @@ namespace CoreWf.Runtime
         {
             if (_isScheduled)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(InternalSR.ActionItemIsAlreadyScheduled));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.ActionItemIsAlreadyScheduled));
             }
 
             _isScheduled = true;

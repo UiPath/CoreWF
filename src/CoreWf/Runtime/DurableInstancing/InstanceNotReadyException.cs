@@ -10,7 +10,7 @@ namespace CoreWf.Runtime.DurableInstancing
     public class InstanceNotReadyException : InstancePersistenceCommandException
     {
         public InstanceNotReadyException()
-            : this(SRCore.InstanceNotReadyDefault, null)
+            : this(SR.InstanceNotReadyDefault, null)
         {
         }
 
@@ -49,9 +49,9 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId != Guid.Empty)
             {
-                return SRCore.InstanceNotReadySpecific(instanceId);
+                return SR.InstanceNotReadySpecific(instanceId);
             }
-            return SRCore.InstanceNotReadyDefault;
+            return SR.InstanceNotReadyDefault;
         }
     }
 }

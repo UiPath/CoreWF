@@ -90,7 +90,7 @@ namespace CoreWf.Runtime
                         }
                         catch (ArgumentException exception)
                         {
-                            throw Fx.Exception.AsError(new InvalidOperationException(SRCore.NameCollisionOnCollect(value.Key, module.GetType().Name), exception));
+                            throw Fx.Exception.AsError(new InvalidOperationException(SR.NameCollisionOnCollect(value.Key, module.GetType().Name), exception));
                         }
                     }
                 }
@@ -104,7 +104,7 @@ namespace CoreWf.Runtime
                         }
                         catch (ArgumentException exception)
                         {
-                            throw Fx.Exception.AsError(new InvalidOperationException(SRCore.NameCollisionOnCollect(value.Key, module.GetType().Name), exception));
+                            throw Fx.Exception.AsError(new InvalidOperationException(SR.NameCollisionOnCollect(value.Key, module.GetType().Name), exception));
                         }
                     }
                 }
@@ -145,7 +145,7 @@ namespace CoreWf.Runtime
                         }
                         catch (ArgumentException exception)
                         {
-                            throw Fx.Exception.AsError(new InvalidOperationException(SRCore.NameCollisionOnMap(value.Key, writeOnlyValues.Item1.GetType().Name), exception));
+                            throw Fx.Exception.AsError(new InvalidOperationException(SR.NameCollisionOnMap(value.Key, writeOnlyValues.Item1.GetType().Name), exception));
                         }
                     }
                 }
@@ -219,7 +219,7 @@ namespace CoreWf.Runtime
                     {
                         throw;
                     }
-                    throw Fx.Exception.AsError(new CallbackException(SRCore.PersistencePipelineAbortThrew(module.GetType().Name), exception));
+                    throw Fx.Exception.AsError(new CallbackException(SR.PersistencePipelineAbortThrew(module.GetType().Name), exception));
                 }
             }
         }
@@ -386,7 +386,7 @@ namespace CoreWf.Runtime
 
             private Exception CreateReadOnlyException()
             {
-                return new InvalidOperationException(InternalSR.DictionaryIsReadOnly);
+                return new InvalidOperationException(SR.DictionaryIsReadOnly);
             }
         }
 
@@ -551,7 +551,7 @@ namespace CoreWf.Runtime
                             {
                                 throw;
                             }
-                            throw Fx.Exception.AsError(new CallbackException(SRCore.PersistencePipelineAbortThrew(module.GetType().Name), exception));
+                            throw Fx.Exception.AsError(new CallbackException(SR.PersistencePipelineAbortThrew(module.GetType().Name), exception));
                         }
                     }
                 }

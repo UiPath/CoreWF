@@ -15,7 +15,7 @@ namespace CoreWf.Runtime.DurableInstancing
         private const string SerializableInstanceOwnerMetadataName = "instancePersistenceSerializableInstanceOwnerMetadata";
 
         public InstanceLockedException()
-            : this(SRCore.CannotAcquireLockDefault, null)
+            : this(SR.CannotAcquireLockDefault, null)
         {
         }
 
@@ -93,22 +93,22 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId == Guid.Empty)
             {
-                return SRCore.CannotAcquireLockDefault;
+                return SR.CannotAcquireLockDefault;
             }
-            return SRCore.CannotAcquireLockSpecific(instanceId);
+            return SR.CannotAcquireLockSpecific(instanceId);
         }
 
         private static string ToMessage(Guid instanceId, Guid instanceOwnerId)
         {
             if (instanceId == Guid.Empty)
             {
-                return SRCore.CannotAcquireLockDefault;
+                return SR.CannotAcquireLockDefault;
             }
             if (instanceOwnerId == Guid.Empty)
             {
-                return SRCore.CannotAcquireLockSpecific(instanceId);
+                return SR.CannotAcquireLockSpecific(instanceId);
             }
-            return SRCore.CannotAcquireLockSpecificWithOwner(instanceId, instanceOwnerId);
+            return SR.CannotAcquireLockSpecificWithOwner(instanceId, instanceOwnerId);
         }
     }
 }

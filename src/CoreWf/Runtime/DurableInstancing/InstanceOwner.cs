@@ -122,7 +122,7 @@ namespace CoreWf.Runtime.DurableInstancing
                         {
                             if (existingHandle.Version != 0 || reference.InstanceHandle.Version != 0)
                             {
-                                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InvalidLockToken));
+                                throw Fx.Exception.AsError(new InvalidOperationException(SR.InvalidLockToken));
                             }
 
                             reference.InstanceHandle.ConflictingHandle = existingHandle;
@@ -146,7 +146,7 @@ namespace CoreWf.Runtime.DurableInstancing
                         if (existingHandle.Version == reference.InstanceHandle.Version)
                         {
                             // This could be a case of amnesia (backup / restore).
-                            throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InstanceStoreBoundSameVersionTwice));
+                            throw Fx.Exception.AsError(new InvalidOperationException(SR.InstanceStoreBoundSameVersionTwice));
                         }
 
                         throw Fx.AssertAndThrow("All cases covered above.");
@@ -193,7 +193,7 @@ namespace CoreWf.Runtime.DurableInstancing
                         {
                             if (existingHandle.Version != 0 || instanceVersion != 0)
                             {
-                                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InvalidLockToken));
+                                throw Fx.Exception.AsError(new InvalidOperationException(SR.InvalidLockToken));
                             }
 
                             reference.InstanceHandle.ConflictingHandle = existingHandle;
@@ -279,7 +279,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     }
                     finally
                     {
-                        marker.Reason = reason ?? new OperationCanceledException(SRCore.HandleFreed);
+                        marker.Reason = reason ?? new OperationCanceledException(SR.HandleFreed);
                         marker.NotifyMarkerComplete(false);
 
                         if (handlesPendingResolution == null)
@@ -456,7 +456,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     {
                         if (existingHandle.Version != 0 || marker.InstanceVersion != 0)
                         {
-                            marker.Reason = new InvalidOperationException(SRCore.InvalidLockToken);
+                            marker.Reason = new InvalidOperationException(SR.InvalidLockToken);
                             returnValue = false;
                         }
                         else

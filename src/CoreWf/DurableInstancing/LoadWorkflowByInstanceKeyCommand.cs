@@ -56,30 +56,30 @@ namespace CoreWf.DurableInstancing
         {
             if (!view.IsBoundToInstanceOwner)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.OwnerRequired));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OwnerRequired));
             }
             if (view.IsBoundToInstance)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.AlreadyBoundToInstance));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AlreadyBoundToInstance));
             }
 
             if (LookupInstanceKey == Guid.Empty)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.LoadOpKeyMustBeValid));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpKeyMustBeValid));
             }
 
             if (AssociateInstanceKeyToInstanceId == Guid.Empty)
             {
                 if (InstanceKeysToAssociate.ContainsKey(LookupInstanceKey))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.LoadOpAssociateKeysCannotContainLookupKey));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpAssociateKeysCannotContainLookupKey));
                 }
             }
             else
             {
                 if (!AcceptUninitializedInstance)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.LoadOpFreeKeyRequiresAcceptUninitialized));
+                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpFreeKeyRequiresAcceptUninitialized));
                 }
             }
 

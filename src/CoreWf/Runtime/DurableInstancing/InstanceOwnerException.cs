@@ -12,7 +12,7 @@ namespace CoreWf.Runtime.DurableInstancing
         private const string InstanceOwnerIdName = "instancePersistenceInstanceOwnerId";
 
         public InstanceOwnerException()
-            : base(SRCore.InstanceOwnerDefault)
+            : base(SR.InstanceOwnerDefault)
         {
         }
 
@@ -65,9 +65,9 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceOwnerId == Guid.Empty)
             {
-                return SRCore.InstanceOwnerDefault;
+                return SR.InstanceOwnerDefault;
             }
-            return SRCore.InstanceOwnerSpecific(instanceOwnerId);
+            return SR.InstanceOwnerSpecific(instanceOwnerId);
         }
     }
 }

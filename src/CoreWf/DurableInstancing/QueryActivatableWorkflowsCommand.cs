@@ -27,12 +27,12 @@ namespace CoreWf.DurableInstancing
         {
             if (!view.IsBoundToInstanceOwner)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.OwnerRequired));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OwnerRequired));
             }
 
             if (view.IsBoundToInstance)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.AlreadyBoundToInstance));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AlreadyBoundToInstance));
             }
         }
     }

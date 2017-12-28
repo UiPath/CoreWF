@@ -12,7 +12,7 @@ namespace CoreWf.Runtime.DurableInstancing
         private const string InstanceKeyName = "instancePersistenceInstanceKey";
 
         public InstanceKeyCompleteException()
-            : this(SRCore.KeyNotReadyDefault, null)
+            : this(SR.KeyNotReadyDefault, null)
         {
         }
 
@@ -66,9 +66,9 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceKey != null && instanceKey.IsValid)
             {
-                return SRCore.KeyCompleteSpecific(instanceKey.Value);
+                return SR.KeyCompleteSpecific(instanceKey.Value);
             }
-            return SRCore.KeyCompleteDefault;
+            return SR.KeyCompleteDefault;
         }
     }
 }

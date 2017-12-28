@@ -34,7 +34,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (value == Guid.Empty)
             {
-                throw Fx.Exception.Argument("value", SRCore.InstanceKeyRequiresValidGuid);
+                throw Fx.Exception.Argument("value", SR.InstanceKeyRequiresValidGuid);
             }
 
             this.Value = value;

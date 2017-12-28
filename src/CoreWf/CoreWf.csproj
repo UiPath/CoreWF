@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" InitialTargets="BuildResources">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
@@ -11,11 +11,23 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
-    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" /> 
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" /> 
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" /> 
   </ItemGroup>
 
+  <ItemGroup>
+    <Resx Include="Resources\*.restext" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\*.resources" />
+  </ItemGroup>
+
+  <Target Name="BuildResources">
+    <GenerateResource ExecuteAsTool="false"
+      Sources="@(Resx)">
+      <Output TaskParameter="OutputResources" ItemName="Resources" />
+    </GenerateResource>
+  </Target>
+  
 </Project>
