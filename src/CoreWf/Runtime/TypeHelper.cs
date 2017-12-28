@@ -107,7 +107,7 @@ namespace CoreWf.Runtime
             {
                 if (typeof(T).IsValueType() && !IsNullableType(typeof(T)))
                 {
-                    throw Fx.Exception.AsError(new InvalidCastException(InternalSR.CannotConvertObject(source, typeof(T))));
+                    throw Fx.Exception.AsError(new InvalidCastException(SR.CannotConvertObject(source, typeof(T))));
                 }
 
                 return default(T);
@@ -119,7 +119,7 @@ namespace CoreWf.Runtime
                 return result;
             }
 
-            throw Fx.Exception.AsError(new InvalidCastException(InternalSR.CannotConvertObject(source, typeof(T))));
+            throw Fx.Exception.AsError(new InvalidCastException(SR.CannotConvertObject(source, typeof(T))));
         }
 
         // get all of the types that this Type implements (based classes, interfaces, etc)

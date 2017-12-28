@@ -10,7 +10,7 @@ namespace CoreWf.Runtime.DurableInstancing
     public class InstanceCompleteException : InstancePersistenceCommandException
     {
         public InstanceCompleteException()
-            : this(SRCore.InstanceCompleteDefault, null)
+            : this(SR.InstanceCompleteDefault, null)
         {
         }
 
@@ -49,9 +49,9 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId != Guid.Empty)
             {
-                return SRCore.InstanceCompleteSpecific(instanceId);
+                return SR.InstanceCompleteSpecific(instanceId);
             }
-            return SRCore.InstanceCompleteDefault;
+            return SR.InstanceCompleteDefault;
         }
     }
 }

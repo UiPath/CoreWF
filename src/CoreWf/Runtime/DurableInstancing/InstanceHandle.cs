@@ -143,7 +143,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (!_providerObjectSet)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.HandleFreedBeforeInitialized));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.HandleFreedBeforeInitialized));
             }
 
             if (!IsValid)
@@ -354,7 +354,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 Fx.Assert(AcquirePending == null, "Bind should only be called after acquiring the transaction.");
                 if (_inProgressBind == null)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.BindLockRequiresCommandFlag));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.BindLockRequiresCommandFlag));
                 }
             }
         }
@@ -373,7 +373,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     Fx.Assert(AcquirePending == null, "StartReclaim should only be called after acquiring the transaction.");
                     if (_inProgressBind == null)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.BindLockRequiresCommandFlag));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.BindLockRequiresCommandFlag));
                     }
 
                     Fx.Assert(Owner != null, "Must be bound to owner to have an inProgressBind for the lock in StartReclaim.");
@@ -396,7 +396,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     if (_inProgressBind == null)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.DoNotCompleteTryCommandWithPendingReclaim));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.DoNotCompleteTryCommandWithPendingReclaim));
                     }
 
                     Fx.Assert(Owner != null, "Must be bound to owner to have an inProgressBind for the lock in CancelReclaim.");
@@ -419,7 +419,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     if (_inProgressBind == null)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.DoNotCompleteTryCommandWithPendingReclaim));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.DoNotCompleteTryCommandWithPendingReclaim));
                     }
 
                     Fx.Assert(Owner != null, "Must be bound to owner to have an inProgressBind for the lock in CancelReclaim.");
@@ -629,11 +629,11 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 if (_waitResult != null)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.WaitAlreadyInProgress));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.WaitAlreadyInProgress));
                 }
                 if (!IsValid)
                 {
-                    throw Fx.Exception.AsError(new OperationCanceledException(SRCore.HandleFreed));
+                    throw Fx.Exception.AsError(new OperationCanceledException(SR.HandleFreed));
                 }
 
                 if (_boundOwnerEvents != null && _boundOwnerEvents.Count > 0)
@@ -733,12 +733,12 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     if (!_handle.IsValid)
                     {
-                        throw Fx.Exception.AsError(new OperationCanceledException(SRCore.HandleFreed));
+                        throw Fx.Exception.AsError(new OperationCanceledException(SR.HandleFreed));
                     }
 
                     if (_handle.OperationPending)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.CommandExecutionCannotOverlap));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.CommandExecutionCannotOverlap));
                     }
                     setOperationPending = true;
                     _handle.OperationPending = true;
@@ -767,7 +767,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     {
                         if (!_handle.IsValid)
                         {
-                            throw Fx.Exception.AsError(new OperationCanceledException(SRCore.HandleFreed));
+                            throw Fx.Exception.AsError(new OperationCanceledException(SR.HandleFreed));
                         }
 
                         _executionContext = new InstancePersistenceContext(_handle, _timeoutHelper.RemainingTime());
@@ -823,7 +823,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     if (_timeout == TimeSpan.Zero)
                     {
                         _handle.CancelWaiting(this);
-                        throw Fx.Exception.AsError(new TimeoutException(SRCore.WaitForEventsTimedOut(TimeSpan.Zero)));
+                        throw Fx.Exception.AsError(new TimeoutException(SR.WaitForEventsTimedOut(TimeSpan.Zero)));
                     }
                 }
                 else
@@ -854,7 +854,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     _timer.Cancel();
                 }
-                Complete(false, new OperationCanceledException(SRCore.HandleFreed));
+                Complete(false, new OperationCanceledException(SR.HandleFreed));
             }
 
             private static void OnTimeout(object state)
@@ -862,7 +862,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 WaitForEventsAsyncResult thisPtr = (WaitForEventsAsyncResult)state;
                 if (thisPtr._handle.CancelWaiting(thisPtr))
                 {
-                    thisPtr.Complete(false, new TimeoutException(SRCore.WaitForEventsTimedOut(thisPtr._timeout)));
+                    thisPtr.Complete(false, new TimeoutException(SR.WaitForEventsTimedOut(thisPtr._timeout)));
                 }
             }
 

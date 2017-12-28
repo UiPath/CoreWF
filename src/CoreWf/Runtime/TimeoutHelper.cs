@@ -152,7 +152,7 @@ namespace CoreWf.Runtime
         {
             if (timeout < TimeSpan.Zero)
             {
-                throw Fx.Exception.ArgumentOutOfRange(argumentName, timeout, InternalSR.TimeoutMustBeNonNegative(argumentName, timeout));
+                throw Fx.Exception.ArgumentOutOfRange(argumentName, timeout, SR.TimeoutMustBeNonNegative(argumentName, timeout));
             }
         }
 
@@ -165,7 +165,7 @@ namespace CoreWf.Runtime
         {
             if (timeout <= TimeSpan.Zero)
             {
-                throw Fx.Exception.ArgumentOutOfRange(argumentName, timeout, InternalSR.TimeoutMustBePositive(argumentName, timeout));
+                throw Fx.Exception.ArgumentOutOfRange(argumentName, timeout, SR.TimeoutMustBePositive(argumentName, timeout));
             }
         }
 

@@ -255,14 +255,14 @@ namespace CoreWf.Runtime
             protected override void Invoke()
             {
                 _callback(_state,
-                    this.TimedOut ? new TimeoutException(InternalSR.TimeoutOnOperation(_originalTimeout)) : null);
+                    this.TimedOut ? new TimeoutException(SR.TimeoutOnOperation(_originalTimeout)) : null);
             }
 
             public void SetTimer(Action<object> callback, object state, TimeSpan timeout)
             {
                 if (_timer != null)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(InternalSR.MustCancelOldTimer));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.MustCancelOldTimer));
                 }
 
                 _originalTimeout = timeout;

@@ -69,7 +69,7 @@ namespace CoreWf.Runtime.DurableInstancing
 
         private static string ToMessage(XName commandName)
         {
-            return commandName == null ? SRCore.GenericInstanceCommandNull : SRCore.GenericInstanceCommand(commandName);
+            return commandName == null ? SR.GenericInstanceCommandNull : SR.GenericInstanceCommand(commandName);
         }
     }
 }

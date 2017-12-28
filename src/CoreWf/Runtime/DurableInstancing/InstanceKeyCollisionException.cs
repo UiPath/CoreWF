@@ -13,7 +13,7 @@ namespace CoreWf.Runtime.DurableInstancing
         private const string InstanceKeyName = "instancePersistenceInstanceKey";
 
         public InstanceKeyCollisionException()
-            : this(SRCore.KeyCollisionDefault, null)
+            : this(SR.KeyCollisionDefault, null)
         {
         }
 
@@ -74,11 +74,11 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 if (instanceId != Guid.Empty && conflictingInstanceId != Guid.Empty)
                 {
-                    return SRCore.KeyCollisionSpecific(instanceId, instanceKey.Value, conflictingInstanceId);
+                    return SR.KeyCollisionSpecific(instanceId, instanceKey.Value, conflictingInstanceId);
                 }
-                return SRCore.KeyCollisionSpecificKeyOnly(instanceKey.Value);
+                return SR.KeyCollisionSpecificKeyOnly(instanceKey.Value);
             }
-            return SRCore.KeyCollisionDefault;
+            return SR.KeyCollisionDefault;
         }
     }
 }

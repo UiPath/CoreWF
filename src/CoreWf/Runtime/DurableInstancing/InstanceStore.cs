@@ -53,7 +53,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId == Guid.Empty)
             {
-                throw Fx.Exception.Argument("instanceId", SRCore.CannotCreateContextWithNullId);
+                throw Fx.Exception.Argument("instanceId", SR.CannotCreateContextWithNullId);
             }
             return PrepareInstanceHandle(new InstanceHandle(this, owner, instanceId));
         }
@@ -74,7 +74,7 @@ namespace CoreWf.Runtime.DurableInstancing
             }
             if (!object.ReferenceEquals(this, handle.Store))
             {
-                throw Fx.Exception.Argument("handle", SRCore.ContextNotFromThisStore);
+                throw Fx.Exception.Argument("handle", SR.ContextNotFromThisStore);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -94,7 +94,7 @@ namespace CoreWf.Runtime.DurableInstancing
             }
             if (!object.ReferenceEquals(this, handle.Store))
             {
-                throw Fx.Exception.Argument("handle", SRCore.ContextNotFromThisStore);
+                throw Fx.Exception.Argument("handle", SR.ContextNotFromThisStore);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -128,7 +128,7 @@ namespace CoreWf.Runtime.DurableInstancing
             }
             if (!object.ReferenceEquals(this, handle.Store))
             {
-                throw Fx.Exception.Argument("handle", SRCore.ContextNotFromThisStore);
+                throw Fx.Exception.Argument("handle", SR.ContextNotFromThisStore);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -160,7 +160,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 WeakReference ownerReference;
                 if (!_owners.TryGetValue(owner.InstanceOwnerId, out ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
                 {
-                    throw Fx.Exception.Argument("owner", SRCore.OwnerBelongsToWrongStore);
+                    throw Fx.Exception.Argument("owner", SR.OwnerBelongsToWrongStore);
                 }
 
                 normal = GetOwnerEventHelper(persistenceEvent, owner);
@@ -199,7 +199,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 WeakReference ownerReference;
                 if (!_owners.TryGetValue(owner.InstanceOwnerId, out ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
                 {
-                    throw Fx.Exception.Argument("owner", SRCore.OwnerBelongsToWrongStore);
+                    throw Fx.Exception.Argument("owner", SR.OwnerBelongsToWrongStore);
                 }
 
                 if (!owner.Events.TryGetValue(persistenceEvent.Name, out normal))
@@ -267,7 +267,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 WeakReference ownerReference;
                 if (!_owners.TryGetValue(owner.InstanceOwnerId, out ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
                 {
-                    throw Fx.Exception.Argument("owner", SRCore.OwnerBelongsToWrongStore);
+                    throw Fx.Exception.Argument("owner", SR.OwnerBelongsToWrongStore);
                 }
 
                 return owner.Events.Values.ToArray();
@@ -290,7 +290,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     }
                     else if (owner.OwnerToken != lockToken)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.StoreReportedConflictingLockTokens));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.StoreReportedConflictingLockTokens));
                     }
                 }
                 else
@@ -427,7 +427,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     throw;
                 }
-                throw Fx.Exception.AsError(new CallbackException(SRCore.OnFreeInstanceHandleThrew, exception));
+                throw Fx.Exception.AsError(new CallbackException(SR.OnFreeInstanceHandleThrew, exception));
             }
         }
 

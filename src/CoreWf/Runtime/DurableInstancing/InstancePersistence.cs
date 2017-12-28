@@ -54,15 +54,15 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (property.Key == null)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.MetadataCannotContainNullKey));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.MetadataCannotContainNullKey));
             }
             if (property.Value == null)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.MetadataCannotContainNullValue(property.Key)));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.MetadataCannotContainNullValue(property.Key)));
             }
             if (!allowDelete && property.Value.IsDeletedValue)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InitialMetadataCannotBeDeleted(property.Key)));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InitialMetadataCannotBeDeleted(property.Key)));
             }
         }
 
@@ -90,7 +90,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     }
                     else if (!allowWriteOnly)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.LoadedWriteOnlyValue));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.LoadedWriteOnlyValue));
                     }
                 }
                 return new ReadOnlyDictionary<XName, InstanceValue>(copy);
@@ -121,7 +121,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     }
                     else if (!allowWriteOnly)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.LoadedWriteOnlyValue));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.LoadedWriteOnlyValue));
                     }
                     else
                     {

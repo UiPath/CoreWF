@@ -10,7 +10,7 @@ namespace CoreWf.Runtime.DurableInstancing
     public class InstanceHandleConflictException : InstancePersistenceCommandException
     {
         public InstanceHandleConflictException()
-            : this(SRCore.InstanceHandleConflictDefault, null)
+            : this(SR.InstanceHandleConflictDefault, null)
         {
         }
 
@@ -49,9 +49,9 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId != Guid.Empty)
             {
-                return SRCore.InstanceHandleConflictSpecific(instanceId);
+                return SR.InstanceHandleConflictSpecific(instanceId);
             }
-            return SRCore.InstanceHandleConflictDefault;
+            return SR.InstanceHandleConflictDefault;
         }
     }
 }

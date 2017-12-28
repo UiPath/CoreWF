@@ -137,7 +137,7 @@ namespace CoreWf.Runtime
         public static Exception AssertAndFailFast(string description)
         {
             Fx.Assert(description);
-            string failFastMessage = InternalSR.FailFastMessage(description);
+            string failFastMessage = SR.FailFastMessage(description);
 
             // The catch is here to force the finally to run, as finallys don't run until the stack walk gets to a catch.  
             // The catch makes sure that the finally will run before the stack-walk leaves the frame, but the code inside is impossible to reach.
@@ -1023,7 +1023,7 @@ namespace CoreWf.Runtime
         internal class InternalException : Exception
         {
             public InternalException(string description)
-                : base(InternalSR.ShipAssertExceptionMessage(description))
+                : base(SR.ShipAssertExceptionMessage(description))
             {
             }
         }

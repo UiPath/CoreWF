@@ -10,7 +10,7 @@ namespace CoreWf.Runtime.DurableInstancing
     public class InstanceCollisionException : InstancePersistenceCommandException
     {
         public InstanceCollisionException()
-            : this(SRCore.InstanceCollisionDefault, null)
+            : this(SR.InstanceCollisionDefault, null)
         {
         }
 
@@ -49,9 +49,9 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId != Guid.Empty)
             {
-                return SRCore.InstanceCollisionSpecific(instanceId);
+                return SR.InstanceCollisionSpecific(instanceId);
             }
-            return SRCore.InstanceCollisionDefault;
+            return SR.InstanceCollisionDefault;
         }
     }
 }

@@ -44,7 +44,7 @@ namespace CoreWf.DurableInstancing
         {
             if (view.IsBoundToInstanceOwner)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SRCore.AlreadyBoundToOwner));
+                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AlreadyBoundToOwner));
             }
 
             InstancePersistence.ValidatePropertyBag(_instanceOwnerMetadata);

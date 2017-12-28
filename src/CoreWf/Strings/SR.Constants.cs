@@ -7,7 +7,7 @@ using System.Resources;
 
 namespace CoreWf
 {
-    internal class SR : StringResourceBase
+    partial class SR : StringResourceBase
     {
         internal static readonly SR Instance = new SR();
 
@@ -19,7 +19,7 @@ namespace CoreWf
             {
                 if (_resourceManager == null)
                 {
-                    _resourceManager = new ResourceManager("CoreWf.Strings.SR", typeof(SR).GetTypeInfo().Assembly);
+                    _resourceManager = new ResourceManager("CoreWf.Resources.strings", typeof(SR).GetTypeInfo().Assembly);
                 }
                 return _resourceManager;
             }

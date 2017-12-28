@@ -182,7 +182,7 @@ namespace CoreWf.Runtime
 
         public ArgumentException ArgumentNullOrEmpty(string paramName)
         {
-            return this.Argument(paramName, InternalSR.ArgumentNullOrEmpty(paramName));
+            return this.Argument(paramName, SR.ArgumentNullOrEmpty(paramName));
         }
 
         public ArgumentOutOfRangeException ArgumentOutOfRange(string paramName, object actualValue, string message)

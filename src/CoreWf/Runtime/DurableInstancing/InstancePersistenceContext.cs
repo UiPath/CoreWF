@@ -109,7 +109,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     {
                         throw;
                     }
-                    throw Fx.Exception.AsError(new CallbackException(SRCore.OnCancelRequestedThrew, exception));
+                    throw Fx.Exception.AsError(new CallbackException(SR.OnCancelRequestedThrew, exception));
                 }
             }
         }
@@ -118,11 +118,11 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceOwnerId == Guid.Empty)
             {
-                throw Fx.Exception.Argument("instanceOwnerId", SRCore.GuidCannotBeEmpty);
+                throw Fx.Exception.Argument("instanceOwnerId", SR.GuidCannotBeEmpty);
             }
             if (lockToken == Guid.Empty)
             {
-                throw Fx.Exception.Argument("lockToken", SRCore.GuidCannotBeEmpty);
+                throw Fx.Exception.Argument("lockToken", SR.GuidCannotBeEmpty);
             }
             ThrowIfNotActive("BindInstanceOwner");
 
@@ -138,7 +138,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId == Guid.Empty)
             {
-                throw Fx.Exception.Argument("instanceId", SRCore.GuidCannotBeEmpty);
+                throw Fx.Exception.Argument("instanceId", SR.GuidCannotBeEmpty);
             }
             ThrowIfNotActive("BindInstance");
 
@@ -158,7 +158,7 @@ namespace CoreWf.Runtime.DurableInstancing
 
             if (!InstanceView.IsBoundToInstanceOwner)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.ContextMustBeBoundToOwner));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.ContextMustBeBoundToOwner));
             }
             IsHandleDoomedByRollback = true;
 
@@ -169,7 +169,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceVersion < 0)
             {
-                throw Fx.Exception.ArgumentOutOfRange("instanceVersion", instanceVersion, SRCore.InvalidLockToken);
+                throw Fx.Exception.ArgumentOutOfRange("instanceVersion", instanceVersion, SR.InvalidLockToken);
             }
             ThrowIfNotActive("BindAcquiredLock");
 
@@ -185,7 +185,7 @@ namespace CoreWf.Runtime.DurableInstancing
             AsyncWaitHandle wait = InitiateBindReclaimedLockHelper("BindReclaimedLock", instanceVersion, timeout);
             if (!wait.Wait(timeout))
             {
-                InstanceHandle.CancelReclaim(new TimeoutException(SRCore.TimedOutWaitingForLockResolution));
+                InstanceHandle.CancelReclaim(new TimeoutException(SR.TimedOutWaitingForLockResolution));
             }
             ConcludeBindReclaimedLockHelper();
         }
@@ -211,7 +211,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceVersion < 0)
             {
-                throw Fx.Exception.ArgumentOutOfRange("instanceVersion", instanceVersion, SRCore.InvalidLockToken);
+                throw Fx.Exception.ArgumentOutOfRange("instanceVersion", instanceVersion, SR.InvalidLockToken);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
             ThrowIfNotActive(methodName);
@@ -269,19 +269,19 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 if (instanceData != null && instanceData.Count > 0)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.UninitializedCannotHaveData));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.UninitializedCannotHaveData));
                 }
             }
             else if (state == InstanceState.Completed)
             {
                 if (associatedInstanceKeyMetadata != null && associatedInstanceKeyMetadata.Count > 0)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.CompletedMustNotHaveAssociatedKeys));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.CompletedMustNotHaveAssociatedKeys));
                 }
             }
             else if (state != InstanceState.Initialized)
             {
-                throw Fx.Exception.Argument("state", SRCore.InvalidInstanceState);
+                throw Fx.Exception.Argument("state", SR.InvalidInstanceState);
             }
             ThrowIfNoInstance();
             ThrowIfNotActive("PersistedInstance");
@@ -344,7 +344,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     if (key.Value.InstanceKeyState == InstanceKeyState.Associated)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.CannotCompleteWithKeys));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.CannotCompleteWithKeys));
                     }
                 }
             }
@@ -405,7 +405,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SRCore.InvalidKeyArgument);
+                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
             }
             ThrowIfNotLocked();
             ThrowIfCompleted();
@@ -414,7 +414,7 @@ namespace CoreWf.Runtime.DurableInstancing
             Dictionary<Guid, InstanceKeyView> copy = new Dictionary<Guid, InstanceKeyView>(InstanceView.InstanceKeys);
             if ((InstanceView.InstanceKeysConsistency & InstanceValueConsistency.InDoubt) == 0 && copy.ContainsKey(key))
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.KeyAlreadyAssociated));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyAlreadyAssociated));
             }
             InstanceKeyView keyView = new InstanceKeyView(key);
             keyView.InstanceKeyState = InstanceKeyState.Associated;
@@ -427,7 +427,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SRCore.InvalidKeyArgument);
+                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
             }
             ThrowIfNotLocked();
             ThrowIfCompleted();
@@ -441,12 +441,12 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     if (existingKeyView.InstanceKeyState == InstanceKeyState.Completed)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.KeyAlreadyCompleted));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyAlreadyCompleted));
                     }
                 }
                 else if ((InstanceView.InstanceKeysConsistency & InstanceValueConsistency.Partial) == 0)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.KeyNotAssociated));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyNotAssociated));
                 }
             }
 
@@ -469,7 +469,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SRCore.InvalidKeyArgument);
+                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
             }
             ThrowIfNotLocked();
             ThrowIfCompleted();
@@ -483,12 +483,12 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     if (existingKeyView.InstanceKeyState == InstanceKeyState.Associated)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.KeyNotCompleted));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyNotCompleted));
                     }
                 }
                 else if ((InstanceView.InstanceKeysConsistency & InstanceValueConsistency.Partial) == 0)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.KeyAlreadyUnassociated));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyAlreadyUnassociated));
                 }
             }
 
@@ -504,7 +504,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SRCore.InvalidKeyArgument);
+                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
             }
             ThrowIfNoInstance();
             ThrowIfNotActive("ReadInstanceKeyMetadata");
@@ -514,7 +514,7 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 if (InstanceView.InstanceKeysConsistency == InstanceValueConsistency.None)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.KeyNotAssociated));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyNotAssociated));
                 }
 
                 Dictionary<Guid, InstanceKeyView> copy = new Dictionary<Guid, InstanceKeyView>(InstanceView.InstanceKeys);
@@ -569,7 +569,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SRCore.InvalidKeyArgument);
+                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
             }
             if (name == null)
             {
@@ -588,7 +588,7 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 if (InstanceView.InstanceKeysConsistency == InstanceValueConsistency.None)
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.KeyNotAssociated));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyNotAssociated));
                 }
 
                 if (!value.IsWriteOnly() && !value.IsDeletedValue)
@@ -745,7 +745,7 @@ namespace CoreWf.Runtime.DurableInstancing
                     {
                         throw;
                     }
-                    throw Fx.Exception.AsError(new CallbackException(SRCore.OnCancelRequestedThrew, exception));
+                    throw Fx.Exception.AsError(new CallbackException(SR.OnCancelRequestedThrew, exception));
                 }
             }
         }
@@ -793,7 +793,7 @@ namespace CoreWf.Runtime.DurableInstancing
             InstanceView finalState = ExecuteAsyncResult.End(result);
             if (finalState == null)
             {
-                throw Fx.Exception.Argument("result", InternalSR.InvalidAsyncResult);
+                throw Fx.Exception.Argument("result", SR.InvalidAsyncResult);
             }
             return finalState;
         }
@@ -802,7 +802,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (!InstanceView.IsBoundToLock)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InstanceOperationRequiresLock));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InstanceOperationRequiresLock));
             }
         }
 
@@ -810,7 +810,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (!InstanceView.IsBoundToInstance)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InstanceOperationRequiresInstance));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InstanceOperationRequiresInstance));
             }
         }
 
@@ -818,7 +818,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (!InstanceView.IsBoundToInstanceOwner)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InstanceOperationRequiresOwner));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InstanceOperationRequiresOwner));
             }
         }
 
@@ -826,7 +826,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (InstanceView.IsBoundToLock && InstanceView.InstanceState == InstanceState.Completed)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InstanceOperationRequiresNotCompleted));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InstanceOperationRequiresNotCompleted));
             }
         }
 
@@ -834,7 +834,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (InstanceView.IsBoundToLock && InstanceView.InstanceState == InstanceState.Uninitialized)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.InstanceOperationRequiresNotUninitialized));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InstanceOperationRequiresNotUninitialized));
             }
         }
 
@@ -842,7 +842,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (!Active)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.OutsideInstanceExecutionScope(methodName)));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.OutsideInstanceExecutionScope(methodName)));
             }
         }
 
@@ -1095,12 +1095,12 @@ namespace CoreWf.Runtime.DurableInstancing
                                 {
                                     if (!_priorAsyncResult.CurrentCommand.AutomaticallyAcquiringLock)
                                     {
-                                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.CannotInvokeBindingFromNonBinding));
+                                        throw Fx.Exception.AsError(new InvalidOperationException(SR.CannotInvokeBindingFromNonBinding));
                                     }
                                 }
                                 else if (!_context.InstanceView.IsBoundToInstanceOwner)
                                 {
-                                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.MayBindLockCommandShouldValidateOwner));
+                                    throw Fx.Exception.AsError(new InvalidOperationException(SR.MayBindLockCommandShouldValidateOwner));
                                 }
                                 else if (!_context.InstanceView.IsBoundToLock)
                                 {
@@ -1110,13 +1110,13 @@ namespace CoreWf.Runtime.DurableInstancing
                             }
                             else if (!_executionStack.Peek().Current.AutomaticallyAcquiringLock)
                             {
-                                throw Fx.Exception.AsError(new InvalidOperationException(SRCore.CannotInvokeBindingFromNonBinding));
+                                throw Fx.Exception.AsError(new InvalidOperationException(SR.CannotInvokeBindingFromNonBinding));
                             }
                         }
 
                         if (_context.CancelRequested)
                         {
-                            throw Fx.Exception.AsError(new OperationCanceledException(SRCore.HandleFreed));
+                            throw Fx.Exception.AsError(new OperationCanceledException(SR.HandleFreed));
                         }
 
                         BindReclaimedLockException bindReclaimedLockException = null;
@@ -1236,18 +1236,18 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 if (!object.ReferenceEquals(_context.LastAsyncResult, this))
                 {
-                    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.ExecuteMustBeNested));
+                    throw Fx.Exception.AsError(new InvalidOperationException(SR.ExecuteMustBeNested));
                 }
                 if (!commandProcessed)
                 {
                     if (_executeCalledByCurrentCommand)
                     {
-                        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.TryCommandCannotExecuteSubCommandsAndReduce));
+                        throw Fx.Exception.AsError(new InvalidOperationException(SR.TryCommandCannotExecuteSubCommandsAndReduce));
                     }
                     IEnumerable<InstancePersistenceCommand> reduction = CurrentCommand.Reduce(_context.InstanceView);
                     if (reduction == null)
                     {
-                        throw Fx.Exception.AsError(new NotSupportedException(SRCore.ProviderDoesNotSupportCommand(CurrentCommand.Name)));
+                        throw Fx.Exception.AsError(new NotSupportedException(SR.ProviderDoesNotSupportCommand(CurrentCommand.Name)));
                     }
                     _executionStack.Push(_currentExecution);
                     _currentExecution = reduction.GetEnumerator();
@@ -1284,14 +1284,14 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 if (timedOut)
                 {
-                    _context.InstanceHandle.CancelReclaim(new TimeoutException(SRCore.TimedOutWaitingForLockResolution));
+                    _context.InstanceHandle.CancelReclaim(new TimeoutException(SR.TimedOutWaitingForLockResolution));
                 }
                 _context.ConcludeBindReclaimedLockHelper();
 
                 // If we get here, the reclaim attempt succeeded and we own the lock - but we are in the
                 // CreateBindReclaimedLockException path, which auto-cancels on success.
                 _context.InstanceHandle.Free();
-                throw Fx.Exception.AsError(new OperationCanceledException(SRCore.BindReclaimSucceeded));
+                throw Fx.Exception.AsError(new OperationCanceledException(SR.BindReclaimSucceeded));
             }
             [Fx.Tag.Blocking(CancelMethod = "NotifyHandleFree", CancelDeclaringType = typeof(InstancePersistenceContext), Conditional = "synchronous")]
 
@@ -1383,7 +1383,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 {
                     if (timeoutException != null)
                     {
-                        thisPtr._context.InstanceHandle.CancelReclaim(new TimeoutException(SRCore.TimedOutWaitingForLockResolution));
+                        thisPtr._context.InstanceHandle.CancelReclaim(new TimeoutException(SR.TimedOutWaitingForLockResolution));
                     }
                     thisPtr._context.ConcludeBindReclaimedLockHelper();
                 }
@@ -1412,7 +1412,7 @@ namespace CoreWf.Runtime.DurableInstancing
             }
 
             internal BindReclaimedLockException(AsyncWaitHandle markerWaitHandle)
-                : base(SRCore.BindReclaimedLockException)
+                : base(SR.BindReclaimedLockException)
             {
                 MarkerWaitHandle = markerWaitHandle;
             }

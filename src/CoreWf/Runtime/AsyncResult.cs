@@ -119,7 +119,7 @@ namespace CoreWf.Runtime
         {
             if (_isCompleted)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(InternalSR.AsyncResultCompletedTwice(GetType())));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.AsyncResultCompletedTwice(GetType())));
             }
 
             //#if DEBUG
@@ -190,7 +190,7 @@ namespace CoreWf.Runtime
                         throw;
                     }
 
-                    throw Fx.Exception.AsError(new CallbackException(InternalSR.AsyncCallbackThrewException, e));
+                    throw Fx.Exception.AsError(new CallbackException(SR.AsyncCallbackThrewException, e));
                 }
 #pragma warning restore 1634
             }
@@ -206,7 +206,7 @@ namespace CoreWf.Runtime
         {
             if (result == null)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(InternalSR.InvalidNullAsyncResult));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InvalidNullAsyncResult));
             }
             if (result.CompletedSynchronously)
             {
@@ -303,7 +303,7 @@ namespace CoreWf.Runtime
         {
             if (result == null)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(InternalSR.InvalidNullAsyncResult));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.InvalidNullAsyncResult));
             }
 
             callback = null;
@@ -336,12 +336,12 @@ namespace CoreWf.Runtime
 
         protected static void ThrowInvalidAsyncResult(IAsyncResult result)
         {
-            throw Fx.Exception.AsError(new InvalidOperationException(InternalSR.InvalidAsyncResultImplementation(result.GetType())));
+            throw Fx.Exception.AsError(new InvalidOperationException(SR.InvalidAsyncResultImplementation(result.GetType())));
         }
 
         protected static void ThrowInvalidAsyncResult(string debugText)
         {
-            string message = InternalSR.InvalidAsyncResultImplementationGeneric;
+            string message = SR.InvalidAsyncResultImplementationGeneric;
             if (debugText != null)
             {
 #if DEBUG
@@ -364,12 +364,12 @@ namespace CoreWf.Runtime
 
             if (asyncResult == null)
             {
-                throw Fx.Exception.Argument("result", InternalSR.InvalidAsyncResult);
+                throw Fx.Exception.Argument("result", SR.InvalidAsyncResult);
             }
 
             if (asyncResult._endCalled)
             {
-                throw Fx.Exception.AsError(new InvalidOperationException(InternalSR.AsyncResultAlreadyEnded));
+                throw Fx.Exception.AsError(new InvalidOperationException(SR.AsyncResultAlreadyEnded));
             }
 
             //#if DEBUG

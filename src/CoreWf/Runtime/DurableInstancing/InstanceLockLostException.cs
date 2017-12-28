@@ -10,7 +10,7 @@ namespace CoreWf.Runtime.DurableInstancing
     public class InstanceLockLostException : InstancePersistenceCommandException
     {
         public InstanceLockLostException()
-            : this(SRCore.InstanceLockLostDefault, null)
+            : this(SR.InstanceLockLostDefault, null)
         {
         }
 
@@ -49,9 +49,9 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId != Guid.Empty)
             {
-                return SRCore.InstanceLockLostSpecific(instanceId);
+                return SR.InstanceLockLostSpecific(instanceId);
             }
-            return SRCore.InstanceLockLostDefault;
+            return SR.InstanceLockLostDefault;
         }
     }
 }

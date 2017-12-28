@@ -82,7 +82,7 @@ namespace CoreWf.Runtime.Collections
             {
                 if (_isNullKeyPresent)
                 {
-                    throw Fx.Exception.Argument("key", InternalSR.NullKeyAlreadyPresent);
+                    throw Fx.Exception.Argument("key", SR.NullKeyAlreadyPresent);
                 }
                 _isNullKeyPresent = true;
                 _nullKeyValue = value;
@@ -244,12 +244,12 @@ namespace CoreWf.Runtime.Collections
 
             public void Add(TypeKey item)
             {
-                throw Fx.Exception.AsError(new NotSupportedException(InternalSR.KeyCollectionUpdatesNotAllowed));
+                throw Fx.Exception.AsError(new NotSupportedException(SR.KeyCollectionUpdatesNotAllowed));
             }
 
             public void Clear()
             {
-                throw Fx.Exception.AsError(new NotSupportedException(InternalSR.KeyCollectionUpdatesNotAllowed));
+                throw Fx.Exception.AsError(new NotSupportedException(SR.KeyCollectionUpdatesNotAllowed));
             }
 
             public bool Contains(TypeKey item)
@@ -268,7 +268,7 @@ namespace CoreWf.Runtime.Collections
 
             public bool Remove(TypeKey item)
             {
-                throw Fx.Exception.AsError(new NotSupportedException(InternalSR.KeyCollectionUpdatesNotAllowed));
+                throw Fx.Exception.AsError(new NotSupportedException(SR.KeyCollectionUpdatesNotAllowed));
             }
 
             public IEnumerator<TypeKey> GetEnumerator()
@@ -319,12 +319,12 @@ namespace CoreWf.Runtime.Collections
 
             public void Add(TypeValue item)
             {
-                throw Fx.Exception.AsError(new NotSupportedException(InternalSR.ValueCollectionUpdatesNotAllowed));
+                throw Fx.Exception.AsError(new NotSupportedException(SR.ValueCollectionUpdatesNotAllowed));
             }
 
             public void Clear()
             {
-                throw Fx.Exception.AsError(new NotSupportedException(InternalSR.ValueCollectionUpdatesNotAllowed));
+                throw Fx.Exception.AsError(new NotSupportedException(SR.ValueCollectionUpdatesNotAllowed));
             }
 
             public bool Contains(TypeValue item)
@@ -344,7 +344,7 @@ namespace CoreWf.Runtime.Collections
 
             public bool Remove(TypeValue item)
             {
-                throw Fx.Exception.AsError(new NotSupportedException(InternalSR.ValueCollectionUpdatesNotAllowed));
+                throw Fx.Exception.AsError(new NotSupportedException(SR.ValueCollectionUpdatesNotAllowed));
             }
 
             public IEnumerator<TypeValue> GetEnumerator()
