@@ -8,6 +8,7 @@
     <Copyright>Copyright &#169; Dustin Metzgar 2017</Copyright> 
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
   
   <ItemGroup>
