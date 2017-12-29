@@ -1,10 +1,12 @@
 # Core WF
-A port of the Windows Workflow Foundation (WF) runtime to the .NET Standard
+A port of the Windows Workflow Foundation (WF) runtime to the .NET Standard.
 
 __This is not an official Microsoft release of WF on .NET Core.__
 
 To add this library to your project, use the [NuGet package](https://www.nuget.org/packages/CoreWf/).
 ETW tracking provider is in a separate package [here](https://www.nuget.org/packages/CoreWf.EtwTracking/).
+
+<img src="https://github.com/dmetzgar/corewf/CoreWf.svg" alt="Drawing" style="width: 50px;"/>
 
 ## A call for help from the community
 
