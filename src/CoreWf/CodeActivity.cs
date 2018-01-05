@@ -98,12 +98,19 @@ namespace CoreWf
             throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
-        //protected virtual void CacheMetadata(CodeActivityMetadata metadata)
-        //{
-        //    // We bypass the metadata call to avoid the null checks
-        //    SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
-        //}
+#if NETSTANDARD1_5
+
+        protected virtual void CacheMetadata(CodeActivityMetadata metadata)
+        {
+           // We bypass the metadata call to avoid the null checks
+           SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
+        }
+
+#else
+
         protected abstract void CacheMetadata(CodeActivityMetadata metadata);
+
+#endif
     }
 
     public abstract class CodeActivity<TResult> : Activity<TResult>
@@ -207,11 +214,18 @@ namespace CoreWf
             throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
-        //protected virtual void CacheMetadata(CodeActivityMetadata metadata)
-        //{
-        //    // We bypass the metadata call to avoid the null checks
-        //    SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
-        //}
+#if NETSTANDARD1_5
+
+        protected virtual void CacheMetadata(CodeActivityMetadata metadata)
+        {
+           // We bypass the metadata call to avoid the null checks
+           SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
+        }
+
+#else
+
         protected abstract void CacheMetadata(CodeActivityMetadata metadata);
+
+#endif
     }
 }

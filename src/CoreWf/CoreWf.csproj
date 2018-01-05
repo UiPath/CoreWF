@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk" InitialTargets="BuildResources">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFrameworks>netstandard1.5;netstandard1.3</TargetFrameworks>
     <Title>Core WF</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</Description>
     <Authors>Dustin Metzgar,Jim Carley</Authors>
@@ -9,13 +9,14 @@
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
     <PackageIconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</PackageIconUrl>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" /> 
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" /> 
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" /> 
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +24,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\*.resources" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard1.5' ">
+    <Compile Remove="ReflectedInformation.cs" />
   </ItemGroup>
 
   <Target Name="BuildResources">
