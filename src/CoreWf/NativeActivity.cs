@@ -89,17 +89,24 @@ namespace CoreWf
             throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForNativeActivity));
         }
 
-        //protected virtual void CacheMetadata(NativeActivityMetadata metadata)
-        //{
-        //    ReflectedInformation information = new ReflectedInformation(this);
+#if NETSTANDARD1_5
 
-        //    // We bypass the metadata structure to avoid the checks for null entries
-        //    SetArgumentsCollection(information.GetArguments(), metadata.CreateEmptyBindings);
-        //    SetChildrenCollection(information.GetChildren());
-        //    SetDelegatesCollection(information.GetDelegates());
-        //    SetVariablesCollection(information.GetVariables());
-        //}
+        protected virtual void CacheMetadata(NativeActivityMetadata metadata)
+        {
+           ReflectedInformation information = new ReflectedInformation(this);
+
+           // We bypass the metadata structure to avoid the checks for null entries
+           SetArgumentsCollection(information.GetArguments(), metadata.CreateEmptyBindings);
+           SetChildrenCollection(information.GetChildren());
+           SetDelegatesCollection(information.GetDelegates());
+           SetVariablesCollection(information.GetVariables());
+        }
+
+#else
+
         protected abstract void CacheMetadata(NativeActivityMetadata metadata);
+
+#endif
 
         //internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer, 
         //    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
@@ -276,17 +283,24 @@ namespace CoreWf
             throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForNativeActivity));
         }
 
-        //protected virtual void CacheMetadata(NativeActivityMetadata metadata)
-        //{
-        //    ReflectedInformation information = new ReflectedInformation(this);
+#if NETSTANDARD1_5
 
-        //    // We bypass the metadata structure to avoid the checks for null entries
-        //    SetArgumentsCollection(information.GetArguments(), metadata.CreateEmptyBindings);
-        //    SetChildrenCollection(information.GetChildren());
-        //    SetDelegatesCollection(information.GetDelegates());
-        //    SetVariablesCollection(information.GetVariables());
-        //}
+        protected virtual void CacheMetadata(NativeActivityMetadata metadata)
+        {
+           ReflectedInformation information = new ReflectedInformation(this);
+
+           // We bypass the metadata structure to avoid the checks for null entries
+           SetArgumentsCollection(information.GetArguments(), metadata.CreateEmptyBindings);
+           SetChildrenCollection(information.GetChildren());
+           SetDelegatesCollection(information.GetDelegates());
+           SetVariablesCollection(information.GetVariables());
+        }
+
+#else
+
         protected abstract void CacheMetadata(NativeActivityMetadata metadata);
+
+#endif
 
         //internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
         //    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)

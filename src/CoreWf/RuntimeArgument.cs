@@ -6,6 +6,7 @@ using CoreWf.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace CoreWf
@@ -15,8 +16,8 @@ namespace CoreWf
     {
         private static InternalEvaluationOrderComparer s_evaluationOrderComparer;
         private Argument _boundArgument;
-        //PropertyDescriptor bindingProperty;
-        //object bindingPropertyOwner;        
+        PropertyDescriptor bindingProperty;
+        object bindingPropertyOwner;        
         private List<string> _overloadGroupNames;
         private int _cacheId;
         private string _name;
@@ -60,12 +61,12 @@ namespace CoreWf
             _overloadGroupNames = overloadGroupNames;
         }
 
-        //internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, PropertyDescriptor bindingProperty, object propertyOwner)
-        //    : this(name, argumentType, direction, isRequired, overloadGroups)
-        //{
-        //    this.bindingProperty = bindingProperty;
-        //    this.bindingPropertyOwner = propertyOwner;
-        //}
+        internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, PropertyDescriptor bindingProperty, object propertyOwner)
+           : this(name, argumentType, direction, isRequired, overloadGroups)
+        {
+           this.bindingProperty = bindingProperty;
+           this.bindingPropertyOwner = propertyOwner;
+        }
 
         internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, Argument argument)
             : this(name, argumentType, direction, isRequired, overloadGroups)
