@@ -1,29 +1,32 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Diagnostics;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System;
+    using CoreWf.XamlIntegration;
+    using System.Diagnostics;
+    using System.Linq.Expressions;
+    using Portable.Xaml.Markup;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.ExpressionParser; 
+#endif
+
     // consciously not XAML-friendly since Linq Expressions aren't create-set-use
     [Fx.Tag.XamlVisible(false)]
     [DebuggerStepThrough]
-    public sealed class LambdaReference<T> : CodeActivity<Location<T>>, IExpressionContainer/*, IValueSerializableExpression*/
+    public sealed class LambdaReference<T> : CodeActivity<Location<T>>, IExpressionContainer, IValueSerializableExpression
     {
-        private Expression<Func<ActivityContext, T>> _locationExpression;
-        private Expression<Func<ActivityContext, T>> _rewrittenTree;
-        private LocationFactory<T> _locationFactory;
+        private readonly Expression<Func<ActivityContext, T>> locationExpression;
+        private Expression<Func<ActivityContext, T>> rewrittenTree;
+        private LocationFactory<T> locationFactory;
 
         public LambdaReference(Expression<Func<ActivityContext, T>> locationExpression)
         {
-            if (locationExpression == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationExpression");
-            }
-            _locationExpression = locationExpression;
+            this.locationExpression = locationExpression ?? throw FxTrace.Exception.ArgumentNull(nameof(locationExpression));
             this.UseOldFastPath = true;
         }
 
@@ -32,7 +35,7 @@ namespace CoreWf.Expressions
         {
             get
             {
-                return _locationExpression;
+                return this.locationExpression;
             }
         }
 
@@ -41,19 +44,17 @@ namespace CoreWf.Expressions
             CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
 
             // We need to rewrite the tree.
-            Expression newTree;
-            if (ExpressionUtilities.TryRewriteLambdaExpression(_locationExpression, out newTree, publicAccessor, true))
+            if (ExpressionUtilities.TryRewriteLambdaExpression(this.locationExpression, out Expression newTree, publicAccessor, true))
             {
-                _rewrittenTree = (Expression<Func<ActivityContext, T>>)newTree;
+                this.rewrittenTree = (Expression<Func<ActivityContext, T>>)newTree;
             }
             else
             {
-                _rewrittenTree = _locationExpression;
+                this.rewrittenTree = this.locationExpression;
             }
 
             // inspect the expressionTree to see if it is a valid location expression(L-value)
-            string extraErrorMessage = null;
-            if (!ExpressionUtilities.IsLocation(_rewrittenTree, typeof(T), out extraErrorMessage))
+            if (!ExpressionUtilities.IsLocation(this.rewrittenTree, typeof(T), out string extraErrorMessage))
             {
                 string errorMessage = SR.InvalidLValueExpression;
                 if (extraErrorMessage != null)
@@ -66,26 +67,26 @@ namespace CoreWf.Expressions
 
         protected override Location<T> Execute(CodeActivityContext context)
         {
-            if (_locationFactory == null)
+            if (this.locationFactory == null)
             {
-                _locationFactory = ExpressionUtilities.CreateLocationFactory<T>(_rewrittenTree);
+                this.locationFactory = ExpressionUtilities.CreateLocationFactory<T>(this.rewrittenTree);
             }
-            return _locationFactory.CreateLocation(context);
+            return this.locationFactory.CreateLocation(context);
         }
 
-        //public bool CanConvertToString(IValueSerializerContext context)
-        //{
-        //    return true;
-        //}
+        public bool CanConvertToString(IValueSerializerContext context)
+        {
+            return true;
+        }
 
-        //public string ConvertToString(IValueSerializerContext context)
-        //{
-        //    // This workflow contains lambda expressions specified in code. 
-        //    // These expressions are not XAML serializable. 
-        //    // In order to make your workflow XAML-serializable, 
-        //    // use either VisualBasicValue/Reference or ExpressionServices.Convert  
-        //    // This will convert your lambda expressions into expression activities.
-        //    throw CoreWf.Internals.FxTrace.Exception.AsError(new LambdaSerializationException());
-        //}
+        public string ConvertToString(IValueSerializerContext context)
+        {
+            // This workflow contains lambda expressions specified in code. 
+            // These expressions are not XAML serializable. 
+            // In order to make your workflow XAML-serializable, 
+            // use either VisualBasicValue/Reference or ExpressionServices.Convert  
+            // This will convert your lambda expressions into expression activities.
+            throw FxTrace.Exception.AsError(new LambdaSerializationException());
+        }
     }
 }

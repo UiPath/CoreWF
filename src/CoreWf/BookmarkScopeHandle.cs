@@ -1,58 +1,43 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.DurableInstancing;
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using System.Runtime.Serialization;
+    using CoreWf.Internals;
+    using CoreWf.Runtime.DurableInstancing;
+
     [DataContract]
     public sealed class BookmarkScopeHandle : Handle
     {
-        private BookmarkScope _bookmarkScope;
-
-        private static BookmarkScopeHandle s_defaultBookmarkScopeHandle = new BookmarkScopeHandle(BookmarkScope.Default);
-
         public BookmarkScopeHandle()
         {
         }
 
         internal BookmarkScopeHandle(BookmarkScope bookmarkScope)
         {
-            _bookmarkScope = bookmarkScope;
+            this.BookmarkScope = bookmarkScope;
             if (bookmarkScope != null)
             {
-                _bookmarkScope.IncrementHandleReferenceCount();
+                this.BookmarkScope.IncrementHandleReferenceCount();
             }
         }
 
-        public static BookmarkScopeHandle Default
-        {
-            get
-            {
-                return s_defaultBookmarkScopeHandle;
-            }
-        }
+        public static BookmarkScopeHandle Default { get; } = new BookmarkScopeHandle(BookmarkScope.Default);
 
-        public BookmarkScope BookmarkScope
-        {
-            get
-            {
-                return _bookmarkScope;
-            }
-        }
+        public BookmarkScope BookmarkScope { get; private set; }
 
         [DataMember(EmitDefaultValue = false, Name = "bookmarkScope")]
         internal BookmarkScope SerializedBookmarkScope
         {
-            get { return _bookmarkScope; }
+            get { return this.BookmarkScope; }
             set
             {
-                _bookmarkScope = value;
-                if (_bookmarkScope != null)
+                this.BookmarkScope = value;
+                if (this.BookmarkScope != null)
                 {
-                    _bookmarkScope.IncrementHandleReferenceCount();
+                    this.BookmarkScope.IncrementHandleReferenceCount();
                 }
             }
         }
@@ -62,7 +47,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             context.ThrowIfDisposed();
@@ -71,46 +56,46 @@ namespace CoreWf
         public void CreateBookmarkScope(NativeActivityContext context)
         {
             this.ThrowIfContextIsNullOrDisposed(context);
-            if (_bookmarkScope != null)
+            if (this.BookmarkScope != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
             }
 
             this.ThrowIfUninitialized();
-            _bookmarkScope = context.CreateBookmarkScope(Guid.Empty, this);
-            _bookmarkScope.IncrementHandleReferenceCount();
+            this.BookmarkScope = context.CreateBookmarkScope(Guid.Empty, this);
+            this.BookmarkScope.IncrementHandleReferenceCount();
         }
 
         public void CreateBookmarkScope(NativeActivityContext context, Guid scopeId)
         {
             this.ThrowIfContextIsNullOrDisposed(context);
-            if (_bookmarkScope != null)
+            if (this.BookmarkScope != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CreateBookmarkScopeFailed));
             }
 
             this.ThrowIfUninitialized();
-            _bookmarkScope = context.CreateBookmarkScope(scopeId, this);
-            _bookmarkScope.IncrementHandleReferenceCount();
+            this.BookmarkScope = context.CreateBookmarkScope(scopeId, this);
+            this.BookmarkScope.IncrementHandleReferenceCount();
         }
-
+        
         public void Initialize(NativeActivityContext context, Guid scope)
         {
             this.ThrowIfContextIsNullOrDisposed(context);
             this.ThrowIfUninitialized();
-            _bookmarkScope.Initialize(context, scope);
+            this.BookmarkScope.Initialize(context, scope);
         }
 
         protected override void OnUninitialize(HandleInitializationContext context)
         {
-            if (_bookmarkScope != null)
+            if (this.BookmarkScope != null)
             {
-                int scopeRefCount = _bookmarkScope.DecrementHandleReferenceCount();
+                int scopeRefCount = this.BookmarkScope.DecrementHandleReferenceCount();
                 DisassociateInstanceKeysExtension extension = context.GetExtension<DisassociateInstanceKeysExtension>();
                 // We only unregister the BookmarkScope if the extension exists and is enabled and if we had the last reference to it.
                 if ((extension != null) && extension.AutomaticDisassociationEnabled && (scopeRefCount == 0))
                 {
-                    context.UnregisterBookmarkScope(_bookmarkScope);
+                    context.UnregisterBookmarkScope(this.BookmarkScope);
                 }
             }
             base.OnUninitialize(context);

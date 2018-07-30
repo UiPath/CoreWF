@@ -1,60 +1,59 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Tracking;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
-    // Added IsReference to avoid circular reference problem for DataContractSerializer.
-    [DataContract(Name = XD.ActivityInstance.Name, Namespace = XD.Runtime.Namespace, IsReference = true)]
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate;
+#endif
+
+    [DataContract(Name = XD.ActivityInstance.Name, Namespace = XD.Runtime.Namespace)]
     [Fx.Tag.XamlVisible(false)]
-    public sealed class ActivityInstance : ActivityInstanceMap.IActivityReference/*WithEnvironment*/
+    public sealed class ActivityInstance
+#if NET45
+        : ActivityInstanceMap.IActivityReferenceWithEnvironment
+#else 
+        : ActivityInstanceMap.IActivityReference
+#endif
     {
-        private Activity _activity;
-
-        private ChildList _childList;
-        private ReadOnlyCollection<ActivityInstance> _childCache;
-
-        private CompletionBookmark _completionBookmark;
-
-        private ActivityInstanceMap _instanceMap;
-        private ActivityInstance _parent;
-
-        private string _ownerName;
-        private int _busyCount;
-        private ExtendedData _extendedData;
+        private Activity activity;
+        private ChildList childList;
+        private ReadOnlyCollection<ActivityInstance> childCache;
+        private CompletionBookmark completionBookmark;
+        private ActivityInstanceMap instanceMap;
+        private ActivityInstance parent;
+        private string ownerName;
+        private int busyCount;
+        private ExtendedData extendedData;
 
         // most activities will have a symbol (either variable or argument, so optimize for that case)
-        private bool _noSymbols;
-
-        private ActivityInstanceState _state;
-        private bool _isCancellationRequested;
-        private bool _performingDefaultCancelation;
-        private Substate _substate;
-
-        private long _id;
-
-        private bool _initializationIncomplete;
+        private bool noSymbols;
+        private ActivityInstanceState state;
+        private bool isCancellationRequested;
+        private bool performingDefaultCancelation;
+        private Substate substate;
+        private long id;
+        private bool initializationIncomplete;
 
         // This is serialized through the SerializedEnvironment property
-        private LocationEnvironment _environment;
-
-        private ExecutionPropertyManager _propertyManager;
-
-        internal ActivityInstance() { }
+        private LocationEnvironment environment;
+        private ExecutionPropertyManager propertyManager;
 
         internal ActivityInstance(Activity activity)
         {
-            _activity = activity;
-            _state = ActivityInstanceState.Executing;
-            _substate = Substate.Created;
+            this.activity = activity;
+            this.state = ActivityInstanceState.Executing;
+            this.substate = Substate.Created;
 
             this.ImplementationVersion = activity.ImplementationVersion;
         }
@@ -63,13 +62,13 @@ namespace CoreWf
         {
             get
             {
-                return _activity;
+                return this.activity;
             }
 
             internal set
             {
-                Fx.Assert(value != null || _state == ActivityInstanceState.Closed, "");
-                _activity = value;
+                Fx.Assert(value != null || this.state == ActivityInstanceState.Closed, "");
+                this.activity = value;
             }
         }
 
@@ -85,7 +84,7 @@ namespace CoreWf
         {
             get
             {
-                return _substate;
+                return this.substate;
             }
         }
 
@@ -100,86 +99,86 @@ namespace CoreWf
                 }
                 else
                 {
-                    return _environment;
+                    return this.environment;
                 }
             }
             set
             {
                 Fx.Assert(value != null, "We should never get null here.");
 
-                _environment = value;
+                this.environment = value;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "busyCount")]
         internal int SerializedBusyCount
         {
-            get { return _busyCount; }
-            set { _busyCount = value; }
+            get { return this.busyCount; }
+            set { this.busyCount = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "extendedData")]
         internal ExtendedData SerializedExtendedData
         {
-            get { return _extendedData; }
-            set { _extendedData = value; }
+            get { return this.extendedData; }
+            set { this.extendedData = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "noSymbols")]
         internal bool SerializedNoSymbols
         {
-            get { return _noSymbols; }
-            set { _noSymbols = value; }
+            get { return this.noSymbols; }
+            set { this.noSymbols = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "state")]
         internal ActivityInstanceState SerializedState
         {
-            get { return _state; }
-            set { _state = value; }
+            get { return this.state; }
+            set { this.state = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "isCancellationRequested")]
         internal bool SerializedIsCancellationRequested
         {
-            get { return _isCancellationRequested; }
-            set { _isCancellationRequested = value; }
+            get { return this.isCancellationRequested; }
+            set { this.isCancellationRequested = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "performingDefaultCancelation")]
         internal bool SerializedPerformingDefaultCancelation
         {
-            get { return _performingDefaultCancelation; }
-            set { _performingDefaultCancelation = value; }
+            get { return this.performingDefaultCancelation; }
+            set { this.performingDefaultCancelation = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "substate")]
         internal Substate SerializedSubstate
         {
-            get { return _substate; }
-            set { _substate = value; }
+            get { return this.substate; }
+            set { this.substate = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "id")]
         internal long SerializedId
         {
-            get { return _id; }
-            set { _id = value; }
+            get { return this.id; }
+            set { this.id = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "initializationIncomplete")]
         internal bool SerializedInitializationIncomplete
         {
-            get { return _initializationIncomplete; }
-            set { _initializationIncomplete = value; }
+            get { return this.initializationIncomplete; }
+            set { this.initializationIncomplete = value; }
         }
 
         internal LocationEnvironment Environment
         {
             get
             {
-                Fx.Assert(_environment != null, "There should always be an environment");
-                return _environment;
+                Fx.Assert(this.environment != null, "There should always be an environment");
+                return this.environment;
             }
         }
 
@@ -187,7 +186,7 @@ namespace CoreWf
         {
             get
             {
-                return _instanceMap;
+                return this.instanceMap;
             }
         }
 
@@ -203,7 +202,7 @@ namespace CoreWf
         {
             get
             {
-                return _state;
+                return this.state;
             }
         }
 
@@ -211,16 +210,16 @@ namespace CoreWf
         {
             get
             {
-                return _isCancellationRequested;
+                return this.isCancellationRequested;
             }
             set
             {
                 // This is set at the time of scheduling the cancelation work item
 
-                Fx.Assert(!_isCancellationRequested, "We should not set this if we have already requested cancel.");
+                Fx.Assert(!this.isCancellationRequested, "We should not set this if we have already requested cancel.");
                 Fx.Assert(value != false, "We should only set this to true.");
 
-                _isCancellationRequested = value;
+                this.isCancellationRequested = value;
             }
         }
 
@@ -228,7 +227,7 @@ namespace CoreWf
         {
             get
             {
-                return _performingDefaultCancelation;
+                return this.performingDefaultCancelation;
             }
         }
 
@@ -236,7 +235,7 @@ namespace CoreWf
         {
             get
             {
-                return _id.ToString(CultureInfo.InvariantCulture);
+                return this.id.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -244,7 +243,7 @@ namespace CoreWf
         {
             get
             {
-                return _id;
+                return this.id;
             }
         }
 
@@ -252,7 +251,7 @@ namespace CoreWf
         {
             get
             {
-                return !_noSymbols;
+                return !this.noSymbols;
             }
         }
 
@@ -260,7 +259,7 @@ namespace CoreWf
         {
             get
             {
-                return _substate == Substate.ResolvingArguments;
+                return this.substate == Substate.ResolvingArguments;
             }
         }
 
@@ -268,7 +267,7 @@ namespace CoreWf
         {
             get
             {
-                return (_substate & Substate.PreExecuting) != 0;
+                return (this.substate & Substate.PreExecuting) != 0;
             }
         }
 
@@ -282,7 +281,7 @@ namespace CoreWf
                 }
 
                 // check if we have pending bookmarks or outstanding OperationControlContexts/WorkItems
-                if (_busyCount > 0)
+                if (this.busyCount > 0)
                 {
                     return true;
                 }
@@ -297,7 +296,7 @@ namespace CoreWf
             {
                 // If our whole busy count is because of blocking bookmarks then
                 // we should return true
-                return !this.HasChildren && _extendedData != null && (_extendedData.BlockingBookmarkCount == _busyCount);
+                return !this.HasChildren && this.extendedData != null && (this.extendedData.BlockingBookmarkCount == this.busyCount);
             }
         }
 
@@ -305,7 +304,7 @@ namespace CoreWf
         {
             get
             {
-                return _parent;
+                return this.parent;
             }
         }
 
@@ -313,20 +312,20 @@ namespace CoreWf
         {
             get
             {
-                if (_extendedData == null)
+                if (this.extendedData == null)
                 {
                     return false;
                 }
                 else
                 {
-                    return _extendedData.WaitingForTransactionContext;
+                    return this.extendedData.WaitingForTransactionContext;
                 }
             }
             set
             {
                 EnsureExtendedData();
 
-                _extendedData.WaitingForTransactionContext = value;
+                this.extendedData.WaitingForTransactionContext = value;
             }
         }
 
@@ -335,12 +334,12 @@ namespace CoreWf
         {
             get
             {
-                return _completionBookmark;
+                return this.completionBookmark;
             }
 
             set
             {
-                _completionBookmark = value;
+                this.completionBookmark = value;
             }
         }
 
@@ -348,21 +347,21 @@ namespace CoreWf
         {
             get
             {
-                if (_extendedData == null)
+                if (this.extendedData == null)
                 {
                     return null;
                 }
 
-                return _extendedData.FaultBookmark;
+                return this.extendedData.FaultBookmark;
             }
 
             set
             {
-                Fx.Assert(value != null || (_extendedData == null || _extendedData.FaultBookmark == null), "cannot go from non-null to null");
+                Fx.Assert(value != null || (this.extendedData == null || this.extendedData.FaultBookmark == null), "cannot go from non-null to null");
                 if (value != null)
                 {
                     EnsureExtendedData();
-                    _extendedData.FaultBookmark = value;
+                    this.extendedData.FaultBookmark = value;
                 }
             }
         }
@@ -371,7 +370,7 @@ namespace CoreWf
         {
             get
             {
-                return (_childList != null && _childList.Count > 0);
+                return (this.childList != null && this.childList.Count > 0);
             }
         }
 
@@ -379,11 +378,11 @@ namespace CoreWf
         {
             get
             {
-                return _propertyManager;
+                return this.propertyManager;
             }
             set
             {
-                _propertyManager = value;
+                this.propertyManager = value;
             }
         }
 
@@ -391,16 +390,16 @@ namespace CoreWf
         {
             get
             {
-                if (_extendedData != null)
+                if (this.extendedData != null)
                 {
-                    return _extendedData.DataContext;
+                    return this.extendedData.DataContext;
                 }
                 return null;
             }
             set
             {
                 EnsureExtendedData();
-                _extendedData.DataContext = value;
+                this.extendedData.DataContext = value;
             }
         }
 
@@ -420,29 +419,29 @@ namespace CoreWf
         {
             get
             {
-                return _extendedData != null && _extendedData.HasActivityReferences;
+                return this.extendedData != null && this.extendedData.HasActivityReferences;
             }
         }
 
         [DataMember(Name = XD.ActivityInstance.PropertyManager, EmitDefaultValue = false)]
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Called from Serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Called from Serialization")]
         internal ExecutionPropertyManager SerializedPropertyManager
         {
             get
             {
-                if (_propertyManager == null || !_propertyManager.ShouldSerialize(this))
+                if (this.propertyManager == null || !this.propertyManager.ShouldSerialize(this))
                 {
                     return null;
                 }
                 else
                 {
-                    return _propertyManager;
+                    return this.propertyManager;
                 }
             }
             set
             {
                 Fx.Assert(value != null, "We don't emit the default value so this should never be null.");
-                _propertyManager = value;
+                this.propertyManager = value;
             }
         }
 
@@ -453,8 +452,8 @@ namespace CoreWf
             {
                 if (this.HasChildren)
                 {
-                    _childList.Compress();
-                    return _childList;
+                    this.childList.Compress();
+                    return this.childList;
                 }
 
                 return null;
@@ -463,7 +462,7 @@ namespace CoreWf
             set
             {
                 Fx.Assert(value != null, "value from Serialization should not be null");
-                _childList = value;
+                this.childList = value;
             }
         }
 
@@ -472,16 +471,16 @@ namespace CoreWf
         {
             get
             {
-                if (_ownerName == null)
+                if (this.ownerName == null)
                 {
-                    _ownerName = this.Activity.GetType().Name;
+                    this.ownerName = this.Activity.GetType().Name;
                 }
-                return _ownerName;
+                return this.ownerName;
             }
             set
             {
                 Fx.Assert(value != null, "value from Serialization should not be null");
-                _ownerName = value;
+                this.ownerName = value;
             }
         }
 
@@ -494,16 +493,20 @@ namespace CoreWf
 
         internal static ActivityInstance CreateCompletedInstance(Activity activity)
         {
-            ActivityInstance instance = new ActivityInstance(activity);
-            instance._state = ActivityInstanceState.Closed;
+            ActivityInstance instance = new ActivityInstance(activity)
+            {
+                state = ActivityInstanceState.Closed
+            };
 
             return instance;
         }
 
         internal static ActivityInstance CreateCanceledInstance(Activity activity)
         {
-            ActivityInstance instance = new ActivityInstance(activity);
-            instance._state = ActivityInstanceState.Canceled;
+            ActivityInstance instance = new ActivityInstance(activity)
+            {
+                state = ActivityInstanceState.Canceled
+            };
 
             return instance;
         }
@@ -515,23 +518,23 @@ namespace CoreWf
                 return ChildList.Empty;
             }
 
-            if (_childCache == null)
+            if (this.childCache == null)
             {
-                _childCache = _childList.AsReadOnly();
+                this.childCache = this.childList.AsReadOnly();
             }
-            return _childCache;
+            return this.childCache;
         }
 
         internal HybridCollection<ActivityInstance> GetRawChildren()
         {
-            return _childList;
+            return this.childList;
         }
 
         private void EnsureExtendedData()
         {
-            if (_extendedData == null)
+            if (this.extendedData == null)
             {
-                _extendedData = new ExtendedData();
+                this.extendedData = new ExtendedData();
             }
         }
 
@@ -541,25 +544,25 @@ namespace CoreWf
         //   3. Blocking bookmarks.
         internal void IncrementBusyCount()
         {
-            _busyCount++;
+            this.busyCount++;
         }
 
         internal void DecrementBusyCount()
         {
-            Fx.Assert(_busyCount > 0, "something went wrong with our bookkeeping");
-            _busyCount--;
+            Fx.Assert(this.busyCount > 0, "something went wrong with our bookkeeping");
+            this.busyCount--;
         }
 
         internal void DecrementBusyCount(int amount)
         {
-            Fx.Assert(_busyCount >= amount, "something went wrong with our bookkeeping");
-            _busyCount -= amount;
+            Fx.Assert(this.busyCount >= amount, "something went wrong with our bookkeeping");
+            this.busyCount -= amount;
         }
 
         internal void AddActivityReference(ActivityInstanceReference reference)
         {
             EnsureExtendedData();
-            _extendedData.AddActivityReference(reference);
+            this.extendedData.AddActivityReference(reference);
         }
 
         internal void AddBookmark(Bookmark bookmark, BookmarkOptions options)
@@ -573,7 +576,7 @@ namespace CoreWf
             }
 
             EnsureExtendedData();
-            _extendedData.AddBookmark(bookmark, affectsBusyCount);
+            this.extendedData.AddBookmark(bookmark, affectsBusyCount);
         }
 
         internal void RemoveBookmark(Bookmark bookmark, BookmarkOptions options)
@@ -586,55 +589,55 @@ namespace CoreWf
                 affectsBusyCount = true;
             }
 
-            Fx.Assert(_extendedData != null, "something went wrong with our bookkeeping");
-            _extendedData.RemoveBookmark(bookmark, affectsBusyCount);
+            Fx.Assert(this.extendedData != null, "something went wrong with our bookkeeping");
+            this.extendedData.RemoveBookmark(bookmark, affectsBusyCount);
         }
 
         internal void RemoveAllBookmarks(BookmarkScopeManager bookmarkScopeManager, BookmarkManager bookmarkManager)
         {
-            if (_extendedData != null)
+            if (this.extendedData != null)
             {
-                _extendedData.PurgeBookmarks(bookmarkScopeManager, bookmarkManager, this);
+                this.extendedData.PurgeBookmarks(bookmarkScopeManager, bookmarkManager, this);
             }
         }
 
         internal void SetInitializationIncomplete()
         {
-            _initializationIncomplete = true;
+            this.initializationIncomplete = true;
         }
 
         internal void MarkCanceled()
         {
-            Fx.Assert(_substate == Substate.Executing || _substate == Substate.Canceling, "called from an unexpected state");
-            _substate = Substate.Canceling;
+            Fx.Assert(this.substate == Substate.Executing || this.substate == Substate.Canceling, "called from an unexpected state");
+            this.substate = Substate.Canceling;
         }
 
         private void MarkExecuted()
         {
-            _substate = Substate.Executing;
+            this.substate = Substate.Executing;
         }
 
         internal void MarkAsComplete(BookmarkScopeManager bookmarkScopeManager, BookmarkManager bookmarkManager)
         {
-            if (_extendedData != null)
+            if (this.extendedData != null)
             {
-                _extendedData.PurgeBookmarks(bookmarkScopeManager, bookmarkManager, this);
+                this.extendedData.PurgeBookmarks(bookmarkScopeManager, bookmarkManager, this);
 
-                if (_extendedData.DataContext != null)
+                if (this.extendedData.DataContext != null)
                 {
-                    _extendedData.DataContext.Dispose();
+                    this.extendedData.DataContext.Dispose();
                 }
             }
 
-            //if (this.instanceMap != null)
-            //{
-            //    this.instanceMap.RemoveEntry(this);
+            if (this.instanceMap != null)
+            {
+                this.instanceMap.RemoveEntry(this);
 
-            //    if (this.HasActivityReferences)
-            //    {
-            //        this.extendedData.PurgeActivityReferences(this.instanceMap);
-            //    }
-            //}
+                if (this.HasActivityReferences)
+                {
+                    this.extendedData.PurgeActivityReferences(this.instanceMap);
+                }
+            }
 
             if (this.Parent != null)
             {
@@ -655,7 +658,10 @@ namespace CoreWf
                 if (!currentInstance.HasNotExecuted)
                 {
                     currentInstance.Activity.InternalAbort(currentInstance, executor, terminationReason);
-                    //executor.DebugActivityCompleted(currentInstance);
+
+#if NET45
+                    executor.DebugActivityCompleted(currentInstance);
+#endif
                 }
 
                 if (currentInstance.PropertyManager != null)
@@ -663,7 +669,7 @@ namespace CoreWf
                     currentInstance.PropertyManager.UnregisterProperties(currentInstance, currentInstance.Activity.MemberOf, true);
                 }
 
-                //executor.TerminateSpecialExecutionBlocks(currentInstance, terminationReason);
+                executor.TerminateSpecialExecutionBlocks(currentInstance, terminationReason);
 
                 executor.CancelPendingOperation(currentInstance);
 
@@ -671,7 +677,7 @@ namespace CoreWf
 
                 currentInstance.MarkAsComplete(executor.RawBookmarkScopeManager, bookmarkManager);
 
-                currentInstance._state = ActivityInstanceState.Faulted;
+                currentInstance.state = ActivityInstanceState.Faulted;
 
                 currentInstance.FinalizeState(executor, false, !isTerminate);
             }
@@ -684,7 +690,7 @@ namespace CoreWf
 
             Fx.Assert(this.IsCancellationRequested, "This should be marked to true at this point.");
 
-            _performingDefaultCancelation = true;
+            this.performingDefaultCancelation = true;
 
             CancelChildren(context);
         }
@@ -707,9 +713,9 @@ namespace CoreWf
 
         internal void Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
         {
-            if (_initializationIncomplete)
+            if (this.initializationIncomplete)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InitializationIncomplete));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InitializationIncomplete));
             }
 
             MarkExecuted();
@@ -718,27 +724,27 @@ namespace CoreWf
 
         internal void AddChild(ActivityInstance item)
         {
-            if (_childList == null)
+            if (this.childList == null)
             {
-                _childList = new ChildList();
+                this.childList = new ChildList();
             }
 
-            _childList.Add(item);
-            _childCache = null;
+            this.childList.Add(item);
+            this.childCache = null;
         }
 
         internal void RemoveChild(ActivityInstance item)
         {
-            Fx.Assert(_childList != null, "");
-            _childList.Remove(item, true);
-            _childCache = null;
+            Fx.Assert(this.childList != null, "");
+            this.childList.Remove(item, true);
+            this.childCache = null;
         }
 
         // called by ActivityUtilities tree-walk
         internal void AppendChildren(ActivityUtilities.TreeProcessingList nextInstanceList, ref Queue<IList<ActivityInstance>> instancesRemaining)
         {
             Fx.Assert(this.HasChildren, "AppendChildren is tuned to only be called when HasChildren is true");
-            _childList.AppendChildren(nextInstanceList, ref instancesRemaining);
+            this.childList.AppendChildren(nextInstanceList, ref instancesRemaining);
         }
 
         // called after deserialization of the workflow instance
@@ -755,29 +761,29 @@ namespace CoreWf
 
             if (this.Activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityInstanceFixupFailed));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityInstanceFixupFailed));
             }
 
-            _parent = parent;
-            _instanceMap = instanceMap;
+            this.parent = parent;
+            this.instanceMap = instanceMap;
 
             if (this.PropertyManager != null)
             {
                 this.PropertyManager.OnDeserialized(this, parent, this.Activity.MemberOf, executor);
             }
-            else if (_parent != null)
+            else if (this.parent != null)
             {
                 // The current property manager is null here
-                this.PropertyManager = _parent.PropertyManager;
+                this.PropertyManager = this.parent.PropertyManager;
             }
             else
             {
                 this.PropertyManager = executor.RootPropertyManager;
             }
 
-            if (!_noSymbols)
+            if (!this.noSymbols)
             {
-                _environment.OnDeserialized(executor, this);
+                this.environment.OnDeserialized(executor, this);
             }
         }
 
@@ -788,7 +794,7 @@ namespace CoreWf
                 return false;
             }
 
-            _childList.FixupList(this, instanceMap, executor);
+            this.childList.FixupList(this, instanceMap, executor);
             return true;
         }
 
@@ -800,23 +806,23 @@ namespace CoreWf
                 return;
             }
 
-            Fx.Assert(_instanceMap == null, "We should never call this unless the current map is null.");
+            Fx.Assert(this.instanceMap == null, "We should never call this unless the current map is null.");
             Fx.Assert(this.Parent == null, "Can only generate a map from a root instance.");
 
-            _instanceMap = instanceMap;
+            this.instanceMap = instanceMap;
             ActivityUtilities.ProcessActivityInstanceTree(this, null, new Func<ActivityInstance, ActivityExecutor, bool>(GenerateInstanceMapCallback));
         }
 
         private bool GenerateInstanceMapCallback(ActivityInstance instance, ActivityExecutor executor)
         {
-            _instanceMap.AddEntry(instance);
-            instance._instanceMap = _instanceMap;
+            this.instanceMap.AddEntry(instance);
+            instance.instanceMap = this.instanceMap;
 
             if (instance.HasActivityReferences)
             {
-                instance._extendedData.FillInstanceMap(instance._instanceMap);
+                instance.extendedData.FillInstanceMap(instance.instanceMap);
             }
-
+         
             return true;
         }
 
@@ -827,26 +833,26 @@ namespace CoreWf
 
         internal bool Initialize(ActivityInstance parent, ActivityInstanceMap instanceMap, LocationEnvironment parentEnvironment, long instanceId, ActivityExecutor executor, int delegateParameterCount)
         {
-            _parent = parent;
-            _instanceMap = instanceMap;
-            _id = instanceId;
+            this.parent = parent;
+            this.instanceMap = instanceMap;
+            this.id = instanceId;
 
-            if (_instanceMap != null)
+            if (this.instanceMap != null)
             {
-                _instanceMap.AddEntry(this);
+                this.instanceMap.AddEntry(this);
             }
 
             // propagate necessary information from our parent
-            if (_parent != null)
+            if (this.parent != null)
             {
-                if (_parent.PropertyManager != null)
+                if (this.parent.PropertyManager != null)
                 {
-                    this.PropertyManager = _parent.PropertyManager;
+                    this.PropertyManager = this.parent.PropertyManager;
                 }
 
                 if (parentEnvironment == null)
                 {
-                    parentEnvironment = _parent.Environment;
+                    parentEnvironment = this.parent.Environment;
                 }
             }
 
@@ -858,12 +864,12 @@ namespace CoreWf
                 {
                     // We create an environment for a root activity that otherwise would not have one
                     // to simplify environment management.
-                    _environment = new LocationEnvironment(executor, this.Activity);
+                    this.environment = new LocationEnvironment(executor, this.Activity);
                 }
                 else
                 {
-                    _noSymbols = true;
-                    _environment = parentEnvironment;
+                    this.noSymbols = true;
+                    this.environment = parentEnvironment;
                 }
 
                 // We don't set Initialized here since the tracking/tracing would be too early
@@ -871,16 +877,16 @@ namespace CoreWf
             }
             else
             {
-                _environment = new LocationEnvironment(executor, this.Activity, parentEnvironment, symbolCount);
-                _substate = Substate.ResolvingArguments;
+                this.environment = new LocationEnvironment(executor, this.Activity, parentEnvironment, symbolCount);
+                this.substate = Substate.ResolvingArguments;
                 return true;
             }
         }
 
         internal void ResolveNewArgumentsDuringDynamicUpdate(ActivityExecutor executor, IList<int> dynamicUpdateArgumentIndexes)
         {
-            Fx.Assert(!_noSymbols, "Can only resolve arguments if we created an environment");
-            Fx.Assert(_substate == Substate.Executing, "Dynamically added arguments are to be resolved only in Substate.Executing.");
+            Fx.Assert(!this.noSymbols, "Can only resolve arguments if we created an environment");
+            Fx.Assert(this.substate == Substate.Executing, "Dynamically added arguments are to be resolved only in Substate.Executing.");
 
             if (this.Activity.SkipArgumentResolution)
             {
@@ -906,13 +912,13 @@ namespace CoreWf
                 argumentValueOverrides.TryGetValue(argument.Name, out overrideValue);
             }
 
-            if (argument.TryPopulateValue(_environment, this, executor, overrideValue, resultLocation, isDynamicUpdate))
+            if (argument.TryPopulateValue(this.environment, this, executor, overrideValue, resultLocation, isDynamicUpdate))
             {
                 return true;
             }
 
             ResolveNextArgumentWorkItem workItem = null;
-            Location location = _environment.GetSpecificLocation(argument.Id);
+            Location location = this.environment.GetSpecificLocation(argument.Id);
 
             if (isDynamicUpdate)
             {
@@ -948,8 +954,8 @@ namespace CoreWf
         // return true if arguments were resolved synchronously
         internal bool ResolveArguments(ActivityExecutor executor, IDictionary<string, object> argumentValueOverrides, Location resultLocation, int startIndex = 0)
         {
-            Fx.Assert(!_noSymbols, "Can only resolve arguments if we created an environment");
-            Fx.Assert(_substate == Substate.ResolvingArguments, "Invalid sub-state machine");
+            Fx.Assert(!this.noSymbols, "Can only resolve arguments if we created an environment");
+            Fx.Assert(this.substate == Substate.ResolvingArguments, "Invalid sub-state machine");
 
             bool completedSynchronously = true;
 
@@ -961,11 +967,11 @@ namespace CoreWf
 
                 RuntimeArgument argument = ((ActivityWithResult)this.Activity).ResultRuntimeArgument;
 
-                if (!argument.TryPopulateValue(_environment, this, executor, null, resultLocation, false))
+                if (!argument.TryPopulateValue(this.environment, this, executor, null, resultLocation, false))
                 {
                     completedSynchronously = false;
 
-                    Location location = _environment.GetSpecificLocation(argument.Id);
+                    Location location = this.environment.GetSpecificLocation(argument.Id);
                     executor.ScheduleExpression(argument.BoundArgument.Expression, this, this.Environment, location, null);
                 }
             }
@@ -997,7 +1003,7 @@ namespace CoreWf
                 // == 0).  Otherwise, a call to UpdateState will
                 // cause the substate switch (as well as a call to
                 // CollapseTemporaryResolutionLocations).
-                _substate = Substate.ResolvingVariables;
+                this.substate = Substate.ResolvingVariables;
             }
 
             return completedSynchronously;
@@ -1005,8 +1011,8 @@ namespace CoreWf
 
         internal void ResolveNewVariableDefaultsDuringDynamicUpdate(ActivityExecutor executor, IList<int> dynamicUpdateVariableIndexes, bool forImplementation)
         {
-            Fx.Assert(!_noSymbols, "Can only resolve variable default if we created an environment");
-            Fx.Assert(_substate == Substate.Executing, "Dynamically added variable default expressions are to be resolved only in Substate.Executing.");
+            Fx.Assert(!this.noSymbols, "Can only resolve variable default if we created an environment");
+            Fx.Assert(this.substate == Substate.Executing, "Dynamically added variable default expressions are to be resolved only in Substate.Executing.");
 
             IList<Variable> runtimeVariables;
             if (forImplementation)
@@ -1030,10 +1036,10 @@ namespace CoreWf
 
         internal bool ResolveVariables(ActivityExecutor executor)
         {
-            Fx.Assert(!_noSymbols, "can only resolve variables if we created an environment");
-            Fx.Assert(_substate == Substate.ResolvingVariables, "invalid sub-state machine");
+            Fx.Assert(!this.noSymbols, "can only resolve variables if we created an environment");
+            Fx.Assert(this.substate == Substate.ResolvingVariables, "invalid sub-state machine");
 
-            _substate = Substate.ResolvingVariables;
+            this.substate = Substate.ResolvingVariables;
             bool completedSynchronously = true;
 
             IList<Variable> implementationVariables = this.Activity.ImplementationVariables;
@@ -1098,23 +1104,23 @@ namespace CoreWf
             Fx.Assert(variable.Default != null, "If we've gone async we must have a default");
             if (variableLocation == null)
             {
-                variableLocation = _environment.GetSpecificLocation(variable.Id);
+                variableLocation = this.environment.GetSpecificLocation(variable.Id);
             }
             variable.SetIsWaitingOnDefaultValue(variableLocation);
-            executor.ScheduleExpression(variable.Default, this, _environment, variableLocation, null);
+            executor.ScheduleExpression(variable.Default, this, this.environment, variableLocation, null);
         }
 
         void ActivityInstanceMap.IActivityReference.Load(Activity activity, ActivityInstanceMap instanceMap)
         {
             if (activity.GetType().Name != this.OwnerName)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(
+                throw FxTrace.Exception.AsError(
                     new ValidationException(SR.ActivityTypeMismatch(activity.DisplayName, this.OwnerName)));
             }
 
             if (activity.ImplementationVersion != this.ImplementationVersion)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new VersionMismatchException(SR.ImplementationVersionMismatch(this.ImplementationVersion, activity.ImplementationVersion, activity)));
+                throw FxTrace.Exception.AsError(new VersionMismatchException(SR.ImplementationVersionMismatch(this.ImplementationVersion, activity.ImplementationVersion, activity)));
             }
 
             this.Activity = activity;
@@ -1147,15 +1153,15 @@ namespace CoreWf
                 {
                     bool scheduleBody = false;
 
-                    if (_substate == Substate.ResolvingArguments)
+                    if (this.substate == Substate.ResolvingArguments)
                     {
                         // if we've had asynchronous resolution of Locations (Out/InOut Arguments), resolve them now
                         this.Environment.CollapseTemporaryResolutionLocations();
 
-                        _substate = Substate.ResolvingVariables;
+                        this.substate = Substate.ResolvingVariables;
                         scheduleBody = ResolveVariables(executor);
                     }
-                    else if (_substate == Substate.ResolvingVariables)
+                    else if (this.substate == Substate.ResolvingVariables)
                     {
                         scheduleBody = true;
                     }
@@ -1170,20 +1176,20 @@ namespace CoreWf
             }
             else if (!this.HasPendingWork)
             {
-                //if (!executor.IsCompletingTransaction(this))
-                //{
-                activityCompleted = true;
-                if (_substate == Substate.Canceling)
+                if (!executor.IsCompletingTransaction(this))
                 {
-                    SetCanceled();
-                }
-                else
-                {
-                    SetClosed();
-                }
-                //} 
+                    activityCompleted = true;
+                    if (this.substate == Substate.Canceling)
+                    {
+                        SetCanceled();
+                    }
+                    else
+                    {
+                        SetClosed();
+                    }
+                } 
             }
-            else if (_performingDefaultCancelation)
+            else if (this.performingDefaultCancelation)
             {
                 if (this.OnlyHasOutstandingBookmarks)
                 {
@@ -1202,21 +1208,21 @@ namespace CoreWf
 
         private void TryCancelParent()
         {
-            if (_parent != null && _parent.IsPerformingDefaultCancelation)
+            if (this.parent != null && this.parent.IsPerformingDefaultCancelation)
             {
-                _parent.MarkCanceled();
+                this.parent.MarkCanceled();
             }
         }
 
         internal void SetInitializedSubstate(ActivityExecutor executor)
         {
-            Fx.Assert(_substate != Substate.Initialized, "SetInitializedSubstate called when substate is already Initialized.");
-            _substate = Substate.Initialized;
+            Fx.Assert(this.substate != Substate.Initialized, "SetInitializedSubstate called when substate is already Initialized.");
+            this.substate = Substate.Initialized;
             if (executor.ShouldTrackActivityStateRecordsExecutingState)
             {
                 if (executor.ShouldTrackActivity(this.Activity.DisplayName))
                 {
-                    executor.AddTrackingRecord(new ActivityStateRecord(executor.WorkflowInstanceId, this, _state));
+                    executor.AddTrackingRecord(new ActivityStateRecord(executor.WorkflowInstanceId, this, this.state));
                 }
             }
 
@@ -1231,8 +1237,7 @@ namespace CoreWf
 
                         if (ArgumentDirectionHelper.IsIn(argument.Direction))
                         {
-                            Location location;
-                            if (_environment.TryGetLocation(argument.Id, this.Activity, out location))
+                            if (this.environment.TryGetLocation(argument.Id, this.Activity, out Location location))
                             {
                                 string argumentValue = null;
 
@@ -1265,18 +1270,18 @@ namespace CoreWf
                 TryCancelParent();
 
                 // We can override previous completion states with this
-                _state = ActivityInstanceState.Faulted;
+                this.state = ActivityInstanceState.Faulted;
             }
 
-            Fx.Assert(_state != ActivityInstanceState.Executing, "We must be in a completed state at this point.");
+            Fx.Assert(this.state != ActivityInstanceState.Executing, "We must be in a completed state at this point.");
 
-            if (_state == ActivityInstanceState.Closed)
+            if (this.state == ActivityInstanceState.Closed)
             {
                 if (executor.ShouldTrackActivityStateRecordsClosedState && !skipTracking)
                 {
                     if (executor.ShouldTrackActivity(this.Activity.DisplayName))
                     {
-                        executor.AddTrackingRecord(new ActivityStateRecord(executor.WorkflowInstanceId, this, _state));
+                        executor.AddTrackingRecord(new ActivityStateRecord(executor.WorkflowInstanceId, this, this.state));
                     }
                 }
             }
@@ -1284,7 +1289,7 @@ namespace CoreWf
             {
                 if (executor.ShouldTrackActivityStateRecords && !skipTracking)
                 {
-                    executor.AddTrackingRecord(new ActivityStateRecord(executor.WorkflowInstanceId, this, _state));
+                    executor.AddTrackingRecord(new ActivityStateRecord(executor.WorkflowInstanceId, this, this.state));
                 }
             }
 
@@ -1292,6 +1297,7 @@ namespace CoreWf
             {
                 TD.ActivityCompleted(this.Activity.GetType().ToString(), this.Activity.DisplayName, this.Id, this.State.GetStateName());
             }
+
         }
 
         private void SetCanceled()
@@ -1300,19 +1306,19 @@ namespace CoreWf
 
             TryCancelParent();
 
-            _state = ActivityInstanceState.Canceled;
+            this.state = ActivityInstanceState.Canceled;
         }
 
         private void SetClosed()
         {
             Fx.Assert(!this.IsCompleted, "Should not be completed if we are changing the state.");
 
-            _state = ActivityInstanceState.Closed;
+            this.state = ActivityInstanceState.Closed;
         }
 
         private static void UpdateLocationEnvironmentHierarchy(LocationEnvironment oldParentEnvironment, LocationEnvironment newEnvironment, ActivityInstance currentInstance)
         {
-            Func<ActivityInstance, ActivityExecutor, bool> processInstanceCallback = delegate (ActivityInstance instance, ActivityExecutor executor)
+            Func<ActivityInstance, ActivityExecutor, bool> processInstanceCallback = delegate(ActivityInstance instance, ActivityExecutor executor)
             {
                 if (instance == currentInstance)
                 {
@@ -1321,20 +1327,20 @@ namespace CoreWf
 
                 if (instance.IsEnvironmentOwner)
                 {
-                    if (instance._environment.Parent == oldParentEnvironment)
+                    if (instance.environment.Parent == oldParentEnvironment)
                     {
                         // overwrite its parent with newEnvironment
-                        instance._environment.Parent = newEnvironment;
+                        instance.environment.Parent = newEnvironment;
                     }
 
                     // We do not need to process children instances beyond this point.
                     return false;
                 }
 
-                if (instance._environment == oldParentEnvironment)
+                if (instance.environment == oldParentEnvironment)
                 {
                     // this instance now points to newEnvironment
-                    instance._environment = newEnvironment;
+                    instance.environment = newEnvironment;
                 }
 
                 return true;
@@ -1343,29 +1349,31 @@ namespace CoreWf
             ActivityUtilities.ProcessActivityInstanceTree(currentInstance, null, processInstanceCallback);
         }
 
-        //void ActivityInstanceMap.IActivityReferenceWithEnvironment.UpdateEnvironment(EnvironmentUpdateMap map, Activity activity)
-        //{            
-        //    Fx.Assert(this.substate != Substate.ResolvingVariables, "We must have already performed the same validations in advance.");
-        //    Fx.Assert(this.substate != Substate.ResolvingArguments, "We must have already performed the same validations in advance.");
+#if NET45
+        void ActivityInstanceMap.IActivityReferenceWithEnvironment.UpdateEnvironment(EnvironmentUpdateMap map, Activity activity)
+        {            
+            Fx.Assert(this.substate != Substate.ResolvingVariables, "We must have already performed the same validations in advance.");
+            Fx.Assert(this.substate != Substate.ResolvingArguments, "We must have already performed the same validations in advance.");
 
-        //    if (this.noSymbols)
-        //    {
-        //        // create a new LocationReference and this ActivityInstance becomes the owner of the created environment.
-        //        LocationEnvironment oldParentEnvironment = this.environment;
+            if (this.noSymbols)
+            {
+                // create a new LocationReference and this ActivityInstance becomes the owner of the created environment.
+                LocationEnvironment oldParentEnvironment = this.environment;
 
-        //        Fx.Assert(oldParentEnvironment != null, "environment must never be null.");
+                Fx.Assert(oldParentEnvironment != null, "environment must never be null.");
 
-        //        this.environment = new LocationEnvironment(oldParentEnvironment, map.NewArgumentCount + map.NewVariableCount + map.NewPrivateVariableCount + map.RuntimeDelegateArgumentCount);
-        //        this.noSymbols = false;
+                this.environment = new LocationEnvironment(oldParentEnvironment, map.NewArgumentCount + map.NewVariableCount + map.NewPrivateVariableCount + map.RuntimeDelegateArgumentCount);
+                this.noSymbols = false;
 
-        //        // traverse the activity instance chain.
-        //        // Update all its non-environment-owning decedent instances to point to the newly created enviroment,
-        //        // and, update all its environment-owning decendent instances to have their environment's parent to point to the newly created environment.
-        //        UpdateLocationEnvironmentHierarchy(oldParentEnvironment, this.environment, this);
-        //    }
+                // traverse the activity instance chain.
+                // Update all its non-environment-owning decedent instances to point to the newly created enviroment,
+                // and, update all its environment-owning decendent instances to have their environment's parent to point to the newly created environment.
+                UpdateLocationEnvironmentHierarchy(oldParentEnvironment, this.environment, this);
+            }
 
-        //    this.Environment.Update(map, activity);
-        //}
+            this.Environment.Update(map, activity);
+        }
+#endif
 
         internal enum Substate : byte
         {
@@ -1384,23 +1392,23 @@ namespace CoreWf
         [DataContract]
         internal class ExtendedData
         {
-            private BookmarkList _bookmarks;
-            private ActivityReferenceList _activityReferences;
-            private int _blockingBookmarkCount;
+            private BookmarkList bookmarks;
+            private ActivityReferenceList activityReferences;
+            private int blockingBookmarkCount;
 
             public ExtendedData()
             {
             }
-
+                        
             public int BlockingBookmarkCount
             {
                 get
                 {
-                    return _blockingBookmarkCount;
+                    return blockingBookmarkCount;
                 }
                 private set
                 {
-                    _blockingBookmarkCount = value;
+                    blockingBookmarkCount = value;
                 }
             }
 
@@ -1432,46 +1440,46 @@ namespace CoreWf
             }
 
             [DataMember(Name = XD.ActivityInstance.Bookmarks, EmitDefaultValue = false)]
-            //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Called from Serialization")]
+            //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Called from Serialization")]
             internal BookmarkList Bookmarks
             {
                 get
                 {
-                    if (_bookmarks == null || _bookmarks.Count == 0)
+                    if (this.bookmarks == null || this.bookmarks.Count == 0)
                     {
                         return null;
                     }
                     else
                     {
-                        return _bookmarks;
+                        return this.bookmarks;
                     }
                 }
                 set
                 {
                     Fx.Assert(value != null, "We don't emit the default value so this should never be null.");
-                    _bookmarks = value;
+                    this.bookmarks = value;
                 }
             }
 
             [DataMember(Name = XD.ActivityInstance.ActivityReferences, EmitDefaultValue = false)]
-            //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Called from Serialization")]
+            //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Called from Serialization")]
             internal ActivityReferenceList ActivityReferences
             {
                 get
                 {
-                    if (_activityReferences == null || _activityReferences.Count == 0)
+                    if (this.activityReferences == null || this.activityReferences.Count == 0)
                     {
                         return null;
                     }
                     else
                     {
-                        return _activityReferences;
+                        return this.activityReferences;
                     }
                 }
                 set
                 {
                     Fx.Assert(value != null && value.Count > 0, "We shouldn't emit the default value or empty lists");
-                    _activityReferences = value;
+                    this.activityReferences = value;
                 }
             }
 
@@ -1479,15 +1487,15 @@ namespace CoreWf
             {
                 get
                 {
-                    return _activityReferences != null && _activityReferences.Count > 0;
+                    return this.activityReferences != null && this.activityReferences.Count > 0;
                 }
             }
 
             public void AddBookmark(Bookmark bookmark, bool affectsBusyCount)
             {
-                if (_bookmarks == null)
+                if (this.bookmarks == null)
                 {
-                    _bookmarks = new BookmarkList();
+                    this.bookmarks = new BookmarkList();
                 }
 
                 if (affectsBusyCount)
@@ -1495,12 +1503,12 @@ namespace CoreWf
                     this.BlockingBookmarkCount = this.BlockingBookmarkCount + 1;
                 }
 
-                _bookmarks.Add(bookmark);
+                this.bookmarks.Add(bookmark);
             }
 
             public void RemoveBookmark(Bookmark bookmark, bool affectsBusyCount)
             {
-                Fx.Assert(_bookmarks != null, "The bookmark list should have been initialized if we are trying to remove one.");
+                Fx.Assert(this.bookmarks != null, "The bookmark list should have been initialized if we are trying to remove one.");
 
                 if (affectsBusyCount)
                 {
@@ -1509,19 +1517,17 @@ namespace CoreWf
                     this.BlockingBookmarkCount = this.BlockingBookmarkCount - 1;
                 }
 
-                _bookmarks.Remove(bookmark);
+                this.bookmarks.Remove(bookmark);
             }
 
             public void PurgeBookmarks(BookmarkScopeManager bookmarkScopeManager, BookmarkManager bookmarkManager, ActivityInstance owningInstance)
             {
-                if (_bookmarks != null)
+                if (this.bookmarks != null)
                 {
-                    if (_bookmarks.Count > 0)
+                    if (this.bookmarks.Count > 0)
                     {
-                        Bookmark singleBookmark;
-                        IList<Bookmark> multipleBookmarks;
-                        _bookmarks.TransferBookmarks(out singleBookmark, out multipleBookmarks);
-                        _bookmarks = null;
+                        this.bookmarks.TransferBookmarks(out Bookmark singleBookmark, out IList<Bookmark> multipleBookmarks);
+                        this.bookmarks = null;
 
                         if (bookmarkScopeManager != null)
                         {
@@ -1541,26 +1547,26 @@ namespace CoreWf
 
             public void AddActivityReference(ActivityInstanceReference reference)
             {
-                if (_activityReferences == null)
+                if (this.activityReferences == null)
                 {
-                    _activityReferences = new ActivityReferenceList();
+                    this.activityReferences = new ActivityReferenceList();
                 }
 
-                _activityReferences.Add(reference);
+                this.activityReferences.Add(reference);
             }
 
             public void FillInstanceMap(ActivityInstanceMap instanceMap)
             {
                 Fx.Assert(this.HasActivityReferences, "Must have references to have called this.");
 
-                _activityReferences.FillInstanceMap(instanceMap);
+                this.activityReferences.FillInstanceMap(instanceMap);
             }
 
             public void PurgeActivityReferences(ActivityInstanceMap instanceMap)
             {
                 Fx.Assert(this.HasActivityReferences, "Must have references to have called this.");
 
-                _activityReferences.PurgeActivityReferences(instanceMap);
+                this.activityReferences.PurgeActivityReferences(instanceMap);
             }
 
             [DataContract]
@@ -1612,7 +1618,7 @@ namespace CoreWf
         [DataContract]
         internal class ChildList : HybridCollection<ActivityInstance>
         {
-            private static ReadOnlyCollection<ActivityInstance> s_emptyChildren;
+            private static ReadOnlyCollection<ActivityInstance> emptyChildren;
 
             public ChildList()
                 : base()
@@ -1623,12 +1629,12 @@ namespace CoreWf
             {
                 get
                 {
-                    if (s_emptyChildren == null)
+                    if (emptyChildren == null)
                     {
-                        s_emptyChildren = new ReadOnlyCollection<ActivityInstance>(new ActivityInstance[0]);
+                        emptyChildren = new ReadOnlyCollection<ActivityInstance>(new ActivityInstance[0]);
                     }
 
-                    return s_emptyChildren;
+                    return emptyChildren;
                 }
             }
 
@@ -1678,21 +1684,20 @@ namespace CoreWf
         // the abort process to determine which child to visit next
         private class AbortEnumerator : IEnumerator<ActivityInstance>
         {
-            private ActivityInstance _root;
-            private ActivityInstance _current;
-
-            private bool _initialized;
+            private readonly ActivityInstance root;
+            private ActivityInstance current;
+            private bool initialized;
 
             public AbortEnumerator(ActivityInstance root)
             {
-                _root = root;
+                this.root = root;
             }
 
             public ActivityInstance Current
             {
                 get
                 {
-                    return _current;
+                    return this.current;
                 }
             }
 
@@ -1706,38 +1711,38 @@ namespace CoreWf
 
             public bool MoveNext()
             {
-                if (!_initialized)
+                if (!this.initialized)
                 {
-                    _current = _root;
+                    this.current = root;
 
                     // We start by diving down the tree along the
                     // "first child" path
-                    while (_current.HasChildren)
+                    while (this.current.HasChildren)
                     {
-                        _current = _current.GetChildren()[0];
+                        this.current = this.current.GetChildren()[0];
                     }
 
-                    _initialized = true;
+                    this.initialized = true;
 
                     return true;
                 }
                 else
                 {
-                    if (_current == _root)
+                    if (this.current == this.root)
                     {
                         // We're done if we returned all the way to the root last time
                         return false;
                     }
                     else
                     {
-                        Fx.Assert(!_current.Parent.GetChildren().Contains(_current), "We should always have removed the current one from the parent's list by now.");
+                        Fx.Assert(!this.current.Parent.GetChildren().Contains(this.current), "We should always have removed the current one from the parent's list by now.");
 
-                        _current = _current.Parent;
+                        this.current = this.current.Parent;
 
                         // Dive down the tree of remaining first children
-                        while (_current.HasChildren)
+                        while (this.current.HasChildren)
                         {
-                            _current = _current.GetChildren()[0];
+                            this.current = this.current.GetChildren()[0];
                         }
 
                         return true;
@@ -1747,8 +1752,8 @@ namespace CoreWf
 
             public void Reset()
             {
-                _current = null;
-                _initialized = false;
+                this.current = null;
+                this.initialized = false;
             }
 
             public void Dispose()
@@ -1756,5 +1761,5 @@ namespace CoreWf
                 // no op
             }
         }
-    }
+    }    
 }

@@ -1,37 +1,37 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Persistence;
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf.Hosting;
+    using CoreWf.Persistence;
+    using System.Collections.Generic;
+    using System.Xml.Linq;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     public class CompensationExtension : PersistenceParticipant, IWorkflowInstanceExtension
     {
-        private static readonly XNamespace s_compensationNamespace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/compensation");
-        private static readonly XName s_compensationExtensionData = s_compensationNamespace.GetName("Data");
-        [Fx.Tag.SynchronizationObject(Blocking = false)]
+        private static readonly XNamespace compensationNamespace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/compensation");
+        private static readonly XName compensationExtensionData = compensationNamespace.GetName("Data");
 
-        private Dictionary<long, CompensationTokenData> _compensationTokenTable;
+        [Fx.Tag.SynchronizationObject(Blocking = false)]
+        private Dictionary<long, CompensationTokenData> compensationTokenTable;            
 
         public CompensationExtension()
         {
-            _compensationTokenTable = new Dictionary<long, CompensationTokenData>();
+            this.compensationTokenTable = new Dictionary<long, CompensationTokenData>();
         }
 
         internal Dictionary<long, CompensationTokenData> CompensationTokenTable
         {
             get
             {
-                return _compensationTokenTable;
+                return this.compensationTokenTable;
             }
             private set
             {
-                _compensationTokenTable = value;
+                this.compensationTokenTable = value;
             }
         }
 
@@ -40,7 +40,7 @@ namespace CoreWf.Statements
             get;
             set;
         }
-
+        
         internal Bookmark WorkflowCompensation
         {
             get;
@@ -85,17 +85,15 @@ namespace CoreWf.Statements
 
         internal CompensationTokenData Get(long compensationId)
         {
-            CompensationTokenData compensationToken = null;
-            this.CompensationTokenTable.TryGetValue(compensationId, out compensationToken);
-            return compensationToken;
+            this.CompensationTokenTable.TryGetValue(compensationId, out CompensationTokenData compensationToken);
+            return compensationToken;   
         }
 
         internal Bookmark FindBookmark(long compensationId, CompensationBookmarkName bookmarkName)
         {
-            CompensationTokenData compensationToken = null;
             Bookmark bookmark = null;
 
-            if (this.CompensationTokenTable.TryGetValue(compensationId, out compensationToken))
+            if (this.CompensationTokenTable.TryGetValue(compensationId, out CompensationTokenData compensationToken))
             {
                 bookmark = compensationToken.BookmarkTable[bookmarkName];
             }
@@ -130,19 +128,19 @@ namespace CoreWf.Statements
             }
             else
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkNotRegistered(compensationBookmark)));
-            }
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkNotRegistered(compensationBookmark)));
+            }         
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.InterfaceMethodsShouldBeCallableByChildTypes,
-        //Justification = "The inherit class don't need to call this method or access this method")]
+        //    Justification = "The inherit class don't need to call this method or access this method")]
         IEnumerable<object> IWorkflowInstanceExtension.GetAdditionalExtensions()
         {
             return null;
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.InterfaceMethodsShouldBeCallableByChildTypes,
-        //Justification = "The inherit class don't need to call this method or access this method")]
+        //    Justification = "The inherit class don't need to call this method or access this method")]
         void IWorkflowInstanceExtension.SetInstance(WorkflowInstanceProxy instance)
         {
             this.Instance = instance;
@@ -155,7 +153,7 @@ namespace CoreWf.Statements
             readWriteValues = new Dictionary<XName, object>(1)
             {
                 {
-                    s_compensationExtensionData,
+                    compensationExtensionData, 
                     new List<object>(6)
                     {
                         this.CompensationTokenTable,
@@ -171,9 +169,8 @@ namespace CoreWf.Statements
 
         protected override void PublishValues(IDictionary<XName, object> readWriteValues)
         {
-            object data;
 
-            if (readWriteValues.TryGetValue(s_compensationExtensionData, out data))
+            if (readWriteValues.TryGetValue(compensationExtensionData, out object data))
             {
                 List<object> list = (List<object>)data;
                 this.CompensationTokenTable = (Dictionary<long, CompensationTokenData>)list[0];
@@ -183,6 +180,6 @@ namespace CoreWf.Statements
                 this.IsWorkflowCompensationBehaviorScheduled = (bool)list[4];
                 this.Id = (long)list[5];
             }
-        }
+        }      
     }
 }

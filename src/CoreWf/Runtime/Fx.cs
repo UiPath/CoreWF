@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -221,11 +221,9 @@ namespace CoreWf.Runtime
 #if DEBUG
                 if (!Fx.s_breakOnExceptionTypesRetrieved)
                 {
-                    object value;
-                    if (TryGetDebugSwitch(Fx.BreakOnExceptionTypesName, out value))
+                    if (TryGetDebugSwitch(Fx.BreakOnExceptionTypesName, out object value))
                     {
-                        string[] typeNames = value as string[];
-                        if (typeNames != null && typeNames.Length > 0)
+                        if (value is string[] typeNames && typeNames.Length > 0)
                         {
                             List<Type> types = new List<Type>(typeNames.Length);
                             for (int i = 0; i < typeNames.Length; i++)
@@ -558,13 +556,7 @@ namespace CoreWf.Runtime
                     Scope = Strings.DeclaringInstance;
                     SizeLimit = Strings.Unbounded;
                     Timeout = Strings.Infinite;
-
-                    if (elementType == null)
-                    {
-                        throw Fx.Exception.ArgumentNull("elementType");
-                    }
-
-                    _elementType = elementType;
+                    _elementType = elementType ?? throw Fx.Exception.ArgumentNull(nameof(elementType));
                     _cacheAttrition = cacheAttrition;
                 }
 
@@ -599,13 +591,7 @@ namespace CoreWf.Runtime
                 {
                     Scope = Strings.DeclaringInstance;
                     SizeLimit = Strings.Unbounded;
-
-                    if (elementType == null)
-                    {
-                        throw Fx.Exception.ArgumentNull("elementType");
-                    }
-
-                    _elementType = elementType;
+                    _elementType = elementType ?? throw Fx.Exception.ArgumentNull(nameof(elementType));
                 }
 
                 public Type ElementType
@@ -636,7 +622,7 @@ namespace CoreWf.Runtime
 
                     if (string.IsNullOrEmpty(limit))
                     {
-                        throw Fx.Exception.ArgumentNullOrEmpty("limit");
+                        throw Fx.Exception.ArgumentNullOrEmpty(nameof(limit));
                     }
 
                     _throttleAction = throttleAction;
@@ -796,16 +782,12 @@ namespace CoreWf.Runtime
 
                 public ThrowsAttribute(Type exceptionType, string diagnosis)
                 {
-                    if (exceptionType == null)
-                    {
-                        throw Fx.Exception.ArgumentNull("exceptionType");
-                    }
                     if (string.IsNullOrEmpty(diagnosis))
                     {
-                        throw Fx.Exception.ArgumentNullOrEmpty("diagnosis");
+                        throw Fx.Exception.ArgumentNullOrEmpty(nameof(diagnosis));
                     }
 
-                    _exceptionType = exceptionType;
+                    _exceptionType = exceptionType ?? throw Fx.Exception.ArgumentNull(nameof(exceptionType));
                     _diagnosis = diagnosis;
                 }
 
@@ -901,7 +883,7 @@ namespace CoreWf.Runtime
         {
             [Fx.Tag.SecurityNote(Critical = "Make these safe to use in SecurityCritical contexts.")]
             [SecurityCritical]
-            private T _callback;
+            private readonly T _callback;
 
             [Fx.Tag.SecurityNote(Critical = "Accesses critical field.", Safe = "Data provided by caller.")]
             [SecuritySafeCritical]

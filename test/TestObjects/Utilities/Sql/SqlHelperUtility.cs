@@ -1,9 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
 
 namespace Test.Common.TestObjects.Utilities.Sql
 {

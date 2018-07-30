@@ -1,17 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
-using System.Security;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Security;
+
     [DataContract]
     internal class FaultCallbackWrapper : CallbackWrapper
     {
-        private static readonly Type s_faultCallbackType = typeof(FaultCallback);
-        private static readonly Type[] s_faultCallbackParameters = new Type[] { typeof(NativeActivityFaultContext), typeof(Exception), typeof(ActivityInstance) };
+        private static readonly Type faultCallbackType = typeof(FaultCallback);
+        private static readonly Type[] faultCallbackParameters = new Type[] { typeof(NativeActivityFaultContext), typeof(Exception), typeof(ActivityInstance) };
 
         public FaultCallbackWrapper(FaultCallback callback, ActivityInstance owningInstance)
             : base(callback, owningInstance)
@@ -23,7 +23,7 @@ namespace CoreWf.Runtime
         [SecuritySafeCritical]
         public void Invoke(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
-            EnsureCallback(s_faultCallbackType, s_faultCallbackParameters);
+            EnsureCallback(faultCallbackType, faultCallbackParameters);
             FaultCallback faultCallback = (FaultCallback)this.Callback;
             faultCallback(faultContext, propagatedException, propagatedFrom);
         }
@@ -36,61 +36,61 @@ namespace CoreWf.Runtime
         [DataContract]
         internal class FaultWorkItem : ActivityExecutionWorkItem
         {
-            private FaultCallbackWrapper _callbackWrapper;
-            private Exception _propagatedException;
-            private ActivityInstance _propagatedFrom;
-            private ActivityInstanceReference _originalExceptionSource;
+            private FaultCallbackWrapper callbackWrapper;
+            private Exception propagatedException;
+            private ActivityInstance propagatedFrom;
+            private ActivityInstanceReference originalExceptionSource;
 
             public FaultWorkItem(FaultCallbackWrapper callbackWrapper, Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
                 : base(callbackWrapper.ActivityInstance)
             {
-                _callbackWrapper = callbackWrapper;
-                _propagatedException = propagatedException;
-                _propagatedFrom = propagatedFrom;
-                _originalExceptionSource = originalExceptionSource;
+                this.callbackWrapper = callbackWrapper;
+                this.propagatedException = propagatedException;
+                this.propagatedFrom = propagatedFrom;
+                this.originalExceptionSource = originalExceptionSource;
             }
 
             public override ActivityInstance OriginalExceptionSource
             {
                 get
                 {
-                    return _originalExceptionSource.ActivityInstance;
+                    return this.originalExceptionSource.ActivityInstance;
                 }
             }
 
             [DataMember(Name = "callbackWrapper")]
             internal FaultCallbackWrapper SerializedCallbackWrapper
             {
-                get { return _callbackWrapper; }
-                set { _callbackWrapper = value; }
+                get { return this.callbackWrapper; }
+                set { this.callbackWrapper = value; }
             }
 
             [DataMember(Name = "propagatedException")]
             internal Exception SerializedPropagatedException
             {
-                get { return _propagatedException; }
-                set { _propagatedException = value; }
+                get { return this.propagatedException; }
+                set { this.propagatedException = value; }
             }
 
             [DataMember(Name = "propagatedFrom")]
             internal ActivityInstance SerializedPropagatedFrom
             {
-                get { return _propagatedFrom; }
-                set { _propagatedFrom = value; }
+                get { return this.propagatedFrom; }
+                set { this.propagatedFrom = value; }
             }
 
             [DataMember(Name = "originalExceptionSource")]
             internal ActivityInstanceReference SerializedOriginalExceptionSource
             {
-                get { return _originalExceptionSource; }
-                set { _originalExceptionSource = value; }
+                get { return this.originalExceptionSource; }
+                set { this.originalExceptionSource = value; }
             }
 
             public override void TraceCompleted()
             {
                 if (TD.CompleteFaultWorkItemIsEnabled())
                 {
-                    TD.CompleteFaultWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, _originalExceptionSource.ActivityInstance.Activity.GetType().ToString(), _originalExceptionSource.ActivityInstance.Activity.DisplayName, _originalExceptionSource.ActivityInstance.Id, _propagatedException);
+                    TD.CompleteFaultWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, this.originalExceptionSource.ActivityInstance.Activity.GetType().ToString(), this.originalExceptionSource.ActivityInstance.Activity.DisplayName, this.originalExceptionSource.ActivityInstance.Id, this.propagatedException);
                 }
             }
 
@@ -98,7 +98,7 @@ namespace CoreWf.Runtime
             {
                 if (TD.ScheduleFaultWorkItemIsEnabled())
                 {
-                    TD.ScheduleFaultWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, _originalExceptionSource.ActivityInstance.Activity.GetType().ToString(), _originalExceptionSource.ActivityInstance.Activity.DisplayName, _originalExceptionSource.ActivityInstance.Id, _propagatedException);
+                    TD.ScheduleFaultWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, this.originalExceptionSource.ActivityInstance.Activity.GetType().ToString(), this.originalExceptionSource.ActivityInstance.Activity.DisplayName, this.originalExceptionSource.ActivityInstance.Id, this.propagatedException);
                 }
             }
 
@@ -106,7 +106,7 @@ namespace CoreWf.Runtime
             {
                 if (TD.StartFaultWorkItemIsEnabled())
                 {
-                    TD.StartFaultWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, _originalExceptionSource.ActivityInstance.Activity.GetType().ToString(), _originalExceptionSource.ActivityInstance.Activity.DisplayName, _originalExceptionSource.ActivityInstance.Id, _propagatedException);
+                    TD.StartFaultWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, this.originalExceptionSource.ActivityInstance.Activity.GetType().ToString(), this.originalExceptionSource.ActivityInstance.Activity.DisplayName, this.originalExceptionSource.ActivityInstance.Id, this.propagatedException);
                 }
             }
 
@@ -116,12 +116,12 @@ namespace CoreWf.Runtime
 
                 try
                 {
-                    faultContext = new NativeActivityFaultContext(this.ActivityInstance, executor, bookmarkManager, _propagatedException, _originalExceptionSource);
-                    _callbackWrapper.Invoke(faultContext, _propagatedException, _propagatedFrom);
+                    faultContext = new NativeActivityFaultContext(this.ActivityInstance, executor, bookmarkManager, this.propagatedException, this.originalExceptionSource);
+                    this.callbackWrapper.Invoke(faultContext, this.propagatedException, this.propagatedFrom);
 
                     if (!faultContext.IsFaultHandled)
                     {
-                        SetExceptionToPropagateWithoutAbort(_propagatedException);
+                        SetExceptionToPropagateWithoutAbort(this.propagatedException);
                     }
                 }
                 catch (Exception e)

@@ -1,35 +1,59 @@
-<Project Sdk="Microsoft.NET.Sdk" InitialTargets="BuildResources">
-
+﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="BuildResources" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Core WF</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</Description>
     <Authors>Dustin Metzgar,Jim Carley</Authors>
-    <Copyright>Copyright &#169; Dustin Metzgar 2017</Copyright> 
+    <Copyright>Copyright © Dustin Metzgar 2018</Copyright>
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
     <PackageIconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</PackageIconUrl>
-    <Version>1.0.3</Version>
+    <Version>1.1.0</Version>
+    <FileUpgradeFlags>40</FileUpgradeFlags>
+    <UpgradeBackupLocation>C:\dev\corewfxaml\src\Backup3\</UpgradeBackupLocation>
+    <OldToolsVersion>15.0</OldToolsVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" /> 
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" /> 
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" /> 
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="2.1.1" />
+    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="Portable.Xaml" Version="0.22.0">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <Resx Include="Resources\*.restext" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\*.resources" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\CoreWf.Transactions\CoreWf.Transactions.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
+    <Compile Remove="Debugger\**\*.cs" />
+    <Compile Remove="DynamicUpdate\**\*.cs" />
+    <Compile Remove="ExpressionParser\**\*.cs" />
+    <Compile Remove="XamlIntegration\DynamicUpdate*.cs" />
+    <Compile Remove="Tracking\WorkflowInstanceUpdatedRecord.cs" />
+    <Compile Remove="XamlIntegration\ObjectMatchInfoConverter.cs" />
+  </ItemGroup>
   <Target Name="BuildResources">
-    <GenerateResource ExecuteAsTool="false"
-      Sources="@(Resx)">
+    <GenerateResource ExecuteAsTool="false" Sources="@(Resx)">
       <Output TaskParameter="OutputResources" ItemName="Resources" />
     </GenerateResource>
   </Target>
-  
 </Project>

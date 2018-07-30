@@ -1,18 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using CoreWf.Expressions;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
-using Test.Common.TestObjects.Utilities.Validation;
 using TestCases.Activities.Common;
 using Xunit;
 
@@ -644,9 +642,11 @@ namespace TestCases.Activities
             //  Test case description:
             //  Call internal method from same dll
 
-            TestInvokeMethod internalMethod = new TestInvokeMethod("myMethod");
-            internalMethod.TargetObject = new TestArgument<MethodInvokeTests>(Direction.In, "TargetObject", (context => new MethodInvokeTests()));
-            internalMethod.MethodName = "myMethod";
+            TestInvokeMethod internalMethod = new TestInvokeMethod("myMethod")
+            {
+                TargetObject = new TestArgument<MethodInvokeTests>(Direction.In, "TargetObject", (context => new MethodInvokeTests())),
+                MethodName = "myMethod"
+            };
 
             string error = string.Format(ErrorStrings.PublicMethodWithMatchingParameterDoesNotExist, "MethodInvokeTests", "instance", "myMethod", internalMethod.ProductActivity.DisplayName);
             TestRuntime.ValidateInstantiationException(internalMethod, error);

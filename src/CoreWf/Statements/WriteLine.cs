@@ -1,15 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Text")]
+    using System;
+    using System.ComponentModel;
+    using System.IO;
+    using Portable.Xaml.Markup;
+    using System.Collections.ObjectModel;
+    using CoreWf.Runtime;
+
+    [ContentProperty("Text")]
     public sealed class WriteLine : CodeActivity
     {
         public WriteLine()
@@ -17,14 +18,14 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        public InArgument<TextWriter> TextWriter
+        public InArgument<TextWriter> TextWriter 
         {
             get;
             set;
         }
 
         [DefaultValue(null)]
-        public InArgument<string> Text
+        public InArgument<string> Text 
         {
             get;
             set;

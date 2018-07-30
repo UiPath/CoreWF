@@ -1,115 +1,119 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
-    [DataContract]
-    internal sealed class LocationEnvironment : ActivityInstanceMap.IActivityReference/*WithEnvironment*/
-    {
-        private static DummyLocation s_dummyLocation = new DummyLocation();
+    using System;
+    using System.Runtime.Serialization;
+    using System.Collections.Generic;
+    using CoreWf.Internals;
 
-        private bool _isDisposed;
-        private bool _hasHandles;
-        private ActivityExecutor _executor;
+#if NET45
+    using CoreWf.DynamicUpdate;
+
+#endif
+    [DataContract]
+    internal sealed class LocationEnvironment
+#if NET45
+                : ActivityInstanceMap.IActivityReferenceWithEnvironment
+#else
+                : ActivityInstanceMap.IActivityReference
+#endif
+    {
+        private static readonly DummyLocation dummyLocation = new DummyLocation();
+        private bool isDisposed;
+        private bool hasHandles;
+        private ActivityExecutor executor;
 
         // These two fields should be null unless we're in between calls to Update() and OnDeserialized().
         // Therefore they should never need to serialize.
-        private IList<Location> _locationsToUnregister;
-        private IList<LocationReference> _locationsToRegister;
-
-        private Location[] _locations;
-        private bool _hasMappableLocations;
-        private LocationEnvironment _parent;
-
-        private Location _singleLocation;
+        private IList<Location> locationsToUnregister;
+        private IList<LocationReference> locationsToRegister;
+        private Location[] locations;
+        private bool hasMappableLocations;
+        private LocationEnvironment parent;
+        private Location singleLocation;
 
         // This list keeps track of handles that are created and initialized.
-        private List<Handle> _handles;
+        private List<Handle> handles;
 
         // We store refCount - 1 because it is more likely to
         // be zero and skipped by serialization
-        private int _referenceCountMinusOne;
-
-        private bool _hasOwnerCompleted;
-
-        internal LocationEnvironment() { }
-
+        private int referenceCountMinusOne;
+        private bool hasOwnerCompleted;
+                
         // this ctor overload is to be exclusively used by DU
         // for creating a LocationEnvironment for "noSymbols" ActivityInstance
-        internal LocationEnvironment(LocationEnvironment parent, int capacity)
+        internal LocationEnvironment(LocationEnvironment parent, int capacity) 
             : this(null, null, parent, capacity)
         {
         }
-
+       
         internal LocationEnvironment(ActivityExecutor executor, Activity definition)
         {
-            _executor = executor;
+            this.executor = executor;
             this.Definition = definition;
         }
 
         internal LocationEnvironment(ActivityExecutor executor, Activity definition, LocationEnvironment parent, int capacity)
             : this(executor, definition)
         {
-            _parent = parent;
+            this.parent = parent;
 
             Fx.Assert(capacity > 0, "must have a positive capacity if using this overload");
             if (capacity > 1)
             {
-                _locations = new Location[capacity];
+                this.locations = new Location[capacity];
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "locations")]
         internal Location[] SerializedLocations
         {
-            get { return _locations; }
-            set { _locations = value; }
+            get { return this.locations; }
+            set { this.locations = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "hasMappableLocations")]
         internal bool SerializedHasMappableLocations
         {
-            get { return _hasMappableLocations; }
-            set { _hasMappableLocations = value; }
+            get { return this.hasMappableLocations; }
+            set { this.hasMappableLocations = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "parent")]
         internal LocationEnvironment SerializedParent
         {
-            get { return _parent; }
-            set { _parent = value; }
+            get { return this.parent; }
+            set { this.parent = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "singleLocation")]
         internal Location SerializedSingleLocation
         {
-            get { return _singleLocation; }
-            set { _singleLocation = value; }
+            get { return this.singleLocation; }
+            set { this.singleLocation = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "handles")]
         internal List<Handle> SerializedHandles
         {
-            get { return _handles; }
-            set { _handles = value; }
+            get { return this.handles; }
+            set { this.handles = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "referenceCountMinusOne")]
         internal int SerializedReferenceCountMinusOne
         {
-            get { return _referenceCountMinusOne; }
-            set { _referenceCountMinusOne = value; }
+            get { return this.referenceCountMinusOne; }
+            set { this.referenceCountMinusOne = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "hasOwnerCompleted")]
         internal bool SerializedHasOwnerCompleted
         {
-            get { return _hasOwnerCompleted; }
-            set { _hasOwnerCompleted = value; }
+            get { return this.hasOwnerCompleted; }
+            set { this.hasOwnerCompleted = value; }
         }
 
         internal Activity Definition
@@ -122,11 +126,11 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _parent;
+                return this.parent;
             }
             set
             {
-                _parent = value;
+                this.parent = value;
             }
         }
 
@@ -134,7 +138,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _hasHandles;
+                return this.hasHandles;
             }
         }
 
@@ -142,7 +146,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _executor.MappableObjectManager;
+                return this.executor.MappableObjectManager;
             }
         }
 
@@ -150,7 +154,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _referenceCountMinusOne == -1;
+                return this.referenceCountMinusOne == -1;
             }
         }
 
@@ -158,7 +162,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _hasOwnerCompleted;
+                return this.hasOwnerCompleted;
             }
         }
 
@@ -172,7 +176,7 @@ namespace CoreWf.Runtime
 
         internal List<Handle> Handles
         {
-            get { return _handles; }
+            get { return this.handles; }
         }
 
         void ActivityInstanceMap.IActivityReference.Load(Activity activity, ActivityInstanceMap instanceMap)
@@ -180,33 +184,35 @@ namespace CoreWf.Runtime
             this.Definition = activity;
         }
 
-        //void ActivityInstanceMap.IActivityReferenceWithEnvironment.UpdateEnvironment(EnvironmentUpdateMap map, Activity activity)
-        //{
-        //    // LocationEnvironment.Update() is invoked through this path when this is a seondary root's environment(and in its parent chain) whose owner has already completed.
-        //    this.Update(map, activity);
-        //}
+#if NET45
+        void ActivityInstanceMap.IActivityReferenceWithEnvironment.UpdateEnvironment(EnvironmentUpdateMap map, Activity activity)
+        {
+            // LocationEnvironment.Update() is invoked through this path when this is a seondary root's environment(and in its parent chain) whose owner has already completed.
+            this.Update(map, activity);
+        }    
+#endif
 
         // Note that the owner should never call this as the first
         // AddReference is assumed
         internal void AddReference()
         {
-            _referenceCountMinusOne++;
+            this.referenceCountMinusOne++;
         }
 
         internal void RemoveReference(bool isOwner)
         {
             if (isOwner)
             {
-                _hasOwnerCompleted = true;
+                this.hasOwnerCompleted = true;
             }
 
-            Fx.Assert(_referenceCountMinusOne >= 0, "We must at least have 1 reference (0 for refCountMinusOne)");
-            _referenceCountMinusOne--;
+            Fx.Assert(this.referenceCountMinusOne >= 0, "We must at least have 1 reference (0 for refCountMinusOne)");
+            this.referenceCountMinusOne--;
         }
 
         internal void OnDeserialized(ActivityExecutor executor, ActivityInstance handleScope)
         {
-            _executor = executor;
+            this.executor = executor;
 
             // The instance map Load might have already set the definition to the correct one.
             // If not then we assume the definition is the same as the handle scope.
@@ -222,13 +228,13 @@ namespace CoreWf.Runtime
         internal void ReinitializeHandles(ActivityInstance handleScope)
         {
             // Need to reinitialize the handles in the list.
-            if (_handles != null)
+            if (this.handles != null)
             {
-                int count = _handles.Count;
+                int count = this.handles.Count;
                 for (int i = 0; i < count; i++)
                 {
-                    _handles[i].Reinitialize(handleScope);
-                    _hasHandles = true;
+                    this.handles[i].Reinitialize(handleScope);
+                    this.hasHandles = true;
                 }
             }
         }
@@ -236,38 +242,38 @@ namespace CoreWf.Runtime
         internal void Dispose()
         {
             Fx.Assert(this.ShouldDispose, "We shouldn't be calling Dispose when we have existing references.");
-            Fx.Assert(!_hasHandles, "We should have already uninitialized the handles and set our hasHandles variable to false.");
-            Fx.Assert(!_isDisposed, "We should not already be disposed.");
+            Fx.Assert(!this.hasHandles, "We should have already uninitialized the handles and set our hasHandles variable to false.");
+            Fx.Assert(!this.isDisposed, "We should not already be disposed.");
 
-            _isDisposed = true;
+            this.isDisposed = true;
 
             CleanupMappedLocations();
         }
 
         internal void AddHandle(Handle handleToAdd)
         {
-            if (_handles == null)
+            if (this.handles == null)
             {
-                _handles = new List<Handle>();
+                this.handles = new List<Handle>();
             }
-            _handles.Add(handleToAdd);
-            _hasHandles = true;
+            this.handles.Add(handleToAdd);
+            this.hasHandles = true;
         }
 
         private void CleanupMappedLocations()
         {
-            if (_hasMappableLocations)
+            if (this.hasMappableLocations)
             {
-                if (_singleLocation != null)
+                if (this.singleLocation != null)
                 {
-                    Fx.Assert(_singleLocation.CanBeMapped, "Can only have mappable locations for a singleton if its mappable.");
-                    UnregisterLocation(_singleLocation);
+                    Fx.Assert(this.singleLocation.CanBeMapped, "Can only have mappable locations for a singleton if its mappable.");
+                    UnregisterLocation(this.singleLocation);
                 }
-                else if (_locations != null)
+                else if (this.locations != null)
                 {
-                    for (int i = 0; i < _locations.Length; i++)
+                    for (int i = 0; i < this.locations.Length; i++)
                     {
-                        Location location = _locations[i];
+                        Location location = this.locations[i];
 
                         if (location.CanBeMapped)
                         {
@@ -280,7 +286,7 @@ namespace CoreWf.Runtime
 
         internal void UninitializeHandles(ActivityInstance scope)
         {
-            if (_hasHandles)
+            if (this.hasHandles)
             {
                 HandleInitializationContext context = null;
 
@@ -289,7 +295,7 @@ namespace CoreWf.Runtime
                     UninitializeHandles(scope, this.Definition.RuntimeVariables, ref context);
                     UninitializeHandles(scope, this.Definition.ImplementationVariables, ref context);
 
-                    _hasHandles = false;
+                    this.hasHandles = false;
                 }
                 finally
                 {
@@ -320,7 +326,7 @@ namespace CoreWf.Runtime
                         {
                             if (context == null)
                             {
-                                context = new HandleInitializationContext(_executor, scope);
+                                context = new HandleInitializationContext(this.executor, scope);
                             }
 
                             handle.Uninitialize(context);
@@ -334,7 +340,7 @@ namespace CoreWf.Runtime
 
         internal void DeclareHandle(LocationReference locationReference, Location location, ActivityInstance activityInstance)
         {
-            _hasHandles = true;
+            this.hasHandles = true;
 
             Declare(locationReference, location, activityInstance);
         }
@@ -350,23 +356,23 @@ namespace CoreWf.Runtime
 
         internal void Declare(LocationReference locationReference, Location location, ActivityInstance activityInstance)
         {
-            Fx.Assert((locationReference.Id == 0 && _locations == null) || (locationReference.Id >= 0 && _locations != null && locationReference.Id < _locations.Length), "The environment should have been created with the appropriate capacity.");
+            Fx.Assert((locationReference.Id == 0 && this.locations == null) || (locationReference.Id >= 0 && this.locations != null && locationReference.Id < this.locations.Length), "The environment should have been created with the appropriate capacity.");
             Fx.Assert(location != null, "");
 
             RegisterLocation(location, locationReference, activityInstance);
 
-            if (_locations == null)
+            if (this.locations == null)
             {
-                Fx.Assert(_singleLocation == null, "We should not have had a single location if we are trying to declare one.");
+                Fx.Assert(this.singleLocation == null, "We should not have had a single location if we are trying to declare one.");
                 Fx.Assert(locationReference.Id == 0, "We should think the id is zero if we are setting the single location.");
 
-                _singleLocation = location;
+                this.singleLocation = location;
             }
             else
             {
-                Fx.Assert(_locations[locationReference.Id] == null || _locations[locationReference.Id] is DummyLocation, "We should not have had a location at the spot we are replacing.");
+                Fx.Assert(this.locations[locationReference.Id] == null || this.locations[locationReference.Id] is DummyLocation, "We should not have had a location at the spot we are replacing.");
 
-                _locations[locationReference.Id] = location;
+                this.locations[locationReference.Id] = location;
             }
         }
 
@@ -377,39 +383,39 @@ namespace CoreWf.Runtime
 
         internal Location GetSpecificLocation(int id)
         {
-            Fx.Assert(id >= 0 && ((_locations == null && id == 0) || (_locations != null && id < _locations.Length)), "Id needs to be within bounds.");
+            Fx.Assert(id >= 0 && ((this.locations == null && id == 0) || (this.locations != null && id < this.locations.Length)), "Id needs to be within bounds.");
 
-            if (_locations == null)
+            if (this.locations == null)
             {
-                return _singleLocation;
+                return this.singleLocation;
             }
             else
             {
-                return _locations[id];
+                return this.locations[id];
             }
         }
 
         // called for asynchronous argument resolution to collapse Location<Location<T>> to Location<T> in the environment
         internal void CollapseTemporaryResolutionLocations()
         {
-            if (_locations == null)
+            if (this.locations == null)
             {
-                if (_singleLocation != null &&
-                    object.ReferenceEquals(_singleLocation.TemporaryResolutionEnvironment, this))
+                if (this.singleLocation != null &&
+                    object.ReferenceEquals(this.singleLocation.TemporaryResolutionEnvironment, this))
                 {
-                    CollapseTemporaryResolutionLocation(ref _singleLocation);
+                    CollapseTemporaryResolutionLocation(ref this.singleLocation);
                 }
             }
             else
             {
-                for (int i = 0; i < _locations.Length; i++)
+                for (int i = 0; i < this.locations.Length; i++)
                 {
-                    Location referenceLocation = _locations[i];
+                    Location referenceLocation = this.locations[i];
 
                     if (referenceLocation != null &&
                         object.ReferenceEquals(referenceLocation.TemporaryResolutionEnvironment, this))
                     {
-                        CollapseTemporaryResolutionLocation(ref _locations[i]);
+                        CollapseTemporaryResolutionLocation(ref this.locations[i]);
                     }
                 }
             }
@@ -423,19 +429,52 @@ namespace CoreWf.Runtime
             // it might have been removed in a subsequent update. If so, this method is a no-op.
             Fx.Assert(location.TemporaryResolutionEnvironment == this, "Trying to collapse from the wrong environment");
 
-            if (_singleLocation == location)
+            if (this.singleLocation == location)
             {
-                CollapseTemporaryResolutionLocation(ref _singleLocation);
+                CollapseTemporaryResolutionLocation(ref this.singleLocation);
             }
-            else if (_locations != null)
+            else if (this.locations != null)
             {
-                for (int i = 0; i < _locations.Length; i++)
+                for (int i = 0; i < this.locations.Length; i++)
                 {
-                    if (_locations[i] == location)
+                    if (this.locations[i] == location)
                     {
-                        CollapseTemporaryResolutionLocation(ref _locations[i]);
+                        CollapseTemporaryResolutionLocation(ref this.locations[i]);
                     }
                 }
+            }
+        }
+
+        private void CollapseTemporaryResolutionLocation(ref Location location)
+        {
+            if (location.Value == null)
+            {
+                location = (Location)location.CreateDefaultValue();
+            }
+            else
+            {
+                location = ((Location)location.Value).CreateReference(location.BufferGetsOnCollapse);
+            }
+        }
+
+        private void RegisterUpdatedLocations(ActivityInstance activityInstance)
+        {
+            if (this.locationsToRegister != null)
+            {
+                foreach (LocationReference locationReference in this.locationsToRegister)
+                {
+                    RegisterLocation(GetSpecificLocation(locationReference.Id), locationReference, activityInstance);
+                }
+                this.locationsToRegister = null;
+            }
+
+            if (this.locationsToUnregister != null)
+            {
+                foreach (Location location in this.locationsToUnregister)
+                {
+                    UnregisterLocation(location);
+                }
+                this.locationsToUnregister = null;
             }
         }
 
@@ -446,18 +485,18 @@ namespace CoreWf.Runtime
 
             value = null;
 
-            if (_locations == null)
+            if (this.locations == null)
             {
                 if (id == 0)
                 {
-                    value = _singleLocation;
+                    value = this.singleLocation;
                 }
             }
             else
             {
-                if (_locations.Length > id)
+                if (this.locations.Length > id)
                 {
-                    value = _locations[id];
+                    value = this.locations[id];
                 }
             }
 
@@ -483,13 +522,13 @@ namespace CoreWf.Runtime
 
             value = null;
 
-            if (id == 0 && targetEnvironment._locations == null)
+            if (id == 0 && targetEnvironment.locations == null)
             {
-                value = targetEnvironment._singleLocation;
+                value = targetEnvironment.singleLocation;
             }
-            else if (targetEnvironment._locations != null && targetEnvironment._locations.Length > id)
+            else if (targetEnvironment.locations != null && targetEnvironment.locations.Length > id)
             {
-                value = targetEnvironment._locations[id];
+                value = targetEnvironment.locations[id];
             }
 
             return value != null;
@@ -499,7 +538,7 @@ namespace CoreWf.Runtime
         {
             if (location.CanBeMapped)
             {
-                _hasMappableLocations = true;
+                this.hasMappableLocations = true;
                 this.MappableObjectManager.Register(location, this.Definition, locationReference, activityInstance);
             }
         }
@@ -511,276 +550,245 @@ namespace CoreWf.Runtime
 
         private void ThrowIfDisposed()
         {
-            if (_isDisposed)
+            if (isDisposed)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(
+                throw FxTrace.Exception.AsError(
                     new ObjectDisposedException(this.GetType().FullName, SR.EnvironmentDisposed));
             }
         }
 
-        //internal void Update(EnvironmentUpdateMap map, Activity activity)
-        //{
-        //    //                    arguments     public variables      private variables    RuntimeDelegateArguments
-        //    //  Locations array:  AAAAAAAAAA   VVVVVVVVVVVVVVVVVVVVVV PPPPPPPPPPPPPPPPPPP  DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-
-        //    int actualRuntimeDelegateArgumentCount = activity.HandlerOf == null ? 0 : activity.HandlerOf.RuntimeDelegateArguments.Count;
-
-        //    if (map.NewArgumentCount != activity.RuntimeArguments.Count ||
-        //        map.NewVariableCount != activity.RuntimeVariables.Count ||
-        //        map.NewPrivateVariableCount != activity.ImplementationVariables.Count ||
-        //        map.RuntimeDelegateArgumentCount != actualRuntimeDelegateArgumentCount)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
-        //            SR.WrongEnvironmentCount(activity, map.NewArgumentCount, map.NewVariableCount, map.NewPrivateVariableCount, map.RuntimeDelegateArgumentCount,
-        //                activity.RuntimeArguments.Count, activity.RuntimeVariables.Count, activity.ImplementationVariables.Count, actualRuntimeDelegateArgumentCount))));
-        //    }
-
-        //    int expectedLocationCount = map.OldArgumentCount + map.OldVariableCount + map.OldPrivateVariableCount + map.RuntimeDelegateArgumentCount;
-
-        //    int actualLocationCount;
-        //    if (this.locations == null)
-        //    {
-        //        if (this.singleLocation == null)
-        //        {
-        //            // we can hit this condition when the root activity instance has zero symbol.
-        //            actualLocationCount = 0;
-        //        }
-        //        else
-        //        {
-        //            actualLocationCount = 1;
-
-        //            // temporarily normalize to locations array for the sake of environment update processing
-        //            this.locations = new Location[] { this.singleLocation };
-        //            this.singleLocation = null;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Fx.Assert(this.singleLocation == null, "locations and singleLocations cannot be non-null at the same time.");
-        //        actualLocationCount = this.locations.Length;
-        //    }
-
-        //    if (expectedLocationCount != actualLocationCount)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
-        //            SR.WrongOriginalEnvironmentCount(activity, map.OldArgumentCount, map.OldVariableCount, map.OldPrivateVariableCount, map.RuntimeDelegateArgumentCount,
-        //                expectedLocationCount, actualLocationCount))));
-        //    }
-
-        //    Location[] newLocations = null;
-
-        //    // If newTotalLocations == 0, update will leave us with an empty LocationEnvironment,
-        //    // which is something the runtime would normally never create. This is harmless, but it
-        //    // is a loosening of normal invariants.
-        //    int newTotalLocations = map.NewArgumentCount + map.NewVariableCount + map.NewPrivateVariableCount + map.RuntimeDelegateArgumentCount;
-        //    if (newTotalLocations > 0)
-        //    {
-        //        newLocations = new Location[newTotalLocations];
-        //    }
-
-        //    UpdateArguments(map, newLocations);
-        //    UnregisterRemovedVariables(map);
-        //    UpdatePublicVariables(map, newLocations, activity);
-        //    UpdatePrivateVariables(map, newLocations, activity);
-        //    CopyRuntimeDelegateArguments(map, newLocations);
-
-        //    Location newSingleLocation = null;
-        //    if (newTotalLocations == 1)
-        //    {
-        //        newSingleLocation = newLocations[0];
-        //        newLocations = null;
-        //    }
-
-        //    this.singleLocation = newSingleLocation;
-        //    this.locations = newLocations;
-        //}
-
-        //void UpdateArguments(EnvironmentUpdateMap map, Location[] newLocations)
-        //{
-        //    if (map.HasArgumentEntries)
-        //    {
-        //        for (int i = 0; i < map.ArgumentEntries.Count; i++)
-        //        {
-        //            EnvironmentUpdateMapEntry entry = map.ArgumentEntries[i];
-
-        //            Fx.Assert(entry.NewOffset >= 0 && entry.NewOffset < map.NewArgumentCount, "Argument offset is out of range");
-
-        //            if (entry.IsAddition)
-        //            {
-        //                // Location allocation will be performed later during ResolveDynamicallyAddedArguments().
-        //                // for now, simply assign a dummy location so we know not to copy over the old value.
-        //                newLocations[entry.NewOffset] = dummyLocation;
-        //            }
-        //            else
-        //            {
-        //                Fx.Assert(this.locations != null && this.singleLocation == null, "Caller should have copied singleLocation into locations array");
-
-        //                // rearrangement of existing arguments
-        //                // this entry here doesn't describe argument removal
-        //                newLocations[entry.NewOffset] = this.locations[entry.OldOffset];
-        //            }
-        //        }
-        //    }
-
-        //    // copy over unchanged Locations, and null out DummyLocations
-        //    for (int i = 0; i < map.NewArgumentCount; i++)
-        //    {
-        //        if (newLocations[i] == null)
-        //        {
-        //            Fx.Assert(this.locations != null && this.locations.Length > i, "locations must be non-null and index i must be within the range of locations.");
-        //            newLocations[i] = this.locations[i];
-        //        }
-        //        else if (newLocations[i] == dummyLocation)
-        //        {
-        //            newLocations[i] = null;
-        //        }
-        //    }
-        //}
-
-        //void UpdatePublicVariables(EnvironmentUpdateMap map, Location[] newLocations, Activity activity)
-        //{
-        //    UpdateVariables(
-        //        map.NewArgumentCount,
-        //        map.OldArgumentCount,
-        //        map.NewVariableCount,
-        //        map.OldVariableCount,
-        //        map.VariableEntries,
-        //        activity.RuntimeVariables,
-        //        newLocations);
-        //}
-
-        //void UpdatePrivateVariables(EnvironmentUpdateMap map, Location[] newLocations, Activity activity)
-        //{
-        //    UpdateVariables(
-        //        map.NewArgumentCount + map.NewVariableCount,
-        //        map.OldArgumentCount + map.OldVariableCount,
-        //        map.NewPrivateVariableCount,
-        //        map.OldPrivateVariableCount,
-        //        map.PrivateVariableEntries,
-        //        activity.ImplementationVariables,
-        //        newLocations);
-        //}
-
-        //void UpdateVariables(int newVariablesOffset, int oldVariablesOffset, int newVariableCount, int oldVariableCount, IList<EnvironmentUpdateMapEntry> variableEntries, IList<Variable> variables, Location[] newLocations)
-        //{
-        //    if (variableEntries != null)
-        //    {
-        //        for (int i = 0; i < variableEntries.Count; i++)
-        //        {
-        //            EnvironmentUpdateMapEntry entry = variableEntries[i];
-
-        //            Fx.Assert(entry.NewOffset >= 0 && entry.NewOffset < newVariableCount, "Variable offset is out of range");
-        //            Fx.Assert(!entry.IsNewHandle, "This should have been caught in ActivityInstanceMap.UpdateRawInstance");
-
-        //            if (entry.IsAddition)
-        //            {
-        //                Variable newVariable = variables[entry.NewOffset];
-        //                Location location = newVariable.CreateLocation();
-        //                newLocations[newVariablesOffset + entry.NewOffset] = location;
-        //                if (location.CanBeMapped)
-        //                {
-        //                    ActivityUtilities.Add(ref this.locationsToRegister, newVariable);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                Fx.Assert(this.locations != null && this.singleLocation == null, "Caller should have copied singleLocation into locations array");
-
-        //                // rearrangement of existing variable
-        //                // this entry here doesn't describe variable removal
-        //                newLocations[newVariablesOffset + entry.NewOffset] = this.locations[oldVariablesOffset + entry.OldOffset];
-        //            }
-        //        }
-        //    }
-
-        //    // copy over unchanged variable Locations
-        //    for (int i = 0; i < newVariableCount; i++)
-        //    {
-        //        if (newLocations[newVariablesOffset + i] == null)
-        //        {
-        //            Fx.Assert(i < oldVariableCount, "New variable should have a location");
-        //            Fx.Assert(this.locations != null && this.locations.Length > oldVariablesOffset + i, "locations must be non-null and index i + oldVariableOffset must be within the range of locations.");
-
-        //            newLocations[newVariablesOffset + i] = this.locations[oldVariablesOffset + i];
-        //        }
-        //    }
-        //}
-
-        //void CopyRuntimeDelegateArguments(EnvironmentUpdateMap map, Location[] newLocations)
-        //{
-        //    for (int i = 1; i <= map.RuntimeDelegateArgumentCount; i++)
-        //    {
-        //        newLocations[newLocations.Length - i] = this.locations[this.locations.Length - i];
-        //    }
-        //}
-
-        private void CollapseTemporaryResolutionLocation(ref Location location)
+#if NET45
+        internal void Update(EnvironmentUpdateMap map, Activity activity)
         {
-            if (location.Value == null)
+            //                    arguments     public variables      private variables    RuntimeDelegateArguments
+            //  Locations array:  AAAAAAAAAA   VVVVVVVVVVVVVVVVVVVVVV PPPPPPPPPPPPPPPPPPP  DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+
+            int actualRuntimeDelegateArgumentCount = activity.HandlerOf == null ? 0 : activity.HandlerOf.RuntimeDelegateArguments.Count;
+
+            if (map.NewArgumentCount != activity.RuntimeArguments.Count ||
+                map.NewVariableCount != activity.RuntimeVariables.Count ||
+                map.NewPrivateVariableCount != activity.ImplementationVariables.Count ||
+                map.RuntimeDelegateArgumentCount != actualRuntimeDelegateArgumentCount)
             {
-                location = (Location)location.CreateDefaultValue();
+                throw FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
+                    SR.WrongEnvironmentCount(activity, map.NewArgumentCount, map.NewVariableCount, map.NewPrivateVariableCount, map.RuntimeDelegateArgumentCount,
+                        activity.RuntimeArguments.Count, activity.RuntimeVariables.Count, activity.ImplementationVariables.Count, actualRuntimeDelegateArgumentCount))));
+            }
+
+            int expectedLocationCount = map.OldArgumentCount + map.OldVariableCount + map.OldPrivateVariableCount + map.RuntimeDelegateArgumentCount;
+
+            int actualLocationCount;
+            if (this.locations == null)
+            {
+                if (this.singleLocation == null)
+                {
+                    // we can hit this condition when the root activity instance has zero symbol.
+                    actualLocationCount = 0;
+                }
+                else
+                {
+                    actualLocationCount = 1;
+
+                    // temporarily normalize to locations array for the sake of environment update processing
+                    this.locations = new Location[] { this.singleLocation };
+                    this.singleLocation = null;
+                }
             }
             else
             {
-                location = ((Location)location.Value).CreateReference(location.BufferGetsOnCollapse);
+                Fx.Assert(this.singleLocation == null, "locations and singleLocations cannot be non-null at the same time.");
+                actualLocationCount = this.locations.Length;
             }
+
+            if (expectedLocationCount != actualLocationCount)
+            {
+                throw FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidUpdateMap(
+                    SR.WrongOriginalEnvironmentCount(activity, map.OldArgumentCount, map.OldVariableCount, map.OldPrivateVariableCount, map.RuntimeDelegateArgumentCount,
+                        expectedLocationCount, actualLocationCount))));
+            }
+
+            Location[] newLocations = null;
+
+            // If newTotalLocations == 0, update will leave us with an empty LocationEnvironment,
+            // which is something the runtime would normally never create. This is harmless, but it
+            // is a loosening of normal invariants.
+            int newTotalLocations = map.NewArgumentCount + map.NewVariableCount + map.NewPrivateVariableCount + map.RuntimeDelegateArgumentCount;
+            if (newTotalLocations > 0)
+            {
+                newLocations = new Location[newTotalLocations];
+            }
+
+            UpdateArguments(map, newLocations);
+            UnregisterRemovedVariables(map);
+            UpdatePublicVariables(map, newLocations, activity);
+            UpdatePrivateVariables(map, newLocations, activity);
+            CopyRuntimeDelegateArguments(map, newLocations);
+
+            Location newSingleLocation = null;
+            if (newTotalLocations == 1)
+            {
+                newSingleLocation = newLocations[0];
+                newLocations = null;
+            }
+
+            this.singleLocation = newSingleLocation;
+            this.locations = newLocations;
         }
 
-        private void RegisterUpdatedLocations(ActivityInstance activityInstance)
+        void UpdateArguments(EnvironmentUpdateMap map, Location[] newLocations)
         {
-            if (_locationsToRegister != null)
+            if (map.HasArgumentEntries)
             {
-                foreach (LocationReference locationReference in _locationsToRegister)
+                for (int i = 0; i < map.ArgumentEntries.Count; i++)
                 {
-                    RegisterLocation(GetSpecificLocation(locationReference.Id), locationReference, activityInstance);
+                    EnvironmentUpdateMapEntry entry = map.ArgumentEntries[i];
+
+                    Fx.Assert(entry.NewOffset >= 0 && entry.NewOffset < map.NewArgumentCount, "Argument offset is out of range");
+
+                    if (entry.IsAddition)
+                    {
+                        // Location allocation will be performed later during ResolveDynamicallyAddedArguments().
+                        // for now, simply assign a dummy location so we know not to copy over the old value.
+                        newLocations[entry.NewOffset] = dummyLocation;
+                    }
+                    else
+                    {
+                        Fx.Assert(this.locations != null && this.singleLocation == null, "Caller should have copied singleLocation into locations array");
+
+                        // rearrangement of existing arguments
+                        // this entry here doesn't describe argument removal
+                        newLocations[entry.NewOffset] = this.locations[entry.OldOffset];
+                    }
                 }
-                _locationsToRegister = null;
             }
 
-            if (_locationsToUnregister != null)
+            // copy over unchanged Locations, and null out DummyLocations
+            for (int i = 0; i < map.NewArgumentCount; i++)
             {
-                foreach (Location location in _locationsToUnregister)
+                if (newLocations[i] == null)
                 {
-                    UnregisterLocation(location);
+                    Fx.Assert(this.locations != null && this.locations.Length > i, "locations must be non-null and index i must be within the range of locations.");
+                    newLocations[i] = this.locations[i];
                 }
-                _locationsToUnregister = null;
+                else if (newLocations[i] == dummyLocation)
+                {
+                    newLocations[i] = null;
+                }
             }
         }
 
-        //void UnregisterRemovedVariables(EnvironmentUpdateMap map)
-        //{
-        //    bool hasMappableLocationsRemaining = false;
-        //    int offset = map.OldArgumentCount;
+        void UpdatePublicVariables(EnvironmentUpdateMap map, Location[] newLocations, Activity activity)
+        {
+            UpdateVariables(
+                map.NewArgumentCount,
+                map.OldArgumentCount,
+                map.NewVariableCount,
+                map.OldVariableCount,
+                map.VariableEntries,
+                activity.RuntimeVariables,
+                newLocations);
+        }
 
-        //    FindVariablesToUnregister(false, map, map.OldVariableCount, offset, ref hasMappableLocationsRemaining);
+        void UpdatePrivateVariables(EnvironmentUpdateMap map, Location[] newLocations, Activity activity)
+        {
+            UpdateVariables(
+                map.NewArgumentCount + map.NewVariableCount,
+                map.OldArgumentCount + map.OldVariableCount,
+                map.NewPrivateVariableCount,
+                map.OldPrivateVariableCount,
+                map.PrivateVariableEntries,
+                activity.ImplementationVariables,
+                newLocations);
+        }
 
-        //    offset = map.OldArgumentCount + map.OldVariableCount;
+        void UpdateVariables(int newVariablesOffset, int oldVariablesOffset, int newVariableCount, int oldVariableCount, IList<EnvironmentUpdateMapEntry> variableEntries, IList<Variable> variables, Location[] newLocations)
+        {
+            if (variableEntries != null)
+            {
+                for (int i = 0; i < variableEntries.Count; i++)
+                {
+                    EnvironmentUpdateMapEntry entry = variableEntries[i];
 
-        //    FindVariablesToUnregister(true, map, map.OldPrivateVariableCount, offset, ref hasMappableLocationsRemaining);
+                    Fx.Assert(entry.NewOffset >= 0 && entry.NewOffset < newVariableCount, "Variable offset is out of range");
+                    Fx.Assert(!entry.IsNewHandle, "This should have been caught in ActivityInstanceMap.UpdateRawInstance");
 
-        //    this.hasMappableLocations = hasMappableLocationsRemaining;
-        //}
+                    if (entry.IsAddition)
+                    {
+                        Variable newVariable = variables[entry.NewOffset];
+                        Location location = newVariable.CreateLocation();
+                        newLocations[newVariablesOffset + entry.NewOffset] = location;
+                        if (location.CanBeMapped)
+                        {
+                            ActivityUtilities.Add(ref this.locationsToRegister, newVariable);
+                        }
+                    }
+                    else
+                    {
+                        Fx.Assert(this.locations != null && this.singleLocation == null, "Caller should have copied singleLocation into locations array");
 
-        //delegate int? GetNewVariableIndex(int oldIndex);
-        //private void FindVariablesToUnregister(bool forImplementation, EnvironmentUpdateMap map, int oldVariableCount, int offset, ref bool hasMappableLocationsRemaining)
-        //{
-        //    for (int i = 0; i < oldVariableCount; i++)
-        //    {
-        //        Location location = this.locations[i + offset];
-        //        if (location.CanBeMapped)
-        //        {
-        //            if ((forImplementation && map.GetNewPrivateVariableIndex(i).HasValue) || (!forImplementation && map.GetNewVariableIndex(i).HasValue))
-        //            {
-        //                hasMappableLocationsRemaining = true;
-        //            }
-        //            else
-        //            {
-        //                ActivityUtilities.Add(ref this.locationsToUnregister, location);
-        //            }
-        //        }
-        //    }
-        //}
+                        // rearrangement of existing variable
+                        // this entry here doesn't describe variable removal
+                        newLocations[newVariablesOffset + entry.NewOffset] = this.locations[oldVariablesOffset + entry.OldOffset];
+                    }
+                }
+            }
 
+            // copy over unchanged variable Locations
+            for (int i = 0; i < newVariableCount; i++)
+            {
+                if (newLocations[newVariablesOffset + i] == null)
+                {
+                    Fx.Assert(i < oldVariableCount, "New variable should have a location");
+                    Fx.Assert(this.locations != null && this.locations.Length > oldVariablesOffset + i, "locations must be non-null and index i + oldVariableOffset must be within the range of locations.");
+
+                    newLocations[newVariablesOffset + i] = this.locations[oldVariablesOffset + i];
+                }
+            }
+        }
+
+        void CopyRuntimeDelegateArguments(EnvironmentUpdateMap map, Location[] newLocations)
+        {
+            for (int i = 1; i <= map.RuntimeDelegateArgumentCount; i++)
+            {
+                newLocations[newLocations.Length - i] = this.locations[this.locations.Length - i];
+            }
+        }
+
+        void UnregisterRemovedVariables(EnvironmentUpdateMap map)
+        {
+            bool hasMappableLocationsRemaining = false;
+            int offset = map.OldArgumentCount;
+
+            FindVariablesToUnregister(false, map, map.OldVariableCount, offset, ref hasMappableLocationsRemaining);
+
+            offset = map.OldArgumentCount + map.OldVariableCount;
+
+            FindVariablesToUnregister(true, map, map.OldPrivateVariableCount, offset, ref hasMappableLocationsRemaining);
+
+            this.hasMappableLocations = hasMappableLocationsRemaining;
+        }
+
+        delegate int? GetNewVariableIndex(int oldIndex);
+        private void FindVariablesToUnregister(bool forImplementation, EnvironmentUpdateMap map, int oldVariableCount, int offset, ref bool hasMappableLocationsRemaining)
+        {
+            for (int i = 0; i < oldVariableCount; i++)
+            {
+                Location location = this.locations[i + offset];
+                if (location.CanBeMapped)
+                {
+                    if ((forImplementation && map.GetNewPrivateVariableIndex(i).HasValue) || (!forImplementation && map.GetNewVariableIndex(i).HasValue))
+                    {
+                        hasMappableLocationsRemaining = true;
+                    }
+                    else
+                    {
+                        ActivityUtilities.Add(ref this.locationsToUnregister, location);
+                    }
+                }
+            }
+        }
+
+#endif
         private class DummyLocation : Location<object>
         {
             // this is a dummy location 

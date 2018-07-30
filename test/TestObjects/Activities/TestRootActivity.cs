@@ -1,11 +1,8 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using CoreWf;
-using CoreWf.Statements;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Utilities.Validation;
 
@@ -97,8 +94,8 @@ namespace Test.Common.TestObjects.Activities
         public const string Confirm = "Confirm";
         public const string Compensate = "Compensate";
 
-        private string _name;
-        private string _action;
+        private readonly string _name;
+        private readonly string _action;
 
         public Directive(string name)
             : this(name, Directive.Wildcard)

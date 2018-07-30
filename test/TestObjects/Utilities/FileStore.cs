@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf.DurableInstancing;
 using CoreWf.Runtime.DurableInstancing;
@@ -71,8 +71,7 @@ namespace Test.Common.TestObjects.Utilities
                 return new CompletedAsyncResult(callback, state);
             }
 
-            CreateWorkflowOwnerCommand createOwner = command as CreateWorkflowOwnerCommand;
-            if (createOwner != null)
+            if (command is CreateWorkflowOwnerCommand createOwner)
             {
                 Guid ownerId = Guid.NewGuid();
                 Owner owner = new Owner();
@@ -89,8 +88,7 @@ namespace Test.Common.TestObjects.Utilities
                 return new CompletedAsyncResult(callback, state);
             }
 
-            DeleteWorkflowOwnerCommand deleteOwner = command as DeleteWorkflowOwnerCommand;
-            if (deleteOwner != null)
+            if (command is DeleteWorkflowOwnerCommand deleteOwner)
             {
                 Guid ownerId = context.InstanceView.InstanceOwner.InstanceOwnerId;
 
@@ -229,8 +227,7 @@ namespace Test.Common.TestObjects.Utilities
                     }
                 }
 
-                IDictionary<XName, InstanceValue> lookupKeyMetadata;
-                if (command.InstanceKeysToAssociate.TryGetValue(command.LookupInstanceKey, out lookupKeyMetadata))
+                if (command.InstanceKeysToAssociate.TryGetValue(command.LookupInstanceKey, out IDictionary<XName, InstanceValue> lookupKeyMetadata))
                 {
                     key.Metadata = new PropertyBag(lookupKeyMetadata);
                 }
@@ -913,7 +910,7 @@ namespace Test.Common.TestObjects.Utilities
         #region PersistenceItemManager
         public static class PersistenceItemManager
         {
-            private static object s_thisLock = new object();
+            private static readonly object s_thisLock = new object();
 
             public static string StorePath;
 

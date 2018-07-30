@@ -1,12 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.ObjectModel;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System.Collections.ObjectModel;
+    using System.Reflection;
+    using System;
+
     internal static class IndexerHelper
     {
         public static void OnGetArguments<TItem>(Collection<InArgument> indices, OutArgument<Location<TItem>> result, CodeActivityMetadata metadata)
@@ -48,5 +48,7 @@ namespace CoreWf.Expressions
                 setMethod = null;
             }
         }
+
     }
+
 }

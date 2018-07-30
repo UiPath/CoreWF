@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Threading;
@@ -10,15 +10,15 @@ namespace Test.Common.TestObjects.Utilities
     public abstract class AsyncResult : IAsyncResult
     {
         private static AsyncCallback s_asyncCompletionWrapperCallback;
-        private AsyncCallback _callback;
+        private readonly AsyncCallback _callback;
         private bool _completedSynchronously;
         private bool _endCalled;
         private Exception _exception;
         private bool _isCompleted;
         private ManualResetEvent _manualResetEvent;
         private AsyncCompletion _nextAsyncCompletion;
-        private object _state;
-        private object _thisLock;
+        private readonly object _state;
+        private readonly object _thisLock;
 
 #if DEBUG_EXPENSIVE
         StackTrace endStack;
@@ -203,9 +203,8 @@ namespace Test.Common.TestObjects.Utilities
                 throw new ArgumentNullException("result");
             }
 
-            TAsyncResult asyncResult = result as TAsyncResult;
 
-            if (asyncResult == null)
+            if (!(result is TAsyncResult asyncResult))
             {
                 throw new ArgumentException("result", "Invalid async result.");
             }

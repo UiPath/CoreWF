@@ -1,24 +1,22 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
-using System.Security;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Security;
+
     // can't add FuncCompletionCallbackWrapper<T> since we don't know what to close the generic with
     [KnownType(typeof(ActivityCompletionCallbackWrapper))]
     [KnownType(typeof(DelegateCompletionCallbackWrapper))]
     [DataContract]
     internal abstract class CompletionCallbackWrapper : CallbackWrapper
     {
-        private static Type s_completionCallbackType = typeof(CompletionCallback);
-        private static Type[] s_completionCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(ActivityInstance) };
-
-        private bool _checkForCancelation;
-
-        private bool _needsToGatherOutputs;
+        private static readonly Type completionCallbackType = typeof(CompletionCallback);
+        private static readonly Type[] completionCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(ActivityInstance) };
+        private bool checkForCancelation;
+        private bool needsToGatherOutputs;
 
         protected CompletionCallbackWrapper(Delegate callback, ActivityInstance owningInstance)
             : base(callback, owningInstance)
@@ -29,32 +27,32 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _needsToGatherOutputs;
+                return this.needsToGatherOutputs;
             }
 
             set
             {
-                _needsToGatherOutputs = value;
+                this.needsToGatherOutputs = value;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "checkForCancelation")]
         internal bool SerializedCheckForCancelation
         {
-            get { return _checkForCancelation; }
-            set { _checkForCancelation = value; }
+            get { return this.checkForCancelation; }
+            set { this.checkForCancelation = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "needsToGatherOutputs")]
         internal bool SerializedNeedsToGatherOutputs
         {
-            get { return _needsToGatherOutputs; }
-            set { _needsToGatherOutputs = value; }
+            get { return this.needsToGatherOutputs; }
+            set { this.needsToGatherOutputs = value; }
         }
 
         public void CheckForCancelation()
         {
-            _checkForCancelation = true;
+            this.checkForCancelation = true;
         }
 
         protected virtual void GatherOutputs(ActivityInstance completedInstance)
@@ -73,7 +71,7 @@ namespace CoreWf.Runtime
 
             CompletionWorkItem workItem;
 
-            if (_checkForCancelation)
+            if (this.checkForCancelation)
             {
                 workItem = new CompletionWithCancelationCheckWorkItem(this, completedInstance);
             }
@@ -83,10 +81,10 @@ namespace CoreWf.Runtime
                 workItem.Initialize(this, completedInstance);
             }
 
-            //if (completedInstance.InstanceMap != null)
-            //{
-            //    completedInstance.InstanceMap.AddEntry(workItem);
-            //}
+            if (completedInstance.InstanceMap != null)
+            {
+                completedInstance.InstanceMap.AddEntry(workItem);
+            }
 
             return workItem;
         }
@@ -99,8 +97,8 @@ namespace CoreWf.Runtime
         [DataContract]
         public class CompletionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
         {
-            private CompletionCallbackWrapper _callbackWrapper;
-            private ActivityInstance _completedInstance;
+            private CompletionCallbackWrapper callbackWrapper;
+            private ActivityInstance completedInstance;
 
             // Called by the Pool.
             public CompletionWorkItem()
@@ -112,69 +110,69 @@ namespace CoreWf.Runtime
             protected CompletionWorkItem(CompletionCallbackWrapper callbackWrapper, ActivityInstance completedInstance)
                 : base(callbackWrapper.ActivityInstance)
             {
-                _callbackWrapper = callbackWrapper;
-                _completedInstance = completedInstance;
+                this.callbackWrapper = callbackWrapper;
+                this.completedInstance = completedInstance;
             }
 
             protected ActivityInstance CompletedInstance
             {
                 get
                 {
-                    return _completedInstance;
+                    return this.completedInstance;
                 }
             }
 
             [DataMember(Name = "callbackWrapper")]
             internal CompletionCallbackWrapper SerializedCallbackWrapper
             {
-                get { return _callbackWrapper; }
-                set { _callbackWrapper = value; }
+                get { return this.callbackWrapper; }
+                set { this.callbackWrapper = value; }
             }
 
             [DataMember(Name = "completedInstance")]
             internal ActivityInstance SerializedCompletedInstance
             {
-                get { return _completedInstance; }
-                set { _completedInstance = value; }
+                get { return this.completedInstance; }
+                set { this.completedInstance = value; }
             }
 
             public void Initialize(CompletionCallbackWrapper callbackWrapper, ActivityInstance completedInstance)
             {
                 base.Reinitialize(callbackWrapper.ActivityInstance);
-                _callbackWrapper = callbackWrapper;
-                _completedInstance = completedInstance;
+                this.callbackWrapper = callbackWrapper;
+                this.completedInstance = completedInstance;
             }
 
             protected override void ReleaseToPool(ActivityExecutor executor)
             {
                 base.ClearForReuse();
-                _callbackWrapper = null;
-                _completedInstance = null;
-
+                this.callbackWrapper = null;
+                this.completedInstance = null;
+            
                 executor.CompletionWorkItemPool.Release(this);
             }
 
             public override void TraceCompleted()
             {
-                if (TD.IsEnd2EndActivityTracingEnabled() && TD.CompleteCompletionWorkItemIsEnabled())
+                if (TD.CompleteCompletionWorkItemIsEnabled())
                 {
-                    TD.CompleteCompletionWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, _completedInstance.Activity.GetType().ToString(), _completedInstance.Activity.DisplayName, _completedInstance.Id);
+                    TD.CompleteCompletionWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, this.completedInstance.Activity.GetType().ToString(), this.completedInstance.Activity.DisplayName, this.completedInstance.Id);
                 }
             }
 
             public override void TraceScheduled()
             {
-                if (TD.IsEnd2EndActivityTracingEnabled() && TD.ScheduleCompletionWorkItemIsEnabled())
+                if (TD.ScheduleCompletionWorkItemIsEnabled())
                 {
-                    TD.ScheduleCompletionWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, _completedInstance.Activity.GetType().ToString(), _completedInstance.Activity.DisplayName, _completedInstance.Id);
+                    TD.ScheduleCompletionWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, this.completedInstance.Activity.GetType().ToString(), this.completedInstance.Activity.DisplayName, this.completedInstance.Id);
                 }
             }
 
             public override void TraceStarting()
             {
-                if (TD.IsEnd2EndActivityTracingEnabled() && TD.StartCompletionWorkItemIsEnabled())
+                if (TD.StartCompletionWorkItemIsEnabled())
                 {
-                    TD.StartCompletionWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, _completedInstance.Activity.GetType().ToString(), _completedInstance.Activity.DisplayName, _completedInstance.Id);
+                    TD.StartCompletionWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, this.completedInstance.Activity.GetType().ToString(), this.completedInstance.Activity.DisplayName, this.completedInstance.Id);
                 }
             }
 
@@ -182,12 +180,12 @@ namespace CoreWf.Runtime
             {
                 NativeActivityContext context = executor.NativeActivityContextPool.Acquire();
 
-                Fx.Assert(_completedInstance.Activity != null, "Activity definition should always be associated with an activity instance.");
+                Fx.Assert(this.completedInstance.Activity != null, "Activity definition should always be associated with an activity instance.");
 
                 try
                 {
                     context.Initialize(this.ActivityInstance, executor, bookmarkManager);
-                    _callbackWrapper.Invoke(context, _completedInstance);
+                    this.callbackWrapper.Invoke(context, this.completedInstance);
                 }
                 catch (Exception e)
                 {
@@ -214,22 +212,23 @@ namespace CoreWf.Runtime
 
             Activity ActivityInstanceMap.IActivityReference.Activity
             {
-                get
+                get 
                 {
-                    return _completedInstance.Activity;
+                    return this.completedInstance.Activity;
                 }
             }
 
             void ActivityInstanceMap.IActivityReference.Load(Activity activity, ActivityInstanceMap instanceMap)
             {
-                if (_completedInstance.Activity == null)
+                if (this.completedInstance.Activity == null)
                 {
-                    ((ActivityInstanceMap.IActivityReference)_completedInstance).Load(activity, instanceMap);
+                    ((ActivityInstanceMap.IActivityReference)this.completedInstance).Load(activity, instanceMap);
                 }
             }
-        }
-        [DataContract]
 
+        }
+
+        [DataContract]
         private class CompletionWithCancelationCheckWorkItem : CompletionWorkItem
         {
             public CompletionWithCancelationCheckWorkItem(CompletionCallbackWrapper callbackWrapper, ActivityInstance completedInstance)

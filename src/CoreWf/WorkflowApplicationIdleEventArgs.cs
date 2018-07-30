@@ -1,16 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Hosting;
+    using CoreWf.Runtime;
+    using System.Collections.ObjectModel;
+
     [Fx.Tag.XamlVisible(false)]
     public class WorkflowApplicationIdleEventArgs : WorkflowApplicationEventArgs
     {
-        private ReadOnlyCollection<BookmarkInfo> _bookmarks;
+        private ReadOnlyCollection<BookmarkInfo> bookmarks;
 
         internal WorkflowApplicationIdleEventArgs(WorkflowApplication application)
             : base(application)
@@ -21,12 +21,12 @@ namespace CoreWf
         {
             get
             {
-                if (_bookmarks == null)
+                if (this.bookmarks == null)
                 {
-                    _bookmarks = this.Owner.GetBookmarksForIdle();
+                    this.bookmarks = this.Owner.GetBookmarksForIdle();
                 }
 
-                return _bookmarks;
+                return this.bookmarks;
             }
         }
     }

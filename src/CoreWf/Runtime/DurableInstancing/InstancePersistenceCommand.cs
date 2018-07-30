@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -10,22 +10,18 @@ namespace CoreWf.Runtime.DurableInstancing
     {
         protected InstancePersistenceCommand(XName name)
         {
-            if (name == null)
-            {
-                throw Fx.Exception.ArgumentNull("name");
-            }
-            Name = name;
+            Name = name ?? throw Fx.Exception.ArgumentNull(nameof(name));
         }
 
         public XName Name { get; private set; }
 
-        //protected internal virtual bool IsTransactionEnlistmentOptional
-        //{
-        //    get
-        //    {
-        //        return false;
-        //    }
-        //}
+        protected internal virtual bool IsTransactionEnlistmentOptional
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         // For now, only support registering to bind once the owner is established.  (Can't create an owner and take a lock in one command.)
         protected internal virtual bool AutomaticallyAcquiringLock

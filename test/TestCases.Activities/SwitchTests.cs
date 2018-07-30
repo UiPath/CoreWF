@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -90,9 +90,11 @@ namespace TestCases.Activities
             //  Test case description:
             //  Simple switch case scenario
 
-            TestSwitch<int> switchAct = new TestSwitch<int>();
-            switchAct.DisplayName = "standAloneSwitch";
-            switchAct.Expression = 23;
+            TestSwitch<int> switchAct = new TestSwitch<int>
+            {
+                DisplayName = "standAloneSwitch",
+                Expression = 23
+            };
             switchAct.AddCase(12, new TestProductWriteline { Text = "in case 12" });
             switchAct.AddCase(23, new TestProductWriteline { Text = "in case 23" });
             switchAct.AddCase(123, new TestProductWriteline { Text = "in case 123" });
@@ -141,9 +143,11 @@ namespace TestCases.Activities
             List<OrderStatus> values = new List<OrderStatus>() { OrderStatus.NewOrder, OrderStatus.Processing, OrderStatus.Shipped };
             DelegateInArgument<OrderStatus> var = new DelegateInArgument<OrderStatus> { Name = "var" };
 
-            TestForEach<OrderStatus> forEachAct = new TestForEach<OrderStatus>("ForEachAct");
-            forEachAct.Values = values;
-            forEachAct.CurrentVariable = var;
+            TestForEach<OrderStatus> forEachAct = new TestForEach<OrderStatus>("ForEachAct")
+            {
+                Values = values,
+                CurrentVariable = var
+            };
             TestSequence seq = new TestSequence("Seq in For Each");
             seq.Activities.Add(order);
             forEachAct.Body = seq;
@@ -209,8 +213,10 @@ namespace TestCases.Activities
         [Fact]
         public void ThrowExceptionInCase()
         {
-            TestSwitch<float> switchAct = new TestSwitch<float>();
-            switchAct.DisplayName = "Switch Act";
+            TestSwitch<float> switchAct = new TestSwitch<float>
+            {
+                DisplayName = "Switch Act"
+            };
             switchAct.AddCase(123, new TestThrow<InvalidCastException>("THrow invalid cast") { ExpectedOutcome = Outcome.UncaughtException(typeof(InvalidCastException)) });
             switchAct.Expression = 123;
             switchAct.Hints.Add(0);

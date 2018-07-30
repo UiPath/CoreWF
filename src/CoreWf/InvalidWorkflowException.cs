@@ -1,11 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
-    //[Serializable]
+    using System;
+    using System.Runtime.Serialization;
+
+    [Serializable]
     public class InvalidWorkflowException : Exception
     {
         public InvalidWorkflowException()
@@ -23,9 +24,9 @@ namespace CoreWf
         {
         }
 
-        //protected InvalidWorkflowException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //}
+        protected InvalidWorkflowException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 }

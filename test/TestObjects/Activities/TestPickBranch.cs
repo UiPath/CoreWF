@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf;
 using CoreWf.Statements;
@@ -12,7 +12,7 @@ namespace Test.Common.TestObjects.Activities
 {
     public class TestPickBranch
     {
-        private PickBranch _productPickBranch;
+        private readonly PickBranch _productPickBranch;
 
         public TestPickBranch()
         {

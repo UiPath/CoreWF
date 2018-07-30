@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Runtime;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+
     [Fx.Tag.XamlVisible(false)]
     public class InvokeCompletedEventArgs : AsyncCompletedEventArgs
     {
@@ -15,6 +15,7 @@ namespace CoreWf
             : base(error, cancelled, context.UserState)
         {
             this.Outputs = context.Outputs;
+            
         }
 
         public IDictionary<string, object> Outputs

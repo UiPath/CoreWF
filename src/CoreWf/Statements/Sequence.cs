@@ -1,108 +1,113 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.Collections;
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Activities")]
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
+    [ContentProperty("Activities")]
     public sealed class Sequence : NativeActivity
     {
-        private Collection<Activity> _activities;
-        private Collection<Variable> _variables;
-        private Variable<int> _lastIndexHint;
-        private CompletionCallback _onChildComplete;
+        private Collection<Activity> activities;
+        private Collection<Variable> variables;
+        private readonly Variable<int> lastIndexHint;
+        private readonly CompletionCallback onChildComplete;
 
         public Sequence()
             : base()
         {
-            _lastIndexHint = new Variable<int>();
-            _onChildComplete = new CompletionCallback(InternalExecute);
+            this.lastIndexHint = new Variable<int>();
+            this.onChildComplete = new CompletionCallback(InternalExecute);
         }
 
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public Collection<Activity> Activities
         {
             get
             {
-                if (_activities == null)
+                if (this.activities == null)
                 {
-                    _activities = new ValidatingCollection<Activity>
+                    this.activities = new ValidatingCollection<Activity>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _activities;
+                return this.activities;
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    // Our algorithm for recovering from update depends on iterating a unique Activities list.
-        //    // So we can't support update if the same activity is referenced more than once.
-        //    for (int i = 0; i < this.Activities.Count - 1; i++)
-        //    {
-        //        for (int j = i + 1; j < this.Activities.Count; j++)
-        //        {
-        //            if (this.Activities[i] == this.Activities[j])
-        //            {
-        //                metadata.DisallowUpdateInsideThisActivity(SR.SequenceDuplicateReferences);
-        //                break;
-        //            }
-        //        }
-        //    }
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            // Our algorithm for recovering from update depends on iterating a unique Activities list.
+            // So we can't support update if the same activity is referenced more than once.
+            for (int i = 0; i < this.Activities.Count - 1; i++)
+            {
+                for (int j = i + 1; j < this.Activities.Count; j++)
+                {
+                    if (this.Activities[i] == this.Activities[j])
+                    {
+                        metadata.DisallowUpdateInsideThisActivity(SR.SequenceDuplicateReferences);
+                        break;
+                    }
+                }
+            }
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             metadata.SetChildrenCollection(this.Activities);
             metadata.SetVariablesCollection(this.Variables);
-            metadata.AddImplementationVariable(_lastIndexHint);
+            metadata.AddImplementationVariable(this.lastIndexHint);
         }
 
         protected override void Execute(NativeActivityContext context)
         {
-            if (_activities != null && this.Activities.Count > 0)
+            if (this.activities != null && this.Activities.Count > 0)
             {
                 Activity nextChild = this.Activities[0];
 
-                context.ScheduleActivity(nextChild, _onChildComplete);
+                context.ScheduleActivity(nextChild, this.onChildComplete);
             }
         }
 
         private void InternalExecute(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            int completedInstanceIndex = _lastIndexHint.Get(context);
+            int completedInstanceIndex = this.lastIndexHint.Get(context);
 
             if (completedInstanceIndex >= this.Activities.Count || this.Activities[completedInstanceIndex] != completedInstance.Activity)
             {
@@ -118,9 +123,9 @@ namespace CoreWf.Statements
 
             Activity nextChild = this.Activities[nextChildIndex];
 
-            context.ScheduleActivity(nextChild, _onChildComplete);
+            context.ScheduleActivity(nextChild, this.onChildComplete);
 
-            _lastIndexHint.Set(context, nextChildIndex);
+            this.lastIndexHint.Set(context, nextChildIndex);
         }
     }
 }

@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections;
@@ -112,10 +112,14 @@ namespace Test.Common.TestObjects.XmlDiff
 
         private void InitFiles()
         {
-            _SourceDoc = new XmlDiffDocument();
-            _SourceDoc.Option = _XmlDiffOption;
-            _TargetDoc = new XmlDiffDocument();
-            _TargetDoc.Option = this.Option;
+            _SourceDoc = new XmlDiffDocument
+            {
+                Option = _XmlDiffOption
+            };
+            _TargetDoc = new XmlDiffDocument
+            {
+                Option = this.Option
+            };
             _Output = new StringBuilder(String.Empty);
         }
 

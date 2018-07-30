@@ -1,10 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using CoreWf;
+    using System.Collections.ObjectModel;
+
     /// <summary>
     /// InternalTransition is internal representation of transition.
     /// Its difference from transition is that if several transition share the same trigger, all of them belongs to the same internal transition.
@@ -12,7 +13,7 @@ namespace CoreWf.Statements
     /// </summary>
     internal sealed class InternalTransition
     {
-        private Collection<TransitionData> _transitionDataList;
+        private Collection<TransitionData> transitionDataList;
 
         /// <summary>
         /// Gets or sets the index of this InternalTransition in internalTransitions list of its parent state.
@@ -30,7 +31,7 @@ namespace CoreWf.Statements
         {
             get
             {
-                return _transitionDataList.Count == 1 && _transitionDataList[0].Condition == null;
+                return this.transitionDataList.Count == 1 && this.transitionDataList[0].Condition == null;
             }
         }
 
@@ -41,12 +42,12 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_transitionDataList == null)
+                if (this.transitionDataList == null)
                 {
-                    _transitionDataList = new Collection<TransitionData>();
+                    this.transitionDataList = new Collection<TransitionData>();
                 }
 
-                return _transitionDataList;
+                return this.transitionDataList;
             }
         }
 

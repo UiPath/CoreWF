@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Diagnostics;
@@ -58,9 +58,8 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         bool IActualTraceStep.Equals(IActualTraceStep trace)
         {
-            WorkflowAbortedTrace exceptionTrace = trace as WorkflowAbortedTrace;
 
-            return exceptionTrace != null &&
+            return trace is WorkflowAbortedTrace exceptionTrace &&
                 exceptionTrace._instanceId == _instanceId &&
                 ((_abortedReason == null || exceptionTrace._abortedReason == null) ||
                 (exceptionTrace._abortedReason.GetType() == _abortedReason.GetType() &&

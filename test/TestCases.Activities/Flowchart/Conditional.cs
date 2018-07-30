@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -29,8 +29,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional();
-            flowDecision.ConditionExpression = ((env) => (counter.Get(env) == 3));
+            TestFlowConditional flowDecision = new TestFlowConditional
+            {
+                ConditionExpression = ((env) => (counter.Get(env) == 3))
+            };
 
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, writeLine3);
 
@@ -51,8 +53,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False);
-            flowDecision.ConditionExpression = (context => counter.Get(context) > 3);
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            {
+                ConditionExpression = (context => counter.Get(context) > 3)
+            };
 
             flowchart.AddStartLink(writeLine1);
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, writeLine3);
@@ -76,8 +80,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional();
-            flowDecision.ConditionVariable = trueVar;
+            TestFlowConditional flowDecision = new TestFlowConditional
+            {
+                ConditionVariable = trueVar
+            };
 
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, writeLine3);
 
@@ -96,8 +102,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False);
-            flowDecision.Condition = false;
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            {
+                Condition = false
+            };
 
             flowchart.AddStartLink(writeLine1);
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, writeLine3);
@@ -116,8 +124,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional();
-            flowDecision.Condition = true;
+            TestFlowConditional flowDecision = new TestFlowConditional
+            {
+                Condition = true
+            };
 
             flowchart.AddStartLink(writeLine1);
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, (TestActivity)null);
@@ -136,8 +146,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False);
-            flowDecision.Condition = false;
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            {
+                Condition = false
+            };
 
             flowchart.AddStartLink(writeLine1);
             flowchart.AddConditionalLink(writeLine1, flowDecision, (TestActivity)null, writeLine2);
@@ -161,8 +173,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional();
-            flowDecision.ConditionExpression = (context => counter.Get(context) == 3);
+            TestFlowConditional flowDecision = new TestFlowConditional
+            {
+                ConditionExpression = (context => counter.Get(context) == 3)
+            };
 
             flowchart.AddStartLink(writeLine1);
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, writeLine3);
@@ -181,8 +195,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False);
-            flowDecision.Condition = false;
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            {
+                Condition = false
+            };
 
             flowchart.AddConditionalLink(writeLine1, flowDecision, (TestActivity)null, writeLine2);
 
@@ -200,8 +216,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional();
-            flowDecision.Condition = true;
+            TestFlowConditional flowDecision = new TestFlowConditional
+            {
+                Condition = true
+            };
 
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, (TestActivity)null);
 
@@ -219,8 +237,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional();
-            flowDecision.Condition = true;
+            TestFlowConditional flowDecision = new TestFlowConditional
+            {
+                Condition = true
+            };
 
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, writeLine2);
 
@@ -310,8 +330,10 @@ namespace TestCases.Activities.Flowchart
         {
             TestFlowchart flowchart = new TestFlowchart();
 
-            TestFlowConditional decision = new TestFlowConditional();
-            decision.Condition = true;
+            TestFlowConditional decision = new TestFlowConditional
+            {
+                Condition = true
+            };
             flowchart.AddConditionalLink(new TestWriteLine("Start", "Flowchart started"), decision);
 
             TestRuntime.RunAndValidateWorkflow(flowchart);

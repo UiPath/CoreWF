@@ -1,6 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using System;
 using System.Resources;
 using System.Runtime.CompilerServices;
@@ -32,7 +34,7 @@ namespace CoreWf
         internal string GetResourceString(string resourceKey, string defaultString)
         {
             string resourceString = null;
-            try { resourceString = ResourceManager.GetString(resourceKey); }
+            try { resourceString = StringLocalizer[resourceKey]; }
             catch (MissingManifestResourceException) { }
 
             if (defaultString != null && resourceKey.Equals(resourceString, StringComparison.Ordinal))
@@ -85,6 +87,23 @@ namespace CoreWf
                 return String.Join(", ", resourceFormat, p1, p2, p3);
             }
             return String.Format(resourceFormat, p1, p2, p3);
+        }
+
+        private IStringLocalizer stringLocalizer = null;
+        internal IStringLocalizer StringLocalizer
+        {
+            get
+            {
+                if (stringLocalizer == null)
+                {
+                    var locOptions = new LocalizationOptions() { ResourcesPath = "Resources" };
+                    var options = Options.Create<LocalizationOptions>(locOptions);
+                    var resourceFactory = new ResourceManagerStringLocalizerFactory(options, Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
+                    stringLocalizer = resourceFactory.Create(typeof(StringResourceBase));
+                }
+
+                return stringLocalizer;
+            }
         }
     }
 }

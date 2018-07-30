@@ -1,28 +1,30 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using CoreWf.Runtime;
-using System;
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
-    public sealed class HandleInitializationContext
+    public sealed class HandleInitializationContext 
     {
-        private ActivityExecutor _executor;
-        private ActivityInstance _scope;
-        private bool _isDiposed;
+        private readonly ActivityExecutor executor;
+        private readonly ActivityInstance scope;
+        private bool isDiposed;
 
         internal HandleInitializationContext(ActivityExecutor executor, ActivityInstance scope)
         {
-            _executor = executor;
-            _scope = scope;
+            this.executor = executor;
+            this.scope = scope;
         }
 
         internal ActivityInstance OwningActivityInstance
         {
             get
             {
-                return _scope;
+                return this.scope;
             }
         }
 
@@ -30,7 +32,7 @@ namespace CoreWf
         {
             get
             {
-                return _executor;
+                return this.executor;
             }
         }
 
@@ -42,14 +44,14 @@ namespace CoreWf
             value.Initialize(this);
 
             // If we have a scope, we need to add this new handle to the LocationEnvironment.
-            if (_scope != null)
+            if (this.scope != null)
             {
-                _scope.Environment.AddHandle(value);
+                this.scope.Environment.AddHandle(value);
             }
             // otherwise add it to the Executor.
             else
             {
-                _executor.AddHandle(value);
+                this.executor.AddHandle(value);
             }
 
             return value;
@@ -57,7 +59,7 @@ namespace CoreWf
 
         public T GetExtension<T>() where T : class
         {
-            return _executor.GetExtension<T>();
+            return this.executor.GetExtension<T>();
         }
 
         public void UninitializeHandle(Handle handle)
@@ -75,14 +77,14 @@ namespace CoreWf
             ((Handle)value).Initialize(this);
 
             // If we have a scope, we need to add this new handle to the LocationEnvironment.
-            if (_scope != null)
+            if (this.scope != null)
             {
-                _scope.Environment.AddHandle((Handle)value);
+                this.scope.Environment.AddHandle((Handle)value);
             }
             // otherwise add it to the Executor.
             else
             {
-                _executor.AddHandle((Handle)value);
+                this.executor.AddHandle((Handle)value);
             }
 
             return value;
@@ -90,27 +92,27 @@ namespace CoreWf
 
         internal BookmarkScope CreateAndRegisterBookmarkScope()
         {
-            return _executor.BookmarkScopeManager.CreateAndRegisterScope(Guid.Empty);
+            return this.executor.BookmarkScopeManager.CreateAndRegisterScope(Guid.Empty);
         }
 
         internal void UnregisterBookmarkScope(BookmarkScope bookmarkScope)
         {
             Fx.Assert(bookmarkScope != null, "The sub instance should not equal null.");
 
-            _executor.BookmarkScopeManager.UnregisterScope(bookmarkScope);
+            this.executor.BookmarkScopeManager.UnregisterScope(bookmarkScope);
         }
 
         private void ThrowIfDisposed()
         {
-            if (_isDiposed)
+            if (this.isDiposed)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(SR.HandleInitializationContextDisposed));
+                throw FxTrace.Exception.AsError(new ObjectDisposedException(SR.HandleInitializationContextDisposed));
             }
         }
 
         internal void Dispose()
         {
-            _isDiposed = true;
+            this.isDiposed = true;
         }
     }
 }

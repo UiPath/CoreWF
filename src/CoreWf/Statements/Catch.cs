@@ -1,12 +1,14 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [Catch](Of Exception))")]
+    using System;
+    using CoreWf;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [Catch](Of Exception))")]
     public abstract class Catch
     {
         internal Catch()
@@ -22,8 +24,8 @@ namespace CoreWf.Statements
         internal abstract void ScheduleAction(NativeActivityContext context, Exception exception, CompletionCallback completionCallback, FaultCallback faultCallback);
     }
 
-    //[ContentProperty("Action")]
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [Catch](Of Exception))")]
+    [ContentProperty("Action")]
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [Catch](Of Exception))")]
     public sealed class Catch<TException> : Catch
         where TException : Exception
     {
@@ -52,7 +54,7 @@ namespace CoreWf.Statements
             return this.Action;
         }
 
-        internal override void ScheduleAction(NativeActivityContext context, Exception exception,
+        internal override void ScheduleAction(NativeActivityContext context, Exception exception, 
             CompletionCallback completionCallback, FaultCallback faultCallback)
         {
             context.ScheduleAction(this.Action, (TException)exception, completionCallback, faultCallback);

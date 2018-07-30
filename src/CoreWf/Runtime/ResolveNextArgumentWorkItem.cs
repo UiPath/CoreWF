@@ -1,19 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class ResolveNextArgumentWorkItem : ActivityExecutionWorkItem
     {
-        private int _nextArgumentIndex;
-
-        private IDictionary<string, object> _argumentValueOverrides;
-
-        private Location _resultLocation;
+        private int nextArgumentIndex;
+        private IDictionary<string, object> argumentValueOverrides;
+        private Location resultLocation;
 
         public ResolveNextArgumentWorkItem()
         {
@@ -23,22 +21,22 @@ namespace CoreWf.Runtime
         [DataMember(EmitDefaultValue = false, Name = "nextArgumentIndex")]
         internal int SerializedNextArgumentIndex
         {
-            get { return _nextArgumentIndex; }
-            set { _nextArgumentIndex = value; }
+            get { return this.nextArgumentIndex; }
+            set { this.nextArgumentIndex = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "argumentValueOverrides")]
         internal IDictionary<string, object> SerializedArgumentValueOverrides
         {
-            get { return _argumentValueOverrides; }
-            set { _argumentValueOverrides = value; }
+            get { return this.argumentValueOverrides; }
+            set { this.argumentValueOverrides = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "resultLocation")]
         internal Location SerializedResultLocation
         {
-            get { return _resultLocation; }
-            set { _resultLocation = value; }
+            get { return this.resultLocation; }
+            set { this.resultLocation = value; }
         }
 
         public override void TraceScheduled()
@@ -60,9 +58,9 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(nextArgumentIndex > 0, "The nextArgumentIndex must be greater than 0 otherwise we will incorrectly set the sub-state when ResolveArguments completes");
             base.Reinitialize(activityInstance);
-            _nextArgumentIndex = nextArgumentIndex;
-            _argumentValueOverrides = argumentValueOverrides;
-            _resultLocation = resultLocation;
+            this.nextArgumentIndex = nextArgumentIndex;
+            this.argumentValueOverrides = argumentValueOverrides;
+            this.resultLocation = resultLocation;
         }
 
         // Knowledge at a distance! This method relies on the fact that ResolveArguments will
@@ -70,7 +68,7 @@ namespace CoreWf.Runtime
         internal bool CanExecuteUserCode()
         {
             Activity activity = this.ActivityInstance.Activity;
-            for (int i = _nextArgumentIndex; i < activity.RuntimeArguments.Count; i++)
+            for (int i = this.nextArgumentIndex; i < activity.RuntimeArguments.Count; i++)
             {
                 RuntimeArgument argument = activity.RuntimeArguments[i];
                 if (argument.IsBound && argument.BoundArgument.Expression != null)
@@ -84,16 +82,16 @@ namespace CoreWf.Runtime
         protected override void ReleaseToPool(ActivityExecutor executor)
         {
             base.ClearForReuse();
-            _nextArgumentIndex = 0;
-            _resultLocation = null;
-            _argumentValueOverrides = null;
+            this.nextArgumentIndex = 0;
+            this.resultLocation = null;
+            this.argumentValueOverrides = null;
 
             executor.ResolveNextArgumentWorkItemPool.Release(this);
         }
 
         public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
         {
-            this.ActivityInstance.ResolveArguments(executor, _argumentValueOverrides, _resultLocation, _nextArgumentIndex);
+            this.ActivityInstance.ResolveArguments(executor, argumentValueOverrides, resultLocation, nextArgumentIndex);
 
             // Return true always to prevent scheduler from yielding silently.
             return true;

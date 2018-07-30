@@ -1,20 +1,21 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
-using System.Text.RegularExpressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System;
+    using CoreWf.XamlIntegration;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Text.RegularExpressions;
+    using Portable.Xaml.Markup;
+    using CoreWf.Runtime;
+
     [DebuggerStepThrough]
-    //[ContentProperty("Value")]
-    public sealed class Literal<T> : CodeActivity<T>, IExpressionContainer/*, IValueSerializableExpression*/
+    [ContentProperty("Value")]
+    public sealed class Literal<T> : CodeActivity<T>, IExpressionContainer, IValueSerializableExpression
     {
-        private static Regex s_expressionEscapeRegex = new Regex(@"^(%*\[)");
+        private static Regex ExpressionEscapeRegex = new Regex(@"^(%*\[)");
 
         public Literal()
         {
@@ -37,7 +38,7 @@ namespace CoreWf.Expressions
         {
             Type literalType = typeof(T);
 
-            if (!literalType.GetTypeInfo().IsValueType && literalType != TypeHelper.StringType)
+            if (!literalType.IsValueType && literalType != TypeHelper.StringType)
             {
                 metadata.AddValidationError(SR.LiteralsMustBeValueTypesOrImmutableTypes(TypeHelper.StringType, literalType));
             }
@@ -53,52 +54,52 @@ namespace CoreWf.Expressions
             return this.Value == null ? "null" : this.Value.ToString();
         }
 
-        //public bool CanConvertToString(IValueSerializerContext context)
-        //{
-        //    Type typeArgument;
-        //    Type valueType;
-        //    TypeConverter converter;
+        public bool CanConvertToString(IValueSerializerContext context)
+        {
+            Type typeArgument;
+            Type valueType;
+            TypeConverter converter;
 
-        //    if (this.Value == null)
-        //    {
-        //        return true;
-        //    }
+            if (this.Value == null)
+            {
+                return true;
+            }
+            
+            typeArgument = typeof(T);
+            valueType = this.Value.GetType();
 
-        //    typeArgument = typeof(T);
-        //    valueType = this.Value.GetType();
+            if (valueType == TypeHelper.StringType)
+            {
+                string myValue = this.Value as string;
+                if (string.IsNullOrEmpty(myValue))
+                {
+                    return false;
+                }
+            }          
 
-        //    if (valueType == TypeHelper.StringType)
-        //    {
-        //        string myValue = this.Value as string;
-        //        if (string.IsNullOrEmpty(myValue))
-        //        {
-        //            return false;
-        //        }
-        //    }          
+            converter = TypeDescriptor.GetConverter(typeArgument);
+            if (typeArgument == valueType &&
+                converter != null && 
+                converter.CanConvertTo(TypeHelper.StringType) && 
+                converter.CanConvertFrom(TypeHelper.StringType))
+            {               
+                if (valueType == typeof(DateTime))
+                {
+                    DateTime literalValue = (DateTime)(object)this.Value;
+                    return IsShortTimeFormattingSafe(literalValue);
+                }
 
-        //    converter = TypeDescriptor.GetConverter(typeArgument);
-        //    if (typeArgument == valueType &&
-        //        converter != null && 
-        //        converter.CanConvertTo(TypeHelper.StringType) && 
-        //        converter.CanConvertFrom(TypeHelper.StringType))
-        //    {               
-        //        if (valueType == typeof(DateTime))
-        //        {
-        //            DateTime literalValue = (DateTime)(object)this.Value;
-        //            return IsShortTimeFormattingSafe(literalValue);
-        //        }
+                if (valueType == typeof(DateTimeOffset))
+                {
+                    DateTimeOffset literalValue = (DateTimeOffset)(object)this.Value;
+                    return IsShortTimeFormattingSafe(literalValue);
+                }
 
-        //        if (valueType == typeof(DateTimeOffset))
-        //        {
-        //            DateTimeOffset literalValue = (DateTimeOffset)(object)this.Value;
-        //            return IsShortTimeFormattingSafe(literalValue);
-        //        }
+                return true;
+            }
 
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
+            return false;
+        }
 
         private static bool IsShortTimeFormattingSafe(DateTime literalValue)
         {
@@ -133,41 +134,41 @@ namespace CoreWf.Expressions
             // DateTimeOffset is similar to DateTime in how its Dev10 string conversion did not preserve seconds, milliseconds, the remaining ticks and DateTimeKind data.
             return IsShortTimeFormattingSafe(literalValue.DateTime);
         }
-
+        
         //[SuppressMessage(FxCop.Category.Globalization, FxCop.Rule.SpecifyIFormatProvider,
-        //Justification = "we really do want the string as-is")]
-        //public string ConvertToString(IValueSerializerContext context)
-        //{
-        //    Type typeArgument;
-        //    Type valueType;
-        //    TypeConverter converter;
+        //    Justification = "we really do want the string as-is")]
+        public string ConvertToString(IValueSerializerContext context)
+        {
+            Type typeArgument;
+            Type valueType;
+            TypeConverter converter;
 
-        //    if (this.Value == null)
-        //    {
-        //        return "[Nothing]";
-        //    }
+            if (this.Value == null)
+            {
+                return "[Nothing]";
+            }
 
-        //    typeArgument = typeof(T);
-        //    valueType = this.Value.GetType();
-        //    converter = TypeDescriptor.GetConverter(typeArgument);
+            typeArgument = typeof(T);
+            valueType = this.Value.GetType();
+            converter = TypeDescriptor.GetConverter(typeArgument);
+            
+            Fx.Assert(typeArgument == valueType &&
+                converter != null &&
+                converter.CanConvertTo(TypeHelper.StringType) &&
+                converter.CanConvertFrom(TypeHelper.StringType),
+                "Literal target type T and the return type mismatch or something wrong with its typeConverter!");
 
-        //    Fx.Assert(typeArgument == valueType &&
-        //        converter != null &&
-        //        converter.CanConvertTo(TypeHelper.StringType) &&
-        //        converter.CanConvertFrom(TypeHelper.StringType),
-        //        "Literal target type T and the return type mismatch or something wrong with its typeConverter!");
-
-        //    // handle a Literal<string> of "[...]" by inserting escape chararcter '%' at the front
-        //    if (typeArgument == TypeHelper.StringType)
-        //    {
-        //        string originalString = Convert.ToString(this.Value);
-        //        if (originalString.EndsWith("]", StringComparison.Ordinal) && ExpressionEscapeRegex.IsMatch(originalString))
-        //        {
-        //            return "%" + originalString;
-        //        }
-        //    }
-        //    return converter.ConvertToString(context, this.Value);
-        //}
+            // handle a Literal<string> of "[...]" by inserting escape chararcter '%' at the front
+            if (typeArgument == TypeHelper.StringType)
+            {
+                string originalString = Convert.ToString(this.Value);
+                if (originalString.EndsWith("]", StringComparison.Ordinal) && ExpressionEscapeRegex.IsMatch(originalString))
+                {
+                    return "%" + originalString;
+                }
+            }
+            return converter.ConvertToString(context, this.Value);
+        }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool ShouldSerializeValue()

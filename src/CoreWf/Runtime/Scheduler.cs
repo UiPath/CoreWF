@@ -1,34 +1,27 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Diagnostics.Tracing;
-using System.Runtime.Serialization;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Threading;
+    using CoreWf.Internals;
+
     [DataContract(Name = XD.Runtime.Scheduler, Namespace = XD.Runtime.Namespace)]
     internal class Scheduler
     {
-        private static ContinueAction s_continueAction = new ContinueAction();
-        private static YieldSilentlyAction s_yieldSilentlyAction = new YieldSilentlyAction();
-        private static AbortAction s_abortAction = new AbortAction();
-
-        private WorkItem _firstWorkItem;
-
-        private static SendOrPostCallback s_onScheduledWorkCallback = Fx.ThunkCallback(new SendOrPostCallback(OnScheduledWork));
-
-        private SynchronizationContext _synchronizationContext;
-
-        private bool _isPausing;
-        private bool _isRunning;
-
-        private bool _resumeTraceRequired;
-
-        private Callbacks _callbacks;
-
-        private Quack<WorkItem> _workItemQueue;
+        private static readonly ContinueAction continueAction = new ContinueAction();
+        private static readonly YieldSilentlyAction yieldSilentlyAction = new YieldSilentlyAction();
+        private static readonly AbortAction abortAction = new AbortAction();
+        private WorkItem firstWorkItem;
+        private static SendOrPostCallback onScheduledWorkCallback = Fx.ThunkCallback(new SendOrPostCallback(OnScheduledWork));
+        private SynchronizationContext synchronizationContext;
+        private bool isPausing;
+        private bool isRunning;
+        private bool resumeTraceRequired;
+        private Callbacks callbacks;
+        private Quack<WorkItem> workItemQueue;
 
         public Scheduler(Callbacks callbacks)
         {
@@ -39,7 +32,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return s_continueAction;
+                return continueAction;
             }
         }
 
@@ -47,7 +40,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return s_yieldSilentlyAction;
+                return yieldSilentlyAction;
             }
         }
 
@@ -55,7 +48,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return s_abortAction;
+                return abortAction;
             }
         }
 
@@ -63,7 +56,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _isRunning;
+                return this.isRunning;
             }
         }
 
@@ -71,15 +64,15 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _firstWorkItem == null;
+                return this.firstWorkItem == null;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "firstWorkItem")]
         internal WorkItem SerializedFirstWorkItem
         {
-            get { return _firstWorkItem; }
-            set { _firstWorkItem = value; }
+            get { return this.firstWorkItem; }
+            set { this.firstWorkItem = value; }
         }
 
         [DataMember(EmitDefaultValue = false)]
@@ -88,9 +81,9 @@ namespace CoreWf.Runtime
         {
             get
             {
-                if (_workItemQueue != null && _workItemQueue.Count > 0)
+                if (this.workItemQueue != null && this.workItemQueue.Count > 0)
                 {
-                    return _workItemQueue.ToArray();
+                    return this.workItemQueue.ToArray();
                 }
                 else
                 {
@@ -102,25 +95,24 @@ namespace CoreWf.Runtime
                 Fx.Assert(value != null, "EmitDefaultValue is false so we should never get null.");
 
                 // this.firstWorkItem is serialized out separately, so don't use ScheduleWork() here
-                _workItemQueue = new Quack<WorkItem>(value);
+                this.workItemQueue = new Quack<WorkItem>(value);
             }
         }
 
         public void FillInstanceMap(ActivityInstanceMap instanceMap)
         {
-            if (_firstWorkItem != null)
+            if (this.firstWorkItem != null)
             {
-                ActivityInstanceMap.IActivityReference activityReference = _firstWorkItem as ActivityInstanceMap.IActivityReference;
-                if (activityReference != null)
+                if (this.firstWorkItem is ActivityInstanceMap.IActivityReference activityReference)
                 {
                     instanceMap.AddEntry(activityReference, true);
                 }
 
-                if (_workItemQueue != null && _workItemQueue.Count > 0)
+                if (this.workItemQueue != null && this.workItemQueue.Count > 0)
                 {
-                    for (int i = 0; i < _workItemQueue.Count; i++)
+                    for (int i = 0; i < this.workItemQueue.Count; i++)
                     {
-                        activityReference = _workItemQueue[i] as ActivityInstanceMap.IActivityReference;
+                        activityReference = this.workItemQueue[i] as ActivityInstanceMap.IActivityReference;
                         if (activityReference != null)
                         {
                             instanceMap.AddEntry(activityReference, true);
@@ -137,62 +129,62 @@ namespace CoreWf.Runtime
 
         public void ClearAllWorkItems(ActivityExecutor executor)
         {
-            if (_firstWorkItem != null)
+            if (this.firstWorkItem != null)
             {
-                _firstWorkItem.Release(executor);
-                _firstWorkItem = null;
+                this.firstWorkItem.Release(executor);
+                this.firstWorkItem = null;
 
-                if (_workItemQueue != null)
+                if (this.workItemQueue != null)
                 {
-                    while (_workItemQueue.Count > 0)
+                    while (this.workItemQueue.Count > 0)
                     {
-                        WorkItem item = _workItemQueue.Dequeue();
+                        WorkItem item = this.workItemQueue.Dequeue();
                         item.Release(executor);
                     }
                 }
             }
 
-            Fx.Assert(_workItemQueue == null || _workItemQueue.Count == 0, "We either didn't have a first work item and therefore don't have anything in the queue, or we drained the queue.");
+            Fx.Assert(this.workItemQueue == null || this.workItemQueue.Count == 0, "We either didn't have a first work item and therefore don't have anything in the queue, or we drained the queue.");
 
             // For consistency we set this to null even if it is empty
-            _workItemQueue = null;
+            this.workItemQueue = null;
         }
 
         public void OnDeserialized(Callbacks callbacks)
         {
             Initialize(callbacks);
-            Fx.Assert(_firstWorkItem != null || _workItemQueue == null, "cannot have items in the queue unless we also have a firstWorkItem set");
+            Fx.Assert(this.firstWorkItem != null || this.workItemQueue == null, "cannot have items in the queue unless we also have a firstWorkItem set");
         }
 
         // This method should only be called when we relinquished the thread but did not
         // complete the operation (silent yield is the current example)
         public void InternalResume(RequestedAction action)
         {
-            Fx.Assert(_isRunning, "We should still be processing work - we just don't have a thread");
+            Fx.Assert(this.isRunning, "We should still be processing work - we just don't have a thread");
 
-            bool isTracingEnabled = CoreWf.Internals.FxTrace.ShouldTraceInformation;
+            bool isTracingEnabled = FxTrace.ShouldTraceInformation;
             bool notifiedCompletion = false;
             bool isInstanceComplete = false;
 
-            if (_callbacks.IsAbortPending)
+            if (this.callbacks.IsAbortPending)
             {
-                _isPausing = false;
-                _isRunning = false;
+                this.isPausing = false;
+                this.isRunning = false;
 
                 this.NotifyWorkCompletion();
                 notifiedCompletion = true;
 
                 if (isTracingEnabled)
                 {
-                    isInstanceComplete = _callbacks.IsCompleted;
+                    isInstanceComplete = this.callbacks.IsCompleted;
                 }
 
                 // After calling SchedulerIdle we no longer have the lock.  That means
                 // that any subsequent processing in this method won't have the single
                 // threaded guarantee.
-                _callbacks.SchedulerIdle();
+                this.callbacks.SchedulerIdle();
             }
-            else if (object.ReferenceEquals(action, s_continueAction))
+            else if (object.ReferenceEquals(action, continueAction))
             {
                 ScheduleWork(false);
             }
@@ -209,17 +201,17 @@ namespace CoreWf.Runtime
                 // dispatch loop first (or request pause again).  If we reset
                 // isPausing here then any outstanding operations wouldn't get
                 // signaled with that type of host.
-                _isRunning = false;
+                this.isRunning = false;
 
                 this.NotifyWorkCompletion();
                 notifiedCompletion = true;
 
                 if (isTracingEnabled)
                 {
-                    isInstanceComplete = _callbacks.IsCompleted;
+                    isInstanceComplete = this.callbacks.IsCompleted;
                 }
 
-                _callbacks.NotifyUnhandledException(notifyAction.Exception, notifyAction.Source);
+                this.callbacks.NotifyUnhandledException(notifyAction.Exception, notifyAction.Source);
             }
 
             if (isTracingEnabled)
@@ -233,26 +225,28 @@ namespace CoreWf.Runtime
                     {
                         if (TD.WorkflowActivityStopIsEnabled())
                         {
-                            TD.SetActivityId(_callbacks.WorkflowInstanceId, out oldActivityId);
+                            oldActivityId = WfEventSource.CurrentThreadActivityId;
+                            WfEventSource.SetCurrentThreadActivityId(this.callbacks.WorkflowInstanceId);
                             resetId = true;
 
-                            TD.WorkflowActivityStop(_callbacks.WorkflowInstanceId);
+                            TD.WorkflowActivityStop(this.callbacks.WorkflowInstanceId);
                         }
                     }
                     else
                     {
                         if (TD.WorkflowActivitySuspendIsEnabled())
                         {
-                            TD.SetActivityId(_callbacks.WorkflowInstanceId, out oldActivityId);
+                            oldActivityId = WfEventSource.CurrentThreadActivityId;
+                            WfEventSource.SetCurrentThreadActivityId(this.callbacks.WorkflowInstanceId);
                             resetId = true;
 
-                            TD.WorkflowActivitySuspend(_callbacks.WorkflowInstanceId);
+                            TD.WorkflowActivitySuspend(this.callbacks.WorkflowInstanceId);
                         }
                     }
 
                     if (resetId)
                     {
-                        TD.CurrentActivityId = oldActivityId;
+                        WfEventSource.SetCurrentThreadActivityId(oldActivityId);
                     }
                 }
             }
@@ -261,45 +255,45 @@ namespace CoreWf.Runtime
         // called from ctor and OnDeserialized intialization paths
         private void Initialize(Callbacks callbacks)
         {
-            _callbacks = callbacks;
+            this.callbacks = callbacks;
         }
 
         public void Open(SynchronizationContext synchronizationContext)
         {
-            Fx.Assert(_synchronizationContext == null, "can only open when in the created state");
+            Fx.Assert(this.synchronizationContext == null, "can only open when in the created state");
             if (synchronizationContext != null)
             {
-                _synchronizationContext = synchronizationContext;
+                this.synchronizationContext = synchronizationContext;
             }
             else
             {
-                _synchronizationContext = SynchronizationContextHelper.GetDefaultSynchronizationContext();
+                this.synchronizationContext = SynchronizationContextHelper.GetDefaultSynchronizationContext();
             }
         }
 
         internal void Open(Scheduler oldScheduler)
         {
-            Fx.Assert(_synchronizationContext == null, "can only open when in the created state");
-            _synchronizationContext = SynchronizationContextHelper.CloneSynchronizationContext(oldScheduler._synchronizationContext);
+            Fx.Assert(this.synchronizationContext == null, "can only open when in the created state");
+            this.synchronizationContext = SynchronizationContextHelper.CloneSynchronizationContext(oldScheduler.synchronizationContext);
         }
 
         private void ScheduleWork(bool notifyStart)
         {
             if (notifyStart)
             {
-                _synchronizationContext.OperationStarted();
-                _resumeTraceRequired = true;
+                this.synchronizationContext.OperationStarted();
+                this.resumeTraceRequired = true;
             }
             else
             {
-                _resumeTraceRequired = false;
+                this.resumeTraceRequired = false;
             }
-            _synchronizationContext.Post(Scheduler.s_onScheduledWorkCallback, this);
+            this.synchronizationContext.Post(Scheduler.onScheduledWorkCallback, this);
         }
 
         private void NotifyWorkCompletion()
         {
-            _synchronizationContext.OperationCompleted();
+            this.synchronizationContext.OperationCompleted();
         }
 
         // signal the scheduler to stop processing work. If we are processing work
@@ -308,23 +302,23 @@ namespace CoreWf.Runtime
         // the worst thing that could happen in a race is that we pause one extra work item later
         public void Pause()
         {
-            _isPausing = true;
+            this.isPausing = true;
         }
 
         public void MarkRunning()
         {
-            _isRunning = true;
+            this.isRunning = true;
         }
 
         public void Resume()
         {
-            Fx.Assert(_isRunning, "This should only be called after we've been set to process work.");
+            Fx.Assert(this.isRunning, "This should only be called after we've been set to process work.");
 
-            if (this.IsIdle || _isPausing || _callbacks.IsAbortPending)
+            if (this.IsIdle || this.isPausing || this.callbacks.IsAbortPending)
             {
-                _isPausing = false;
-                _isRunning = false;
-                _callbacks.SchedulerIdle();
+                this.isPausing = false;
+                this.isRunning = false;
+                this.callbacks.SchedulerIdle();
             }
             else
             {
@@ -334,25 +328,25 @@ namespace CoreWf.Runtime
 
         public void PushWork(WorkItem workItem)
         {
-            if (_firstWorkItem == null)
+            if (this.firstWorkItem == null)
             {
-                _firstWorkItem = workItem;
+                this.firstWorkItem = workItem;
             }
             else
             {
-                if (_workItemQueue == null)
+                if (this.workItemQueue == null)
                 {
-                    _workItemQueue = new Quack<WorkItem>();
+                    this.workItemQueue = new Quack<WorkItem>();
                 }
 
-                _workItemQueue.PushFront(_firstWorkItem);
-                _firstWorkItem = workItem;
+                this.workItemQueue.PushFront(this.firstWorkItem);
+                this.firstWorkItem = workItem;
             }
 
             // To avoid the virt call on EVERY work item we check
             // the Verbose flag.  All of our Schedule traces are
             // verbose.
-            if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+            if (FxTrace.ShouldTraceVerboseToTraceSource)
             {
                 workItem.TraceScheduled();
             }
@@ -360,21 +354,21 @@ namespace CoreWf.Runtime
 
         public void EnqueueWork(WorkItem workItem)
         {
-            if (_firstWorkItem == null)
+            if (this.firstWorkItem == null)
             {
-                _firstWorkItem = workItem;
+                this.firstWorkItem = workItem;
             }
             else
             {
-                if (_workItemQueue == null)
+                if (this.workItemQueue == null)
                 {
-                    _workItemQueue = new Quack<WorkItem>();
+                    this.workItemQueue = new Quack<WorkItem>();
                 }
 
-                _workItemQueue.Enqueue(workItem);
+                this.workItemQueue.Enqueue(workItem);
             }
 
-            if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+            if (FxTrace.ShouldTraceVerboseToTraceSource)
             {
                 workItem.TraceScheduled();
             }
@@ -386,49 +380,49 @@ namespace CoreWf.Runtime
 
             // We snapshot these values here so that we can
             // use them after calling OnSchedulerIdle.
-            bool isTracingEnabled = TD.IsEnd2EndActivityTracingEnabled() && TD.ShouldTraceToTraceSource(EventLevel.Informational);
+            //bool isTracingEnabled = FxTrace.Trace.ShouldTraceToTraceSource(TraceEventLevel.Informational);
             Guid oldActivityId = Guid.Empty;
             Guid workflowInstanceId = Guid.Empty;
 
-            if (isTracingEnabled)
-            {
-                oldActivityId = TD.CurrentActivityId;
-                workflowInstanceId = thisPtr._callbacks.WorkflowInstanceId;
-                TD.TraceTransfer(workflowInstanceId);
+            //if (isTracingEnabled)
+            //{
+            //    oldActivityId = DiagnosticTraceBase.ActivityId;
+            //    workflowInstanceId = thisPtr.callbacks.WorkflowInstanceId;
+            //    FxTrace.Trace.SetAndTraceTransfer(workflowInstanceId, true);
 
-                if (thisPtr._resumeTraceRequired)
-                {
-                    if (TD.WorkflowActivityResumeIsEnabled())
-                    {
-                        TD.WorkflowActivityResume(workflowInstanceId);
-                    }
-                }
-            }
+            //    if (thisPtr.resumeTraceRequired)
+            //    {
+            //        if (TD.WorkflowActivityResumeIsEnabled())
+            //        {
+            //            TD.WorkflowActivityResume(workflowInstanceId);
+            //        }
+            //    }
+            //}
 
-            thisPtr._callbacks.ThreadAcquired();
+            thisPtr.callbacks.ThreadAcquired();
 
-            RequestedAction nextAction = s_continueAction;
+            RequestedAction nextAction = continueAction;
             bool idleOrPaused = false;
 
-            while (object.ReferenceEquals(nextAction, s_continueAction))
+            while (object.ReferenceEquals(nextAction, continueAction))
             {
-                if (thisPtr.IsIdle || thisPtr._isPausing)
+                if (thisPtr.IsIdle || thisPtr.isPausing)
                 {
                     idleOrPaused = true;
                     break;
                 }
 
                 // cycle through (queue->thisPtr.firstWorkItem->currentWorkItem)
-                WorkItem currentWorkItem = thisPtr._firstWorkItem;
+                WorkItem currentWorkItem = thisPtr.firstWorkItem;
 
                 // promote an item out of our work queue if necessary
-                if (thisPtr._workItemQueue != null && thisPtr._workItemQueue.Count > 0)
+                if (thisPtr.workItemQueue != null && thisPtr.workItemQueue.Count > 0)
                 {
-                    thisPtr._firstWorkItem = thisPtr._workItemQueue.Dequeue();
+                    thisPtr.firstWorkItem = thisPtr.workItemQueue.Dequeue();
                 }
                 else
                 {
-                    thisPtr._firstWorkItem = null;
+                    thisPtr.firstWorkItem = null;
                 }
 
                 if (TD.ExecuteWorkItemStartIsEnabled())
@@ -436,7 +430,7 @@ namespace CoreWf.Runtime
                     TD.ExecuteWorkItemStart();
                 }
 
-                nextAction = thisPtr._callbacks.ExecuteWorkItem(currentWorkItem);
+                nextAction = thisPtr.callbacks.ExecuteWorkItem(currentWorkItem);
 
                 if (TD.ExecuteWorkItemStopIsEnabled())
                 {
@@ -447,25 +441,25 @@ namespace CoreWf.Runtime
             bool notifiedCompletion = false;
             bool isInstanceComplete = false;
 
-            if (idleOrPaused || object.ReferenceEquals(nextAction, s_abortAction))
+            if (idleOrPaused || object.ReferenceEquals(nextAction, abortAction))
             {
-                thisPtr._isPausing = false;
-                thisPtr._isRunning = false;
+                thisPtr.isPausing = false;
+                thisPtr.isRunning = false;
 
                 thisPtr.NotifyWorkCompletion();
                 notifiedCompletion = true;
 
-                if (isTracingEnabled)
-                {
-                    isInstanceComplete = thisPtr._callbacks.IsCompleted;
-                }
+                //if (isTracingEnabled)
+                //{
+                //    isInstanceComplete = thisPtr.callbacks.IsCompleted;
+                //}
 
                 // After calling SchedulerIdle we no longer have the lock.  That means
                 // that any subsequent processing in this method won't have the single
                 // threaded guarantee.
-                thisPtr._callbacks.SchedulerIdle();
+                thisPtr.callbacks.SchedulerIdle();
             }
-            else if (!object.ReferenceEquals(nextAction, s_yieldSilentlyAction))
+            else if (!object.ReferenceEquals(nextAction, yieldSilentlyAction))
             {
                 Fx.Assert(nextAction is NotifyUnhandledExceptionAction, "This is the only other option");
 
@@ -478,57 +472,57 @@ namespace CoreWf.Runtime
                 // dispatch loop first (or request pause again).  If we reset
                 // isPausing here then any outstanding operations wouldn't get
                 // signaled with that type of host.
-                thisPtr._isRunning = false;
+                thisPtr.isRunning = false;
 
                 thisPtr.NotifyWorkCompletion();
                 notifiedCompletion = true;
 
-                if (isTracingEnabled)
-                {
-                    isInstanceComplete = thisPtr._callbacks.IsCompleted;
-                }
+                //if (isTracingEnabled)
+                //{
+                //    isInstanceComplete = thisPtr.callbacks.IsCompleted;
+                //}
 
-                thisPtr._callbacks.NotifyUnhandledException(notifyAction.Exception, notifyAction.Source);
+                thisPtr.callbacks.NotifyUnhandledException(notifyAction.Exception, notifyAction.Source);
             }
 
-            if (isTracingEnabled)
-            {
-                if (notifiedCompletion)
-                {
-                    if (isInstanceComplete)
-                    {
-                        if (TD.WorkflowActivityStopIsEnabled())
-                        {
-                            TD.WorkflowActivityStop(workflowInstanceId);
-                        }
-                    }
-                    else
-                    {
-                        if (TD.WorkflowActivitySuspendIsEnabled())
-                        {
-                            TD.WorkflowActivitySuspend(workflowInstanceId);
-                        }
-                    }
-                }
+            //if (isTracingEnabled)
+            //{
+            //    if (notifiedCompletion)
+            //    {
+            //        if (isInstanceComplete)
+            //        {
+            //            if (TD.WorkflowActivityStopIsEnabled())
+            //            {
+            //                TD.WorkflowActivityStop(workflowInstanceId);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (TD.WorkflowActivitySuspendIsEnabled())
+            //            {
+            //                TD.WorkflowActivitySuspend(workflowInstanceId);
+            //            }
+            //        }
+            //    }
 
-                TD.CurrentActivityId = oldActivityId;
-            }
+            //    DiagnosticTraceBase.ActivityId = oldActivityId;
+            //}
         }
 
         public struct Callbacks
         {
-            private readonly ActivityExecutor _activityExecutor;
+            private readonly ActivityExecutor activityExecutor;
 
             public Callbacks(ActivityExecutor activityExecutor)
             {
-                _activityExecutor = activityExecutor;
+                this.activityExecutor = activityExecutor;
             }
 
             public Guid WorkflowInstanceId
             {
                 get
                 {
-                    return _activityExecutor.WorkflowInstanceId;
+                    return this.activityExecutor.WorkflowInstanceId;
                 }
             }
 
@@ -536,7 +530,7 @@ namespace CoreWf.Runtime
             {
                 get
                 {
-                    return _activityExecutor.IsAbortPending || _activityExecutor.IsTerminatePending;
+                    return this.activityExecutor.IsAbortPending || this.activityExecutor.IsTerminatePending;
                 }
             }
 
@@ -544,33 +538,33 @@ namespace CoreWf.Runtime
             {
                 get
                 {
-                    return ActivityUtilities.IsCompletedState(_activityExecutor.State);
+                    return ActivityUtilities.IsCompletedState(this.activityExecutor.State);
                 }
             }
 
             public RequestedAction ExecuteWorkItem(WorkItem workItem)
             {
-                Fx.Assert(_activityExecutor != null, "ActivityExecutor null in ExecuteWorkItem.");
+                Fx.Assert(this.activityExecutor != null, "ActivityExecutor null in ExecuteWorkItem.");
 
                 // We check the Verbose flag to avoid the 
                 // virt call if possible
-                if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+                if (FxTrace.ShouldTraceVerboseToTraceSource)
                 {
                     workItem.TraceStarting();
                 }
 
-                RequestedAction action = _activityExecutor.OnExecuteWorkItem(workItem);
+                RequestedAction action = this.activityExecutor.OnExecuteWorkItem(workItem);
 
                 if (!object.ReferenceEquals(action, Scheduler.YieldSilently))
                 {
-                    if (_activityExecutor.IsAbortPending || _activityExecutor.IsTerminatePending)
+                    if (this.activityExecutor.IsAbortPending || this.activityExecutor.IsTerminatePending)
                     {
                         action = Scheduler.Abort;
                     }
 
                     // if the caller yields, then the work item is still active and the callback
                     // is responsible for releasing it back to the pool                    
-                    workItem.Dispose(_activityExecutor);
+                    workItem.Dispose(this.activityExecutor);                    
                 }
 
                 return action;
@@ -578,20 +572,20 @@ namespace CoreWf.Runtime
 
             public void SchedulerIdle()
             {
-                Fx.Assert(_activityExecutor != null, "ActivityExecutor null in SchedulerIdle.");
-                _activityExecutor.OnSchedulerIdle();
+                Fx.Assert(this.activityExecutor != null, "ActivityExecutor null in SchedulerIdle.");
+                this.activityExecutor.OnSchedulerIdle();
             }
 
             public void ThreadAcquired()
             {
-                Fx.Assert(_activityExecutor != null, "ActivityExecutor null in ThreadAcquired.");
-                _activityExecutor.OnSchedulerThreadAcquired();
+                Fx.Assert(this.activityExecutor != null, "ActivityExecutor null in ThreadAcquired.");
+                this.activityExecutor.OnSchedulerThreadAcquired();
             }
 
             public void NotifyUnhandledException(Exception exception, ActivityInstance source)
             {
-                Fx.Assert(_activityExecutor != null, "ActivityExecutor null in NotifyUnhandledException.");
-                _activityExecutor.NotifyUnhandledException(exception, source);
+                Fx.Assert(this.activityExecutor != null, "ActivityExecutor null in NotifyUnhandledException.");
+                this.activityExecutor.NotifyUnhandledException(exception, source);
             }
         }
 
@@ -645,3 +639,4 @@ namespace CoreWf.Runtime
         }
     }
 }
+

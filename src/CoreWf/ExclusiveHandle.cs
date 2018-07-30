@@ -1,30 +1,25 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Runtime.Serialization;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [DataContract]
     public class ExclusiveHandle : Handle
     {
-        private ReadOnlyCollection<BookmarkScopeHandle> _readOnlyBookmarkScopeCollection;
-
-        private List<BookmarkScopeHandle> _bookmarkScopes;
-
-        private ActivityInstance _owningInstance;
-
-        private ActivityExecutor _executor;
-
-        private ExclusiveHandleBookmarkList _importantBookmarks;
-
-        private ExclusiveHandleBookmarkList _unimportantBookmarks;
-
-        private bool _bookmarkScopesListIsDefault;
+        private ReadOnlyCollection<BookmarkScopeHandle> readOnlyBookmarkScopeCollection;
+        private List<BookmarkScopeHandle> bookmarkScopes;
+        private ActivityInstance owningInstance;
+        private ActivityExecutor executor;
+        private ExclusiveHandleBookmarkList importantBookmarks;
+        private ExclusiveHandleBookmarkList unimportantBookmarks;
+        private bool bookmarkScopesListIsDefault;
 
         public ExclusiveHandle()
         {
@@ -35,117 +30,117 @@ namespace CoreWf
         {
             get
             {
-                if (_bookmarkScopes == null)
+                if (this.bookmarkScopes == null)
                 {
                     return new ReadOnlyCollection<BookmarkScopeHandle>(new List<BookmarkScopeHandle>());
                 }
 
-                if (_readOnlyBookmarkScopeCollection == null)
+                if (this.readOnlyBookmarkScopeCollection == null)
                 {
-                    _readOnlyBookmarkScopeCollection = new ReadOnlyCollection<BookmarkScopeHandle>(_bookmarkScopes);
+                    this.readOnlyBookmarkScopeCollection = new ReadOnlyCollection<BookmarkScopeHandle>(this.bookmarkScopes);
                 }
-                return _readOnlyBookmarkScopeCollection;
+                return this.readOnlyBookmarkScopeCollection;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "bookmarkScopes")]
         internal List<BookmarkScopeHandle> SerializedBookmarkScopes
         {
-            get { return _bookmarkScopes; }
-            set { _bookmarkScopes = value; }
+            get { return this.bookmarkScopes; }
+            set { this.bookmarkScopes = value; }
         }
 
         [DataMember(Name = "owningInstance")]
         internal ActivityInstance SerializedOwningInstance
         {
-            get { return _owningInstance; }
-            set { _owningInstance = value; }
+            get { return this.owningInstance; }
+            set { this.owningInstance = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "executor")]
         internal ActivityExecutor SerializedExecutor
         {
-            get { return _executor; }
-            set { _executor = value; }
+            get { return this.executor; }
+            set { this.executor = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "importantBookmarks")]
         internal ExclusiveHandleBookmarkList SerializedImportantBookmarks
         {
-            get { return _importantBookmarks; }
-            set { _importantBookmarks = value; }
+            get { return this.importantBookmarks; }
+            set { this.importantBookmarks = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "unimportantBookmarks")]
         internal ExclusiveHandleBookmarkList SerializedUnimportantBookmarks
         {
-            get { return _unimportantBookmarks; }
-            set { _unimportantBookmarks = value; }
+            get { return this.unimportantBookmarks; }
+            set { this.unimportantBookmarks = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "bookmarkScopesListIsDefault")]
         internal bool SerializedBookmarkScopesListIsDefault
         {
-            get { return _bookmarkScopesListIsDefault; }
-            set { _bookmarkScopesListIsDefault = value; }
+            get { return this.bookmarkScopesListIsDefault; }
+            set { this.bookmarkScopesListIsDefault = value; }
         }
 
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "We are restricting the activities that can call this API.")]
+        //    Justification = "We are restricting the activities that can call this API.")]
         public void RegisterBookmarkScope(NativeActivityContext context, BookmarkScopeHandle bookmarkScopeHandle)
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             context.ThrowIfDisposed();
 
             if (bookmarkScopeHandle == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmarkScopeHandle");
+                throw FxTrace.Exception.ArgumentNull(nameof(bookmarkScopeHandle));
             }
 
             if ((this.ImportantBookmarks != null && this.ImportantBookmarks.Count != 0) || (this.UnimportantBookmarks != null && this.UnimportantBookmarks.Count != 0))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleRegisterBookmarkScopeFailed));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleRegisterBookmarkScopeFailed));
             }
 
-            if (_bookmarkScopesListIsDefault)
+            if (this.bookmarkScopesListIsDefault)
             {
-                _bookmarkScopesListIsDefault = false;
-                _bookmarkScopes.Clear();
+                this.bookmarkScopesListIsDefault = false;
+                this.bookmarkScopes.Clear();
             }
 
-            _bookmarkScopes.Add(bookmarkScopeHandle);
-            _readOnlyBookmarkScopeCollection = null;
+            this.bookmarkScopes.Add(bookmarkScopeHandle);
+            this.readOnlyBookmarkScopeCollection = null;
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "We are restricting the activities that can call this API.")]
+        //    Justification = "We are restricting the activities that can call this API.")]
         public void Reinitialize(NativeActivityContext context)
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             context.ThrowIfDisposed();
 
             if ((this.ImportantBookmarks != null && this.ImportantBookmarks.Count != 0) || (this.UnimportantBookmarks != null && this.UnimportantBookmarks.Count != 0))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleReinitializeFailed));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExclusiveHandleReinitializeFailed));
             }
-            _bookmarkScopes.Clear();
-            _readOnlyBookmarkScopeCollection = null;
+            this.bookmarkScopes.Clear();
+            this.readOnlyBookmarkScopeCollection = null;
             this.PerformDefaultRegistration();
         }
 
         protected override void OnInitialize(HandleInitializationContext context)
         {
-            _owningInstance = context.OwningActivityInstance;
-            _executor = context.Executor;
+            this.owningInstance = context.OwningActivityInstance;
+            this.executor = context.Executor;
             PerformDefaultRegistration();
         }
 
@@ -153,11 +148,11 @@ namespace CoreWf
         {
             get
             {
-                return _importantBookmarks;
+                return this.importantBookmarks;
             }
             set
             {
-                _importantBookmarks = value;
+                this.importantBookmarks = value;
             }
         }
 
@@ -165,11 +160,11 @@ namespace CoreWf
         {
             get
             {
-                return _unimportantBookmarks;
+                return this.unimportantBookmarks;
             }
             set
             {
-                _unimportantBookmarks = value;
+                this.unimportantBookmarks = value;
             }
         }
 
@@ -236,18 +231,18 @@ namespace CoreWf
 
         private void PerformDefaultRegistration()
         {
-            if (_bookmarkScopes == null)
+            if (this.bookmarkScopes == null)
             {
-                _bookmarkScopes = new List<BookmarkScopeHandle>();
+                this.bookmarkScopes = new List<BookmarkScopeHandle>();
             }
 
             //First register the default subinstance
-            _bookmarkScopes.Add(BookmarkScopeHandle.Default);
+            this.bookmarkScopes.Add(BookmarkScopeHandle.Default);
 
             // Note that we are starting the LocationEnvironment traversal from the current environment's Parent. We don't
             // want to include any BookmarkScopeHandles that are at the same scope level as the ExclusiveHandle. The ExclusiveHandle
             // should only be dependent on BookmarkScopeHandles that are higher in the scope tree.
-            LocationEnvironment current = _owningInstance.Environment;
+            LocationEnvironment current = this.owningInstance.Environment;
             if (current != null)
             {
                 for (current = current.Parent; current != null; current = current.Parent)
@@ -265,10 +260,9 @@ namespace CoreWf
                         int count = handles.Count;
                         for (int i = 0; i < count; i++)
                         {
-                            BookmarkScopeHandle scopeHandle = handles[i] as BookmarkScopeHandle;
-                            if (scopeHandle != null)
+                            if (handles[i] is BookmarkScopeHandle scopeHandle)
                             {
-                                _bookmarkScopes.Add(scopeHandle);
+                                this.bookmarkScopes.Add(scopeHandle);
                             }
                         }
                     }
@@ -276,21 +270,20 @@ namespace CoreWf
             }
 
             // Also need to look in the Executor for handles that may have been created without an environment.
-            List<Handle> executorHandles = _executor.Handles;
+            List<Handle> executorHandles = this.executor.Handles;
             if (executorHandles != null)
             {
                 int count = executorHandles.Count;
                 for (int i = 0; i < count; i++)
                 {
-                    BookmarkScopeHandle scopeHandle = executorHandles[i] as BookmarkScopeHandle;
-                    if (scopeHandle != null)
+                    if (executorHandles[i] is BookmarkScopeHandle scopeHandle)
                     {
-                        _bookmarkScopes.Add(scopeHandle);
+                        this.bookmarkScopes.Add(scopeHandle);
                     }
                 }
             }
 
-            _bookmarkScopesListIsDefault = true;
+            this.bookmarkScopesListIsDefault = true;
         }
 
         // Exclusive handle needs to track bookmarks such that it can tell the difference between two bookmarks in
@@ -300,41 +293,41 @@ namespace CoreWf
         [DataContract]
         internal class ExclusiveHandleBookmarkList
         {
-            private List<Bookmark> _bookmarks;
+            private List<Bookmark> bookmarks;
 
             public ExclusiveHandleBookmarkList()
                 : base()
             {
-                _bookmarks = new List<Bookmark>();
+                this.bookmarks = new List<Bookmark>();
             }
 
             public int Count
             {
-                get { return _bookmarks.Count; }
+                get { return this.bookmarks.Count; }
             }
 
             [DataMember(Name = "bookmarks")]
             internal List<Bookmark> SerializedBookmarks
             {
-                get { return _bookmarks; }
-                set { _bookmarks = value; }
+                get { return this.bookmarks; }
+                set { this.bookmarks = value; }
             }
 
             public void Add(Bookmark bookmark)
             {
                 Fx.Assert(bookmark != null, "A valid bookmark is expected.");
-                _bookmarks.Add(bookmark);
+                this.bookmarks.Add(bookmark);
             }
 
             public void Remove(Bookmark bookmark)
             {
                 Fx.Assert(bookmark != null, "A valid bookmark is expected.");
 
-                for (int i = 0; i < _bookmarks.Count; i++)
+                for (int i = 0; i < this.bookmarks.Count; i++)
                 {
-                    if (object.ReferenceEquals(_bookmarks[i], bookmark))
+                    if (object.ReferenceEquals(this.bookmarks[i], bookmark))
                     {
-                        _bookmarks.RemoveAt(i);
+                        this.bookmarks.RemoveAt(i);
                         return;
                     }
                 }
@@ -344,9 +337,9 @@ namespace CoreWf
             {
                 Fx.Assert(bookmark != null, "A valid bookmark is expected.");
 
-                for (int i = 0; i < _bookmarks.Count; i++)
+                for (int i = 0; i < this.bookmarks.Count; i++)
                 {
-                    if (object.ReferenceEquals(_bookmarks[i], bookmark))
+                    if (object.ReferenceEquals(this.bookmarks[i], bookmark))
                     {
                         return true;
                     }

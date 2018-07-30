@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System.Xml;
 
@@ -8,10 +8,10 @@ namespace Test.Common.TestObjects.XmlDiff
     public class XmlDiffAttribute : XmlDiffNode
     {
         internal XmlDiffElement _ownerElement;
-        private string _lName;
+        private readonly string _lName;
         private string _prefix;
-        private string _ns;
-        private string _value;
+        private readonly string _ns;
+        private readonly string _value;
         private XmlQualifiedName _valueAsQName;
 
         public XmlDiffAttribute(string localName, string prefix, string ns, string value)

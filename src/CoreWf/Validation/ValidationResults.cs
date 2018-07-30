@@ -1,29 +1,29 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using System.Collections.ObjectModel;
+    using System.Collections.Generic;
+    using CoreWf.Runtime;
+
     [Fx.Tag.XamlVisible(false)]
     public class ValidationResults
     {
-        private ReadOnlyCollection<ValidationError> _allValidationErrors;
-        private ReadOnlyCollection<ValidationError> _errors;
-        private ReadOnlyCollection<ValidationError> _warnings;
-        private bool _processedAllValidationErrors;
+        private readonly ReadOnlyCollection<ValidationError> allValidationErrors;
+        private ReadOnlyCollection<ValidationError> errors;
+        private ReadOnlyCollection<ValidationError> warnings;
+        private bool processedAllValidationErrors;
 
         public ValidationResults(IList<ValidationError> allValidationErrors)
         {
             if (allValidationErrors == null)
             {
-                _allValidationErrors = ActivityValidationServices.EmptyValidationErrors;
+                this.allValidationErrors = ActivityValidationServices.EmptyValidationErrors;
             }
             else
             {
-                _allValidationErrors = new ReadOnlyCollection<ValidationError>(allValidationErrors);
+                this.allValidationErrors = new ReadOnlyCollection<ValidationError>(allValidationErrors);
             }
         }
 
@@ -31,12 +31,12 @@ namespace CoreWf.Validation
         {
             get
             {
-                if (!_processedAllValidationErrors)
+                if (!this.processedAllValidationErrors)
                 {
                     ProcessAllValidationErrors();
                 }
 
-                return _errors;
+                return this.errors;
             }
         }
 
@@ -44,30 +44,30 @@ namespace CoreWf.Validation
         {
             get
             {
-                if (!_processedAllValidationErrors)
+                if (!this.processedAllValidationErrors)
                 {
                     ProcessAllValidationErrors();
                 }
 
-                return _warnings;
+                return this.warnings;
             }
         }
 
         private void ProcessAllValidationErrors()
         {
-            if (_allValidationErrors.Count == 0)
+            if (this.allValidationErrors.Count == 0)
             {
-                _errors = ActivityValidationServices.EmptyValidationErrors;
-                _warnings = ActivityValidationServices.EmptyValidationErrors;
+                this.errors = ActivityValidationServices.EmptyValidationErrors;
+                this.warnings = ActivityValidationServices.EmptyValidationErrors;
             }
             else
             {
                 IList<ValidationError> warningsList = null;
                 IList<ValidationError> errorsList = null;
 
-                for (int i = 0; i < _allValidationErrors.Count; i++)
+                for (int i = 0; i < this.allValidationErrors.Count; i++)
                 {
-                    ValidationError violation = _allValidationErrors[i];
+                    ValidationError violation = this.allValidationErrors[i];
 
                     if (violation.IsWarning)
                     {
@@ -91,24 +91,24 @@ namespace CoreWf.Validation
 
                 if (warningsList == null)
                 {
-                    _warnings = ActivityValidationServices.EmptyValidationErrors;
+                    this.warnings = ActivityValidationServices.EmptyValidationErrors;
                 }
                 else
                 {
-                    _warnings = new ReadOnlyCollection<ValidationError>(warningsList);
+                    this.warnings = new ReadOnlyCollection<ValidationError>(warningsList);
                 }
 
                 if (errorsList == null)
                 {
-                    _errors = ActivityValidationServices.EmptyValidationErrors;
+                    this.errors = ActivityValidationServices.EmptyValidationErrors;
                 }
                 else
                 {
-                    _errors = new ReadOnlyCollection<ValidationError>(errorsList);
+                    this.errors = new ReadOnlyCollection<ValidationError>(errorsList);
                 }
             }
 
-            _processedAllValidationErrors = true;
+            this.processedAllValidationErrors = true;
         }
     }
 }

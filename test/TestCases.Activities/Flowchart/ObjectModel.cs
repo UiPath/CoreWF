@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -37,12 +37,18 @@ namespace TestCases.Activities.Flowchart
         [Fact]
         public void FlowchartInitializerSyntax_Sequence()
         {
-            Test.Common.TestObjects.CustomActivities.WriteLine writeLine1 = new Test.Common.TestObjects.CustomActivities.WriteLine();
-            writeLine1.Message = new InArgument<string>("Hello1");
-            Test.Common.TestObjects.CustomActivities.WriteLine writeLine2 = new Test.Common.TestObjects.CustomActivities.WriteLine();
-            writeLine2.Message = new InArgument<string>("Hello2");
-            Test.Common.TestObjects.CustomActivities.WriteLine writeLine3 = new Test.Common.TestObjects.CustomActivities.WriteLine();
-            writeLine3.Message = new InArgument<string>("Hello3");
+            Test.Common.TestObjects.CustomActivities.WriteLine writeLine1 = new Test.Common.TestObjects.CustomActivities.WriteLine
+            {
+                Message = new InArgument<string>("Hello1")
+            };
+            Test.Common.TestObjects.CustomActivities.WriteLine writeLine2 = new Test.Common.TestObjects.CustomActivities.WriteLine
+            {
+                Message = new InArgument<string>("Hello2")
+            };
+            Test.Common.TestObjects.CustomActivities.WriteLine writeLine3 = new Test.Common.TestObjects.CustomActivities.WriteLine
+            {
+                Message = new InArgument<string>("Hello3")
+            };
 
             FlowStep flowStep1 = new FlowStep { Action = writeLine1 };
             FlowStep flowStep2 = new FlowStep { Action = writeLine2, Next = flowStep1 };
@@ -59,8 +65,10 @@ namespace TestCases.Activities.Flowchart
 
             AutoResetEvent are = new AutoResetEvent(false);
 
-            WorkflowApplication application = new WorkflowApplication(flowchart);
-            application.Completed = delegate (WorkflowApplicationCompletedEventArgs e) { are.Set(); };
+            WorkflowApplication application = new WorkflowApplication(flowchart)
+            {
+                Completed = delegate (WorkflowApplicationCompletedEventArgs e) { are.Set(); }
+            };
             application.Run();
 
             are.WaitOne();
@@ -77,11 +85,15 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine w1 = new TestWriteLine("w1", "w1");
             TestWriteLine w2 = new TestWriteLine("w2", "w2");
 
-            TestFlowConditional conditional1 = new TestFlowConditional();
-            conditional1.Condition = true;
+            TestFlowConditional conditional1 = new TestFlowConditional
+            {
+                Condition = true
+            };
 
-            TestFlowConditional conditional2 = new TestFlowConditional();
-            conditional2.Condition = true;
+            TestFlowConditional conditional2 = new TestFlowConditional
+            {
+                Condition = true
+            };
 
             flowchart.AddConditionalLink(w1, conditional1);
             flowchart.AddConditionalLink(null, conditional2, w2, (TestActivity)null);
@@ -101,11 +113,15 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine w1 = new TestWriteLine("w1", "w1");
             TestWriteLine w2 = new TestWriteLine("w2", "w2");
 
-            TestFlowConditional conditional1 = new TestFlowConditional(HintTrueFalse.False);
-            conditional1.Condition = false;
+            TestFlowConditional conditional1 = new TestFlowConditional(HintTrueFalse.False)
+            {
+                Condition = false
+            };
 
-            TestFlowConditional conditional2 = new TestFlowConditional();
-            conditional2.Condition = true;
+            TestFlowConditional conditional2 = new TestFlowConditional
+            {
+                Condition = true
+            };
 
             flowchart.AddConditionalLink(w1, conditional1);
             flowchart.AddConditionalLink(null, conditional1, (TestActivity)null, conditional2);
@@ -125,9 +141,11 @@ namespace TestCases.Activities.Flowchart
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
 
-            TestAssign<int> assign = new TestAssign<int>("assign");
-            assign.ValueExpression = (e => counter.Get(e) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("assign")
+            {
+                ValueExpression = (e => counter.Get(e) + 1),
+                ToVariable = counter
+            };
 
             List<HintTrueFalse> hints = new List<HintTrueFalse>();
             for (int i = 0; i < 4; i++)
@@ -135,14 +153,20 @@ namespace TestCases.Activities.Flowchart
                 hints.Add(HintTrueFalse.False);
             }
             hints.Add(HintTrueFalse.True);
-            TestFlowConditional conditional1 = new TestFlowConditional(hints.ToArray());
-            conditional1.ConditionExpression = (e => counter.Get(e) == 5);
+            TestFlowConditional conditional1 = new TestFlowConditional(hints.ToArray())
+            {
+                ConditionExpression = (e => counter.Get(e) == 5)
+            };
 
-            TestFlowConditional conditional2 = new TestFlowConditional();
-            conditional2.Condition = true;
+            TestFlowConditional conditional2 = new TestFlowConditional
+            {
+                Condition = true
+            };
 
-            TestFlowConditional conditional3 = new TestFlowConditional();
-            conditional3.Condition = true;
+            TestFlowConditional conditional3 = new TestFlowConditional
+            {
+                Condition = true
+            };
 
             flowchart.AddLink(new TestWriteLine("Start", "Flowchart Started"), assign);
             flowchart.AddConditionalLink(assign, conditional1, conditional3, conditional2);
@@ -166,15 +190,21 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine w1 = new TestWriteLine("w1", "w1");
             TestWriteLine w2 = new TestWriteLine("w2", "w2");
 
-            TestAssign<int> assign = new TestAssign<int>("assign");
-            assign.ValueExpression = (e => counter.Get(e) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("assign")
+            {
+                ValueExpression = (e => counter.Get(e) + 1),
+                ToVariable = counter
+            };
 
-            TestFlowConditional conditional1 = new TestFlowConditional(HintTrueFalse.False);
-            conditional1.ConditionExpression = (e => counter.Get(e) == 5);
+            TestFlowConditional conditional1 = new TestFlowConditional(HintTrueFalse.False)
+            {
+                ConditionExpression = (e => counter.Get(e) == 5)
+            };
 
-            TestFlowConditional conditional2 = new TestFlowConditional(HintTrueFalse.False);
-            conditional2.ConditionExpression = (e => counter.Get(e) == 5);
+            TestFlowConditional conditional2 = new TestFlowConditional(HintTrueFalse.False)
+            {
+                ConditionExpression = (e => counter.Get(e) == 5)
+            };
 
             flowchart.AddLink(w1, assign);
             flowchart.AddConditionalLink(assign, conditional1);
@@ -195,16 +225,20 @@ namespace TestCases.Activities.Flowchart
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
 
-            TestAssign<int> assign = new TestAssign<int>("assign");
-            assign.ValueExpression = (e => counter.Get(e) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("assign")
+            {
+                ValueExpression = (e => counter.Get(e) + 1),
+                ToVariable = counter
+            };
 
             List<HintTrueFalse> hintsList = new List<HintTrueFalse>();
             hintsList.Add(HintTrueFalse.True);
             hintsList.Add(HintTrueFalse.False);
 
-            TestFlowConditional conditional = new TestFlowConditional(hintsList.ToArray());
-            conditional.ConditionExpression = (e => counter.Get(e) == 1);
+            TestFlowConditional conditional = new TestFlowConditional(hintsList.ToArray())
+            {
+                ConditionExpression = (e => counter.Get(e) == 1)
+            };
             flowchart.AddConditionalLink(assign, conditional, assign, (TestActivity)null);
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
@@ -265,8 +299,10 @@ namespace TestCases.Activities.Flowchart
         public void AddSameElementTwiceToFlowchartElementsCollection()
         {
             TestFlowchart flowchart = new TestFlowchart();
-            TestFlowStep step = new TestFlowStep();
-            step.ActionActivity = new TestWriteLine("Start", "Dummy Start");
+            TestFlowStep step = new TestFlowStep
+            {
+                ActionActivity = new TestWriteLine("Start", "Dummy Start")
+            };
 
             flowchart.Elements.Add(step);
             flowchart.Elements.Add(step);
@@ -417,8 +453,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True);
-            flowDecision.ConditionExpression = (context => counter.Get(context) > 0);
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            {
+                ConditionExpression = (context => counter.Get(context) > 0)
+            };
 
             flowchart.AddStartLink(writeLine1);
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, writeLine3);
@@ -442,8 +480,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine w3 = new TestWriteLine("WriteLine3", "Executing WriteLine3");
             TestWriteLine wDefault = new TestWriteLine("wDefault", "Executing wDefault");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False);
-            flowDecision.ConditionExpression = (context => counter.Get(context) > 4);
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            {
+                ConditionExpression = (context => counter.Get(context) > 4)
+            };
 
             Dictionary<string, TestActivity> cases = new Dictionary<string, TestActivity>();
             cases.Add("One", w1);
@@ -479,8 +519,10 @@ namespace TestCases.Activities.Flowchart
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True);
-            flowDecision.ConditionExpression = (context => margin.Get(context) > 0);
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            {
+                ConditionExpression = (context => margin.Get(context) > 0)
+            };
             flowchart.AddConditionalLink(null, flowDecision, w2True, w2False);
 
             Dictionary<string, TestFlowElement> cases = new Dictionary<string, TestFlowElement>();
@@ -563,8 +605,10 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine w2 = new TestWriteLine("W2", "Executing W2");
             TestWriteLine w3 = new TestWriteLine("W3", "Executing W3");
 
-            TestFlowConditional flowCond1 = new TestFlowConditional(HintTrueFalse.True);
-            flowCond1.Condition = true;
+            TestFlowConditional flowCond1 = new TestFlowConditional(HintTrueFalse.True)
+            {
+                Condition = true
+            };
 
             flowchart1.AddStartLink(w1);
 
@@ -629,8 +673,10 @@ namespace TestCases.Activities.Flowchart
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True);
-            flowDecision.ConditionExpression = (context => margin.Get(context) > 0);
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            {
+                ConditionExpression = (context => margin.Get(context) > 0)
+            };
             TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
             flowchart1.Elements.Add(tCond);
 
@@ -650,8 +696,10 @@ namespace TestCases.Activities.Flowchart
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True);
-            flowDecision.ConditionExpression = (context => margin.Get(context) > 0);
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            {
+                ConditionExpression = (context => margin.Get(context) > 0)
+            };
             TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
@@ -694,8 +742,10 @@ namespace TestCases.Activities.Flowchart
             Variable<int> margin = new Variable<int> { Name = "margin", Default = 10 };
 
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional((HintTrueFalse[])null); // null here means neither True or False will happen as the action is null
-            flowDecision.ConditionExpression = (context => margin.Get(context) > 0);
+            TestFlowConditional flowDecision = new TestFlowConditional((HintTrueFalse[])null)
+            {
+                ConditionExpression = (context => margin.Get(context) > 0)
+            }; // null here means neither True or False will happen as the action is null
             TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, null, w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
@@ -757,8 +807,10 @@ namespace TestCases.Activities.Flowchart
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True);
-            flowDecision.ConditionExpression = (context => margin.Get(context) > 0);
+            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            {
+                ConditionExpression = (context => margin.Get(context) > 0)
+            };
             TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, fStep, flowchart2);
 
             TestRuntime.ValidateInstantiationException(flowchart1, string.Format(ErrorStrings.FlowNodeCannotBeShared, flowchart1.DisplayName, flowchart2.DisplayName));

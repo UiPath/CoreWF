@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace TestCases.Activities
 {
@@ -342,8 +342,7 @@ namespace TestCases.Activities
                 testWorkflowRuntime.PersistWorkflow();
                 testWorkflowRuntime.ResumeBookMark("Blocking1", null);
 
-                Exception resultedException;
-                testWorkflowRuntime.WaitForAborted(out resultedException);
+                testWorkflowRuntime.WaitForAborted(out Exception resultedException);
 
                 if (!(resultedException is TAC.ApplicationException))
                     throw resultedException;
@@ -422,8 +421,7 @@ namespace TestCases.Activities
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(tc))
             {
                 testWorkflowRuntime.ExecuteWorkflow();
-                Exception outEx;
-                testWorkflowRuntime.WaitForAborted(out outEx);
+                testWorkflowRuntime.WaitForAborted(out Exception outEx);
                 Dictionary<string, string> errorProperty = new Dictionary<string, string>();
                 errorProperty.Add("Message", "this should be caught");
                 ExceptionHelpers.ValidateException(outEx, typeof(TestCaseException), errorProperty);
@@ -580,7 +578,7 @@ namespace TestCases.Activities
 
     internal class TestRethrowInPrivateChildren : CoreWf.NativeActivity
     {
-        private CoreWf.Statements.Rethrow _body = new CoreWf.Statements.Rethrow() { DisplayName = "Rethrow" };
+        private readonly CoreWf.Statements.Rethrow _body = new CoreWf.Statements.Rethrow() { DisplayName = "Rethrow" };
         protected override void CacheMetadata(CoreWf.NativeActivityMetadata metadata)
         {
             metadata.AddImplementationChild(_body);

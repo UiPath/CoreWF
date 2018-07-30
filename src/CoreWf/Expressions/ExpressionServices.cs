@@ -1,40 +1,40 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Linq.Expressions;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Collections.ObjectModel;
+    using System.Collections;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+
     public static class ExpressionServices
     {
         // Reflection is used to call generic function because type information are only known at runtime.
-        private static MethodInfo s_tryConvertBinaryExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertBinaryExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
-        private static MethodInfo s_tryConvertUnaryExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertUnaryExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
-        private static MethodInfo s_tryConvertMemberExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertMemberExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
-        private static MethodInfo s_tryConvertArgumentExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertArgumentExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
-        private static MethodInfo s_tryConvertReferenceMemberExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertReferenceMemberExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
-        private static MethodInfo s_tryConvertIndexerReferenceHandle = typeof(ExpressionServices).GetMethod("TryConvertIndexerReferenceWorker", BindingFlags.NonPublic | BindingFlags.Static);
+        private static MethodInfo TryConvertBinaryExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertBinaryExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
+        private static MethodInfo TryConvertUnaryExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertUnaryExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
+        private static MethodInfo TryConvertMemberExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertMemberExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
+        private static MethodInfo TryConvertArgumentExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertArgumentExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
+        private static MethodInfo TryConvertReferenceMemberExpressionHandle = typeof(ExpressionServices).GetMethod("TryConvertReferenceMemberExpressionWorker", BindingFlags.NonPublic | BindingFlags.Static);
+        private static MethodInfo TryConvertIndexerReferenceHandle = typeof(ExpressionServices).GetMethod("TryConvertIndexerReferenceWorker", BindingFlags.NonPublic | BindingFlags.Static);
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "The parameter is restricted correctly.")]
+        //    Justification = "The parameter is restricted correctly.")]
         public static Activity<TResult> Convert<TResult>(Expression<Func<ActivityContext, TResult>> expression)
         {
-            Activity<TResult> result;
             if (expression == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("expression", SR.ExpressionRequiredForConversion));
+                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(expression), SR.ExpressionRequiredForConversion));
             }
-            TryConvert<TResult>(expression.Body, true, out result);
+            TryConvert<TResult>(expression.Body, true, out Activity<TResult> result);
             return result;
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "The parameter is restricted correctly.")]
+        //    Justification = "The parameter is restricted correctly.")]
         public static bool TryConvert<TResult>(Expression<Func<ActivityContext, TResult>> expression, out Activity<TResult> result)
         {
             if (expression == null)
@@ -48,15 +48,13 @@ namespace CoreWf.Expressions
         private static string TryConvert<TResult>(Expression body, bool throwOnError, out Activity<TResult> result)
         {
             result = null;
-            UnaryExpression unaryExpressionBody = body as UnaryExpression;
-            if (unaryExpressionBody != null)
+            if (body is UnaryExpression unaryExpressionBody)
             {
                 Type operandType = unaryExpressionBody.Operand.Type;
                 Type resultType = typeof(TResult);
                 return TryConvertUnaryExpression<TResult>(unaryExpressionBody, operandType, throwOnError, out result);
             }
-            BinaryExpression binaryExpressionBody = body as BinaryExpression;
-            if (binaryExpressionBody != null)
+            if (body is BinaryExpression binaryExpressionBody)
             {
                 Type leftType = binaryExpressionBody.Left.Type;
                 Type rightType = binaryExpressionBody.Right.Type;
@@ -66,14 +64,12 @@ namespace CoreWf.Expressions
                 }
                 return TryConvertBinaryExpression<TResult>(binaryExpressionBody, leftType, rightType, throwOnError, out result);
             }
-            MemberExpression memberExpressionBody = body as MemberExpression;
-            if (memberExpressionBody != null)
+            if (body is MemberExpression memberExpressionBody)
             {
                 Type memberType = memberExpressionBody.Expression == null ? memberExpressionBody.Member.DeclaringType : memberExpressionBody.Expression.Type;
                 return TryConvertMemberExpression<TResult>(memberExpressionBody, memberType, throwOnError, out result);
             }
-            MethodCallExpression methodCallExpressionBody = body as MethodCallExpression;
-            if (methodCallExpressionBody != null)
+            if (body is MethodCallExpression methodCallExpressionBody)
             {
                 MethodInfo calledMethod = methodCallExpressionBody.Method;
                 Type declaringType = calledMethod.DeclaringType;
@@ -108,23 +104,19 @@ namespace CoreWf.Expressions
                     return TryConvertMethodCallExpression<TResult>(methodCallExpressionBody, throwOnError, out result);
                 }
             }
-            InvocationExpression invocationExpression = body as InvocationExpression;
-            if (invocationExpression != null)
+            if (body is InvocationExpression invocationExpression)
             {
                 return TryConvertInvocationExpression<TResult>(invocationExpression, throwOnError, out result);
             }
-            NewExpression newExpression = body as NewExpression;
-            if (newExpression != null)
+            if (body is NewExpression newExpression)
             {
                 return TryConvertNewExpression<TResult>(newExpression, throwOnError, out result);
             }
-            NewArrayExpression newArrayExpression = body as NewArrayExpression;
-            if (newArrayExpression != null && newArrayExpression.NodeType != ExpressionType.NewArrayInit)
+            if (body is NewArrayExpression newArrayExpression && newArrayExpression.NodeType != ExpressionType.NewArrayInit)
             {
                 return TryConvertNewArrayExpression<TResult>(newArrayExpression, throwOnError, out result);
             }
-            ConstantExpression constantExpressionBody = body as ConstantExpression;
-            if (constantExpressionBody != null)
+            if (body is ConstantExpression constantExpressionBody)
             {
                 // This is to handle the leaf node as a literal value
                 result = new Literal<TResult> { Value = (TResult)constantExpressionBody.Value };
@@ -132,30 +124,29 @@ namespace CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(body.NodeType)));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(body.NodeType)));
             }
             else
             {
                 return SR.UnsupportedExpressionType(body.NodeType);
             }
-        }
+        }        
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "The parameter is restricted correctly.")]
+        //    Justification = "The parameter is restricted correctly.")]
         public static Activity<Location<TResult>> ConvertReference<TResult>(Expression<Func<ActivityContext, TResult>> expression)
         {
-            Activity<Location<TResult>> result;
             if (expression == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("expression", SR.ExpressionRequiredForConversion));
+                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(expression), SR.ExpressionRequiredForConversion));
             }
 
-            TryConvertReference<TResult>(expression.Body, true, out result);
+            TryConvertReference<TResult>(expression.Body, true, out Activity<Location<TResult>> result);
             return result;
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "The parameter is restricted correctly.")]
+        //    Justification = "The parameter is restricted correctly.")]
         public static bool TryConvertReference<TResult>(Expression<Func<ActivityContext, TResult>> expression, out Activity<Location<TResult>> result)
         {
             if (expression == null)
@@ -169,14 +160,12 @@ namespace CoreWf.Expressions
         private static string TryConvertReference<TResult>(Expression body, bool throwOnError, out Activity<Location<TResult>> result)
         {
             result = null;
-            MemberExpression memberExpressionBody = body as MemberExpression;
-            if (memberExpressionBody != null)
+            if (body is MemberExpression memberExpressionBody)
             {
                 Type memberType = memberExpressionBody.Expression == null ? memberExpressionBody.Member.DeclaringType : memberExpressionBody.Expression.Type;
                 return TryConvertReferenceMemberExpression<TResult>(memberExpressionBody, memberType, throwOnError, out result);
             }
-            BinaryExpression binaryExpressionBody = body as BinaryExpression;
-            if (binaryExpressionBody != null)
+            if (body is BinaryExpression binaryExpressionBody)
             {
                 Type leftType = binaryExpressionBody.Left.Type;
                 Type rightType = binaryExpressionBody.Right.Type;
@@ -185,8 +174,7 @@ namespace CoreWf.Expressions
                     return TryConvertArrayItemReference<TResult>(binaryExpressionBody, leftType, rightType, throwOnError, out result);
                 }
             }
-            MethodCallExpression methodCallExpressionBody = body as MethodCallExpression;
-            if (methodCallExpressionBody != null)
+            if (body is MethodCallExpression methodCallExpressionBody)
             {
                 Type declaringType = methodCallExpressionBody.Method.DeclaringType;
                 MethodInfo calledMethod = methodCallExpressionBody.Method;
@@ -223,7 +211,7 @@ namespace CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedReferenceExpressionType(body.NodeType)));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedReferenceExpressionType(body.NodeType)));
             }
             else
             {
@@ -240,14 +228,14 @@ namespace CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
+                        throw FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
                     }
                     else
                     {
                         return SR.InstanceMethodCallRequiresTargetObject;
                     }
                 }
-                MethodInfo specializedHandle = s_tryConvertIndexerReferenceHandle.MakeGenericMethod(methodCallExpressionBody.Object.Type, typeof(TResult));
+                MethodInfo specializedHandle = TryConvertIndexerReferenceHandle.MakeGenericMethod(methodCallExpressionBody.Object.Type, typeof(TResult));
                 object[] parameters = new object[] { methodCallExpressionBody, throwOnError, null };
                 string errorString = specializedHandle.Invoke(null, parameters) as string;
                 result = parameters[2] as Activity<Location<TResult>>;
@@ -255,7 +243,7 @@ namespace CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -263,10 +251,9 @@ namespace CoreWf.Expressions
         {
             result = null;
             Fx.Assert(methodCallExpressionBody.Object != null, "Indexer must have a target object");
-            if (!typeof(TOperand).GetTypeInfo().IsValueType)
+            if (!typeof(TOperand).IsValueType)
             {
-                Activity<TOperand> operand = null;
-                string operandError = TryConvert<TOperand>(methodCallExpressionBody.Object, throwOnError, out operand);
+                string operandError = TryConvert<TOperand>(methodCallExpressionBody.Object, throwOnError, out Activity<TOperand> operand);
                 if (operandError != null)
                 {
                     return operandError;
@@ -281,11 +268,11 @@ namespace CoreWf.Expressions
                     return argumentError;
                 }
                 result = indexerReference;
+
             }
             else
             {
-                Activity<Location<TOperand>> operandReference = null;
-                string operandError = TryConvertReference<TOperand>(methodCallExpressionBody.Object, throwOnError, out operandReference);
+                string operandError = TryConvertReference<TOperand>(methodCallExpressionBody.Object, throwOnError, out Activity<Location<TOperand>> operandReference);
                 if (operandError != null)
                 {
                     return operandError;
@@ -307,19 +294,18 @@ namespace CoreWf.Expressions
         private static string TryConvertMultiDimensionalArrayItemReference<TResult>(MethodCallExpression methodCallExpression, bool throwOnError, out Activity<Location<TResult>> result)
         {
             result = null;
-            Activity<Array> operand;
             if (methodCallExpression.Object == null)
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
                 }
                 else
                 {
                     return SR.InstanceMethodCallRequiresTargetObject;
                 }
             }
-            string errorString = TryConvert<Array>(methodCallExpression.Object, throwOnError, out operand);
+            string errorString = TryConvert<Array>(methodCallExpression.Object, throwOnError, out Activity<Array> operand);
             if (errorString != null)
             {
                 return errorString;
@@ -338,6 +324,7 @@ namespace CoreWf.Expressions
             }
             result = reference;
             return null;
+
         }
 
         private static string TryConvertVariableReference<TResult>(MethodCallExpression methodCallExpression, bool throwOnError, out Activity<Location<TResult>> result)
@@ -412,7 +399,7 @@ namespace CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -433,7 +420,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
                 }
                 else
                 {
@@ -446,7 +433,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerReferenceWithDifferentArrayTypeAndResultType(leftType, typeof(TResult))));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerReferenceWithDifferentArrayTypeAndResultType(leftType, typeof(TResult))));
                 }
                 else
                 {
@@ -457,7 +444,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
                 }
                 else
                 {
@@ -465,15 +452,13 @@ namespace CoreWf.Expressions
                 }
             }
 
-            Activity<TResult[]> array;
-            string arrayError = TryConvert<TResult[]>(binaryExpression.Left, throwOnError, out array);
+            string arrayError = TryConvert<TResult[]>(binaryExpression.Left, throwOnError, out Activity<TResult[]> array);
             if (arrayError != null)
             {
                 return arrayError;
             }
 
-            Activity<int> index;
-            string indexError = TryConvert<int>(binaryExpression.Right, throwOnError, out index);
+            string indexError = TryConvert<int>(binaryExpression.Right, throwOnError, out Activity<int> index);
             if (indexError != null)
             {
                 return indexError;
@@ -491,7 +476,7 @@ namespace CoreWf.Expressions
         {
             result = null;
             Variable variableObject = null;
-
+            
             //
             // This is a fast path to handle a simple variable object                
             //
@@ -554,7 +539,7 @@ namespace CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -609,7 +594,7 @@ namespace CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -664,7 +649,7 @@ namespace CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(e);
+                    throw FxTrace.Exception.AsError(e);
                 }
                 else
                 {
@@ -710,13 +695,14 @@ namespace CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.RuntimeArgumentNotCreated));
+                        throw FxTrace.Exception.AsError(new ValidationException(SR.RuntimeArgumentNotCreated));
                     }
                     else
                     {
                         return SR.RuntimeArgumentNotCreated;
                     }
                 }
+
             }
             else
             {
@@ -729,7 +715,7 @@ namespace CoreWf.Expressions
                 }
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
                 }
                 else
                 {
@@ -754,7 +740,7 @@ namespace CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
+                throw FxTrace.Exception.AsError(new ValidationException(SR.ArgumentMustbePropertyofWorkflowElement));
             }
             else
             {
@@ -766,7 +752,7 @@ namespace CoreWf.Expressions
         {
             try
             {
-                MethodInfo specializedHandle = s_tryConvertBinaryExpressionHandle.MakeGenericMethod(leftType, rightType, typeof(TResult));
+                MethodInfo specializedHandle = TryConvertBinaryExpressionHandle.MakeGenericMethod(leftType, rightType, typeof(TResult));
                 object[] parameters = new object[] { binaryExpressionBody, throwOnError, null };
                 string errorString = specializedHandle.Invoke(null, parameters) as string;
                 result = parameters[2] as Activity<TResult>;
@@ -774,7 +760,7 @@ namespace CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -788,7 +774,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerOnNonArrayType(leftType)));
                 }
                 else
                 {
@@ -799,7 +785,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerValueWithIncompatibleArrayTypeAndResultType(leftType, typeof(TResult))));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerValueWithIncompatibleArrayTypeAndResultType(leftType, typeof(TResult))));
                 }
                 else
                 {
@@ -810,7 +796,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.DoNotSupportArrayIndexerWithNonIntIndex(rightType)));
                 }
                 else
                 {
@@ -818,15 +804,13 @@ namespace CoreWf.Expressions
                 }
             }
 
-            Activity<TResult[]> array;
-            string arrayError = TryConvert<TResult[]>(binaryExpression.Left, throwOnError, out array);
+            string arrayError = TryConvert<TResult[]>(binaryExpression.Left, throwOnError, out Activity<TResult[]> array);
             if (arrayError != null)
             {
                 return arrayError;
             }
 
-            Activity<int> index;
-            string indexError = TryConvert<int>(binaryExpression.Right, throwOnError, out index);
+            string indexError = TryConvert<int>(binaryExpression.Right, throwOnError, out Activity<int> index);
             if (indexError != null)
             {
                 return indexError;
@@ -844,14 +828,12 @@ namespace CoreWf.Expressions
         {
             result = null;
 
-            Activity<TLeft> left;
-            string leftError = TryConvert<TLeft>(binaryExpressionBody.Left, throwOnError, out left);
+            string leftError = TryConvert<TLeft>(binaryExpressionBody.Left, throwOnError, out Activity<TLeft> left);
             if (leftError != null)
             {
                 return leftError;
             }
-            Activity<TRight> right;
-            string rightError = TryConvert<TRight>(binaryExpressionBody.Right, throwOnError, out right);
+            string rightError = TryConvert<TRight>(binaryExpressionBody.Right, throwOnError, out Activity<TRight> right);
             if (rightError != null)
             {
                 return rightError;
@@ -935,7 +917,7 @@ namespace CoreWf.Expressions
                 default:
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(binaryExpressionBody.NodeType)));
+                        throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(binaryExpressionBody.NodeType)));
                     }
                     else
                     {
@@ -950,7 +932,7 @@ namespace CoreWf.Expressions
         {
             try
             {
-                MethodInfo specializedHandle = s_tryConvertUnaryExpressionHandle.MakeGenericMethod(operandType, typeof(TResult));
+                MethodInfo specializedHandle = TryConvertUnaryExpressionHandle.MakeGenericMethod(operandType, typeof(TResult));
                 object[] parameters = new object[] { unaryExpressionBody, throwOnError, null };
                 string errorString = specializedHandle.Invoke(null, parameters) as string;
                 result = parameters[2] as Activity<TResult>;
@@ -958,7 +940,7 @@ namespace CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -966,8 +948,7 @@ namespace CoreWf.Expressions
         {
             result = null;
 
-            Activity<TOperand> operand;
-            string operandError = TryConvert<TOperand>(unaryExpressionBody.Operand, throwOnError, out operand);
+            string operandError = TryConvert<TOperand>(unaryExpressionBody.Operand, throwOnError, out Activity<TOperand> operand);
             if (operandError != null)
             {
                 return operandError;
@@ -995,7 +976,7 @@ namespace CoreWf.Expressions
                 default:
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(unaryExpressionBody.NodeType)));
+                        throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedExpressionType(unaryExpressionBody.NodeType)));
                     }
                     else
                     {
@@ -1010,7 +991,7 @@ namespace CoreWf.Expressions
         {
             try
             {
-                MethodInfo specializedHandle = s_tryConvertMemberExpressionHandle.MakeGenericMethod(operandType, typeof(TResult));
+                MethodInfo specializedHandle = TryConvertMemberExpressionHandle.MakeGenericMethod(operandType, typeof(TResult));
                 object[] parameters = new object[] { memberExpressionBody, throwOnError, null };
                 string errorString = specializedHandle.Invoke(null, parameters) as string;
                 result = parameters[2] as Activity<TResult>;
@@ -1018,7 +999,7 @@ namespace CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -1061,7 +1042,7 @@ namespace CoreWf.Expressions
             }
             if (throwOnError)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
             }
             else
             {
@@ -1073,7 +1054,7 @@ namespace CoreWf.Expressions
         {
             try
             {
-                MethodInfo specializedHandle = s_tryConvertReferenceMemberExpressionHandle.MakeGenericMethod(operandType, typeof(TResult));
+                MethodInfo specializedHandle = TryConvertReferenceMemberExpressionHandle.MakeGenericMethod(operandType, typeof(TResult));
                 object[] parameters = new object[] { memberExpressionBody, throwOnError, null };
                 string errorString = specializedHandle.Invoke(null, parameters) as string;
                 result = parameters[2] as Activity<Location<TResult>>;
@@ -1081,7 +1062,7 @@ namespace CoreWf.Expressions
             }
             catch (TargetInvocationException e)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(e.InnerException);
+                throw FxTrace.Exception.AsError(e.InnerException);
             }
         }
 
@@ -1090,7 +1071,7 @@ namespace CoreWf.Expressions
             result = null;
             Activity<TOperand> operand = null;
             Activity<Location<TOperand>> operandReference = null;
-            bool isValueType = typeof(TOperand).GetTypeInfo().IsValueType;
+            bool isValueType = typeof(TOperand).IsValueType;
             if (memberExpressionBody.Expression != null)
             {
                 // Static property might not have any expressions.
@@ -1134,6 +1115,7 @@ namespace CoreWf.Expressions
                     {
                         result = new ValueTypePropertyReference<TOperand, TResult> { OperandLocation = operandReference, PropertyName = memberExpressionBody.Member.Name };
                     }
+
                 }
                 return null;
             }
@@ -1160,12 +1142,13 @@ namespace CoreWf.Expressions
                     {
                         result = new ValueTypeFieldReference<TOperand, TResult> { OperandLocation = operandReference, FieldName = memberExpressionBody.Member.Name };
                     }
+
                 }
                 return null;
             }
             if (throwOnError)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedMemberExpressionWithType(memberExpressionBody.Member.GetType().Name)));
             }
             else
             {
@@ -1180,7 +1163,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
                 }
                 else
                 {
@@ -1204,7 +1187,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.OverloadingMethodMustBeStatic));
                 }
                 else
                 {
@@ -1230,7 +1213,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MethodInfoRequired(methodCallExpression.GetType().Name)));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.MethodInfoRequired(methodCallExpression.GetType().Name)));
                 }
                 else
                 {
@@ -1241,7 +1224,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MethodNameRequired(methodInfo.GetType().Name)));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.MethodNameRequired(methodInfo.GetType().Name)));
                 }
                 else
                 {
@@ -1258,7 +1241,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(methodCallExpression.GetType().Name)));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(methodCallExpression.GetType().Name)));
                 }
                 else
                 {
@@ -1278,7 +1261,7 @@ namespace CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidGenericTypeInfo(methodCallExpression.GetType().Name)));
+                        throw FxTrace.Exception.AsError(new ValidationException(SR.InvalidGenericTypeInfo(methodCallExpression.GetType().Name)));
                     }
                     else
                     {
@@ -1297,7 +1280,7 @@ namespace CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
+                        throw FxTrace.Exception.AsError(new ValidationException(SR.InstanceMethodCallRequiresTargetObject));
                     }
                     else
                     {
@@ -1305,7 +1288,7 @@ namespace CoreWf.Expressions
                     }
                 }
                 object[] parameters = new object[] { methodCallExpression.Object, false, throwOnError, null };
-                error = s_tryConvertArgumentExpressionHandle.MakeGenericMethod(methodCallExpression.Object.Type).Invoke(null, parameters) as string;
+                error = TryConvertArgumentExpressionHandle.MakeGenericMethod(methodCallExpression.Object.Type).Invoke(null, parameters) as string;
                 if (error != null)
                 {
                     return error;
@@ -1325,7 +1308,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidExpressionProperty(invocationExpression.GetType().Name)));
+                    throw FxTrace.Exception.AsError(new ValidationException(SR.InvalidExpressionProperty(invocationExpression.GetType().Name)));
                 }
                 else
                 {
@@ -1337,8 +1320,7 @@ namespace CoreWf.Expressions
                 MethodName = "Invoke",
             };
             object[] parameters = new object[] { invocationExpression.Expression, false, throwOnError, null };
-            string error = s_tryConvertArgumentExpressionHandle.MakeGenericMethod(invocationExpression.Expression.Type).Invoke(null, parameters) as string;
-            if (error != null)
+            if (TryConvertArgumentExpressionHandle.MakeGenericMethod(invocationExpression.Expression.Type).Invoke(null, parameters) is string error)
             {
                 return error;
             }
@@ -1366,20 +1348,18 @@ namespace CoreWf.Expressions
 
             if (isByRef)
             {
-                Activity<Location<TArgument>> argument;
-                error = TryConvertReference<TArgument>(expression, throwOnError, out argument);
+                error = TryConvertReference<TArgument>(expression, throwOnError, out Activity<Location<TArgument>> argument);
                 if (error == null)
                 {
                     result = new InOutArgument<TArgument>
-                    {
-                        Expression = argument,
-                    };
+                   {
+                       Expression = argument,
+                   };
                 }
             }
             else
             {
-                Activity<TArgument> argument;
-                error = TryConvert<TArgument>(expression, throwOnError, out argument);
+                error = TryConvert<TArgument>(expression, throwOnError, out Activity<TArgument> argument);
                 if (error == null)
                 {
                     result = new InArgument<TArgument>
@@ -1403,7 +1383,7 @@ namespace CoreWf.Expressions
                 {
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(newExpression.GetType().Name)));
+                        throw FxTrace.Exception.AsError(new ValidationException(SR.ArgumentNumberRequiresTheSameAsParameterNumber(newExpression.GetType().Name)));
                     }
                     else
                     {
@@ -1432,6 +1412,7 @@ namespace CoreWf.Expressions
             }
             result = newArrayActivity;
             return null;
+
         }
 
         private static string TryConvertArguments(ReadOnlyCollection<Expression> source, IList target, Type expressionType, int baseEvaluationOrder, ParameterInfo[] parameterInfoArray, bool throwOnError)
@@ -1449,7 +1430,7 @@ namespace CoreWf.Expressions
                     {
                         if (throwOnError)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.InvalidParameterInfo(i, expressionType.Name)));
+                            throw FxTrace.Exception.AsError(new ValidationException(SR.InvalidParameterInfo(i, expressionType.Name)));
                         }
                         else
                         {
@@ -1459,8 +1440,7 @@ namespace CoreWf.Expressions
                     isByRef = parameterInfo.ParameterType.IsByRef;
                 }
                 parameters = new object[] { expression, isByRef, throwOnError, null };
-                string error = s_tryConvertArgumentExpressionHandle.MakeGenericMethod(expression.Type).Invoke(null, parameters) as string;
-                if (error != null)
+                if (TryConvertArgumentExpressionHandle.MakeGenericMethod(expression.Type).Invoke(null, parameters) is string error)
                 {
                     return error;
                 }
@@ -1480,7 +1460,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(
+                    throw FxTrace.Exception.AsError(new ValidationException(
                         SR.UnexpectedExpressionNodeType(ExpressionType.Constant.ToString(), expression.NodeType.ToString())));
                 }
                 else
@@ -1518,7 +1498,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
                 }
                 else
                 {
@@ -1538,7 +1518,7 @@ namespace CoreWf.Expressions
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(
+                    throw FxTrace.Exception.AsError(new ValidationException(
                         SR.UnexpectedExpressionNodeType(ExpressionType.Constant.ToString(), expression.NodeType.ToString())));
                 }
                 else
@@ -1571,12 +1551,12 @@ namespace CoreWf.Expressions
                     DelegateArgument = delegateArgument
                 };
             }
-
+            
             if (result == null && throwOnError)
             {
                 if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.UnsupportedLocationReferenceValue));
                 }
                 else
                 {

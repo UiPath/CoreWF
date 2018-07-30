@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf.Runtime.Diagnostics;
 using System;
@@ -16,7 +16,7 @@ namespace CoreWf.Runtime.DurableInstancing
         private readonly TimeSpan _timeout;
 
         private int _cancellationHandlerCalled;
-        private EventTraceActivity _eventTraceActivity;
+        private readonly EventTraceActivity _eventTraceActivity;
 
         internal InstancePersistenceContext(InstanceHandle handle, TimeSpan timeout)
             : this(handle)
@@ -118,11 +118,11 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceOwnerId == Guid.Empty)
             {
-                throw Fx.Exception.Argument("instanceOwnerId", SR.GuidCannotBeEmpty);
+                throw Fx.Exception.Argument(nameof(instanceOwnerId), SR.GuidCannotBeEmpty);
             }
             if (lockToken == Guid.Empty)
             {
-                throw Fx.Exception.Argument("lockToken", SR.GuidCannotBeEmpty);
+                throw Fx.Exception.Argument(nameof(lockToken), SR.GuidCannotBeEmpty);
             }
             ThrowIfNotActive("BindInstanceOwner");
 
@@ -138,7 +138,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId == Guid.Empty)
             {
-                throw Fx.Exception.Argument("instanceId", SR.GuidCannotBeEmpty);
+                throw Fx.Exception.Argument(nameof(instanceId), SR.GuidCannotBeEmpty);
             }
             ThrowIfNotActive("BindInstance");
 
@@ -152,7 +152,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (persistenceEvent == null)
             {
-                throw Fx.Exception.ArgumentNull("persistenceEvent");
+                throw Fx.Exception.ArgumentNull(nameof(persistenceEvent));
             }
             ThrowIfNotActive("BindEvent");
 
@@ -169,7 +169,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceVersion < 0)
             {
-                throw Fx.Exception.ArgumentOutOfRange("instanceVersion", instanceVersion, SR.InvalidLockToken);
+                throw Fx.Exception.ArgumentOutOfRange(nameof(instanceVersion), instanceVersion, SR.InvalidLockToken);
             }
             ThrowIfNotActive("BindAcquiredLock");
 
@@ -211,7 +211,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceVersion < 0)
             {
-                throw Fx.Exception.ArgumentOutOfRange("instanceVersion", instanceVersion, SR.InvalidLockToken);
+                throw Fx.Exception.ArgumentOutOfRange(nameof(instanceVersion), instanceVersion, SR.InvalidLockToken);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
             ThrowIfNotActive(methodName);
@@ -281,7 +281,7 @@ namespace CoreWf.Runtime.DurableInstancing
             }
             else if (state != InstanceState.Initialized)
             {
-                throw Fx.Exception.Argument("state", SR.InvalidInstanceState);
+                throw Fx.Exception.Argument(nameof(state), SR.InvalidInstanceState);
             }
             ThrowIfNoInstance();
             ThrowIfNotActive("PersistedInstance");
@@ -301,10 +301,12 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> keyMetadata in associatedInstanceKeyMetadata)
                 {
-                    InstanceKeyView view = new InstanceKeyView(keyMetadata.Key);
-                    view.InstanceKeyState = InstanceKeyState.Associated;
-                    view.InstanceKeyMetadata = keyMetadata.Value.ReadOnlyCopy(false);
-                    view.InstanceKeyMetadataConsistency = InstanceView.IsBoundToLock ? InstanceValueConsistency.None : InstanceValueConsistency.InDoubt;
+                    InstanceKeyView view = new InstanceKeyView(keyMetadata.Key)
+                    {
+                        InstanceKeyState = InstanceKeyState.Associated,
+                        InstanceKeyMetadata = keyMetadata.Value.ReadOnlyCopy(false),
+                        InstanceKeyMetadataConsistency = InstanceView.IsBoundToLock ? InstanceValueConsistency.None : InstanceValueConsistency.InDoubt
+                    };
                     keysCopy.Add(view.InstanceKey, view);
                 }
             }
@@ -313,10 +315,12 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> keyMetadata in completedInstanceKeyMetadata)
                 {
-                    InstanceKeyView view = new InstanceKeyView(keyMetadata.Key);
-                    view.InstanceKeyState = InstanceKeyState.Completed;
-                    view.InstanceKeyMetadata = keyMetadata.Value.ReadOnlyCopy(false);
-                    view.InstanceKeyMetadataConsistency = consistency;
+                    InstanceKeyView view = new InstanceKeyView(keyMetadata.Key)
+                    {
+                        InstanceKeyState = InstanceKeyState.Completed,
+                        InstanceKeyMetadata = keyMetadata.Value.ReadOnlyCopy(false),
+                        InstanceKeyMetadataConsistency = consistency
+                    };
                     keysCopy.Add(view.InstanceKey, view);
                 }
             }
@@ -388,24 +392,21 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (name == null)
             {
-                throw Fx.Exception.ArgumentNull("name");
+                throw Fx.Exception.ArgumentNull(nameof(name));
             }
-            if (value == null)
-            {
-                throw Fx.Exception.ArgumentNull("value");
-            }
+
             ThrowIfNotLocked();
             ThrowIfCompleted();
             ThrowIfNotTransactional("WroteInstanceMetadataValue");
 
-            InstanceView.AccumulatedMetadataWrites[name] = value;
+            InstanceView.AccumulatedMetadataWrites[name] = value ?? throw Fx.Exception.ArgumentNull(nameof(value));
         }
 
         public void AssociatedInstanceKey(Guid key)
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
+                throw Fx.Exception.Argument(nameof(key), SR.InvalidKeyArgument);
             }
             ThrowIfNotLocked();
             ThrowIfCompleted();
@@ -416,9 +417,11 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 throw Fx.Exception.AsError(new InvalidOperationException(SR.KeyAlreadyAssociated));
             }
-            InstanceKeyView keyView = new InstanceKeyView(key);
-            keyView.InstanceKeyState = InstanceKeyState.Associated;
-            keyView.InstanceKeyMetadataConsistency = InstanceValueConsistency.None;
+            InstanceKeyView keyView = new InstanceKeyView(key)
+            {
+                InstanceKeyState = InstanceKeyState.Associated,
+                InstanceKeyMetadataConsistency = InstanceValueConsistency.None
+            };
             copy[keyView.InstanceKey] = keyView;
             InstanceView.InstanceKeys = new ReadOnlyDictionary<Guid, InstanceKeyView>(copy);
         }
@@ -427,14 +430,13 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
+                throw Fx.Exception.Argument(nameof(key), SR.InvalidKeyArgument);
             }
             ThrowIfNotLocked();
             ThrowIfCompleted();
             ThrowIfNotTransactional("CompletedInstanceKey");
 
-            InstanceKeyView existingKeyView;
-            InstanceView.InstanceKeys.TryGetValue(key, out existingKeyView);
+            InstanceView.InstanceKeys.TryGetValue(key, out InstanceKeyView existingKeyView);
             if ((InstanceView.InstanceKeysConsistency & InstanceValueConsistency.InDoubt) == 0)
             {
                 if (existingKeyView != null)
@@ -457,9 +459,11 @@ namespace CoreWf.Runtime.DurableInstancing
             else
             {
                 Dictionary<Guid, InstanceKeyView> copy = new Dictionary<Guid, InstanceKeyView>(InstanceView.InstanceKeys);
-                InstanceKeyView keyView = new InstanceKeyView(key);
-                keyView.InstanceKeyState = InstanceKeyState.Completed;
-                keyView.InstanceKeyMetadataConsistency = InstanceValueConsistency.Partial;
+                InstanceKeyView keyView = new InstanceKeyView(key)
+                {
+                    InstanceKeyState = InstanceKeyState.Completed,
+                    InstanceKeyMetadataConsistency = InstanceValueConsistency.Partial
+                };
                 copy[keyView.InstanceKey] = keyView;
                 InstanceView.InstanceKeys = new ReadOnlyDictionary<Guid, InstanceKeyView>(copy);
             }
@@ -469,14 +473,13 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
+                throw Fx.Exception.Argument(nameof(key), SR.InvalidKeyArgument);
             }
             ThrowIfNotLocked();
             ThrowIfCompleted();
             ThrowIfNotTransactional("UnassociatedInstanceKey");
 
-            InstanceKeyView existingKeyView;
-            InstanceView.InstanceKeys.TryGetValue(key, out existingKeyView);
+            InstanceView.InstanceKeys.TryGetValue(key, out InstanceKeyView existingKeyView);
             if ((InstanceView.InstanceKeysConsistency & InstanceValueConsistency.InDoubt) == 0)
             {
                 if (existingKeyView != null)
@@ -504,13 +507,12 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
+                throw Fx.Exception.Argument(nameof(key), SR.InvalidKeyArgument);
             }
             ThrowIfNoInstance();
             ThrowIfNotActive("ReadInstanceKeyMetadata");
 
-            InstanceKeyView keyView;
-            if (!InstanceView.InstanceKeys.TryGetValue(key, out keyView))
+            if (!InstanceView.InstanceKeys.TryGetValue(key, out InstanceKeyView keyView))
             {
                 if (InstanceView.InstanceKeysConsistency == InstanceValueConsistency.None)
                 {
@@ -569,22 +571,21 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (key == Guid.Empty)
             {
-                throw Fx.Exception.Argument("key", SR.InvalidKeyArgument);
+                throw Fx.Exception.Argument(nameof(key), SR.InvalidKeyArgument);
             }
             if (name == null)
             {
-                throw Fx.Exception.ArgumentNull("name");
+                throw Fx.Exception.ArgumentNull(nameof(name));
             }
             if (value == null)
             {
-                throw Fx.Exception.ArgumentNull("value");
+                throw Fx.Exception.ArgumentNull(nameof(value));
             }
             ThrowIfNotLocked();
             ThrowIfCompleted();
             ThrowIfNotTransactional("WroteInstanceKeyMetadataValue");
 
-            InstanceKeyView keyView;
-            if (!InstanceView.InstanceKeys.TryGetValue(key, out keyView))
+            if (!InstanceView.InstanceKeys.TryGetValue(key, out InstanceKeyView keyView))
             {
                 if (InstanceView.InstanceKeysConsistency == InstanceValueConsistency.None)
                 {
@@ -634,11 +635,11 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (name == null)
             {
-                throw Fx.Exception.ArgumentNull("name");
+                throw Fx.Exception.ArgumentNull(nameof(name));
             }
             if (value == null)
             {
-                throw Fx.Exception.ArgumentNull("value");
+                throw Fx.Exception.ArgumentNull(nameof(value));
             }
             ThrowIfNoOwner();
             ThrowIfNotTransactional("WroteInstanceOwnerMetadataValue");
@@ -650,7 +651,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (queryResult == null)
             {
-                throw Fx.Exception.ArgumentNull("queryResult");
+                throw Fx.Exception.ArgumentNull(nameof(queryResult));
             }
             ThrowIfNotActive("QueriedInstanceStore");
 
@@ -665,7 +666,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (command == null)
             {
-                throw Fx.Exception.ArgumentNull("command");
+                throw Fx.Exception.ArgumentNull(nameof(command));
             }
             ThrowIfNotActive("Execute");
 
@@ -691,7 +692,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (command == null)
             {
-                throw Fx.Exception.ArgumentNull("command");
+                throw Fx.Exception.ArgumentNull(nameof(command));
             }
             ThrowIfNotActive("BeginExecute");
 
@@ -793,7 +794,7 @@ namespace CoreWf.Runtime.DurableInstancing
             InstanceView finalState = ExecuteAsyncResult.End(result);
             if (finalState == null)
             {
-                throw Fx.Exception.Argument("result", SR.InvalidAsyncResult);
+                throw Fx.Exception.Argument(nameof(result), SR.InvalidAsyncResult);
             }
             return finalState;
         }
@@ -851,7 +852,7 @@ namespace CoreWf.Runtime.DurableInstancing
             ThrowIfNotActive(methodName);
             //if (RootAsyncResult.CurrentCommand.IsTransactionEnlistmentOptional)
             //{
-            //    throw Fx.Exception.AsError(new InvalidOperationException(SRCore.OutsideTransactionalCommand(methodName)));
+            //    throw Fx.Exception.AsError(new InvalidOperationException(SR.OutsideTransactionalCommand(methodName)));
             //}
         }
 
@@ -1071,7 +1072,7 @@ namespace CoreWf.Runtime.DurableInstancing
                         //    {
                         //        if (this.priorAsyncResult.CurrentCommand.IsTransactionEnlistmentOptional && !CurrentCommand.IsTransactionEnlistmentOptional)
                         //        {
-                        //            throw Fx.Exception.AsError(new InvalidOperationException(SRCore.CannotInvokeTransactionalFromNonTransactional));
+                        //            throw Fx.Exception.AsError(new InvalidOperationException(SR.CannotInvokeTransactionalFromNonTransactional));
                         //        }
                         //    }
                         //}
@@ -1079,7 +1080,7 @@ namespace CoreWf.Runtime.DurableInstancing
                         //{
                         //    if (!CurrentCommand.IsTransactionEnlistmentOptional)
                         //    {
-                        //        throw Fx.Exception.AsError(new InvalidOperationException(SRCore.CannotInvokeTransactionalFromNonTransactional));
+                        //        throw Fx.Exception.AsError(new InvalidOperationException(SR.CannotInvokeTransactionalFromNonTransactional));
                         //    }
                         //}
 

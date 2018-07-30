@@ -1,22 +1,25 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf;
+    using CoreWf.Expressions;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
     public sealed class FlowDecision : FlowNode
     {
         private const string DefaultDisplayName = "Decision";
-        private string _displayName;
+        private string displayName;
 
         public FlowDecision()
         {
-            _displayName = FlowDecision.DefaultDisplayName;
+            this.displayName = FlowDecision.DefaultDisplayName;
         }
 
         public FlowDecision(Expression<Func<ActivityContext, bool>> condition)
@@ -24,7 +27,7 @@ namespace CoreWf.Statements
         {
             if (condition == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw FxTrace.Exception.ArgumentNull(nameof(condition));
             }
 
             this.Condition = new LambdaValue<bool>(condition);
@@ -33,12 +36,7 @@ namespace CoreWf.Statements
         public FlowDecision(Activity<bool> condition)
             : this()
         {
-            if (condition == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
-            }
-
-            this.Condition = condition;
+            this.Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
         }
 
         [DefaultValue(null)]
@@ -49,7 +47,7 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Condition")]
+        [DependsOn("Condition")]
         public FlowNode True
         {
             get;
@@ -57,7 +55,7 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("True")]
+        [DependsOn("True")]
         public FlowNode False
         {
             get;
@@ -69,11 +67,11 @@ namespace CoreWf.Statements
         {
             get
             {
-                return _displayName;
+                return this.displayName;
             }
             set
             {
-                _displayName = value;
+                this.displayName = value;
             }
         }
 

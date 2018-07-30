@@ -1,10 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using System.ComponentModel;
+
     internal static class BookmarkOptionsHelper
     {
         private static bool IsDefined(BookmarkOptions options)
@@ -16,7 +17,7 @@ namespace CoreWf
         {
             if (!IsDefined(options))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(
+                throw FxTrace.Exception.AsError(
                     new InvalidEnumArgumentException(argumentName, (int)options, typeof(BookmarkOptions)));
             }
         }

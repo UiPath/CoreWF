@@ -1,20 +1,21 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Tracking;
-using System;
-using System.Globalization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+    using System.Globalization;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     public class ActivityContext
     {
-        private ActivityInstance _instance;
-        private ActivityExecutor _executor;
-        private bool _isDisposed;
-        private long _instanceId;
+        private ActivityInstance instance;
+        private ActivityExecutor executor;
+        private bool isDisposed;
+        private long instanceId;
 
         // Used by subclasses that are pooled.
         internal ActivityContext()
@@ -26,10 +27,10 @@ namespace CoreWf
         {
             Fx.Assert(instance != null, "valid activity instance is required");
 
-            _instance = instance;
-            _executor = executor;
-            this.Activity = _instance.Activity;
-            _instanceId = instance.InternalId;
+            this.instance = instance;
+            this.executor = executor;
+            this.Activity = this.instance.Activity;
+            this.instanceId = instance.InternalId;
         }
 
         internal LocationEnvironment Environment
@@ -37,7 +38,7 @@ namespace CoreWf
             get
             {
                 ThrowIfDisposed();
-                return _instance.Environment;
+                return this.instance.Environment;
             }
         }
 
@@ -57,7 +58,7 @@ namespace CoreWf
         {
             get
             {
-                return _instance;
+                return this.instance;
             }
         }
 
@@ -65,7 +66,7 @@ namespace CoreWf
         {
             get
             {
-                return _executor;
+                return this.executor;
             }
         }
 
@@ -74,7 +75,7 @@ namespace CoreWf
             get
             {
                 ThrowIfDisposed();
-                return _instanceId.ToString(CultureInfo.InvariantCulture);
+                return this.instanceId.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -83,7 +84,7 @@ namespace CoreWf
             get
             {
                 ThrowIfDisposed();
-                return _executor.WorkflowInstanceId;
+                return this.executor.WorkflowInstanceId;
             }
         }
 
@@ -96,16 +97,16 @@ namespace CoreWf
                 // Argument expressions don't have visbility into public variables at the same scope.
                 // However fast-path expressions use the parent's ActivityInstance instead of
                 // creating their own, so we need to give them a DataContext without variables
-                bool includeLocalVariables = !_instance.IsResolvingArguments;
+                bool includeLocalVariables = !this.instance.IsResolvingArguments;
 
-                if (_instance.DataContext == null ||
-                    _instance.DataContext.IncludesLocalVariables != includeLocalVariables)
+                if (this.instance.DataContext == null ||
+                    this.instance.DataContext.IncludesLocalVariables != includeLocalVariables)
                 {
-                    _instance.DataContext
-                        = new WorkflowDataContext(_executor, _instance, includeLocalVariables);
+                    this.instance.DataContext
+                        = new WorkflowDataContext(this.executor, this.instance, includeLocalVariables);
                 }
 
-                return _instance.DataContext;
+                return this.instance.DataContext;
             }
         }
 
@@ -113,7 +114,7 @@ namespace CoreWf
         {
             get
             {
-                return _isDisposed;
+                return this.isDisposed;
             }
         }
 
@@ -121,12 +122,12 @@ namespace CoreWf
             where T : class
         {
             ThrowIfDisposed();
-            return _executor.GetExtension<T>();
+            return this.executor.GetExtension<T>();
         }
 
         internal Location GetIgnorableResultLocation(RuntimeArgument resultArgument)
         {
-            return _executor.GetIgnorableResultLocation(resultArgument);
+            return this.executor.GetIgnorableResultLocation(resultArgument);
         }
 
         internal void Reinitialize(ActivityInstance instance, ActivityExecutor executor)
@@ -136,29 +137,29 @@ namespace CoreWf
 
         internal void Reinitialize(ActivityInstance instance, ActivityExecutor executor, Activity activity, long instanceId)
         {
-            _isDisposed = false;
-            _instance = instance;
-            _executor = executor;
+            this.isDisposed = false;
+            this.instance = instance;
+            this.executor = executor;
             this.Activity = activity;
-            _instanceId = instanceId;
+            this.instanceId = instanceId;
         }
 
         // extra insurance against misuse (if someone stashes away the execution context to use later)
         internal void Dispose()
         {
-            _isDisposed = true;
-            _instance = null;
-            _executor = null;
+            this.isDisposed = true;
+            this.instance = null;
+            this.executor = null;
             this.Activity = null;
-            _instanceId = 0;
+            this.instanceId = 0;
         }
 
         internal void DisposeDataContext()
         {
-            if (_instance.DataContext != null)
+            if (this.instance.DataContext != null)
             {
-                _instance.DataContext.DisposeEnvironment();
-                _instance.DataContext = null;
+                this.instance.DataContext.DisposeEnvironment();
+                this.instance.DataContext = null;
             }
         }
 
@@ -171,14 +172,13 @@ namespace CoreWf
 
             if (locationReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(locationReference));
             }
 
             Location location = locationReference.GetLocation(this);
 
-            Location<T> typedLocation = location as Location<T>;
 
-            if (typedLocation != null)
+            if (location is Location<T> typedLocation)
             {
                 return typedLocation;
             }
@@ -192,7 +192,7 @@ namespace CoreWf
                 }
                 else
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LocationTypeMismatch(locationReference.Name, typeof(T), locationReference.Type)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LocationTypeMismatch(locationReference.Name, typeof(T), locationReference.Type)));
                 }
             }
         }
@@ -206,7 +206,7 @@ namespace CoreWf
 
             if (locationReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(locationReference));
             }
 
             return GetValueCore<T>(locationReference);
@@ -216,9 +216,8 @@ namespace CoreWf
         {
             Location location = locationReference.GetLocationForRead(this);
 
-            Location<T> typedLocation = location as Location<T>;
 
-            if (typedLocation != null)
+            if (location is Location<T> typedLocation)
             {
                 // If we hit this path we can avoid boxing value types
                 return typedLocation.Value;
@@ -237,7 +236,7 @@ namespace CoreWf
 
             if (locationReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(locationReference));
             }
 
             SetValueCore<T>(locationReference, value);
@@ -247,18 +246,18 @@ namespace CoreWf
         {
             Location location = locationReference.GetLocationForWrite(this);
 
-            Location<T> typedLocation = location as Location<T>;
 
-            if (typedLocation != null)
+            if (location is Location<T> typedLocation)
             {
                 // If we hit this path we can avoid boxing value types
                 typedLocation.Value = value;
             }
             else
             {
+
                 if (!TypeHelper.AreTypesCompatible(value, locationReference.Type))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotSetValueToLocation(value != null ? value.GetType() : typeof(T), locationReference.Name, locationReference.Type)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotSetValueToLocation(value != null ? value.GetType() : typeof(T), locationReference.Name, locationReference.Type)));
                 }
 
                 location.Value = value;
@@ -269,14 +268,14 @@ namespace CoreWf
         // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
         // file if the signature changes.
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public T GetValue<T>(OutArgument<T> argument)
         {
             ThrowIfDisposed();
 
             if (argument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw FxTrace.Exception.ArgumentNull(nameof(argument));
             }
 
             argument.ThrowIfNotInTree();
@@ -288,14 +287,14 @@ namespace CoreWf
         // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
         // file if the signature changes.
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public T GetValue<T>(InOutArgument<T> argument)
         {
             ThrowIfDisposed();
 
             if (argument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw FxTrace.Exception.ArgumentNull(nameof(argument));
             }
 
             argument.ThrowIfNotInTree();
@@ -307,14 +306,14 @@ namespace CoreWf
         // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
         // file if the signature changes.
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public T GetValue<T>(InArgument<T> argument)
         {
             ThrowIfDisposed();
 
             if (argument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw FxTrace.Exception.ArgumentNull(nameof(argument));
             }
 
             argument.ThrowIfNotInTree();
@@ -331,7 +330,7 @@ namespace CoreWf
 
             if (argument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw FxTrace.Exception.ArgumentNull(nameof(argument));
             }
 
             argument.ThrowIfNotInTree();
@@ -343,21 +342,21 @@ namespace CoreWf
         // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
         // file if the signature changes.
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "We explicitly provide a RuntimeArgument overload to avoid requiring the object type parameter.")]
+        //    Justification = "We explicitly provide a RuntimeArgument overload to avoid requiring the object type parameter.")]
         public object GetValue(RuntimeArgument runtimeArgument)
         {
             ThrowIfDisposed();
 
             if (runtimeArgument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("runtimeArgument");
+                throw FxTrace.Exception.ArgumentNull(nameof(runtimeArgument));
             }
 
             return GetValueCore<object>(runtimeArgument);
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public void SetValue<T>(OutArgument<T> argument, T value)
         {
             ThrowIfDisposed();
@@ -374,7 +373,7 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public void SetValue<T>(InOutArgument<T> argument, T value)
         {
             ThrowIfDisposed();
@@ -389,9 +388,9 @@ namespace CoreWf
 
             SetValueCore(argument.RuntimeArgument, value);
         }
-
+        
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public void SetValue<T>(InArgument<T> argument, T value)
         {
             ThrowIfDisposed();
@@ -413,7 +412,7 @@ namespace CoreWf
 
             if (argument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw FxTrace.Exception.ArgumentNull(nameof(argument));
             }
 
             argument.ThrowIfNotInTree();
@@ -423,22 +422,22 @@ namespace CoreWf
 
         internal void TrackCore(CustomTrackingRecord record)
         {
-            Fx.Assert(!_isDisposed, "not usable if disposed");
+            Fx.Assert(!this.isDisposed, "not usable if disposed");
             Fx.Assert(record != null, "expect non-null record");
 
-            if (_executor.ShouldTrack)
+            if (this.executor.ShouldTrack)
             {
-                record.Activity = new ActivityInfo(_instance);
+                record.Activity = new ActivityInfo(this.instance);
                 record.InstanceId = this.WorkflowInstanceId;
-                _executor.AddTrackingRecord(record);
+                this.executor.AddTrackingRecord(record);
             }
         }
 
         internal void ThrowIfDisposed()
         {
-            if (_isDisposed)
+            if (this.isDisposed)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(
+                throw FxTrace.Exception.AsError(
                     new ObjectDisposedException(this.GetType().FullName, SR.AECDisposed));
             }
         }

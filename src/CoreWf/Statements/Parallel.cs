@@ -1,20 +1,26 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.Collections;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Branches")]
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+    using CoreWf.Runtime.Collections;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Branches")]
     public sealed class Parallel : NativeActivity
     {
-        private CompletionCallback<bool> _onConditionComplete;
-        private Collection<Activity> _branches;
-        private Collection<Variable> _variables;
-
-        private Variable<bool> _hasCompleted;
+        private CompletionCallback<bool> onConditionComplete;
+        private Collection<Activity> branches;
+        private Collection<Variable> variables;
+        private Variable<bool> hasCompleted;
 
         public Parallel()
             : base()
@@ -25,83 +31,85 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public Activity<bool> CompletionCondition
         {
             get;
             set;
         }
 
-        //[DependsOn("CompletionCondition")]
+        [DependsOn("CompletionCondition")]
         public Collection<Activity> Branches
         {
             get
             {
-                if (_branches == null)
+                if (this.branches == null)
                 {
-                    _branches = new ValidatingCollection<Activity>
+                    this.branches = new ValidatingCollection<Activity>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _branches;
+                return this.branches;
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        }
 
-        //protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
-        //{
-        //    if (updateContext.IsCancellationRequested || this.branches == null)
-        //    {
-        //        return;
-        //    }
+        protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
+        {
+            if (updateContext.IsCancellationRequested || this.branches == null)
+            {
+                return;
+            }
 
-        //    if (this.CompletionCondition != null && updateContext.GetValue(this.hasCompleted))
-        //    {
-        //        // when CompletionCondition exists, schedule newly added branches only if "hasCompleted" variable evaluates to false
-        //        return;
-        //    }           
+            if (this.CompletionCondition != null && updateContext.GetValue(this.hasCompleted))
+            {
+                // when CompletionCondition exists, schedule newly added branches only if "hasCompleted" variable evaluates to false
+                return;
+            }
 
-        //    CompletionCallback onBranchComplete = new CompletionCallback(OnBranchComplete);
+            CompletionCallback onBranchComplete = new CompletionCallback(OnBranchComplete);
 
-        //    foreach (Activity branch in this.branches)
-        //    {
-        //        if (updateContext.IsNewlyAdded(branch))
-        //        {
-        //            updateContext.ScheduleActivity(branch, onBranchComplete);
-        //        }
-        //    }
-        //}
+            foreach (Activity branch in this.branches)
+            {
+                if (updateContext.IsNewlyAdded(branch))
+                {
+                    updateContext.ScheduleActivity(branch, onBranchComplete);
+                }
+            }
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -123,18 +131,18 @@ namespace CoreWf.Statements
 
             if (this.CompletionCondition != null)
             {
-                if (_hasCompleted == null)
+                if (this.hasCompleted == null)
                 {
-                    _hasCompleted = new Variable<bool>("hasCompletedVar");
+                    this.hasCompleted = new Variable<bool>("hasCompletedVar");
                 }
 
-                metadata.AddImplementationVariable(_hasCompleted);
+                metadata.AddImplementationVariable(this.hasCompleted);
             }
         }
 
         protected override void Execute(NativeActivityContext context)
         {
-            if (_branches != null && this.Branches.Count != 0)
+            if (this.branches != null && this.Branches.Count != 0)
             {
                 CompletionCallback onBranchComplete = new CompletionCallback(OnBranchComplete);
 
@@ -161,23 +169,23 @@ namespace CoreWf.Statements
 
         private void OnBranchComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            if (this.CompletionCondition != null && !_hasCompleted.Get(context))
+            if (this.CompletionCondition != null && !this.hasCompleted.Get(context))
             {
                 // If we haven't completed, we've been requested to cancel, and we've had a child
                 // end in a non-Closed state then we should cancel ourselves.
                 if (completedInstance.State != ActivityInstanceState.Closed && context.IsCancellationRequested)
                 {
                     context.MarkCanceled();
-                    _hasCompleted.Set(context, true);
+                    this.hasCompleted.Set(context, true);
                     return;
                 }
 
-                if (_onConditionComplete == null)
+                if (this.onConditionComplete == null)
                 {
-                    _onConditionComplete = new CompletionCallback<bool>(OnConditionComplete);
+                    this.onConditionComplete = new CompletionCallback<bool>(OnConditionComplete);
                 }
 
-                context.ScheduleActivity(this.CompletionCondition, _onConditionComplete);
+                context.ScheduleActivity(this.CompletionCondition, this.onConditionComplete);
             }
         }
 
@@ -186,7 +194,7 @@ namespace CoreWf.Statements
             if (result)
             {
                 context.CancelChildren();
-                _hasCompleted.Set(context, true);
+                this.hasCompleted.Set(context, true);
             }
         }
     }

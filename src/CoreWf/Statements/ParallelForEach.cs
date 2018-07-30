@@ -1,18 +1,25 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Body")]
+    using CoreWf;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+    using System;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Body")]
     public sealed class ParallelForEach<T> : NativeActivity
     {
-        private Variable<bool> _hasCompleted;
-        private CompletionCallback<bool> _onConditionComplete;
+        private Variable<bool> hasCompleted;
+        private CompletionCallback<bool> onConditionComplete;
 
         public ParallelForEach()
             : base()
@@ -41,10 +48,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -61,12 +70,12 @@ namespace CoreWf.Statements
             // declare the hasCompleted variable
             if (this.CompletionCondition != null)
             {
-                if (_hasCompleted == null)
+                if (this.hasCompleted == null)
                 {
-                    _hasCompleted = new Variable<bool>("hasCompletedVar");
+                    this.hasCompleted = new Variable<bool>("hasCompletedVar");
                 }
 
-                metadata.AddImplementationVariable(_hasCompleted);
+                metadata.AddImplementationVariable(this.hasCompleted);
             }
 
             metadata.AddDelegate(this.Body);
@@ -77,7 +86,7 @@ namespace CoreWf.Statements
             IEnumerable<T> values = this.Values.Get(context);
             if (values == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ParallelForEachRequiresNonNullValues(this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ParallelForEachRequiresNonNullValues(this.DisplayName)));
             }
 
             IEnumerator<T> valueEnumerator = values.GetEnumerator();
@@ -96,7 +105,7 @@ namespace CoreWf.Statements
         private void OnBodyComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
             // for the completion condition, we handle cancelation ourselves
-            if (this.CompletionCondition != null && !_hasCompleted.Get(context))
+            if (this.CompletionCondition != null && !this.hasCompleted.Get(context))
             {
                 if (completedInstance.State != ActivityInstanceState.Closed && context.IsCancellationRequested)
                 {
@@ -104,15 +113,15 @@ namespace CoreWf.Statements
                     // or one of our iteration of body cancels then we'll consider
                     // ourself canceled.
                     context.MarkCanceled();
-                    _hasCompleted.Set(context, true);
-                }
-                else
+                    this.hasCompleted.Set(context, true);
+                }            
+                else 
                 {
-                    if (_onConditionComplete == null)
+                    if (this.onConditionComplete == null)
                     {
-                        _onConditionComplete = new CompletionCallback<bool>(OnConditionComplete);
+                        this.onConditionComplete = new CompletionCallback<bool>(OnConditionComplete);
                     }
-                    context.ScheduleActivity(CompletionCondition, _onConditionComplete);
+                    context.ScheduleActivity(CompletionCondition, this.onConditionComplete);              
                 }
             }
         }
@@ -122,7 +131,7 @@ namespace CoreWf.Statements
             if (result)
             {
                 context.CancelChildren();
-                _hasCompleted.Set(context, true);
+                this.hasCompleted.Set(context, true);
             }
         }
     }

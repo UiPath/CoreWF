@@ -1,10 +1,9 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using System.Collections.Generic;
-using Test.Common.TestObjects;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
@@ -12,7 +11,6 @@ using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Utilities.Validation;
 using CoreWf.Expressions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace TestCases.Activities
 {
@@ -83,8 +81,10 @@ namespace TestCases.Activities
                 HintIterationCount = 1,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
             increment.ToVariable = counter;
             increment.ValueExpression = ((env) => (((int)counter.Get(env))) + 1);
 
@@ -115,8 +115,10 @@ namespace TestCases.Activities
                 HintIterationCount = 1,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "The world is changing all the time";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "The world is changing all the time"
+            };
             o1o.ToVariable = counter;
             // Use the mod make it as Zero-One-Zero.
             o1o.ValueExpression = ((env) => ((((int)counter.Get(env))) + 1) % 2);
@@ -193,8 +195,10 @@ namespace TestCases.Activities
                 HintIterationCount = 2,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "set the counter to be 1";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "set the counter to be 1"
+            };
             o1o.ToVariable = counter;
             // Use the mod make it as Zero-One-Zero.
             o1o.ValueExpression = ((env) => (counter.Get(env) + 1) % 2);
@@ -759,9 +763,11 @@ namespace TestCases.Activities
         {
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
-            TestAssign<int> increment = new TestAssign<int>("Increment Counter");
-            increment.ToVariable = counter;
-            increment.ValueExpression = ((env) => (((int)counter.Get(env))) + 1);
+            TestAssign<int> increment = new TestAssign<int>("Increment Counter")
+            {
+                ToVariable = counter,
+                ValueExpression = ((env) => (((int)counter.Get(env))) + 1)
+            };
 
             TestDoWhile doWhile = new TestDoWhile("dowhile")
             {
@@ -771,8 +777,10 @@ namespace TestCases.Activities
                 Variables = { counter }
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             TestRuntime.RunAndValidateUsingWorkflowInvoker(doWhile, null, null, null);
         }

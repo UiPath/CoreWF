@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf;
 using CoreWf.DurableInstancing;
@@ -9,7 +9,6 @@ using CoreWf.Tracking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reflection;
 using System.Xml.Linq;
 using Test.Common.TestObjects.Tracking;
 using Test.Common.TestObjects.Utilities;
@@ -31,7 +30,7 @@ namespace Test.Common.TestObjects.Runtime
         private Guid _workflowInstanceId;
 
         private InstanceStore _instanceStore;
-        private PersistableIdleAction _idleAction;
+        private readonly PersistableIdleAction _idleAction;
 
         private InstanceStoreVersion _instanceStoreVersion;
         private Type _instanceStoreType;
@@ -308,8 +307,7 @@ namespace Test.Common.TestObjects.Runtime
                 throw new NullReferenceException("ProductActivity is null");
             }
 
-            IWorkflowRuntimeAdapter2 workflowRuntimeAdapter2 = _workflowRuntimeAdapter as IWorkflowRuntimeAdapter2;
-            if (workflowRuntimeAdapter2 != null)
+            if (_workflowRuntimeAdapter is IWorkflowRuntimeAdapter2 workflowRuntimeAdapter2)
             {
                 _workflowApplication = workflowRuntimeAdapter2.CreateInstance(_productActivity);
             }
@@ -641,8 +639,7 @@ namespace Test.Common.TestObjects.Runtime
 
             if (isDefaultTimeout)
             {
-                IWorkflowRuntimeAdapter2 workflowRuntimeAdapter2 = _workflowRuntimeAdapter as IWorkflowRuntimeAdapter2;
-                if (workflowRuntimeAdapter2 != null)
+                if (_workflowRuntimeAdapter is IWorkflowRuntimeAdapter2 workflowRuntimeAdapter2)
                 {
                     workflowRuntimeAdapter2.LoadInstance(_workflowApplication, _workflowInstanceId);
                     //Adapter should add extensions
@@ -771,8 +768,7 @@ namespace Test.Common.TestObjects.Runtime
         internal WorkflowApplicationInstance RetrieveWorkflowApplicationInstance(string oldDefinitionIdentity, string identityMask, bool isDefaultTimeout, TimeSpan timeout)
         {
             WorkflowIdentityFilter filter = (WorkflowIdentityFilter)Enum.Parse(typeof(WorkflowIdentityFilter), identityMask, true);
-            WorkflowIdentity oldIdentity = null;
-            WorkflowIdentity.TryParse(oldDefinitionIdentity, out oldIdentity);
+            WorkflowIdentity.TryParse(oldDefinitionIdentity, out WorkflowIdentity oldIdentity);
 
             this.DeleteDefaultInstanceOwner();
             this.CreateDefaultInstanceOwner(oldIdentity, filter);
@@ -1050,8 +1046,7 @@ namespace Test.Common.TestObjects.Runtime
             else
             {
                 WorkflowIdentityFilter filter = (WorkflowIdentityFilter)Enum.Parse(typeof(WorkflowIdentityFilter), identityMask, true);
-                WorkflowIdentity oldIdentity = null;
-                WorkflowIdentity.TryParse(oldDefinitionIdentity, out oldIdentity);
+                WorkflowIdentity.TryParse(oldDefinitionIdentity, out WorkflowIdentity oldIdentity);
 
                 CreateDefaultInstanceOwner(oldIdentity, filter);
 
@@ -1355,10 +1350,12 @@ namespace Test.Common.TestObjects.Runtime
         {
             _trackingConfig = new List<TrackingConfiguration>();
 
-            TrackingConfiguration inMemoryTrackingConfig = new TrackingConfiguration();
-            inMemoryTrackingConfig.TrackingParticipantName = "TestTrackingParticipant";
-            inMemoryTrackingConfig.TrackingParticipantType = TrackingParticipantType.InMemoryTrackingParticipant;
-            inMemoryTrackingConfig.TestProfileType = TestProfileType.AllTrackpointsProfile;
+            TrackingConfiguration inMemoryTrackingConfig = new TrackingConfiguration
+            {
+                TrackingParticipantName = "TestTrackingParticipant",
+                TrackingParticipantType = TrackingParticipantType.InMemoryTrackingParticipant,
+                TestProfileType = TestProfileType.AllTrackpointsProfile
+            };
             _trackingConfig.Add(inMemoryTrackingConfig);
 
             TestTrackingDataManager.GetInstance(instanceId).InstantiateTrackingParticipants(_trackingConfig);
@@ -1856,8 +1853,7 @@ namespace Test.Common.TestObjects.Runtime
 
             internal IAsyncResult GetAsyncResult(Guid asyncResultKey, bool isRemove)
             {
-                IAsyncResult asyncResult;
-                if (_asyncResultCollection.TryGetValue(asyncResultKey, out asyncResult))
+                if (_asyncResultCollection.TryGetValue(asyncResultKey, out IAsyncResult asyncResult))
                 {
                     if (isRemove)
                     {

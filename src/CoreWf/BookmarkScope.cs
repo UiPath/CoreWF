@@ -1,35 +1,33 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using System;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Hosting;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
     public sealed class BookmarkScope : IEquatable<BookmarkScope>
     {
-        private static BookmarkScope s_defaultBookmarkScope;
-
-        private long _temporaryId;
-
-        private Guid _id;
-
-        private int _handleReferenceCount;
+        private static BookmarkScope defaultBookmarkScope;
+        private long temporaryId;
+        private Guid id;
+        private int handleReferenceCount;
 
         internal BookmarkScope(long temporaryId)
         {
             Fx.Assert(temporaryId != default(long), "Should never call this constructor with the default value.");
-            _temporaryId = temporaryId;
+            this.temporaryId = temporaryId;
         }
 
         public BookmarkScope(Guid id)
         {
-            _id = id;
+            this.id = id;
         }
 
         private BookmarkScope()
@@ -42,7 +40,7 @@ namespace CoreWf
         {
             get
             {
-                return _temporaryId == default(long);
+                return this.temporaryId == default(long);
             }
         }
 
@@ -50,47 +48,47 @@ namespace CoreWf
         {
             get
             {
-                return _id;
+                return this.id;
             }
             internal set
             {
                 Fx.Assert(value != Guid.Empty, "Cannot set this to Guid.Empty.");
                 Fx.Assert(!this.IsInitialized, "Can only set this when uninitialized.");
 
-                _id = value;
-                _temporaryId = default(long);
+                this.id = value;
+                this.temporaryId = default(long);
             }
         }
 
         internal int IncrementHandleReferenceCount()
         {
-            return ++_handleReferenceCount;
+            return ++this.handleReferenceCount;
         }
 
         internal int DecrementHandleReferenceCount()
         {
-            return --_handleReferenceCount;
+            return --this.handleReferenceCount;
         }
 
         [DataMember(EmitDefaultValue = false, Name = "temporaryId")]
         internal long SerializedTemporaryId
         {
-            get { return _temporaryId; }
-            set { _temporaryId = value; }
+            get { return this.temporaryId; }
+            set { this.temporaryId = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "id")]
         internal Guid SerializedId
         {
-            get { return _id; }
-            set { _id = value; }
+            get { return this.id; }
+            set { this.id = value; }
         }
 
         internal long TemporaryId
         {
             get
             {
-                return _temporaryId;
+                return this.temporaryId;
             }
         }
 
@@ -98,12 +96,12 @@ namespace CoreWf
         {
             get
             {
-                if (s_defaultBookmarkScope == null)
+                if (defaultBookmarkScope == null)
                 {
-                    s_defaultBookmarkScope = new BookmarkScope();
+                    defaultBookmarkScope = new BookmarkScope();
                 }
 
-                return s_defaultBookmarkScope;
+                return defaultBookmarkScope;
             }
         }
 
@@ -117,7 +115,7 @@ namespace CoreWf
                 // through NativeActivityContext.DefaultBookmarkScope.
                 // We use a scope initialized to Guid.Empty to signify this
                 // "loose reference".
-                return this.IsInitialized && _id == Guid.Empty;
+                return this.IsInitialized && this.id == Guid.Empty;
             }
         }
 
@@ -125,17 +123,17 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             if (id == Guid.Empty)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("id");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(id));
             }
 
             if (this.IsInitialized)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeAlreadyInitialized));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeAlreadyInitialized));
             }
 
             context.InitializeBookmarkScope(this, id);
@@ -145,11 +143,11 @@ namespace CoreWf
         {
             if (this.IsInitialized)
             {
-                return _id.GetHashCode();
+                return this.id.GetHashCode();
             }
             else
             {
-                return _temporaryId.GetHashCode();
+                return this.temporaryId.GetHashCode();
             }
         }
 
@@ -161,7 +159,7 @@ namespace CoreWf
             }
             else
             {
-                return new BookmarkScopeInfo(_temporaryId.ToString(CultureInfo.InvariantCulture));
+                return new BookmarkScopeInfo(this.temporaryId.ToString(CultureInfo.InvariantCulture));
             }
         }
 
@@ -183,9 +181,9 @@ namespace CoreWf
             }
             else if (this.IsInitialized)
             {
-                Fx.Assert(_id != Guid.Empty, "If we're not the default but we're initialized then we must have a non-Empty Guid.");
+                Fx.Assert(this.id != Guid.Empty, "If we're not the default but we're initialized then we must have a non-Empty Guid.");
 
-                if (other._id == _id)
+                if (other.id == this.id)
                 {
                     return true;
                 }
@@ -196,9 +194,9 @@ namespace CoreWf
             }
             else
             {
-                Fx.Assert(_temporaryId != 0, "We should have a non-zero temp id if we're not the default and not initialized.");
+                Fx.Assert(this.temporaryId != 0, "We should have a non-zero temp id if we're not the default and not initialized.");
 
-                if (other._temporaryId == _temporaryId)
+                if (other.temporaryId == this.temporaryId)
                 {
                     return true;
                 }

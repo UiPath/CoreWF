@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -65,14 +65,16 @@ namespace TestCases.Runtime.Common
 
         public static WorkflowApplication CreateWorkflowApplication(Activity activity, AutoResetEvent completedOrAbortedEvent)
         {
-            WorkflowApplication instance = new WorkflowApplication(activity);
-            instance.Completed = (arg) =>
+            WorkflowApplication instance = new WorkflowApplication(activity)
             {
-                completedOrAbortedEvent.Set();
-            };
-            instance.Aborted = (arg) =>
-            {
-                completedOrAbortedEvent.Set();
+                Completed = (arg) =>
+                {
+                    completedOrAbortedEvent.Set();
+                },
+                Aborted = (arg) =>
+                {
+                    completedOrAbortedEvent.Set();
+                }
             };
             return instance;
         }

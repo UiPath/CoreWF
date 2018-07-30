@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -12,7 +12,7 @@ namespace Test.Common.TestObjects.Activities.Expressions
     public class TestValueTypeIndexerReference<TOperand, TResult> : TestActivity
     {
         private TestActivity _operandLocationActivity;
-        private MemberCollection<TestArgument> _indices;
+        private readonly MemberCollection<TestArgument> _indices;
 
         public TestValueTypeIndexerReference()
         {
@@ -24,9 +24,8 @@ namespace Test.Common.TestObjects.Activities.Expressions
         {
             set
             {
-                Activity<Location<TOperand>> we = value.ProductActivity as Activity<Location<TOperand>>;
 
-                if (we == null)
+                if (!(value.ProductActivity is Activity<Location<TOperand>> we))
                 {
                     throw new Exception("TestActivity should be for Activity<Location<T>> for conversion");
                 }

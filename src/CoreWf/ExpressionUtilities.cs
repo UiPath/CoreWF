@@ -1,64 +1,66 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.Serialization;
-using CoreWf.Internals;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Runtime.Serialization;
+    using System.Collections.Generic;
+    using CoreWf.XamlIntegration;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     internal static class ExpressionUtilities
     {
         public static ParameterExpression RuntimeContextParameter = Expression.Parameter(typeof(ActivityContext), "context");
-        private static Assembly s_linqAssembly = typeof(Func<>).GetTypeInfo().Assembly;
-        private static MethodInfo s_createLocationFactoryGenericMethod = typeof(ExpressionUtilities).GetMethod("CreateLocationFactory");
-        private static MethodInfo s_propertyDescriptorGetValue; // PropertyDescriptor.GetValue
+        private static Assembly linqAssembly = typeof(Func<>).Assembly;
+        private static MethodInfo createLocationFactoryGenericMethod = typeof(ExpressionUtilities).GetMethod("CreateLocationFactory");
+        private static MethodInfo propertyDescriptorGetValue; // PropertyDescriptor.GetValue
 
 
         // Types cached for use in TryRewriteLambdaExpression
-        private static Type s_inArgumentGenericType = typeof(InArgument<>);
-        private static Type s_outArgumentGenericType = typeof(OutArgument<>);
-        private static Type s_inOutArgumentGenericType = typeof(InOutArgument<>);
-        private static Type s_variableGenericType = typeof(Variable<>);
-        private static Type s_delegateInArgumentGenericType = typeof(DelegateInArgument<>);
-        private static Type s_delegateOutArgumentGenericType = typeof(DelegateOutArgument<>);
-        private static Type s_activityContextType = typeof(ActivityContext);
-        private static Type s_locationReferenceType = typeof(LocationReference);
-        private static Type s_runtimeArgumentType = typeof(RuntimeArgument);
-        private static Type s_argumentType = typeof(Argument);
-        private static Type s_variableType = typeof(Variable);
-        private static Type s_delegateArgumentType = typeof(DelegateArgument);
+        private static readonly Type inArgumentGenericType = typeof(InArgument<>);
+        private static readonly Type outArgumentGenericType = typeof(OutArgument<>);
+        private static readonly Type inOutArgumentGenericType = typeof(InOutArgument<>);
+        private static readonly Type variableGenericType = typeof(Variable<>);
+        private static readonly Type delegateInArgumentGenericType = typeof(DelegateInArgument<>);
+        private static readonly Type delegateOutArgumentGenericType = typeof(DelegateOutArgument<>);
+        private static readonly Type activityContextType = typeof(ActivityContext);
+        private static readonly Type locationReferenceType = typeof(LocationReference);
+        private static readonly Type runtimeArgumentType = typeof(RuntimeArgument);
+        private static readonly Type argumentType = typeof(Argument);
+        private static readonly Type variableType = typeof(Variable);
+        private static readonly Type delegateArgumentType = typeof(DelegateArgument);
 
         // MethodInfos cached for use in TryRewriteLambdaExpression
-        private static MethodInfo s_activityContextGetValueGenericMethod = typeof(ActivityContext).GetMethod("GetValue", new Type[] { typeof(LocationReference) });
-        private static MethodInfo s_activityContextGetLocationGenericMethod = typeof(ActivityContext).GetMethod("GetLocation", new Type[] { typeof(LocationReference) });
-        private static MethodInfo s_locationReferenceGetLocationMethod = typeof(LocationReference).GetMethod("GetLocation", new Type[] { typeof(ActivityContext) });
-        private static MethodInfo s_argumentGetLocationMethod = typeof(Argument).GetMethod("GetLocation", new Type[] { typeof(ActivityContext) });
-        private static MethodInfo s_variableGetMethod = typeof(Variable).GetMethod("Get", new Type[] { typeof(ActivityContext) });
-        private static MethodInfo s_delegateArgumentGetMethod = typeof(DelegateArgument).GetMethod("Get", new Type[] { typeof(ActivityContext) });
+        private static MethodInfo activityContextGetValueGenericMethod = typeof(ActivityContext).GetMethod("GetValue", new Type[] { typeof(LocationReference) });
+        private static MethodInfo activityContextGetLocationGenericMethod = typeof(ActivityContext).GetMethod("GetLocation", new Type[] { typeof(LocationReference) });
+        private static readonly MethodInfo locationReferenceGetLocationMethod = typeof(LocationReference).GetMethod("GetLocation", new Type[] { typeof(ActivityContext) });
+        private static readonly MethodInfo argumentGetLocationMethod = typeof(Argument).GetMethod("GetLocation", new Type[] { typeof(ActivityContext) });
+        private static readonly MethodInfo variableGetMethod = typeof(Variable).GetMethod("Get", new Type[] { typeof(ActivityContext) });
+        private static readonly MethodInfo delegateArgumentGetMethod = typeof(DelegateArgument).GetMethod("Get", new Type[] { typeof(ActivityContext) });
 
-        //static MethodInfo PropertyDescriptorGetValue
-        //{
-        //    get
-        //    {
-        //        if (propertyDescriptorGetValue == null)
-        //        {
-        //            propertyDescriptorGetValue = typeof(PropertyDescriptor).GetMethod("GetValue");
-        //        }
+        private static MethodInfo PropertyDescriptorGetValue
+        {
+            get
+            {
+                if (propertyDescriptorGetValue == null)
+                {
+                    propertyDescriptorGetValue = typeof(PropertyDescriptor).GetMethod("GetValue");
+                }
 
-        //        return propertyDescriptorGetValue;
-        //    }
-        //}
+                return propertyDescriptorGetValue;
+            }
+        }
 
         public static Expression CreateIdentifierExpression(LocationReference locationReference)
         {
-            return Expression.Call(RuntimeContextParameter, s_activityContextGetValueGenericMethod.MakeGenericMethod(locationReference.Type), Expression.Constant(locationReference, typeof(LocationReference)));
+            return Expression.Call(RuntimeContextParameter, activityContextGetValueGenericMethod.MakeGenericMethod(locationReference.Type), Expression.Constant(locationReference, typeof(LocationReference)));
         }
 
         // If we ever expand the depth to which we'll look through an expression for a location,
@@ -85,44 +87,30 @@ namespace CoreWf
                     return true;
 
                 case ExpressionType.MemberAccess:
+                    // This also handles variables, which are emitted as "context.GetLocation<T>("v").Value"
                     MemberExpression memberExpression = (MemberExpression)body;
-                    FieldInfo fieldInfo = memberExpression.Member as FieldInfo;
-                    if (fieldInfo != null)
+                    MemberTypes memberType = memberExpression.Member.MemberType;
+                    if (memberType == MemberTypes.Field)
                     {
-                        return !fieldInfo.IsInitOnly;
+                        FieldInfo fieldInfo = (FieldInfo)memberExpression.Member;
+                        if (fieldInfo.IsInitOnly)
+                        {
+                            // readOnly field
+                            return false;
+                        }
+                        return true;
                     }
-
-                    PropertyInfo propertyInfo = memberExpression.Member as PropertyInfo;
-                    if (propertyInfo != null)
+                    else if (memberType == MemberTypes.Property)
                     {
-                        return propertyInfo.CanWrite;
+                        PropertyInfo propertyInfo = (PropertyInfo)memberExpression.Member;
+                        if (!propertyInfo.CanWrite)
+                        {
+                            // no Setter
+                            return false;
+                        }
+                        return true;
                     }
-
                     break;
-                //// This also handles variables, which are emitted as "context.GetLocation<T>("v").Value"
-                //MemberExpression memberExpression = (MemberExpression)body;
-                //MemberTypes memberType = memberExpression.Member.MemberType;
-                //if (memberType == MemberTypes.Field)
-                //{
-                //    FieldInfo fieldInfo = (FieldInfo)memberExpression.Member;
-                //    if (fieldInfo.IsInitOnly)
-                //    {
-                //        // readOnly field
-                //        return false;
-                //    }
-                //    return true;
-                //}
-                //else if (memberType == MemberTypes.Property)
-                //{
-                //    PropertyInfo propertyInfo = (PropertyInfo)memberExpression.Member;
-                //    if (!propertyInfo.CanWrite)
-                //    {
-                //        // no Setter
-                //        return false;
-                //    }
-                //    return true;
-                //}
-                //break;
 
                 case ExpressionType.Call:
                     // Depends on the method being called.
@@ -133,7 +121,7 @@ namespace CoreWf
                     MethodInfo method = callExpression.Method;
 
                     Type declaringType = method.DeclaringType;
-                    if (declaringType.GetTypeInfo().BaseType == TypeHelper.ArrayType && method.Name == "Get")
+                    if (declaringType.BaseType == TypeHelper.ArrayType && method.Name == "Get")
                     {
                         return true;
                     }
@@ -141,16 +129,16 @@ namespace CoreWf
                     {
                         return true;
                     }
-                    else if (method.Name == "GetValue" && declaringType == s_activityContextType)
+                    else if (method.Name == "GetValue" && declaringType == activityContextType)
                     {
                         return true;
                     }
-                    else if (method.Name == "Get" && declaringType.GetTypeInfo().IsGenericType)
+                    else if (method.Name == "Get" && declaringType.IsGenericType)
                     {
                         Type declaringTypeGenericDefinition = declaringType.GetGenericTypeDefinition();
 
-                        if (declaringTypeGenericDefinition == s_inOutArgumentGenericType ||
-                            declaringTypeGenericDefinition == s_outArgumentGenericType)
+                        if (declaringTypeGenericDefinition == inOutArgumentGenericType ||
+                            declaringTypeGenericDefinition == outArgumentGenericType)
                         {
                             return true;
                         }
@@ -175,34 +163,20 @@ namespace CoreWf
                     return new ArrayLocationFactory<T>(expression);
 
                 case ExpressionType.MemberAccess:
-                    MemberExpression memberExpression = (MemberExpression)body;
-                    FieldInfo fieldInfo = memberExpression.Member as FieldInfo;
-                    if (fieldInfo != null)
+                    // This also handles variables, which are emitted as "context.GetLocation<T>("v").Value"
+                    MemberTypes memberType = ((MemberExpression)body).Member.MemberType;
+                    if (memberType == MemberTypes.Field)
                     {
                         return new FieldLocationFactory<T>(expression);
                     }
-
-                    PropertyInfo propertyInfo = memberExpression.Member as PropertyInfo;
-                    if (propertyInfo != null)
+                    else if (memberType == MemberTypes.Property)
                     {
                         return new PropertyLocationFactory<T>(expression);
                     }
-
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException("Lvalues must be fields or properties"));
-                //// This also handles variables, which are emitted as "context.GetLocation<T>("v").Value"
-                //MemberTypes memberType = ((MemberExpression)body).Member.MemberType;
-                //if (memberType == MemberTypes.Field)
-                //{
-                //    return new FieldLocationFactory<T>(expression);
-                //}
-                //else if (memberType == MemberTypes.Property)
-                //{
-                //    return new PropertyLocationFactory<T>(expression);
-                //}
-                //else
-                //{
-                //    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException("Lvalues of member type " + memberType));
-                //}
+                    else
+                    {
+                        throw FxTrace.Exception.AsError(new NotSupportedException("Lvalues of member type " + memberType));
+                    }
 
                 case ExpressionType.Call:
                     // Depends on the method being called.
@@ -213,7 +187,7 @@ namespace CoreWf
                     MethodInfo method = callExpression.Method;
 
                     Type declaringType = method.DeclaringType;
-                    if (declaringType.GetTypeInfo().BaseType == TypeHelper.ArrayType && method.Name == "Get")
+                    if (declaringType.BaseType == TypeHelper.ArrayType && method.Name == "Get")
                     {
                         return new MultidimensionalArrayLocationFactory<T>(expression);
                     }
@@ -221,25 +195,25 @@ namespace CoreWf
                     {
                         return new IndexerLocationFactory<T>(expression);
                     }
-                    else if (method.Name == "GetValue" && declaringType == s_activityContextType)
+                    else if (method.Name == "GetValue" && declaringType == activityContextType)
                     {
                         return new LocationReferenceFactory<T>(callExpression.Arguments[0], expression.Parameters);
                     }
-                    else if (method.Name == "Get" && declaringType.GetTypeInfo().IsGenericType)
+                    else if (method.Name == "Get" && declaringType.IsGenericType)
                     {
                         Type declaringTypeGenericDefinition = declaringType.GetGenericTypeDefinition();
 
-                        if (declaringTypeGenericDefinition == s_inOutArgumentGenericType ||
-                            declaringTypeGenericDefinition == s_outArgumentGenericType)
+                        if (declaringTypeGenericDefinition == inOutArgumentGenericType ||
+                            declaringTypeGenericDefinition == outArgumentGenericType)
                         {
                             return new ArgumentFactory<T>(callExpression.Object, expression.Parameters);
                         }
                     }
 
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
 
                 default:
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExpressionForLocation(body.NodeType)));
             }
         }
 
@@ -260,7 +234,7 @@ namespace CoreWf
         {
             // create a LambdaExpression to get access to the expression
             int parameterCount = lambdaParameters.Count;
-            Type genericFuncType = s_linqAssembly.GetType("System.Func`" + (parameterCount + 1), true, false);
+            Type genericFuncType = linqAssembly.GetType("System.Func`" + (parameterCount + 1), true);
             Type[] delegateParameterTypes = new Type[parameterCount + 1];
 
             for (int i = 0; i < parameterCount; ++i)
@@ -272,7 +246,7 @@ namespace CoreWf
             LambdaExpression parentLambda = Expression.Lambda(funcType, expression, lambdaParameters);
 
             // call CreateLocationFactory<parentLambda.Type>(parentLambda);
-            MethodInfo typedMethod = s_createLocationFactoryGenericMethod.MakeGenericMethod(expression.Type);
+            MethodInfo typedMethod = createLocationFactoryGenericMethod.MakeGenericMethod(expression.Type);
             return (LocationFactory)typedMethod.Invoke(null, new object[] { parentLambda });
         }
 
@@ -297,156 +271,153 @@ namespace CoreWf
         // for single-dimensional arrays 
         private class ArrayLocationFactory<T> : LocationFactory<T>
         {
-            private Func<ActivityContext, T[]> _arrayFunction;
-            private Func<ActivityContext, int> _indexFunction;
+            private readonly Func<ActivityContext, T[]> arrayFunction;
+            private readonly Func<ActivityContext, int> indexFunction;
 
             public ArrayLocationFactory(LambdaExpression expression)
             {
                 Fx.Assert(expression.Body.NodeType == ExpressionType.ArrayIndex, "ArrayIndex expression required");
                 BinaryExpression arrayIndexExpression = (BinaryExpression)expression.Body;
 
-                _arrayFunction = ExpressionUtilities.Compile<T[]>(arrayIndexExpression.Left, expression.Parameters);
-                _indexFunction = ExpressionUtilities.Compile<int>(arrayIndexExpression.Right, expression.Parameters);
+                this.arrayFunction = ExpressionUtilities.Compile<T[]>(arrayIndexExpression.Left, expression.Parameters);
+                this.indexFunction = ExpressionUtilities.Compile<int>(arrayIndexExpression.Right, expression.Parameters);
             }
 
             public override Location<T> CreateLocation(ActivityContext context)
             {
-                return new ArrayLocation(_arrayFunction(context), _indexFunction(context));
+                return new ArrayLocation(this.arrayFunction(context), this.indexFunction(context));
             }
 
             [DataContract]
             internal class ArrayLocation : Location<T>
             {
-                private T[] _array;
-
-                private int _index;
+                private T[] array;
+                private int index;
 
                 public ArrayLocation(T[] array, int index)
                     : base()
                 {
-                    _array = array;
-                    _index = index;
+                    this.array = array;
+                    this.index = index;
                 }
 
                 public override T Value
                 {
                     get
                     {
-                        return _array[_index];
+                        return this.array[this.index];
                     }
                     set
                     {
-                        _array[_index] = value;
+                        this.array[this.index] = value;
                     }
                 }
 
                 [DataMember(Name = "array")]
                 internal T[] SerializedArray
                 {
-                    get { return _array; }
-                    set { _array = value; }
+                    get { return this.array; }
+                    set { this.array = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "index")]
                 internal int SerializedIndex
                 {
-                    get { return _index; }
-                    set { _index = value; }
+                    get { return this.index; }
+                    set { this.index = value; }
                 }
             }
         }
 
         private class FieldLocationFactory<T> : LocationFactory<T>
         {
-            private FieldInfo _fieldInfo;
-            private Func<ActivityContext, object> _ownerFunction;
-            private LocationFactory _parentFactory;
+            private readonly FieldInfo fieldInfo;
+            private readonly Func<ActivityContext, object> ownerFunction;
+            private LocationFactory parentFactory;
 
             public FieldLocationFactory(LambdaExpression expression)
             {
                 Fx.Assert(expression.Body.NodeType == ExpressionType.MemberAccess, "field expression required");
                 MemberExpression memberExpression = (MemberExpression)expression.Body;
 
-                //Fx.Assert(memberExpression.Member.MemberType == MemberTypes.Field, "member field expected");
-                _fieldInfo = (FieldInfo)memberExpression.Member;
+                Fx.Assert(memberExpression.Member.MemberType == MemberTypes.Field, "member field expected");
+                this.fieldInfo = (FieldInfo)memberExpression.Member;
 
-                if (_fieldInfo.IsStatic)
+                if (this.fieldInfo.IsStatic)
                 {
-                    _ownerFunction = null;
+                    this.ownerFunction = null;
                 }
                 else
                 {
-                    _ownerFunction = ExpressionUtilities.Compile<object>(
+                    this.ownerFunction = ExpressionUtilities.Compile<object>(
                     Expression.Convert(memberExpression.Expression, TypeHelper.ObjectType), expression.Parameters);
                 }
 
-                if (_fieldInfo.DeclaringType.GetTypeInfo().IsValueType)
+                if (this.fieldInfo.DeclaringType.IsValueType)
                 {
                     // may want to set a struct, so we need to make an expression in order to set the parent
-                    _parentFactory = CreateParentReference(memberExpression.Expression, expression.Parameters);
+                    parentFactory = CreateParentReference(memberExpression.Expression, expression.Parameters);
                 }
             }
 
             public override Location<T> CreateLocation(ActivityContext context)
             {
                 object owner = null;
-                if (_ownerFunction != null)
+                if (this.ownerFunction != null)
                 {
-                    owner = _ownerFunction(context);
+                    owner = this.ownerFunction(context);
                 }
 
                 Location parent = null;
-                if (_parentFactory != null)
+                if (parentFactory != null)
                 {
-                    parent = _parentFactory.CreateLocation(context);
+                    parent = parentFactory.CreateLocation(context);
                 }
-                return new FieldLocation(_fieldInfo, owner, parent);
+                return new FieldLocation(this.fieldInfo, owner, parent);
             }
 
             [DataContract]
             internal class FieldLocation : Location<T>
             {
-                private FieldInfo _fieldInfo;
-
-                private object _owner;
-
-                private Location _parent;
+                private FieldInfo fieldInfo;
+                private object owner;
+                private Location parent;
 
                 public FieldLocation(FieldInfo fieldInfo, object owner, Location parent)
                     : base()
                 {
-                    _fieldInfo = fieldInfo;
-                    _owner = owner;
-                    _parent = parent;
+                    this.fieldInfo = fieldInfo;
+                    this.owner = owner;
+                    this.parent = parent;
                 }
 
                 //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.DoNotRaiseReservedExceptionTypes,
-                //Justification = "Need to raise NullReferenceException to match expected failure case in workflows.")]
+                //    Justification = "Need to raise NullReferenceException to match expected failure case in workflows.")]
                 public override T Value
                 {
                     get
                     {
-                        if (_owner == null && !_fieldInfo.IsStatic)
+                        if (this.owner == null && !this.fieldInfo.IsStatic)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_fieldInfo.Name)));
+                            throw FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(this.fieldInfo.Name)));
                         }
 
-                        return (T)_fieldInfo.GetValue(_owner);
+                        return (T)this.fieldInfo.GetValue(this.owner);
                     }
                     set
                     {
-                        if (_owner == null && !_fieldInfo.IsStatic)
+                        if (this.owner == null && !this.fieldInfo.IsStatic)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_fieldInfo.Name)));
+                            throw FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(this.fieldInfo.Name)));
                         }
 
-                        _fieldInfo.SetValue(_owner, value);
-                        if (_parent != null)
+                        this.fieldInfo.SetValue(this.owner, value);
+                        if (this.parent != null)
                         {
                             // Looks like we are trying to set a field on a struct
                             // Calling SetValue simply sets the field on the local copy of the struct, which is not very helpful
                             // Since we have a copy, assign it back to the parent
-                            _parent.Value = _owner;
+                            this.parent.Value = this.owner;
                         }
                     }
                 }
@@ -454,38 +425,38 @@ namespace CoreWf
                 [DataMember(Name = "fieldInfo")]
                 internal FieldInfo SerializedFieldInfo
                 {
-                    get { return _fieldInfo; }
-                    set { _fieldInfo = value; }
+                    get { return this.fieldInfo; }
+                    set { this.fieldInfo = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "owner")]
                 internal object SerializedOwner
                 {
-                    get { return _owner; }
-                    set { _owner = value; }
+                    get { return this.owner; }
+                    set { this.owner = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "parent")]
                 internal Location SerializedParent
                 {
-                    get { return _parent; }
-                    set { _parent = value; }
+                    get { return this.parent; }
+                    set { this.parent = value; }
                 }
             }
         }
 
         private class ArgumentFactory<T> : LocationFactory<T>
         {
-            private Func<ActivityContext, Argument> _argumentFunction;
+            private readonly Func<ActivityContext, Argument> argumentFunction;
 
             public ArgumentFactory(Expression argumentExpression, ReadOnlyCollection<ParameterExpression> expressionParameters)
             {
-                _argumentFunction = ExpressionUtilities.Compile<Argument>(argumentExpression, expressionParameters);
+                this.argumentFunction = ExpressionUtilities.Compile<Argument>(argumentExpression, expressionParameters);
             }
 
             public override Location<T> CreateLocation(ActivityContext context)
             {
-                Argument argument = _argumentFunction(context);
+                Argument argument = this.argumentFunction(context);
 
                 return argument.RuntimeArgument.GetLocation(context) as Location<T>;
             }
@@ -493,68 +464,68 @@ namespace CoreWf
 
         private class LocationReferenceFactory<T> : LocationFactory<T>
         {
-            private Func<ActivityContext, LocationReference> _locationReferenceFunction;
+            private readonly Func<ActivityContext, LocationReference> locationReferenceFunction;
 
             public LocationReferenceFactory(Expression locationReferenceExpression, ReadOnlyCollection<ParameterExpression> expressionParameters)
             {
-                _locationReferenceFunction = ExpressionUtilities.Compile<LocationReference>(locationReferenceExpression, expressionParameters);
+                this.locationReferenceFunction = ExpressionUtilities.Compile<LocationReference>(locationReferenceExpression, expressionParameters);
             }
 
             public override Location<T> CreateLocation(ActivityContext context)
             {
-                LocationReference locationReference = _locationReferenceFunction(context);
+                LocationReference locationReference = this.locationReferenceFunction(context);
                 return locationReference.GetLocation(context) as Location<T>;
             }
         }
 
         private class IndexerLocationFactory<T> : LocationFactory<T>
         {
-            private MethodInfo _getItemMethod;
-            private string _indexerName;
-            private MethodInfo _setItemMethod;
-            private Func<ActivityContext, object>[] _setItemArgumentFunctions;
-            private Func<ActivityContext, object> _targetObjectFunction;
+            private readonly MethodInfo getItemMethod;
+            private readonly string indexerName;
+            private readonly MethodInfo setItemMethod;
+            private readonly Func<ActivityContext, object>[] setItemArgumentFunctions;
+            private readonly Func<ActivityContext, object> targetObjectFunction;
 
             public IndexerLocationFactory(LambdaExpression expression)
             {
                 Fx.Assert(expression.Body.NodeType == ExpressionType.Call, "Call expression required.");
 
                 MethodCallExpression callExpression = (MethodCallExpression)expression.Body;
-                _getItemMethod = callExpression.Method;
+                this.getItemMethod = callExpression.Method;
 
-                Fx.Assert(_getItemMethod.IsSpecialName && _getItemMethod.Name.StartsWith("get_", StringComparison.Ordinal), "Special get_Item method required.");
+                Fx.Assert(this.getItemMethod.IsSpecialName && this.getItemMethod.Name.StartsWith("get_", StringComparison.Ordinal), "Special get_Item method required.");
 
                 //  Get the set_Item accessor for the same set of parameter/return types if any.
-                _indexerName = _getItemMethod.Name.Substring(4);
-                string setItemName = "set_" + _indexerName;
-                ParameterInfo[] getItemParameters = _getItemMethod.GetParameters();
+                this.indexerName = this.getItemMethod.Name.Substring(4);
+                string setItemName = "set_" + this.indexerName;
+                ParameterInfo[] getItemParameters = this.getItemMethod.GetParameters();
                 Type[] setItemParameterTypes = new Type[getItemParameters.Length + 1];
 
                 for (int i = 0; i < getItemParameters.Length; i++)
                 {
                     setItemParameterTypes[i] = getItemParameters[i].ParameterType;
                 }
-                setItemParameterTypes[getItemParameters.Length] = _getItemMethod.ReturnType;
+                setItemParameterTypes[getItemParameters.Length] = this.getItemMethod.ReturnType;
 
-                _setItemMethod = _getItemMethod.DeclaringType.GetMethod(
-                    setItemName, BindingFlags.Public | BindingFlags.Instance, setItemParameterTypes);
+                this.setItemMethod = this.getItemMethod.DeclaringType.GetMethod(
+                    setItemName, BindingFlags.Public | BindingFlags.Instance, null, setItemParameterTypes, null);
 
-                if (_setItemMethod != null)
+                if (this.setItemMethod != null)
                 {
                     //  Get the target object and all the setter's arguments 
                     //  (minus the actual value to be set).
-                    _targetObjectFunction = ExpressionUtilities.Compile<object>(callExpression.Object, expression.Parameters);
+                    this.targetObjectFunction = ExpressionUtilities.Compile<object>(callExpression.Object, expression.Parameters);
 
-                    _setItemArgumentFunctions = new Func<ActivityContext, object>[callExpression.Arguments.Count];
+                    this.setItemArgumentFunctions = new Func<ActivityContext, object>[callExpression.Arguments.Count];
                     for (int i = 0; i < callExpression.Arguments.Count; i++)
                     {
                         // convert value types to objects since Linq doesn't do it automatically
                         Expression argument = callExpression.Arguments[i];
-                        if (argument.Type.GetTypeInfo().IsValueType)
+                        if (argument.Type.IsValueType)
                         {
                             argument = Expression.Convert(argument, TypeHelper.ObjectType);
                         }
-                        _setItemArgumentFunctions[i] = ExpressionUtilities.Compile<object>(argument, expression.Parameters);
+                        this.setItemArgumentFunctions[i] = ExpressionUtilities.Compile<object>(argument, expression.Parameters);
                     }
                 }
             }
@@ -564,43 +535,39 @@ namespace CoreWf
                 object targetObject = null;
                 object[] setItemArguments = null;
 
-                if (_setItemMethod != null)
+                if (this.setItemMethod != null)
                 {
-                    targetObject = _targetObjectFunction(context);
+                    targetObject = this.targetObjectFunction(context);
 
-                    setItemArguments = new object[_setItemArgumentFunctions.Length];
+                    setItemArguments = new object[this.setItemArgumentFunctions.Length];
 
-                    for (int i = 0; i < _setItemArgumentFunctions.Length; i++)
+                    for (int i = 0; i < this.setItemArgumentFunctions.Length; i++)
                     {
-                        setItemArguments[i] = _setItemArgumentFunctions[i](context);
+                        setItemArguments[i] = this.setItemArgumentFunctions[i](context);
                     }
                 }
 
-                return new IndexerLocation(_indexerName, _getItemMethod, _setItemMethod, targetObject, setItemArguments);
+                return new IndexerLocation(this.indexerName, this.getItemMethod, this.setItemMethod, targetObject, setItemArguments);
             }
 
             [DataContract]
             internal class IndexerLocation : Location<T>
             {
-                private string _indexerName;
-
-                private MethodInfo _getItemMethod;
-
-                private MethodInfo _setItemMethod;
-
-                private object _targetObject;
-
-                private object[] _setItemArguments;
+                private string indexerName;
+                private MethodInfo getItemMethod;
+                private MethodInfo setItemMethod;
+                private object targetObject;
+                private object[] setItemArguments;
 
                 public IndexerLocation(string indexerName, MethodInfo getItemMethod, MethodInfo setItemMethod,
                     object targetObject, object[] getItemArguments)
                     : base()
                 {
-                    _indexerName = indexerName;
-                    _getItemMethod = getItemMethod;
-                    _setItemMethod = setItemMethod;
-                    _targetObject = targetObject;
-                    _setItemArguments = getItemArguments;
+                    this.indexerName = indexerName;
+                    this.getItemMethod = getItemMethod;
+                    this.setItemMethod = setItemMethod;
+                    this.targetObject = targetObject;
+                    this.setItemArguments = getItemArguments;
                 }
 
                 //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.DoNotRaiseReservedExceptionTypes,
@@ -609,210 +576,208 @@ namespace CoreWf
                 {
                     get
                     {
-                        if (_targetObject == null && !_getItemMethod.IsStatic)
+                        if (this.targetObject == null && !this.getItemMethod.IsStatic)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_getItemMethod.Name)));
+                            throw FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(this.getItemMethod.Name)));
                         }
 
-                        return (T)_getItemMethod.Invoke(_targetObject, _setItemArguments);
+                        return (T)this.getItemMethod.Invoke(this.targetObject, this.setItemArguments);
                     }
 
                     set
                     {
-                        if (_setItemMethod == null)
+
+                        if (this.setItemMethod == null)
                         {
-                            string targetObjectTypeName = _targetObject.GetType().Name;
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(
-                                SR.MissingSetAccessorForIndexer(_indexerName, targetObjectTypeName)));
+                            string targetObjectTypeName = this.targetObject.GetType().Name;
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(
+                                SR.MissingSetAccessorForIndexer(this.indexerName, targetObjectTypeName)));
                         }
 
-                        if (_targetObject == null && !_setItemMethod.IsStatic)
+                        if (this.targetObject == null && !this.setItemMethod.IsStatic)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_setItemMethod.Name)));
+                            throw FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(this.setItemMethod.Name)));
                         }
 
-                        object[] localSetItemArguments = new object[_setItemArguments.Length + 1];
-                        Array.ConstrainedCopy(_setItemArguments, 0, localSetItemArguments, 0, _setItemArguments.Length);
+                        object[] localSetItemArguments = new object[this.setItemArguments.Length + 1];
+                        Array.ConstrainedCopy(this.setItemArguments, 0, localSetItemArguments, 0, this.setItemArguments.Length);
                         localSetItemArguments[localSetItemArguments.Length - 1] = value;
 
-                        _setItemMethod.Invoke(_targetObject, localSetItemArguments);
+                        this.setItemMethod.Invoke(this.targetObject, localSetItemArguments);
                     }
                 }
 
                 [DataMember(Name = "indexerName")]
                 internal string SerializedIndexerName
                 {
-                    get { return _indexerName; }
-                    set { _indexerName = value; }
+                    get { return this.indexerName; }
+                    set { this.indexerName = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "getItemMethod")]
                 internal MethodInfo SerializedGetItemMethod
                 {
-                    get { return _getItemMethod; }
-                    set { _getItemMethod = value; }
+                    get { return this.getItemMethod; }
+                    set { this.getItemMethod = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "setItemMethod")]
                 internal MethodInfo SerializedSetItemMethod
                 {
-                    get { return _setItemMethod; }
-                    set { _setItemMethod = value; }
+                    get { return this.setItemMethod; }
+                    set { this.setItemMethod = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "targetObject")]
                 internal object SerializedTargetObject
                 {
-                    get { return _targetObject; }
-                    set { _targetObject = value; }
+                    get { return this.targetObject; }
+                    set { this.targetObject = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "setItemArguments")]
                 internal object[] SerializedSetItemArguments
                 {
-                    get { return _setItemArguments; }
-                    set { _setItemArguments = value; }
+                    get { return this.setItemArguments; }
+                    set { this.setItemArguments = value; }
                 }
             }
         }
 
         private class MultidimensionalArrayLocationFactory<T> : LocationFactory<T>
         {
-            private Func<ActivityContext, Array> _arrayFunction;
-            private Func<ActivityContext, int>[] _indexFunctions;
+            private readonly Func<ActivityContext, Array> arrayFunction;
+            private readonly Func<ActivityContext, int>[] indexFunctions;
 
             public MultidimensionalArrayLocationFactory(LambdaExpression expression)
             {
                 Fx.Assert(expression.Body.NodeType == ExpressionType.Call, "Call expression required.");
                 MethodCallExpression callExpression = (MethodCallExpression)expression.Body;
 
-                _arrayFunction = ExpressionUtilities.Compile<Array>(
+                this.arrayFunction = ExpressionUtilities.Compile<Array>(
                     callExpression.Object, expression.Parameters);
 
-                _indexFunctions = new Func<ActivityContext, int>[callExpression.Arguments.Count];
-                for (int i = 0; i < _indexFunctions.Length; i++)
+                this.indexFunctions = new Func<ActivityContext, int>[callExpression.Arguments.Count];
+                for (int i = 0; i < this.indexFunctions.Length; i++)
                 {
-                    _indexFunctions[i] = ExpressionUtilities.Compile<int>(
+                    this.indexFunctions[i] = ExpressionUtilities.Compile<int>(
                         callExpression.Arguments[i], expression.Parameters);
                 }
             }
 
             public override Location<T> CreateLocation(ActivityContext context)
             {
-                int[] indices = new int[_indexFunctions.Length];
+                int[] indices = new int[this.indexFunctions.Length];
                 for (int i = 0; i < indices.Length; i++)
                 {
-                    indices[i] = _indexFunctions[i](context);
+                    indices[i] = this.indexFunctions[i](context);
                 }
-                return new MultidimensionalArrayLocation(_arrayFunction(context), indices);
+                return new MultidimensionalArrayLocation(this.arrayFunction(context), indices);
             }
 
             [DataContract]
             internal class MultidimensionalArrayLocation : Location<T>
             {
-                private Array _array;
-
-                private int[] _indices;
+                private Array array;
+                private int[] indices;
 
                 public MultidimensionalArrayLocation(Array array, int[] indices)
                     : base()
                 {
-                    _array = array;
-                    _indices = indices;
+                    this.array = array;
+                    this.indices = indices;
                 }
 
                 public override T Value
                 {
                     get
                     {
-                        return (T)_array.GetValue(_indices);
+                        return (T)this.array.GetValue(this.indices);
                     }
 
                     set
                     {
-                        _array.SetValue(value, _indices);
+                        this.array.SetValue(value, this.indices);
                     }
                 }
 
                 [DataMember(Name = "array")]
                 internal Array SerializedArray
                 {
-                    get { return _array; }
-                    set { _array = value; }
+                    get { return this.array; }
+                    set { this.array = value; }
                 }
 
                 [DataMember(Name = "indices")]
                 internal int[] SerializedIndicess
                 {
-                    get { return _indices; }
-                    set { _indices = value; }
+                    get { return this.indices; }
+                    set { this.indices = value; }
                 }
             }
         }
 
         private class PropertyLocationFactory<T> : LocationFactory<T>
         {
-            private Func<ActivityContext, object> _ownerFunction;
-            private PropertyInfo _propertyInfo;
-            private LocationFactory _parentFactory;
+            private readonly Func<ActivityContext, object> ownerFunction;
+            private readonly PropertyInfo propertyInfo;
+            private LocationFactory parentFactory;
 
             public PropertyLocationFactory(LambdaExpression expression)
             {
                 Fx.Assert(expression.Body.NodeType == ExpressionType.MemberAccess, "member access expression required");
                 MemberExpression memberExpression = (MemberExpression)expression.Body;
 
-                //Fx.Assert(memberExpression.Member.MemberType == MemberTypes.Property, "property access expression expected");
-                _propertyInfo = (PropertyInfo)memberExpression.Member;
+                Fx.Assert(memberExpression.Member.MemberType == MemberTypes.Property, "property access expression expected");
+                this.propertyInfo = (PropertyInfo)memberExpression.Member;
 
                 if (memberExpression.Expression == null)
                 {
                     // static property
-                    _ownerFunction = null;
+                    this.ownerFunction = null;
                 }
                 else
                 {
-                    _ownerFunction = ExpressionUtilities.Compile<object>(
+                    this.ownerFunction = ExpressionUtilities.Compile<object>(
                         Expression.Convert(memberExpression.Expression, TypeHelper.ObjectType), expression.Parameters);
                 }
 
-                if (_propertyInfo.DeclaringType.GetTypeInfo().IsValueType)
+                if (this.propertyInfo.DeclaringType.IsValueType)
                 {
                     // may want to set a struct, so we need to make an expression in order to set the parent
-                    _parentFactory = CreateParentReference(memberExpression.Expression, expression.Parameters);
+                    parentFactory = CreateParentReference(memberExpression.Expression, expression.Parameters);
                 }
             }
 
             public override Location<T> CreateLocation(ActivityContext context)
             {
                 object owner = null;
-                if (_ownerFunction != null)
+                if (this.ownerFunction != null)
                 {
-                    owner = _ownerFunction(context);
+                    owner = this.ownerFunction(context);
                 }
 
                 Location parent = null;
-                if (_parentFactory != null)
+                if (parentFactory != null)
                 {
-                    parent = _parentFactory.CreateLocation(context);
+                    parent = parentFactory.CreateLocation(context);
                 }
-                return new PropertyLocation(_propertyInfo, owner, parent);
+                return new PropertyLocation(this.propertyInfo, owner, parent);
             }
 
             [DataContract]
             internal class PropertyLocation : Location<T>
             {
-                private object _owner;
-
-                private PropertyInfo _propertyInfo;
-
-                private Location _parent;
+                private object owner;
+                private PropertyInfo propertyInfo;
+                private Location parent;
 
                 public PropertyLocation(PropertyInfo propertyInfo, object owner, Location parent)
                     : base()
                 {
-                    _propertyInfo = propertyInfo;
-                    _owner = owner;
-                    _parent = parent;
+                    this.propertyInfo = propertyInfo;
+                    this.owner = owner;
+                    this.parent = parent;
                 }
 
                 //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.DoNotRaiseReservedExceptionTypes,
@@ -825,19 +790,19 @@ namespace CoreWf
                         // from the other's perspective, not internal properties, so they're okay as a special case.
                         // E.g. "[N]" from the user's perspective is not accessing a nonpublic property, even though
                         // at an implementation level it is.
-                        MethodInfo getMethodInfo = _propertyInfo.GetGetMethod();
-                        if (getMethodInfo == null && !TypeHelper.AreTypesCompatible(_propertyInfo.DeclaringType, typeof(Location)))
+                        MethodInfo getMethodInfo = this.propertyInfo.GetGetMethod();
+                        if (getMethodInfo == null && !TypeHelper.AreTypesCompatible(this.propertyInfo.DeclaringType, typeof(Location)))
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteonlyPropertyCannotBeRead(_propertyInfo.DeclaringType, _propertyInfo.Name)));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteonlyPropertyCannotBeRead(this.propertyInfo.DeclaringType, this.propertyInfo.Name)));
                         }
 
-                        if (_owner == null && (getMethodInfo == null || !getMethodInfo.IsStatic))
+                        if (this.owner == null && (getMethodInfo == null || !getMethodInfo.IsStatic))
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_propertyInfo.Name)));
+                            throw FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(this.propertyInfo.Name)));
                         }
 
                         // Okay, it's public
-                        return (T)_propertyInfo.GetValue(_owner, null);
+                        return (T)this.propertyInfo.GetValue(this.owner, null);
                     }
 
                     set
@@ -846,25 +811,25 @@ namespace CoreWf
                         // from the other's perspective, not internal properties, so they're okay as a special case.
                         // E.g. "[N]" from the user's perspective is not accessing a nonpublic property, even though
                         // at an implementation level it is.
-                        MethodInfo setMethodInfo = _propertyInfo.GetSetMethod();
-                        if (setMethodInfo == null && !TypeHelper.AreTypesCompatible(_propertyInfo.DeclaringType, typeof(Location)))
+                        MethodInfo setMethodInfo = this.propertyInfo.GetSetMethod();
+                        if (setMethodInfo == null && !TypeHelper.AreTypesCompatible(this.propertyInfo.DeclaringType, typeof(Location)))
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadonlyPropertyCannotBeSet(_propertyInfo.DeclaringType, _propertyInfo.Name)));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadonlyPropertyCannotBeSet(this.propertyInfo.DeclaringType, this.propertyInfo.Name)));
                         }
 
-                        if (_owner == null && (setMethodInfo == null || !setMethodInfo.IsStatic))
+                        if (this.owner == null && (setMethodInfo == null || !setMethodInfo.IsStatic))
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(_propertyInfo.Name)));
+                            throw FxTrace.Exception.AsError(new NullReferenceException(SR.CannotDereferenceNull(this.propertyInfo.Name)));
                         }
 
                         // Okay, it's public
-                        _propertyInfo.SetValue(_owner, value, null);
-                        if (_parent != null)
+                        this.propertyInfo.SetValue(this.owner, value, null);
+                        if (this.parent != null)
                         {
                             // Looks like we are trying to set a property on a struct
                             // Calling SetValue simply sets the property on the local copy of the struct, which is not very helpful
                             // Since we have a copy, assign it back to the parent
-                            _parent.Value = _owner;
+                            this.parent.Value = this.owner;
                         }
                     }
                 }
@@ -872,22 +837,22 @@ namespace CoreWf
                 [DataMember(EmitDefaultValue = false, Name = "owner")]
                 internal object SerializedOwner
                 {
-                    get { return _owner; }
-                    set { _owner = value; }
+                    get { return this.owner; }
+                    set { this.owner = value; }
                 }
 
                 [DataMember(Name = "propertyInfo")]
                 internal PropertyInfo SerializedPropertyInfo
                 {
-                    get { return _propertyInfo; }
-                    set { _propertyInfo = value; }
+                    get { return this.propertyInfo; }
+                    set { this.propertyInfo = value; }
                 }
 
                 [DataMember(EmitDefaultValue = false, Name = "parent")]
                 internal Location SerializedParent
                 {
-                    get { return _parent; }
-                    set { _parent = value; }
+                    get { return this.parent; }
+                    set { this.parent = value; }
                 }
             }
         }
@@ -1031,7 +996,7 @@ namespace CoreWf
 
                     // When creating a location for a member on a struct, we also need a location
                     // for the struct (so we don't just set the member on a copy of the struct)
-                    bool subTreeIsLocationExpression = isLocationExpression && memberExpression.Member.DeclaringType.GetTypeInfo().IsValueType;
+                    bool subTreeIsLocationExpression = isLocationExpression && memberExpression.Member.DeclaringType.IsValueType;
 
                     hasChanged |= TryRewriteLambdaExpression(memberExpression.Expression, out other, publicAccessor, subTreeIsLocationExpression);
 
@@ -1226,8 +1191,7 @@ namespace CoreWf
             {
                 MemberBinding binding = bindings[i];
 
-                MemberBinding newBinding;
-                if (TryRewriteMemberBinding(binding, out newBinding, publicAccessor))
+                if (TryRewriteMemberBinding(binding, out MemberBinding newBinding, publicAccessor))
                 {
                     if (temporaryBindings == null)
                     {
@@ -1310,7 +1274,6 @@ namespace CoreWf
             return hasChanged;
         }
 
-
         private static bool TryRewriteLambdaExpressionCollection(IList<Expression> expressions, out IList<Expression> newExpressions, CodeActivityPublicEnvironmentAccessor publicAccessor)
         {
             IList<Expression> temporaryExpressions = null;
@@ -1319,8 +1282,7 @@ namespace CoreWf
             {
                 Expression expression = expressions[i];
 
-                Expression newExpression;
-                if (TryRewriteLambdaExpression(expression, out newExpression, publicAccessor))
+                if (TryRewriteLambdaExpression(expression, out Expression newExpression, publicAccessor))
                 {
                     if (temporaryExpressions == null)
                     {
@@ -1363,8 +1325,7 @@ namespace CoreWf
             {
                 ElementInit elementInit = initializers[i];
 
-                IList<Expression> newExpressions;
-                if (TryRewriteLambdaExpressionCollection(elementInit.Arguments, out newExpressions, publicAccessor))
+                if (TryRewriteLambdaExpressionCollection(elementInit.Arguments, out IList<Expression> newExpressions, publicAccessor))
                 {
                     if (temporaryInitializers == null)
                     {
@@ -1404,9 +1365,8 @@ namespace CoreWf
             inlinedReference = null;
 
             Argument argument = null;
-            object tempArgument;
 
-            if (CustomMemberResolver(argumentExpression, out tempArgument) && tempArgument is Argument)
+            if (CustomMemberResolver(argumentExpression, out object tempArgument) && tempArgument is Argument)
             {
                 argument = (Argument)tempArgument;
             }
@@ -1435,8 +1395,7 @@ namespace CoreWf
                 if (argumentExpression.NodeType == ExpressionType.MemberAccess)
                 {
                     MemberExpression memberExpression = (MemberExpression)argumentExpression;
-                    PropertyInfo propertyInfo = memberExpression.Member as PropertyInfo;
-                    if (propertyInfo != null)
+                    if (memberExpression.Member.MemberType == MemberTypes.Property)
                     {
                         RuntimeArgument runtimeArgument = ActivityUtilities.FindArgument(memberExpression.Member.Name, publicAccessor.ActivityMetadata.CurrentActivity);
 
@@ -1445,16 +1404,6 @@ namespace CoreWf
                             return true;
                         }
                     }
-                    //MemberExpression memberExpression = (MemberExpression)argumentExpression;
-                    //if (memberExpression.Member.MemberType == MemberTypes.Property)
-                    //{
-                    //    RuntimeArgument runtimeArgument = ActivityUtilities.FindArgument(memberExpression.Member.Name, publicAccessor.ActivityMetadata.CurrentActivity);
-
-                    //    if (runtimeArgument != null && TryGetInlinedReference(publicAccessor, runtimeArgument, isLocationExpression, out inlinedReference))
-                    //    {
-                    //        return true;
-                    //    }
-                    //}
                 }
 
                 publicAccessor.ActivityMetadata.AddValidationError(SR.ErrorExtractingValuesForLambdaRewrite(argumentExpression.Type, originalExpression, SR.SubexpressionResultWasNull(argumentExpression.Type)));
@@ -1485,12 +1434,11 @@ namespace CoreWf
             {
                 Expression contextExpression = argumentExpressions[0];
 
-                if (contextExpression.Type == s_activityContextType)
+                if (contextExpression.Type == activityContextType)
                 {
-                    LocationReference inlinedReference;
-                    if (TryGetInlinedArgumentReference(originalExpression, originalExpression.Object, out inlinedReference, publicAccessor, isLocationExpression))
+                    if (TryGetInlinedArgumentReference(originalExpression, originalExpression.Object, out LocationReference inlinedReference, publicAccessor, isLocationExpression))
                     {
-                        newExpression = Expression.Call(contextExpression, s_activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                        newExpression = Expression.Call(contextExpression, activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                         return true;
                     }
                 }
@@ -1511,18 +1459,17 @@ namespace CoreWf
             {
                 Expression contextExpression = argumentExpressions[0];
 
-                if (contextExpression.Type == s_activityContextType)
+                if (contextExpression.Type == activityContextType)
                 {
-                    LocationReference inlinedReference;
-                    if (TryGetInlinedArgumentReference(originalExpression, originalExpression.Object, out inlinedReference, publicAccessor, true))
+                    if (TryGetInlinedArgumentReference(originalExpression, originalExpression.Object, out LocationReference inlinedReference, publicAccessor, true))
                     {
                         if (returnType == null)
                         {
-                            newExpression = Expression.Call(Expression.Constant(inlinedReference, typeof(LocationReference)), s_locationReferenceGetLocationMethod, contextExpression);
+                            newExpression = Expression.Call(Expression.Constant(inlinedReference, typeof(LocationReference)), locationReferenceGetLocationMethod, contextExpression);
                         }
                         else
                         {
-                            newExpression = Expression.Call(contextExpression, s_activityContextGetLocationGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                            newExpression = Expression.Call(contextExpression, activityContextGetLocationGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                         }
 
                         return true;
@@ -1545,12 +1492,11 @@ namespace CoreWf
             {
                 Expression contextExpression = argumentExpressions[0];
 
-                if (contextExpression.Type == s_activityContextType)
+                if (contextExpression.Type == activityContextType)
                 {
-                    LocationReference inlinedReference;
-                    if (TryGetInlinedLocationReference(originalExpression, originalExpression.Object, out inlinedReference, publicAccessor, isLocationExpression))
+                    if (TryGetInlinedLocationReference(originalExpression, originalExpression.Object, out LocationReference inlinedReference, publicAccessor, isLocationExpression))
                     {
-                        newExpression = Expression.Call(contextExpression, s_activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                        newExpression = Expression.Call(contextExpression, activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                         return true;
                     }
                 }
@@ -1571,18 +1517,17 @@ namespace CoreWf
             {
                 Expression contextExpression = argumentExpressions[0];
 
-                if (contextExpression.Type == s_activityContextType)
+                if (contextExpression.Type == activityContextType)
                 {
-                    LocationReference inlinedReference;
-                    if (TryGetInlinedLocationReference(originalExpression, originalExpression.Object, out inlinedReference, publicAccessor, true))
+                    if (TryGetInlinedLocationReference(originalExpression, originalExpression.Object, out LocationReference inlinedReference, publicAccessor, true))
                     {
                         if (returnType == null)
                         {
-                            newExpression = Expression.Call(Expression.Constant(inlinedReference, typeof(LocationReference)), s_locationReferenceGetLocationMethod, originalExpression.Arguments[0]);
+                            newExpression = Expression.Call(Expression.Constant(inlinedReference, typeof(LocationReference)), locationReferenceGetLocationMethod, originalExpression.Arguments[0]);
                         }
                         else
                         {
-                            newExpression = Expression.Call(contextExpression, s_activityContextGetLocationGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                            newExpression = Expression.Call(contextExpression, activityContextGetLocationGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                         }
 
                         return true;
@@ -1633,33 +1578,18 @@ namespace CoreWf
                 return null;
             }
 
-            //MemberTypes memberType = memberInfo.MemberType;
-            //if (memberType == MemberTypes.Property)
-            //{
-            //    PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-            //    return propertyInfo.GetValue(owner, null);
-
-            //}
-            //else if (memberType == MemberTypes.Field)
-            //{
-            //    FieldInfo fieldInfo = memberInfo as FieldInfo;
-            //    return fieldInfo.GetValue(owner);
-            //}
-
-            PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-            if (propertyInfo != null)
+            MemberTypes memberType = memberInfo.MemberType;
+            if (memberType == MemberTypes.Property)
             {
+                PropertyInfo propertyInfo = memberInfo as PropertyInfo;
                 return propertyInfo.GetValue(owner, null);
+
             }
-            else
+            else if (memberType == MemberTypes.Field)
             {
                 FieldInfo fieldInfo = memberInfo as FieldInfo;
-                if (fieldInfo != null)
-                {
-                    return fieldInfo.GetValue(owner);
-                }
+                return fieldInfo.GetValue(owner);
             }
-
             return null;
         }
 
@@ -1668,8 +1598,7 @@ namespace CoreWf
             inlinedReference = null;
 
             LocationReference locationReference = null;
-            object tempLocationReference;
-            if (CustomMemberResolver(locationReferenceExpression, out tempLocationReference) && tempLocationReference is LocationReference)
+            if (CustomMemberResolver(locationReferenceExpression, out object tempLocationReference) && tempLocationReference is LocationReference)
             {
                 locationReference = (LocationReference)tempLocationReference;
             }
@@ -1744,7 +1673,7 @@ namespace CoreWf
 
             if (inlinedReference != null)
             {
-                newExpression = Expression.Call(originalExpression.Object, s_activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                newExpression = Expression.Call(originalExpression.Object, activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                 return true;
             }
 
@@ -1762,12 +1691,11 @@ namespace CoreWf
             {
                 Expression locationReference = argumentExpressions[0];
 
-                if (TypeHelper.AreTypesCompatible(locationReference.Type, s_locationReferenceType))
+                if (TypeHelper.AreTypesCompatible(locationReference.Type, locationReferenceType))
                 {
-                    LocationReference inlinedReference;
-                    if (TryGetInlinedLocationReference(originalExpression, originalExpression.Arguments[0], out inlinedReference, publicAccessor, true))
+                    if (TryGetInlinedLocationReference(originalExpression, originalExpression.Arguments[0], out LocationReference inlinedReference, publicAccessor, true))
                     {
-                        newExpression = Expression.Call(originalExpression.Object, s_activityContextGetLocationGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                        newExpression = Expression.Call(originalExpression.Object, activityContextGetLocationGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                         return true;
                     }
                 }
@@ -1868,7 +1796,7 @@ namespace CoreWf
             MethodInfo targetMethod = methodCall.Method;
             Type targetObjectType = targetMethod.DeclaringType;
 
-            if (targetObjectType.GetTypeInfo().IsGenericType)
+            if (targetObjectType.IsGenericType)
             {
                 // All of these methods are non-generic methods (they don't introduce a new
                 // type parameter), but they do make use of the type parameter of the 
@@ -1876,7 +1804,7 @@ namespace CoreWf
                 // and fall back to string comparison.
                 Type targetObjectGenericType = targetObjectType.GetGenericTypeDefinition();
 
-                if (targetObjectGenericType == s_variableGenericType)
+                if (targetObjectGenericType == variableGenericType)
                 {
                     if (targetMethod.Name == "Get")
                     {
@@ -1887,14 +1815,14 @@ namespace CoreWf
                         return TryRewriteLocationReferenceSubclassGetLocationCall(methodCall, targetObjectType.GetGenericArguments()[0], out newExpression, publicAccessor);
                     }
                 }
-                else if (targetObjectGenericType == s_inArgumentGenericType)
+                else if (targetObjectGenericType == inArgumentGenericType)
                 {
                     if (targetMethod.Name == "Get")
                     {
                         return TryRewriteArgumentGetCall(methodCall, targetObjectType.GetGenericArguments()[0], out newExpression, publicAccessor, isLocationExpression);
                     }
                 }
-                else if (targetObjectGenericType == s_outArgumentGenericType || targetObjectGenericType == s_inOutArgumentGenericType)
+                else if (targetObjectGenericType == outArgumentGenericType || targetObjectGenericType == inOutArgumentGenericType)
                 {
                     if (targetMethod.Name == "Get")
                     {
@@ -1905,14 +1833,14 @@ namespace CoreWf
                         return TryRewriteArgumentGetLocationCall(methodCall, targetObjectType.GetGenericArguments()[0], out newExpression, publicAccessor);
                     }
                 }
-                else if (targetObjectGenericType == s_delegateInArgumentGenericType)
+                else if (targetObjectGenericType == delegateInArgumentGenericType)
                 {
                     if (targetMethod.Name == "Get")
                     {
                         return TryRewriteLocationReferenceSubclassGetCall(methodCall, targetObjectType.GetGenericArguments()[0], out newExpression, publicAccessor, isLocationExpression);
                     }
                 }
-                else if (targetObjectGenericType == s_delegateOutArgumentGenericType)
+                else if (targetObjectGenericType == delegateOutArgumentGenericType)
                 {
                     if (targetMethod.Name == "Get")
                     {
@@ -1926,21 +1854,21 @@ namespace CoreWf
             }
             else
             {
-                if (targetObjectType == s_variableType)
+                if (targetObjectType == variableType)
                 {
-                    if (object.ReferenceEquals(targetMethod, s_variableGetMethod))
+                    if (object.ReferenceEquals(targetMethod, variableGetMethod))
                     {
                         return TryRewriteLocationReferenceSubclassGetCall(methodCall, TypeHelper.ObjectType, out newExpression, publicAccessor, isLocationExpression);
                     }
                 }
-                else if (targetObjectType == s_delegateArgumentType)
+                else if (targetObjectType == delegateArgumentType)
                 {
-                    if (object.ReferenceEquals(targetMethod, s_delegateArgumentGetMethod))
+                    if (object.ReferenceEquals(targetMethod, delegateArgumentGetMethod))
                     {
                         return TryRewriteLocationReferenceSubclassGetCall(methodCall, TypeHelper.ObjectType, out newExpression, publicAccessor, isLocationExpression);
                     }
                 }
-                else if (targetObjectType == s_activityContextType)
+                else if (targetObjectType == activityContextType)
                 {
                     // We use the string comparison for these two because
                     // we have several overloads of GetValue (some generic,
@@ -1961,14 +1889,14 @@ namespace CoreWf
                         return TryRewriteActivityContextGetLocationCall(methodCall, targetMethod.GetGenericArguments()[0], out newExpression, publicAccessor);
                     }
                 }
-                else if (targetObjectType == s_locationReferenceType)
+                else if (targetObjectType == locationReferenceType)
                 {
-                    if (object.ReferenceEquals(targetMethod, s_locationReferenceGetLocationMethod))
+                    if (object.ReferenceEquals(targetMethod, locationReferenceGetLocationMethod))
                     {
                         return TryRewriteLocationReferenceSubclassGetLocationCall(methodCall, null, out newExpression, publicAccessor);
                     }
                 }
-                else if (targetObjectType == s_runtimeArgumentType)
+                else if (targetObjectType == runtimeArgumentType)
                 {
                     // We use string comparison here because we can
                     // match both overloads with a single check.
@@ -1984,7 +1912,7 @@ namespace CoreWf
                         return TryRewriteLocationReferenceSubclassGetCall(methodCall, returnType, out newExpression, publicAccessor, isLocationExpression);
                     }
                 }
-                else if (targetObjectType == s_argumentType)
+                else if (targetObjectType == argumentType)
                 {
                     // We use string comparison here because we can
                     // match both overloads with a single check.
@@ -1999,7 +1927,7 @@ namespace CoreWf
 
                         return TryRewriteArgumentGetCall(methodCall, returnType, out newExpression, publicAccessor, isLocationExpression);
                     }
-                    else if (object.ReferenceEquals(targetMethod, s_argumentGetLocationMethod))
+                    else if (object.ReferenceEquals(targetMethod, argumentGetLocationMethod))
                     {
                         return TryRewriteArgumentGetLocationCall(methodCall, null, out newExpression, publicAccessor);
                     }
@@ -2009,11 +1937,8 @@ namespace CoreWf
             // Here's the code for a method call that isn't on our "special" list
             newExpression = methodCall;
 
-            Expression objectExpression;
-            IList<Expression> expressionList;
-
-            bool hasChanged = TryRewriteLambdaExpression(methodCall.Object, out objectExpression, publicAccessor);
-            hasChanged |= TryRewriteLambdaExpressionCollection(methodCall.Arguments, out expressionList, publicAccessor);
+            bool hasChanged = TryRewriteLambdaExpression(methodCall.Object, out Expression objectExpression, publicAccessor);
+            hasChanged |= TryRewriteLambdaExpressionCollection(methodCall.Arguments, out IList<Expression> expressionList, publicAccessor);
 
             if (hasChanged)
             {
@@ -2021,6 +1946,15 @@ namespace CoreWf
             }
 
             return hasChanged;
+        }
+
+        internal static Expression RewriteNonCompiledExpressionTree(LambdaExpression originalLambdaExpression)
+        {
+            ExpressionTreeRewriter expressionVisitor = new ExpressionTreeRewriter();
+            return expressionVisitor.Visit(Expression.Lambda(
+                typeof(Func<,>).MakeGenericType(typeof(ActivityContext), originalLambdaExpression.ReturnType),
+                originalLambdaExpression.Body, 
+                new ParameterExpression[] { ExpressionUtilities.RuntimeContextParameter }));
         }
     }
 }

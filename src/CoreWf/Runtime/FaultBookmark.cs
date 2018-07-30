@@ -1,31 +1,31 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class FaultBookmark
     {
-        private FaultCallbackWrapper _callbackWrapper;
+        private FaultCallbackWrapper callbackWrapper;
 
         public FaultBookmark(FaultCallbackWrapper callbackWrapper)
         {
-            _callbackWrapper = callbackWrapper;
+            this.callbackWrapper = callbackWrapper;
         }
 
         [DataMember(Name = "callbackWrapper")]
         internal FaultCallbackWrapper SerializedCallbackWrapper
         {
-            get { return _callbackWrapper; }
-            set { _callbackWrapper = value; }
+            get { return this.callbackWrapper; }
+            set { this.callbackWrapper = value; }
         }
 
         public WorkItem GenerateWorkItem(Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
         {
-            return _callbackWrapper.CreateWorkItem(propagatedException, propagatedFrom, originalExceptionSource);
+            return this.callbackWrapper.CreateWorkItem(propagatedException, propagatedFrom, originalExceptionSource);
         }
     }
 }

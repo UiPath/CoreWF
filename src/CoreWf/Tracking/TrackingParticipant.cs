@@ -1,11 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using CoreWf.Runtime;
+    using System;
+
     public abstract class TrackingParticipant
     {
         protected TrackingParticipant()
@@ -36,18 +36,18 @@ namespace CoreWf.Tracking
 
         private class TrackAsyncResult : AsyncResult
         {
-            private static Action<object> s_asyncExecuteTrack = new Action<object>(ExecuteTrack);
-            private TrackingParticipant _participant;
-            private TrackingRecord _record;
-            private TimeSpan _timeout;
+            private static Action<object> asyncExecuteTrack = new Action<object>(ExecuteTrack);
+            private readonly TrackingParticipant participant;
+            private readonly TrackingRecord record;
+            private readonly TimeSpan timeout;
 
             public TrackAsyncResult(TrackingParticipant participant, TrackingRecord record, TimeSpan timeout, AsyncCallback callback, object state)
                 : base(callback, state)
             {
-                _participant = participant;
-                _record = record;
-                _timeout = timeout;
-                ActionItem.Schedule(s_asyncExecuteTrack, this);
+                this.participant = participant;
+                this.record = record;
+                this.timeout = timeout;
+                ActionItem.Schedule(asyncExecuteTrack, this);
             }
 
             public static void End(IAsyncResult result)
@@ -66,7 +66,7 @@ namespace CoreWf.Tracking
                 Exception participantException = null;
                 try
                 {
-                    _participant.Track(_record, _timeout);
+                    this.participant.Track(this.record, this.timeout);
                 }
                 catch (Exception exception)
                 {
@@ -80,5 +80,6 @@ namespace CoreWf.Tracking
                 base.Complete(false, participantException);
             }
         }
+
     }
 }

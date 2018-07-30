@@ -1,11 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using System;
+    using CoreWf.Runtime;
+
     internal abstract class WorkflowInstanceExtensionProvider
     {
         protected WorkflowInstanceExtensionProvider()
@@ -51,23 +51,23 @@ namespace CoreWf.Hosting
     internal class WorkflowInstanceExtensionProvider<T> : WorkflowInstanceExtensionProvider
         where T : class
     {
-        private Func<T> _providerFunction;
-        private bool _hasGeneratedValue;
+        private readonly Func<T> providerFunction;
+        private bool hasGeneratedValue;
 
         public WorkflowInstanceExtensionProvider(Func<T> providerFunction)
             : base()
         {
-            _providerFunction = providerFunction;
+            this.providerFunction = providerFunction;
             base.Type = typeof(T);
         }
 
         public override object ProvideValue()
         {
-            T value = _providerFunction();
-            if (!_hasGeneratedValue)
+            T value = this.providerFunction();
+            if (!this.hasGeneratedValue)
             {
                 base.GeneratedTypeMatchesDeclaredType = object.ReferenceEquals(value.GetType(), this.Type);
-                _hasGeneratedValue = true;
+                this.hasGeneratedValue = true;
             }
 
             return value;

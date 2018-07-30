@@ -1,11 +1,10 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading;
-using System.Linq;
 using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.Utilities
@@ -50,7 +49,7 @@ namespace Test.Common.TestObjects.Utilities
         private HashSet<Guid> _allKnownTraces;
         private List<string> _traceFilter;
 
-        private object _thisLock;
+        private readonly object _thisLock;
 
         private TestTraceManager()
         {
@@ -108,8 +107,7 @@ namespace Test.Common.TestObjects.Utilities
         {
             lock (_thisLock)
             {
-                List<Subscription> workflowInstanceSubscriptions = null;
-                if (_allSubscriptions.TryGetValue(instanceId, out workflowInstanceSubscriptions))
+                if (_allSubscriptions.TryGetValue(instanceId, out List<Subscription> workflowInstanceSubscriptions))
                 {
                     List<Subscription> subscriptionsPendingRemoval = new List<Subscription>();
 
@@ -137,8 +135,7 @@ namespace Test.Common.TestObjects.Utilities
         {
             lock (_thisLock)
             {
-                List<Subscription> workflowInstanceSubscriptions = null;
-                if (_allSubscriptions.TryGetValue(instanceId, out workflowInstanceSubscriptions))
+                if (_allSubscriptions.TryGetValue(instanceId, out List<Subscription> workflowInstanceSubscriptions))
                 {
                     workflowInstanceSubscriptions.Add(subscription);
                 }
@@ -159,9 +156,8 @@ namespace Test.Common.TestObjects.Utilities
         {
             lock (_thisLock)
             {
-                ActualTrace instanceTraces = null;
 
-                if (!_allTraces.TryGetValue(instanceId, out instanceTraces))
+                if (!_allTraces.TryGetValue(instanceId, out ActualTrace instanceTraces))
                 {
                     instanceTraces = new ActualTrace();
                     _allTraces.Add(instanceId, instanceTraces);
@@ -313,7 +309,7 @@ namespace Test.Common.TestObjects.Utilities
 
         internal class ORSubscription : Subscription
         {
-            private IActualTraceStep _otherTraceStep;
+            private readonly IActualTraceStep _otherTraceStep;
             private IActualTraceStep _successfulTraceStep;
 
             public ORSubscription(IActualTraceStep traceStep, IActualTraceStep otherTraceStep, ManualResetEvent mre)

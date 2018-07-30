@@ -1,45 +1,46 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Persistence;
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf;
+    using CoreWf.Persistence;
+    using System.Collections.Generic;
+    using System.Xml.Linq;
+    using CoreWf.Hosting;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     public class DurableTimerExtension : TimerExtension, IWorkflowInstanceExtension, IDisposable, ICancelable
     {
-        private WorkflowInstanceProxy _instance;
-        private TimerTable _registeredTimers;
-        private Action<object> _onTimerFiredCallback;
-        private TimerPersistenceParticipant _timerPersistenceParticipant;
-        private static AsyncCallback s_onResumeBookmarkComplete = Fx.ThunkCallback(new AsyncCallback(OnResumeBookmarkComplete));
+        private WorkflowInstanceProxy instance;
+        private TimerTable registeredTimers;
+        private readonly Action<object> onTimerFiredCallback;
+        private readonly TimerPersistenceParticipant timerPersistenceParticipant;
+        private static readonly AsyncCallback onResumeBookmarkComplete = Fx.ThunkCallback(new AsyncCallback(OnResumeBookmarkComplete));
+        private static readonly XName timerTableName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("RegisteredTimers");
+        private static readonly XName timerExpirationTimeName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("TimerExpirationTime");
+        private bool isDisposed; 
 
-        private static readonly XName s_timerTableName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("RegisteredTimers");
-        private static readonly XName s_timerExpirationTimeName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("TimerExpirationTime");
-        private bool _isDisposed;
         [Fx.Tag.SynchronizationObject()]
-
-        private object _thisLock;
+        private readonly object thisLock;
 
         public DurableTimerExtension()
             : base()
         {
-            _onTimerFiredCallback = new Action<object>(this.OnTimerFired);
-            _thisLock = new object();
-            _timerPersistenceParticipant = new TimerPersistenceParticipant(this);
-            _isDisposed = false;
+            this.onTimerFiredCallback = new Action<object>(this.OnTimerFired);
+            this.thisLock = new object();
+            this.timerPersistenceParticipant = new TimerPersistenceParticipant(this);
+            this.isDisposed = false; 
         }
 
         private object ThisLock
         {
             get
             {
-                return _thisLock;
+                return this.thisLock;
             }
         }
 
@@ -47,7 +48,7 @@ namespace CoreWf.Statements
         {
             get
             {
-                return _onTimerFiredCallback;
+                return this.onTimerFiredCallback;
             }
         }
 
@@ -55,27 +56,27 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_registeredTimers == null)
+                if (this.registeredTimers == null)
                 {
-                    _registeredTimers = new TimerTable(this);
+                    this.registeredTimers = new TimerTable(this);
                 }
-                return _registeredTimers;
+                return this.registeredTimers;
             }
         }
 
         public virtual IEnumerable<object> GetAdditionalExtensions()
         {
-            yield return _timerPersistenceParticipant;
+            yield return this.timerPersistenceParticipant;
         }
 
         public virtual void SetInstance(WorkflowInstanceProxy instance)
         {
-            if (_instance != null && instance != null)
+            if (this.instance != null && instance != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TimerExtensionAlreadyAttached));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.TimerExtensionAlreadyAttached));
             }
 
-            _instance = instance;
+            this.instance = instance;
         }
 
         protected override void OnRegisterTimer(TimeSpan timeout, Bookmark bookmark)
@@ -85,7 +86,7 @@ namespace CoreWf.Statements
             {
                 lock (this.ThisLock)
                 {
-                    Fx.Assert(!_isDisposed, "DurableTimerExtension is already disposed, it cannot be used to register a new timer.");
+                    Fx.Assert(!this.isDisposed, "DurableTimerExtension is already disposed, it cannot be used to register a new timer.");
                     this.RegisteredTimers.AddTimer(timeout, bookmark);
                 }
             }
@@ -104,17 +105,17 @@ namespace CoreWf.Statements
         {
             readWriteValues = null;
             writeOnlyValues = null;
-
+            
             // Using a lock here to prevent the timer firing back without us being ready
             lock (this.ThisLock)
             {
                 this.RegisteredTimers.MarkAsImmutable();
-                if (_registeredTimers != null && _registeredTimers.Count > 0)
+                if (this.registeredTimers != null && this.registeredTimers.Count > 0)
                 {
                     readWriteValues = new Dictionary<XName, object>(1);
                     writeOnlyValues = new Dictionary<XName, object>(1);
-                    readWriteValues.Add(s_timerTableName, _registeredTimers);
-                    writeOnlyValues.Add(s_timerExpirationTimeName, _registeredTimers.GetNextDueTime());
+                    readWriteValues.Add(timerTableName, this.registeredTimers);
+                    writeOnlyValues.Add(timerExpirationTimeName, this.registeredTimers.GetNextDueTime());
                 }
             }
         }
@@ -131,10 +132,9 @@ namespace CoreWf.Statements
         {
             lock (this.ThisLock)
             {
-                object timerTable;
-                if (readWriteValues != null && readWriteValues.TryGetValue(s_timerTableName, out timerTable))
+                if (readWriteValues != null && readWriteValues.TryGetValue(timerTableName, out object timerTable))
                 {
-                    _registeredTimers = timerTable as TimerTable;
+                    this.registeredTimers = timerTable as TimerTable;
                     Fx.Assert(this.RegisteredTimers != null, "Timer Table cannot be null");
                     this.RegisteredTimers.OnLoad(this);
                 }
@@ -145,7 +145,7 @@ namespace CoreWf.Statements
         {
             Bookmark timerBookmark = state as Bookmark;
 
-            WorkflowInstanceProxy targetInstance = _instance;
+            WorkflowInstanceProxy targetInstance = this.instance;
             // it's possible that we've been unloaded while the timer was in the process of firing, in
             // which case targetInstance will be null
             if (targetInstance != null)
@@ -155,8 +155,8 @@ namespace CoreWf.Statements
                 bool completed = false;
 
                 result = targetInstance.BeginResumeBookmark(timerBookmark, null, TimeSpan.MaxValue,
-                    s_onResumeBookmarkComplete, new BookmarkResumptionState(timerBookmark, this, targetInstance));
-                completed = result.CompletedSynchronously;
+                    onResumeBookmarkComplete, new BookmarkResumptionState(timerBookmark, this, targetInstance));
+                completed = result.CompletedSynchronously; 
 
                 if (completed && result != null)
                 {
@@ -186,7 +186,6 @@ namespace CoreWf.Statements
             state.TimerExtension.ProcessBookmarkResumptionResult(state.TimerBookmark, resumptionResult);
         }
 
-
         private void ProcessBookmarkResumptionResult(Bookmark timerBookmark, BookmarkResumptionResult result)
         {
             switch (result)
@@ -197,7 +196,7 @@ namespace CoreWf.Statements
                     // no need to keep the timer around
                     lock (this.ThisLock)
                     {
-                        if (!_isDisposed)
+                        if (!this.isDisposed)
                         {
                             this.RegisteredTimers.RemoveTimer(timerBookmark);
                         }
@@ -219,20 +218,20 @@ namespace CoreWf.Statements
 
         public void Dispose()
         {
-            if (_registeredTimers != null)
+            if (this.registeredTimers != null)
             {
                 lock (this.ThisLock)
                 {
-                    _isDisposed = true;
-                    if (_registeredTimers != null)
+                    this.isDisposed = true; 
+                    if (this.registeredTimers != null)
                     {
-                        _registeredTimers.Dispose();
+                        this.registeredTimers.Dispose();
                     }
                 }
             }
             GC.SuppressFinalize(this);
         }
-
+        
         void ICancelable.Cancel()
         {
             Dispose();
@@ -268,33 +267,33 @@ namespace CoreWf.Statements
 
         private class TimerPersistenceParticipant : PersistenceIOParticipant
         {
-            private DurableTimerExtension _defaultTimerExtension;
+            private readonly DurableTimerExtension defaultTimerExtension;
 
             public TimerPersistenceParticipant(DurableTimerExtension timerExtension)
                 : base(false, false)
             {
-                _defaultTimerExtension = timerExtension;
+                this.defaultTimerExtension = timerExtension;
             }
 
             protected override void CollectValues(out IDictionary<XName, object> readWriteValues, out IDictionary<XName, object> writeOnlyValues)
             {
-                _defaultTimerExtension.OnSave(out readWriteValues, out writeOnlyValues);
+                this.defaultTimerExtension.OnSave(out readWriteValues, out writeOnlyValues);
             }
 
             protected override void PublishValues(IDictionary<XName, object> readWriteValues)
             {
-                _defaultTimerExtension.OnLoad(readWriteValues);
+                this.defaultTimerExtension.OnLoad(readWriteValues);
             }
 
             protected override IAsyncResult BeginOnSave(IDictionary<XName, object> readWriteValues, IDictionary<XName, object> writeOnlyValues, TimeSpan timeout, AsyncCallback callback, object state)
             {
-                _defaultTimerExtension.PersistenceDone();
+                this.defaultTimerExtension.PersistenceDone();
                 return base.BeginOnSave(readWriteValues, writeOnlyValues, timeout, callback, state);
             }
 
             protected override void Abort()
             {
-                _defaultTimerExtension.PersistenceDone();
+                this.defaultTimerExtension.PersistenceDone();
             }
         }
     }

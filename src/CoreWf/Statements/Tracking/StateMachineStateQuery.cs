@@ -1,10 +1,10 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Tracking;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements.Tracking
 {
+    using CoreWf.Tracking;
+
     /// <summary>
     /// When added to the Queries, subscribes to state machine state execution records.
     /// </summary>
@@ -16,12 +16,12 @@ namespace CoreWf.Statements.Tracking
         public StateMachineStateQuery()
         {
             base.Name = StateMachineStateRecord.StateMachineStateRecordName;
-        }
-
+        }   
+        
         /// <summary>
         /// Gets the name that distinguishes this tracking record.
         /// </summary>
-        public new string Name
+        public new string Name 
         {
             get
             {
@@ -31,4 +31,4 @@ namespace CoreWf.Statements.Tracking
             }
         }
     }
-}
+}   

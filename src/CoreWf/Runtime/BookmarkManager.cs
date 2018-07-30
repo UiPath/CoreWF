@@ -1,34 +1,32 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using CoreWf.Hosting;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using CoreWf.Internals;
+
     [DataContract(Name = XD.Runtime.BookmarkManager, Namespace = XD.Runtime.Namespace)]
     internal class BookmarkManager
     {
-        private long _nextId;
-
-        private Dictionary<Bookmark, BookmarkCallbackWrapper> _bookmarks;
-
-        private BookmarkScope _scope;
-
-        private BookmarkScopeHandle _scopeHandle;
+        private long nextId;
+        private Dictionary<Bookmark, BookmarkCallbackWrapper> bookmarks;
+        private BookmarkScope scope;
+        private BookmarkScopeHandle scopeHandle;
 
         public BookmarkManager()
         {
-            _nextId = 1;
+            this.nextId = 1;
         }
 
         internal BookmarkManager(BookmarkScope scope, BookmarkScopeHandle scopeHandle)
             : this()
         {
-            _scope = scope;
-            _scopeHandle = scopeHandle;
+            this.scope = scope;
+            this.scopeHandle = scopeHandle;
         }
 
 
@@ -36,65 +34,45 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _bookmarks != null && _bookmarks.Count > 0;
+                return this.bookmarks != null && this.bookmarks.Count > 0;
             }
         }
 
         [DataMember(Name = "nextId")]
         internal long SerializedNextId
         {
-            get { return _nextId; }
-            set { _nextId = value; }
+            get { return this.nextId; }
+            set { this.nextId = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "bookmarks")]
-        internal Tuple<Bookmark, BookmarkCallbackWrapper>[] SerializedBookmarks
+        internal Dictionary<Bookmark, BookmarkCallbackWrapper> SerializedBookmarks
         {
-            get
-            {
-                var lst = new List<Tuple<Bookmark, BookmarkCallbackWrapper>>();
-                if (_bookmarks != null)
-                {
-                    foreach (var kvp in _bookmarks)
-                    {
-                        lst.Add(new Tuple<Bookmark, BookmarkCallbackWrapper>(kvp.Key, kvp.Value));
-                    }
-                }
-
-                return lst.ToArray();
-            }
-            set
-            {
-                if (_bookmarks == null)
-                    _bookmarks = new Dictionary<Bookmark, BookmarkCallbackWrapper>();
-                foreach (var kvp in value)
-                {
-                    _bookmarks[kvp.Item1] = kvp.Item2;
-                }
-            }
+            get { return this.bookmarks; }
+            set { this.bookmarks = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "scope")]
         internal BookmarkScope SerializedScope
         {
-            get { return _scope; }
-            set { _scope = value; }
+            get { return this.scope; }
+            set { this.scope = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "scopeHandle")]
         internal BookmarkScopeHandle SerializedScopeHandle
         {
-            get { return _scopeHandle; }
-            set { _scopeHandle = value; }
+            get { return this.scopeHandle; }
+            set { this.scopeHandle = value; }
         }
 
         public Bookmark CreateBookmark(string name, BookmarkCallback callback, ActivityInstance owningInstance, BookmarkOptions options)
         {
             Bookmark toAdd = new Bookmark(name);
 
-            if (_bookmarks != null && _bookmarks.ContainsKey(toAdd))
+            if (this.bookmarks != null && this.bookmarks.ContainsKey(toAdd))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkAlreadyExists(name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkAlreadyExists(name)));
             }
 
             AddBookmark(toAdd, callback, owningInstance, options);
@@ -106,7 +84,7 @@ namespace CoreWf.Runtime
 
         public Bookmark CreateBookmark(BookmarkCallback callback, ActivityInstance owningInstance, BookmarkOptions options)
         {
-            Fx.Assert(_scope == null, "We only support named bookmarks within bookmark scopes right now.");
+            Fx.Assert(this.scope == null, "We only support named bookmarks within bookmark scopes right now.");
 
             Bookmark bookmark = Bookmark.Create(GetNextBookmarkId());
             AddBookmark(bookmark, callback, owningInstance, options);
@@ -143,12 +121,12 @@ namespace CoreWf.Runtime
                 ExclusiveHandle handle = handles[i];
                 if (handle != null)
                 {
-                    if (_scopeHandle != null)
+                    if (this.scopeHandle != null)
                     {
                         bool found = false;
                         foreach (BookmarkScopeHandle bookmarkScopeHandle in handle.RegisteredBookmarkScopes)
                         {
-                            if (bookmarkScopeHandle == _scopeHandle)
+                            if (bookmarkScopeHandle == this.scopeHandle)
                             {
                                 handle.AddToImportantBookmarks(bookmark);
                                 found = true;
@@ -175,18 +153,18 @@ namespace CoreWf.Runtime
 
         private void AddBookmark(Bookmark bookmark, BookmarkCallback callback, ActivityInstance owningInstance, BookmarkOptions options)
         {
-            if (_bookmarks == null)
+            if (this.bookmarks == null)
             {
-                _bookmarks = new Dictionary<Bookmark, BookmarkCallbackWrapper>(Bookmark.Comparer);
+                this.bookmarks = new Dictionary<Bookmark, BookmarkCallbackWrapper>(Bookmark.Comparer);
             }
 
-            bookmark.Scope = _scope;
+            bookmark.Scope = this.scope;
 
             BookmarkCallbackWrapper bookmarkCallbackWrapper = new BookmarkCallbackWrapper(callback, owningInstance, options)
             {
                 Bookmark = bookmark
             };
-            _bookmarks.Add(bookmark, bookmarkCallbackWrapper);
+            this.bookmarks.Add(bookmark, bookmarkCallbackWrapper);
 
             owningInstance.AddBookmark(bookmark, options);
 
@@ -198,13 +176,13 @@ namespace CoreWf.Runtime
 
         private long GetNextBookmarkId()
         {
-            if (_nextId == long.MaxValue)
+            if (this.nextId == long.MaxValue)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInternalBookmarks));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInternalBookmarks));
             }
 
-            long result = _nextId;
-            _nextId++;
+            long result = this.nextId;
+            this.nextId++;
             return result;
         }
 
@@ -216,13 +194,12 @@ namespace CoreWf.Runtime
         {
             internalBookmark = null;
             callbackWrapper = null;
-            if (_bookmarks == null)
+            if (this.bookmarks == null)
             {
                 return false;
             }
 
-            BookmarkCallbackWrapper wrapper;
-            if (_bookmarks.TryGetValue(bookmark, out wrapper))
+            if (this.bookmarks.TryGetValue(bookmark, out BookmarkCallbackWrapper wrapper))
             {
                 internalBookmark = wrapper.Bookmark;
                 callbackWrapper = wrapper;
@@ -234,9 +211,7 @@ namespace CoreWf.Runtime
 
         public BookmarkResumptionResult TryGenerateWorkItem(ActivityExecutor executor, bool isExternal, ref Bookmark bookmark, object value, ActivityInstance isolationInstance, out ActivityExecutionWorkItem workItem)
         {
-            Bookmark internalBookmark = null;
-            BookmarkCallbackWrapper callbackWrapper = null;
-            if (!this.TryGetBookmarkFromInternalList(bookmark, out internalBookmark, out callbackWrapper))
+            if (!this.TryGetBookmarkFromInternalList(bookmark, out Bookmark internalBookmark, out BookmarkCallbackWrapper callbackWrapper))
             {
                 workItem = null;
                 return BookmarkResumptionResult.NotFound;
@@ -266,7 +241,7 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(this.HasBookmarks, "Should only be called if this actually has bookmarks.");
 
-            foreach (KeyValuePair<Bookmark, BookmarkCallbackWrapper> bookmarkEntry in _bookmarks)
+            foreach (KeyValuePair<Bookmark, BookmarkCallbackWrapper> bookmarkEntry in this.bookmarks)
             {
                 if (bookmarkEntry.Key.IsNamed)
                 {
@@ -297,22 +272,18 @@ namespace CoreWf.Runtime
 
         internal void PurgeSingleBookmark(Bookmark bookmark)
         {
-            Fx.Assert(_bookmarks.ContainsKey(bookmark) && object.ReferenceEquals(bookmark, _bookmarks[bookmark].Bookmark), "Something went wrong with our housekeeping - it must exist and must be our intenral reference");
+            Fx.Assert(this.bookmarks.ContainsKey(bookmark) && object.ReferenceEquals(bookmark, this.bookmarks[bookmark].Bookmark), "Something went wrong with our housekeeping - it must exist and must be our intenral reference");
             UpdateExclusiveHandleList(bookmark);
-            _bookmarks.Remove(bookmark);
+            this.bookmarks.Remove(bookmark);
         }
 
         public bool Remove(Bookmark bookmark, ActivityInstance instanceAttemptingRemove)
         {
-            // We need to translate to our internal instance of the bookmark.  See TryGetBookmarkFromInternalList
-            // for more details.
-            BookmarkCallbackWrapper callbackWrapper;
-            Bookmark internalBookmark;
-            if (TryGetBookmarkFromInternalList(bookmark, out internalBookmark, out callbackWrapper))
+            if (TryGetBookmarkFromInternalList(bookmark, out Bookmark internalBookmark, out BookmarkCallbackWrapper callbackWrapper))
             {
                 if (callbackWrapper.ActivityInstance != instanceAttemptingRemove)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyBookmarkOwnerCanRemove));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyBookmarkOwnerCanRemove));
                 }
 
                 Remove(internalBookmark, callbackWrapper);
@@ -328,7 +299,7 @@ namespace CoreWf.Runtime
         {
             callbackWrapper.ActivityInstance.RemoveBookmark(bookmark, callbackWrapper.Options);
             UpdateExclusiveHandleList(bookmark);
-            _bookmarks.Remove(bookmark);
+            this.bookmarks.Remove(bookmark);
         }
 
         private void UpdateExclusiveHandleList(Bookmark bookmark)

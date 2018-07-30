@@ -1,50 +1,50 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Statements;
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
-    //[ContentProperty("Parameters")]
+    using CoreWf.Statements;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+    using System.Reflection;
+    using System.Threading;
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Runtime.Collections;
+    using CoreWf.Internals;
+
+    [ContentProperty("Parameters")]
     public sealed class InvokeMethod<TResult> : AsyncCodeActivity<TResult>
     {
-        private Collection<Argument> _parameters;
-        private Collection<Type> _genericTypeArguments;
-
-        private MethodResolver _methodResolver;
-        private MethodExecutor _methodExecutor;
-        private RuntimeArgument _resultArgument;
-
-        private static MruCache<MethodInfo, Func<object, object[], object>> s_funcCache =
+        private Collection<Argument> parameters;
+        private Collection<Type> genericTypeArguments;
+        private MethodResolver methodResolver;
+        private MethodExecutor methodExecutor;
+        private RuntimeArgument resultArgument;
+        private static readonly MruCache<MethodInfo, Func<object, object[], object>> funcCache =
             new MruCache<MethodInfo, Func<object, object[], object>>(MethodCallExpressionHelper.FuncCacheCapacity);
-        private static ReaderWriterLockSlim s_locker = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         public Collection<Type> GenericTypeArguments
         {
             get
             {
-                if (_genericTypeArguments == null)
+                if (this.genericTypeArguments == null)
                 {
-                    _genericTypeArguments = new ValidatingCollection<Type>
+                    this.genericTypeArguments = new ValidatingCollection<Type>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _genericTypeArguments;
+                return this.genericTypeArguments;
             }
         }
 
@@ -58,21 +58,21 @@ namespace CoreWf.Expressions
         {
             get
             {
-                if (_parameters == null)
+                if (this.parameters == null)
                 {
-                    _parameters = new ValidatingCollection<Argument>
+                    this.parameters = new ValidatingCollection<Argument>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _parameters;
+                return this.parameters;
             }
         }
 
@@ -112,52 +112,52 @@ namespace CoreWf.Expressions
             metadata.Bind(this.TargetObject, targetObjectArgument);
             arguments.Add(targetObjectArgument);
 
-            _resultArgument = new RuntimeArgument("Result", typeof(TResult), ArgumentDirection.Out);
-            metadata.Bind(this.Result, _resultArgument);
-            arguments.Add(_resultArgument);
+            this.resultArgument = new RuntimeArgument("Result", typeof(TResult), ArgumentDirection.Out);
+            metadata.Bind(this.Result, this.resultArgument);
+            arguments.Add(this.resultArgument);
 
             // Parameters are named according to MethodInfo name if DetermineMethodInfo 
             // succeeds, otherwise arbitrary names are used.
-            _methodResolver = CreateMethodResolver();
-
-            _methodResolver.DetermineMethodInfo(metadata, s_funcCache, s_locker, ref _methodExecutor);
-            _methodResolver.RegisterParameters(arguments);
+            this.methodResolver = CreateMethodResolver();
+            
+            this.methodResolver.DetermineMethodInfo(metadata, funcCache, locker, ref this.methodExecutor);
+             this.methodResolver.RegisterParameters(arguments);
 
             metadata.SetArgumentsCollection(arguments);
 
-            _methodResolver.Trace();
+            this.methodResolver.Trace();
 
-            if (_methodExecutor != null)
+            if (this.methodExecutor != null)
             {
-                _methodExecutor.Trace(this);
+                this.methodExecutor.Trace(this);
             }
         }
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
-            return _methodExecutor.BeginExecuteMethod(context, callback, state);
+            return this.methodExecutor.BeginExecuteMethod(context, callback, state);
         }
 
         protected override TResult EndExecute(AsyncCodeActivityContext context, IAsyncResult result)
         {
-            _methodExecutor.EndExecuteMethod(context, result);
+            this.methodExecutor.EndExecuteMethod(context, result);
             return this.Result.Get(context);
         }
 
         private MethodResolver CreateMethodResolver()
         {
             return new MethodResolver
-            {
-                MethodName = this.MethodName,
-                RunAsynchronously = this.RunAsynchronously,
-                TargetType = this.TargetType,
-                TargetObject = this.TargetObject,
-                GenericTypeArguments = this.GenericTypeArguments,
-                Parameters = this.Parameters,
-                Result = _resultArgument,
-                ResultType = typeof(TResult),
-                Parent = this
-            };
+                {
+                    MethodName = this.MethodName,
+                    RunAsynchronously = this.RunAsynchronously,
+                    TargetType = this.TargetType,
+                    TargetObject = this.TargetObject,
+                    GenericTypeArguments = this.GenericTypeArguments,
+                    Parameters = this.Parameters,
+                    Result = this.resultArgument,
+                    ResultType = typeof(TResult),
+                    Parent = this
+                };            
         }
     }
 }

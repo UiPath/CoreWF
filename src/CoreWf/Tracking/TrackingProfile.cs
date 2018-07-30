@@ -1,15 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
-    //[ContentProperty("Queries")]
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+
+    [ContentProperty("Queries")]
     public class TrackingProfile
     {
-        private Collection<TrackingQuery> _queries;
+        private Collection<TrackingQuery> queries;
 
         public TrackingProfile()
         {
@@ -28,11 +29,11 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (_queries == null)
+                if (this.queries == null)
                 {
-                    _queries = new Collection<TrackingQuery>();
+                    this.queries = new Collection<TrackingQuery>();
                 }
-                return _queries;
+                return this.queries;
             }
         }
     }

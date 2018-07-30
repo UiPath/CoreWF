@@ -1,58 +1,65 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf;
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
     /// <summary>
     /// This class represents a StateMachine which contains States and Variables.
     /// </summary>
-    //[ContentProperty("States")]
+    [ContentProperty("States")]
     public sealed class StateMachine : NativeActivity
     {
         // internal Id of StateMachine. it's a constant value and states of state machine will generate their ids based on this root id.
         private const string RootId = "0";
         private const string ExitProperty = "Exit";
-
-        private static Func<StateMachineExtension> s_getDefaultExtension = new Func<StateMachineExtension>(GetStateMachineExtension);
+        private static readonly Func<StateMachineExtension> getDefaultExtension = new Func<StateMachineExtension>(GetStateMachineExtension);
 
         // states in root level of StateMachine
-        private Collection<State> _states;
+        private Collection<State> states;
 
         // variables used in StateMachine
-        private Collection<Variable> _variables;
+        private Collection<Variable> variables;
 
         // internal representations of states
-        private Collection<InternalState> _internalStates;
+        private readonly Collection<InternalState> internalStates;
 
         // ActivityFuncs who call internal activities
-        private Collection<ActivityFunc<StateMachineEventManager, string>> _internalStateFuncs;
+        private readonly Collection<ActivityFunc<StateMachineEventManager, string>> internalStateFuncs;
 
         // Callback when a state completes
-        private CompletionCallback<string> _onStateComplete;
+        private readonly CompletionCallback<string> onStateComplete;
 
         // eventManager is used to manage the events of trigger completion.
         // When a trigger on a transition is completed, the corresponding event will be sent to eventManager.
         // eventManager will decide whether immediate process it or just register it.
-        private Variable<StateMachineEventManager> _eventManager;
+        private readonly Variable<StateMachineEventManager> eventManager;
 
         /// <summary>
         /// It's constructor.
         /// </summary>
         public StateMachine()
         {
-            _internalStates = new Collection<InternalState>();
-            _internalStateFuncs = new Collection<ActivityFunc<StateMachineEventManager, string>>();
-            _eventManager = new Variable<StateMachineEventManager> { Name = "EventManager", Default = new StateMachineEventManagerFactory() };
-            _onStateComplete = new CompletionCallback<string>(this.OnStateComplete);
+            this.internalStates = new Collection<InternalState>();
+            this.internalStateFuncs = new Collection<ActivityFunc<StateMachineEventManager, string>>();
+            this.eventManager = new Variable<StateMachineEventManager> { Name = "EventManager", Default = new StateMachineEventManagerFactory() };
+            this.onStateComplete = new CompletionCallback<string>(this.OnStateComplete);
         }
 
         /// <summary>
@@ -68,54 +75,54 @@ namespace CoreWf.Statements
         /// <summary>
         /// Gets all root level States in the StateMachine.
         /// </summary>
-        //[DependsOn("InitialState")]
+        [DependsOn("InitialState")]
         public Collection<State> States
         {
             get
             {
-                if (_states == null)
+                if (this.states == null)
                 {
-                    _states = new ValidatingCollection<State>
+                    this.states = new ValidatingCollection<State>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("item"));
+                                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
                             }
                         },
                     };
                 }
-
-                return _states;
+             
+                return this.states;
             }
         }
 
         /// <summary>
         /// Gets Variables which can be used within StateMachine scope.
         /// </summary>
-        //[DependsOn("States")]
+        [DependsOn("States")]
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("item"));
+                                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
                             }
                         },
                     };
                 }
 
-                return _variables;
+                return this.variables;
             }
         }
 
@@ -136,13 +143,13 @@ namespace CoreWf.Statements
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             // cleanup
-            _internalStateFuncs.Clear();
-            _internalStates.Clear();
+            this.internalStateFuncs.Clear();
+            this.internalStates.Clear();
 
             // clear Ids and Flags via transitions
             this.PassNumber++;
             this.TraverseViaTransitions(ClearState, ClearTransition);
-
+            
             // clear Ids and Flags of all containing State references.
             this.PassNumber++;
             this.TraverseStates(
@@ -160,9 +167,9 @@ namespace CoreWf.Statements
                 checkReached: false);
 
             this.PassNumber++;
-
+            
             // Mark via transition
-            this.TraverseViaTransitions(delegate (State state) { MarkStateViaTransition(state); }, null);
+            this.TraverseViaTransitions(delegate(State state) { MarkStateViaTransition(state); }, null);
 
             // Do validation via children
             // need not check the violation of state which is not reached
@@ -179,7 +186,7 @@ namespace CoreWf.Statements
 
             this.TraverseStates(
                 ValidateStates,
-                (NativeActivityMetadata m, State state) =>
+                (NativeActivityMetadata m, State state) => 
                 {
                     if (!state.Reachable)
                     {
@@ -194,40 +201,42 @@ namespace CoreWf.Statements
             this.ValidateStateMachine(metadata);
             this.ProcessStates(metadata);
 
-            metadata.AddImplementationVariable(_eventManager);
+            metadata.AddImplementationVariable(this.eventManager);
             foreach (Variable variable in this.Variables)
             {
                 metadata.AddVariable(variable);
             }
 
-            metadata.AddDefaultExtensionProvider<StateMachineExtension>(s_getDefaultExtension);
+            metadata.AddDefaultExtensionProvider<StateMachineExtension>(getDefaultExtension);
         }
 
         /// <summary>
         /// Execution of StateMachine
         /// </summary>
         /// <param name="context">NativeActivityContext reference</param>
-        //[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0",
-        //Justification = "The context is used by workflow runtime. The parameter should be fine.")]
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0",
+                        Justification = "The context is used by workflow runtime. The parameter should be fine.")]
         protected override void Execute(NativeActivityContext context)
         {
             // We view the duration before moving to initial state is on transition.
-            StateMachineEventManager localEventManager = _eventManager.Get(context);
+            StateMachineEventManager localEventManager = this.eventManager.Get(context);
             localEventManager.OnTransition = true;
             localEventManager.CurrentBeingProcessedEvent = null;
             int index = StateMachineIdHelper.GetChildStateIndex(RootId, this.InitialState.StateId);
 
             context.ScheduleFunc<StateMachineEventManager, string>(
-                _internalStateFuncs[index],
+                this.internalStateFuncs[index],
                 localEventManager,
-                _onStateComplete);
+                this.onStateComplete);
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    // enable dynamic update in state machine
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            // enable dynamic update in state machine
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         private static void MarkTransitionsInState(State state)
         {
@@ -429,12 +438,12 @@ namespace CoreWf.Statements
         private void ProcessStates(NativeActivityMetadata metadata)
         {
             // remove duplicate state in the collection during evaluation
-            IEnumerable<State> distinctStates = _states.Distinct();
+            IEnumerable<State> distinctStates = this.states.Distinct();
 
             foreach (State state in distinctStates)
             {
                 InternalState internalState = state.InternalState;
-                _internalStates.Add(internalState);
+                this.internalStates.Add(internalState);
 
                 DelegateInArgument<StateMachineEventManager> eventManager = new DelegateInArgument<Statements.StateMachineEventManager>();
                 internalState.EventManager = eventManager;
@@ -451,7 +460,7 @@ namespace CoreWf.Statements
                     metadata.AddDelegate(activityFunc, /* origin = */ state);
                 }
 
-                _internalStateFuncs.Add(activityFunc);
+                this.internalStateFuncs.Add(activityFunc);
             }
         }
 
@@ -461,9 +470,9 @@ namespace CoreWf.Statements
             {
                 int index = StateMachineIdHelper.GetChildStateIndex(RootId, result);
                 context.ScheduleFunc<StateMachineEventManager, string>(
-                    _internalStateFuncs[index],
-                    _eventManager.Get(context),
-                    _onStateComplete);
+                    this.internalStateFuncs[index],
+                    this.eventManager.Get(context),
+                    this.onStateComplete);
             }
         }
 
@@ -532,7 +541,7 @@ namespace CoreWf.Statements
                     if (string.IsNullOrEmpty(state.StateId))
                     {
                         state.StateId = StateMachineIdHelper.GenerateStateId(RootId, i);
-                        state.StateMachineName = this.DisplayName;
+                        state.StateMachineName = this.DisplayName; 
                     }
                     else
                     {
@@ -559,7 +568,7 @@ namespace CoreWf.Statements
                 {
                     continue;
                 }
-
+                
                 currentState.PassNumber = passNumber;
 
                 if (actionForState != null)
@@ -590,21 +599,21 @@ namespace CoreWf.Statements
             protected override void CacheMetadata(CodeActivityMetadata metadata)
             {
                 if (this.Result == null)
-                {
+                { 
                     // metdata.Bind uses reflection if the argument property has a value of null. 
                     // So by forcing the argument property to have a non-null value, it avoids reflection.
                     // Otherwise it would use reflection to initializer Result and would fail Partial Trust.
                     this.Result = new OutArgument<StateMachineEventManager>();
                 }
-
+                
                 RuntimeArgument eventManagerArgument = new RuntimeArgument("Result", this.ResultType, ArgumentDirection.Out);
                 metadata.Bind(this.Result, eventManagerArgument);
                 metadata.AddArgument(eventManagerArgument);
             }
-
+            
             protected override StateMachineEventManager Execute(CodeActivityContext context)
             {
-                return new StateMachineEventManager();
+                return new StateMachineEventManager();  
             }
         }
     }

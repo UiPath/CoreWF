@@ -1,25 +1,25 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Tracking;
-using System;
-using System.Runtime.Serialization;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Runtime
 {
+    using CoreWf.Internals;
+    using CoreWf.Tracking;
+    using System;
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// Evaluates a new-fast-path (SkipArgumentsResolution and Not UseOldFastPath) expression
     /// </summary>
     [DataContract]
     internal class ExecuteSynchronousExpressionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
     {
-        private ActivityWithResult _expressionActivity;
+        private ActivityWithResult expressionActivity;
 
-        private long _instanceId;
+        private long instanceId;
 
-        private ResolveNextArgumentWorkItem _nextArgumentWorkItem;
+        private ResolveNextArgumentWorkItem nextArgumentWorkItem;
 
-        private Location _resultLocation;
+        private Location resultLocation;
 
         /// <summary>
         /// Initializes a new instance of the ExecuteSynchronousExpressionWorkItem class.
@@ -33,22 +33,22 @@ namespace CoreWf.Runtime
         [DataMember(EmitDefaultValue = false, Name = "instanceId")]
         internal long SerializedInstanceId
         {
-            get { return _instanceId; }
-            set { _instanceId = value; }
+            get { return this.instanceId; }
+            set { this.instanceId = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "nextArgumentWorkItem")]
         internal ResolveNextArgumentWorkItem SerializedNextArgumentWorkItem
         {
-            get { return _nextArgumentWorkItem; }
-            set { _nextArgumentWorkItem = value; }
+            get { return this.nextArgumentWorkItem; }
+            set { this.nextArgumentWorkItem = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "resultLocation")]
         internal Location SerializedResultLocation
         {
-            get { return _resultLocation; }
-            set { _resultLocation = value; }
+            get { return this.resultLocation; }
+            set { this.resultLocation = value; }
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace CoreWf.Runtime
         /// </summary>
         Activity ActivityInstanceMap.IActivityReference.Activity
         {
-            get { return _expressionActivity; }
+            get { return this.expressionActivity; }
         }
 
         /// <summary>
@@ -74,10 +74,10 @@ namespace CoreWf.Runtime
             Fx.Assert(resultLocation != null, "We should only use this work item when we are resolving arguments/variables and therefore have a result location.");
             Fx.Assert(expressionActivity.IsFastPath, "Should only use this work item for fast path expressions");
 
-            _expressionActivity = expressionActivity;
-            _instanceId = instanceId;
-            _resultLocation = resultLocation;
-            _nextArgumentWorkItem = nextArgumentWorkItem;
+            this.expressionActivity = expressionActivity;
+            this.instanceId = instanceId;
+            this.resultLocation = resultLocation;
+            this.nextArgumentWorkItem = nextArgumentWorkItem;
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace CoreWf.Runtime
 
             try
             {
-                executor.ExecuteInResolutionContextUntyped(this.ActivityInstance, _expressionActivity, _instanceId, _resultLocation);
+                executor.ExecuteInResolutionContextUntyped(this.ActivityInstance, this.expressionActivity, this.instanceId, this.resultLocation);
             }
             catch (Exception e)
             {
@@ -128,25 +128,25 @@ namespace CoreWf.Runtime
 
                 this.TrackFaulted(executor, ref activityInfo);
 
-                if (_nextArgumentWorkItem != null)
+                if (this.nextArgumentWorkItem != null)
                 {
-                    executor.ScheduleItem(_nextArgumentWorkItem);
+                    executor.ScheduleItem(this.nextArgumentWorkItem);
                 }
 
-                executor.ScheduleExpressionFaultPropagation(_expressionActivity, _instanceId, this.ActivityInstance, e);
+                executor.ScheduleExpressionFaultPropagation(this.expressionActivity, this.instanceId, this.ActivityInstance, e);
                 return true;
             }
-            //finally
-            //{
-            //    if (this.ActivityInstance.InstanceMap != null)
-            //    {
-            //        this.ActivityInstance.InstanceMap.RemoveEntry(this);
-            //    }
-            //}
+            finally
+            {
+                if (this.ActivityInstance.InstanceMap != null)
+                {
+                    this.ActivityInstance.InstanceMap.RemoveEntry(this);
+                }
+            }
 
             this.TrackClosed(executor, ref activityInfo);
 
-            if (_nextArgumentWorkItem != null)
+            if (this.nextArgumentWorkItem != null)
             {
                 this.EvaluateNextArgument(executor);
             }
@@ -161,14 +161,13 @@ namespace CoreWf.Runtime
         /// <param name="instanceMap">The map containing persisted activity references</param>
         void ActivityInstanceMap.IActivityReference.Load(Activity activity, ActivityInstanceMap instanceMap)
         {
-            ActivityWithResult activityWithResult = activity as ActivityWithResult;
-            if (activityWithResult == null)
+            if (!(activity is ActivityWithResult activityWithResult))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(
+                throw FxTrace.Exception.AsError(
                     new ValidationException(SR.ActivityTypeMismatch(activity.DisplayName, typeof(ActivityWithResult).Name)));
             }
 
-            _expressionActivity = activityWithResult;
+            this.expressionActivity = activityWithResult;
         }
 
         /// <summary>
@@ -179,25 +178,25 @@ namespace CoreWf.Runtime
         {
             this.ClearForReuse();
 
-            _expressionActivity = null;
-            _instanceId = 0;
-            _resultLocation = null;
-            _nextArgumentWorkItem = null;
+            this.expressionActivity = null;
+            this.instanceId = 0;
+            this.resultLocation = null;
+            this.nextArgumentWorkItem = null;
 
             executor.ExecuteSynchronousExpressionWorkItemPool.Release(this);
         }
 
         private void EvaluateNextArgument(ActivityExecutor executor)
         {
-            if (executor.HasPendingTrackingRecords && _nextArgumentWorkItem.CanExecuteUserCode())
+            if (executor.HasPendingTrackingRecords && this.nextArgumentWorkItem.CanExecuteUserCode())
             {
                 // Need to schedule a separate work item so we flush tracking before we continue.
                 // This ensures consistent ordering of tracking output and user code.
-                executor.ScheduleItem(_nextArgumentWorkItem);
+                executor.ScheduleItem(this.nextArgumentWorkItem);
             }
             else
             {
-                executor.ExecuteSynchronousWorkItem(_nextArgumentWorkItem);
+                executor.ExecuteSynchronousWorkItem(this.nextArgumentWorkItem);
             }
         }
 
@@ -205,7 +204,7 @@ namespace CoreWf.Runtime
         {
             if (activityInfo == null)
             {
-                activityInfo = new ActivityInfo(_expressionActivity, _instanceId);
+                activityInfo = new ActivityInfo(this.expressionActivity, this.instanceId);
             }
         }
 
@@ -235,7 +234,7 @@ namespace CoreWf.Runtime
 
         private void TrackState(ActivityExecutor executor, ActivityInstanceState state, ref ActivityInfo activityInfo)
         {
-            if (executor.ShouldTrackActivity(_expressionActivity.DisplayName))
+            if (executor.ShouldTrackActivity(this.expressionActivity.DisplayName))
             {
                 this.EnsureActivityInfo(ref activityInfo);
                 executor.AddTrackingRecord(new ActivityStateRecord(executor.WorkflowInstanceId, activityInfo, state));

@@ -1,33 +1,33 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Runtime;
+    using System;
+    using System.Collections.Generic;
+
     [Fx.Tag.XamlVisible(false)]
     public class WorkflowApplicationCompletedEventArgs : WorkflowApplicationEventArgs
     {
-        private ActivityInstanceState _completionState;
-        private Exception _terminationException;
-        private IDictionary<string, object> _outputs;
+        private readonly ActivityInstanceState completionState;
+        private readonly Exception terminationException;
+        private IDictionary<string, object> outputs;
 
         internal WorkflowApplicationCompletedEventArgs(WorkflowApplication application, Exception terminationException, ActivityInstanceState completionState, IDictionary<string, object> outputs)
             : base(application)
         {
             Fx.Assert(ActivityUtilities.IsCompletedState(completionState), "event should only fire for completed activities");
-            _terminationException = terminationException;
-            _completionState = completionState;
-            _outputs = outputs;
+            this.terminationException = terminationException;
+            this.completionState = completionState;
+            this.outputs = outputs;
         }
 
         public ActivityInstanceState CompletionState
         {
             get
             {
-                return _completionState;
+                return this.completionState;
             }
         }
 
@@ -35,11 +35,11 @@ namespace CoreWf
         {
             get
             {
-                if (_outputs == null)
+                if (this.outputs == null)               
                 {
-                    _outputs = ActivityUtilities.EmptyParameters;
+                    this.outputs = ActivityUtilities.EmptyParameters;
                 }
-                return _outputs;
+                return this.outputs;
             }
         }
 
@@ -47,7 +47,7 @@ namespace CoreWf
         {
             get
             {
-                return _terminationException;
+                return this.terminationException;
             }
         }
     }

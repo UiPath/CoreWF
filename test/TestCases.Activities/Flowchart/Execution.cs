@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf;
 using System.Collections.Generic;
@@ -196,8 +196,10 @@ namespace TestCases.Activities.Flowchart
         {
             TestFlowchart flowchart = new TestFlowchart();
 
-            TestBlockingActivity blocking1 = new TestBlockingActivity("B1", "B1");
-            blocking1.ExpectedOutcome = Outcome.Canceled;
+            TestBlockingActivity blocking1 = new TestBlockingActivity("B1", "B1")
+            {
+                ExpectedOutcome = Outcome.Canceled
+            };
 
             flowchart.AddStartLink(blocking1);
             flowchart.ExpectedOutcome = Outcome.Canceled;

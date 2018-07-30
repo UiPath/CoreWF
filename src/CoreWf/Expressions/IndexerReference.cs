@@ -1,29 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
-    //[ContentProperty("Indices")]
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Reflection;
+    using CoreWf.Runtime.Collections;
+    using System.Runtime.Serialization;
+    using Portable.Xaml.Markup;
+    using System.Threading;
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
+    [ContentProperty("Indices")]
     public sealed class IndexerReference<TOperand, TItem> : CodeActivity<Location<TItem>>
     {
-        private Collection<InArgument> _indices;
-        private MethodInfo _getMethod;
-        private MethodInfo _setMethod;
-        private Func<object, object[], object> _getFunc;
-        private Func<object, object[], object> _setFunc;
-
-        private static MruCache<MethodInfo, Func<object, object[], object>> s_funcCache =
+        private Collection<InArgument> indices;
+        private MethodInfo getMethod;
+        private MethodInfo setMethod;
+        private Func<object, object[], object> getFunc;
+        private Func<object, object[], object> setFunc;
+        private static readonly MruCache<MethodInfo, Func<object, object[], object>> funcCache =
             new MruCache<MethodInfo, Func<object, object[], object>>(MethodCallExpressionHelper.FuncCacheCapacity);
-        private static ReaderWriterLockSlim s_locker = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         [RequiredArgument]
         [DefaultValue(null)]
@@ -39,30 +40,30 @@ namespace CoreWf.Expressions
         {
             get
             {
-                if (_indices == null)
+                if (this.indices == null)
                 {
-                    _indices = new ValidatingCollection<InArgument>
-                    {
+                    this.indices = new ValidatingCollection<InArgument>
+                    {   
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         },
                     };
                 }
-                return _indices;
+                return this.indices;
             }
         }
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
-            MethodInfo oldGetMethod = _getMethod;
-            MethodInfo oldSetMethod = _setMethod;
+            MethodInfo oldGetMethod = this.getMethod;
+            MethodInfo oldSetMethod = this.setMethod;
 
-            if (typeof(TOperand).GetTypeInfo().IsValueType)
+            if (typeof(TOperand).IsValueType)
             {
                 metadata.AddValidationError(SR.TargetTypeIsValueType(this.GetType().Name, this.DisplayName));
             }
@@ -72,25 +73,25 @@ namespace CoreWf.Expressions
             }
             else
             {
-                IndexerHelper.CacheMethod<TOperand, TItem>(this.Indices, ref _getMethod, ref _setMethod);
-                if (_setMethod == null)
+                IndexerHelper.CacheMethod<TOperand, TItem>(this.Indices, ref this.getMethod, ref this.setMethod);
+                if (this.setMethod == null)
                 {
                     metadata.AddValidationError(SR.SpecialMethodNotFound("set_Item", typeof(TOperand).Name));
                 }
             }
-
+           
             RuntimeArgument operandArgument = new RuntimeArgument("Operand", typeof(TOperand), ArgumentDirection.In, true);
             metadata.Bind(this.Operand, operandArgument);
             metadata.AddArgument(operandArgument);
-
+            
             IndexerHelper.OnGetArguments<TItem>(this.Indices, this.Result, metadata);
-            if (MethodCallExpressionHelper.NeedRetrieve(_getMethod, oldGetMethod, _getFunc))
+             if (MethodCallExpressionHelper.NeedRetrieve(this.getMethod, oldGetMethod, this.getFunc))
             {
-                _getFunc = MethodCallExpressionHelper.GetFunc(metadata, _getMethod, s_funcCache, s_locker);
+                this.getFunc = MethodCallExpressionHelper.GetFunc(metadata, this.getMethod, funcCache, locker);
             }
-            if (MethodCallExpressionHelper.NeedRetrieve(_setMethod, oldSetMethod, _setFunc))
+            if (MethodCallExpressionHelper.NeedRetrieve(this.setMethod, oldSetMethod, this.setFunc))
             {
-                _setFunc = MethodCallExpressionHelper.GetFunc(metadata, _setMethod, s_funcCache, s_locker);
+                this.setFunc = MethodCallExpressionHelper.GetFunc(metadata, this.setMethod, funcCache, locker);
             }
         }
 
@@ -106,78 +107,73 @@ namespace CoreWf.Expressions
             TOperand operandValue = this.Operand.Get(context);
             if (operandValue == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
             }
 
-            return new IndexerLocation(operandValue, indicesValue, _getMethod, _setMethod, _getFunc, _setFunc);
+            return new IndexerLocation(operandValue, indicesValue, this.getMethod, this.setMethod, this.getFunc, this.setFunc);
         }
 
-
+        
         [DataContract]
         internal class IndexerLocation : Location<TItem>
         {
-            private TOperand _operand;
+            private TOperand operand;
+            private object[] indices;
+            private object[] parameters;
+            private MethodInfo getMethod;
+            private MethodInfo setMethod;
+            private readonly Func<object, object[], object> getFunc;
+            private readonly Func<object, object[], object> setFunc;
 
-            private object[] _indices;
-
-            private object[] _parameters;
-
-            private MethodInfo _getMethod;
-
-            private MethodInfo _setMethod;
-
-            private Func<object, object[], object> _getFunc;
-            private Func<object, object[], object> _setFunc;
-
-            public IndexerLocation(TOperand operand, object[] indices, MethodInfo getMethod, MethodInfo setMethod,
+            public IndexerLocation(TOperand operand, object[] indices, MethodInfo getMethod, MethodInfo setMethod, 
                 Func<object, object[], object> getFunc, Func<object, object[], object> setFunc)
                 : base()
             {
-                _operand = operand;
-                _indices = indices;
-                _getMethod = getMethod;
-                _setMethod = setMethod;
-                _getFunc = getFunc;
-                _setFunc = setFunc;
+                this.operand = operand;
+                this.indices = indices;
+                this.getMethod = getMethod;
+                this.setMethod = setMethod;
+                this.getFunc = getFunc;
+                this.setFunc = setFunc;
             }
 
             public override TItem Value
             {
                 get
                 {
-                    Fx.Assert(_operand != null, "operand must not be null");
-                    Fx.Assert(_indices != null, "indices must not be null");
-                    if (_getFunc != null)
+                    Fx.Assert(this.operand != null, "operand must not be null");
+                    Fx.Assert(this.indices != null, "indices must not be null");
+                    if (this.getFunc != null)
                     {
-                        return (TItem)_getFunc(_operand, _indices);
+                        return (TItem)this.getFunc(this.operand, indices);
                     }
-                    else if (_getMethod != null)
+                    else if (this.getMethod != null)
                     {
-                        return (TItem)_getMethod.Invoke(_operand, _indices);
+                        return (TItem)this.getMethod.Invoke(this.operand, indices);
                     }
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SpecialMethodNotFound("get_Item", typeof(TOperand).Name)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SpecialMethodNotFound("get_Item", typeof(TOperand).Name)));
                 }
                 set
                 {
-                    Fx.Assert(_setMethod != null, "setMethod must not be null");
-                    Fx.Assert(_operand != null, "operand must not be null");
-                    Fx.Assert(_indices != null, "indices must not be null");
-                    if (_parameters == null)
+                    Fx.Assert(this.setMethod != null, "setMethod must not be null");
+                    Fx.Assert(this.operand != null, "operand must not be null");
+                    Fx.Assert(this.indices != null, "indices must not be null");
+                    if (this.parameters == null)
                     {
-                        _parameters = new object[_indices.Length + 1];
-                        for (int i = 0; i < _indices.Length; i++)
+                        this.parameters = new object[this.indices.Length + 1];
+                        for (int i = 0; i < this.indices.Length; i++)
                         {
-                            _parameters[i] = _indices[i];
+                            parameters[i] = this.indices[i];
                         }
-                        _parameters[_parameters.Length - 1] = value;
+                        parameters[parameters.Length - 1] = value;
                     }
-                    if (_setFunc != null)
+                    if (this.setFunc != null)
                     {
-                        _setFunc(_operand, _parameters);
+                        this.setFunc(operand, parameters);
                     }
                     else
                     {
-                        _setMethod.Invoke(_operand, _parameters);
+                        this.setMethod.Invoke(operand, parameters);
                     }
                 }
             }
@@ -185,36 +181,36 @@ namespace CoreWf.Expressions
             [DataMember(EmitDefaultValue = false, Name = "operand")]
             internal TOperand SerializedOperand
             {
-                get { return _operand; }
-                set { _operand = value; }
+                get { return this.operand; }
+                set { this.operand = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "indices")]
             internal object[] SerializedIndices
             {
-                get { return _indices; }
-                set { _indices = value; }
+                get { return this.indices; }
+                set { this.indices = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "parameters")]
             internal object[] SerializedParameters
             {
-                get { return _parameters; }
-                set { _parameters = value; }
+                get { return this.parameters; }
+                set { this.parameters = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "getMethod")]
             internal MethodInfo SerializedGetMethod
             {
-                get { return _getMethod; }
-                set { _getMethod = value; }
+                get { return this.getMethod; }
+                set { this.getMethod = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "setMethod")]
             internal MethodInfo SerializedSetMethod
             {
-                get { return _setMethod; }
-                set { _setMethod = value; }
+                get { return this.setMethod; }
+                set { this.setMethod = value; }
             }
         }
     }

@@ -1,14 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using System;
-using System.ComponentModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Expressions;
+    using CoreWf.Runtime;
+    using CoreWf.XamlIntegration;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
     public abstract class OutArgument : Argument
     {
         internal OutArgument()
@@ -17,34 +20,34 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
+        //    Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
         public static OutArgument CreateReference(OutArgument argumentToReference, string referencedArgumentName)
         {
             if (argumentToReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
             }
 
             return (OutArgument)ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, ArgumentDirection.Out, referencedArgumentName);
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
+        //    Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
         public static OutArgument CreateReference(InOutArgument argumentToReference, string referencedArgumentName)
         {
             if (argumentToReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
             }
 
             // Note that we explicitly pass Out since we want an OutArgument created
@@ -52,9 +55,9 @@ namespace CoreWf
         }
     }
 
-    //[ContentProperty("Expression")]
-    //[TypeConverter(typeof(OutArgumentConverter))]    
-    //[ValueSerializer(typeof(ArgumentValueSerializer))]
+    [ContentProperty("Expression")]
+    [TypeConverter(typeof(OutArgumentConverter))]    
+    [ValueSerializer(typeof(ArgumentValueSerializer))]
     public sealed class OutArgument<T> : OutArgument
     {
         public OutArgument(Variable variable)
@@ -149,7 +152,7 @@ namespace CoreWf
         {
             if (variable == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw FxTrace.Exception.ArgumentNull(nameof(variable));
             }
             return new OutArgument<T>(variable);
         }
@@ -158,7 +161,7 @@ namespace CoreWf
         {
             if (delegateArgument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("delegateArgument");
+                throw FxTrace.Exception.ArgumentNull(nameof(delegateArgument));
             }
             return new OutArgument<T>(delegateArgument);
         }
@@ -167,7 +170,7 @@ namespace CoreWf
         {
             if (expression == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw FxTrace.Exception.ArgumentNull(nameof(expression));
             }
 
             return new OutArgument<T>(expression);
@@ -180,7 +183,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();
@@ -200,7 +203,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();

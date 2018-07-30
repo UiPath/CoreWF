@@ -1,79 +1,83 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf;
+    using CoreWf.Runtime;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using CoreWf.Runtime.Collections;
+    using System.Runtime.Serialization;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate;
+#endif
+
     public sealed class TryCatch : NativeActivity
     {
-        private CatchList _catches;
-        private Collection<Variable> _variables;
-
-        private Variable<TryCatchState> _state;
-
-        private FaultCallback _exceptionFromCatchOrFinallyHandler;
+        private CatchList catches;
+        private Collection<Variable> variables;
+        private readonly Variable<TryCatchState> state;
+        private FaultCallback exceptionFromCatchOrFinallyHandler;
 
         internal const string FaultContextId = "{35ABC8C3-9AF1-4426-8293-A6DDBB6ED91D}";
 
         public TryCatch()
             : base()
         {
-            _state = new Variable<TryCatchState>();
+            this.state = new Variable<TryCatchState>();
         }
 
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public Activity Try
         {
             get;
             set;
         }
 
-        //[DependsOn("Try")]
+        [DependsOn("Try")]
         public Collection<Catch> Catches
         {
             get
             {
-                if (_catches == null)
+                if (this.catches == null)
                 {
-                    _catches = new CatchList();
+                    this.catches = new CatchList();
                 }
-                return _catches;
+                return this.catches;
             }
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Catches")]
+        [DependsOn("Catches")]
         public Activity Finally
         {
             get;
@@ -84,33 +88,35 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_exceptionFromCatchOrFinallyHandler == null)
+                if (this.exceptionFromCatchOrFinallyHandler == null)
                 {
-                    _exceptionFromCatchOrFinallyHandler = new FaultCallback(OnExceptionFromCatchOrFinally);
+                    this.exceptionFromCatchOrFinallyHandler = new FaultCallback(OnExceptionFromCatchOrFinally);
                 }
 
-                return _exceptionFromCatchOrFinallyHandler;
+                return this.exceptionFromCatchOrFinallyHandler;
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        }
 
-        //protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
-        //{
-        //    TryCatchState state = updateContext.GetValue(this.state);
-        //    if (state != null && !state.SuppressCancel && state.CaughtException != null && this.FindCatch(state.CaughtException.Exception) == null)
-        //    {
-        //        // This is a very small window of time in which we want to block update inside TryCatch.  
-        //        // This is in between OnExceptionFromTry faultHandler and OnTryComplete completionHandler.  
-        //        // A Catch handler could be found at OnExceptionFromTry before update, yet that appropriate Catch handler could have been removed during update and not be found at OnTryComplete.
-        //        // In such case, the exception can be unintentionally eaten without ever propagating it upward.  
-        //        // Such TryCatch state is detected by inspecting the TryCatchState private variable for SuppressCancel == false && CaughtException != Null && this.FindCatch(state.CaughtException.Exception) == null.
-        //        updateContext.DisallowUpdate(SR.TryCatchInvalidStateForUpdate(state.CaughtException.Exception));                
-        //    }
-        //}
+        protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
+        {
+            TryCatchState state = updateContext.GetValue(this.state);
+            if (state != null && !state.SuppressCancel && state.CaughtException != null && this.FindCatch(state.CaughtException.Exception) == null)
+            {
+                // This is a very small window of time in which we want to block update inside TryCatch.  
+                // This is in between OnExceptionFromTry faultHandler and OnTryComplete completionHandler.  
+                // A Catch handler could be found at OnExceptionFromTry before update, yet that appropriate Catch handler could have been removed during update and not be found at OnTryComplete.
+                // In such case, the exception can be unintentionally swallowed without ever propagating it upward.  
+                // Such TryCatch state is detected by inspecting the TryCatchState private variable for SuppressCancel == false && CaughtException != Null && this.FindCatch(state.CaughtException.Exception) == null.
+                updateContext.DisallowUpdate(SR.TryCatchInvalidStateForUpdate(state.CaughtException.Exception));
+            }
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -126,9 +132,9 @@ namespace CoreWf.Statements
 
             Collection<ActivityDelegate> delegates = new Collection<ActivityDelegate>();
 
-            if (_catches != null)
+            if (this.catches != null)
             {
-                foreach (Catch item in _catches)
+                foreach (Catch item in this.catches)
                 {
                     ActivityDelegate catchDelegate = item.GetAction();
                     if (catchDelegate != null)
@@ -138,7 +144,7 @@ namespace CoreWf.Statements
                 }
             }
 
-            metadata.AddImplementationVariable(_state);
+            metadata.AddImplementationVariable(this.state);
 
             metadata.SetDelegatesCollection(delegates);
 
@@ -169,15 +175,14 @@ namespace CoreWf.Statements
             if ((extension != null) && !extension.PersistExceptions)
             {
                 // We will need a NoPersistProperty if we catch an exception.
-                NoPersistProperty noPersistProperty = context.Properties.FindAtCurrentScope(NoPersistProperty.Name) as NoPersistProperty;
-                if (noPersistProperty == null)
+                if (!(context.Properties.FindAtCurrentScope(NoPersistProperty.Name) is NoPersistProperty noPersistProperty))
                 {
                     noPersistProperty = new NoPersistProperty(context.CurrentExecutor);
                     context.Properties.Add(NoPersistProperty.Name, noPersistProperty);
                 }
             }
 
-            _state.Set(context, new TryCatchState());
+            this.state.Set(context, new TryCatchState());
             if (this.Try != null)
             {
                 context.ScheduleActivity(this.Try, new CompletionCallback(OnTryComplete), new FaultCallback(OnExceptionFromTry));
@@ -190,7 +195,7 @@ namespace CoreWf.Statements
 
         protected override void Cancel(NativeActivityContext context)
         {
-            TryCatchState state = _state.Get(context);
+            TryCatchState state = this.state.Get(context);
             if (!state.SuppressCancel)
             {
                 context.CancelChildren();
@@ -199,7 +204,7 @@ namespace CoreWf.Statements
 
         private void OnTryComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            TryCatchState state = _state.Get(context);
+            TryCatchState state = this.state.Get(context);
 
             // We only allow the Try to be canceled.
             state.SuppressCancel = true;
@@ -247,7 +252,7 @@ namespace CoreWf.Statements
                     }
 
                     context.CancelChild(propagatedFrom);
-                    TryCatchState state = _state.Get(context);
+                    TryCatchState state = this.state.Get(context);
 
                     // If we are not supposed to persist exceptions, enter our noPersistScope
                     ExceptionPersistenceExtension extension = context.GetExtension<ExceptionPersistenceExtension>();
@@ -270,7 +275,7 @@ namespace CoreWf.Statements
         private void OnCatchComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
             // Start suppressing cancel for the finally activity
-            TryCatchState state = _state.Get(context);
+            TryCatchState state = this.state.Get(context);
             state.SuppressCancel = true;
 
             if (completedInstance != null && completedInstance.State != ActivityInstanceState.Closed)
@@ -292,7 +297,7 @@ namespace CoreWf.Statements
 
         private void OnFinallyComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            TryCatchState state = _state.Get(context);
+            TryCatchState state = this.state.Get(context);
             if (context.IsCancellationRequested && !state.ExceptionHandled)
             {
                 context.MarkCanceled();
@@ -307,7 +312,7 @@ namespace CoreWf.Statements
             }
 
             // We allow cancel through if there is an exception from the catch or finally
-            TryCatchState state = _state.Get(context);
+            TryCatchState state = this.state.Get(context);
             state.SuppressCancel = false;
         }
 
@@ -323,11 +328,11 @@ namespace CoreWf.Statements
                     // An exact match
                     return catchHandler;
                 }
-                else if (catchHandler.ExceptionType.GetTypeInfo().IsAssignableFrom(exceptionType.GetTypeInfo()))
+                else if (catchHandler.ExceptionType.IsAssignableFrom(exceptionType))
                 {
                     if (potentialCatch != null)
                     {
-                        if (catchHandler.ExceptionType.GetTypeInfo().IsSubclassOf(potentialCatch.ExceptionType))
+                        if (catchHandler.ExceptionType.IsSubclassOf(potentialCatch.ExceptionType))
                         {
                             // The new handler is more specific
                             potentialCatch = catchHandler;
@@ -377,7 +382,7 @@ namespace CoreWf.Statements
                 {
                     if (item == null)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                        throw FxTrace.Exception.ArgumentNull(nameof(item));
                     }
                 };
             }
@@ -386,14 +391,14 @@ namespace CoreWf.Statements
             {
                 if (item == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                    throw FxTrace.Exception.ArgumentNull(nameof(item));
                 }
 
                 Catch existingCatch = TryCatch.FindCatchActivity(item.ExceptionType, this.Items);
 
                 if (existingCatch != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("item", SR.DuplicateCatchClause(item.ExceptionType.FullName));
+                    throw FxTrace.Exception.Argument(nameof(item), SR.DuplicateCatchClause(item.ExceptionType.FullName));
                 }
 
                 base.InsertItem(index, item);
@@ -403,14 +408,14 @@ namespace CoreWf.Statements
             {
                 if (item == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                    throw FxTrace.Exception.ArgumentNull(nameof(item));
                 }
 
                 Catch existingCatch = TryCatch.FindCatchActivity(item.ExceptionType, this.Items);
 
                 if (existingCatch != null && !object.ReferenceEquals(this[index], existingCatch))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("item", SR.DuplicateCatchClause(item.ExceptionType.FullName));
+                    throw FxTrace.Exception.Argument(nameof(item), SR.DuplicateCatchClause(item.ExceptionType.FullName));
                 }
 
                 base.SetItem(index, item);

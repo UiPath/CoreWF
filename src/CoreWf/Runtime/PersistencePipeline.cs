@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf.Runtime.DurableInstancing;
 using System;
@@ -76,10 +76,8 @@ namespace CoreWf.Runtime
 
             foreach (IPersistencePipelineModule module in _modules)
             {
-                IDictionary<XName, object> readWriteValues;
-                IDictionary<XName, object> writeOnlyValues;
 
-                module.CollectValues(out readWriteValues, out writeOnlyValues);
+                module.CollectValues(out IDictionary<XName, object> readWriteValues, out IDictionary<XName, object> writeOnlyValues);
                 if (readWriteValues != null)
                 {
                     foreach (KeyValuePair<XName, object> value in readWriteValues)
@@ -237,7 +235,7 @@ namespace CoreWf.Runtime
         private class ValueDictionaryView : IDictionary<XName, object>
         {
             private IDictionary<XName, InstanceValue> _basis;
-            private bool _writeOnly;
+            private readonly bool _writeOnly;
 
             private List<XName> _keys;
             private List<object> _values;
@@ -276,8 +274,7 @@ namespace CoreWf.Runtime
             {
                 get
                 {
-                    object value;
-                    if (TryGetValue(key, out value))
+                    if (TryGetValue(key, out object value))
                     {
                         return value;
                     }
@@ -313,8 +310,7 @@ namespace CoreWf.Runtime
 
             public bool ContainsKey(XName key)
             {
-                object dummy;
-                return TryGetValue(key, out dummy);
+                return TryGetValue(key, out object dummy);
             }
 
             public bool Remove(XName key)
@@ -324,8 +320,7 @@ namespace CoreWf.Runtime
 
             public bool TryGetValue(XName key, out object value)
             {
-                InstanceValue realValue;
-                if (!_basis.TryGetValue(key, out realValue) || realValue.IsWriteOnly() != _writeOnly)
+                if (!_basis.TryGetValue(key, out InstanceValue realValue) || realValue.IsWriteOnly() != _writeOnly)
                 {
                     value = null;
                     return false;
@@ -347,8 +342,7 @@ namespace CoreWf.Runtime
 
             public bool Contains(KeyValuePair<XName, object> item)
             {
-                object value;
-                if (!TryGetValue(item.Key, out value))
+                if (!TryGetValue(item.Key, out object value))
                 {
                     return false;
                 }
@@ -393,7 +387,7 @@ namespace CoreWf.Runtime
         private class IOAsyncResult : AsyncResult
         {
             private PersistencePipeline _pipeline;
-            private bool _isLoad;
+            private readonly bool _isLoad;
             private IPersistencePipelineModule[] _pendingModules;
             private int _remainingModules;
             private Exception _exception;

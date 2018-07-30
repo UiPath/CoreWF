@@ -1,28 +1,30 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using CoreWf.Runtime;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Runtime;
+    using System;
+
     // A mostly output-restricted double-ended queue. You can add an item to both ends
     // and it is optimized for removing from the front.  The list can be scanned and
     // items can be removed from any location at the cost of performance.
     internal class Quack<T>
     {
-        private T[] _items;
+        private T[] items;
 
         // First element when items is not empty
-        private int _head;
+        private int head;
+
         // Next vacancy when items are not full
-        private int _tail;
+        private int tail;
+
         // Number of elements.
-        private int _count;
+        private int count;
 
         public Quack()
         {
-            _items = new T[4];
+            this.items = new T[4];
         }
 
         public Quack(T[] items)
@@ -30,40 +32,40 @@ namespace CoreWf
             Fx.Assert(items != null, "This shouldn't get called with null");
             Fx.Assert(items.Length > 0, "This shouldn't be called with a zero length array.");
 
-            _items = items;
+            this.items = items;
 
             // The default value of 0 is correct for both
             // head and tail.
 
-            _count = _items.Length;
+            this.count = this.items.Length;
         }
 
         public int Count
         {
-            get { return _count; }
+            get { return this.count; }
         }
 
         public T this[int index]
         {
             get
             {
-                Fx.Assert(index < _count, "Index out of range.");
+                Fx.Assert(index < this.count, "Index out of range.");
 
-                int realIndex = (_head + index) % _items.Length;
+                int realIndex = (this.head + index) % this.items.Length;
 
-                return _items[realIndex];
+                return this.items[realIndex];
             }
         }
 
         public T[] ToArray()
         {
-            Fx.Assert(_count > 0, "We should only call this when we have items.");
+            Fx.Assert(this.count > 0, "We should only call this when we have items.");
 
-            T[] compressedItems = new T[_count];
+            T[] compressedItems = new T[this.count];
 
-            for (int i = 0; i < _count; i++)
+            for (int i = 0; i < this.count; i++)
             {
-                compressedItems[i] = _items[(_head + i) % _items.Length];
+                compressedItems[i] = this.items[(this.head + i) % this.items.Length];
             }
 
             return compressedItems;
@@ -71,48 +73,48 @@ namespace CoreWf
 
         public void PushFront(T item)
         {
-            if (_count == _items.Length)
+            if (this.count == this.items.Length)
             {
                 Enlarge();
             }
 
-            if (--_head == -1)
+            if (--this.head == -1)
             {
-                _head = _items.Length - 1;
+                this.head = this.items.Length - 1;
             }
-            _items[_head] = item;
+            this.items[this.head] = item;
 
-            ++_count;
+            ++this.count;
         }
 
         public void Enqueue(T item)
         {
-            if (_count == _items.Length)
+            if (this.count == this.items.Length)
             {
                 Enlarge();
             }
 
-            _items[_tail] = item;
-            if (++_tail == _items.Length)
+            this.items[this.tail] = item;
+            if (++this.tail == this.items.Length)
             {
-                _tail = 0;
+                this.tail = 0;
             }
 
-            ++_count;
+            ++this.count;
         }
 
         public T Dequeue()
         {
-            Fx.Assert(_count > 0, "Quack is empty");
+            Fx.Assert(this.count > 0, "Quack is empty");
 
-            T removed = _items[_head];
-            _items[_head] = default(T);
-            if (++_head == _items.Length)
+            T removed = this.items[this.head];
+            this.items[this.head] = default(T);
+            if (++this.head == this.items.Length)
             {
-                _head = 0;
+                this.head = 0;
             }
 
-            --_count;
+            --this.count;
 
             return removed;
         }
@@ -121,10 +123,10 @@ namespace CoreWf
         {
             int found = -1;
 
-            for (int i = 0; i < _count; i++)
+            for (int i = 0; i < this.count; i++)
             {
-                int realIndex = (_head + i) % _items.Length;
-                if (object.Equals(_items[realIndex], item))
+                int realIndex = (this.head + i) % this.items.Length;
+                if (object.Equals(this.items[realIndex], item))
                 {
                     found = i;
                     break;
@@ -144,59 +146,59 @@ namespace CoreWf
 
         public void Remove(int index)
         {
-            Fx.Assert(index < _count, "Index out of range");
+            Fx.Assert(index < this.count, "Index out of range");
 
             for (int i = index - 1; i >= 0; i--)
             {
-                int sourceIndex = (_head + i) % _items.Length;
+                int sourceIndex = (this.head + i) % this.items.Length;
                 int targetIndex = sourceIndex + 1;
 
-                if (targetIndex == _items.Length)
+                if (targetIndex == this.items.Length)
                 {
                     targetIndex = 0;
                 }
 
-                _items[targetIndex] = _items[sourceIndex];
+                this.items[targetIndex] = this.items[sourceIndex];
             }
 
-            --_count;
-            ++_head;
+            --this.count;
+            ++this.head;
 
-            if (_head == _items.Length)
+            if (this.head == this.items.Length)
             {
-                _head = 0;
+                this.head = 0;
             }
         }
 
         private void Enlarge()
         {
-            Fx.Assert(_items.Length > 0, "Quack is empty");
+            Fx.Assert(this.items.Length > 0, "Quack is empty");
 
-            int capacity = _items.Length * 2;
+            int capacity = this.items.Length * 2;
             this.SetCapacity(capacity);
         }
 
         private void SetCapacity(int capacity)
         {
-            Fx.Assert(capacity >= _count, "Capacity is set to a smaller value");
+            Fx.Assert(capacity >= this.count, "Capacity is set to a smaller value");
 
             T[] newArray = new T[capacity];
-            if (_count > 0)
+            if (this.count > 0)
             {
-                if (_head < _tail)
+                if (this.head < this.tail)
                 {
-                    Array.Copy(_items, _head, newArray, 0, _count);
+                    Array.Copy(this.items, this.head, newArray, 0, this.count);
                 }
                 else
                 {
-                    Array.Copy(_items, _head, newArray, 0, _items.Length - _head);
-                    Array.Copy(_items, 0, newArray, _items.Length - _head, _tail);
+                    Array.Copy(this.items, this.head, newArray, 0, this.items.Length - this.head);
+                    Array.Copy(this.items, 0, newArray, this.items.Length - this.head, this.tail);
                 }
             }
 
-            _items = newArray;
-            _head = 0;
-            _tail = (_count == capacity) ? 0 : _count;
+            this.items = newArray;
+            this.head = 0;
+            this.tail = (this.count == capacity) ? 0 : this.count;
         }
     }
 }

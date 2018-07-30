@@ -1,17 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using CoreWf.Runtime;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+
     [Fx.Tag.XamlVisible(false)]
     public class ValidationSettings
     {
-        private IDictionary<Type, IList<Constraint>> _additionalConstraints;
+        private IDictionary<Type, IList<Constraint>> additionalConstraints;
 
         public CancellationToken CancellationToken
         {
@@ -53,21 +53,21 @@ namespace CoreWf.Validation
         {
             get
             {
-                return _additionalConstraints != null && _additionalConstraints.Count > 0;
+                return this.additionalConstraints != null && this.additionalConstraints.Count > 0;
             }
         }
-
+        
         public IDictionary<Type, IList<Constraint>> AdditionalConstraints
         {
             get
             {
-                if (_additionalConstraints == null)
+                if (this.additionalConstraints == null)
                 {
-                    _additionalConstraints = new Dictionary<Type, IList<Constraint>>();
+                    this.additionalConstraints = new Dictionary<Type, IList<Constraint>>(); 
                 }
 
-                return _additionalConstraints;
+                return this.additionalConstraints;
             }
-        }
+        }        
     }
 }

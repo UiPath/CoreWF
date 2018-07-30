@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -439,9 +439,11 @@ namespace TestCases.Activities.ExpressionTransform
             {
                 foreach (BinaryOperator op in _operators)
                 {
-                    TestBinaryExpression binaryExpression = new TestBinaryExpression();
-                    binaryExpression.ResultType = typeof(T);
-                    binaryExpression.Operator = op;
+                    TestBinaryExpression binaryExpression = new TestBinaryExpression
+                    {
+                        ResultType = typeof(T),
+                        Operator = op
+                    };
                     foreach (TestExpression left in EnumerateTest<T>(level + 1, maxLevel))
                     {
                         left.ResultType = typeof(T);

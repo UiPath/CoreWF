@@ -1,19 +1,20 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Globalization;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
     public sealed class ActivityScheduledRecord : TrackingRecord
     {
-        private ActivityInfo _activity;
-        private ActivityInfo _child;
+        private ActivityInfo activity;
+        private ActivityInfo child;
 
         internal ActivityScheduledRecord(Guid instanceId, ActivityInstance instance, ActivityInstance child)
             : this(instanceId, instance, new ActivityInfo(child))
@@ -39,43 +40,38 @@ namespace CoreWf.Tracking
             ActivityInfo child)
             : base(instanceId, recordNumber)
         {
-            if (child == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("child");
-            }
-
-            this.Activity = activity;
-            this.Child = child;
+            this.Activity = activity;            
+            this.Child = child ?? throw FxTrace.Exception.ArgumentNull(nameof(child));
         }
 
         private ActivityScheduledRecord(ActivityScheduledRecord record)
             : base(record)
         {
             this.Activity = record.Activity;
-            this.Child = record.Child;
+            this.Child = record.Child;            
         }
-
+        
         public ActivityInfo Activity
         {
             get
             {
-                return _activity;
+                return this.activity;
             }
             private set
             {
-                _activity = value;
+                this.activity = value;
             }
         }
-
+        
         public ActivityInfo Child
         {
             get
             {
-                return _child;
+                return this.child;
             }
             private set
             {
-                _child = value;
+                this.child = value;
             }
         }
 
@@ -103,8 +99,9 @@ namespace CoreWf.Tracking
             return string.Format(CultureInfo.CurrentCulture,
                "ActivityScheduledRecord {{ {0}, Activity {{ {1} }}, ChildActivity {{ {2} }} }}",
                base.ToString(),
-               this.Activity == null ? "<null>" : this.Activity.ToString(),
+               this.Activity == null ? "<null>" : this.Activity.ToString(),               
                this.Child.ToString());
         }
+
     }
 }

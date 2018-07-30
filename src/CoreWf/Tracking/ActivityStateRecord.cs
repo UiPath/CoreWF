@@ -1,25 +1,25 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
     public sealed class ActivityStateRecord : TrackingRecord
     {
-        private IDictionary<string, object> _variables;
-        private IDictionary<string, object> _arguments;
-        private ActivityInfo _activity;
-        private string _state;
-
-        private static ReadOnlyCollection<string> s_wildcardCollection = new ReadOnlyCollection<string>(new List<string>(1) { "*" });
+        private IDictionary<string, object> variables;
+        private IDictionary<string, object> arguments;
+        private ActivityInfo activity;
+        private string state;
+        private static readonly ReadOnlyCollection<string> wildcardCollection = new ReadOnlyCollection<string>(new List<string>(1) { "*" });
 
         internal ActivityStateRecord(Guid instanceId, ActivityInstance instance, ActivityInstanceState state)
             : this(instanceId, new ActivityInfo(instance), state)
@@ -57,16 +57,12 @@ namespace CoreWf.Tracking
             string state)
             : base(instanceId, recordNumber)
         {
-            if (activity == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
-            }
             if (string.IsNullOrEmpty(state))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("state");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(state));
             }
 
-            this.Activity = activity;
+            this.Activity = activity ?? throw FxTrace.Exception.ArgumentNull(nameof(activity));
             this.State = state;
         }
 
@@ -75,53 +71,53 @@ namespace CoreWf.Tracking
         {
             this.Activity = record.Activity;
             this.State = record.State;
-            if (record._variables != null)
+            if (record.variables != null)
             {
-                if (record._variables == ActivityUtilities.EmptyParameters)
+                if (record.variables == ActivityUtilities.EmptyParameters)
                 {
-                    _variables = ActivityUtilities.EmptyParameters;
+                    this.variables = ActivityUtilities.EmptyParameters;
                 }
                 else
                 {
-                    _variables = new Dictionary<string, object>(record._variables);
+                    this.variables = new Dictionary<string, object>(record.variables);
                 }
             }
 
-            if (record._arguments != null)
+            if (record.arguments != null)
             {
-                if (record._arguments == ActivityUtilities.EmptyParameters)
+                if (record.arguments == ActivityUtilities.EmptyParameters)
                 {
-                    _arguments = ActivityUtilities.EmptyParameters;
+                    this.arguments = ActivityUtilities.EmptyParameters;
                 }
                 else
                 {
-                    _arguments = new Dictionary<string, object>(record._arguments);
+                    this.arguments = new Dictionary<string, object>(record.arguments);
                 }
             }
         }
 
-
+        
         public ActivityInfo Activity
         {
             get
             {
-                return _activity;
+                return this.activity;
             }
             private set
             {
-                _activity = value;
+                this.activity = value;
             }
         }
-
+        
         public string State
         {
             get
             {
-                return _state;
+                return this.state;
             }
             private set
             {
-                _state = value;
+                this.state = value;
             }
         }
 
@@ -129,18 +125,18 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = GetVariables(s_wildcardCollection);
-                    Fx.Assert(_variables.IsReadOnly, "only readonly dictionary can be set for variables");
+                    this.variables = GetVariables(wildcardCollection);
+                    Fx.Assert(this.variables.IsReadOnly, "only readonly dictionary can be set for variables");
                 }
-                return _variables;
+                return this.variables;
             }
 
             internal set
             {
                 Fx.Assert(value.IsReadOnly, "only readonly dictionary can be set for variables");
-                _variables = value;
+                this.variables = value;
             }
         }
 
@@ -148,33 +144,33 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (_arguments == null)
+                if (this.arguments == null)
                 {
-                    _arguments = GetArguments(s_wildcardCollection);
-                    Fx.Assert(_arguments.IsReadOnly, "only readonly dictionary can be set for arguments");
+                    this.arguments = GetArguments(wildcardCollection);
+                    Fx.Assert(this.arguments.IsReadOnly, "only readonly dictionary can be set for arguments");
                 }
-                return _arguments;
+                return this.arguments;
             }
 
             internal set
             {
                 Fx.Assert(value.IsReadOnly, "only readonly dictionary can be set for arguments");
-                _arguments = value;
+                this.arguments = value;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "variables")]
         internal IDictionary<string, object> SerializedVariables
         {
-            get { return _variables; }
-            set { _variables = value; }
+            get { return this.variables; }
+            set { this.variables = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "arguments")]
         internal IDictionary<string, object> SerializedArguments
         {
-            get { return _arguments; }
-            set { _arguments = value; }
+            get { return this.arguments; }
+            set { this.arguments = value; }
         }
 
         [DataMember(Name = "Activity")]
@@ -315,7 +311,6 @@ namespace CoreWf.Tracking
                 return new ReadOnlyDictionary<string, object>(trackedArguments);
             }
         }
-
 
         private bool TrackData(string name, int id, ActivityInstance currentInstance, ICollection<string> data, bool wildcard, ref Dictionary<string, object> trackedData)
         {

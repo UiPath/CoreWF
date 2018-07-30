@@ -1,32 +1,33 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+
     internal class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : class
         where TValue : class
     {
-        private TKey _singleItemKey;
-        private TValue _singleItemValue;
-        private IDictionary<TKey, TValue> _dictionary;
+        private TKey singleItemKey;
+        private TValue singleItemValue;
+        private IDictionary<TKey, TValue> dictionary;
 
         public int Count
         {
-            get
+            get 
             {
-                if (_singleItemKey != null)
+                if (this.singleItemKey != null)
                 {
                     return 1;
                 }
-                else if (_dictionary != null)
+                else if (this.dictionary != null)
                 {
-                    return _dictionary.Count;
+                    return this.dictionary.Count;
                 }
 
                 return 0;
@@ -45,13 +46,13 @@ namespace CoreWf
         {
             get
             {
-                if (_singleItemKey != null)
+                if (this.singleItemKey != null)
                 {
-                    return new ReadOnlyCollection<TValue>(new List<TValue>() { _singleItemValue });
+                    return new ReadOnlyCollection<TValue>(new List<TValue>() { this.singleItemValue });
                 }
-                else if (_dictionary != null)
+                else if (this.dictionary != null)
                 {
-                    return new ReadOnlyCollection<TValue>(new List<TValue>(_dictionary.Values));
+                    return new ReadOnlyCollection<TValue>(new List<TValue>(this.dictionary.Values));
                 }
 
                 return null;
@@ -62,13 +63,13 @@ namespace CoreWf
         {
             get
             {
-                if (_singleItemKey != null)
+                if (this.singleItemKey != null)
                 {
-                    return new ReadOnlyCollection<TKey>(new List<TKey>() { _singleItemKey });
+                    return new ReadOnlyCollection<TKey>(new List<TKey>() { this.singleItemKey });
                 }
-                else if (_dictionary != null)
+                else if (this.dictionary != null)
                 {
-                    return new ReadOnlyCollection<TKey>(new List<TKey>(_dictionary.Keys));
+                    return new ReadOnlyCollection<TKey>(new List<TKey>(this.dictionary.Keys));
                 }
 
                 return null;
@@ -79,13 +80,13 @@ namespace CoreWf
         {
             get
             {
-                if (_singleItemKey == key)
+                if (this.singleItemKey == key)
                 {
-                    return _singleItemValue;
+                    return this.singleItemValue;
                 }
-                else if (_dictionary != null)
+                else if (this.dictionary != null)
                 {
-                    return _dictionary[key];
+                    return this.dictionary[key];
                 }
 
                 return null;
@@ -101,31 +102,31 @@ namespace CoreWf
         {
             if (key == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("key");
+                throw FxTrace.Exception.ArgumentNull(nameof(key));
             }
 
-            if (_singleItemKey == null && _singleItemValue == null && _dictionary == null)
+            if (this.singleItemKey == null && this.singleItemValue == null && this.dictionary == null)
             {
-                _singleItemKey = key;
-                _singleItemValue = value;
+                this.singleItemKey = key;
+                this.singleItemValue = value;
             }
-            else if (_singleItemKey != null)
+            else if (this.singleItemKey != null)
             {
-                _dictionary = new Dictionary<TKey, TValue>();
+                this.dictionary = new Dictionary<TKey, TValue>();
 
-                _dictionary.Add(_singleItemKey, _singleItemValue);
+                this.dictionary.Add(this.singleItemKey, this.singleItemValue);
 
-                _singleItemKey = null;
-                _singleItemValue = null;
+                this.singleItemKey = null;
+                this.singleItemValue = null;
 
-                _dictionary.Add(key, value);
+                this.dictionary.Add(key, value);
                 return;
             }
             else
             {
-                Fx.Assert(_dictionary != null, "We should always have a dictionary at this point");
+                Fx.Assert(this.dictionary != null, "We should always have a dictionary at this point");
 
-                _dictionary.Add(key, value);
+                this.dictionary.Add(key, value);
             }
         }
 
@@ -133,16 +134,16 @@ namespace CoreWf
         {
             if (key == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("key");
+                throw FxTrace.Exception.ArgumentNull(nameof(key));
             }
 
-            if (_singleItemKey != null)
+            if (this.singleItemKey != null)
             {
-                return _singleItemKey == key;
+                return this.singleItemKey == key;
             }
-            else if (_dictionary != null)
+            else if (this.dictionary != null)
             {
-                return _dictionary.ContainsKey(key);
+                return this.dictionary.ContainsKey(key);
             }
 
             return false;
@@ -150,20 +151,20 @@ namespace CoreWf
 
         public bool Remove(TKey key)
         {
-            if (_singleItemKey == key)
+            if (this.singleItemKey == key)
             {
-                _singleItemKey = null;
-                _singleItemValue = null;
+                this.singleItemKey = null;
+                this.singleItemValue = null;
 
                 return true;
             }
-            else if (_dictionary != null)
+            else if (this.dictionary != null)
             {
-                bool ret = _dictionary.Remove(key);
+                bool ret = this.dictionary.Remove(key);
 
-                if (_dictionary.Count == 0)
+                if (this.dictionary.Count == 0)
                 {
-                    _dictionary = null;
+                    this.dictionary = null;
                 }
 
                 return ret;
@@ -174,14 +175,14 @@ namespace CoreWf
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            if (_singleItemKey == key)
+            if (this.singleItemKey == key)
             {
-                value = _singleItemValue;
+                value = this.singleItemValue;
                 return true;
             }
-            else if (_dictionary != null)
+            else if (this.dictionary != null)
             {
-                return _dictionary.TryGetValue(key, out value);
+                return this.dictionary.TryGetValue(key, out value);
             }
 
             value = null;
@@ -195,20 +196,20 @@ namespace CoreWf
 
         public void Clear()
         {
-            _singleItemKey = null;
-            _singleItemValue = null;
-            _dictionary = null;
+            this.singleItemKey = null;
+            this.singleItemValue = null;
+            this.dictionary = null;
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            if (_singleItemKey != null)
+            if (this.singleItemKey != null)
             {
-                return _singleItemKey == item.Key && _singleItemValue == item.Value;
+                return this.singleItemKey == item.Key && this.singleItemValue == item.Value;
             }
-            else if (_dictionary != null)
+            else if (this.dictionary != null)
             {
-                return _dictionary.Contains(item);
+                return this.dictionary.Contains(item);
             }
 
             return false;
@@ -216,13 +217,13 @@ namespace CoreWf
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            if (_singleItemKey != null)
+            if (this.singleItemKey != null)
             {
-                array[arrayIndex] = new KeyValuePair<TKey, TValue>(_singleItemKey, _singleItemValue);
+                array[arrayIndex] = new KeyValuePair<TKey, TValue>(this.singleItemKey, this.singleItemValue);
             }
-            else if (_dictionary != null)
+            else if (this.dictionary != null)
             {
-                _dictionary.CopyTo(array, arrayIndex);
+                this.dictionary.CopyTo(array, arrayIndex);
             }
         }
 
@@ -233,13 +234,13 @@ namespace CoreWf
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            if (_singleItemKey != null)
+            if (this.singleItemKey != null)
             {
-                yield return new KeyValuePair<TKey, TValue>(_singleItemKey, _singleItemValue);
+                yield return new KeyValuePair<TKey, TValue>(this.singleItemKey, this.singleItemValue);
             }
-            else if (_dictionary != null)
+            else if (this.dictionary != null)
             {
-                foreach (KeyValuePair<TKey, TValue> kvp in _dictionary)
+                foreach (KeyValuePair<TKey, TValue> kvp in this.dictionary)
                 {
                     yield return kvp;
                 }

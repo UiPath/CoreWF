@@ -1,11 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     // DelegateArgument is the XAML-based construct. RuntimeDelegateArgument is a binding construct to store the value
     [Fx.Tag.XamlVisible(false)]
     public sealed class RuntimeDelegateArgument
@@ -14,12 +15,7 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
-            }
-
-            if (type == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
             ArgumentDirectionHelper.Validate(direction, "direction");
@@ -33,7 +29,7 @@ namespace CoreWf
             }
 
             this.Name = name;
-            this.Type = type;
+            this.Type = type ?? throw FxTrace.Exception.ArgumentNull(nameof(type));
             this.Direction = direction;
             this.BoundArgument = boundArgument;
         }
@@ -45,7 +41,7 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.PropertyNamesShouldNotMatchGetMethods,
-        //Justification = "Workflow normalizes on Type for Type properties")]
+        //    Justification = "Workflow normalizes on Type for Type properties")]
         public Type Type
         {
             get;

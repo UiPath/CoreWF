@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -177,8 +177,10 @@ namespace TestCases.Activities.ExpressionTransform
             {
                 foreach (UnaryOperator op in _operators)
                 {
-                    TestUnaryExpression expression = new TestUnaryExpression();
-                    expression.ResultType = typeof(T);
+                    TestUnaryExpression expression = new TestUnaryExpression
+                    {
+                        ResultType = typeof(T)
+                    };
                     expression.ResultType = typeof(T);
                     expression.Operator = op;
                     foreach (TestExpression operand in EnumerateTest<T>(level + 1, maxLevel))

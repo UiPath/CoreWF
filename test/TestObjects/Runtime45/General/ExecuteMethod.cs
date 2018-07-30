@@ -1,8 +1,7 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
-using System.Reflection;
 using Test.Common.Configurers;
 using Test.Common.TestObjects.Runtime.Core;
 
@@ -18,8 +17,8 @@ namespace Test.Common.TestObjects.Runtime45.Client
     public class ExecuteMethod : IDeployable, IRunnable
     {
         //private TestDomainManager deployment;
-        private string _assemblyQualifiedMethodTypeName;
-        private string _methodName;
+        private readonly string _assemblyQualifiedMethodTypeName;
+        private readonly string _methodName;
         private TestSettings _settings;
         private bool _isDiposed = false;
 
@@ -45,14 +44,9 @@ namespace Test.Common.TestObjects.Runtime45.Client
                 throw new ArgumentNullException("methodType");
             }
 
-            if (methodName == null)
-            {
-                throw new ArgumentNullException("methodName");
-            }
-
             // We extract the type name from the type that is passed in, since type cant be serialized
             _assemblyQualifiedMethodTypeName = methodType.AssemblyQualifiedName;
-            _methodName = methodName;
+            _methodName = methodName ?? throw new ArgumentNullException("methodName");
             _settings = settings;
         }
 

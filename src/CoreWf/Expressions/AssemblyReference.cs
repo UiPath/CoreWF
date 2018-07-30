@@ -1,23 +1,31 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
-    //[TypeConverter(typeof(AssemblyReferenceConverter))]
+    using System;
+    using CoreWf.XamlIntegration;
+    using System.Collections;
+    using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.IO;
+    using System.Reflection;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
+    [TypeConverter(typeof(AssemblyReferenceConverter))]
     public class AssemblyReference
     {
         private const int AssemblyToAssemblyNameCacheInitSize = 100;
         private const int AssemblyCacheInitialSize = 100;
-
+        
         // cache for Assembly ==> AssemblyName
         // Assembly.GetName() is very very expensive
-        private static object s_assemblyToAssemblyNameCacheLock = new object();
+        private static readonly object assemblyToAssemblyNameCacheLock = new object();
 
         // Double-checked locking pattern requires volatile for read/write synchronization
-        //private static volatile Hashtable assemblyToAssemblyNameCache;
+        private static volatile Hashtable assemblyToAssemblyNameCache;
 
         // cache for AssemblyName ==> Assembly
         // For back-compat with VB (which in turn was roughly emulating XamlSchemaContext)
@@ -25,12 +33,12 @@ namespace CoreWf.Expressions
         // even if a new matching assembly is loaded later.
 
         // Double-checked locking pattern requires volatile for read/write synchronization
-        //private static volatile Hashtable assemblyCache;
-        private static object s_assemblyCacheLock = new object();
+        private static volatile Hashtable assemblyCache;
+        private static readonly object assemblyCacheLock = new object();
 
-        private Assembly _assembly;
-        private AssemblyName _assemblyName;
-        private bool _isImmutable;
+        private Assembly assembly;
+        private AssemblyName assemblyName;
+        private readonly bool isImmutable;
 
         public AssemblyReference()
         {
@@ -39,23 +47,23 @@ namespace CoreWf.Expressions
         // This immutable ctor is for the default references, so they can be shared freely
         internal AssemblyReference(Assembly assembly, AssemblyName assemblyName)
         {
-            _assembly = assembly;
-            _assemblyName = assemblyName;
-            _isImmutable = true;
+            this.assembly = assembly;
+            this.assemblyName = assemblyName;
+            this.isImmutable = true;
         }
 
-        //[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Assembly Assembly
         {
             get
             {
-                return _assembly;
+                return this.assembly;
             }
 
             set
             {
                 this.ThrowIfImmutable();
-                _assembly = value;
+                this.assembly = value;
             }
         }
 
@@ -63,228 +71,227 @@ namespace CoreWf.Expressions
         {
             get
             {
-                return _assemblyName;
+                return this.assemblyName;
             }
 
             set
             {
                 this.ThrowIfImmutable();
-                _assemblyName = value;
+                this.assemblyName = value;
             }
         }
 
         //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.OperatorOverloadsHaveNamedAlternates,
-        //Justification = "A named method provides no advantage over the property setter.")]
+        //    Justification = "A named method provides no advantage over the property setter.")]
         public static implicit operator AssemblyReference(Assembly assembly)
         {
             return new AssemblyReference { Assembly = assembly };
         }
 
         //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.OperatorOverloadsHaveNamedAlternates,
-        //Justification = "A named method provides no advantage over the property setter.")]
+        //    Justification = "A named method provides no advantage over the property setter.")]
         public static implicit operator AssemblyReference(AssemblyName assemblyName)
         {
             return new AssemblyReference { AssemblyName = assemblyName };
         }
 
-        //public void LoadAssembly()
-        //{
-        //    if (AssemblyName != null && (this.assembly == null || !this.isImmutable))
-        //    {
-        //        this.assembly = GetAssembly(this.AssemblyName);
-        //    }
-        //}
+        public void LoadAssembly()
+        {
+            if (AssemblyName != null && (this.assembly == null || !this.isImmutable))
+            {
+                this.assembly = GetAssembly(this.AssemblyName);
+            }
+        }
 
         // this code is borrowed from XamlSchemaContext
-        //internal static bool AssemblySatisfiesReference(AssemblyName assemblyName, AssemblyName reference)
-        //{
-        //    if (reference.Name != assemblyName.Name)
-        //    {
-        //        return false;
-        //    }
+        internal static bool AssemblySatisfiesReference(AssemblyName assemblyName, AssemblyName reference)
+        {
+            if (reference.Name != assemblyName.Name)
+            {
+                return false;
+            }
 
-        //    if (reference.Version != null && !reference.Version.Equals(assemblyName.Version))
-        //    {
-        //        return false;
-        //    }
+            if (reference.Version != null && !reference.Version.Equals(assemblyName.Version))
+            {
+                return false;
+            }
 
-        //    if (reference.CultureInfo != null && !reference.CultureInfo.Equals(assemblyName.CultureInfo))
-        //    {
-        //        return false;
-        //    }
+            if (reference.CultureInfo != null && !reference.CultureInfo.Equals(assemblyName.CultureInfo))
+            {
+                return false;
+            }
 
-        //    byte[] requiredToken = reference.GetPublicKeyToken();
-        //    if (requiredToken != null)
-        //    {
-        //        byte[] actualToken = assemblyName.GetPublicKeyToken();
-        //        if (!AssemblyNameEqualityComparer.IsSameKeyToken(requiredToken, actualToken))
-        //        {
-        //            return false;
-        //        }
-        //    }
+            byte[] requiredToken = reference.GetPublicKeyToken();
+            if (requiredToken != null)
+            {
+                byte[] actualToken = assemblyName.GetPublicKeyToken();
+                if (!AssemblyNameEqualityComparer.IsSameKeyToken(requiredToken, actualToken))
+                {
+                    return false;
+                }
+            }
 
-        //    return true;
-        //}
+            return true;
+        }
 
-        //internal static Assembly GetAssembly(AssemblyName assemblyName)
-        //{
-        //    // the following assembly resolution logic
-        //    // emulates the Xaml's assembly resolution logic as closely as possible.
-        //    // Should Xaml's assembly resolution logic ever change, this code needs update as well.
-        //    // please see XamlSchemaContext.ResolveAssembly() 
-        //    if (assemblyCache == null)
-        //    {
-        //        lock (assemblyCacheLock)
-        //        {
-        //            if (assemblyCache == null)
-        //            {
-        //                assemblyCache = new Hashtable(AssemblyCacheInitialSize, new AssemblyNameEqualityComparer());
-        //            }
-        //        }
-        //    }
+        internal static Assembly GetAssembly(AssemblyName assemblyName)
+        {
+            // the following assembly resolution logic
+            // emulates the Xaml's assembly resolution logic as closely as possible.
+            // Should Xaml's assembly resolution logic ever change, this code needs update as well.
+            // please see XamlSchemaContext.ResolveAssembly() 
+            if (assemblyCache == null)
+            {
+                lock (assemblyCacheLock)
+                {
+                    if (assemblyCache == null)
+                    {
+                        assemblyCache = new Hashtable(AssemblyCacheInitialSize, new AssemblyNameEqualityComparer());
+                    }
+                }
+            }
 
-        //    Assembly assembly = assemblyCache[assemblyName] as Assembly;
-        //    if (assembly != null)
-        //    {
-        //        return assembly;
-        //    }
+            Assembly assembly = assemblyCache[assemblyName] as Assembly;
+            if (assembly != null)
+            {
+                return assembly;
+            }
 
-        //    // search current AppDomain first
-        //    // this for-loop part is to ensure that 
-        //    // loose AssemblyNames get resolved in the same way 
-        //    // as Xaml would do.  that is to find the first match
-        //    // found starting from the end of the array of Assemblies
-        //    // returned by AppDomain.GetAssemblies()
-        //    Assembly[] currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-        //    for (int i = currentAssemblies.Length - 1; i >= 0; i--)
-        //    {
-        //        Assembly curAsm = currentAssemblies[i];
-        //        if (curAsm.IsDynamic)
-        //        {
-        //            // ignore dynamic assemblies
-        //            continue;
-        //        }
+            // search current AppDomain first
+            // this for-loop part is to ensure that 
+            // loose AssemblyNames get resolved in the same way 
+            // as Xaml would do.  that is to find the first match
+            // found starting from the end of the array of Assemblies
+            // returned by AppDomain.GetAssemblies()
+            Assembly[] currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            for (int i = currentAssemblies.Length - 1; i >= 0; i--)
+            {
+                Assembly curAsm = currentAssemblies[i];
+                if (curAsm.IsDynamic)
+                {
+                    // ignore dynamic assemblies
+                    continue;
+                }
 
-        //        AssemblyName curAsmName = GetFastAssemblyName(curAsm);
-        //        Version curVersion = curAsmName.Version;
-        //        CultureInfo curCulture = curAsmName.CultureInfo;
-        //        byte[] curKeyToken = curAsmName.GetPublicKeyToken();
+                AssemblyName curAsmName = GetFastAssemblyName(curAsm);
+                Version curVersion = curAsmName.Version;
+                CultureInfo curCulture = curAsmName.CultureInfo;
+                byte[] curKeyToken = curAsmName.GetPublicKeyToken();
 
-        //        Version reqVersion = assemblyName.Version;
-        //        CultureInfo reqCulture = assemblyName.CultureInfo;
-        //        byte[] reqKeyToken = assemblyName.GetPublicKeyToken();
+                Version reqVersion = assemblyName.Version;
+                CultureInfo reqCulture = assemblyName.CultureInfo;
+                byte[] reqKeyToken = assemblyName.GetPublicKeyToken();
 
-        //        if ((String.Compare(curAsmName.Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase) == 0) &&
-        //                 (reqVersion == null || reqVersion.Equals(curVersion)) &&
-        //                 (reqCulture == null || reqCulture.Equals(curCulture)) &&
-        //                 (reqKeyToken == null || AssemblyNameEqualityComparer.IsSameKeyToken(reqKeyToken, curKeyToken)))
-        //        {
-        //            lock (assemblyCacheLock)
-        //            {
-        //                assemblyCache[assemblyName] = curAsm;
-        //                return curAsm;
-        //            }
-        //        }
-        //    }
+                if ((String.Compare(curAsmName.Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase) == 0) &&
+                         (reqVersion == null || reqVersion.Equals(curVersion)) &&
+                         (reqCulture == null || reqCulture.Equals(curCulture)) &&
+                         (reqKeyToken == null || AssemblyNameEqualityComparer.IsSameKeyToken(reqKeyToken, curKeyToken)))
+                {
+                    lock (assemblyCacheLock)
+                    {
+                        assemblyCache[assemblyName] = curAsm;
+                        return curAsm;
+                    }
+                }
+            }
 
-        //    assembly = LoadAssembly(assemblyName);
-        //    if (assembly != null)
-        //    {
-        //        lock (assemblyCacheLock)
-        //        {
-        //            assemblyCache[assemblyName] = assembly;
-        //        }
-        //    }
+            assembly = LoadAssembly(assemblyName);
+            if (assembly != null)
+            {
+                lock (assemblyCacheLock)
+                {
+                    assemblyCache[assemblyName] = assembly;
+                }
+            }
 
-        //    return assembly;
-        //}
+            return assembly;
+        }
 
         // this gets the cached AssemblyName
         // if not found, it caches the Assembly and creates its AssemblyName set it as the value
         // we don't cache DynamicAssemblies because they may be collectible and we don't want to root them
-        //internal static AssemblyName GetFastAssemblyName(Assembly assembly)
-        //{
-        //    if (assembly.IsDynamic)
-        //    {
-        //        return new AssemblyName(assembly.FullName);
-        //    }
+        internal static AssemblyName GetFastAssemblyName(Assembly assembly)
+        {
+            if (assembly.IsDynamic)
+            {
+                return new AssemblyName(assembly.FullName);
+            }
 
-        //    if (assemblyToAssemblyNameCache == null)
-        //    {
-        //        lock (assemblyToAssemblyNameCacheLock)
-        //        {
-        //            if (assemblyToAssemblyNameCache == null)
-        //            {
-        //                assemblyToAssemblyNameCache = new Hashtable(AssemblyToAssemblyNameCacheInitSize);
-        //            }
-        //        }
-        //    }
+            if (assemblyToAssemblyNameCache == null)
+            {
+                lock (assemblyToAssemblyNameCacheLock)
+                {
+                    if (assemblyToAssemblyNameCache == null)
+                    {
+                        assemblyToAssemblyNameCache = new Hashtable(AssemblyToAssemblyNameCacheInitSize);
+                    }
+                }
+            }
 
-        //    AssemblyName assemblyName = assemblyToAssemblyNameCache[assembly] as AssemblyName;
-        //    if (assemblyName != null)
-        //    {
-        //        return assemblyName;
-        //    }
+            if (assemblyToAssemblyNameCache[assembly] is AssemblyName assemblyName)
+            {
+                return assemblyName;
+            }
 
-        //    assemblyName = new AssemblyName(assembly.FullName);
-        //    lock (assemblyToAssemblyNameCacheLock)
-        //    {
-        //        assemblyToAssemblyNameCache[assembly] = assemblyName;
-        //    }
+            assemblyName = new AssemblyName(assembly.FullName);
+            lock (assemblyToAssemblyNameCacheLock)
+            {
+                assemblyToAssemblyNameCache[assembly] = assemblyName;
+            }
 
-        //    return assemblyName;
-        //}
+            return assemblyName;
+        }
 
 #pragma warning disable 618
-        //[SuppressMessage(
-        //"Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods",
-        //MessageId = "System.Reflection.Assembly.LoadWithPartialName",
-        //Justification = "Assembly.LoadWithPartialName is the only method with the right behavior.")]
-        //private static Assembly LoadAssembly(AssemblyName assemblyName)
-        //{
-        //    Assembly loaded = null;
+        [SuppressMessage(
+            "Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods",
+            MessageId = "System.Reflection.Assembly.LoadWithPartialName",
+            Justification = "Assembly.LoadWithPartialName is the only method with the right behavior.")]
+        private static Assembly LoadAssembly(AssemblyName assemblyName)
+        {
+            Assembly loaded = null;
 
-        //    Fx.Assert(assemblyName.Name != null, "AssemblyName.Name cannot be null");
-        //    byte[] publicKeyToken = assemblyName.GetPublicKeyToken();
-        //    if (assemblyName.Version != null || assemblyName.CultureInfo != null || publicKeyToken != null)
-        //    {
-        //        // Assembly.Load(string)
-        //        try
-        //        {
-        //            loaded = Assembly.Load(assemblyName.FullName);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            if (ex is FileNotFoundException ||
-        //                ex is FileLoadException ||
-        //                (ex is TargetInvocationException &&
-        //                (((TargetInvocationException)ex).InnerException is FileNotFoundException ||
-        //                ((TargetInvocationException)ex).InnerException is FileNotFoundException)))
-        //            {
-        //                loaded = null;
-        //                FxTrace.Exception.AsWarning(ex);
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // partial assembly name
-        //        loaded = Assembly.LoadWithPartialName(assemblyName.FullName);
-        //    }
+            Fx.Assert(assemblyName.Name != null, "AssemblyName.Name cannot be null");
+            byte[] publicKeyToken = assemblyName.GetPublicKeyToken();
+            if (assemblyName.Version != null || assemblyName.CultureInfo != null || publicKeyToken != null)
+            {
+                // Assembly.Load(string)
+                try
+                {
+                    loaded = Assembly.Load(assemblyName.FullName);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is FileNotFoundException ||
+                        ex is FileLoadException ||
+                        (ex is TargetInvocationException &&
+                        (((TargetInvocationException)ex).InnerException is FileNotFoundException ||
+                        ((TargetInvocationException)ex).InnerException is FileNotFoundException)))
+                    {
+                        loaded = null;
+                        FxTrace.Exception.AsWarning(ex);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+                // partial assembly name
+                loaded = Assembly.LoadWithPartialName(assemblyName.FullName);
+            }
 
-        //    return loaded;
-        //}
+            return loaded;
+        }
 #pragma warning restore 618
 
         private void ThrowIfImmutable()
         {
-            if (_isImmutable)
+            if (this.isImmutable)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.AssemblyReferenceIsImmutable));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.AssemblyReferenceIsImmutable));
             }
         }
     }

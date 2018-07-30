@@ -1,20 +1,21 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Validation;
-using System;
-using System.ComponentModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf;
+    using CoreWf.Validation;
+    using System;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+
     public sealed class Cast<TOperand, TResult> : CodeActivity<TResult>
     {
         //Lock is not needed for operationFunction here. The reason is that delegates for a given Cast<TLeft, TRight, TResult> are the same.
         //It's possible that 2 threads are assigning the operationFucntion at the same time. But it's okay because the compiled codes are the same.
-        private static Func<TOperand, TResult> s_checkedOperationFunction;
-        private static Func<TOperand, TResult> s_uncheckedOperationFunction;
-        private bool _checkedOperation = true;
+        private static Func<TOperand, TResult> checkedOperationFunction;
+        private static Func<TOperand, TResult> uncheckedOperationFunction;
+        private bool checkedOperation = true;
 
         [RequiredArgument]
         [DefaultValue(null)]
@@ -27,21 +28,21 @@ namespace CoreWf.Expressions
         [DefaultValue(true)]
         public bool Checked
         {
-            get { return _checkedOperation; }
-            set { _checkedOperation = value; }
+            get { return this.checkedOperation; }
+            set { this.checkedOperation = value; }
         }
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
             UnaryExpressionHelper.OnGetArguments(metadata, this.Operand);
 
-            if (_checkedOperation)
+            if (this.checkedOperation)
             {
-                EnsureOperationFunction(metadata, ref s_checkedOperationFunction, ExpressionType.ConvertChecked);
+                EnsureOperationFunction(metadata, ref checkedOperationFunction, ExpressionType.ConvertChecked);
             }
             else
             {
-                EnsureOperationFunction(metadata, ref s_uncheckedOperationFunction, ExpressionType.Convert);
+                EnsureOperationFunction(metadata, ref uncheckedOperationFunction, ExpressionType.Convert);
             }
         }
 
@@ -51,11 +52,10 @@ namespace CoreWf.Expressions
         {
             if (operationFunction == null)
             {
-                ValidationError validationError;
                 if (!UnaryExpressionHelper.TryGenerateLinqDelegate(
                             operatorType,
                             out operationFunction,
-                            out validationError))
+                            out ValidationError validationError))
                 {
                     metadata.AddValidationError(validationError);
                 }
@@ -65,16 +65,16 @@ namespace CoreWf.Expressions
         protected override TResult Execute(CodeActivityContext context)
         {
             TOperand operandValue = this.Operand.Get(context);
-
+            
             //if user changed Checked flag between Open and Execution, 
             //a NRE may be thrown and that's by design
-            if (_checkedOperation)
+            if (this.checkedOperation)
             {
-                return s_checkedOperationFunction(operandValue);
+                return checkedOperationFunction(operandValue);
             }
             else
             {
-                return s_uncheckedOperationFunction(operandValue);
+                return uncheckedOperationFunction(operandValue);
             }
         }
     }

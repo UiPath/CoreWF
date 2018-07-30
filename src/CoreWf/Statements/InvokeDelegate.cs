@@ -1,25 +1,30 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Globalization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Globalization;
+    using CoreWf.Runtime;
+    using Portable.Xaml.Markup;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,
-    //Justification = "Approved Workflow naming")]
-    //[ContentProperty("Delegate")]
+    //    Justification = "Approved Workflow naming")]
+    [ContentProperty("Delegate")]
     public sealed class InvokeDelegate : NativeActivity
     {
-        private IDictionary<string, Argument> _delegateArguments;
-        private bool _hasOutputArguments;
+        private readonly IDictionary<string, Argument> delegateArguments;
+        private bool hasOutputArguments;
 
         public InvokeDelegate()
         {
-            _delegateArguments = new Dictionary<string, Argument>();
+            this.delegateArguments = new Dictionary<string, Argument>();
         }
 
         [DefaultValue(null)]
@@ -33,7 +38,7 @@ namespace CoreWf.Statements
         {
             get
             {
-                return _delegateArguments;
+                return this.delegateArguments;
             }
         }
 
@@ -44,10 +49,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -77,9 +84,8 @@ namespace CoreWf.Statements
                 for (int i = 0; i < targetDelegateArguments.Count; i++)
                 {
                     RuntimeDelegateArgument expectedParameter = targetDelegateArguments[i];
-                    Argument delegateArgument = null;
                     string parameterName = expectedParameter.Name;
-                    if (this.DelegateArguments.TryGetValue(parameterName, out delegateArgument))
+                    if (this.DelegateArguments.TryGetValue(parameterName, out Argument delegateArgument))
                     {
                         if (delegateArgument.Direction != expectedParameter.Direction)
                         {
@@ -106,9 +112,9 @@ namespace CoreWf.Statements
                         metadata.AddValidationError(SR.InputParametersMissing(expectedParameter.Name));
                     }
 
-                    if (!_hasOutputArguments && ArgumentDirectionHelper.IsOut(expectedParameter.Direction))
+                    if (!this.hasOutputArguments && ArgumentDirectionHelper.IsOut(expectedParameter.Direction))
                     {
-                        _hasOutputArguments = true;
+                        this.hasOutputArguments = true;
                     }
                 }
             }
@@ -146,12 +152,11 @@ namespace CoreWf.Statements
 
         private void OnHandlerComplete(NativeActivityContext context, ActivityInstance completedInstance, IDictionary<string, object> outArguments)
         {
-            if (_hasOutputArguments)
+            if (this.hasOutputArguments)
             {
                 foreach (KeyValuePair<string, object> entry in outArguments)
                 {
-                    Argument argument = null;
-                    if (DelegateArguments.TryGetValue(entry.Key, out argument))
+                    if (DelegateArguments.TryGetValue(entry.Key, out Argument argument))
                     {
                         if (ArgumentDirectionHelper.IsOut(argument.Direction))
                         {
@@ -165,5 +170,6 @@ namespace CoreWf.Statements
                 }
             }
         }
+
     }
 }

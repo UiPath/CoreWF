@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -7,9 +7,6 @@ using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
-using Test.Common.TestObjects.Runtime.ConstraintValidation;
-using Act = CoreWf.Statements;
-using CoreWf.Statements;
 using Xunit;
 
 namespace TestCases.Activities.Flowchart
@@ -113,8 +110,10 @@ namespace TestCases.Activities.Flowchart
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
 
-            TestIncrement increment = new TestIncrement("Inc", 1);
-            increment.CounterVariable = counter;
+            TestIncrement increment = new TestIncrement("Inc", 1)
+            {
+                CounterVariable = counter
+            };
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Ola");
             Dictionary<object, TestActivity> cases = new Dictionary<object, TestActivity>();
@@ -376,9 +375,8 @@ namespace TestCases.Activities.Flowchart
 
         public override bool Equals(object obj)
         {
-            SwitchExpressionClass s = obj as SwitchExpressionClass;
 
-            if (s == null) return false;
+            if (!(obj is SwitchExpressionClass s)) return false;
 
             if (s._i == _i) return true;
 

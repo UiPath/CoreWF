@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -78,8 +78,7 @@ namespace CoreWf.Runtime.DurableInstancing
             lock (HandlesLock)
             {
                 // The handle may have already been bumped - only remove it if it's still it.
-                InstanceHandle existingHandle;
-                if (BoundHandles.TryGetValue(handle.Id, out existingHandle) && object.ReferenceEquals(handle, existingHandle))
+                if (BoundHandles.TryGetValue(handle.Id, out InstanceHandle existingHandle) && object.ReferenceEquals(handle, existingHandle))
                 {
                     BoundHandles.Remove(handle.Id);
                 }
@@ -114,8 +113,7 @@ namespace CoreWf.Runtime.DurableInstancing
             {
                 try
                 {
-                    InstanceHandle existingHandle;
-                    if (BoundHandles.TryGetValue(reference.InstanceHandle.Id, out existingHandle))
+                    if (BoundHandles.TryGetValue(reference.InstanceHandle.Id, out InstanceHandle existingHandle))
                     {
                         Fx.AssertAndFailFast(!object.ReferenceEquals(existingHandle, reference.InstanceHandle), "InstanceStore lock state is not correct.");
                         if (existingHandle.Version <= 0 || reference.InstanceHandle.Version <= 0)
@@ -185,8 +183,7 @@ namespace CoreWf.Runtime.DurableInstancing
                 LockResolutionMarker markerReference = null;
                 try
                 {
-                    InstanceHandle existingHandle;
-                    if (BoundHandles.TryGetValue(reference.InstanceHandle.Id, out existingHandle))
+                    if (BoundHandles.TryGetValue(reference.InstanceHandle.Id, out InstanceHandle existingHandle))
                     {
                         Fx.AssertAndFailFast(!object.ReferenceEquals(existingHandle, reference.InstanceHandle), "InstanceStore lock state is not correct in InitiateLockResolution.");
                         if (existingHandle.Version <= 0 || instanceVersion <= 0)
@@ -270,8 +267,7 @@ namespace CoreWf.Runtime.DurableInstancing
 
             lock (HandlesLock)
             {
-                LockResolutionMarker marker = reference as LockResolutionMarker;
-                if (marker != null && !marker.IsComplete)
+                if (reference is LockResolutionMarker marker && !marker.IsComplete)
                 {
                     try
                     {
@@ -333,8 +329,7 @@ namespace CoreWf.Runtime.DurableInstancing
 
             try
             {
-                LockResolutionMarker marker = reference as LockResolutionMarker;
-                if (marker != null && !marker.IsComplete)
+                if (reference is LockResolutionMarker marker && !marker.IsComplete)
                 {
                     if (handlesPendingResolution == null)
                     {
@@ -353,8 +348,7 @@ namespace CoreWf.Runtime.DurableInstancing
 
             if (wasBoundToInstanceId != Guid.Empty)
             {
-                Queue<InstanceHandleReference> instanceQueue;
-                if (InProgressHandlesPerInstance.TryGetValue(wasBoundToInstanceId, out instanceQueue))
+                if (InProgressHandlesPerInstance.TryGetValue(wasBoundToInstanceId, out Queue<InstanceHandleReference> instanceQueue))
                 {
                     while (instanceQueue.Count > 0)
                     {
@@ -391,8 +385,7 @@ namespace CoreWf.Runtime.DurableInstancing
                         break;
                     }
 
-                    Queue<InstanceHandleReference> acceptingQueue;
-                    if (!InProgressHandlesPerInstance.TryGetValue(handleRef.InstanceHandle.Id, out acceptingQueue))
+                    if (!InProgressHandlesPerInstance.TryGetValue(handleRef.InstanceHandle.Id, out Queue<InstanceHandleReference> acceptingQueue))
                     {
                         if (CheckOldestReference(handleRef, ref handlesPendingResolution))
                         {
@@ -420,8 +413,7 @@ namespace CoreWf.Runtime.DurableInstancing
             }
             else if (handleRef.InstanceHandle.Id != Guid.Empty)
             {
-                Queue<InstanceHandleReference> queue;
-                if (!InProgressHandlesPerInstance.TryGetValue(handleRef.InstanceHandle.Id, out queue))
+                if (!InProgressHandlesPerInstance.TryGetValue(handleRef.InstanceHandle.Id, out Queue<InstanceHandleReference> queue))
                 {
                     queue = new Queue<InstanceHandleReference>(2);
                     InProgressHandlesPerInstance.Add(handleRef.InstanceHandle.Id, queue);
@@ -439,8 +431,7 @@ namespace CoreWf.Runtime.DurableInstancing
         // Returns false if the resolution failed, meaning that the marker can be removed.
         private bool CheckOldestReference(InstanceHandleReference handleRef, ref List<InstanceHandleReference> handlesPendingResolution)
         {
-            LockResolutionMarker marker = handleRef as LockResolutionMarker;
-            if (marker == null || marker.IsComplete)
+            if (!(handleRef is LockResolutionMarker marker) || marker.IsComplete)
             {
                 return true;
             }
@@ -448,8 +439,7 @@ namespace CoreWf.Runtime.DurableInstancing
             bool returnValue = true;
             try
             {
-                InstanceHandle existingHandle;
-                if (BoundHandles.TryGetValue(marker.InstanceHandle.Id, out existingHandle))
+                if (BoundHandles.TryGetValue(marker.InstanceHandle.Id, out InstanceHandle existingHandle))
                 {
                     Fx.AssertAndFailFast(!object.ReferenceEquals(existingHandle, marker.InstanceHandle), "InstanceStore lock state is not correct in CheckOldestReference.");
                     if (existingHandle.Version <= 0 || marker.InstanceVersion <= 0)
@@ -503,7 +493,7 @@ namespace CoreWf.Runtime.DurableInstancing
 
         private class LockResolutionMarker : InstanceHandleReference
         {
-            private AsyncWaitHandle _waitHandle = new AsyncWaitHandle(EventResetMode.ManualReset);
+            private readonly AsyncWaitHandle _waitHandle = new AsyncWaitHandle(EventResetMode.ManualReset);
 
             internal LockResolutionMarker(InstanceHandle instanceHandle, long instanceVersion)
                 : base(instanceHandle)

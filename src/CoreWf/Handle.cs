@@ -1,30 +1,31 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     public abstract class Handle
     {
-        private ActivityInstance _owner;
+        private ActivityInstance owner;
 
         // We check uninitialized because it should be false more often
-        private bool _isUninitialized;
+        private bool isUninitialized;
 
         protected Handle()
         {
-            _isUninitialized = true;
+            this.isUninitialized = true;
         }
 
         public ActivityInstance Owner
         {
             get
             {
-                return _owner;
+                return this.owner;
             }
         }
 
@@ -39,15 +40,15 @@ namespace CoreWf
         [DataMember(EmitDefaultValue = false, Name = "owner")]
         internal ActivityInstance SerializedOwner
         {
-            get { return _owner; }
-            set { _owner = value; }
+            get { return this.owner; }
+            set { this.owner = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "isUninitialized")]
         internal bool SerializedIsUninitialized
         {
-            get { return _isUninitialized; }
-            set { _isUninitialized = value; }
+            get { return this.isUninitialized; }
+            set { this.isUninitialized = value; }
         }
 
         [DataMember(EmitDefaultValue = false)]
@@ -61,7 +62,7 @@ namespace CoreWf
         {
             get
             {
-                return !_isUninitialized;
+                return !this.isUninitialized;
             }
         }
 
@@ -73,21 +74,21 @@ namespace CoreWf
 
         internal void Initialize(HandleInitializationContext context)
         {
-            _owner = context.OwningActivityInstance;
-            _isUninitialized = false;
+            this.owner = context.OwningActivityInstance;
+            this.isUninitialized = false;
 
             OnInitialize(context);
         }
 
         internal void Reinitialize(ActivityInstance owner)
         {
-            _owner = owner;
+            this.owner = owner;
         }
 
         internal void Uninitialize(HandleInitializationContext context)
         {
             OnUninitialize(context);
-            _isUninitialized = true;
+            this.isUninitialized = true;
         }
 
         protected virtual void OnInitialize(HandleInitializationContext context)
@@ -100,9 +101,9 @@ namespace CoreWf
 
         protected void ThrowIfUninitialized()
         {
-            if (_isUninitialized)
+            if (this.isUninitialized)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.HandleNotInitialized));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.HandleNotInitialized));
             }
         }
     }

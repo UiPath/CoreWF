@@ -1,19 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
-using System.Security;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Security;
+
     [DataContract]
     internal class FuncCompletionCallbackWrapper<T> : CompletionCallbackWrapper
     {
-        private static readonly Type s_callbackType = typeof(CompletionCallback<T>);
-        private static readonly Type[] s_callbackParameterTypes = new Type[] { typeof(NativeActivityContext), typeof(ActivityInstance), typeof(T) };
-
-        private T _resultValue;
+        private static readonly Type callbackType = typeof(CompletionCallback<T>);
+        private static readonly Type[] callbackParameterTypes = new Type[] { typeof(NativeActivityContext), typeof(ActivityInstance), typeof(T) };
+        private T resultValue;
 
         public FuncCompletionCallbackWrapper(CompletionCallback<T> callback, ActivityInstance owningInstance)
             : base(callback, owningInstance)
@@ -24,8 +23,8 @@ namespace CoreWf.Runtime
         [DataMember(EmitDefaultValue = false, Name = "resultValue")]
         internal T SerializedResultValue
         {
-            get { return _resultValue; }
-            set { _resultValue = value; }
+            get { return this.resultValue; }
+            set { this.resultValue = value; }
         }
 
         private int GetResultId(ActivityWithResult activity)
@@ -63,9 +62,8 @@ namespace CoreWf.Runtime
                 }
                 else
                 {
-                    ActivityWithResult activity = completedInstance.Activity as ActivityWithResult;
                     // for auto-generated results, we should bind the value from the Handler if available
-                    if (activity != null && TypeHelper.AreTypesCompatible(activity.ResultType, typeof(T)))
+                    if (completedInstance.Activity is ActivityWithResult activity && TypeHelper.AreTypesCompatible(activity.ResultType, typeof(T)))
                     {
                         resultId = GetResultId(activity);
                     }
@@ -80,15 +78,14 @@ namespace CoreWf.Runtime
             if (resultId >= 0)
             {
                 Location location = completedInstance.Environment.GetSpecificLocation(resultId);
-                Location<T> typedLocation = location as Location<T>;
 
-                if (typedLocation != null)
+                if (location is Location<T> typedLocation)
                 {
-                    _resultValue = typedLocation.Value;
+                    this.resultValue = typedLocation.Value;
                 }
                 else if (location != null)
                 {
-                    _resultValue = TypeHelper.Convert<T>(location.Value);
+                    this.resultValue = TypeHelper.Convert<T>(location.Value);
                 }
             }
         }
@@ -100,14 +97,14 @@ namespace CoreWf.Runtime
         {
             // Call the EnsureCallback overload that also looks for SomeMethod<T> where T is the result type
             // and the signature matches.
-            EnsureCallback(s_callbackType, s_callbackParameterTypes, s_callbackParameterTypes[2]);
+            EnsureCallback(callbackType, callbackParameterTypes, callbackParameterTypes[2]);
             CompletionCallback<T> completionCallback = (CompletionCallback<T>)this.Callback;
-            completionCallback(context, completedInstance, _resultValue);
+            completionCallback(context, completedInstance, this.resultValue);
         }
 
         protected override void OnSerializingGenericCallback()
         {
-            ValidateCallbackResolution(s_callbackType, s_callbackParameterTypes, s_callbackParameterTypes[2]);
+            ValidateCallbackResolution(callbackType, callbackParameterTypes, callbackParameterTypes[2]);
         }
     }
 }

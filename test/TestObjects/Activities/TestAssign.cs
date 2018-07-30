@@ -1,13 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Linq.Expressions;
 using CoreWf;
 using CoreWf.Statements;
-using Test.Common.TestObjects.Utilities.Validation;
 using System.Collections.Generic;
-using CoreWf.Expressions;
 using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities
@@ -51,9 +49,8 @@ namespace Test.Common.TestObjects.Activities
         {
             set
             {
-                Activity<Location<T>> we = value.ProductActivity as Activity<Location<T>>;
 
-                if (we == null)
+                if (!(value.ProductActivity is Activity<Location<T>> we))
                 {
                     throw new Exception("TestActivity should be for Activity<Location<T>> for conversion");
                 }

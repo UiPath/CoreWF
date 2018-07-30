@@ -1,19 +1,19 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf.Hosting;
+    using System.Collections.Generic;
+    using CoreWf.Runtime;
+
     /// <summary>
     /// StateMachineExtension is used to resume a bookmark outside StateMachine.
     /// </summary>
     internal class StateMachineExtension : IWorkflowInstanceExtension
     {
-        private WorkflowInstanceProxy _instance;
+        private WorkflowInstanceProxy instance;
 
         /// <summary>
         /// Used to get additional extensions.
@@ -30,7 +30,7 @@ namespace CoreWf.Statements
         /// <param name="instance">The value of WorkflowInstanceProxy</param>
         public void SetInstance(WorkflowInstanceProxy instance)
         {
-            _instance = instance;
+            this.instance = instance;
         }
 
         /// <summary>
@@ -39,10 +39,11 @@ namespace CoreWf.Statements
         /// <param name="bookmark">The value of Bookmark to be resumed</param>
         public void ResumeBookmark(Bookmark bookmark)
         {
-            IAsyncResult asyncResult = _instance.BeginResumeBookmark(bookmark, null, Fx.ThunkCallback(new AsyncCallback(StateMachineExtension.OnResumeBookmarkCompleted)), _instance);
+            // This method is necessary due to CSDMain 223257.
+            IAsyncResult asyncResult = this.instance.BeginResumeBookmark(bookmark, null, Fx.ThunkCallback(new AsyncCallback(StateMachineExtension.OnResumeBookmarkCompleted)), this.instance);
             if (asyncResult.CompletedSynchronously)
             {
-                _instance.EndResumeBookmark(asyncResult);
+                this.instance.EndResumeBookmark(asyncResult);
             }
         }
 

@@ -1,20 +1,21 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+
     [Fx.Tag.XamlVisible(false)]
     public sealed class AsyncCodeActivityContext : CodeActivityContext
     {
-        private AsyncOperationContext _asyncContext;
+        private readonly AsyncOperationContext asyncContext;
 
         internal AsyncCodeActivityContext(AsyncOperationContext asyncContext, ActivityInstance instance, ActivityExecutor executor)
             : base(instance, executor)
         {
-            _asyncContext = asyncContext;
+            this.asyncContext = asyncContext;
         }
 
         public bool IsCancellationRequested
@@ -31,12 +32,12 @@ namespace CoreWf
             get
             {
                 ThrowIfDisposed();
-                return _asyncContext.UserState;
+                return this.asyncContext.UserState;
             }
             set
             {
                 ThrowIfDisposed();
-                _asyncContext.UserState = value;
+                this.asyncContext.UserState = value;
             }
         }
 
@@ -45,9 +46,9 @@ namespace CoreWf
             ThrowIfDisposed();
 
             // This is valid to be called while aborting or while canceling
-            if (!this.CurrentInstance.IsCancellationRequested && !_asyncContext.IsAborting)
+            if (!this.CurrentInstance.IsCancellationRequested && !this.asyncContext.IsAborting)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
             }
 
             this.CurrentInstance.MarkCanceled();

@@ -1,24 +1,24 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Globalization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using CoreWf.Runtime;
+    using System.Globalization;
+
     [Fx.Tag.XamlVisible(false)]
     public class ValidationError
     {
-        private Activity _source;
+        private Activity source;
 
         public ValidationError(string message)
             : this(message, false, string.Empty)
         {
         }
-
+        
         public ValidationError(string message, bool isWarning)
             : this(message, isWarning, string.Empty)
-        {
+        {            
         }
 
         public ValidationError(string message, bool isWarning, string propertyName)
@@ -31,7 +31,7 @@ namespace CoreWf.Validation
         {
             this.SourceDetail = sourceDetail;
         }
-
+        
         internal ValidationError(string message, Activity activity)
             : this(message, false, string.Empty, activity)
         {
@@ -67,13 +67,13 @@ namespace CoreWf.Validation
             get;
             private set;
         }
-
+        
         public string PropertyName
         {
             get;
             private set;
         }
-
+        
         public string Id
         {
             get;
@@ -84,14 +84,14 @@ namespace CoreWf.Validation
         {
             get
             {
-                return _source;
+                return this.source;
             }
             internal set
             {
-                _source = value;
-                if (_source != null && this.SourceDetail == null)
+                this.source = value;
+                if (this.source != null && this.SourceDetail == null)
                 {
-                    this.SourceDetail = _source.Origin;
+                    this.SourceDetail = this.source.Origin;
                 }
             }
         }
@@ -101,13 +101,13 @@ namespace CoreWf.Validation
             get;
             internal set;
         }
-
+        
         public override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture,
                 "ValidationError {{ Message = {0}, Source = {1}, PropertyName = {2}, IsWarning = {3} }}",
                 this.Message,
-                this.Source,
+                this.Source,  
                 this.PropertyName,
                 this.IsWarning);
         }

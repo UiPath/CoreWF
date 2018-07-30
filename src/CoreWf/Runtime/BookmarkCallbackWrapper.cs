@@ -1,23 +1,21 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
-using System.Security;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Security;
+
     [DataContract]
     internal class BookmarkCallbackWrapper : CallbackWrapper
     {
-        private static readonly Type s_bookmarkCallbackType = typeof(BookmarkCallback);
-        private static readonly Type[] s_bookmarkCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(Bookmark), typeof(object) };
-
-        internal BookmarkCallbackWrapper() { }
+        private static readonly Type bookmarkCallbackType = typeof(BookmarkCallback);
+        private static readonly Type[] bookmarkCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(Bookmark), typeof(object) };
 
         public BookmarkCallbackWrapper(BookmarkCallback callback, ActivityInstance owningInstance)
             : this(callback, owningInstance, BookmarkOptions.None)
-        {
+        {           
         }
 
         public BookmarkCallbackWrapper(BookmarkCallback callback, ActivityInstance owningInstance, BookmarkOptions bookmarkOptions)
@@ -28,16 +26,16 @@ namespace CoreWf.Runtime
             this.Options = bookmarkOptions;
         }
 
-        private BookmarkOptions _options;
+        private BookmarkOptions options;
         public BookmarkOptions Options
         {
             get
             {
-                return _options;
+                return this.options;
             }
             private set
             {
-                _options = value;
+                this.options = value;
             }
         }
 
@@ -60,7 +58,7 @@ namespace CoreWf.Runtime
         [SecuritySafeCritical]
         public void Invoke(NativeActivityContext context, Bookmark bookmark, object value)
         {
-            EnsureCallback(s_bookmarkCallbackType, s_bookmarkCallbackParameters);
+            EnsureCallback(bookmarkCallbackType, bookmarkCallbackParameters);
             BookmarkCallback bookmarkCallback = (BookmarkCallback)this.Callback;
             bookmarkCallback(context, bookmark, value);
         }

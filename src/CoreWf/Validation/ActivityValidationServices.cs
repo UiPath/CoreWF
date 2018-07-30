@@ -1,47 +1,47 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Text;
+    using System.Linq;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+
     public static class ActivityValidationServices
     {
         internal static readonly ReadOnlyCollection<Activity> EmptyChildren = new ReadOnlyCollection<Activity>(new Activity[0]);
-        private static ValidationSettings s_defaultSettings = new ValidationSettings();
+        private static readonly ValidationSettings defaultSettings = new ValidationSettings();
         internal static ReadOnlyCollection<ValidationError> EmptyValidationErrors = new ReadOnlyCollection<ValidationError>(new List<ValidationError>(0));
 
         public static ValidationResults Validate(Activity toValidate)
         {
-            return Validate(toValidate, s_defaultSettings);
+            return Validate(toValidate, defaultSettings);
         }
 
         public static ValidationResults Validate(Activity toValidate, ValidationSettings settings)
         {
             if (toValidate == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("toValidate");
+                throw FxTrace.Exception.ArgumentNull(nameof(toValidate));
             }
 
             if (settings == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("settings");
+                throw FxTrace.Exception.ArgumentNull(nameof(settings));
             }
 
             if (toValidate.HasBeenAssociatedWithAnInstance)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(toValidate.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(toValidate.DisplayName)));
             }
 
             if (settings.PrepareForRuntime && (settings.SingleLevel || settings.SkipValidatingRootConfiguration || settings.OnlyUseAdditionalConstraints))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("settings", SR.InvalidPrepareForRuntimeValidationSettings);
+                throw FxTrace.Exception.Argument(nameof(settings), SR.InvalidPrepareForRuntimeValidationSettings);
             }
 
             InternalActivityValidationServices validator = new InternalActivityValidationServices(settings, toValidate);
@@ -59,7 +59,7 @@ namespace CoreWf.Validation
 
             if (exception != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(exception);
+                throw FxTrace.Exception.AsError(exception);
             }
         }
 
@@ -131,8 +131,7 @@ namespace CoreWf.Validation
                             found = true;
 
                             // Validate if the input argument type matches the expected argument type.
-                            object inputArgumentValue = null;
-                            if (inputs.TryGetValue(key, out inputArgumentValue))
+                            if (inputs.TryGetValue(key, out object inputArgumentValue))
                             {
                                 if (!TypeHelper.AreTypesCompatible(inputArgumentValue, argument.Type))
                                 {
@@ -175,7 +174,7 @@ namespace CoreWf.Validation
 
                 if (exceptionString != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument(parameterName, exceptionString);
+                    throw FxTrace.Exception.Argument(parameterName, exceptionString);
                 }
             }
         }
@@ -183,11 +182,7 @@ namespace CoreWf.Validation
         internal static void ValidateArguments(Activity activity, bool isRoot, ref IList<ValidationError> validationErrors)
         {
             Fx.Assert(activity != null, "Activity to validate should not be null.");
-
-            Dictionary<string, List<RuntimeArgument>> overloadGroups;
-            List<RuntimeArgument> requiredArgumentsNotInOverloadGroups;
-            ValidationHelper.OverloadGroupEquivalenceInfo equivalenceInfo;
-            if (ValidationHelper.GatherAndValidateOverloads(activity, out overloadGroups, out requiredArgumentsNotInOverloadGroups, out equivalenceInfo, ref validationErrors))
+            if (ValidationHelper.GatherAndValidateOverloads(activity, out Dictionary<string, List<RuntimeArgument>> overloadGroups, out List<RuntimeArgument> requiredArgumentsNotInOverloadGroups, out ValidationHelper.OverloadGroupEquivalenceInfo equivalenceInfo, ref validationErrors))
             {
                 // If we're not the root and the overload groups are valid
                 // then we validate the arguments
@@ -251,7 +246,7 @@ namespace CoreWf.Validation
                     }
 
                     exceptionMessageBuilder.AppendLine();
-                    exceptionMessageBuilder.Append(string.Format(/*SR.Culture,*/ "'{0}': {1}", activityName, validationError.Message));
+                    exceptionMessageBuilder.Append(string.Format("'{0}': {1}", activityName, validationError.Message));
 
                     if (exceptionMessageBuilder.Length > maxExceptionStringSize)
                     {
@@ -313,9 +308,9 @@ namespace CoreWf.Validation
                         prefix = SR.ValidationErrorPrefixForHiddenActivity(source);
                     }
                     return prefix;
-                }
+                }                
             }
-
+           
             // Find out if any of the parents of the activity are not publicly visible
             for (int i = 0; i < parentChain.Count; i++)
             {
@@ -338,7 +333,7 @@ namespace CoreWf.Validation
             {
                 source = source.Parent;
             }
-
+            
             if (toValidate.MemberOf.Parent != null)
             {
                 // Activity itself is hidden 
@@ -402,8 +397,7 @@ namespace CoreWf.Validation
 
                     if (results != null)
                     {
-                        object resultValidationErrors;
-                        if (results.TryGetValue(Constraint.ValidationErrorListArgumentName, out resultValidationErrors))
+                        if (results.TryGetValue(Constraint.ValidationErrorListArgumentName, out object resultValidationErrors))
                         {
                             IList<ValidationError> validationErrorList = (IList<ValidationError>)resultValidationErrors;
 
@@ -414,8 +408,7 @@ namespace CoreWf.Validation
                                     validationErrors = new List<ValidationError>();
                                 }
 
-                                Activity source;
-                                string prefix = ActivityValidationServices.GenerateValidationErrorPrefix(childActivity.Activity, parentChain, options, out source);
+                                string prefix = ActivityValidationServices.GenerateValidationErrorPrefix(childActivity.Activity, parentChain, options, out Activity source);
 
                                 for (int validationErrorIndex = 0; validationErrorIndex < validationErrorList.Count; validationErrorIndex++)
                                 {
@@ -459,44 +452,44 @@ namespace CoreWf.Validation
 
         private class InternalActivityValidationServices
         {
-            private ValidationSettings _settings;
-            private Activity _rootToValidate;
-            private IList<ValidationError> _errors;
-            private ProcessActivityTreeOptions _options;
-            private Activity _expressionRoot;
-            private LocationReferenceEnvironment _environment;
+            private readonly ValidationSettings settings;
+            private readonly Activity rootToValidate;
+            private IList<ValidationError> errors;
+            private ProcessActivityTreeOptions options;
+            private Activity expressionRoot;
+            private readonly LocationReferenceEnvironment environment;
 
             internal InternalActivityValidationServices(ValidationSettings settings, Activity toValidate)
             {
-                _settings = settings;
-                _rootToValidate = toValidate;
-                _environment = settings.Environment;
+                this.settings = settings;
+                this.rootToValidate = toValidate;
+                this.environment = settings.Environment;
             }
 
             internal ValidationResults InternalValidate()
             {
-                _options = ProcessActivityTreeOptions.GetValidationOptions(_settings);
+                this.options = ProcessActivityTreeOptions.GetValidationOptions(this.settings);
 
-                if (_settings.OnlyUseAdditionalConstraints)
+                if (this.settings.OnlyUseAdditionalConstraints)
                 {
                     // We don't want the errors from CacheMetadata so we send those to a "dummy" list.
                     IList<ValidationError> suppressedErrors = null;
-                    ActivityUtilities.CacheRootMetadata(_rootToValidate, _environment, _options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref suppressedErrors);
+                    ActivityUtilities.CacheRootMetadata(this.rootToValidate, this.environment, this.options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref suppressedErrors);
                 }
                 else
                 {
                     // We want to add the CacheMetadata errors to our errors collection
-                    ActivityUtilities.CacheRootMetadata(_rootToValidate, _environment, _options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref _errors);
+                    ActivityUtilities.CacheRootMetadata(this.rootToValidate, this.environment, this.options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref this.errors);
                 }
 
-                return new ValidationResults(_errors);
+                return new ValidationResults(this.errors);
             }
 
             private void ValidateElement(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)
             {
                 Activity toValidate = childActivity.Activity;
 
-                if (!_settings.SingleLevel || object.ReferenceEquals(toValidate, _rootToValidate))
+                if (!this.settings.SingleLevel || object.ReferenceEquals(toValidate, this.rootToValidate))
                 {
                     // 0. Open time violations are captured by the CacheMetadata walk.
 
@@ -505,33 +498,31 @@ namespace CoreWf.Validation
                     // 2. Build constraints are done by the CacheMetadata walk.
 
                     // 3. Then do policy constraints
-                    if (_settings.HasAdditionalConstraints && childActivity.CanBeExecuted && parentChain.WillExecute)
+                    if (this.settings.HasAdditionalConstraints && childActivity.CanBeExecuted && parentChain.WillExecute)
                     {
-                        bool suppressGetChildrenViolations = _settings.OnlyUseAdditionalConstraints || _settings.SingleLevel;
+                        bool suppressGetChildrenViolations = this.settings.OnlyUseAdditionalConstraints || this.settings.SingleLevel;
 
                         Type currentType = toValidate.GetType();
 
                         while (currentType != null)
                         {
-                            IList<Constraint> policyConstraints;
-                            if (_settings.AdditionalConstraints.TryGetValue(currentType, out policyConstraints))
+                            if (this.settings.AdditionalConstraints.TryGetValue(currentType, out IList<Constraint> policyConstraints))
                             {
-                                RunConstraints(childActivity, parentChain, policyConstraints, _options, suppressGetChildrenViolations, ref _errors);
+                                RunConstraints(childActivity, parentChain, policyConstraints, this.options, suppressGetChildrenViolations, ref this.errors);
                             }
 
-                            if (currentType.GetTypeInfo().IsGenericType)
+                            if (currentType.IsGenericType)
                             {
                                 Type genericDefinitionType = currentType.GetGenericTypeDefinition();
                                 if (genericDefinitionType != null)
                                 {
-                                    IList<Constraint> genericTypePolicyConstraints;
-                                    if (_settings.AdditionalConstraints.TryGetValue(genericDefinitionType, out genericTypePolicyConstraints))
+                                    if (this.settings.AdditionalConstraints.TryGetValue(genericDefinitionType, out IList<Constraint> genericTypePolicyConstraints))
                                     {
-                                        RunConstraints(childActivity, parentChain, genericTypePolicyConstraints, _options, suppressGetChildrenViolations, ref _errors);
+                                        RunConstraints(childActivity, parentChain, genericTypePolicyConstraints, this.options, suppressGetChildrenViolations, ref this.errors);
                                     }
                                 }
                             }
-                            currentType = currentType.GetTypeInfo().BaseType;
+                            currentType = currentType.BaseType;
                         }
                     }
 
@@ -540,36 +531,37 @@ namespace CoreWf.Validation
                     {
                         if (childActivity.Activity.HasNonEmptySubtree)
                         {
-                            _expressionRoot = childActivity.Activity;
+                            this.expressionRoot = childActivity.Activity;
                             // Back-compat: In Dev10 we always used ProcessActivityTreeOptions.FullCachingOptions here, and ignored this.options.
                             // So we need to continue to do that, unless the new Dev11 flag SkipRootConfigurationValidation is passed.
-                            ProcessActivityTreeOptions options = _options.SkipRootConfigurationValidation ? _options : ProcessActivityTreeOptions.FullCachingOptions;
+                            ProcessActivityTreeOptions options = this.options.SkipRootConfigurationValidation ? this.options : ProcessActivityTreeOptions.FullCachingOptions;
                             ActivityUtilities.FinishCachingSubtree(childActivity, parentChain, options, ValidateExpressionSubtree);
-                            _expressionRoot = null;
+                            this.expressionRoot = null;
                         }
                         else if (childActivity.Activity.InternalCanInduceIdle)
                         {
                             Activity activity = childActivity.Activity;
                             RuntimeArgument runtimeArgument = GetBoundRuntimeArgument(activity);
                             ValidationError error = new ValidationError(SR.CanInduceIdleActivityInArgumentExpression(runtimeArgument.Name, activity.Parent.DisplayName, activity.DisplayName), true, runtimeArgument.Name, activity.Parent);
-                            ActivityUtilities.Add(ref _errors, error);
+                            ActivityUtilities.Add(ref this.errors, error);
                         }
+
                     }
                 }
             }
 
             private void ValidateExpressionSubtree(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)
             {
-                Fx.Assert(_expressionRoot != null, "This callback should be called activities in the expression subtree only.");
+                Fx.Assert(this.expressionRoot != null, "This callback should be called activities in the expression subtree only.");
 
                 if (childActivity.Activity.InternalCanInduceIdle)
                 {
                     Activity activity = childActivity.Activity;
-                    Activity expressionRoot = _expressionRoot;
+                    Activity expressionRoot = this.expressionRoot;
 
                     RuntimeArgument runtimeArgument = GetBoundRuntimeArgument(expressionRoot);
                     ValidationError error = new ValidationError(SR.CanInduceIdleActivityInArgumentExpression(runtimeArgument.Name, expressionRoot.Parent.DisplayName, activity.DisplayName), true, runtimeArgument.Name, expressionRoot.Parent);
-                    ActivityUtilities.Add(ref _errors, error);
+                    ActivityUtilities.Add(ref this.errors, error);
                 }
             }
         }
@@ -618,5 +610,6 @@ namespace CoreWf.Validation
             InvalidNullInputs,
             InvalidNonNullInputs,
         }
+
     }
 }

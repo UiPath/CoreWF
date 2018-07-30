@@ -1,26 +1,31 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using CoreWf.Validation;
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Branches")]
+    using CoreWf.Validation;
+    using System.Collections.ObjectModel;
+    using CoreWf.Runtime.Collections;
+    using System.Runtime.Serialization;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Branches")]
     public sealed class Pick : NativeActivity
     {
         private const string pickStateProperty = "CoreWf.Statements.Pick.PickState";
-
-        private Collection<PickBranch> _branches;
-        private Variable<PickState> _pickStateVariable;
-        private Collection<Activity> _branchBodies;
-
+        private Collection<PickBranch> branches;
+        private readonly Variable<PickState> pickStateVariable;
+        private Collection<Activity> branchBodies;        
+        
         public Pick()
         {
-            _pickStateVariable = new Variable<PickState>();
+            this.pickStateVariable = new Variable<PickState>();
         }
 
         protected override bool CanInduceIdle
@@ -35,59 +40,61 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_branches == null)
+                if (this.branches == null)
                 {
-                    _branches = new ValidatingCollection<PickBranch>
+                    this.branches = new ValidatingCollection<PickBranch>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _branches;
+                return this.branches;
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        }
 
-        //protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
-        //{
-        //    PickState pickState = updateContext.GetValue(this.pickStateVariable);
-        //    Fx.Assert(pickState != null, "Pick's Execute must have run by now.");
+        protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
+        {
+            PickState pickState = updateContext.GetValue(this.pickStateVariable);
+            Fx.Assert(pickState != null, "Pick's Execute must have run by now.");
 
-        //    if (updateContext.IsCancellationRequested || pickState.TriggerCompletionBookmark == null)
-        //    {
-        //        // do not schedule newly added Branches once a Trigger has successfully completed.
-        //        return;
-        //    }            
+            if (updateContext.IsCancellationRequested || pickState.TriggerCompletionBookmark == null)
+            {
+                // do not schedule newly added Branches once a Trigger has successfully completed.
+                return;
+            }
 
-        //    CompletionCallback onBranchCompleteCallback = new CompletionCallback(OnBranchComplete);
-        //    foreach (PickBranchBody body in this.branchBodies)
-        //    {
-        //        if (updateContext.IsNewlyAdded(body))
-        //        {
-        //            updateContext.ScheduleActivity(body, onBranchCompleteCallback, null);
-        //        }
-        //    }
-        //}
+            CompletionCallback onBranchCompleteCallback = new CompletionCallback(OnBranchComplete);
+            foreach (PickBranchBody body in this.branchBodies)
+            {
+                if (updateContext.IsNewlyAdded(body))
+                {
+                    updateContext.ScheduleActivity(body, onBranchCompleteCallback, null);
+                }
+            }
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
-            if (_branchBodies == null)
+            if (this.branchBodies == null)
             {
-                _branchBodies = new Collection<Activity>();
+                this.branchBodies = new Collection<Activity>();
             }
             else
             {
-                _branchBodies.Clear();
+                this.branchBodies.Clear();
             }
 
             foreach (PickBranch branch in this.Branches)
@@ -96,32 +103,32 @@ namespace CoreWf.Statements
                 {
                     metadata.AddValidationError(new ValidationError(SR.PickBranchRequiresTrigger(branch.DisplayName), false, null, branch));
                 }
-
+                
                 PickBranchBody pickBranchBody = new PickBranchBody
                 {
                     Action = branch.Action,
                     DisplayName = branch.DisplayName,
                     Trigger = branch.Trigger,
-                    Variables = branch.Variables,
+                    Variables = branch.Variables,                    
                 };
 
-                _branchBodies.Add(pickBranchBody);
+                this.branchBodies.Add(pickBranchBody);
 
                 metadata.AddChild(pickBranchBody, origin: branch);
             }
-
-            metadata.AddImplementationVariable(_pickStateVariable);
+                        
+            metadata.AddImplementationVariable(this.pickStateVariable);
         }
 
         protected override void Execute(NativeActivityContext context)
         {
-            if (_branchBodies.Count == 0)
+            if (this.branchBodies.Count == 0)
             {
-                return;
+                 return;
             }
 
             PickState pickState = new PickState();
-            _pickStateVariable.Set(context, pickState);
+            this.pickStateVariable.Set(context, pickState);
 
             pickState.TriggerCompletionBookmark = context.CreateBookmark(new BookmarkCallback(OnTriggerComplete));
 
@@ -130,9 +137,9 @@ namespace CoreWf.Statements
             CompletionCallback onBranchCompleteCallback = new CompletionCallback(OnBranchComplete);
 
             //schedule every branch to only run trigger
-            for (int i = _branchBodies.Count - 1; i >= 0; i--)
+            for (int i = this.branchBodies.Count - 1; i >= 0; i--)
             {
-                context.ScheduleActivity(_branchBodies[i], onBranchCompleteCallback);
+                context.ScheduleActivity(this.branchBodies[i], onBranchCompleteCallback);
             }
         }
 
@@ -143,7 +150,7 @@ namespace CoreWf.Statements
 
         private void OnBranchComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            PickState pickState = _pickStateVariable.Get(context);
+            PickState pickState = this.pickStateVariable.Get(context);
             ReadOnlyCollection<ActivityInstance> executingChildren = context.GetChildren();
 
             switch (completedInstance.State)
@@ -162,7 +169,7 @@ namespace CoreWf.Statements
                             context.MarkCanceled();
                             context.RemoveAllBookmarks();
                         }
-                    }
+                    }                    
                     break;
             }
 
@@ -175,7 +182,7 @@ namespace CoreWf.Statements
 
         private void OnTriggerComplete(NativeActivityContext context, Bookmark bookmark, object state)
         {
-            PickState pickState = _pickStateVariable.Get(context);
+            PickState pickState = this.pickStateVariable.Get(context);
 
             string winningBranch = (string)state;
 
@@ -193,7 +200,7 @@ namespace CoreWf.Statements
                     resumeAction = false;
                 }
             }
-
+            
             if (resumeAction)
             {
                 ResumeExecutionActionBookmark(pickState, context);
@@ -265,17 +272,19 @@ namespace CoreWf.Statements
                 set;
             }
 
-            //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-            //{
-            //    PickBranchBody originalBranchBody = (PickBranchBody)originalActivity;
-            //    if ((originalBranchBody.Action != null && metadata.GetMatch(this.Trigger) == originalBranchBody.Action) || (this.Action != null && metadata.GetMatch(this.Action) == originalBranchBody.Trigger))
-            //    {
-            //        metadata.DisallowUpdateInsideThisActivity(SR.PickBranchTriggerActionSwapped);
-            //        return;
-            //    }
+#if NET45
+            protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+            {
+                PickBranchBody originalBranchBody = (PickBranchBody)originalActivity;
+                if ((originalBranchBody.Action != null && metadata.GetMatch(this.Trigger) == originalBranchBody.Action) || (this.Action != null && metadata.GetMatch(this.Action) == originalBranchBody.Trigger))
+                {
+                    metadata.DisallowUpdateInsideThisActivity(SR.PickBranchTriggerActionSwapped);
+                    return;
+                }
 
-            //    metadata.AllowUpdateInsideThisActivity();
-            //}
+                metadata.AllowUpdateInsideThisActivity();
+            } 
+#endif
 
             protected override void CacheMetadata(NativeActivityMetadata metadata)
             {
@@ -291,7 +300,7 @@ namespace CoreWf.Statements
                 }
 
                 metadata.SetChildrenCollection(children);
-
+                
                 metadata.SetVariablesCollection(this.Variables);
             }
 

@@ -1,27 +1,28 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldHaveCorrectSuffix,
-    //Justification = "Approved name")]
+    //    Justification = "Approved name")]
     public sealed class SymbolResolver : IDictionary<string, object>
     {
-        private Dictionary<string, ExternalLocationReference> _symbols;
+        private Dictionary<string, ExternalLocationReference> symbols;
 
         public SymbolResolver()
         {
-            _symbols = new Dictionary<string, ExternalLocationReference>();
+            this.symbols = new Dictionary<string, ExternalLocationReference>();
         }
 
         public int Count
         {
-            get { return _symbols.Count; }
+            get { return this.symbols.Count; }
         }
 
         public bool IsReadOnly
@@ -31,16 +32,16 @@ namespace CoreWf.Hosting
 
         public ICollection<string> Keys
         {
-            get { return _symbols.Keys; }
+            get { return this.symbols.Keys; }
         }
 
         public ICollection<object> Values
         {
             get
             {
-                List<object> values = new List<object>(_symbols.Count);
+                List<object> values = new List<object>(this.symbols.Count);
 
-                foreach (ExternalLocationReference reference in _symbols.Values)
+                foreach (ExternalLocationReference reference in this.symbols.Values)
                 {
                     values.Add(reference.Value);
                 }
@@ -54,47 +55,47 @@ namespace CoreWf.Hosting
             get
             {
                 // We don't need to do any existence checks since we want the dictionary exception to bubble up
-                return _symbols[key].Value;
+                return this.symbols[key].Value;
             }
 
             set
             {
                 // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-                _symbols[key] = CreateReference(key, value);
+                this.symbols[key] = CreateReference(key, value);
             }
         }
 
         public void Add(string key, object value)
         {
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-            _symbols.Add(key, CreateReference(key, value));
+            this.symbols.Add(key, CreateReference(key, value));
         }
 
         public void Add(string key, Type type)
         {
             if (type == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
+                throw FxTrace.Exception.ArgumentNull(nameof(type));
             }
 
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-            _symbols.Add(key, new ExternalLocationReference(key, type, TypeHelper.GetDefaultValueForType(type)));
+            this.symbols.Add(key, new ExternalLocationReference(key, type, TypeHelper.GetDefaultValueForType(type)));
         }
 
         public void Add(string key, object value, Type type)
         {
             if (type == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("type");
+                throw FxTrace.Exception.ArgumentNull(nameof(type));
             }
 
             if (!TypeHelper.AreTypesCompatible(value, type))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("value", SR.ValueMustBeAssignableToType);
+                throw FxTrace.Exception.Argument(nameof(value), SR.ValueMustBeAssignableToType);
             }
 
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-            _symbols.Add(key, new ExternalLocationReference(key, type, value));
+            this.symbols.Add(key, new ExternalLocationReference(key, type, value));
         }
 
         private ExternalLocationReference CreateReference(string name, object value)
@@ -116,14 +117,13 @@ namespace CoreWf.Hosting
 
         public void Clear()
         {
-            _symbols.Clear();
+            this.symbols.Clear();
         }
 
         public bool Contains(KeyValuePair<string, object> item)
         {
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-            ExternalLocationReference reference;
-            if (_symbols.TryGetValue(item.Key, out reference))
+            if (this.symbols.TryGetValue(item.Key, out ExternalLocationReference reference))
             {
                 return item.Value == reference.Value;
             }
@@ -134,32 +134,32 @@ namespace CoreWf.Hosting
         public bool ContainsKey(string key)
         {
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-            return _symbols.ContainsKey(key);
+            return this.symbols.ContainsKey(key);
         }
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
             if (array == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("array");
+                throw FxTrace.Exception.ArgumentNull(nameof(array));
             }
 
             if (arrayIndex < 0)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("arrayIndex", arrayIndex, SR.CopyToIndexOutOfRange);
+                throw FxTrace.Exception.ArgumentOutOfRange(nameof(arrayIndex), arrayIndex, SR.CopyToIndexOutOfRange);
             }
 
             if (array.Rank > 1)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("array", SR.CopyToRankMustBeOne);
+                throw FxTrace.Exception.Argument(nameof(array), SR.CopyToRankMustBeOne);
             }
 
-            if (_symbols.Count > array.Length - arrayIndex)
+            if (this.symbols.Count > array.Length - arrayIndex)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("array", SR.CopyToNotEnoughSpaceInArray);
+                throw FxTrace.Exception.Argument(nameof(array), SR.CopyToNotEnoughSpaceInArray);
             }
 
-            foreach (KeyValuePair<string, ExternalLocationReference> pair in _symbols)
+            foreach (KeyValuePair<string, ExternalLocationReference> pair in this.symbols)
             {
                 Fx.Assert(arrayIndex < array.Length, "We must have room since we validated it.");
 
@@ -170,7 +170,7 @@ namespace CoreWf.Hosting
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            foreach (KeyValuePair<string, ExternalLocationReference> pair in _symbols)
+            foreach (KeyValuePair<string, ExternalLocationReference> pair in this.symbols)
             {
                 yield return new KeyValuePair<string, object>(pair.Key, pair.Value.Value);
             }
@@ -178,7 +178,7 @@ namespace CoreWf.Hosting
 
         internal IEnumerable<KeyValuePair<string, LocationReference>> GetLocationReferenceEnumerator()
         {
-            foreach (KeyValuePair<string, ExternalLocationReference> pair in _symbols)
+            foreach (KeyValuePair<string, ExternalLocationReference> pair in this.symbols)
             {
                 yield return new KeyValuePair<string, LocationReference>(pair.Key, pair.Value);
             }
@@ -192,18 +192,17 @@ namespace CoreWf.Hosting
         public bool Remove(string key)
         {
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-            return _symbols.Remove(key);
+            return this.symbols.Remove(key);
         }
 
         public bool Remove(KeyValuePair<string, object> item)
         {
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
-            ExternalLocationReference reference;
-            if (_symbols.TryGetValue(item.Key, out reference))
+            if (this.symbols.TryGetValue(item.Key, out ExternalLocationReference reference))
             {
                 if (reference.Value == item.Value)
                 {
-                    _symbols.Remove(item.Key);
+                    this.symbols.Remove(item.Key);
                     return true;
                 }
             }
@@ -215,8 +214,7 @@ namespace CoreWf.Hosting
         {
             // We don't need to check key for null since we want the exception to bubble up from the inner dictionary
 
-            ExternalLocationReference reference;
-            if (_symbols.TryGetValue(key, out reference))
+            if (this.symbols.TryGetValue(key, out ExternalLocationReference reference))
             {
                 value = reference.Value;
                 return true;
@@ -228,8 +226,7 @@ namespace CoreWf.Hosting
 
         internal bool TryGetLocationReference(string name, out LocationReference result)
         {
-            ExternalLocationReference reference;
-            if (_symbols.TryGetValue(name, out reference))
+            if (this.symbols.TryGetValue(name, out ExternalLocationReference reference))
             {
                 result = reference;
                 return true;
@@ -249,8 +246,7 @@ namespace CoreWf.Hosting
             }
             else
             {
-                ExternalLocationReference externalLocationReference;
-                if (_symbols.TryGetValue(locationReference.Name, out externalLocationReference))
+                if (this.symbols.TryGetValue(locationReference.Name, out ExternalLocationReference externalLocationReference))
                 {
                     if (externalLocationReference.Type == locationReference.Type)
                     {
@@ -264,8 +260,7 @@ namespace CoreWf.Hosting
 
         private Location GetLocation(string name, Type type)
         {
-            ExternalLocationReference reference;
-            if (_symbols.TryGetValue(name, out reference))
+            if (this.symbols.TryGetValue(name, out ExternalLocationReference reference))
             {
                 if (reference.Type == type)
                 {
@@ -274,7 +269,7 @@ namespace CoreWf.Hosting
                 }
             }
 
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverDoesNotHaveSymbol(name, type)));
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverDoesNotHaveSymbol(name, type)));
         }
 
         public LocationReferenceEnvironment AsLocationReferenceEnvironment()
@@ -284,11 +279,11 @@ namespace CoreWf.Hosting
 
         private class SymbolResolverLocationReferenceEnvironment : LocationReferenceEnvironment
         {
-            private SymbolResolver _symbolResolver;
+            private readonly SymbolResolver symbolResolver;
 
             public SymbolResolverLocationReferenceEnvironment(SymbolResolver symbolResolver)
             {
-                _symbolResolver = symbolResolver;
+                this.symbolResolver = symbolResolver;
             }
 
             public override Activity Root
@@ -303,26 +298,26 @@ namespace CoreWf.Hosting
             {
                 if (locationReference == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                    throw FxTrace.Exception.ArgumentNull(nameof(locationReference));
                 }
 
-                return _symbolResolver.IsVisible(locationReference);
+                return this.symbolResolver.IsVisible(locationReference);
             }
 
             public override bool TryGetLocationReference(string name, out LocationReference result)
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                    throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
                 }
 
-                return _symbolResolver.TryGetLocationReference(name, out result);
+                return this.symbolResolver.TryGetLocationReference(name, out result);
             }
 
             public override IEnumerable<LocationReference> GetLocationReferences()
             {
                 List<LocationReference> list = new List<LocationReference>();
-                foreach (ExternalLocationReference item in _symbolResolver._symbols.Values)
+                foreach (ExternalLocationReference item in this.symbolResolver.symbols.Values)
                 {
                     list.Add(item);
                 }
@@ -332,22 +327,22 @@ namespace CoreWf.Hosting
 
         private class ExternalLocationReference : LocationReference
         {
-            private ExternalLocation _location;
-            private string _name;
-            private Type _type;
+            private readonly ExternalLocation location;
+            private readonly string name;
+            private readonly Type type;
 
             public ExternalLocationReference(string name, Type type, object value)
             {
-                _name = name;
-                _type = type;
-                _location = new ExternalLocation(_type, value);
+                this.name = name;
+                this.type = type;
+                this.location = new ExternalLocation(this.type, value);
             }
 
             public object Value
             {
                 get
                 {
-                    return _location.Value;
+                    return this.location.Value;
                 }
             }
 
@@ -355,7 +350,7 @@ namespace CoreWf.Hosting
             {
                 get
                 {
-                    return _location;
+                    return this.location;
                 }
             }
 
@@ -363,7 +358,7 @@ namespace CoreWf.Hosting
             {
                 get
                 {
-                    return _name;
+                    return this.name;
                 }
             }
 
@@ -371,7 +366,7 @@ namespace CoreWf.Hosting
             {
                 get
                 {
-                    return _type;
+                    return this.type;
                 }
             }
 
@@ -381,7 +376,7 @@ namespace CoreWf.Hosting
 
                 if (resolver == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanNotFindSymbolResolverInWorkflowInstanceExtensions));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CanNotFindSymbolResolverInWorkflowInstanceExtensions));
                 }
 
                 return resolver.GetLocation(this.Name, this.Type);
@@ -389,20 +384,20 @@ namespace CoreWf.Hosting
 
             private class ExternalLocation : Location
             {
-                private Type _type;
-                private object _value;
+                private readonly Type type;
+                private readonly object value;
 
                 public ExternalLocation(Type type, object value)
                 {
-                    _type = type;
-                    _value = value;
+                    this.type = type;
+                    this.value = value;
                 }
 
                 public override Type LocationType
                 {
                     get
                     {
-                        return _type;
+                        return this.type;
                     }
                 }
 
@@ -410,11 +405,11 @@ namespace CoreWf.Hosting
                 {
                     get
                     {
-                        return _value;
+                        return this.value;
                     }
                     set
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExternalLocationsGetOnly));
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExternalLocationsGetOnly));
                     }
                 }
             }

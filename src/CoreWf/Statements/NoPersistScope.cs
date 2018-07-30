@@ -1,25 +1,26 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Body")]
+    using CoreWf;
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Linq;
+    using Portable.Xaml.Markup;
+    using CoreWf.Runtime;
+
+    [ContentProperty("Body")]
     public sealed class NoPersistScope : NativeActivity
     {
-        private static Constraint s_constraint;
-
-        private Variable<NoPersistHandle> _noPersistHandle;
+        private static Constraint constraint;
+        private readonly Variable<NoPersistHandle> noPersistHandle;
 
         public NoPersistScope()
         {
-            _noPersistHandle = new Variable<NoPersistHandle>();
+            this.noPersistHandle = new Variable<NoPersistHandle>();
             this.Constraints.Add(NoPersistScope.Constraint);
         }
 
@@ -34,26 +35,26 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (s_constraint == null)
+                if (constraint == null)
                 {
-                    s_constraint = NoPersistScope.NoPersistInScope();
+                    constraint = NoPersistScope.NoPersistInScope();
                 }
 
-                return s_constraint;
+                return constraint;
             }
         }
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             metadata.AddChild(this.Body);
-            metadata.AddImplementationVariable(_noPersistHandle);
+            metadata.AddImplementationVariable(this.noPersistHandle);
         }
 
         protected override void Execute(NativeActivityContext context)
         {
             if (this.Body != null)
             {
-                NoPersistHandle handle = _noPersistHandle.Get(context);
+                NoPersistHandle handle = this.noPersistHandle.Get(context);
                 handle.Enter(context);
                 context.ScheduleActivity(this.Body);
             }

@@ -1,11 +1,10 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities.Tracing;
-using Test.Common.TestObjects.Utilities;
 using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.Activities
@@ -15,7 +14,7 @@ namespace Test.Common.TestObjects.Activities
         protected int iterationNumber = 0;
         private static int s_nameCount = 1;
         private Activity _productActivity = null;
-        private List<WorkflowTraceStep> _customActivitySpecificTraces = new List<WorkflowTraceStep>();
+        private readonly List<WorkflowTraceStep> _customActivitySpecificTraces = new List<WorkflowTraceStep>();
 
         // For transition period this needs to point to uses old tracing
         //  Afterwards should be changed to always Complete
@@ -89,9 +88,8 @@ namespace Test.Common.TestObjects.Activities
 
         public TestActivity FindChildActivity(string targetDisplayName)
         {
-            TestActivity found;
 
-            if (!TryFindChildActivity(targetDisplayName, out found))
+            if (!TryFindChildActivity(targetDisplayName, out TestActivity found))
             {
                 throw new Exception(
                     string.Format("Could not find any TestActivity with DisplayName='{0}'",

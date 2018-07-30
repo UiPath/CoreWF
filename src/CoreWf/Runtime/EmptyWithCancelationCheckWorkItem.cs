@@ -1,27 +1,27 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class EmptyWithCancelationCheckWorkItem : ActivityExecutionWorkItem
     {
-        private ActivityInstance _completedInstance;
+        private ActivityInstance completedInstance;
 
         public EmptyWithCancelationCheckWorkItem(ActivityInstance activityInstance, ActivityInstance completedInstance)
             : base(activityInstance)
         {
-            _completedInstance = completedInstance;
+            this.completedInstance = completedInstance;
             this.IsEmpty = true;
         }
 
         [DataMember(Name = "completedInstance")]
         internal ActivityInstance SerializedCompletedInstance
         {
-            get { return _completedInstance; }
-            set { _completedInstance = value; }
+            get { return this.completedInstance; }
+            set { this.completedInstance = value; }
         }
 
         public override void TraceCompleted()
@@ -48,7 +48,7 @@ namespace CoreWf.Runtime
 
         public override void PostProcess(ActivityExecutor executor)
         {
-            if (_completedInstance.State != ActivityInstanceState.Closed && this.ActivityInstance.IsPerformingDefaultCancelation)
+            if (this.completedInstance.State != ActivityInstanceState.Closed && this.ActivityInstance.IsPerformingDefaultCancelation)
             {
                 this.ActivityInstance.MarkCanceled();
             }

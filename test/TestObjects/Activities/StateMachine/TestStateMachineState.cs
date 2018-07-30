@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -33,10 +33,12 @@ namespace Test.Common.TestObjects.Activities
 
             _productState = new State();
 
-            _transitions = new MemberCollection<TestTransition>(AddTransition);
-            _transitions.RemoveItem = RemoveTransition;
-            _transitions.RemoveAtItem = RemoveAtTransition;
-            _transitions.InsertItem = InsertTransition;
+            _transitions = new MemberCollection<TestTransition>(AddTransition)
+            {
+                RemoveItem = RemoveTransition,
+                RemoveAtItem = RemoveAtTransition,
+                InsertItem = InsertTransition
+            };
 
             // InternalState default display name is String.Empty.
             this.DisplayName = string.Empty;

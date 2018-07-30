@@ -1,14 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.DurableInstancing
 {
-    //using System.Diagnostics.CodeAnalysis;
+    using CoreWf.Runtime;
+    using CoreWf.Runtime.DurableInstancing;
 
-    [Fx.Tag.XamlVisible(false)]
+    [Fx.Tag.XamlVisible(false)]   
     public sealed class HasActivatableWorkflowEvent : InstancePersistenceEvent<HasActivatableWorkflowEvent>
     {
         public HasActivatableWorkflowEvent()

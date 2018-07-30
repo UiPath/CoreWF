@@ -1,28 +1,30 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using CoreWf.XamlIntegration;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Runtime.Serialization;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
     public abstract class Argument
     {
         public static readonly int UnspecifiedEvaluationOrder = -1;
 
         public const string ResultValue = "Result";
-
-        private ArgumentDirection _direction;
-        private RuntimeArgument _runtimeArgument;
-        private int _evaluationOrder;
+        private ArgumentDirection direction;
+        private RuntimeArgument runtimeArgument;
+        private int evaluationOrder;
 
         internal Argument()
         {
-            _evaluationOrder = Argument.UnspecifiedEvaluationOrder;
+            this.evaluationOrder = Argument.UnspecifiedEvaluationOrder;
         }
 
         public Type ArgumentType
@@ -35,12 +37,12 @@ namespace CoreWf
         {
             get
             {
-                return _direction;
+                return this.direction;
             }
             internal set
             {
                 ArgumentDirectionHelper.Validate(value, "value");
-                _direction = value;
+                this.direction = value;
             }
         }
 
@@ -49,15 +51,15 @@ namespace CoreWf
         {
             get
             {
-                return _evaluationOrder;
+                return this.evaluationOrder;
             }
             set
             {
                 if (value < 0 && value != Argument.UnspecifiedEvaluationOrder)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentOutOfRange("EvaluationOrder", value, SR.InvalidEvaluationOrderValue);
+                    throw FxTrace.Exception.ArgumentOutOfRange("EvaluationOrder", value, SR.InvalidEvaluationOrderValue);
                 }
-                _evaluationOrder = value;
+                this.evaluationOrder = value;
             }
         }
 
@@ -73,7 +75,7 @@ namespace CoreWf
             {
                 this.ExpressionCore = value;
             }
-        }
+        }        
 
         internal abstract ActivityWithResult ExpressionCore
         {
@@ -85,11 +87,11 @@ namespace CoreWf
         {
             get
             {
-                return _runtimeArgument;
+                return this.runtimeArgument;
             }
             set
             {
-                _runtimeArgument = value;
+                this.runtimeArgument = value;
             }
         }
 
@@ -97,7 +99,7 @@ namespace CoreWf
         {
             get
             {
-                return (_runtimeArgument != null && _runtimeArgument.IsInTree);
+                return (this.runtimeArgument != null && this.runtimeArgument.IsInTree);
             }
         }
 
@@ -111,8 +113,8 @@ namespace CoreWf
         {
             get
             {
-                Fx.Assert(_runtimeArgument != null, "We shouldn't call Id unless we have a runtime argument.");
-                return _runtimeArgument.Id;
+                Fx.Assert(this.runtimeArgument != null, "We shouldn't call Id unless we have a runtime argument.");
+                return this.runtimeArgument.Id;
             }
         }
 
@@ -128,48 +130,48 @@ namespace CoreWf
         {
             if (argumentToReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
             }
 
             return ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, argumentToReference.Direction, referencedArgumentName);
         }
 
         // for ArgumentValueSerializer
-        //internal bool CanConvertToString(IValueSerializerContext context)
-        //{
-        //    if (this.WasDesignTimeNull)
-        //    {
-        //        return true;
-        //    }            
-        //    else
-        //    {
-        //        if (this.EvaluationOrder == Argument.UnspecifiedEvaluationOrder)
-        //        {
-        //            return ActivityWithResultValueSerializer.CanConvertToStringWrapper(this.Expression, context);
-        //        }
-        //        else
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //}
+        internal bool CanConvertToString(IValueSerializerContext context)
+        {
+            if (this.WasDesignTimeNull)
+            {
+                return true;
+            }            
+            else
+            {
+                if (this.EvaluationOrder == Argument.UnspecifiedEvaluationOrder)
+                {
+                    return ActivityWithResultValueSerializer.CanConvertToStringWrapper(this.Expression, context);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
 
-        //internal string ConvertToString(IValueSerializerContext context)
-        //{
-        //    if (this.WasDesignTimeNull)
-        //    {
-        //        // this argument instance was artificially created by the runtime
-        //        // to Xaml, this should appear as {x:Null}
-        //        return null;
-        //    }
+        internal string ConvertToString(IValueSerializerContext context)
+        {
+            if (this.WasDesignTimeNull)
+            {
+                // this argument instance was artificially created by the runtime
+                // to Xaml, this should appear as {x:Null}
+                return null;
+            }
 
-        //    return ActivityWithResultValueSerializer.ConvertToStringWrapper(this.Expression, context);
-        //}
+            return ActivityWithResultValueSerializer.ConvertToStringWrapper(this.Expression, context);
+        }
 
         internal static void Bind(Argument binding, RuntimeArgument argument)
         {
@@ -188,7 +190,7 @@ namespace CoreWf
         {
             if (argument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argument");
+                throw FxTrace.Exception.ArgumentNull(nameof(argument));
             }
 
             bool passedValidations = true;
@@ -238,7 +240,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();
@@ -250,7 +252,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();
@@ -311,19 +313,19 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();
 
-            return _runtimeArgument.GetLocation(context);
+            return this.runtimeArgument.GetLocation(context);
         }
 
         internal void ThrowIfNotInTree()
         {
             if (!this.IsInTree)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentNotInTree(this.ArgumentType)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentNotInTree(this.ArgumentType)));
             }
         }
 

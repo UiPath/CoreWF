@@ -1,17 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Core WF ETW Tracking Provider</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) ETW tracking provider to the .NET Standard</Description>
     <Authors>Dustin Metzgar,Jim Carley</Authors>
-    <Copyright>Copyright &#169; Dustin Metzgar 2017</Copyright> 
+    <Copyright>Copyright © Dustin Metzgar 2017</Copyright> 
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <ProjectReference Include="../CoreWf/CoreWf.csproj" />
   </ItemGroup>
 

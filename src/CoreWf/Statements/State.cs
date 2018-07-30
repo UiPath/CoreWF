@@ -1,22 +1,25 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf;
+    using System.ComponentModel;
+    using System.Collections.ObjectModel;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
     /// <summary>
     /// This class represents a State in a StateMachine.
     /// </summary>
     public sealed class State
     {
-        private InternalState _internalState;
-        private Collection<Transition> _transitions;
-        private NoOp _nullTrigger;
-        private Collection<Variable> _variables;
+        private InternalState internalState;
+        private Collection<Transition> transitions;
+        private NoOp nullTrigger;
+        private Collection<Variable> variables;
 
         /// <summary>
         /// Gets or sets DisplayName of the State.
@@ -42,7 +45,7 @@ namespace CoreWf.Statements
         /// Gets or sets exit action of the State. It is executed when the StateMachine leaves the State. 
         /// It's optional.
         /// </summary>
-        //[DependsOn("Entry")]
+        [DependsOn("Entry")]
         [DefaultValue(null)]
         public Activity Exit
         {
@@ -54,54 +57,56 @@ namespace CoreWf.Statements
         /// <summary>
         /// Gets Transitions collection contains all outgoing Transitions from the State.
         /// </summary>
-        //[DependsOn("Exit")]
+        [DependsOn("Exit")]
         public Collection<Transition> Transitions
         {
             get
             {
-                if (_transitions == null)
+                if (this.transitions == null)
                 {
-                    _transitions = new ValidatingCollection<Transition>
+                    this.transitions = new ValidatingCollection<Transition>
                     {
+
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("item"));
+                                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
                             }
                         },
                     };
                 }
 
-                return _transitions;
+                return this.transitions;
             }
         }
 
         /// <summary>
         /// Gets Variables which can be used within the scope of State and its Transitions collection.
         /// </summary>
-        //[DependsOn("Transitions")]
+        [DependsOn("Transitions")]
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
+
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentNullException("item"));
+                                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
                             }
                         },
                     };
                 }
 
-                return _variables;
+                return this.variables;
             }
         }
 
@@ -122,11 +127,11 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_internalState == null)
+                if (this.internalState == null)
                 {
-                    _internalState = new InternalState(this);
+                    this.internalState = new InternalState(this);
                 }
-                return _internalState;
+                return this.internalState;
             }
         }
 
@@ -172,33 +177,30 @@ namespace CoreWf.Statements
         /// </summary>
         internal void ClearInternalState()
         {
-            _internalState = null;
+            this.internalState = null;
         }
 
         internal NoOp NullTrigger
         {
             get
             {
-                if (_nullTrigger == null)
+                if (this.nullTrigger == null)
                 {
-                    _nullTrigger = new NoOp
+                    this.nullTrigger = new NoOp
                     {
                         DisplayName = "Null Trigger"
                     };
                 }
 
-                return _nullTrigger;
+                return this.nullTrigger;
             }
         }
 
         internal sealed class NoOp : CodeActivity
         {
-            protected override void CacheMetadata(CodeActivityMetadata metadata)
-            {
-            }
-
             protected override void Execute(CodeActivityContext context)
             {
+
             }
         }
     }

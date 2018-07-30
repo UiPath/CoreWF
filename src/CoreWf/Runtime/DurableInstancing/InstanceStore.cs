@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -53,7 +53,7 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (instanceId == Guid.Empty)
             {
-                throw Fx.Exception.Argument("instanceId", SR.CannotCreateContextWithNullId);
+                throw Fx.Exception.Argument(nameof(instanceId), SR.CannotCreateContextWithNullId);
             }
             return PrepareInstanceHandle(new InstanceHandle(this, owner, instanceId));
         }
@@ -66,15 +66,15 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (command == null)
             {
-                throw Fx.Exception.ArgumentNull("command");
+                throw Fx.Exception.ArgumentNull(nameof(command));
             }
             if (handle == null)
             {
-                throw Fx.Exception.ArgumentNull("handle");
+                throw Fx.Exception.ArgumentNull(nameof(handle));
             }
             if (!object.ReferenceEquals(this, handle.Store))
             {
-                throw Fx.Exception.Argument("handle", SR.ContextNotFromThisStore);
+                throw Fx.Exception.Argument(nameof(handle), SR.ContextNotFromThisStore);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -86,15 +86,15 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (command == null)
             {
-                throw Fx.Exception.ArgumentNull("command");
+                throw Fx.Exception.ArgumentNull(nameof(command));
             }
             if (handle == null)
             {
-                throw Fx.Exception.ArgumentNull("handle");
+                throw Fx.Exception.ArgumentNull(nameof(handle));
             }
             if (!object.ReferenceEquals(this, handle.Store))
             {
-                throw Fx.Exception.Argument("handle", SR.ContextNotFromThisStore);
+                throw Fx.Exception.Argument(nameof(handle), SR.ContextNotFromThisStore);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -124,11 +124,11 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (handle == null)
             {
-                throw Fx.Exception.ArgumentNull("handle");
+                throw Fx.Exception.ArgumentNull(nameof(handle));
             }
             if (!object.ReferenceEquals(this, handle.Store))
             {
-                throw Fx.Exception.Argument("handle", SR.ContextNotFromThisStore);
+                throw Fx.Exception.Argument(nameof(handle), SR.ContextNotFromThisStore);
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -146,21 +146,20 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (persistenceEvent == null)
             {
-                throw Fx.Exception.ArgumentNull("persistenceEvent");
+                throw Fx.Exception.ArgumentNull(nameof(persistenceEvent));
             }
             if (owner == null)
             {
-                throw Fx.Exception.ArgumentNull("owner");
+                throw Fx.Exception.ArgumentNull(nameof(owner));
             }
 
             InstanceNormalEvent normal;
             InstanceHandle[] handlesToNotify = null;
             lock (ThisLock)
             {
-                WeakReference ownerReference;
-                if (!_owners.TryGetValue(owner.InstanceOwnerId, out ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
+                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
                 {
-                    throw Fx.Exception.Argument("owner", SR.OwnerBelongsToWrongStore);
+                    throw Fx.Exception.Argument(nameof(owner), SR.OwnerBelongsToWrongStore);
                 }
 
                 normal = GetOwnerEventHelper(persistenceEvent, owner);
@@ -186,23 +185,21 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (persistenceEvent == null)
             {
-                throw Fx.Exception.ArgumentNull("persistenceEvent");
+                throw Fx.Exception.ArgumentNull(nameof(persistenceEvent));
             }
             if (owner == null)
             {
-                throw Fx.Exception.ArgumentNull("owner");
+                throw Fx.Exception.ArgumentNull(nameof(owner));
             }
 
-            InstanceNormalEvent normal;
             lock (ThisLock)
             {
-                WeakReference ownerReference;
-                if (!_owners.TryGetValue(owner.InstanceOwnerId, out ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
+                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
                 {
-                    throw Fx.Exception.Argument("owner", SR.OwnerBelongsToWrongStore);
+                    throw Fx.Exception.Argument(nameof(owner), SR.OwnerBelongsToWrongStore);
                 }
 
-                if (!owner.Events.TryGetValue(persistenceEvent.Name, out normal))
+                if (!owner.Events.TryGetValue(persistenceEvent.Name, out InstanceNormalEvent normal))
                 {
                     return;
                 }
@@ -259,15 +256,14 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             if (owner == null)
             {
-                throw Fx.Exception.ArgumentNull("owner");
+                throw Fx.Exception.ArgumentNull(nameof(owner));
             }
 
             lock (ThisLock)
             {
-                WeakReference ownerReference;
-                if (!_owners.TryGetValue(owner.InstanceOwnerId, out ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
+                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
                 {
-                    throw Fx.Exception.Argument("owner", SR.OwnerBelongsToWrongStore);
+                    throw Fx.Exception.Argument(nameof(owner), SR.OwnerBelongsToWrongStore);
                 }
 
                 return owner.Events.Values.ToArray();
@@ -278,9 +274,8 @@ namespace CoreWf.Runtime.DurableInstancing
         {
             lock (ThisLock)
             {
-                WeakReference ownerRef;
                 InstanceOwner owner;
-                if (_owners.TryGetValue(instanceOwnerId, out ownerRef))
+                if (_owners.TryGetValue(instanceOwnerId, out WeakReference ownerRef))
                 {
                     owner = (InstanceOwner)ownerRef.Target;
                     if (owner == null)
@@ -406,8 +401,7 @@ namespace CoreWf.Runtime.DurableInstancing
         // Must be called under ThisLock.  Doesn't validate the InstanceOwner.
         private InstanceNormalEvent GetOwnerEventHelper(InstancePersistenceEvent persistenceEvent, InstanceOwner owner)
         {
-            InstanceNormalEvent normal;
-            if (!owner.Events.TryGetValue(persistenceEvent.Name, out normal))
+            if (!owner.Events.TryGetValue(persistenceEvent.Name, out InstanceNormalEvent normal))
             {
                 normal = new InstanceNormalEvent(persistenceEvent);
                 owner.Events.Add(persistenceEvent.Name, normal);

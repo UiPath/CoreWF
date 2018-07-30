@@ -1,36 +1,37 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     public sealed class RegistrationContext
     {
-        private ExecutionPropertyManager _properties;
-        private IdSpace _currentIdSpace;
+        private readonly ExecutionPropertyManager properties;
+        private readonly IdSpace currentIdSpace;
 
         internal RegistrationContext(ExecutionPropertyManager properties, IdSpace currentIdSpace)
         {
-            _properties = properties;
-            _currentIdSpace = currentIdSpace;
+            this.properties = properties;
+            this.currentIdSpace = currentIdSpace;
         }
 
         public object FindProperty(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
-            if (_properties == null)
+            if (this.properties == null)
             {
                 return null;
             }
             else
             {
-                return _properties.GetProperty(name, _currentIdSpace);
+                return this.properties.GetProperty(name, this.currentIdSpace);
             }
         }
     }

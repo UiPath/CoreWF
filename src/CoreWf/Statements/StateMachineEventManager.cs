@@ -1,38 +1,40 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    [DataContract]
+    using CoreWf;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// StateMachineEventManager is used to manage triggered events globally.
     /// </summary>
-    //[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
-    //Justification = "This type is actually used in LINQ expression and FxCop didn't detect that.")]
+    [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses",
+        Justification = "This type is actually used in LINQ expression and FxCop didn't detect that.")]
+    [DataContract]
     internal class StateMachineEventManager
     {
         // To avoid out of memory, set a fixed length of event queue.
         private const int MaxQueueLength = 1 << 25;
 
         // queue is used to store triggered events
-        private Queue<TriggerCompletedEvent> _queue;
+        private Queue<TriggerCompletedEvent> queue;
 
         // If a state is running, its condition evaluation bookmark will be added in to activityBookmarks.
         // If a state is completed, its bookmark will be removed.
-        private Collection<Bookmark> _activeBookmarks;
+        private Collection<Bookmark> activeBookmarks;     
 
         /// <summary>
         /// Constructor to do initialization.
         /// </summary>
         public StateMachineEventManager()
         {
-            _queue = new Queue<TriggerCompletedEvent>();
-            _activeBookmarks = new Collection<Bookmark>();
+            this.queue = new Queue<TriggerCompletedEvent>();
+            this.activeBookmarks = new Collection<Bookmark>();
         }
 
         /// <summary>
@@ -72,7 +74,7 @@ namespace CoreWf.Statements
         {
             get
             {
-                return _queue;
+                return this.queue;
             }
         }
 
@@ -83,22 +85,22 @@ namespace CoreWf.Statements
         {
             get
             {
-                return this.CurrentBeingProcessedEvent == null && !this.OnTransition && _queue.Count == 0;
+                return this.CurrentBeingProcessedEvent == null && !this.OnTransition && this.queue.Count == 0;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "queue")]
         internal Queue<TriggerCompletedEvent> SerializedQueue
         {
-            get { return _queue; }
-            set { _queue = value; }
+            get { return this.queue; }
+            set { this.queue = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "activeBookmarks")]
         internal Collection<Bookmark> SerializedActiveBookmarks
         {
-            get { return _activeBookmarks; }
-            set { _activeBookmarks = value; }
+            get { return this.activeBookmarks; }
+            set { this.activeBookmarks = value; }
         }
 
         /// <summary>
@@ -107,7 +109,7 @@ namespace CoreWf.Statements
         /// <param name="bookmark">Bookmark reference.</param>
         public void AddActiveBookmark(Bookmark bookmark)
         {
-            _activeBookmarks.Add(bookmark);
+            this.activeBookmarks.Add(bookmark);
         }
 
         /// <summary>
@@ -116,10 +118,10 @@ namespace CoreWf.Statements
         /// <returns>Top TriggerCompletedEvent item in the queue.</returns>
         public TriggerCompletedEvent GetNextCompletedEvent()
         {
-            while (_queue.Any())
+            while (this.queue.Any())
             {
-                TriggerCompletedEvent completedEvent = _queue.Dequeue();
-                if (_activeBookmarks.Contains(completedEvent.Bookmark))
+                TriggerCompletedEvent completedEvent = this.queue.Dequeue();
+                if (this.activeBookmarks.Contains(completedEvent.Bookmark))
                 {
                     this.CurrentBeingProcessedEvent = completedEvent;
                     return completedEvent;
@@ -147,7 +149,7 @@ namespace CoreWf.Statements
         public void RegisterCompletedEvent(TriggerCompletedEvent completedEvent, out bool canBeProcessedImmediately)
         {
             canBeProcessedImmediately = this.CanProcessEventImmediately;
-            _queue.Enqueue(completedEvent);
+            this.queue.Enqueue(completedEvent);
             return;
         }
 
@@ -157,7 +159,7 @@ namespace CoreWf.Statements
         /// <param name="bookmark">Bookmark reference.</param>
         public void RemoveActiveBookmark(Bookmark bookmark)
         {
-            _activeBookmarks.Remove(bookmark);
+            this.activeBookmarks.Remove(bookmark);
         }
     }
 }

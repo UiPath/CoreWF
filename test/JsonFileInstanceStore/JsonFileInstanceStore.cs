@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf.DurableInstancing;
 using CoreWf.Runtime.DurableInstancing;
@@ -13,12 +13,12 @@ namespace JsonFileInstanceStore
 {
     public class FileInstanceStore : InstanceStore
     {
-        private string _storeDirectoryPath;
+        private readonly string _storeDirectoryPath;
 
         private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             ObjectCreationHandling = ObjectCreationHandling.Replace,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
@@ -79,8 +79,7 @@ namespace JsonFileInstanceStore
 
         protected override bool EndTryCommand(IAsyncResult result)
         {
-            TypedCompletedAsyncResult<Exception> exceptionResult = result as TypedCompletedAsyncResult<Exception>;
-            if (exceptionResult != null)
+            if (result is TypedCompletedAsyncResult<Exception> exceptionResult)
             {
                 throw exceptionResult.Data;
             }

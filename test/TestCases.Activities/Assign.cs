@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -8,9 +8,7 @@ using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
-using CoreWf.Expressions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace TestCases.Activities
 {
@@ -96,8 +94,10 @@ namespace TestCases.Activities
         public void AssignToANullObject()
         {
             string hello = "Hello World";
-            Variable<string> word = new Variable<string>();
-            word.Default = null;
+            Variable<string> word = new Variable<string>
+            {
+                Default = null
+            };
 
             TestSequence seq = new TestSequence
             {
@@ -126,8 +126,10 @@ namespace TestCases.Activities
         public void EmptyAssignment()
         {
             string hello = "Hello World";
-            Variable<string> word = new Variable<string>();
-            word.Default = null;
+            Variable<string> word = new Variable<string>
+            {
+                Default = null
+            };
             TestAssign<string> assign = new TestAssign<string>();
             TestSequence seq = new TestSequence
             {
@@ -272,8 +274,10 @@ namespace TestCases.Activities
         public void AssignToANullObjectNonGeneric()
         {
             string hello = "Hello World";
-            Variable<string> word = new Variable<string>();
-            word.Default = null;
+            Variable<string> word = new Variable<string>
+            {
+                Default = null
+            };
 
             TestSequence seq = new TestSequence
             {
@@ -301,8 +305,10 @@ namespace TestCases.Activities
         public void EmptyAssignmentNonGeneric()
         {
             string hello = "Hello World";
-            Variable<string> word = new Variable<string>();
-            word.Default = null;
+            Variable<string> word = new Variable<string>
+            {
+                Default = null
+            };
             TestAssignNG assign = new TestAssignNG(typeof(string));
             TestSequence seq = new TestSequence
             {

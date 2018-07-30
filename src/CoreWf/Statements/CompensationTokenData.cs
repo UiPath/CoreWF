@@ -1,12 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.ComponentModel;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System.Runtime.Serialization;
+    using System.ComponentModel;
+    using CoreWf.Runtime;
+
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
     internal class CompensationTokenData
@@ -62,7 +62,7 @@ namespace CoreWf.Statements
             get;
             set;
         }
-
+        
         [DataMember(EmitDefaultValue = false)]
         internal bool IsTokenValidInSecondaryRoot
         {
@@ -76,7 +76,7 @@ namespace CoreWf.Statements
 
             if (bookmark != null)
             {
-                context.RemoveBookmark(bookmark);
+                context.RemoveBookmark(bookmark); 
                 this.BookmarkTable[bookmarkName] = null;
             }
         }

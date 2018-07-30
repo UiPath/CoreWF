@@ -1,59 +1,57 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Tracking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     internal class WorkflowInstanceExtensionCollection
     {
-        private List<KeyValuePair<WorkflowInstanceExtensionProvider, object>> _instanceExtensions;
-        private List<object> _additionalInstanceExtensions;
-        private List<object> _allSingletonExtensions;
-        private bool _hasTrackingParticipant;
-        private bool _hasPersistenceModule;
-        private bool _shouldSetInstanceForInstanceExtensions;
+        private readonly List<KeyValuePair<WorkflowInstanceExtensionProvider, object>> instanceExtensions;
+        private List<object> additionalInstanceExtensions;
+        private readonly List<object> allSingletonExtensions;
+        private bool hasTrackingParticipant;
+        private bool hasPersistenceModule;
+        private bool shouldSetInstanceForInstanceExtensions;
 
         // cache for cases where we have a single match
-        private Dictionary<Type, object> _singleTypeCache;
-
-        private List<IWorkflowInstanceExtension> _workflowInstanceExtensions;
+        private Dictionary<Type, object> singleTypeCache;
+        private List<IWorkflowInstanceExtension> workflowInstanceExtensions;
 
         // optimization for common extension in a loop/parallel (like Compensation or Send)
-        private Type _lastTypeCached;
-        private object _lastObjectCached;
+        private Type lastTypeCached;
+        private object lastObjectCached;
 
         // temporary pointer to our parent manager between ctor and Initialize
-        private WorkflowInstanceExtensionManager _extensionManager;
+        private readonly WorkflowInstanceExtensionManager extensionManager;
 
         internal WorkflowInstanceExtensionCollection(Activity workflowDefinition, WorkflowInstanceExtensionManager extensionManager)
         {
-            _extensionManager = extensionManager;
+            this.extensionManager = extensionManager;
 
             int extensionProviderCount = 0;
             if (extensionManager != null)
             {
                 extensionProviderCount = extensionManager.ExtensionProviders.Count;
-                _hasTrackingParticipant = extensionManager.HasSingletonTrackingParticipant;
-                _hasPersistenceModule = extensionManager.HasSingletonPersistenceModule;
+                this.hasTrackingParticipant = extensionManager.HasSingletonTrackingParticipant;
+                this.hasPersistenceModule = extensionManager.HasSingletonPersistenceModule;
 
                 // create an uber-IEnumerable to simplify our iteration code
-                _allSingletonExtensions = _extensionManager.GetAllSingletonExtensions();
+                this.allSingletonExtensions = this.extensionManager.GetAllSingletonExtensions();
             }
             else
             {
-                _allSingletonExtensions = WorkflowInstanceExtensionManager.EmptySingletonExtensions;
+                this.allSingletonExtensions = WorkflowInstanceExtensionManager.EmptySingletonExtensions;
             }
 
             // Resolve activity extensions
-            Dictionary<Type, WorkflowInstanceExtensionProvider> activityExtensionProviders;
             Dictionary<Type, WorkflowInstanceExtensionProvider> filteredActivityExtensionProviders = null;
-            HashSet<Type> requiredActivityExtensionTypes;
-            if (workflowDefinition.GetActivityExtensionInformation(out activityExtensionProviders, out requiredActivityExtensionTypes))
+            if (workflowDefinition.GetActivityExtensionInformation(out Dictionary<Type, WorkflowInstanceExtensionProvider> activityExtensionProviders, out HashSet<Type> requiredActivityExtensionTypes))
             {
                 // a) filter out the extension Types that were already configured by the host. Note that only "primary" extensions are in play here, not
                 // "additional" extensions
@@ -123,7 +121,7 @@ namespace CoreWf.Hosting
                     {
                         if (!TypeHelper.ContainsCompatibleType(allExtensionTypes, requiredType))
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.RequiredExtensionTypeNotFound(requiredType.ToString())));
+                            throw FxTrace.Exception.AsError(new ValidationException(SR.RequiredExtensionTypeNotFound(requiredType.ToString())));
                         }
                     }
                 }
@@ -132,7 +130,7 @@ namespace CoreWf.Hosting
             // Finally, if our checks of passed, resolve our delegates
             if (extensionProviderCount > 0)
             {
-                _instanceExtensions = new List<KeyValuePair<WorkflowInstanceExtensionProvider, object>>(extensionProviderCount);
+                this.instanceExtensions = new List<KeyValuePair<WorkflowInstanceExtensionProvider, object>>(extensionProviderCount);
 
                 if (extensionManager != null)
                 {
@@ -140,7 +138,7 @@ namespace CoreWf.Hosting
                     for (int i = 0; i < extensionProviders.Count; i++)
                     {
                         KeyValuePair<Type, WorkflowInstanceExtensionProvider> extensionProvider = extensionProviders[i];
-                        AddInstanceExtension(extensionProvider.Value);
+                        AddInstanceExtension(extensionProvider.Value); 
                     }
                 }
 
@@ -156,37 +154,37 @@ namespace CoreWf.Hosting
 
         private void AddInstanceExtension(WorkflowInstanceExtensionProvider extensionProvider)
         {
-            Fx.Assert(_instanceExtensions != null, "instanceExtensions should be setup by now");
+            Fx.Assert(this.instanceExtensions != null, "instanceExtensions should be setup by now");
             object newExtension = extensionProvider.ProvideValue();
             if (newExtension is SymbolResolver)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverMustBeSingleton));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SymbolResolverMustBeSingleton));
             }
 
             // for IWorkflowInstance we key off the type of the value, not the declared type
-            if (!_shouldSetInstanceForInstanceExtensions && newExtension is IWorkflowInstanceExtension)
+            if (!this.shouldSetInstanceForInstanceExtensions && newExtension is IWorkflowInstanceExtension)
             {
-                _shouldSetInstanceForInstanceExtensions = true;
+                this.shouldSetInstanceForInstanceExtensions = true;
             }
-            if (!_hasTrackingParticipant && extensionProvider.IsMatch<TrackingParticipant>(newExtension))
+            if (!this.hasTrackingParticipant && extensionProvider.IsMatch<TrackingParticipant>(newExtension))
             {
-                _hasTrackingParticipant = true;
+                this.hasTrackingParticipant = true;
             }
-            if (!_hasPersistenceModule && extensionProvider.IsMatch<IPersistencePipelineModule>(newExtension))
+            if (!this.hasPersistenceModule && extensionProvider.IsMatch<IPersistencePipelineModule>(newExtension))
             {
-                _hasPersistenceModule = true;
+                this.hasPersistenceModule = true;
             }
 
-            _instanceExtensions.Add(new KeyValuePair<WorkflowInstanceExtensionProvider, object>(extensionProvider, newExtension));
+            this.instanceExtensions.Add(new KeyValuePair<WorkflowInstanceExtensionProvider, object>(extensionProvider, newExtension));
 
-            WorkflowInstanceExtensionManager.AddExtensionClosure(newExtension, ref _additionalInstanceExtensions, ref _hasTrackingParticipant, ref _hasPersistenceModule);
+            WorkflowInstanceExtensionManager.AddExtensionClosure(newExtension, ref this.additionalInstanceExtensions, ref this.hasTrackingParticipant, ref this.hasPersistenceModule);
         }
 
         internal bool HasPersistenceModule
         {
             get
             {
-                return _hasPersistenceModule;
+                return this.hasPersistenceModule;
             }
         }
 
@@ -194,7 +192,7 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _hasTrackingParticipant;
+                return this.hasTrackingParticipant;
             }
         }
 
@@ -202,7 +200,7 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _workflowInstanceExtensions != null && _workflowInstanceExtensions.Count > 0;
+                return this.workflowInstanceExtensions != null && this.workflowInstanceExtensions.Count > 0;
             }
         }
 
@@ -210,49 +208,48 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _workflowInstanceExtensions;
+                return this.workflowInstanceExtensions;
             }
         }
 
         internal void Initialize()
         {
-            if (_extensionManager != null)
+            if (this.extensionManager != null)
             {
                 // if we have any singleton IWorkflowInstanceExtensions, initialize them first
                 // All validation logic for singletons is done through WorkflowInstanceExtensionManager
-                if (_extensionManager.HasSingletonIWorkflowInstanceExtensions)
+                if (this.extensionManager.HasSingletonIWorkflowInstanceExtensions)
                 {
-                    SetInstance(_extensionManager.SingletonExtensions);
+                    SetInstance(this.extensionManager.SingletonExtensions);
 
-                    if (_extensionManager.HasAdditionalSingletonIWorkflowInstanceExtensions)
+                    if (this.extensionManager.HasAdditionalSingletonIWorkflowInstanceExtensions)
                     {
-                        SetInstance(_extensionManager.AdditionalSingletonExtensions);
+                        SetInstance(this.extensionManager.AdditionalSingletonExtensions);
                     }
                 }
             }
 
-            if (_shouldSetInstanceForInstanceExtensions)
+            if (this.shouldSetInstanceForInstanceExtensions)
             {
-                for (int i = 0; i < _instanceExtensions.Count; i++)
+                for (int i = 0; i < this.instanceExtensions.Count; i++)
                 {
-                    KeyValuePair<WorkflowInstanceExtensionProvider, object> keyedExtension = _instanceExtensions[i];
+                    KeyValuePair<WorkflowInstanceExtensionProvider, object> keyedExtension = this.instanceExtensions[i];
                     // for IWorkflowInstance we key off the type of the value, not the declared type
-                    IWorkflowInstanceExtension workflowInstanceExtension = keyedExtension.Value as IWorkflowInstanceExtension;
 
-                    if (workflowInstanceExtension != null)
+                    if (keyedExtension.Value is IWorkflowInstanceExtension workflowInstanceExtension)
                     {
-                        if (_workflowInstanceExtensions == null)
+                        if (this.workflowInstanceExtensions == null)
                         {
-                            _workflowInstanceExtensions = new List<IWorkflowInstanceExtension>();
+                            this.workflowInstanceExtensions = new List<IWorkflowInstanceExtension>();
                         }
 
-                        _workflowInstanceExtensions.Add(workflowInstanceExtension);
+                        this.workflowInstanceExtensions.Add(workflowInstanceExtension);
                     }
                 }
 
-                if (_additionalInstanceExtensions != null)
+                if (this.additionalInstanceExtensions != null)
                 {
-                    SetInstance(_additionalInstanceExtensions);
+                    SetInstance(this.additionalInstanceExtensions);
                 }
             }
         }
@@ -264,12 +261,12 @@ namespace CoreWf.Hosting
                 object extension = extensionsList[i];
                 if (extension is IWorkflowInstanceExtension)
                 {
-                    if (_workflowInstanceExtensions == null)
+                    if (this.workflowInstanceExtensions == null)
                     {
-                        _workflowInstanceExtensions = new List<IWorkflowInstanceExtension>();
+                        this.workflowInstanceExtensions = new List<IWorkflowInstanceExtension>();
                     }
 
-                    _workflowInstanceExtensions.Add((IWorkflowInstanceExtension)extension);
+                    this.workflowInstanceExtensions.Add((IWorkflowInstanceExtension)extension);
                 }
             }
         }
@@ -279,8 +276,7 @@ namespace CoreWf.Hosting
         {
             T result = null;
 
-            object cachedExtension;
-            if (TryGetCachedExtension(typeof(T), out cachedExtension))
+            if (TryGetCachedExtension(typeof(T), out object cachedExtension))
             {
                 return (T)cachedExtension;
             }
@@ -288,9 +284,9 @@ namespace CoreWf.Hosting
             try
             {
                 // when we have support for context.GetExtensions<T>(), then change from early break to ThrowOnMultipleMatches ("There are more than one matched extensions found which is not allowed with GetExtension method call. Please use GetExtensions method instead.")
-                for (int i = 0; i < _allSingletonExtensions.Count; i++)
+                for (int i = 0; i < this.allSingletonExtensions.Count; i++)
                 {
-                    object extension = _allSingletonExtensions[i];
+                    object extension = this.allSingletonExtensions[i];
                     result = extension as T;
                     if (result != null)
                     {
@@ -298,11 +294,11 @@ namespace CoreWf.Hosting
                     }
                 }
 
-                if (_instanceExtensions != null)
+                if (this.instanceExtensions != null)
                 {
-                    for (int i = 0; i < _instanceExtensions.Count; i++)
+                    for (int i = 0; i < this.instanceExtensions.Count; i++)
                     {
-                        KeyValuePair<WorkflowInstanceExtensionProvider, object> keyedExtension = _instanceExtensions[i];
+                        KeyValuePair<WorkflowInstanceExtensionProvider, object> keyedExtension = this.instanceExtensions[i];
                         if (keyedExtension.Key.IsMatch<T>(keyedExtension.Value))
                         {
                             result = (T)keyedExtension.Value;
@@ -310,11 +306,11 @@ namespace CoreWf.Hosting
                         }
                     }
 
-                    if (_additionalInstanceExtensions != null)
+                    if (this.additionalInstanceExtensions != null)
                     {
-                        for (int i = 0; i < _additionalInstanceExtensions.Count; i++)
+                        for (int i = 0; i < this.additionalInstanceExtensions.Count; i++)
                         {
-                            object additionalExtension = _additionalInstanceExtensions[i];
+                            object additionalExtension = this.additionalInstanceExtensions[i];
                             result = additionalExtension as T;
                             if (result != null)
                             {
@@ -342,8 +338,7 @@ namespace CoreWf.Hosting
             where T : class
         {
             // sometimes we match the single case even when you ask for multiple
-            object cachedExtension;
-            if (TryGetCachedExtension(typeof(T), out cachedExtension))
+            if (TryGetCachedExtension(typeof(T), out object cachedExtension))
             {
                 yield return (T)cachedExtension;
             }
@@ -352,7 +347,7 @@ namespace CoreWf.Hosting
                 T lastExtension = null;
                 bool hasMultiple = false;
 
-                foreach (T extension in _allSingletonExtensions.OfType<T>())
+                foreach (T extension in this.allSingletonExtensions.OfType<T>())
                 {
                     if (lastExtension == null)
                     {
@@ -389,11 +384,11 @@ namespace CoreWf.Hosting
 
         private IEnumerable<T> GetInstanceExtensions<T>(bool useObjectTypeForComparison) where T : class
         {
-            if (_instanceExtensions != null)
+            if (this.instanceExtensions != null)
             {
-                for (int i = 0; i < _instanceExtensions.Count; i++)
+                for (int i = 0; i < this.instanceExtensions.Count; i++)
                 {
-                    KeyValuePair<WorkflowInstanceExtensionProvider, object> keyedExtension = _instanceExtensions[i];
+                    KeyValuePair<WorkflowInstanceExtensionProvider, object> keyedExtension = this.instanceExtensions[i];
                     if ((useObjectTypeForComparison && keyedExtension.Value is T)
                         || keyedExtension.Key.IsMatch<T>(keyedExtension.Value))
                     {
@@ -401,9 +396,9 @@ namespace CoreWf.Hosting
                     }
                 }
 
-                if (_additionalInstanceExtensions != null)
+                if (this.additionalInstanceExtensions != null)
                 {
-                    foreach (object additionalExtension in _additionalInstanceExtensions)
+                    foreach (object additionalExtension in this.additionalInstanceExtensions)
                     {
                         if (additionalExtension is T)
                         {
@@ -445,32 +440,32 @@ namespace CoreWf.Hosting
         {
             if (extension != null)
             {
-                if (_singleTypeCache == null)
+                if (this.singleTypeCache == null)
                 {
-                    _singleTypeCache = new Dictionary<Type, object>();
+                    this.singleTypeCache = new Dictionary<Type, object>();
                 }
 
-                _lastTypeCached = extensionType;
-                _lastObjectCached = extension;
-                _singleTypeCache[extensionType] = extension;
+                this.lastTypeCached = extensionType;
+                this.lastObjectCached = extension;
+                this.singleTypeCache[extensionType] = extension;
             }
         }
 
         private bool TryGetCachedExtension(Type type, out object extension)
         {
-            if (_singleTypeCache == null)
+            if (this.singleTypeCache == null)
             {
                 extension = null;
                 return false;
             }
 
-            if (object.ReferenceEquals(type, _lastTypeCached))
+            if (object.ReferenceEquals(type, this.lastTypeCached))
             {
-                extension = _lastObjectCached;
+                extension = this.lastObjectCached;
                 return true;
             }
 
-            return _singleTypeCache.TryGetValue(type, out extension);
+            return this.singleTypeCache.TryGetValue(type, out extension);
         }
     }
 }

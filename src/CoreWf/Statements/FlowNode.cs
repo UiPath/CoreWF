@@ -1,14 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System.Collections.Generic;
+    using CoreWf;
+
     public abstract class FlowNode
     {
-        private Flowchart _owner;
-        private int _cacheId;
+        private Flowchart owner;
+        private int cacheId;
 
         internal FlowNode()
         {
@@ -21,36 +22,36 @@ namespace CoreWf.Statements
         }
 
         internal int Index
-        {
-            get;
-            set;
+        { 
+            get; 
+            set; 
         }
 
         internal bool IsOpen
         {
             get
             {
-                return _owner != null;
+                return this.owner != null;
             }
         }
-
+        
         internal Flowchart Owner
         {
             get
             {
-                return _owner;
+                return this.owner;
             }
         }
 
         // Returns true if this is the first time we've visited this node during this pass
         internal bool Open(Flowchart owner, NativeActivityMetadata metadata)
         {
-            if (_cacheId == owner.CacheId)
+            if (this.cacheId == owner.CacheId)
             {
                 // We've already visited this node during this pass
-                if (!object.ReferenceEquals(_owner, owner))
+                if (!object.ReferenceEquals(this.owner, owner))
                 {
-                    metadata.AddValidationError(SR.FlowNodeCannotBeShared(_owner.DisplayName, owner.DisplayName));
+                    metadata.AddValidationError(SR.FlowNodeCannotBeShared(this.owner.DisplayName, owner.DisplayName));
                 }
 
                 // Whether we found an issue or not we don't want to change
@@ -63,15 +64,15 @@ namespace CoreWf.Statements
             {
                 OnOpen(owner, metadata);
             }
-            _owner = owner;
-            _cacheId = owner.CacheId;
+            this.owner = owner;
+            this.cacheId = owner.CacheId;
             this.Index = -1;
 
             return true;
         }
 
         internal abstract void OnOpen(Flowchart owner, NativeActivityMetadata metadata);
-
+        
         internal void GetChildActivities(ICollection<Activity> children)
         {
             if (ChildActivity != null)

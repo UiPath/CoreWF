@@ -1,14 +1,15 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+
     public sealed class Rethrow : NativeActivity
     {
         public Rethrow()
@@ -39,11 +40,10 @@ namespace CoreWf.Statements
 
         protected override void Execute(NativeActivityContext context)
         {
-            FaultContext faultContext = context.Properties.Find(TryCatch.FaultContextId) as FaultContext;
 
-            if (faultContext == null)
+            if (!(context.Properties.Find(TryCatch.FaultContextId) is FaultContext faultContext))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.FaultContextNotFound(this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.FaultContextNotFound(this.DisplayName)));
             }
 
             context.RethrowException(faultContext);
@@ -108,8 +108,7 @@ namespace CoreWf.Statements
                         privateRethrow = true;
                     }
 
-                    TryCatch tryCatch = parent as TryCatch;
-                    if (tryCatch != null)
+                    if (parent is TryCatch tryCatch)
                     {
                         if (previousActivity != null)
                         {

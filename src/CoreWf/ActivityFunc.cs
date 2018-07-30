@@ -1,11 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.Generic;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System.ComponentModel;
+    using System.Collections.Generic;
+
     public sealed class ActivityFunc<TResult> : ActivityDelegate
     {
         public ActivityFunc()

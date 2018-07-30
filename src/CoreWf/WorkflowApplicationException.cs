@@ -1,15 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
-    //[Serializable]
+    using CoreWf.Runtime;
+    using System;
+    using System.Runtime.Serialization;
+    using System.Security;
+
+    [Serializable]
     public class WorkflowApplicationException : Exception
     {
         private const string InstanceIdName = "instanceId";
-        private Guid _instanceId;
+        private readonly Guid instanceId;
 
         public WorkflowApplicationException()
             : base(SR.DefaultWorkflowApplicationExceptionMessage)
@@ -24,7 +27,7 @@ namespace CoreWf
         public WorkflowApplicationException(string message, Guid instanceId)
             : base(message)
         {
-            _instanceId = instanceId;
+            this.instanceId = instanceId;
         }
 
         public WorkflowApplicationException(string message, Exception innerException)
@@ -35,29 +38,29 @@ namespace CoreWf
         public WorkflowApplicationException(string message, Guid instanceId, Exception innerException)
             : base(message, innerException)
         {
-            _instanceId = instanceId;
+            this.instanceId = instanceId;
         }
 
-        //protected WorkflowApplicationException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //    this.instanceId = (Guid)info.GetValue(InstanceIdName, typeof(Guid));
-        //}
+        protected WorkflowApplicationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            this.instanceId = (Guid)info.GetValue(InstanceIdName, typeof(Guid));
+        }
 
         public Guid InstanceId
         {
             get
             {
-                return _instanceId;
+                return this.instanceId;
             }
         }
 
-        //[Fx.Tag.SecurityNote(Critical = "Critical because we are overriding a critical method in the base class.")]
-        //[SecurityCritical]
-        //public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        //{
-        //    base.GetObjectData(info, context);
-        //    info.AddValue(InstanceIdName, this.instanceId);
-        //}
+        [Fx.Tag.SecurityNote(Critical = "Critical because we are overriding a critical method in the base class.")]
+        [SecurityCritical]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(InstanceIdName, this.instanceId);
+        }
     }
 }

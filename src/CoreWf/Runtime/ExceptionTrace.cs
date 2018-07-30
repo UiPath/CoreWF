@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.ObjectModel;
@@ -12,7 +12,7 @@ namespace CoreWf.Runtime
     internal class ExceptionTrace
     {
         private const ushort FailFastEventLogCategory = 6;
-        private string _eventSourceName;
+        private readonly string _eventSourceName;
 
         public ExceptionTrace(string eventSourceName)
         {
@@ -38,15 +38,13 @@ namespace CoreWf.Runtime
         public Exception AsError(Exception exception)
         {
             // AggregateExceptions are automatically unwrapped.
-            AggregateException aggregateException = exception as AggregateException;
-            if (aggregateException != null)
+            if (exception is AggregateException aggregateException)
             {
                 return AsError<Exception>(aggregateException);
             }
 
             // TargetInvocationExceptions are automatically unwrapped.
-            TargetInvocationException targetInvocationException = exception as TargetInvocationException;
-            if (targetInvocationException != null && targetInvocationException.InnerException != null)
+            if (exception is TargetInvocationException targetInvocationException && targetInvocationException.InnerException != null)
             {
                 return AsError(targetInvocationException.InnerException);
             }
@@ -57,15 +55,13 @@ namespace CoreWf.Runtime
         public Exception AsError(Exception exception, string eventSource)
         {
             // AggregateExceptions are automatically unwrapped.
-            AggregateException aggregateException = exception as AggregateException;
-            if (aggregateException != null)
+            if (exception is AggregateException aggregateException)
             {
                 return AsError<Exception>(aggregateException, eventSource);
             }
 
             // TargetInvocationExceptions are automatically unwrapped.
-            TargetInvocationException targetInvocationException = exception as TargetInvocationException;
-            if (targetInvocationException != null && targetInvocationException.InnerException != null)
+            if (exception is TargetInvocationException targetInvocationException && targetInvocationException.InnerException != null)
             {
                 return AsError(targetInvocationException.InnerException, eventSource);
             }
@@ -141,9 +137,8 @@ namespace CoreWf.Runtime
             foreach (Exception nextInnerException in innerExceptions)
             {
                 // AggregateException may wrap TargetInvocationException, so unwrap those as well
-                TargetInvocationException targetInvocationException = nextInnerException as TargetInvocationException;
 
-                Exception innerException = (targetInvocationException != null && targetInvocationException.InnerException != null)
+                Exception innerException = (nextInnerException is TargetInvocationException targetInvocationException && targetInvocationException.InnerException != null)
                                                 ? targetInvocationException.InnerException
                                                 : nextInnerException;
 

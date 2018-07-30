@@ -1,22 +1,29 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
-using CoreWf.Tracking;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.Tracing;
-using System.Globalization;
-using System.Runtime.Serialization;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using CoreWf.Hosting;
+    using CoreWf.Tracking;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using System.Security;
+    using System.Threading;
+    using CoreWf.Transactions;
+    using CoreWf.Internals;
+    using System.Diagnostics.Tracing;
+    using CoreWf.Runtime.DurableInstancing;
+
+#if NET45
+    using CoreWf.Debugger;
+    using CoreWf.DynamicUpdate; 
+#endif
+
     [DataContract(Name = XD.Executor.Name, Namespace = XD.Runtime.Namespace)]
-    internal class ActivityExecutor /*: IEnlistmentNotification*/
+    internal class ActivityExecutor : IEnlistmentNotification
     {
         private static ReadOnlyCollection<BookmarkInfo> s_emptyBookmarkInfoCollection;
 
@@ -24,8 +31,10 @@ namespace CoreWf.Runtime
 
         private BookmarkScopeManager _bookmarkScopeManager;
 
-        //DebugController debugController;
-        private bool _hasRaisedWorkflowStarted;
+#if NET45
+        private DebugController _debugController;
+#endif
+        private readonly bool _hasRaisedWorkflowStarted;
 
         private Guid _instanceId;
         private bool _instanceIdSet;
@@ -66,8 +75,8 @@ namespace CoreWf.Runtime
 
         private Queue<PersistenceWaiter> _persistenceWaiters;
 
-        //Quack<TransactionContextWaiter> transactionContextWaiters;
-        //RuntimeTransactionData runtimeTransaction;
+        private Quack<TransactionContextWaiter> _transactionContextWaiters;
+        private RuntimeTransactionData _runtimeTransaction;
 
         private bool _isAbortPending;
         private bool _isDisposed;
@@ -104,8 +113,6 @@ namespace CoreWf.Runtime
 
         private bool _persistExceptions;
         private bool _havePersistExceptionsValue;
-
-        internal ActivityExecutor() { }
 
         public ActivityExecutor(WorkflowInstance host)
         {
@@ -313,7 +320,7 @@ namespace CoreWf.Runtime
                         {
                             throw;
                         }
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(this.WorkflowInstanceId), e));
+                        throw FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(WorkflowInstanceId), e));
                     }
                 }
 
@@ -366,7 +373,7 @@ namespace CoreWf.Runtime
                     WorkflowInstanceId = _host.Id;
                     if (!_instanceIdSet)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyIdReturnedFromHost(_host.GetType())));
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyIdReturnedFromHost(_host.GetType())));
                     }
                 }
 
@@ -486,33 +493,33 @@ namespace CoreWf.Runtime
             }
         }
 
-        //public bool RequiresTransactionContextWaiterExists
-        //{
-        //    get
-        //    {
-        //        return this.transactionContextWaiters != null && this.transactionContextWaiters.Count > 0 && this.transactionContextWaiters[0].IsRequires;
-        //    }
-        //}
+        public bool RequiresTransactionContextWaiterExists
+        {
+            get
+            {
+                return _transactionContextWaiters != null && _transactionContextWaiters.Count > 0 && _transactionContextWaiters[0].IsRequires;
+            }
+        }
 
-        //public bool HasRuntimeTransaction
-        //{
-        //    get { return this.runtimeTransaction != null; }
-        //}
+        public bool HasRuntimeTransaction
+        {
+            get { return _runtimeTransaction != null; }
+        }
 
-        //public Transaction CurrentTransaction
-        //{
-        //    get
-        //    {
-        //        if (this.runtimeTransaction != null)
-        //        {
-        //            return this.runtimeTransaction.ClonedTransaction;
-        //        }
-        //        else
-        //        {
-        //            return null;
-        //        }
-        //    }
-        //}
+        public Transaction CurrentTransaction
+        {
+            get
+            {
+                if (_runtimeTransaction != null)
+                {
+                    return _runtimeTransaction.ClonedTransaction;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
 
         private static ReadOnlyCollection<BookmarkInfo> EmptyBookmarkInfoCollection
         {
@@ -647,7 +654,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                if (this.PersistExceptions)
+                if (PersistExceptions)
                 {
                     return _completionException;
                 }
@@ -662,30 +669,30 @@ namespace CoreWf.Runtime
             }
         }
 
-        //[DataMember(Name = XD.Executor.TransactionContextWaiters, EmitDefaultValue = false)]
-        ////[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Used by serialization")]
-        //internal TransactionContextWaiter[] SerializedTransactionContextWaiters
-        //{
-        //    get
-        //    {
-        //        if (this.transactionContextWaiters != null && this.transactionContextWaiters.Count > 0)
-        //        {
-        //            return this.transactionContextWaiters.ToArray();
-        //        }
-        //        else
-        //        {
-        //            return null;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        Fx.Assert(value != null, "We don't serialize out null.");
-        //        this.transactionContextWaiters = new Quack<TransactionContextWaiter>(value);
-        //    }
-        //}
+        [DataMember(Name = XD.Executor.TransactionContextWaiters, EmitDefaultValue = false)]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Used by serialization")]
+        internal TransactionContextWaiter[] SerializedTransactionContextWaiters
+        {
+            get
+            {
+                if (_transactionContextWaiters != null && _transactionContextWaiters.Count > 0)
+                {
+                    return _transactionContextWaiters.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                Fx.Assert(value != null, "We don't serialize out null.");
+                _transactionContextWaiters = new Quack<TransactionContextWaiter>(value);
+            }
+        }
 
         [DataMember(Name = XD.Executor.PersistenceWaiters, EmitDefaultValue = false)]
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Used by serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Used by serialization")]
         internal Queue<PersistenceWaiter> SerializedPersistenceWaiters
         {
             get
@@ -707,7 +714,7 @@ namespace CoreWf.Runtime
         }
 
         [DataMember(Name = XD.Executor.SecondaryRootInstances, EmitDefaultValue = false)]
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Used by serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Used by serialization")]
         internal List<ActivityInstance> SerializedExecutingSecondaryRootInstances
         {
             get
@@ -729,7 +736,7 @@ namespace CoreWf.Runtime
         }
 
         [DataMember(Name = XD.Executor.MappableObjectManager, EmitDefaultValue = false)]
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Used by serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Used by serialization")]
         internal MappableObjectManager SerializedMappableObjectManager
         {
             get
@@ -749,9 +756,9 @@ namespace CoreWf.Runtime
             }
         }
 
-        //// map from activity names to (active) associated activity instances
+        // map from activity names to (active) associated activity instances
         [DataMember(Name = XD.Executor.ActivityInstanceMap, EmitDefaultValue = false)]
-        ////[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "called from serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "called from serialization")]
         internal ActivityInstanceMap SerializedProgramMapping
         {
             get
@@ -811,7 +818,7 @@ namespace CoreWf.Runtime
         }
 
         [DataMember(Name = XD.ActivityInstance.PropertyManager, EmitDefaultValue = false)]
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Called from Serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Called from Serialization")]
         internal ExecutionPropertyManager SerializedPropertyManager
         {
             get
@@ -830,7 +837,7 @@ namespace CoreWf.Runtime
         {
             if (_throwDuringSerialization)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.StateCannotBeSerialized(this.WorkflowInstanceId)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.StateCannotBeSerialized(this.WorkflowInstanceId)));
             }
         }
 
@@ -839,24 +846,26 @@ namespace CoreWf.Runtime
             _throwDuringSerialization = true;
         }
 
-        //public IList<ActivityBlockingUpdate> GetActivitiesBlockingUpdate(DynamicUpdateMap updateMap)
-        //{
-        //    Fx.Assert(updateMap != null, "UpdateMap must not be null.");
-        //    Collection<ActivityBlockingUpdate> result = null;
-        //    this.instanceMap.GetActivitiesBlockingUpdate(updateMap, this.executingSecondaryRootInstances, ref result);
-        //    return result;
-        //}
+#if NET45
+        public IList<ActivityBlockingUpdate> GetActivitiesBlockingUpdate(DynamicUpdateMap updateMap)
+        {
+            Fx.Assert(updateMap != null, "UpdateMap must not be null.");
+            Collection<ActivityBlockingUpdate> result = null;
+            _instanceMap.GetActivitiesBlockingUpdate(updateMap, _executingSecondaryRootInstances, ref result);
+            return result;
+        }
 
-        //public void UpdateInstancePhase1(DynamicUpdateMap updateMap, Activity targetDefinition, ref Collection<ActivityBlockingUpdate> updateErrors)
-        //{
-        //    Fx.Assert(updateMap != null, "UpdateMap must not be null.");
-        //    this.instanceMap.UpdateRawInstance(updateMap, targetDefinition, this.executingSecondaryRootInstances, ref updateErrors);
-        //}
+        public void UpdateInstancePhase1(DynamicUpdateMap updateMap, Activity targetDefinition, ref Collection<ActivityBlockingUpdate> updateErrors)
+        {
+            Fx.Assert(updateMap != null, "UpdateMap must not be null.");
+            _instanceMap.UpdateRawInstance(updateMap, targetDefinition, _executingSecondaryRootInstances, ref updateErrors);
+        }
 
-        //public void UpdateInstancePhase2(DynamicUpdateMap updateMap, ref Collection<ActivityBlockingUpdate> updateErrors)
-        //{
-        //    this.instanceMap.UpdateInstanceByActivityParticipation(this, updateMap, ref updateErrors);
-        //}
+        public void UpdateInstancePhase2(DynamicUpdateMap updateMap, ref Collection<ActivityBlockingUpdate> updateErrors)
+        {
+            _instanceMap.UpdateInstanceByActivityParticipation(this, updateMap, ref updateErrors);
+        } 
+#endif
 
         internal List<Handle> Handles
         {
@@ -947,32 +956,34 @@ namespace CoreWf.Runtime
             return _ignorableResultLocation;
         }
 
+#if NET45
         // Whether it is being debugged.
-        //        bool IsDebugged()
-        //        {
-        //            if (this.debugController == null)
-        //            {
-        //#if DEBUG
-        //                if (Fx.StealthDebugger)
-        //                {
-        //                    return false;
-        //                }
-        //#endif
-        //                if (System.Diagnostics.Debugger.IsAttached)
-        //                {
-        //                    this.debugController = new DebugController(this.host);
-        //                }
-        //            }
-        //            return this.debugController != null;
-        //        }
+        bool IsDebugged()
+        {
+            if (_debugController == null)
+            {
+#if DEBUG
+                if (Fx.StealthDebugger)
+                {
+                    return false;
+                }
+#endif
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    _debugController = new DebugController(_host);
+                }
+            }
+            return _debugController != null;
+        }
 
-        //public void DebugActivityCompleted(ActivityInstance instance)
-        //{
-        //    if (this.debugController != null)   // Don't use IsDebugged() for perf reason.
-        //    {
-        //        this.debugController.ActivityCompleted(instance);
-        //    }
-        //}
+        public void DebugActivityCompleted(ActivityInstance instance)
+        {
+            if (_debugController != null)   // Don't use IsDebugged() for perf reason.
+            {
+                _debugController.ActivityCompleted(instance);
+            }
+        }
+#endif
 
         public void AddTrackingRecord(TrackingRecord record)
         {
@@ -1010,11 +1021,13 @@ namespace CoreWf.Runtime
 
         internal void OnSchedulerThreadAcquired()
         {
-            //if (this.IsDebugged() && !this.hasRaisedWorkflowStarted)
-            //{
-            //    this.hasRaisedWorkflowStarted = true;
-            //    this.debugController.WorkflowStarted();
-            //}
+#if NET45
+            if (this.IsDebugged() && !_hasRaisedWorkflowStarted)
+            {
+                _hasRaisedWorkflowStarted = true;
+                _debugController.WorkflowStarted();
+            }
+#endif
         }
 
         public void Dispose()
@@ -1026,11 +1039,13 @@ namespace CoreWf.Runtime
         {
             if (!_isDisposed)
             {
-                //if (this.debugController != null)   // Don't use IsDebugged() because it may create debugController unnecessarily.
-                //{
-                //    this.debugController.WorkflowCompleted();
-                //    this.debugController = null;
-                //}
+#if NET45
+                if (_debugController != null)   // Don't use IsDebugged() because it may create debugController unnecessarily.
+                {
+                    _debugController.WorkflowCompleted();
+                    _debugController = null;
+                }
+#endif
 
                 if (_activeOperations != null && _activeOperations.Count > 0)
                 {
@@ -1079,7 +1094,7 @@ namespace CoreWf.Runtime
                 TD.ExitNoPersistBlock();
             }
 
-            if (_shouldPauseOnCanPersist && this.IsPersistable)
+            if (_shouldPauseOnCanPersist && IsPersistable)
             {
                 // shouldPauseOnCanPersist is reset at the next pause
                 // notification
@@ -1087,231 +1102,230 @@ namespace CoreWf.Runtime
             }
         }
 
-        //void IEnlistmentNotification.Commit(Enlistment enlistment)
-        //{
-        //    // Because of ordering we might get this notification after we've already
-        //    // determined the outcome
+        void IEnlistmentNotification.Commit(Enlistment enlistment)
+        {
+            // Because of ordering we might get this notification after we've already
+            // determined the outcome
 
-        //    // Get a local copy of this.runtimeTransaction because it is possible for
-        //    // this.runtimeTransaction to be nulled out between the time we check for null
-        //    // and the time we try to lock it.
-        //    RuntimeTransactionData localRuntimeTransaction = this.runtimeTransaction;
+            // Get a local copy of _runtimeTransaction because it is possible for
+            // _runtimeTransaction to be nulled out between the time we check for null
+            // and the time we try to lock it.
+            RuntimeTransactionData localRuntimeTransaction = _runtimeTransaction;
 
-        //    if (localRuntimeTransaction != null)
-        //    {
-        //        AsyncWaitHandle completionEvent = null;
+            if (localRuntimeTransaction != null)
+            {
+                AsyncWaitHandle completionEvent = null;
 
-        //        lock (localRuntimeTransaction)
-        //        {
-        //            completionEvent = localRuntimeTransaction.CompletionEvent;
+                lock (localRuntimeTransaction)
+                {
+                    completionEvent = localRuntimeTransaction.CompletionEvent;
 
-        //            localRuntimeTransaction.TransactionStatus = TransactionStatus.Committed;
-        //        }
+                    localRuntimeTransaction.TransactionStatus = TransactionStatus.Committed;
+                }
 
-        //        enlistment.Done();
+                enlistment.Done();
 
-        //        if (completionEvent != null)
-        //        {
-        //            completionEvent.Set();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        enlistment.Done();
-        //    }
-        //}
+                if (completionEvent != null)
+                {
+                    completionEvent.Set();
+                }
+            }
+            else
+            {
+                enlistment.Done();
+            }
+        }
 
-        //void IEnlistmentNotification.InDoubt(Enlistment enlistment)
-        //{
-        //    ((IEnlistmentNotification)this).Rollback(enlistment);
-        //}
+        void IEnlistmentNotification.InDoubt(Enlistment enlistment)
+        {
+            ((IEnlistmentNotification)this).Rollback(enlistment);
+        }
 
-        ////Note - There is a scenario in the TransactedReceiveScope while dealing with server side WCF dispatcher created transactions, 
-        ////the activity instance will end up calling BeginCommit before finishing up its execution. By this we allow the executing TransactedReceiveScope activity to 
-        ////complete and the executor is "free" to respond to this Prepare notification as part of the commit processing of that server side transaction
-        //void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
-        //{
-        //    // Because of ordering we might get this notification after we've already
-        //    // determined the outcome
+        //Note - There is a scenario in the TransactedReceiveScope while dealing with server side WCF dispatcher created transactions, 
+        //the activity instance will end up calling BeginCommit before finishing up its execution. By this we allow the executing TransactedReceiveScope activity to 
+        //complete and the executor is "free" to respond to this Prepare notification as part of the commit processing of that server side transaction
+        void IEnlistmentNotification.Prepare(PreparingEnlistment preparingEnlistment)
+        {
+            // Because of ordering we might get this notification after we've already
+            // determined the outcome
 
-        //    // Get a local copy of this.runtimeTransaction because it is possible for
-        //    // this.runtimeTransaction to be nulled out between the time we check for null
-        //    // and the time we try to lock it.
-        //    RuntimeTransactionData localRuntimeTransaction = this.runtimeTransaction;
+            // Get a local copy of _runtimeTransaction because it is possible for
+            // _runtimeTransaction to be nulled out between the time we check for null
+            // and the time we try to lock it.
+            RuntimeTransactionData localRuntimeTransaction = _runtimeTransaction;
 
-        //    if (localRuntimeTransaction != null)
-        //    {
-        //        bool callPrepared = false;
+            if (localRuntimeTransaction != null)
+            {
+                bool callPrepared = false;
 
-        //        lock (localRuntimeTransaction)
-        //        {
-        //            if (localRuntimeTransaction.HasPrepared)
-        //            {
-        //                callPrepared = true;
-        //            }
-        //            else
-        //            {
-        //                localRuntimeTransaction.PendingPreparingEnlistment = preparingEnlistment;
-        //            }
-        //        }
+                lock (localRuntimeTransaction)
+                {
+                    if (localRuntimeTransaction.HasPrepared)
+                    {
+                        callPrepared = true;
+                    }
+                    else
+                    {
+                        localRuntimeTransaction.PendingPreparingEnlistment = preparingEnlistment;
+                    }
+                }
 
-        //        if (callPrepared)
-        //        {
-        //            preparingEnlistment.Prepared();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        preparingEnlistment.Prepared();
-        //    }
-        //}
+                if (callPrepared)
+                {
+                    preparingEnlistment.Prepared();
+                }
+            }
+            else
+            {
+                preparingEnlistment.Prepared();
+            }
+        }
 
-        //void IEnlistmentNotification.Rollback(Enlistment enlistment)
-        //{
-        //    // Because of ordering we might get this notification after we've already
-        //    // determined the outcome
+        void IEnlistmentNotification.Rollback(Enlistment enlistment)
+        {
+            // Because of ordering we might get this notification after we've already
+            // determined the outcome
 
-        //    // Get a local copy of this.runtimeTransaction because it is possible for
-        //    // this.runtimeTransaction to be nulled out between the time we check for null
-        //    // and the time we try to lock it.
-        //    RuntimeTransactionData localRuntimeTransaction = this.runtimeTransaction;
+            // Get a local copy of _runtimeTransaction because it is possible for
+            // _runtimeTransaction to be nulled out between the time we check for null
+            // and the time we try to lock it.
+            RuntimeTransactionData localRuntimeTransaction = _runtimeTransaction;
 
-        //    if (localRuntimeTransaction != null)
-        //    {
-        //        AsyncWaitHandle completionEvent = null;
+            if (localRuntimeTransaction != null)
+            {
+                AsyncWaitHandle completionEvent = null;
 
-        //        lock (localRuntimeTransaction)
-        //        {
-        //            completionEvent = localRuntimeTransaction.CompletionEvent;
+                lock (localRuntimeTransaction)
+                {
+                    completionEvent = localRuntimeTransaction.CompletionEvent;
 
-        //            localRuntimeTransaction.TransactionStatus = TransactionStatus.Aborted;
-        //        }
+                    localRuntimeTransaction.TransactionStatus = TransactionStatus.Aborted;
+                }
 
-        //        enlistment.Done();
+                enlistment.Done();
 
-        //        if (completionEvent != null)
-        //        {
-        //            completionEvent.Set();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        enlistment.Done();
-        //    }
-        //}
+                if (completionEvent != null)
+                {
+                    completionEvent.Set();
+                }
+            }
+            else
+            {
+                enlistment.Done();
+            }
+        }
 
-        //public void RequestTransactionContext(ActivityInstance instance, bool isRequires, RuntimeTransactionHandle handle, Action<NativeActivityTransactionContext, object> callback, object state)
-        //{
-        //    if (isRequires)
-        //    {
-        //        EnterNoPersist();
-        //    }
+        public void RequestTransactionContext(ActivityInstance instance, bool isRequires, RuntimeTransactionHandle handle, Action<NativeActivityTransactionContext, object> callback, object state)
+        {
+            if (isRequires)
+            {
+                EnterNoPersist();
+            }
 
-        //    if (this.transactionContextWaiters == null)
-        //    {
-        //        this.transactionContextWaiters = new Quack<TransactionContextWaiter>();
-        //    }
+            if (_transactionContextWaiters == null)
+            {
+                _transactionContextWaiters = new Quack<TransactionContextWaiter>();
+            }
 
-        //    TransactionContextWaiter waiter = new TransactionContextWaiter(instance, isRequires, handle, new TransactionContextWaiterCallbackWrapper(callback, instance), state);
+            TransactionContextWaiter waiter = new TransactionContextWaiter(instance, isRequires, handle, new TransactionContextWaiterCallbackWrapper(callback, instance), state);
 
-        //    if (isRequires)
-        //    {
-        //        Fx.Assert(this.transactionContextWaiters.Count == 0 || !this.transactionContextWaiters[0].IsRequires, "Either we don't have any waiters or the first one better not be IsRequires == true");
+            if (isRequires)
+            {
+                Fx.Assert(_transactionContextWaiters.Count == 0 || !_transactionContextWaiters[0].IsRequires, "Either we don't have any waiters or the first one better not be IsRequires == true");
 
-        //        this.transactionContextWaiters.PushFront(waiter);
-        //    }
-        //    else
-        //    {
-        //        this.transactionContextWaiters.Enqueue(waiter);
-        //    }
+                _transactionContextWaiters.PushFront(waiter);
+            }
+            else
+            {
+                _transactionContextWaiters.Enqueue(waiter);
+            }
 
-        //    instance.IncrementBusyCount();
-        //    instance.WaitingForTransactionContext = true;
-        //}
+            instance.IncrementBusyCount();
+            instance.WaitingForTransactionContext = true;
+        }
 
-        //public void SetTransaction(RuntimeTransactionHandle handle, Transaction transaction, ActivityInstance isolationScope, ActivityInstance transactionOwner)
-        //{
-        //    this.runtimeTransaction = new RuntimeTransactionData(handle, transaction, isolationScope);
-        //    EnterNoPersist();
+        public void SetTransaction(RuntimeTransactionHandle handle, Transaction transaction, ActivityInstance isolationScope, ActivityInstance transactionOwner)
+        {
+            _runtimeTransaction = new RuntimeTransactionData(handle, transaction, isolationScope);
+            EnterNoPersist();
 
-        //    // no more work to do for a host-declared transaction
-        //    if (transactionOwner == null)
-        //    {
-        //        return;
-        //    }
+            // no more work to do for a host-declared transaction
+            if (transactionOwner == null)
+            {
+                return;
+            }
 
-        //    Exception abortException = null;
+            Exception abortException = null;
 
-        //    try
-        //    {
-        //        transaction.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        if (Fx.IsFatal(e))
-        //        {
-        //            throw;
-        //        }
+            try
+            {
+                transaction.EnlistVolatile(this, EnlistmentOptions.EnlistDuringPrepareRequired);
+            }
+            catch (Exception e)
+            {
+                if (Fx.IsFatal(e))
+                {
+                    throw;
+                }
 
-        //        abortException = e;
-        //    }
+                abortException = e;
+            }
 
-        //    if (abortException != null)
-        //    {
-        //        AbortWorkflowInstance(abortException);
-        //    }
-        //    else
-        //    {
-        //        if (TD.RuntimeTransactionSetIsEnabled())
-        //        {
-        //            Fx.Assert(transactionOwner != null, "isolationScope and transactionOwner are either both null or both non-null");
-        //            TD.RuntimeTransactionSet(transactionOwner.Activity.GetType().ToString(), transactionOwner.Activity.DisplayName, transactionOwner.Id, isolationScope.Activity.GetType().ToString(), isolationScope.Activity.DisplayName, isolationScope.Id);
-        //        }
-        //    }
-        //}
+            if (abortException != null)
+            {
+                AbortWorkflowInstance(abortException);
+            }
+            else
+            {
+                if (TD.RuntimeTransactionSetIsEnabled())
+                {
+                    Fx.Assert(transactionOwner != null, "isolationScope and transactionOwner are either both null or both non-null");
+                    TD.RuntimeTransactionSet(transactionOwner.Activity.GetType().ToString(), transactionOwner.Activity.DisplayName, transactionOwner.Id, isolationScope.Activity.GetType().ToString(), isolationScope.Activity.DisplayName, isolationScope.Id);
+                }
+            }
+        }
 
-        //public void CompleteTransaction(RuntimeTransactionHandle handle, BookmarkCallback callback, ActivityInstance callbackOwner)
-        //{
-        //    if (callback != null)
-        //    {
-        //        Bookmark bookmark = this.bookmarkManager.CreateBookmark(callback, callbackOwner, BookmarkOptions.None);
-        //        ActivityExecutionWorkItem workItem;
+        public void CompleteTransaction(RuntimeTransactionHandle handle, BookmarkCallback callback, ActivityInstance callbackOwner)
+        {
+            if (callback != null)
+            {
+                Bookmark bookmark = _bookmarkManager.CreateBookmark(callback, callbackOwner, BookmarkOptions.None);
 
-        //        ActivityInstance isolationScope = null;
+                ActivityInstance isolationScope = null;
 
-        //        if (this.runtimeTransaction != null)
-        //        {
-        //            isolationScope = this.runtimeTransaction.IsolationScope;
-        //        }
+                if (_runtimeTransaction != null)
+                {
+                    isolationScope = _runtimeTransaction.IsolationScope;
+                }
 
-        //        this.bookmarkManager.TryGenerateWorkItem(this, false, ref bookmark, null, isolationScope, out workItem);
-        //        this.scheduler.EnqueueWork(workItem);
-        //    }
+                _bookmarkManager.TryGenerateWorkItem(this, false, ref bookmark, null, isolationScope, out ActivityExecutionWorkItem workItem);
+                _scheduler.EnqueueWork(workItem);
+            }
 
-        //    if (this.runtimeTransaction != null && this.runtimeTransaction.TransactionHandle == handle)
-        //    {
-        //        this.runtimeTransaction.ShouldScheduleCompletion = true;
+            if (_runtimeTransaction != null && _runtimeTransaction.TransactionHandle == handle)
+            {
+                _runtimeTransaction.ShouldScheduleCompletion = true;
 
-        //        if (TD.RuntimeTransactionCompletionRequestedIsEnabled())
-        //        {
-        //            TD.RuntimeTransactionCompletionRequested(callbackOwner.Activity.GetType().ToString(), callbackOwner.Activity.DisplayName, callbackOwner.Id);
-        //        }
-        //    }
-        //}
+                if (TD.RuntimeTransactionCompletionRequestedIsEnabled())
+                {
+                    TD.RuntimeTransactionCompletionRequested(callbackOwner.Activity.GetType().ToString(), callbackOwner.Activity.DisplayName, callbackOwner.Id);
+                }
+            }
+        }
 
-        //void SchedulePendingCancelation()
-        //{
-        //    if (this.runtimeTransaction.IsRootCancelPending)
-        //    {
-        //        if (!this.rootInstance.IsCancellationRequested && !this.rootInstance.IsCompleted)
-        //        {
-        //            this.rootInstance.IsCancellationRequested = true;
-        //            this.scheduler.PushWork(new CancelActivityWorkItem(this.rootInstance));
-        //        }
+        private void SchedulePendingCancelation()
+        {
+            if (_runtimeTransaction.IsRootCancelPending)
+            {
+                if (!_rootInstance.IsCancellationRequested && !_rootInstance.IsCompleted)
+                {
+                    _rootInstance.IsCancellationRequested = true;
+                    _scheduler.PushWork(new CancelActivityWorkItem(_rootInstance));
+                }
 
-        //        this.runtimeTransaction.IsRootCancelPending = false;
-        //    }
-        //}
+                _runtimeTransaction.IsRootCancelPending = false;
+            }
+        }
 
         public EmptyWorkItem CreateEmptyWorkItem(ActivityInstance instance)
         {
@@ -1321,67 +1335,67 @@ namespace CoreWf.Runtime
             return workItem;
         }
 
-        //public bool IsCompletingTransaction(ActivityInstance instance)
-        //{
-        //    if (this.runtimeTransaction != null && this.runtimeTransaction.IsolationScope == instance)
-        //    {
-        //        // We add an empty work item to keep the instance alive
-        //        this.scheduler.PushWork(CreateEmptyWorkItem(instance));
+        public bool IsCompletingTransaction(ActivityInstance instance)
+        {
+            if (_runtimeTransaction != null && _runtimeTransaction.IsolationScope == instance)
+            {
+                // We add an empty work item to keep the instance alive
+                _scheduler.PushWork(CreateEmptyWorkItem(instance));
 
-        //        // This will schedule the appopriate work item at the end of this work item
-        //        this.runtimeTransaction.ShouldScheduleCompletion = true;
+                // This will schedule the appopriate work item at the end of this work item
+                _runtimeTransaction.ShouldScheduleCompletion = true;
 
-        //        if (TD.RuntimeTransactionCompletionRequestedIsEnabled())
-        //        {
-        //            TD.RuntimeTransactionCompletionRequested(instance.Activity.GetType().ToString(), instance.Activity.DisplayName, instance.Id);
-        //        }
+                if (TD.RuntimeTransactionCompletionRequestedIsEnabled())
+                {
+                    TD.RuntimeTransactionCompletionRequested(instance.Activity.GetType().ToString(), instance.Activity.DisplayName, instance.Id);
+                }
 
-        //        return true;
-        //    }
+                return true;
+            }
 
-        //    return false;
-        //}
+            return false;
+        }
 
-        //public void TerminateSpecialExecutionBlocks(ActivityInstance terminatedInstance, Exception terminationReason)
-        //{
-        //    if (this.runtimeTransaction != null && this.runtimeTransaction.IsolationScope == terminatedInstance)
-        //    {
-        //        Exception abortException = null;
+        public void TerminateSpecialExecutionBlocks(ActivityInstance terminatedInstance, Exception terminationReason)
+        {
+            if (_runtimeTransaction != null && _runtimeTransaction.IsolationScope == terminatedInstance)
+            {
+                Exception abortException = null;
 
-        //        try
-        //        {
-        //            this.runtimeTransaction.Rollback(terminationReason);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (Fx.IsFatal(e))
-        //            {
-        //                throw;
-        //            }
+                try
+                {
+                    _runtimeTransaction.Rollback(terminationReason);
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
 
-        //            abortException = e;
-        //        }
+                    abortException = e;
+                }
 
-        //        if (abortException != null)
-        //        {
-        //            // It is okay for us to call AbortWorkflowInstance even if we are already
-        //            // aborting the instance since it is an async call (IE - we asking the host
-        //            // to re-enter the instance to abandon it.
-        //            AbortWorkflowInstance(abortException);
-        //        }
+                if (abortException != null)
+                {
+                    // It is okay for us to call AbortWorkflowInstance even if we are already
+                    // aborting the instance since it is an async call (IE - we asking the host
+                    // to re-enter the instance to abandon it.
+                    AbortWorkflowInstance(abortException);
+                }
 
-        //        SchedulePendingCancelation();
+                SchedulePendingCancelation();
 
-        //        ExitNoPersist();
+                ExitNoPersist();
 
-        //        if (this.runtimeTransaction.TransactionHandle.AbortInstanceOnTransactionFailure)
-        //        {
-        //            AbortWorkflowInstance(terminationReason);
-        //        }
+                if (_runtimeTransaction.TransactionHandle.AbortInstanceOnTransactionFailure)
+                {
+                    AbortWorkflowInstance(terminationReason);
+                }
 
-        //        this.runtimeTransaction = null;
-        //    }
-        //}
+                _runtimeTransaction = null;
+            }
+        }
 
         // Returns true if we actually performed the abort and false if we had already been disposed
         private bool Abort(Exception terminationException, bool isTerminate)
@@ -1400,8 +1414,7 @@ namespace CoreWf.Runtime
                             HandleInitializationContext context = new HandleInitializationContext(this, null);
                             foreach (ExecutionPropertyManager.ExecutionProperty executionProperty in _rootPropertyManager.Properties.Values)
                             {
-                                Handle handle = executionProperty.Property as Handle;
-                                if (handle != null)
+                                if (executionProperty.Property is Handle handle)
                                 {
                                     handle.Uninitialize(context);
                                 }
@@ -1508,8 +1521,7 @@ namespace CoreWf.Runtime
 
         public bool Abort(Exception reason)
         {
-            Guid oldActivityId;
-            bool hasTracedResume = TryTraceResume(out oldActivityId);
+            bool hasTracedResume = TryTraceResume(out Guid oldActivityId);
 
             bool abortResult = Abort(reason, false);
 
@@ -1539,7 +1551,7 @@ namespace CoreWf.Runtime
                 {
                     throw;
                 }
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostAbort(this.WorkflowInstanceId), e));
+                throw FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostAbort(this.WorkflowInstanceId), e));
             }
         }
 
@@ -1553,8 +1565,7 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(!_isDisposed, "We should not have been able to get here if we are disposed and Abort makes choices based on isDisposed");
 
-            Guid oldActivityId;
-            bool hasTracedResume = TryTraceResume(out oldActivityId);
+            bool hasTracedResume = TryTraceResume(out Guid oldActivityId);
 
             Abort(reason, true);
 
@@ -1567,33 +1578,32 @@ namespace CoreWf.Runtime
             {
                 if (!_rootInstance.IsCancellationRequested)
                 {
-                    Guid oldActivityId;
-                    bool hasTracedResume = TryTraceResume(out oldActivityId);
+                    bool hasTracedResume = TryTraceResume(out Guid oldActivityId);
 
                     bool trackCancelRequested = true;
 
-                    //if (this.runtimeTransaction != null && this.runtimeTransaction.IsolationScope != null)
-                    //{
-                    //    if (this.runtimeTransaction.IsRootCancelPending)
-                    //    {
-                    //        trackCancelRequested = false;
-                    //    }
-
-                    //    this.runtimeTransaction.IsRootCancelPending = true;
-                    //}
-                    //else
-                    //{
-                    _rootInstance.IsCancellationRequested = true;
-
-                    if (_rootInstance.HasNotExecuted)
+                    if (_runtimeTransaction != null && _runtimeTransaction.IsolationScope != null)
                     {
-                        _scheduler.PushWork(CreateEmptyWorkItem(_rootInstance));
+                        if (_runtimeTransaction.IsRootCancelPending)
+                        {
+                            trackCancelRequested = false;
+                        }
+
+                        _runtimeTransaction.IsRootCancelPending = true;
                     }
                     else
                     {
-                        _scheduler.PushWork(new CancelActivityWorkItem(_rootInstance));
+                        _rootInstance.IsCancellationRequested = true;
+
+                        if (_rootInstance.HasNotExecuted)
+                        {
+                            _scheduler.PushWork(CreateEmptyWorkItem(_rootInstance));
+                        }
+                        else
+                        {
+                            _scheduler.PushWork(new CancelActivityWorkItem(_rootInstance));
+                        }
                     }
-                    //}
 
                     if (this.ShouldTrackCancelRequestedRecords && trackCancelRequested)
                     {
@@ -1664,19 +1674,19 @@ namespace CoreWf.Runtime
             }
             while (exceptionPropagator != null && targetBookmark == null)
             {
-                //if (!exceptionPropagator.IsCompleted)
-                //{
-                //    if (this.runtimeTransaction != null && this.runtimeTransaction.IsolationScope == exceptionPropagator)
-                //    {
-                //        // We are propagating the exception across the isolation scope
-                //        this.scheduler.PushWork(new AbortActivityWorkItem(this, exceptionPropagator, exception, CreateActivityInstanceReference(workItem.OriginalExceptionSource, exceptionPropagator)));
+                if (!exceptionPropagator.IsCompleted)
+                {
+                    if (_runtimeTransaction != null && _runtimeTransaction.IsolationScope == exceptionPropagator)
+                    {
+                        // We are propagating the exception across the isolation scope
+                        _scheduler.PushWork(new AbortActivityWorkItem(this, exceptionPropagator, exception, CreateActivityInstanceReference(workItem.OriginalExceptionSource, exceptionPropagator)));
 
-                //        // Because we are aborting the transaction we reset the ShouldScheduleCompletion flag
-                //        this.runtimeTransaction.ShouldScheduleCompletion = false;
-                //        workItem.ExceptionPropagated();
-                //        return;
-                //    }
-                //}
+                        // Because we are aborting the transaction we reset the ShouldScheduleCompletion flag
+                        _runtimeTransaction.ShouldScheduleCompletion = false;
+                        workItem.ExceptionPropagated();
+                        return;
+                    }
+                }
 
                 if (exceptionPropagator.IsCancellationRequested)
                 {
@@ -1753,7 +1763,7 @@ namespace CoreWf.Runtime
 
             if (!object.Equals(workflowInstance.DefinitionIdentity, this.WorkflowIdentity))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new VersionMismatchException(workflowInstance.DefinitionIdentity, this.WorkflowIdentity));
+                throw FxTrace.Exception.AsError(new VersionMismatchException(workflowInstance.DefinitionIdentity, this.WorkflowIdentity));
             }
 
             _rootElement = workflow;
@@ -1761,11 +1771,11 @@ namespace CoreWf.Runtime
 
             if (!_instanceIdSet)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyGuidOnDeserializedInstance));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.EmptyGuidOnDeserializedInstance));
             }
             if (_host.Id != _instanceId)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.HostIdDoesNotMatchInstance(_host.Id, _instanceId)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.HostIdDoesNotMatchInstance(_host.Id, _instanceId)));
             }
 
             if (_host.HasTrackingParticipant)
@@ -1823,7 +1833,7 @@ namespace CoreWf.Runtime
                 {
                     throw;
                 }
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(this.WorkflowInstanceId), e));
+                throw FxTrace.Exception.AsError(new CallbackException(SR.CallbackExceptionFromHostGetExtension(this.WorkflowInstanceId), e));
             }
 
             return extension;
@@ -2078,11 +2088,11 @@ namespace CoreWf.Runtime
 
         private void ScheduleRuntimeWorkItems()
         {
-            //if (this.runtimeTransaction != null && this.runtimeTransaction.ShouldScheduleCompletion)
-            //{
-            //    this.scheduler.PushWork(new CompleteTransactionWorkItem(this.runtimeTransaction.IsolationScope));
-            //    return;
-            //}
+            if (_runtimeTransaction != null && _runtimeTransaction.ShouldScheduleCompletion)
+            {
+                _scheduler.PushWork(new CompleteTransactionWorkItem(_runtimeTransaction.IsolationScope));
+                return;
+            }
 
             if (_persistenceWaiters != null && _persistenceWaiters.Count > 0 &&
                 this.IsPersistable)
@@ -2142,10 +2152,12 @@ namespace CoreWf.Runtime
             // opportunity to gather up any output values.
             ScheduleCompletionBookmark(targetInstance);
 
-            //if (!targetInstance.HasNotExecuted)
-            //{
-            //    DebugActivityCompleted(targetInstance);
-            //}
+#if NET45
+            if (!targetInstance.HasNotExecuted)
+            {
+                DebugActivityCompleted(targetInstance);
+            }
+#endif
 
             // 3. Cleanup environmental resources (properties, handles, mapped locations)
             try
@@ -2253,8 +2265,7 @@ namespace CoreWf.Runtime
 
         internal void CancelPendingOperation(ActivityInstance instance)
         {
-            AsyncOperationContext asyncContext;
-            if (TryGetPendingOperation(instance, out asyncContext))
+            if (TryGetPendingOperation(instance, out AsyncOperationContext asyncContext))
             {
                 if (asyncContext.IsStillActive)
                 {
@@ -2298,8 +2309,7 @@ namespace CoreWf.Runtime
                         HandleInitializationContext context = new HandleInitializationContext(this, null);
                         foreach (ExecutionPropertyManager.ExecutionProperty executionProperty in _rootPropertyManager.Properties.Values)
                         {
-                            Handle handle = executionProperty.Property as Handle;
-                            if (handle != null)
+                            if (executionProperty.Property is Handle handle)
                             {
                                 handle.Uninitialize(context);
                             }
@@ -2327,7 +2337,7 @@ namespace CoreWf.Runtime
             // We only gather outputs for Closed - not for canceled or faulted
             if (_rootInstance.State == ActivityInstanceState.Closed)
             {
-                // We use rootElement here instead of this.rootInstance.Activity
+                // We use rootElement here instead of _rootInstance.Activity
                 // because we don't always reload the root instance (like if it
                 // was complete when we last persisted).
                 IList<RuntimeArgument> rootArguments = _rootElement.RuntimeArguments;
@@ -2346,7 +2356,7 @@ namespace CoreWf.Runtime
                         Location location = _rootEnvironment.GetSpecificLocation(argument.BoundArgument.Id);
                         if (location == null)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
                         }
                         _workflowOutputs.Add(argument.Name, location.Value);
                     }
@@ -2386,23 +2396,23 @@ namespace CoreWf.Runtime
 
             if (this.IsIdle)
             {
-                //if (this.transactionContextWaiters != null && this.transactionContextWaiters.Count > 0)
-                //{
-                //    if (this.IsPersistable || (this.transactionContextWaiters[0].IsRequires && this.noPersistCount == 1))
-                //    {
-                //        TransactionContextWaiter waiter = this.transactionContextWaiters.Dequeue();
+                if (_transactionContextWaiters != null && _transactionContextWaiters.Count > 0)
+                {
+                    if (this.IsPersistable || (_transactionContextWaiters[0].IsRequires && _noPersistCount == 1))
+                    {
+                        TransactionContextWaiter waiter = _transactionContextWaiters.Dequeue();
 
-                //        waiter.WaitingInstance.DecrementBusyCount();
-                //        waiter.WaitingInstance.WaitingForTransactionContext = false;
+                        waiter.WaitingInstance.DecrementBusyCount();
+                        waiter.WaitingInstance.WaitingForTransactionContext = false;
 
-                //        ScheduleItem(new TransactionContextWorkItem(waiter));
+                        ScheduleItem(new TransactionContextWorkItem(waiter));
 
-                //        MarkSchedulerRunning();
-                //        ResumeScheduler();
+                        MarkSchedulerRunning();
+                        ResumeScheduler();
 
-                //        return;
-                //    }
-                //}
+                        return;
+                    }
+                }
 
                 if (_shouldRaiseMainBodyComplete)
                 {
@@ -2429,7 +2439,7 @@ namespace CoreWf.Runtime
                 }
             }
 
-            if (_shouldPauseOnCanPersist && this.IsPersistable)
+            if (_shouldPauseOnCanPersist && IsPersistable)
             {
                 _shouldPauseOnCanPersist = false;
             }
@@ -2508,8 +2518,7 @@ namespace CoreWf.Runtime
         // originated by the host
         internal BookmarkResumptionResult TryResumeHostBookmark(Bookmark bookmark, object value)
         {
-            Guid oldActivityId;
-            bool hasTracedResume = TryTraceResume(out oldActivityId);
+            bool hasTracedResume = TryTraceResume(out Guid oldActivityId);
 
             BookmarkResumptionResult result = TryResumeUserBookmark(bookmark, value, true);
 
@@ -2527,14 +2536,13 @@ namespace CoreWf.Runtime
 
             ActivityInstance isolationInstance = null;
 
-            //if (this.runtimeTransaction != null)
-            //{
-            //    isolationInstance = this.runtimeTransaction.IsolationScope;
-            //}
+            if (_runtimeTransaction != null)
+            {
+                isolationInstance = _runtimeTransaction.IsolationScope;
+            }
 
-            ActivityExecutionWorkItem resumeExecutionWorkItem;
 
-            BookmarkResumptionResult result = _bookmarkManager.TryGenerateWorkItem(this, isExternal, ref bookmark, value, isolationInstance, out resumeExecutionWorkItem);
+            BookmarkResumptionResult result = _bookmarkManager.TryGenerateWorkItem(this, isExternal, ref bookmark, value, isolationInstance, out ActivityExecutionWorkItem resumeExecutionWorkItem);
 
             if (result == BookmarkResumptionResult.Success)
             {
@@ -2642,20 +2650,18 @@ namespace CoreWf.Runtime
             // We have to perform all of this work with tracing set up
             // since we might initialize a sub-instance while generating
             // the work item.
-            Guid oldActivityId;
-            bool hasTracedResume = TryTraceResume(out oldActivityId);
+            bool hasTracedResume = TryTraceResume(out Guid oldActivityId);
 
             ActivityInstance isolationInstance = null;
 
-            //if (this.runtimeTransaction != null)
-            //{
-            //    isolationInstance = this.runtimeTransaction.IsolationScope;
-            //}
+            if (_runtimeTransaction != null)
+            {
+                isolationInstance = _runtimeTransaction.IsolationScope;
+            }
 
             bool hasOperations = _activeOperations != null && _activeOperations.Count > 0;
 
-            ActivityExecutionWorkItem resumeExecutionWorkItem;
-            BookmarkResumptionResult result = this.BookmarkScopeManager.TryGenerateWorkItem(this, ref bookmark, scope, value, isolationInstance, hasOperations || _bookmarkManager.HasBookmarks, out resumeExecutionWorkItem);
+            BookmarkResumptionResult result = this.BookmarkScopeManager.TryGenerateWorkItem(this, ref bookmark, scope, value, isolationInstance, hasOperations || _bookmarkManager.HasBookmarks, out ActivityExecutionWorkItem resumeExecutionWorkItem);
 
             if (result == BookmarkResumptionResult.Success)
             {
@@ -2711,8 +2717,7 @@ namespace CoreWf.Runtime
                 _rootPropertyManager = new ExecutionPropertyManager(null, rootProperties);
             }
 
-            Guid oldActivityId;
-            bool hasTracedStart = TryTraceStart(out oldActivityId);
+            bool hasTracedStart = TryTraceStart(out Guid oldActivityId);
 
             // Create and initialize the root instance
             _rootInstance = new ActivityInstance(activity)
@@ -2866,7 +2871,7 @@ namespace CoreWf.Runtime
         {
             if (_lastInstanceId == long.MaxValue)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInstanceIds));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfInstanceIds));
             }
             _lastInstanceId++;
         }
@@ -2899,14 +2904,14 @@ namespace CoreWf.Runtime
 
             if (!activity.IsMetadataCached || activity.CacheId != parent.Activity.CacheId)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
+                throw FxTrace.Exception.Argument(nameof(activity), SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
             }
 
             if (activity.SkipArgumentResolution)
             {
                 Fx.Assert(!activity.UseOldFastPath || parent.SubState == ActivityInstance.Substate.Executing,
                     "OldFastPath activities should have been handled by the Populate methods, unless this is a dynamic update");
-
+                
                 IncrementLastInstanceId();
 
                 ScheduleExpression(activity, parent, resultLocation, nextArgumentWorkItem, _lastInstanceId);
@@ -2985,7 +2990,7 @@ namespace CoreWf.Runtime
         {
             if (_activeOperations != null && _activeOperations.ContainsKey(owningActivity))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyOneOperationPerActivity));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OnlyOneOperationPerActivity));
             }
 
             this.EnterNoPersist();
@@ -3062,7 +3067,7 @@ namespace CoreWf.Runtime
                 this.OnPersistBookmark = onPersist;
                 this.WaitingInstance = waitingInstance;
             }
-
+            
             public Bookmark OnPersistBookmark
             {
                 get
@@ -3074,7 +3079,7 @@ namespace CoreWf.Runtime
                     _onPersistBookmark = value;
                 }
             }
-
+            
             public ActivityInstance WaitingInstance
             {
                 get
@@ -3181,7 +3186,7 @@ namespace CoreWf.Runtime
                             throw;
                         }
 
-                        this.workflowAbortException = e;
+                        _workflowAbortException = e;
                     }
 
                     return result == null || result.CompletedSynchronously;
@@ -3207,7 +3212,7 @@ namespace CoreWf.Runtime
                             throw;
                         }
 
-                        this.workflowAbortException = e;
+                        _workflowAbortException = e;
                     }
 
                     executor.FinishWorkItem(this);
@@ -3228,8 +3233,7 @@ namespace CoreWf.Runtime
         {
             private Exception _reason;
             private ActivityInstanceReference _originalSource;
-
-            private ActivityExecutor _executor;
+            private readonly ActivityExecutor _executor;
 
             public AbortActivityWorkItem(ActivityExecutor executor, ActivityInstance activityInstance, Exception reason, ActivityInstanceReference originalSource)
                 : base(activityInstance)
@@ -3409,7 +3413,7 @@ namespace CoreWf.Runtime
             {
                 get { return _argumentValueOverrides; }
                 set { _argumentValueOverrides = value; }
-            }
+            }            
 
             public void Initialize(ActivityInstance activityInstance, bool requiresSymbolResolution, IDictionary<string, object> argumentValueOverrides)
             {
@@ -3476,10 +3480,12 @@ namespace CoreWf.Runtime
                     // synchronously.
                     this.ActivityInstance.SetInitializedSubstate(executor);
 
-                    //if (executor.IsDebugged())
-                    //{
-                    //    executor.debugController.ActivityStarted(this.ActivityInstance);
-                    //}
+#if NET45
+                    if (executor.IsDebugged())
+                    {
+                        executor.debugController.ActivityStarted(this.ActivityInstance);
+                    }
+#endif
 
                     this.ActivityInstance.Execute(executor, bookmarkManager);
                 }
@@ -3677,765 +3683,763 @@ namespace CoreWf.Runtime
             }
         }
 
-        //[DataContract]
-        //internal class TransactionContextWaiter
-        //{
-        //    public TransactionContextWaiter(ActivityInstance instance, bool isRequires, RuntimeTransactionHandle handle, TransactionContextWaiterCallbackWrapper callbackWrapper, object state)
-        //    {
-        //        Fx.Assert(instance != null, "Must have an instance.");
-        //        Fx.Assert(handle != null, "Must have a handle.");
-        //        Fx.Assert(callbackWrapper != null, "Must have a callbackWrapper");
-
-        //        this.WaitingInstance = instance;
-        //        this.IsRequires = isRequires;
-        //        this.Handle = handle;
-        //        this.State = state;
-        //        this.CallbackWrapper = callbackWrapper;
-        //    }
-
-        //    ActivityInstance waitingInstance;
-        //    public ActivityInstance WaitingInstance
-        //    {
-        //        get
-        //        {
-        //            return this.waitingInstance;
-        //        }
-        //        private set
-        //        {
-        //            this.waitingInstance = value;
-        //        }
-        //    }
-
-        //    bool isRequires;
-        //    public bool IsRequires
-        //    {
-        //        get
-        //        {
-        //            return this.isRequires;
-        //        }
-        //        private set
-        //        {
-        //            this.isRequires = value;
-        //        }
-        //    }
-
-        //    RuntimeTransactionHandle handle;
-        //    public RuntimeTransactionHandle Handle
-        //    {
-        //        get
-        //        {
-        //            return this.handle;
-        //        }
-        //        private set
-        //        {
-        //            this.handle = value;
-        //        }
-        //    }
-
-        //    object state;
-        //    public object State
-        //    {
-        //        get
-        //        {
-        //            return this.state;
-        //        }
-        //        private set
-        //        {
-        //            this.state = value;
-        //        }
-        //    }
-
-        //    TransactionContextWaiterCallbackWrapper callbackWrapper;
-        //    public TransactionContextWaiterCallbackWrapper CallbackWrapper
-        //    {
-        //        get
-        //        {
-        //            return this.callbackWrapper;
-        //        }
-        //        private set
-        //        {
-        //            this.callbackWrapper = value;
-        //        }
-        //    }
-
-        //    [DataMember(Name = "WaitingInstance")]
-        //    internal ActivityInstance SerializedWaitingInstance
-        //    {
-        //        get { return this.WaitingInstance; }
-        //        set { this.WaitingInstance = value; }
-        //    }
-
-        //    [DataMember(EmitDefaultValue = false, Name = "IsRequires")]
-        //    internal bool SerializedIsRequires
-        //    {
-        //        get { return this.IsRequires; }
-        //        set { this.IsRequires = value; }
-        //    }
-
-        //    [DataMember(Name = "Handle")]
-        //    internal RuntimeTransactionHandle SerializedHandle
-        //    {
-        //        get { return this.Handle; }
-        //        set { this.Handle = value; }
-        //    }
-
-        //    [DataMember(EmitDefaultValue = false, Name = "State")]
-        //    internal object SerializedState
-        //    {
-        //        get { return this.State; }
-        //        set { this.State = value; }
-        //    }
-
-        //    [DataMember(Name = "CallbackWrapper")]
-        //    internal TransactionContextWaiterCallbackWrapper SerializedCallbackWrapper
-        //    {
-        //        get { return this.CallbackWrapper; }
-        //        set { this.CallbackWrapper = value; }
-        //    }
-        //}
-
-        //[DataContract]
-        //internal class TransactionContextWaiterCallbackWrapper : CallbackWrapper
-        //{
-        //    static readonly Type callbackType = typeof(Action<NativeActivityTransactionContext, object>);
-        //    static readonly Type[] transactionCallbackParameterTypes = new Type[] { typeof(NativeActivityTransactionContext), typeof(object) };
-
-        //    public TransactionContextWaiterCallbackWrapper(Action<NativeActivityTransactionContext, object> action, ActivityInstance owningInstance)
-        //        : base(action, owningInstance)
-        //    {
-        //    }
-
-        //    [Fx.Tag.SecurityNote(Critical = "Because we are calling EnsureCallback",
-        //        Safe = "Safe because the method needs to be part of an Activity and we are casting to the callback type and it has a very specific signature. The author of the callback is buying into being invoked from PT.")]
-        //    [SecuritySafeCritical]
-        //    public void Invoke(NativeActivityTransactionContext context, object value)
-        //    {
-        //        EnsureCallback(callbackType, transactionCallbackParameterTypes);
-        //        Action<NativeActivityTransactionContext, object> callback = (Action<NativeActivityTransactionContext, object>)this.Callback;
-        //        callback(context, value);
-        //    }
-        //}
-
-        //// This is not DataContract because this is always scheduled in a no-persist zone.
-        //// This work items exits the no persist zone when it is released.
-        //class CompleteTransactionWorkItem : WorkItem
-        //{
-        //    static AsyncCallback persistCompleteCallback;
-        //    static AsyncCallback commitCompleteCallback;
-        //    static Action<object, TimeoutException> outcomeDeterminedCallback;
-
-        //    RuntimeTransactionData runtimeTransaction;
-        //    ActivityExecutor executor;
-
-        //    public CompleteTransactionWorkItem(ActivityInstance instance)
-        //        : base(instance)
-        //    {
-        //        this.ExitNoPersistRequired = true;
-        //    }
-
-        //    static AsyncCallback PersistCompleteCallback
-        //    {
-        //        get
-        //        {
-        //            if (persistCompleteCallback == null)
-        //            {
-        //                persistCompleteCallback = Fx.ThunkCallback(new AsyncCallback(OnPersistComplete));
-        //            }
-
-        //            return persistCompleteCallback;
-        //        }
-        //    }
-
-        //    static AsyncCallback CommitCompleteCallback
-        //    {
-        //        get
-        //        {
-        //            if (commitCompleteCallback == null)
-        //            {
-        //                commitCompleteCallback = Fx.ThunkCallback(new AsyncCallback(OnCommitComplete));
-        //            }
-
-        //            return commitCompleteCallback;
-        //        }
-        //    }
-
-        //    static Action<object, TimeoutException> OutcomeDeterminedCallback
-        //    {
-        //        get
-        //        {
-        //            if (outcomeDeterminedCallback == null)
-        //            {
-        //                outcomeDeterminedCallback = new Action<object, TimeoutException>(OnOutcomeDetermined);
-        //            }
-
-        //            return outcomeDeterminedCallback;
-        //        }
-        //    }
-
-        //    public override bool IsValid
-        //    {
-        //        get
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    public override ActivityInstance PropertyManagerOwner
-        //    {
-        //        get
-        //        {
-        //            return null;
-        //        }
-        //    }
-
-        //    public override void TraceCompleted()
-        //    {
-        //        TraceRuntimeWorkItemCompleted();
-        //    }
-
-        //    public override void TraceScheduled()
-        //    {
-        //        TraceRuntimeWorkItemScheduled();
-        //    }
-
-        //    public override void TraceStarting()
-        //    {
-        //        TraceRuntimeWorkItemStarting();
-        //    }
-
-        //    public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
-        //    {
-        //        this.runtimeTransaction = executor.runtimeTransaction;
-        //        this.executor = executor;
-
-        //        // We need to take care of any pending cancelation
-        //        this.executor.SchedulePendingCancelation();
-
-        //        bool completeSelf;
-        //        try
-        //        {
-        //            // If the transaction is already rolled back, skip the persistence.  This allows us to avoid aborting the instance.
-        //            completeSelf = CheckTransactionAborted();
-        //            if (!completeSelf)
-        //            {
-        //                IAsyncResult result = new TransactionalPersistAsyncResult(this.executor, PersistCompleteCallback, this);
-        //                if (result.CompletedSynchronously)
-        //                {
-        //                    completeSelf = FinishPersist(result);
-        //                }
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (Fx.IsFatal(e))
-        //            {
-        //                throw;
-        //            }
-
-        //            HandleException(e);
-        //            completeSelf = true;
-        //        }
-
-        //        if (completeSelf)
-        //        {
-        //            this.executor.runtimeTransaction = null;
-
-        //            TraceTransactionOutcome();
-        //            return true;
-        //        }
-
-        //        return false;
-        //    }
-
-        //    void TraceTransactionOutcome()
-        //    {
-        //        if (TD.RuntimeTransactionCompleteIsEnabled())
-        //        {
-        //            TD.RuntimeTransactionComplete(this.runtimeTransaction.TransactionStatus.ToString());
-        //        }
-        //    }
-
-        //    void HandleException(Exception exception)
-        //    {
-        //        try
-        //        {
-        //            this.runtimeTransaction.OriginalTransaction.Rollback(exception);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (Fx.IsFatal(e))
-        //            {
-        //                throw;
-        //            }
-
-        //            this.workflowAbortException = e;
-        //        }
-
-        //        if (this.runtimeTransaction.TransactionHandle.AbortInstanceOnTransactionFailure)
-        //        {
-        //            // We might be overwriting a more recent exception from above, but it is
-        //            // more important that we tell the user why they failed originally.
-        //            this.workflowAbortException = exception;
-        //        }
-        //        else
-        //        {
-        //            this.ExceptionToPropagate = exception;
-        //        }
-        //    }
-
-        //    static void OnPersistComplete(IAsyncResult result)
-        //    {
-        //        if (result.CompletedSynchronously)
-        //        {
-        //            return;
-        //        }
-
-        //        CompleteTransactionWorkItem thisPtr = (CompleteTransactionWorkItem)result.AsyncState;
-        //        bool completeSelf = true;
-
-        //        try
-        //        {
-        //            completeSelf = thisPtr.FinishPersist(result);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (Fx.IsFatal(e))
-        //            {
-        //                throw;
-        //            }
-
-        //            thisPtr.HandleException(e);
-        //            completeSelf = true;
-        //        }
-
-        //        if (completeSelf)
-        //        {
-        //            thisPtr.executor.runtimeTransaction = null;
-
-        //            thisPtr.TraceTransactionOutcome();
-
-        //            thisPtr.executor.FinishWorkItem(thisPtr);
-        //        }
-        //    }
-
-        //    bool FinishPersist(IAsyncResult result)
-        //    {
-        //        TransactionalPersistAsyncResult.End(result);
-
-        //        return CompleteTransaction();
-        //    }
-
-        //    bool CompleteTransaction()
-        //    {
-        //        PreparingEnlistment enlistment = null;
-
-        //        lock (this.runtimeTransaction)
-        //        {
-        //            if (this.runtimeTransaction.PendingPreparingEnlistment != null)
-        //            {
-        //                enlistment = this.runtimeTransaction.PendingPreparingEnlistment;
-        //            }
-
-        //            this.runtimeTransaction.HasPrepared = true;
-        //        }
-
-        //        if (enlistment != null)
-        //        {
-        //            enlistment.Prepared();
-        //        }
-
-        //        Transaction original = this.runtimeTransaction.OriginalTransaction;
-
-        //        DependentTransaction dependentTransaction = original as DependentTransaction;
-        //        if (dependentTransaction != null)
-        //        {
-        //            dependentTransaction.Complete();
-        //            return CheckOutcome();
-        //        }
-        //        else
-        //        {
-        //            CommittableTransaction committableTransaction = original as CommittableTransaction;
-        //            if (committableTransaction != null)
-        //            {
-        //                IAsyncResult result = committableTransaction.BeginCommit(CommitCompleteCallback, this);
-
-        //                if (result.CompletedSynchronously)
-        //                {
-        //                    return FinishCommit(result);
-        //                }
-        //                else
-        //                {
-        //                    return false;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                return CheckOutcome();
-        //            }
-        //        }
-        //    }
-
-        //    static void OnCommitComplete(IAsyncResult result)
-        //    {
-        //        if (result.CompletedSynchronously)
-        //        {
-        //            return;
-        //        }
-
-        //        CompleteTransactionWorkItem thisPtr = (CompleteTransactionWorkItem)result.AsyncState;
-        //        bool completeSelf = true;
-
-        //        try
-        //        {
-        //            completeSelf = thisPtr.FinishCommit(result);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (Fx.IsFatal(e))
-        //            {
-        //                throw;
-        //            }
-
-        //            thisPtr.HandleException(e);
-        //            completeSelf = true;
-        //        }
-
-        //        if (completeSelf)
-        //        {
-        //            thisPtr.executor.runtimeTransaction = null;
-
-        //            thisPtr.TraceTransactionOutcome();
-
-        //            thisPtr.executor.FinishWorkItem(thisPtr);
-        //        }
-        //    }
-
-        //    bool FinishCommit(IAsyncResult result)
-        //    {
-        //        ((CommittableTransaction)this.runtimeTransaction.OriginalTransaction).EndCommit(result);
-
-        //        return CheckOutcome();
-        //    }
-
-        //    bool CheckOutcome()
-        //    {
-        //        AsyncWaitHandle completionEvent = null;
-
-        //        lock (this.runtimeTransaction)
-        //        {
-        //            TransactionStatus status = this.runtimeTransaction.TransactionStatus;
-
-        //            if (status == TransactionStatus.Active)
-        //            {
-        //                completionEvent = new AsyncWaitHandle();
-        //                this.runtimeTransaction.CompletionEvent = completionEvent;
-        //            }
-        //        }
-
-        //        if (completionEvent != null)
-        //        {
-        //            if (!completionEvent.WaitAsync(OutcomeDeterminedCallback, this, ActivityDefaults.TransactionCompletionTimeout))
-        //            {
-        //                return false;
-        //            }
-        //        }
-
-        //        return FinishCheckOutcome();
-        //    }
-
-        //    static void OnOutcomeDetermined(object state, TimeoutException asyncException)
-        //    {
-        //        CompleteTransactionWorkItem thisPtr = (CompleteTransactionWorkItem)state;
-        //        bool completeSelf = true;
-
-        //        if (asyncException != null)
-        //        {
-        //            thisPtr.HandleException(asyncException);
-        //        }
-        //        else
-        //        {
-        //            try
-        //            {
-        //                completeSelf = thisPtr.FinishCheckOutcome();
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                if (Fx.IsFatal(e))
-        //                {
-        //                    throw;
-        //                }
-
-        //                thisPtr.HandleException(e);
-        //                completeSelf = true;
-        //            }
-        //        }
-
-        //        if (completeSelf)
-        //        {
-        //            thisPtr.executor.runtimeTransaction = null;
-
-        //            thisPtr.TraceTransactionOutcome();
-
-        //            thisPtr.executor.FinishWorkItem(thisPtr);
-        //        }
-        //    }
-
-        //    bool FinishCheckOutcome()
-        //    {
-        //        CheckTransactionAborted();
-        //        return true;
-        //    }
-
-        //    bool CheckTransactionAborted()
-        //    {
-        //        try
-        //        {
-        //            TransactionHelper.ThrowIfTransactionAbortedOrInDoubt(this.runtimeTransaction.OriginalTransaction);
-        //            return false;
-        //        }
-        //        catch (TransactionException exception)
-        //        {
-        //            if (this.runtimeTransaction.TransactionHandle.AbortInstanceOnTransactionFailure)
-        //            {
-        //                this.workflowAbortException = exception;
-        //            }
-        //            else
-        //            {
-        //                this.ExceptionToPropagate = exception;
-        //            }
-        //            return true;
-        //        }
-        //    }
-
-        //    public override void PostProcess(ActivityExecutor executor)
-        //    {
-        //    }
-
-        //    class TransactionalPersistAsyncResult : TransactedAsyncResult
-        //    {
-        //        CompleteTransactionWorkItem workItem;
-        //        static readonly AsyncCompletion onPersistComplete = new AsyncCompletion(OnPersistComplete);
-        //        readonly ActivityExecutor executor;
-
-        //        public TransactionalPersistAsyncResult(ActivityExecutor executor, AsyncCallback callback, object state)
-        //            : base(callback, state)
-        //        {
-        //            this.executor = executor;
-        //            this.workItem = (CompleteTransactionWorkItem)state;
-        //            IAsyncResult result = null;
-        //            using (PrepareTransactionalCall(this.executor.CurrentTransaction))
-        //            {
-        //                try
-        //                {
-        //                    result = this.executor.host.OnBeginPersist(PrepareAsyncCompletion(TransactionalPersistAsyncResult.onPersistComplete), this);
-        //                }
-        //                catch (Exception e)
-        //                {
-        //                    if (Fx.IsFatal(e))
-        //                    {
-        //                        throw;
-        //                    }
-        //                    this.workItem.workflowAbortException = e;
-        //                    throw;
-        //                }
-        //            }
-        //            if (SyncContinue(result))
-        //            {
-        //                Complete(true);
-        //            }
-        //        }
-
-        //        public static void End(IAsyncResult result)
-        //        {
-        //            AsyncResult.End<TransactionalPersistAsyncResult>(result);
-        //        }
-
-        //        static bool OnPersistComplete(IAsyncResult result)
-        //        {
-        //            TransactionalPersistAsyncResult thisPtr = (TransactionalPersistAsyncResult)result.AsyncState;
-
-        //            try
-        //            {
-        //                thisPtr.executor.host.OnEndPersist(result);
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                if (Fx.IsFatal(e))
-        //                {
-        //                    throw;
-        //                }
-        //                thisPtr.workItem.workflowAbortException = e;
-        //                throw;
-        //            }
-
-        //            return true;
-        //        }
-        //    }
-        //}
-
-        //[DataContract]
-        //internal class TransactionContextWorkItem : ActivityExecutionWorkItem
-        //{
-        //    TransactionContextWaiter waiter;
-
-        //    public TransactionContextWorkItem(TransactionContextWaiter waiter)
-        //        : base(waiter.WaitingInstance)
-        //    {
-        //        this.waiter = waiter;
-
-        //        if (this.waiter.IsRequires)
-        //        {
-        //            this.ExitNoPersistRequired = true;
-        //        }
-        //    }
-
-        //    [DataMember(Name = "waiter")]
-        //    internal TransactionContextWaiter SerializedWaiter
-        //    {
-        //        get { return this.waiter; }
-        //        set { this.waiter = value; }
-        //    }
-
-        //    public override void TraceCompleted()
-        //    {
-        //        if (TD.CompleteTransactionContextWorkItemIsEnabled())
-        //        {
-        //            TD.CompleteTransactionContextWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
-        //        }
-        //    }
-
-        //    public override void TraceScheduled()
-        //    {
-        //        if (TD.ScheduleTransactionContextWorkItemIsEnabled())
-        //        {
-        //            TD.ScheduleTransactionContextWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
-        //        }
-        //    }
-
-        //    public override void TraceStarting()
-        //    {
-        //        if (TD.StartTransactionContextWorkItemIsEnabled())
-        //        {
-        //            TD.StartTransactionContextWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
-        //        }
-        //    }
-
-        //    public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
-        //    {
-        //        NativeActivityTransactionContext transactionContext = null;
-
-        //        try
-        //        {
-        //            transactionContext = new NativeActivityTransactionContext(this.ActivityInstance, executor, bookmarkManager, this.waiter.Handle);
-        //            waiter.CallbackWrapper.Invoke(transactionContext, this.waiter.State);
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (Fx.IsFatal(e))
-        //            {
-        //                throw;
-        //            }
-
-        //            this.ExceptionToPropagate = e;
-        //        }
-        //        finally
-        //        {
-        //            if (transactionContext != null)
-        //            {
-        //                transactionContext.Dispose();
-        //            }
-        //        }
-
-        //        return true;
-        //    }
-        //}
-
-        //// This class is not DataContract since we only create instances of it while we
-        //// are in no-persist zones
-        //class RuntimeTransactionData
-        //{
-        //    public RuntimeTransactionData(RuntimeTransactionHandle handle, Transaction transaction, ActivityInstance isolationScope)
-        //    {
-        //        this.TransactionHandle = handle;
-        //        this.OriginalTransaction = transaction;
-        //        this.ClonedTransaction = transaction.Clone();
-        //        this.IsolationScope = isolationScope;
-        //        this.TransactionStatus = TransactionStatus.Active;
-        //    }
-
-        //    public AsyncWaitHandle CompletionEvent
-        //    {
-        //        get;
-        //        set;
-        //    }
-
-        //    public PreparingEnlistment PendingPreparingEnlistment
-        //    {
-        //        get;
-        //        set;
-        //    }
-
-        //    public bool HasPrepared
-        //    {
-        //        get;
-        //        set;
-        //    }
-
-        //    public bool ShouldScheduleCompletion
-        //    {
-        //        get;
-        //        set;
-        //    }
-
-        //    public TransactionStatus TransactionStatus
-        //    {
-        //        get;
-        //        set;
-        //    }
-
-        //    public bool IsRootCancelPending
-        //    {
-        //        get;
-        //        set;
-        //    }
-
-        //    public RuntimeTransactionHandle TransactionHandle
-        //    {
-        //        get;
-        //        private set;
-        //    }
-
-        //    public Transaction ClonedTransaction
-        //    {
-        //        get;
-        //        private set;
-        //    }
-
-        //    public Transaction OriginalTransaction
-        //    {
-        //        get;
-        //        private set;
-        //    }
-
-        //    public ActivityInstance IsolationScope
-        //    {
-        //        get;
-        //        private set;
-        //    }
-
-        //    [Fx.Tag.Throws(typeof(Exception), "Doesn't handle any exceptions coming from Rollback.")]
-        //    public void Rollback(Exception reason)
-        //    {
-        //        Fx.Assert(this.OriginalTransaction != null, "We always have an original transaction.");
-
-        //        this.OriginalTransaction.Rollback(reason);
-        //    }
-        //}
-
-        private class AssociateKeysAsyncResult : AsyncResult
+        [DataContract]
+        internal class TransactionContextWaiter
         {
-            private static readonly AsyncCompletion s_associatedCallback = new AsyncCompletion(OnAssociated);
+            public TransactionContextWaiter(ActivityInstance instance, bool isRequires, RuntimeTransactionHandle handle, TransactionContextWaiterCallbackWrapper callbackWrapper, object state)
+            {
+                Fx.Assert(instance != null, "Must have an instance.");
+                Fx.Assert(handle != null, "Must have a handle.");
+                Fx.Assert(callbackWrapper != null, "Must have a callbackWrapper");
 
+                this.WaitingInstance = instance;
+                this.IsRequires = isRequires;
+                this.Handle = handle;
+                this.State = state;
+                this.CallbackWrapper = callbackWrapper;
+            }
+
+            private ActivityInstance _waitingInstance;
+            public ActivityInstance WaitingInstance
+            {
+                get
+                {
+                    return _waitingInstance;
+                }
+                private set
+                {
+                    _waitingInstance = value;
+                }
+            }
+
+            private bool _isRequires;
+            public bool IsRequires
+            {
+                get
+                {
+                    return _isRequires;
+                }
+                private set
+                {
+                    _isRequires = value;
+                }
+            }
+
+            private RuntimeTransactionHandle _handle;
+            public RuntimeTransactionHandle Handle
+            {
+                get
+                {
+                    return _handle;
+                }
+                private set
+                {
+                    _handle = value;
+                }
+            }
+
+            private object _state;
+            public object State
+            {
+                get
+                {
+                    return _state;
+                }
+                private set
+                {
+                    _state = value;
+                }
+            }
+
+            private TransactionContextWaiterCallbackWrapper _callbackWrapper;
+            public TransactionContextWaiterCallbackWrapper CallbackWrapper
+            {
+                get
+                {
+                    return _callbackWrapper;
+                }
+                private set
+                {
+                    _callbackWrapper = value;
+                }
+            }
+
+            [DataMember(Name = "WaitingInstance")]
+            internal ActivityInstance SerializedWaitingInstance
+            {
+                get { return this.WaitingInstance; }
+                set { this.WaitingInstance = value; }
+            }
+
+            [DataMember(EmitDefaultValue = false, Name = "IsRequires")]
+            internal bool SerializedIsRequires
+            {
+                get { return this.IsRequires; }
+                set { this.IsRequires = value; }
+            }
+
+            [DataMember(Name = "Handle")]
+            internal RuntimeTransactionHandle SerializedHandle
+            {
+                get { return this.Handle; }
+                set { this.Handle = value; }
+            }
+
+            [DataMember(EmitDefaultValue = false, Name = "State")]
+            internal object SerializedState
+            {
+                get { return this.State; }
+                set { this.State = value; }
+            }
+
+            [DataMember(Name = "CallbackWrapper")]
+            internal TransactionContextWaiterCallbackWrapper SerializedCallbackWrapper
+            {
+                get { return this.CallbackWrapper; }
+                set { this.CallbackWrapper = value; }
+            }
+        }
+
+        [DataContract]
+        internal class TransactionContextWaiterCallbackWrapper : CallbackWrapper
+        {
+            private static readonly Type callbackType = typeof(Action<NativeActivityTransactionContext, object>);
+            private static readonly Type[] transactionCallbackParameterTypes = new Type[] { typeof(NativeActivityTransactionContext), typeof(object) };
+
+            public TransactionContextWaiterCallbackWrapper(Action<NativeActivityTransactionContext, object> action, ActivityInstance owningInstance)
+                : base(action, owningInstance)
+            {
+            }
+
+            [Fx.Tag.SecurityNote(Critical = "Because we are calling EnsureCallback",
+                Safe = "Safe because the method needs to be part of an Activity and we are casting to the callback type and it has a very specific signature. The author of the callback is buying into being invoked from PT.")]
+            [SecuritySafeCritical]
+            public void Invoke(NativeActivityTransactionContext context, object value)
+            {
+                EnsureCallback(callbackType, transactionCallbackParameterTypes);
+                Action<NativeActivityTransactionContext, object> callback = (Action<NativeActivityTransactionContext, object>)this.Callback;
+                callback(context, value);
+            }
+        }
+
+        // This is not DataContract because this is always scheduled in a no-persist zone.
+        // This work items exits the no persist zone when it is released.
+        private class CompleteTransactionWorkItem : WorkItem
+        {
+            private static AsyncCallback persistCompleteCallback;
+            private static AsyncCallback commitCompleteCallback;
+            private static Action<object, TimeoutException> outcomeDeterminedCallback;
+            private RuntimeTransactionData _runtimeTransaction;
+            private ActivityExecutor _executor;
+
+            public CompleteTransactionWorkItem(ActivityInstance instance)
+                : base(instance)
+            {
+                this.ExitNoPersistRequired = true;
+            }
+
+            private static AsyncCallback PersistCompleteCallback
+            {
+                get
+                {
+                    if (persistCompleteCallback == null)
+                    {
+                        persistCompleteCallback = Fx.ThunkCallback(new AsyncCallback(OnPersistComplete));
+                    }
+
+                    return persistCompleteCallback;
+                }
+            }
+
+            private static AsyncCallback CommitCompleteCallback
+            {
+                get
+                {
+                    if (commitCompleteCallback == null)
+                    {
+                        commitCompleteCallback = Fx.ThunkCallback(new AsyncCallback(OnCommitComplete));
+                    }
+
+                    return commitCompleteCallback;
+                }
+            }
+
+            private static Action<object, TimeoutException> OutcomeDeterminedCallback
+            {
+                get
+                {
+                    if (outcomeDeterminedCallback == null)
+                    {
+                        outcomeDeterminedCallback = new Action<object, TimeoutException>(OnOutcomeDetermined);
+                    }
+
+                    return outcomeDeterminedCallback;
+                }
+            }
+
+            public override bool IsValid
+            {
+                get
+                {
+                    return true;
+                }
+            }
+
+            public override ActivityInstance PropertyManagerOwner
+            {
+                get
+                {
+                    return null;
+                }
+            }
+
+            public override void TraceCompleted()
+            {
+                TraceRuntimeWorkItemCompleted();
+            }
+
+            public override void TraceScheduled()
+            {
+                TraceRuntimeWorkItemScheduled();
+            }
+
+            public override void TraceStarting()
+            {
+                TraceRuntimeWorkItemStarting();
+            }
+
+            public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
+            {
+                _runtimeTransaction = executor._runtimeTransaction;
+                _executor = executor;
+
+                // We need to take care of any pending cancelation
+                _executor.SchedulePendingCancelation();
+
+                bool completeSelf;
+                try
+                {
+                    // If the transaction is already rolled back, skip the persistence.  This allows us to avoid aborting the instance.
+                    completeSelf = CheckTransactionAborted();
+                    if (!completeSelf)
+                    {
+                        IAsyncResult result = new TransactionalPersistAsyncResult(_executor, PersistCompleteCallback, this);
+                        if (result.CompletedSynchronously)
+                        {
+                            completeSelf = FinishPersist(result);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+
+                    HandleException(e);
+                    completeSelf = true;
+                }
+
+                if (completeSelf)
+                {
+                    _executor._runtimeTransaction = null;
+
+                    TraceTransactionOutcome();
+                    return true;
+                }
+
+                return false;
+            }
+
+            private void TraceTransactionOutcome()
+            {
+                if (TD.RuntimeTransactionCompleteIsEnabled())
+                {
+                    TD.RuntimeTransactionComplete(_runtimeTransaction.TransactionStatus.ToString());
+                }
+            }
+
+            private void HandleException(Exception exception)
+            {
+                try
+                {
+                    _runtimeTransaction.OriginalTransaction.Rollback(exception);
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+
+                    _workflowAbortException = e;
+                }
+
+                if (_runtimeTransaction.TransactionHandle.AbortInstanceOnTransactionFailure)
+                {
+                    // We might be overwriting a more recent exception from above, but it is
+                    // more important that we tell the user why they failed originally.
+                    _workflowAbortException = exception;
+                }
+                else
+                {
+                    this.ExceptionToPropagate = exception;
+                }
+            }
+
+            private static void OnPersistComplete(IAsyncResult result)
+            {
+                if (result.CompletedSynchronously)
+                {
+                    return;
+                }
+
+                CompleteTransactionWorkItem thisPtr = (CompleteTransactionWorkItem)result.AsyncState;
+                bool completeSelf = true;
+
+                try
+                {
+                    completeSelf = thisPtr.FinishPersist(result);
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+
+                    thisPtr.HandleException(e);
+                    completeSelf = true;
+                }
+
+                if (completeSelf)
+                {
+                    thisPtr._executor._runtimeTransaction = null;
+
+                    thisPtr.TraceTransactionOutcome();
+
+                    thisPtr._executor.FinishWorkItem(thisPtr);
+                }
+            }
+
+            private bool FinishPersist(IAsyncResult result)
+            {
+                TransactionalPersistAsyncResult.End(result);
+
+                return CompleteTransaction();
+            }
+
+            private bool CompleteTransaction()
+            {
+                PreparingEnlistment enlistment = null;
+
+                lock (_runtimeTransaction)
+                {
+                    if (_runtimeTransaction.PendingPreparingEnlistment != null)
+                    {
+                        enlistment = _runtimeTransaction.PendingPreparingEnlistment;
+                    }
+
+                    _runtimeTransaction.HasPrepared = true;
+                }
+
+                if (enlistment != null)
+                {
+                    enlistment.Prepared();
+                }
+
+                Transaction original = _runtimeTransaction.OriginalTransaction;
+
+                DependentTransaction dependentTransaction = original as DependentTransaction;
+                if (dependentTransaction != null)
+                {
+                    dependentTransaction.Complete();
+                    return CheckOutcome();
+                }
+                else
+                {
+                    CommittableTransaction committableTransaction = original as CommittableTransaction;
+                    if (committableTransaction != null)
+                    {
+                        IAsyncResult result = committableTransaction.BeginCommit(CommitCompleteCallback, this);
+
+                        if (result.CompletedSynchronously)
+                        {
+                            return FinishCommit(result);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return CheckOutcome();
+                    }
+                }
+            }
+
+            private static void OnCommitComplete(IAsyncResult result)
+            {
+                if (result.CompletedSynchronously)
+                {
+                    return;
+                }
+
+                CompleteTransactionWorkItem thisPtr = (CompleteTransactionWorkItem)result.AsyncState;
+                bool completeSelf = true;
+
+                try
+                {
+                    completeSelf = thisPtr.FinishCommit(result);
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+
+                    thisPtr.HandleException(e);
+                    completeSelf = true;
+                }
+
+                if (completeSelf)
+                {
+                    thisPtr._executor._runtimeTransaction = null;
+
+                    thisPtr.TraceTransactionOutcome();
+
+                    thisPtr._executor.FinishWorkItem(thisPtr);
+                }
+            }
+
+            private bool FinishCommit(IAsyncResult result)
+            {
+                ((CommittableTransaction)_runtimeTransaction.OriginalTransaction).EndCommit(result);
+
+                return CheckOutcome();
+            }
+
+            private bool CheckOutcome()
+            {
+                AsyncWaitHandle completionEvent = null;
+
+                lock (_runtimeTransaction)
+                {
+                    TransactionStatus status = _runtimeTransaction.TransactionStatus;
+
+                    if (status == TransactionStatus.Active)
+                    {
+                        completionEvent = new AsyncWaitHandle();
+                        _runtimeTransaction.CompletionEvent = completionEvent;
+                    }
+                }
+
+                if (completionEvent != null)
+                {
+                    if (!completionEvent.WaitAsync(OutcomeDeterminedCallback, this, ActivityDefaults.TransactionCompletionTimeout))
+                    {
+                        return false;
+                    }
+                }
+
+                return FinishCheckOutcome();
+            }
+
+            private static void OnOutcomeDetermined(object state, TimeoutException asyncException)
+            {
+                CompleteTransactionWorkItem thisPtr = (CompleteTransactionWorkItem)state;
+                bool completeSelf = true;
+
+                if (asyncException != null)
+                {
+                    thisPtr.HandleException(asyncException);
+                }
+                else
+                {
+                    try
+                    {
+                        completeSelf = thisPtr.FinishCheckOutcome();
+                    }
+                    catch (Exception e)
+                    {
+                        if (Fx.IsFatal(e))
+                        {
+                            throw;
+                        }
+
+                        thisPtr.HandleException(e);
+                        completeSelf = true;
+                    }
+                }
+
+                if (completeSelf)
+                {
+                    thisPtr._executor._runtimeTransaction = null;
+
+                    thisPtr.TraceTransactionOutcome();
+
+                    thisPtr._executor.FinishWorkItem(thisPtr);
+                }
+            }
+
+            private bool FinishCheckOutcome()
+            {
+                CheckTransactionAborted();
+                return true;
+            }
+
+            private bool CheckTransactionAborted()
+            {
+                try
+                {
+                    TransactionHelper.ThrowIfTransactionAbortedOrInDoubt(_runtimeTransaction.OriginalTransaction);
+                    return false;
+                }
+                catch (TransactionException exception)
+                {
+                    if (_runtimeTransaction.TransactionHandle.AbortInstanceOnTransactionFailure)
+                    {
+                        _workflowAbortException = exception;
+                    }
+                    else
+                    {
+                        this.ExceptionToPropagate = exception;
+                    }
+                    return true;
+                }
+            }
+
+            public override void PostProcess(ActivityExecutor executor)
+            {
+            }
+
+            private class TransactionalPersistAsyncResult : TransactedAsyncResult
+            {
+                private CompleteTransactionWorkItem _workItem;
+                private static readonly AsyncCompletion onPersistComplete = new AsyncCompletion(OnPersistComplete);
+                private readonly ActivityExecutor _executor;
+
+                public TransactionalPersistAsyncResult(ActivityExecutor executor, AsyncCallback callback, object state)
+                    : base(callback, state)
+                {
+                    _executor = executor;
+                    _workItem = (CompleteTransactionWorkItem)state;
+                    IAsyncResult result = null;
+                    using (PrepareTransactionalCall(_executor.CurrentTransaction))
+                    {
+                        try
+                        {
+                            result = _executor._host.OnBeginPersist(PrepareAsyncCompletion(TransactionalPersistAsyncResult.onPersistComplete), this);
+                        }
+                        catch (Exception e)
+                        {
+                            if (Fx.IsFatal(e))
+                            {
+                                throw;
+                            }
+                            _workItem._workflowAbortException = e;
+                            throw;
+                        }
+                    }
+                    if (SyncContinue(result))
+                    {
+                        Complete(true);
+                    }
+                }
+
+                public static void End(IAsyncResult result)
+                {
+                    AsyncResult.End<TransactionalPersistAsyncResult>(result);
+                }
+
+                private static bool OnPersistComplete(IAsyncResult result)
+                {
+                    TransactionalPersistAsyncResult thisPtr = (TransactionalPersistAsyncResult)result.AsyncState;
+
+                    try
+                    {
+                        thisPtr._executor._host.OnEndPersist(result);
+                    }
+                    catch (Exception e)
+                    {
+                        if (Fx.IsFatal(e))
+                        {
+                            throw;
+                        }
+                        thisPtr._workItem._workflowAbortException = e;
+                        throw;
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        [DataContract]
+        internal class TransactionContextWorkItem : ActivityExecutionWorkItem
+        {
+            private TransactionContextWaiter _waiter;
+
+            public TransactionContextWorkItem(TransactionContextWaiter waiter)
+                : base(waiter.WaitingInstance)
+            {
+                _waiter = waiter;
+
+                if (_waiter.IsRequires)
+                {
+                    this.ExitNoPersistRequired = true;
+                }
+            }
+
+            [DataMember(Name = "waiter")]
+            internal TransactionContextWaiter SerializedWaiter
+            {
+                get { return _waiter; }
+                set { _waiter = value; }
+            }
+
+            public override void TraceCompleted()
+            {
+                if (TD.CompleteTransactionContextWorkItemIsEnabled())
+                {
+                    TD.CompleteTransactionContextWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
+                }
+            }
+
+            public override void TraceScheduled()
+            {
+                if (TD.ScheduleTransactionContextWorkItemIsEnabled())
+                {
+                    TD.ScheduleTransactionContextWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
+                }
+            }
+
+            public override void TraceStarting()
+            {
+                if (TD.StartTransactionContextWorkItemIsEnabled())
+                {
+                    TD.StartTransactionContextWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
+                }
+            }
+
+            public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
+            {
+                NativeActivityTransactionContext transactionContext = null;
+
+                try
+                {
+                    transactionContext = new NativeActivityTransactionContext(this.ActivityInstance, executor, bookmarkManager, _waiter.Handle);
+                    _waiter.CallbackWrapper.Invoke(transactionContext, _waiter.State);
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+
+                    this.ExceptionToPropagate = e;
+                }
+                finally
+                {
+                    if (transactionContext != null)
+                    {
+                        transactionContext.Dispose();
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        // This class is not DataContract since we only create instances of it while we
+        // are in no-persist zones
+        private class RuntimeTransactionData
+        {
+            public RuntimeTransactionData(RuntimeTransactionHandle handle, Transaction transaction, ActivityInstance isolationScope)
+            {
+                this.TransactionHandle = handle;
+                this.OriginalTransaction = transaction;
+                this.ClonedTransaction = transaction.Clone();
+                this.IsolationScope = isolationScope;
+                this.TransactionStatus = TransactionStatus.Active;
+            }
+
+            public AsyncWaitHandle CompletionEvent
+            {
+                get;
+                set;
+            }
+
+            public PreparingEnlistment PendingPreparingEnlistment
+            {
+                get;
+                set;
+            }
+
+            public bool HasPrepared
+            {
+                get;
+                set;
+            }
+
+            public bool ShouldScheduleCompletion
+            {
+                get;
+                set;
+            }
+
+            public TransactionStatus TransactionStatus
+            {
+                get;
+                set;
+            }
+
+            public bool IsRootCancelPending
+            {
+                get;
+                set;
+            }
+
+            public RuntimeTransactionHandle TransactionHandle
+            {
+                get;
+                private set;
+            }
+
+            public Transaction ClonedTransaction
+            {
+                get;
+                private set;
+            }
+
+            public Transaction OriginalTransaction
+            {
+                get;
+                private set;
+            }
+
+            public ActivityInstance IsolationScope
+            {
+                get;
+                private set;
+            }
+
+            [Fx.Tag.Throws(typeof(Exception), "Doesn't handle any exceptions coming from Rollback.")]
+            public void Rollback(Exception reason)
+            {
+                Fx.Assert(this.OriginalTransaction != null, "We always have an original transaction.");
+
+                this.OriginalTransaction.Rollback(reason);
+            }
+        }
+
+        private class AssociateKeysAsyncResult : TransactedAsyncResult
+        {
+            private static readonly AsyncCompletion associatedCallback = new AsyncCompletion(OnAssociated);
             private readonly ActivityExecutor _executor;
 
             public AssociateKeysAsyncResult(ActivityExecutor executor, ICollection<InstanceKey> keysToAssociate, AsyncCallback callback, object state)
@@ -4444,10 +4448,10 @@ namespace CoreWf.Runtime
                 _executor = executor;
 
                 IAsyncResult result;
-                //using (PrepareTransactionalCall(this.executor.CurrentTransaction))
-                //{
-                result = _executor._host.OnBeginAssociateKeys(keysToAssociate, PrepareAsyncCompletion(s_associatedCallback), this);
-                //}
+                using (PrepareTransactionalCall(_executor.CurrentTransaction))
+                {
+                    result = _executor._host.OnBeginAssociateKeys(keysToAssociate, PrepareAsyncCompletion(associatedCallback), this);
+                }
                 if (SyncContinue(result))
                 {
                     Complete(true);
@@ -4529,11 +4533,6 @@ namespace CoreWf.Runtime
         {
             internal EmptyDelegateActivity()
             {
-            }
-
-            protected override void CacheMetadata(NativeActivityMetadata metadata)
-            {
-                // No op
             }
 
             protected override void Execute(NativeActivityContext context)

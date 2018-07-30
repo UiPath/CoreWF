@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -124,8 +124,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         public override bool Equals(object obj)
         {
-            ActivityTrace trace = obj as ActivityTrace;
-            if (trace != null)
+            if (obj is ActivityTrace trace)
             {
                 if (
                     (this.ActivityName == trace.ActivityName) &&
@@ -147,9 +146,8 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         bool IActualTraceStep.Equals(IActualTraceStep trace)
         {
-            ActivityTrace activityTrace = trace as ActivityTrace;
 
-            if (activityTrace != null &&
+            if (trace is ActivityTrace activityTrace &&
                 activityTrace._activityName == _activityName &&
                 activityTrace._activityStatus == _activityStatus)
             {

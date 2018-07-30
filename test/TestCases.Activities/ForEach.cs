@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -29,14 +29,17 @@ namespace TestCases.Activities
             TestSequence innerSequence = new TestSequence("innerSeq");
 
             string[] strArray = new string[] { "var1", "var2", "var3" };
-            TestForEach<string> foreachAct = new TestForEach<string>();
+            TestForEach<string> foreachAct = new TestForEach<string>
+            {
+                Values = strArray,
 
-            foreachAct.Values = strArray;
+                HintIterationCount = 3
+            };
 
-            foreachAct.HintIterationCount = 3;
-
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             foreachAct.Body = innerSequence;
 
@@ -96,9 +99,10 @@ namespace TestCases.Activities
             //  Test case description:
             //  Simple foreach test (set Values to a list to iterate) without anything in the body
             string[] strArray = new string[] { "var1", "var2", "var3" };
-            TestForEach<string> foreachAct = new TestForEach<string>();
-
-            foreachAct.Values = strArray;
+            TestForEach<string> foreachAct = new TestForEach<string>
+            {
+                Values = strArray
+            };
 
             TestRuntime.RunAndValidateWorkflow(foreachAct);
         }
@@ -114,8 +118,10 @@ namespace TestCases.Activities
 
             List<string> stringList = new List<string>() { "var1", "var2", "var3" };
 
-            TestWriteLine writeLine = new TestWriteLine("Write Line");
-            writeLine.Message = "Here we are!";
+            TestWriteLine writeLine = new TestWriteLine("Write Line")
+            {
+                Message = "Here we are!"
+            };
 
             TestForEach<string> foreachAct = new TestForEach<string>()
             {
@@ -128,8 +134,10 @@ namespace TestCases.Activities
             Variable<List<string>> foreachList = new Variable<List<string>>("foreachList", context => stringList);
 
             BindingFlags flags = /*BindingFlags.InvokeMethod |*/ BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
-            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinvoke", this.GetType().GetMethod("ChangeListToNewList", flags));
-            methodInvokeAct.TargetObject = new TestArgument<ForEach>(Direction.In, "TargetObject", context => new ForEach());
+            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinvoke", this.GetType().GetMethod("ChangeListToNewList", flags))
+            {
+                TargetObject = new TestArgument<ForEach>(Direction.In, "TargetObject", context => new ForEach())
+            };
             methodInvokeAct.Arguments.Add(new TestArgument<List<string>>(Direction.InOut, "listOfStrings", foreachList));
 
             innerSequence.Activities.Add(methodInvokeAct);
@@ -559,10 +567,12 @@ namespace TestCases.Activities
         [Fact]
         public void GetChildrenModifyChildrenExecute()
         {
-            TestForEach<string> foreachAct = new TestForEach<string>();
-            foreachAct.Body = new TestWriteLine("write hello A")
+            TestForEach<string> foreachAct = new TestForEach<string>
             {
-                Message = "Its a big world after all",
+                Body = new TestWriteLine("write hello A")
+                {
+                    Message = "Its a big world after all",
+                }
             };
 
             WorkflowInspectionServices.GetActivities(foreachAct.ProductActivity);
@@ -1010,11 +1020,15 @@ namespace TestCases.Activities
         public void ForEachWithWorkFlowInvoker()
         {
             string[] strArray = new string[] { "var1", "var2", "var3" };
-            TestForEach<string> foreachAct = new TestForEach<string>();
-            foreachAct.HintIterationCount = 3;
+            TestForEach<string> foreachAct = new TestForEach<string>
+            {
+                HintIterationCount = 3
+            };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             foreachAct.Body = writeLine;
 
@@ -1043,11 +1057,13 @@ namespace TestCases.Activities
             switchAct.AddCase(2, new TestBlockingActivity("BookMark1"));
             switchAct.AddCase(3, new TestWriteLine("W3") { Message = "case 3" });
 
-            TestForEach<int> foreachAct = new TestForEach<int>();
-            foreachAct.HintIterationCount = 3;
-            foreachAct.Body = switchAct;
-            foreachAct.CurrentVariable = arg;
-            foreachAct.Values = intArray;
+            TestForEach<int> foreachAct = new TestForEach<int>
+            {
+                HintIterationCount = 3,
+                Body = switchAct,
+                CurrentVariable = arg,
+                Values = intArray
+            };
 
             JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
 

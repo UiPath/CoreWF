@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -22,13 +22,17 @@ namespace TestCases.Activities
         [Fact]
         public void SimpleParallel()
         {
-            TestWriteLine writeLine1 = new TestWriteLine();
-            writeLine1.Message = "writeLine1";
-            writeLine1.DisplayName = "writeLine1";
+            TestWriteLine writeLine1 = new TestWriteLine
+            {
+                Message = "writeLine1",
+                DisplayName = "writeLine1"
+            };
 
-            TestWriteLine writeLine2 = new TestWriteLine();
-            writeLine2.Message = "writeLine2";
-            writeLine2.DisplayName = "writeLine2";
+            TestWriteLine writeLine2 = new TestWriteLine
+            {
+                Message = "writeLine2",
+                DisplayName = "writeLine2"
+            };
 
             TestParallel parallelActivity = new TestParallel("Parallel Activity");
             parallelActivity.Branches.Add(writeLine1);
@@ -55,9 +59,11 @@ namespace TestCases.Activities
         [Fact]
         public void OneBranch()
         {
-            TestWriteLine writeLine1 = new TestWriteLine();
-            writeLine1.Message = "writeLine1";
-            writeLine1.DisplayName = "writeLine1";
+            TestWriteLine writeLine1 = new TestWriteLine
+            {
+                Message = "writeLine1",
+                DisplayName = "writeLine1"
+            };
 
             TestParallel parallelActivity = new TestParallel("Parallel Activity");
             parallelActivity.Branches.Add(writeLine1);
@@ -427,13 +433,17 @@ namespace TestCases.Activities
         [Fact]
         public void ParallelWithWorkFlowInvoker()
         {
-            TestWriteLine writeLine1 = new TestWriteLine();
-            writeLine1.Message = "writeLine1";
-            writeLine1.DisplayName = "writeLine1";
+            TestWriteLine writeLine1 = new TestWriteLine
+            {
+                Message = "writeLine1",
+                DisplayName = "writeLine1"
+            };
 
-            TestWriteLine writeLine2 = new TestWriteLine();
-            writeLine2.Message = "writeLine2";
-            writeLine2.DisplayName = "writeLine2";
+            TestWriteLine writeLine2 = new TestWriteLine
+            {
+                Message = "writeLine2",
+                DisplayName = "writeLine2"
+            };
 
             TestParallel parallelActivity = new TestParallel("Parallel Activity");
             parallelActivity.Branches.Add(writeLine1);
@@ -509,8 +519,7 @@ namespace TestCases.Activities
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(parallelActivity))
             {
                 testWorkflowRuntime.ExecuteWorkflow();
-                Exception outException = null;
-                testWorkflowRuntime.WaitForAborted(out outException, false);
+                testWorkflowRuntime.WaitForAborted(out Exception outException, false);
                 if (outException == null || outException.InnerException == null || !outException.InnerException.GetType().Equals(typeof(TestCaseException)))
                 {
                     throw new TestCaseException(String.Format("Workflow was suuposed to Abort with a TestCaseException, but this is the exception: {0}", outException.ToString()));

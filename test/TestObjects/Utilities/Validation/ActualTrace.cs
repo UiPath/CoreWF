@@ -1,10 +1,9 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace Test.Common.TestObjects.Utilities.Validation
 {
     using System;
-    using CoreWf.Tracking;
     using System.Collections.Generic;
     using System.IO;
     using System.Runtime.Serialization;
@@ -28,8 +27,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
             {
                 foreach (IActualTraceStep step in actualTrace.Steps)
                 {
-                    ActivityTrace activityTrace = step as ActivityTrace;
-                    if (activityTrace != null)
+                    if (step is ActivityTrace activityTrace)
                     {
                         this.Steps.Add(new ActivityTrace(activityTrace));
                         continue;
@@ -42,45 +40,39 @@ namespace Test.Common.TestObjects.Utilities.Validation
                     //    continue;
                     //}
 
-                    WorkflowInstanceTrace workflowInstanceTrace = step as WorkflowInstanceTrace;
-                    if (workflowInstanceTrace != null)
+                    if (step is WorkflowInstanceTrace workflowInstanceTrace)
                     {
                         this.Steps.Add(new WorkflowInstanceTrace(workflowInstanceTrace.InstanceName, workflowInstanceTrace.WorkflowDefinitionIdentity, workflowInstanceTrace.InstanceStatus));
                         continue;
                     }
 
-                    UserTrace userTrace = step as UserTrace;
-                    if (userTrace != null)
+                    if (step is UserTrace userTrace)
                     {
                         this.Steps.Add(new UserTrace(userTrace.InstanceId, userTrace.ActivityParent, userTrace.Message));
                         continue;
                     }
 
-                    BookmarkResumptionTrace bookmarkResumptionTrace = step as BookmarkResumptionTrace;
-                    if (bookmarkResumptionTrace != null)
+                    if (step is BookmarkResumptionTrace bookmarkResumptionTrace)
                     {
                         this.Steps.Add(new BookmarkResumptionTrace(bookmarkResumptionTrace.BookmarkName, bookmarkResumptionTrace.SubinstanceId,
                             bookmarkResumptionTrace.ActivityName));
                         continue;
                     }
 
-                    SynchronizeTrace synchronizeTrace = step as SynchronizeTrace;
-                    if (synchronizeTrace != null)
+                    if (step is SynchronizeTrace synchronizeTrace)
                     {
                         this.Steps.Add(new SynchronizeTrace(synchronizeTrace.userTrace.InstanceId,
                             synchronizeTrace.userTrace.Message));
                         continue;
                     }
 
-                    WorkflowExceptionTrace weTrace = step as WorkflowExceptionTrace;
-                    if (weTrace != null)
+                    if (step is WorkflowExceptionTrace weTrace)
                     {
                         this.Steps.Add(new WorkflowExceptionTrace(weTrace.InstanceName, weTrace.InstanceException));
                         continue;
                     }
 
-                    WorkflowAbortedTrace wasTrace = step as WorkflowAbortedTrace;
-                    if (wasTrace != null)
+                    if (step is WorkflowAbortedTrace wasTrace)
                     {
                         this.Steps.Add(new WorkflowAbortedTrace(wasTrace.InstanceId, wasTrace.AbortedReason));
                         continue;
@@ -271,9 +263,11 @@ namespace Test.Common.TestObjects.Utilities.Validation
         {
             using (StringWriter stringWriter = new StringWriter())
             {
-                XmlWriterSettings xmlSettings = new XmlWriterSettings();
-                xmlSettings.Indent = true;
-                xmlSettings.OmitXmlDeclaration = true;
+                XmlWriterSettings xmlSettings = new XmlWriterSettings
+                {
+                    Indent = true,
+                    OmitXmlDeclaration = true
+                };
                 using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter, xmlSettings))
                 {
                     OrderedTraces orderedTraces = new OrderedTraces();

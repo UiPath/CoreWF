@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -48,8 +48,10 @@ namespace TestCases.Runtime.WorkflowInstanceTest
                 }
             };
 
-            WorkflowApplication instance = new WorkflowApplication(sequence);
-            instance.Aborted = OnWorkflowInstanceAborted;
+            WorkflowApplication instance = new WorkflowApplication(sequence)
+            {
+                Aborted = OnWorkflowInstanceAborted
+            };
 
             instance.Run();
 
@@ -188,8 +190,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
             ExpectedTrace expectedTrace = parallel.GetExpectedTrace();
             //Only verify User trace since activity traces will not be available once abort is called
             expectedTrace.AddVerifyTypes(typeof(UserTrace));
-            Exception excepion;
-            runtime.WaitForAborted(out excepion, expectedTrace);
+            runtime.WaitForAborted(out Exception excepion, expectedTrace);
         }
 
         [Fact(Skip = "Test is flaky, fails after 60 seconds")]
@@ -300,8 +301,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
             expectTrace.Trace.Steps.Add(new UserTrace(WaitReadLine<int>.AfterWait));
             expectTrace.AddVerifyTypes(typeof(UserTrace));
 
-            Exception exception;
-            runtime.WaitForAborted(out exception, expectTrace);
+            runtime.WaitForAborted(out Exception exception, expectTrace);
         }
 
         /// <summary>

@@ -1,15 +1,15 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal abstract class ActivityExecutionWorkItem : WorkItem
     {
-        private bool _skipActivityInstanceAbort;
+        private bool skipActivityInstanceAbort;
 
         // Used by subclasses in the pooled case
         protected ActivityExecutionWorkItem()
@@ -40,18 +40,18 @@ namespace CoreWf.Runtime
         protected override void ClearForReuse()
         {
             base.ClearForReuse();
-            _skipActivityInstanceAbort = false;
+            this.skipActivityInstanceAbort = false;
         }
 
         protected void SetExceptionToPropagateWithoutAbort(Exception exception)
         {
             this.ExceptionToPropagate = exception;
-            _skipActivityInstanceAbort = true;
+            this.skipActivityInstanceAbort = true;
         }
 
         public override void PostProcess(ActivityExecutor executor)
         {
-            if (this.ExceptionToPropagate != null && !_skipActivityInstanceAbort)
+            if (this.ExceptionToPropagate != null && !skipActivityInstanceAbort)
             {
                 executor.AbortActivityInstance(this.ActivityInstance, this.ExceptionToPropagate);
             }

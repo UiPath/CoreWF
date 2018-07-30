@@ -1,15 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf.Runtime;
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Threading;
+
     internal static class MethodCallExpressionHelper
     {
         public const int FuncCacheCapacity = 500;
@@ -26,7 +26,7 @@ namespace CoreWf.Expressions
                     Type parameterType = parameterInfos[i].ParameterType;
                     ParameterExpression variable = Expression.Parameter(parameterType.IsByRef ? parameterType.GetElementType() : parameterType, "arg" + i);
                     // If variable.Type is NOT a Nullable<T>, we include the call to Convert.ChangeType on the actual parameter.
-                    if (variable.Type.GetTypeInfo().IsValueType && Nullable.GetUnderlyingType(variable.Type) == null)
+                    if (variable.Type.IsValueType && Nullable.GetUnderlyingType(variable.Type) == null)
                     {
                         assignVariablesExpressions.Add(Expression.Assign(variable,
                              Expression.Convert(
@@ -40,7 +40,7 @@ namespace CoreWf.Expressions
                     }
                     if (parameterType.IsByRef)
                     {
-                        if (variable.Type.GetTypeInfo().IsValueType)
+                        if (variable.Type.IsValueType)
                         {
                             assignVariablesBackExpressions.Add(Expression.Assign(Expression.ArrayAccess(objectArray, Expression.Constant(i)),
                                 Expression.Convert(variable, typeof(object))));
@@ -78,7 +78,7 @@ namespace CoreWf.Expressions
             assignTempInstanceExpression = null;
             if (!methodInfo.IsStatic)
             {
-                if (methodInfo.DeclaringType.GetTypeInfo().IsValueType)
+                if (methodInfo.DeclaringType.IsValueType)
                 {
                     tempInstance = Expression.Parameter(methodInfo.DeclaringType, "tempInstance");
                     assignTempInstanceExpression = Expression.Assign(tempInstance, Expression.Convert(targetInstance, methodInfo.DeclaringType));
@@ -111,7 +111,7 @@ namespace CoreWf.Expressions
             if (returnType != typeof(void))
             {
                 Expression resultAssign = null;
-                if (!isConstructor && returnType.GetTypeInfo().IsValueType)
+                if (!isConstructor && returnType.IsValueType)
                 {
                     resultAssign = Expression.Assign(result,
                         Expression.Convert(callExpression, typeof(object)));
@@ -152,7 +152,7 @@ namespace CoreWf.Expressions
             Expression assignTempInstanceExpression = null;
             Expression expression;
 
-            if (!methodInfo.IsStatic && methodInfo.DeclaringType.GetTypeInfo().IsValueType && valueTypeReference)
+            if (!methodInfo.IsStatic && methodInfo.DeclaringType.IsValueType && valueTypeReference)
             {
                 expression = PrepareForCallExpression((MethodInfo)methodInfo, targetInstance, variables, out tempInstance, out assignTempInstanceExpression);
                 variables.Add(tempInstance);
@@ -165,6 +165,8 @@ namespace CoreWf.Expressions
                 expression = PrepareForCallExpression((MethodInfo)methodInfo, targetInstance, variables);
                 return ComposeBlockExpression(variables, assignVariablesExpressions, expression, assignVariablesBackExpressions, returnType, false, false);
             }
+
+
         }
 
         private static Expression ComposeLinqExpression<TResult>(ConstructorInfo constructorInfo, ParameterExpression objectArray)
@@ -206,6 +208,7 @@ namespace CoreWf.Expressions
                 metadata.AddValidationError(e.Message);
                 return null;
             }
+
         }
 
         private static Func<object[], TResult> GetFunc<TResult>(CodeActivityMetadata metadata, ConstructorInfo constructorInfo)
@@ -226,6 +229,7 @@ namespace CoreWf.Expressions
                 metadata.AddValidationError(e.Message);
                 return null;
             }
+
         }
 
         internal static bool NeedRetrieve(MethodBase newMethod, MethodBase oldMethod, Delegate func)
@@ -241,7 +245,7 @@ namespace CoreWf.Expressions
             return true;
         }
 
-        internal static Func<object, object[], object> GetFunc(CodeActivityMetadata metadata, MethodInfo methodInfo,
+        internal static Func<object, object[], object> GetFunc(CodeActivityMetadata metadata, MethodInfo methodInfo, 
             MruCache<MethodInfo, Func<object, object[], object>> cache, ReaderWriterLockSlim locker, bool valueTypeReference = false)
         {
             Func<object, object[], object> func = null;
@@ -261,8 +265,7 @@ namespace CoreWf.Expressions
                 try
                 {
                     //MruCache has on ContainsKey(), so we use TryGetValue()
-                    Func<object, object[], object> result = null;
-                    if (!cache.TryGetValue(methodInfo, out result))
+                    if (!cache.TryGetValue(methodInfo, out Func<object, object[], object> result))
                     {
                         cache.Add(methodInfo, func);
                     }
@@ -279,7 +282,7 @@ namespace CoreWf.Expressions
             return func;
         }
 
-        internal static Func<object[], TResult> GetFunc<TResult>(CodeActivityMetadata metadata, ConstructorInfo constructorInfo,
+        internal static Func<object[], TResult> GetFunc<TResult>(CodeActivityMetadata metadata, ConstructorInfo constructorInfo, 
             MruCache<ConstructorInfo, Func<object[], TResult>> cache, ReaderWriterLockSlim locker)
         {
             Func<object[], TResult> func = null;
@@ -304,8 +307,7 @@ namespace CoreWf.Expressions
                     try
                     {
                         //MruCache has on ContainsKey(), so we use TryGetValue()
-                        Func<object[], TResult> result = null;
-                        if (!cache.TryGetValue(constructorInfo, out result))
+                        if (!cache.TryGetValue(constructorInfo, out Func<object[], TResult> result))
                         {
                             cache.Add(constructorInfo, func);
                         }

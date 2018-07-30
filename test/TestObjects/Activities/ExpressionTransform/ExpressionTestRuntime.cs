@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -7,10 +7,7 @@ using CoreWf.Expressions;
 using CoreWf.Statements;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using Test.Common;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Utilities;
 
@@ -18,7 +15,7 @@ namespace Test.Common.TestObjects.Activities.ExpressionTransform
 {
     public class ExpressionTestRuntime
     {
-        private static string s_path = string.Empty; //DirectoryAssistance.GetTestBinsDirectory("TempFile.txt");
+        private static readonly string s_path = string.Empty; //DirectoryAssistance.GetTestBinsDirectory("TempFile.txt");
 
         public static void ValidateExpressionXaml<T>(TestExpression te)
         {
@@ -187,9 +184,8 @@ namespace Test.Common.TestObjects.Activities.ExpressionTransform
         public static Activity<TResult> TryConvert<TResult>(Expression<Func<ActivityContext, TResult>> expression, bool expectSucceeded)
         {
             bool isSucceeded;
-            Activity<TResult> resultWorkflow = null;
 
-            isSucceeded = ExpressionServices.TryConvert<TResult>(expression, out resultWorkflow);
+            isSucceeded = ExpressionServices.TryConvert<TResult>(expression, out Activity<TResult> resultWorkflow);
             if (isSucceeded != expectSucceeded)
                 throw new Exception(string.Format("Expected return is {0}, but actual return is {1}", expectSucceeded, isSucceeded));
 
@@ -226,9 +222,8 @@ namespace Test.Common.TestObjects.Activities.ExpressionTransform
         public static Activity<Location<TResult>> TryConvertReference<TResult>(Expression<Func<ActivityContext, TResult>> expression, bool expectSucceeded)
         {
             bool isSucceeded;
-            Activity<Location<TResult>> resultWorkflow = null;
 
-            isSucceeded = ExpressionServices.TryConvertReference<TResult>(expression, out resultWorkflow);
+            isSucceeded = ExpressionServices.TryConvertReference<TResult>(expression, out Activity<Location<TResult>> resultWorkflow);
             if (isSucceeded != expectSucceeded)
                 throw new Exception(string.Format("Expected return is {0}, but actual return is {1}", expectSucceeded, isSucceeded));
 

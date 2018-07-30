@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -263,8 +263,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
                         }
                     case 3:
                         {
-                            Exception terminationException;
-                            workflowRuntime.WaitForTerminated(1, out terminationException, expectedTrace);
+                            workflowRuntime.WaitForTerminated(1, out Exception terminationException, expectedTrace);
                             break;
                         }
                     case 4:

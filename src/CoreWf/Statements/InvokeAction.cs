@@ -1,28 +1,34 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Action")]
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using System.Collections.ObjectModel;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Action")]
     public sealed class InvokeAction : NativeActivity
     {
-        private IList<Argument> _actionArguments;
+        private readonly IList<Argument> actionArguments;
 
         public InvokeAction()
         {
-            _actionArguments = new ValidatingCollection<Argument>
+            this.actionArguments = new ValidatingCollection<Argument>
             {
                 // disallow null values
                 OnAddValidationCallback = item =>
                 {
                     if (item == null)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                        throw FxTrace.Exception.ArgumentNull(nameof(item));
                     }
                 }
             };
@@ -39,7 +45,6 @@ namespace CoreWf.Statements
         {
             metadata.AddDelegate(this.Action);
         }
-
         protected override void Execute(NativeActivityContext context)
         {
             if (Action == null || Action.Handler == null)
@@ -49,9 +54,10 @@ namespace CoreWf.Statements
 
             context.ScheduleAction(Action);
         }
+
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T> : NativeActivity
     {
         public InvokeAction()
@@ -72,10 +78,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -86,7 +94,6 @@ namespace CoreWf.Statements
 
             metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { runtimeArgument });
         }
-
         protected override void Execute(NativeActivityContext context)
         {
             if (Action == null || Action.Handler == null) // no-op
@@ -98,7 +105,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2> : NativeActivity
     {
         public InvokeAction()
@@ -126,23 +133,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -155,7 +151,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3> : NativeActivity
     {
         public InvokeAction()
@@ -190,25 +186,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -221,7 +204,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4> : NativeActivity
     {
         public InvokeAction()
@@ -263,27 +246,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -292,12 +260,12 @@ namespace CoreWf.Statements
                 return;
             }
 
-            context.ScheduleAction(Action, Argument1.Get(context), Argument2.Get(context), Argument3.Get(context),
+            context.ScheduleAction(Action, Argument1.Get(context), Argument2.Get(context), Argument3.Get(context), 
                 Argument4.Get(context));
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5> : NativeActivity
     {
         public InvokeAction()
@@ -346,29 +314,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -382,7 +333,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6> : NativeActivity
     {
         public InvokeAction()
@@ -438,31 +389,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -476,7 +408,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7> : NativeActivity
     {
         public InvokeAction()
@@ -539,33 +471,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -579,7 +490,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8> : NativeActivity
     {
         public InvokeAction()
@@ -649,35 +560,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -692,7 +580,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9> : NativeActivity
     {
         public InvokeAction()
@@ -769,37 +657,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -814,7 +677,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : NativeActivity
     {
         public InvokeAction()
@@ -898,39 +761,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument10", typeof(T10), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-            metadata.Bind(this.Argument10, runtimeArguments[9]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -945,7 +781,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : NativeActivity
     {
         public InvokeAction()
@@ -1036,41 +872,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument10", typeof(T10), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument11", typeof(T11), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-            metadata.Bind(this.Argument10, runtimeArguments[9]);
-            metadata.Bind(this.Argument11, runtimeArguments[10]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -1085,7 +892,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : NativeActivity
     {
         public InvokeAction()
@@ -1183,43 +990,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument10", typeof(T10), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument11", typeof(T11), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument12", typeof(T12), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-            metadata.Bind(this.Argument10, runtimeArguments[9]);
-            metadata.Bind(this.Argument11, runtimeArguments[10]);
-            metadata.Bind(this.Argument12, runtimeArguments[11]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -1235,7 +1011,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : NativeActivity
     {
         public InvokeAction()
@@ -1340,45 +1116,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument10", typeof(T10), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument11", typeof(T11), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument12", typeof(T12), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument13", typeof(T13), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-            metadata.Bind(this.Argument10, runtimeArguments[9]);
-            metadata.Bind(this.Argument11, runtimeArguments[10]);
-            metadata.Bind(this.Argument12, runtimeArguments[11]);
-            metadata.Bind(this.Argument13, runtimeArguments[12]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -1394,7 +1137,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : NativeActivity
     {
         public InvokeAction()
@@ -1506,47 +1249,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument10", typeof(T10), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument11", typeof(T11), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument12", typeof(T12), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument13", typeof(T13), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument14", typeof(T14), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-            metadata.Bind(this.Argument10, runtimeArguments[9]);
-            metadata.Bind(this.Argument11, runtimeArguments[10]);
-            metadata.Bind(this.Argument12, runtimeArguments[11]);
-            metadata.Bind(this.Argument13, runtimeArguments[12]);
-            metadata.Bind(this.Argument14, runtimeArguments[13]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -1562,7 +1270,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : NativeActivity
     {
         public InvokeAction()
@@ -1681,49 +1389,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument10", typeof(T10), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument11", typeof(T11), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument12", typeof(T12), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument13", typeof(T13), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument14", typeof(T14), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument15", typeof(T15), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-            metadata.Bind(this.Argument10, runtimeArguments[9]);
-            metadata.Bind(this.Argument11, runtimeArguments[10]);
-            metadata.Bind(this.Argument12, runtimeArguments[11]);
-            metadata.Bind(this.Argument13, runtimeArguments[12]);
-            metadata.Bind(this.Argument14, runtimeArguments[13]);
-            metadata.Bind(this.Argument15, runtimeArguments[14]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -1739,7 +1410,7 @@ namespace CoreWf.Statements
         }
     }
 
-    //[ContentProperty("Action")]
+    [ContentProperty("Action")]
     public sealed class InvokeAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> : NativeActivity
     {
         public InvokeAction()
@@ -1865,51 +1536,12 @@ namespace CoreWf.Statements
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
         {
-            metadata.AddDelegate(this.Action);
-
-            var runtimeArguments = new Collection<RuntimeArgument>();
-            runtimeArguments.Add(new RuntimeArgument("Argument1", typeof(T1), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument2", typeof(T2), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument3", typeof(T3), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument4", typeof(T4), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument5", typeof(T5), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument6", typeof(T6), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument7", typeof(T7), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument8", typeof(T8), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument9", typeof(T9), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument10", typeof(T10), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument11", typeof(T11), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument12", typeof(T12), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument13", typeof(T13), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument14", typeof(T14), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument15", typeof(T15), ArgumentDirection.In, true));
-            runtimeArguments.Add(new RuntimeArgument("Argument16", typeof(T16), ArgumentDirection.In, true));
-            metadata.Bind(this.Argument1, runtimeArguments[0]);
-            metadata.Bind(this.Argument2, runtimeArguments[1]);
-            metadata.Bind(this.Argument3, runtimeArguments[2]);
-            metadata.Bind(this.Argument4, runtimeArguments[3]);
-            metadata.Bind(this.Argument5, runtimeArguments[4]);
-            metadata.Bind(this.Argument6, runtimeArguments[5]);
-            metadata.Bind(this.Argument7, runtimeArguments[6]);
-            metadata.Bind(this.Argument8, runtimeArguments[7]);
-            metadata.Bind(this.Argument9, runtimeArguments[8]);
-            metadata.Bind(this.Argument10, runtimeArguments[9]);
-            metadata.Bind(this.Argument11, runtimeArguments[10]);
-            metadata.Bind(this.Argument12, runtimeArguments[11]);
-            metadata.Bind(this.Argument13, runtimeArguments[12]);
-            metadata.Bind(this.Argument14, runtimeArguments[13]);
-            metadata.Bind(this.Argument15, runtimeArguments[14]);
-            metadata.Bind(this.Argument16, runtimeArguments[15]);
-
-            metadata.SetArgumentsCollection(runtimeArguments);
-        }
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {

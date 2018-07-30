@@ -1,14 +1,16 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using System;
+    using CoreWf;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Globalization;
+    using CoreWf.Runtime;
+
     internal static class ValidationHelper
     {
         public static void ValidateArguments(Activity activity, OverloadGroupEquivalenceInfo equivalenceInfo, Dictionary<string, List<RuntimeArgument>> overloadGroups, List<RuntimeArgument> requiredArgumentsNotInOverloadGroups, IDictionary<string, object> inputs, ref IList<ValidationError> validationErrors)
@@ -146,8 +148,7 @@ namespace CoreWf.Validation
                             overloadGroups = new Dictionary<string, List<RuntimeArgument>>();
                         }
 
-                        List<RuntimeArgument> arguments = null;
-                        if (!overloadGroups.TryGetValue(groupName, out arguments))
+                        if (!overloadGroups.TryGetValue(groupName, out List<RuntimeArgument> arguments))
                         {
                             arguments = new List<RuntimeArgument>();
                             overloadGroups.Add(groupName, arguments);
@@ -184,10 +185,10 @@ namespace CoreWf.Validation
 
             if (!equivalenceInfo.EquivalentGroupsDictionary.IsNullOrEmpty())
             {
-                Dictionary<string, string> keysVisited = new Dictionary<string, string>(equivalenceInfo.EquivalentGroupsDictionary.Count);
+                Hashtable keysVisited = new Hashtable(equivalenceInfo.EquivalentGroupsDictionary.Count);
                 foreach (KeyValuePair<string, List<string>> entry in equivalenceInfo.EquivalentGroupsDictionary)
                 {
-                    if (!keysVisited.ContainsKey(entry.Key))
+                    if (!keysVisited.Contains(entry.Key))
                     {
                         string[] equivalentGroups = new string[entry.Value.Count + 1];
                         equivalentGroups[0] = entry.Key;
@@ -309,10 +310,10 @@ namespace CoreWf.Validation
 
         public class OverloadGroupEquivalenceInfo
         {
-            private Dictionary<string, List<string>> _equivalentGroupsDictionary;
-            private Dictionary<string, List<string>> _supersetOfGroupsDictionary;
-            private Dictionary<string, List<string>> _overlappingGroupsDictionary;
-            private Dictionary<string, List<string>> _disjointGroupsDictionary;
+            private Dictionary<string, List<string>> equivalentGroupsDictionary;
+            private Dictionary<string, List<string>> supersetOfGroupsDictionary;
+            private Dictionary<string, List<string>> overlappingGroupsDictionary;
+            private Dictionary<string, List<string>> disjointGroupsDictionary;
 
             public OverloadGroupEquivalenceInfo()
             {
@@ -322,7 +323,7 @@ namespace CoreWf.Validation
             {
                 get
                 {
-                    return _equivalentGroupsDictionary;
+                    return this.equivalentGroupsDictionary;
                 }
             }
 
@@ -330,7 +331,7 @@ namespace CoreWf.Validation
             {
                 get
                 {
-                    return _supersetOfGroupsDictionary;
+                    return this.supersetOfGroupsDictionary;
                 }
             }
 
@@ -338,7 +339,7 @@ namespace CoreWf.Validation
             {
                 get
                 {
-                    return _overlappingGroupsDictionary;
+                    return this.overlappingGroupsDictionary;
                 }
             }
 
@@ -346,40 +347,40 @@ namespace CoreWf.Validation
             {
                 get
                 {
-                    return _disjointGroupsDictionary;
+                    return this.disjointGroupsDictionary;
                 }
             }
 
             public void SetAsEquivalent(string group1, string group2)
             {
                 // Setup EquivalentGroups for group1
-                this.AddToDictionary(ref _equivalentGroupsDictionary, group1, group2);
+                this.AddToDictionary(ref this.equivalentGroupsDictionary, group1, group2);
 
                 // Setup EquivalentGroups for group2
-                this.AddToDictionary(ref _equivalentGroupsDictionary, group2, group1);
+                this.AddToDictionary(ref this.equivalentGroupsDictionary, group2, group1);
             }
 
             public void SetAsSuperset(string group1, string group2)
             {
-                this.AddToDictionary(ref _supersetOfGroupsDictionary, group1, group2);
+                this.AddToDictionary(ref this.supersetOfGroupsDictionary, group1, group2);
             }
 
             public void SetAsOverlapping(string group1, string group2)
             {
                 // Setup OverlapGroups for group1
-                this.AddToDictionary(ref _overlappingGroupsDictionary, group1, group2);
+                this.AddToDictionary(ref this.overlappingGroupsDictionary, group1, group2);
 
                 // Setup OverlapGroups for group2
-                this.AddToDictionary(ref _overlappingGroupsDictionary, group2, group1);
+                this.AddToDictionary(ref this.overlappingGroupsDictionary, group2, group1);
             }
 
             public void SetAsDisjoint(string group1, string group2)
             {
                 // Setup DisjointGroups for group1
-                this.AddToDictionary(ref _disjointGroupsDictionary, group1, group2);
+                this.AddToDictionary(ref this.disjointGroupsDictionary, group1, group2);
 
                 // Setup DisjointGroups for group2
-                this.AddToDictionary(ref _disjointGroupsDictionary, group2, group1);
+                this.AddToDictionary(ref this.disjointGroupsDictionary, group2, group1);
             }
 
             private void AddToDictionary(ref Dictionary<string, List<string>> dictionary, string dictionaryKey, string listEntry)
@@ -389,8 +390,7 @@ namespace CoreWf.Validation
                     dictionary = new Dictionary<string, List<string>>();
                 }
 
-                List<string> listValues = null;
-                if (!dictionary.TryGetValue(dictionaryKey, out listValues))
+                if (!dictionary.TryGetValue(dictionaryKey, out List<string> listValues))
                 {
                     listValues = new List<string> { listEntry };
                     dictionary.Add(dictionaryKey, listValues);

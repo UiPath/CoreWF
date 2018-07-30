@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -97,7 +97,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
 
     internal class AdditionalExtensionsAdded : IWorkflowInstanceExtension
     {
-        private Collection<object> _additionalExtensions;
+        private readonly Collection<object> _additionalExtensions;
 
         public AdditionalExtensionsAdded(Collection<object> additionalExtensions)
         {
@@ -151,7 +151,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
     internal class CheckWorkflowPropertiesExtension : IWorkflowInstanceExtension
     {
         private Activity _expectedWorkflowDefinition;
-        private Guid _expectedWorkflowId;
+        private readonly Guid _expectedWorkflowId;
 
         public CheckWorkflowPropertiesExtension(Guid expectedWorkflowId, Activity expectedWorkflowDefinition)
         {

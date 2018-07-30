@@ -1,38 +1,40 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Diagnostics;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using System.Diagnostics;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+
     public struct CodeActivityPublicEnvironmentAccessor
     {
-        private CodeActivityMetadata _metadata;
-        private bool _withoutArgument;
+        private CodeActivityMetadata metadata;
+        private bool withoutArgument;
 
         public CodeActivityMetadata ActivityMetadata
         {
-            get { return _metadata; }
+            get { return this.metadata; }
         }
 
         public static CodeActivityPublicEnvironmentAccessor Create(CodeActivityMetadata metadata)
         {
             metadata.ThrowIfDisposed();
-
+            
             AssertIsCodeActivity(metadata.CurrentActivity);
 
-            CodeActivityPublicEnvironmentAccessor result = new CodeActivityPublicEnvironmentAccessor();
-            result._metadata = metadata;
+            CodeActivityPublicEnvironmentAccessor result = new CodeActivityPublicEnvironmentAccessor
+            {
+                metadata = metadata
+            };
             return result;
         }
 
         internal static CodeActivityPublicEnvironmentAccessor CreateWithoutArgument(CodeActivityMetadata metadata)
         {
             CodeActivityPublicEnvironmentAccessor toReturn = Create(metadata);
-            toReturn._withoutArgument = true;
+            toReturn.withoutArgument = true;
             return toReturn;
         }
 
@@ -51,7 +53,7 @@ namespace CoreWf
         {
             if (publicLocation == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("publicLocation");
+                throw FxTrace.Exception.ArgumentNull(nameof(publicLocation));
             }
             ThrowIfUninitialized();
 
@@ -63,7 +65,7 @@ namespace CoreWf
         {
             if (publicReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("publicReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(publicReference));
             }
             ThrowIfUninitialized();
 
@@ -78,12 +80,12 @@ namespace CoreWf
             }
 
             CodeActivityPublicEnvironmentAccessor other = (CodeActivityPublicEnvironmentAccessor)obj;
-            return other._metadata == _metadata;
+            return other.metadata == this.metadata;
         }
 
         public override int GetHashCode()
         {
-            return _metadata.GetHashCode();
+            return this.metadata.GetHashCode();
         }
 
         // In 4.0 the expression type for publicly inspectable auto-generated arguments was 
@@ -95,13 +97,13 @@ namespace CoreWf
         {
             Fx.Assert(!useLocationReferenceValue || this.ActivityMetadata.CurrentActivity.UseOldFastPath, "useLocationReferenceValue should only be used for back-compat");
 
-            if (_metadata.Environment.IsVisible(publicLocation))
+            if (this.metadata.Environment.IsVisible(publicLocation))
             {
-                if (!_withoutArgument)
+                if (!this.withoutArgument)
                 {
                     CreateArgument(publicLocation, accessDirection, useLocationReferenceValue);
-                }
-                equivalentLocation = new InlinedLocationReference(publicLocation, _metadata.CurrentActivity, accessDirection);
+                }                
+                equivalentLocation = new InlinedLocationReference(publicLocation, this.metadata.CurrentActivity, accessDirection);
                 return true;
             }
 
@@ -114,13 +116,13 @@ namespace CoreWf
         {
             Fx.Assert(!useLocationReferenceValue || this.ActivityMetadata.CurrentActivity.UseOldFastPath, "useLocationReferenceValue should only be used for back-compat");
 
-            if (_metadata.Environment.IsVisible(publicReference))
+            if (this.metadata.Environment.IsVisible(publicReference))
             {
-                if (!_withoutArgument)
+                if (!this.withoutArgument)
                 {
                     CreateLocationArgument(publicReference, useLocationReferenceValue);
                 }
-                equivalentReference = new InlinedLocationReference(publicReference, _metadata.CurrentActivity);
+                equivalentReference = new InlinedLocationReference(publicReference, this.metadata.CurrentActivity);
                 return true;
             }
 
@@ -144,16 +146,16 @@ namespace CoreWf
         {
             Argument argument = ActivityUtilities.CreateArgument(argumentType, direction);
             argument.Expression = expression;
-            RuntimeArgument runtimeArgument = _metadata.CurrentActivity.AddTempAutoGeneratedArgument(argumentType, direction);
-            Argument.TryBind(argument, runtimeArgument, _metadata.CurrentActivity);
+            RuntimeArgument runtimeArgument = this.metadata.CurrentActivity.AddTempAutoGeneratedArgument(argumentType, direction);
+            Argument.TryBind(argument, runtimeArgument, this.metadata.CurrentActivity);
         }
 
         private void ThrowIfUninitialized()
         {
-            if (_metadata.CurrentActivity == null)
+            if (this.metadata.CurrentActivity == null)
             {
                 // Using ObjectDisposedException for consistency with the other metadata structs
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
+                throw FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
             }
         }
 
@@ -161,12 +163,11 @@ namespace CoreWf
         private static void AssertIsCodeActivity(Activity activity)
         {
             Type codeActivityOfTType = null;
-            ActivityWithResult activityWithResult = activity as ActivityWithResult;
-            if (activityWithResult != null)
+            if (activity is ActivityWithResult activityWithResult)
             {
                 codeActivityOfTType = typeof(CodeActivity<>).MakeGenericType(activityWithResult.ResultType);
             }
-            Fx.Assert(activity is CodeActivity || (codeActivityOfTType != null && codeActivityOfTType.GetTypeInfo().IsAssignableFrom(activity.GetType().GetTypeInfo())), "Expected CodeActivity or CodeActivity<T>");
+            Fx.Assert(activity is CodeActivity || (codeActivityOfTType != null && codeActivityOfTType.IsAssignableFrom(activity.GetType())), "Expected CodeActivity or CodeActivity<T>");
         }
     }
 }

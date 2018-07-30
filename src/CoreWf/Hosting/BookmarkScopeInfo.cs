@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using System;
+    using System.Runtime.Serialization;
+    using CoreWf.Runtime;
+
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
     public sealed class BookmarkScopeInfo
     {
-        private Guid _id;
-        private string _temporaryId;
+        private Guid id;
+        private string temporaryId;
 
         internal BookmarkScopeInfo(Guid id)
         {
@@ -31,28 +31,28 @@ namespace CoreWf.Hosting
                 return this.TemporaryId == null;
             }
         }
-
+        
         public Guid Id
         {
             get
             {
-                return _id;
+                return this.id;
             }
             private set
             {
-                _id = value;
+                this.id = value;
             }
         }
-
+        
         public string TemporaryId
         {
             get
             {
-                return _temporaryId;
+                return this.temporaryId;
             }
             private set
             {
-                _temporaryId = value;
+                this.temporaryId = value;
             }
         }
 

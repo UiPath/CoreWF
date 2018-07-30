@@ -1,10 +1,9 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using CoreWf.Statements;
-using System.Collections;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities.Collections;
 using Test.Common.TestObjects.Activities.Tracing;
@@ -20,10 +19,12 @@ namespace Test.Common.TestObjects.Activities
         public TestStateMachine()
         {
             this.ProductActivity = new StateMachine();
-            _states = new MemberCollection<TestStateMachineState>(AddState);
-            _states.RemoveItem = RemoveState;
-            _states.RemoveAtItem = RemoveAtState;
-            _states.InsertItem = InsertState;
+            _states = new MemberCollection<TestStateMachineState>(AddState)
+            {
+                RemoveItem = RemoveState,
+                RemoveAtItem = RemoveAtState,
+                InsertItem = InsertState
+            };
         }
 
         public TestStateMachine(string displayName)

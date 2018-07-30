@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace CoreWf.Runtime
 
         private List<AsyncWaiter> _asyncWaiters;
         private bool _isSignaled;
-        private EventResetMode _resetMode;
+        private readonly EventResetMode _resetMode;
         [Fx.Tag.SynchronizationObject(Kind = Fx.Tag.SynchronizationKind.MonitorWait)]
 
         private object _syncObject;
@@ -214,10 +214,10 @@ namespace CoreWf.Runtime
         {
             [Fx.Tag.SecurityNote(Critical = "Store the delegate to be invoked")]
             [SecurityCritical]
-            private Action<object, TimeoutException> _callback;
+            private readonly Action<object, TimeoutException> _callback;
             [Fx.Tag.SecurityNote(Critical = "Stores the state object to be passed to the callback")]
             [SecurityCritical]
-            private object _state;
+            private readonly object _state;
             //IOThreadTimer timer;
             private DelayTimer _timer;
             private TimeSpan _originalTimeout;

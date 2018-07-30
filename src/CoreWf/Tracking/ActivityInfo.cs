@@ -1,40 +1,41 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Globalization;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
     public sealed class ActivityInfo
     {
-        private string _name;
-        private string _id;
-        private string _instanceId;
-        private long _instanceIdInternal;
-        private string _typeName;
+        private string name;
+        private string id;
+        private string instanceId;
+        private readonly long instanceIdInternal;
+        private string typeName;
 
         public ActivityInfo(string name, string id, string instanceId, string typeName)
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
             if (string.IsNullOrEmpty(id))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("id");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(id));
             }
             if (string.IsNullOrEmpty(instanceId))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(instanceId));
             }
             if (string.IsNullOrEmpty(typeName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("typeName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(typeName));
             }
             this.Name = name;
             this.Id = id;
@@ -51,7 +52,7 @@ namespace CoreWf.Tracking
         internal ActivityInfo(Activity activity, long instanceId)
         {
             this.Activity = activity;
-            _instanceIdInternal = instanceId;
+            this.instanceIdInternal = instanceId;
         }
 
         internal ActivityInstance Instance
@@ -65,18 +66,18 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (string.IsNullOrEmpty(_name))
+                if (string.IsNullOrEmpty(this.name))
                 {
                     Fx.Assert(this.Activity != null, "Activity not set");
-                    _name = this.Activity.DisplayName;
+                    this.name = this.Activity.DisplayName;
                 }
-                return _name;
+                return this.name;
             }
             // Internal visibility for partial trust serialization purposes only.
             internal set
             {
                 Fx.Assert(!string.IsNullOrEmpty(value), "Name cannot be null or empty");
-                _name = value;
+                this.name = value;
             }
         }
 
@@ -85,18 +86,18 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (String.IsNullOrEmpty(_id))
+                if (String.IsNullOrEmpty(this.id))
                 {
                     Fx.Assert(this.Activity != null, "Activity not set");
-                    _id = this.Activity.Id;
+                    this.id = this.Activity.Id;
                 }
-                return _id;
+                return this.id;
             }
             // Internal visibility for partial trust serialization purposes only.
             internal set
             {
                 Fx.Assert(!string.IsNullOrEmpty(value), "Id cannot be null or empty");
-                _id = value;
+                this.id = value;
             }
         }
 
@@ -105,17 +106,17 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (string.IsNullOrEmpty(_instanceId))
+                if (string.IsNullOrEmpty(this.instanceId))
                 {
-                    _instanceId = _instanceIdInternal.ToString(CultureInfo.InvariantCulture);
+                    this.instanceId = this.instanceIdInternal.ToString(CultureInfo.InvariantCulture);
                 }
-                return _instanceId;
+                return this.instanceId;
             }
             // Internal visibility for partial trust serialization purposes only.
             internal set
             {
                 Fx.Assert(!string.IsNullOrEmpty(value), "InstanceId cannot be null or empty");
-                _instanceId = value;
+                this.instanceId = value;
             }
         }
 
@@ -124,25 +125,25 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (string.IsNullOrEmpty(_typeName))
+                if (string.IsNullOrEmpty(this.typeName))
                 {
                     Fx.Assert(this.Activity != null, "Activity not set");
-                    _typeName = this.Activity.GetType().FullName;
+                    this.typeName = this.Activity.GetType().FullName;
                 }
-                return _typeName;
+                return this.typeName;
             }
             // Internal visibility for partial trust serialization purposes only.
             internal set
             {
                 Fx.Assert(!string.IsNullOrEmpty(value), "TypeName cannot be null or empty");
-                _typeName = value;
+                this.typeName = value;
             }
         }
 
         public override string ToString()
         {
             return string.Format(CultureInfo.CurrentCulture,
-                "Name={0}, ActivityId = {1}, ActivityInstanceId = {2}, TypeName={3}",
+                "Name={0}, ActivityId = {1}, ActivityInstanceId = {2}, TypeName={3}",                
                 this.Name,
                 this.Id,
                 this.InstanceId,
@@ -151,7 +152,7 @@ namespace CoreWf.Tracking
 
         internal Activity Activity
         {
-            get;
+            get; 
             private set;
         }
     }

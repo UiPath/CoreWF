@@ -1,31 +1,36 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Nodes")]
+    using CoreWf;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Linq;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Nodes")]
     public sealed class Flowchart : NativeActivity
     {
-        private Collection<Variable> _variables;
-        private Collection<FlowNode> _nodes;
-        private Collection<FlowNode> _reachableNodes;
-
-        private CompletionCallback _onStepCompleted;
-        private CompletionCallback<bool> _onDecisionCompleted;
-
-        private Variable<int> _currentNode;
+        private Collection<Variable> variables;
+        private Collection<FlowNode> nodes;
+        private readonly Collection<FlowNode> reachableNodes;
+        private CompletionCallback onStepCompleted;
+        private CompletionCallback<bool> onDecisionCompleted;
+        private readonly Variable<int> currentNode;
         public Flowchart()
         {
-            _currentNode = new Variable<int>();
-            _reachableNodes = new Collection<FlowNode>();
+            this.currentNode = new Variable<int>();
+            this.reachableNodes = new Collection<FlowNode>();
         }
 
         [DefaultValue(false)]
@@ -39,156 +44,158 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public FlowNode StartNode
         {
             get;
             set;
         }
 
-        //[DependsOn("StartNode")]
+        [DependsOn("StartNode")]
         public Collection<FlowNode> Nodes
         {
             get
             {
-                if (_nodes == null)
+                if (this.nodes == null)
                 {
-                    _nodes = new ValidatingCollection<FlowNode>
+                    this.nodes = new ValidatingCollection<FlowNode>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
 
-                return _nodes;
+                return this.nodes;
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    Flowchart originalFlowchart = (Flowchart)originalActivity;
-        //    Dictionary<Activity, int> originalActivities = new Dictionary<Activity, int>();
-        //    foreach (FlowNode node in originalFlowchart.reachableNodes)
-        //    {
-        //        if (node.ChildActivity == null)
-        //        {
-        //            continue;
-        //        }
-        //        if (metadata.IsReferenceToImportedChild(node.ChildActivity))
-        //        {
-        //            // We can't save original values for referenced children. Also, we can't reliably combine
-        //            // implementation changes with changes to referenced children. For now, we just disable 
-        //            // this scenario altogether; if we want to support it, we'll need deeper runtime support.
-        //            metadata.DisallowUpdateInsideThisActivity(SR.FlowchartContainsReferences);
-        //            return;
-        //        }
-        //        if (originalActivities.ContainsKey(node.ChildActivity))
-        //        {
-        //            metadata.DisallowUpdateInsideThisActivity(SR.MultipleFlowNodesSharingSameChildBlockDU);
-        //            return;
-        //        }
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            Flowchart originalFlowchart = (Flowchart)originalActivity;
+            Dictionary<Activity, int> originalActivities = new Dictionary<Activity, int>();
+            foreach (FlowNode node in originalFlowchart.reachableNodes)
+            {
+                if (node.ChildActivity == null)
+                {
+                    continue;
+                }
+                if (metadata.IsReferenceToImportedChild(node.ChildActivity))
+                {
+                    // We can't save original values for referenced children. Also, we can't reliably combine
+                    // implementation changes with changes to referenced children. For now, we just disable 
+                    // this scenario altogether; if we want to support it, we'll need deeper runtime support.
+                    metadata.DisallowUpdateInsideThisActivity(SR.FlowchartContainsReferences);
+                    return;
+                }
+                if (originalActivities.ContainsKey(node.ChildActivity))
+                {
+                    metadata.DisallowUpdateInsideThisActivity(SR.MultipleFlowNodesSharingSameChildBlockDU);
+                    return;
+                }
 
-        //        originalActivities[node.ChildActivity] = node.Index;
-        //    }
+                originalActivities[node.ChildActivity] = node.Index;
+            }
 
-        //    HashSet<Activity> updatedActivities = new HashSet<Activity>();
-        //    foreach (FlowNode node in this.reachableNodes)
-        //    {
-        //        if (node.ChildActivity != null)
-        //        {
-        //            if (metadata.IsReferenceToImportedChild(node.ChildActivity))
-        //            {
-        //                metadata.DisallowUpdateInsideThisActivity(SR.FlowchartContainsReferences);
-        //                return;
-        //            }
+            HashSet<Activity> updatedActivities = new HashSet<Activity>();
+            foreach (FlowNode node in this.reachableNodes)
+            {
+                if (node.ChildActivity != null)
+                {
+                    if (metadata.IsReferenceToImportedChild(node.ChildActivity))
+                    {
+                        metadata.DisallowUpdateInsideThisActivity(SR.FlowchartContainsReferences);
+                        return;
+                    }
 
-        //            if (updatedActivities.Contains(node.ChildActivity))
-        //            {
-        //                metadata.DisallowUpdateInsideThisActivity(SR.MultipleFlowNodesSharingSameChildBlockDU);
-        //                return;
-        //            }
-        //            else
-        //            {
-        //                updatedActivities.Add(node.ChildActivity);
-        //            }
+                    if (updatedActivities.Contains(node.ChildActivity))
+                    {
+                        metadata.DisallowUpdateInsideThisActivity(SR.MultipleFlowNodesSharingSameChildBlockDU);
+                        return;
+                    }
+                    else
+                    {
+                        updatedActivities.Add(node.ChildActivity);
+                    }
 
-        //            Activity originalChild = metadata.GetMatch(node.ChildActivity);
-        //            int originalIndex;
-        //            if (originalChild != null && originalActivities.TryGetValue(originalChild, out originalIndex))
-        //            {
-        //                if (originalFlowchart.reachableNodes[originalIndex].GetType() != node.GetType())
-        //                {
-        //                    metadata.DisallowUpdateInsideThisActivity(SR.CannotMoveChildAcrossDifferentFlowNodeTypes);
-        //                    return;
-        //                }
+                    Activity originalChild = metadata.GetMatch(node.ChildActivity);
+                    int originalIndex;
+                    if (originalChild != null && originalActivities.TryGetValue(originalChild, out originalIndex))
+                    {
+                        if (originalFlowchart.reachableNodes[originalIndex].GetType() != node.GetType())
+                        {
+                            metadata.DisallowUpdateInsideThisActivity(SR.CannotMoveChildAcrossDifferentFlowNodeTypes);
+                            return;
+                        }
 
-        //                if (originalIndex != node.Index)
-        //                {
-        //                    metadata.SaveOriginalValue(node.ChildActivity, originalIndex);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+                        if (originalIndex != node.Index)
+                        {
+                            metadata.SaveOriginalValue(node.ChildActivity, originalIndex);
+                        }
+                    }
+                }
+            }
+        }
 
-        //protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
-        //{
-        //    int oldNodeIndex = updateContext.GetValue(this.currentNode);
+        protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
+        {
+            int oldNodeIndex = updateContext.GetValue(this.currentNode);
 
-        //    foreach (FlowNode node in this.reachableNodes)
-        //    {
-        //        if (node.ChildActivity != null)
-        //        {
-        //            object originalValue = updateContext.GetSavedOriginalValue(node.ChildActivity);
-        //            if (originalValue != null)
-        //            {
-        //                int originalIndex = (int)originalValue;
-        //                if (originalIndex == oldNodeIndex)
-        //                {
-        //                    updateContext.SetValue(this.currentNode, node.Index);
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+            foreach (FlowNode node in this.reachableNodes)
+            {
+                if (node.ChildActivity != null)
+                {
+                    object originalValue = updateContext.GetSavedOriginalValue(node.ChildActivity);
+                    if (originalValue != null)
+                    {
+                        int originalIndex = (int)originalValue;
+                        if (originalIndex == oldNodeIndex)
+                        {
+                            updateContext.SetValue(this.currentNode, node.Index);
+                            break;
+                        }
+                    }
+                }
+            }
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             metadata.SetVariablesCollection(this.Variables);
-            metadata.AddImplementationVariable(_currentNode);
+            metadata.AddImplementationVariable(this.currentNode);
 
             this.GatherReachableNodes(metadata);
-            if (this.ValidateUnconnectedNodes && (_reachableNodes.Count < this.Nodes.Count))
+            if (this.ValidateUnconnectedNodes && (this.reachableNodes.Count < this.Nodes.Count))
             {
                 metadata.AddValidationError(SR.FlowchartContainsUnconnectedNodes(this.DisplayName));
             }
             HashSet<Activity> uniqueChildren = new HashSet<Activity>();
-            IEnumerable<FlowNode> childrenNodes = this.ValidateUnconnectedNodes ? this.Nodes.Distinct() : _reachableNodes;
+            IEnumerable<FlowNode> childrenNodes = this.ValidateUnconnectedNodes ? this.Nodes.Distinct() : this.reachableNodes;
             foreach (FlowNode node in childrenNodes)
             {
                 if (this.ValidateUnconnectedNodes)
@@ -210,7 +217,7 @@ namespace CoreWf.Statements
         private void GatherReachableNodes(NativeActivityMetadata metadata)
         {
             // Clear out our cached list of all nodes
-            _reachableNodes.Clear();
+            this.reachableNodes.Clear();
 
             if (this.StartNode == null && this.Nodes.Count > 0)
             {
@@ -227,10 +234,10 @@ namespace CoreWf.Statements
         {
             if (node.Open(this, metadata))
             {
-                Fx.Assert(node.Index == -1 && !_reachableNodes.Contains(node), "Corrupt Flowchart.reachableNodes.");
+                Fx.Assert(node.Index == -1 && !this.reachableNodes.Contains(node), "Corrupt Flowchart.reachableNodes.");
 
-                node.Index = _reachableNodes.Count;
-                _reachableNodes.Add(node);
+                node.Index = this.reachableNodes.Count;
+                this.reachableNodes.Add(node);
 
                 return true;
             }
@@ -320,14 +327,13 @@ namespace CoreWf.Statements
             FlowNode current = node;
             do
             {
-                FlowNode next;
-                if (this.ExecuteSingleNode(context, current, out next))
+                if (this.ExecuteSingleNode(context, current, out FlowNode next))
                 {
                     current = next;
                 }
                 else
                 {
-                    _currentNode.Set(context, current.Index);
+                    this.currentNode.Set(context, current.Index);
                     current = null;
                 }
             }
@@ -337,27 +343,25 @@ namespace CoreWf.Statements
         private bool ExecuteSingleNode(NativeActivityContext context, FlowNode node, out FlowNode nextNode)
         {
             Fx.Assert(node != null, "caller should validate");
-            FlowStep step = node as FlowStep;
-            if (step != null)
+            if (node is FlowStep step)
             {
-                if (_onStepCompleted == null)
+                if (this.onStepCompleted == null)
                 {
-                    _onStepCompleted = new CompletionCallback(this.OnStepCompleted);
+                    this.onStepCompleted = new CompletionCallback(this.OnStepCompleted);
                 }
 
-                return step.Execute(context, _onStepCompleted, out nextNode);
+                return step.Execute(context, this.onStepCompleted, out nextNode);
             }
 
             nextNode = null;
-            FlowDecision decision = node as FlowDecision;
-            if (decision != null)
+            if (node is FlowDecision decision)
             {
-                if (_onDecisionCompleted == null)
+                if (this.onDecisionCompleted == null)
                 {
-                    _onDecisionCompleted = new CompletionCallback<bool>(this.OnDecisionCompleted);
+                    this.onDecisionCompleted = new CompletionCallback<bool>(this.OnDecisionCompleted);
                 }
 
-                return decision.Execute(context, _onDecisionCompleted);
+                return decision.Execute(context, this.onDecisionCompleted);
             }
 
             IFlowSwitch switchNode = node as IFlowSwitch;
@@ -368,8 +372,8 @@ namespace CoreWf.Statements
 
         private FlowNode GetCurrentNode(NativeActivityContext context)
         {
-            int index = _currentNode.Get(context);
-            FlowNode result = _reachableNodes[index];
+            int index = this.currentNode.Get(context);
+            FlowNode result = this.reachableNodes[index];
             Fx.Assert(result != null, "corrupt internal state");
             return result;
         }

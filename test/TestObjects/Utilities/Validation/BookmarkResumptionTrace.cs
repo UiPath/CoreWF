@@ -1,10 +1,7 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using CoreWf.Tracking;
 using System.Xml;
 
 namespace Test.Common.TestObjects.Utilities.Validation
@@ -59,8 +56,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         public override bool Equals(object obj)
         {
-            BookmarkResumptionTrace trace = obj as BookmarkResumptionTrace;
-            if (trace != null)
+            if (obj is BookmarkResumptionTrace trace)
             {
                 if (_activityName == trace._activityName &&
                     _bookmarkName == trace._bookmarkName &&
@@ -88,9 +84,8 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         bool IActualTraceStep.Equals(IActualTraceStep trace)
         {
-            BookmarkResumptionTrace bookmarkResumptionTrace = trace as BookmarkResumptionTrace;
 
-            if (bookmarkResumptionTrace != null &&
+            if (trace is BookmarkResumptionTrace bookmarkResumptionTrace &&
                 bookmarkResumptionTrace._activityName == _activityName &&
                 bookmarkResumptionTrace._bookmarkName == _bookmarkName &&
                 bookmarkResumptionTrace._subinstanceId == _subinstanceId)

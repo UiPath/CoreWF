@@ -1,11 +1,9 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Xml;
-using Test.Common.TestObjects.Utilities;
 
 namespace Test.Common.TestObjects.Utilities.Validation
 {
@@ -16,8 +14,8 @@ namespace Test.Common.TestObjects.Utilities.Validation
         private DateTime _timeStamp;
         private int _validated;
 
-        private Guid _instanceId;
-        private String _parentActivityID;
+        private readonly Guid _instanceId;
+        private readonly String _parentActivityID;
 
         public UserTrace(string message)
         {
@@ -80,8 +78,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         public override bool Equals(object obj)
         {
-            UserTrace trace = obj as UserTrace;
-            if (trace != null)
+            if (obj is UserTrace trace)
             {
                 if (this.ToString() == trace.ToString())
                 {
@@ -100,9 +97,8 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         bool IActualTraceStep.Equals(IActualTraceStep trace)
         {
-            UserTrace userTrace = trace as UserTrace;
 
-            if (userTrace != null &&
+            if (trace is UserTrace userTrace &&
                 userTrace._message == _message)
             {
                 return true;

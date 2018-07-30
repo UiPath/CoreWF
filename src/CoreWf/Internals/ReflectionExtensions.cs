@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Globalization;
@@ -24,15 +24,15 @@ namespace CoreWf.Internals
         }
         public static ConstructorInfo GetConstructor(this Type type, Type[] types)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         public static ConstructorInfo GetConstructor(this Type type, BindingFlags bindingAttr, object binder, Type[] types, object[] modifiers)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingAttr)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
 
         public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags bindingFlags, Type[] parameterTypes, Type[] genericTypeArguments = null)
@@ -140,11 +140,11 @@ namespace CoreWf.Internals
         }
         public static MemberInfo[] GetMember(this Type type, string name, BindingFlags bindingAttr)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         public static MemberInfo[] GetMembers(this Type type, BindingFlags bindingAttr)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
 
         // TypeCode does not exist in N, but it is used by ServiceModel.
@@ -209,26 +209,26 @@ namespace CoreWf.Internals
         #region ConstructorInfo
         public static bool IsPublic(this ConstructorInfo ci)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         public static object Invoke(this ConstructorInfo ci, BindingFlags invokeAttr, object binder, object[] parameters, CultureInfo culture)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         #endregion ConstructorInfo
 
         #region MethodInfo, MethodBase
         public static RuntimeMethodHandle MethodHandle(this MethodBase mb)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         public static RuntimeMethodHandle MethodHandle(this MethodInfo mi)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         public static Type ReflectedType(this MethodInfo mi)
         {
-            throw ExceptionHelper.PlatformNotSupported();
+            throw new PlatformNotSupportedException();
         }
         #endregion MethodInfo, MethodBase
 

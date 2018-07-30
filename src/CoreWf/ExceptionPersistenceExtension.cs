@@ -1,26 +1,26 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
     public class ExceptionPersistenceExtension
     {
-        private bool _persistExceptions;
+        private bool persistExceptions;
 
         public ExceptionPersistenceExtension()
         {
-            _persistExceptions = true;
+            this.persistExceptions = true;
         }
 
         public bool PersistExceptions
         {
             get
             {
-                return _persistExceptions;
+                return this.persistExceptions;
             }
             set
             {
-                _persistExceptions = value;
+                this.persistExceptions = value;
             }
         }
     }

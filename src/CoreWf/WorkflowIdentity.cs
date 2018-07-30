@@ -1,52 +1,55 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Text.RegularExpressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using CoreWf.XamlIntegration;
+    using System;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+    using System.Text;
+    using System.Text.RegularExpressions;
+
     [DataContract]
-    //[Serializable]
-    //[TypeConverter(typeof(WorkflowIdentityConverter))]
+    [Serializable]
+    [TypeConverter(typeof(WorkflowIdentityConverter))]
     public class WorkflowIdentity : IEquatable<WorkflowIdentity>
     {
-        private static Regex s_identityString = new Regex(
+        private static Regex identityString = new Regex(
             @"^(?<name>[^;]*)
                (; (\s* Version \s* = \s* (?<version>[^;]*))? )?
                (; (\s* Package \s* = \s* (?<package>.*))? )?
               $", RegexOptions.IgnorePatternWhitespace);
         private const string versionString = "; Version=";
         private const string packageString = "; Package=";
-
-        private string _name;
-        private Version _version;
-        private string _package;
+        private string name;
+        private Version version;
+        private string package;
 
         public WorkflowIdentity()
         {
-            _name = string.Empty;
+            this.name = string.Empty;
         }
 
         public WorkflowIdentity(string name, Version version, string package)
         {
-            _name = ValidateName(name, "name");
-            _version = version;
-            _package = ValidatePackage(package, "package");
+            this.name = ValidateName(name, nameof(name));
+            this.version = version;
+            this.package = ValidatePackage(package, nameof(package));
         }
 
         public string Name
         {
             get
             {
-                return _name;
+                return this.name;
             }
             set
             {
-                _name = ValidateName(value, "value");
+                this.name = ValidateName(value, nameof(value));
             }
         }
 
@@ -54,11 +57,11 @@ namespace CoreWf
         {
             get
             {
-                return _version;
+                return this.version;
             }
             set
             {
-                _version = value;
+                this.version = value;
             }
         }
 
@@ -66,11 +69,11 @@ namespace CoreWf
         {
             get
             {
-                return _package;
+                return this.package;
             }
             set
             {
-                _package = ValidatePackage(value, "value");
+                this.package = ValidatePackage(value, nameof(value));
             }
         }
 
@@ -78,7 +81,7 @@ namespace CoreWf
         {
             if (identity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("identity");
+                throw FxTrace.Exception.ArgumentNull(nameof(identity));
             }
             return IdentityParser.Parse(identity, true);
         }
@@ -101,36 +104,36 @@ namespace CoreWf
 
         public bool Equals(WorkflowIdentity other)
         {
-            return !object.ReferenceEquals(other, null) && _name == other._name &&
-                _version == other._version && _package == other._package;
+            return !object.ReferenceEquals(other, null) && this.name == other.name &&
+                this.version == other.version && this.package == other.package;
         }
 
         public override int GetHashCode()
         {
-            int result = _name.GetHashCode();
-            if (_version != null)
+            int result = this.name.GetHashCode();
+            if (this.version != null)
             {
-                result ^= _version.GetHashCode();
+                result ^= this.version.GetHashCode();
             }
-            if (_package != null)
+            if (this.package != null)
             {
-                result ^= _package.GetHashCode();
+                result ^= this.package.GetHashCode();
             }
             return result;
         }
 
         public override string ToString()
         {
-            StringBuilder result = new StringBuilder(_name);
-            if (_version != null)
+            StringBuilder result = new StringBuilder(this.name);
+            if (this.version != null)
             {
                 result.Append(versionString);
-                result.Append(_version.ToString());
+                result.Append(this.version.ToString());
             }
-            if (_package != null)
+            if (this.package != null)
             {
                 result.Append(packageString);
-                result.Append(_package);
+                result.Append(this.package);
             }
             return result.ToString();
         }
@@ -138,8 +141,8 @@ namespace CoreWf
         [DataMember(EmitDefaultValue = false, Name = "name")]
         internal string SerializedName
         {
-            get { return _name; }
-            set { _name = value; }
+            get { return this.name; }
+            set { this.name = value; }
         }
 
         // Version is [Serializable], which isn't supported in PT, so need to convert it to string
@@ -148,19 +151,19 @@ namespace CoreWf
         {
             get
             {
-                return (_version == null) ? null : _version.ToString();
+                return (this.version == null) ? null : this.version.ToString();
             }
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    _version = null;
+                    this.version = null;
                 }
                 else
                 {
                     try
                     {
-                        _version = Version.Parse(value);
+                        this.version = Version.Parse(value);
                     }
                     catch (ArgumentException ex)
                     {
@@ -181,33 +184,33 @@ namespace CoreWf
         [DataMember(EmitDefaultValue = false, Name = "package")]
         internal string SerializedPackage
         {
-            get { return _package; }
-            set { _package = value; }
+            get { return this.package; }
+            set { this.package = value; }
         }
 
         // SerializationException with an InnerException is the pattern that DCS follows when values aren't convertible.
         private static void WrapInSerializationException(Exception exception)
         {
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new SerializationException(exception.Message, exception));
+            throw FxTrace.Exception.AsError(new SerializationException(exception.Message, exception));
         }
 
         private static string ValidateName(string name, string paramName)
         {
             if (name == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull(paramName);
+                throw FxTrace.Exception.ArgumentNull(paramName);
             }
             if (name.Contains(";"))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityNameSemicolon);
+                throw FxTrace.Exception.Argument(paramName, SR.IdentityNameSemicolon);
             }
             if (HasControlCharacter(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
+                throw FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
             }
             if (HasLeadingOrTrailingWhitespace(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
+                throw FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
             }
             return Normalize(name, paramName);
         }
@@ -221,11 +224,11 @@ namespace CoreWf
 
             if (HasControlCharacter(package))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
+                throw FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
             }
             if (HasLeadingOrTrailingWhitespace(package))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
+                throw FxTrace.Exception.Argument(paramName, SR.IdentityWhitespace);
             }
             return Normalize(package, paramName);
         }
@@ -250,41 +253,39 @@ namespace CoreWf
 
         private static string Normalize(string value, string paramName, bool throwOnError = true)
         {
-            return value;
-            //try
-            //{
-            //    string result = value.Normalize(NormalizationForm.FormC);
-            //    for (int i = result.Length - 1; i >= 0; i--)
-            //    {
-            //        if (char.GetUnicodeCategory(result, i) == UnicodeCategory.Format)
-            //        {
-            //            result = result.Remove(i, 1);
-            //        }
-            //    }
-            //    return result;
-            //}
-            //catch (ArgumentException ex)
-            //{
-            //    if (throwOnError)
-            //    {
-            //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentException(ex.Message, paramName, ex));
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-            //}
+            try
+            {
+                string result = value.Normalize(NormalizationForm.FormC);
+                for (int i = result.Length - 1; i >= 0; i--)
+                {
+                    if (char.GetUnicodeCategory(result, i) == UnicodeCategory.Format)
+                    {
+                        result = result.Remove(i, 1);
+                    }
+                }
+                return result;
+            }
+            catch (ArgumentException ex)
+            {
+                if (throwOnError)
+                {
+                    throw FxTrace.Exception.AsError(new ArgumentException(ex.Message, paramName, ex));
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         private struct IdentityParser
         {
             private const string paramName = "identity";
-
-            private bool _throwOnError;
-            private Match _match;
-            private string _name;
-            private Version _version;
-            private string _package;
+            private bool throwOnError;
+            private Match match;
+            private string name;
+            private Version version;
+            private string package;
 
             public static WorkflowIdentity Parse(string identity, bool throwOnError)
             {
@@ -292,22 +293,24 @@ namespace CoreWf
                 {
                     if (throwOnError)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
+                        throw FxTrace.Exception.Argument(paramName, SR.IdentityControlCharacter);
                     }
                     return null;
                 }
 
-                IdentityParser parser = new IdentityParser();
-                parser._throwOnError = throwOnError;
-                parser._match = s_identityString.Match(identity.Trim());
+                IdentityParser parser = new IdentityParser
+                {
+                    throwOnError = throwOnError,
+                    match = identityString.Match(identity.Trim())
+                };
 
-                if (parser._match.Success)
+                if (parser.match.Success)
                 {
                     return parser.Parse();
                 }
                 else if (throwOnError)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument(paramName, SR.BadWorkflowIdentityFormat);
+                    throw FxTrace.Exception.Argument(paramName, SR.BadWorkflowIdentityFormat);
                 }
                 else
                 {
@@ -330,38 +333,40 @@ namespace CoreWf
                     return null;
                 }
 
-                Fx.Assert(!_name.Contains(";"), "Regex should not have matched semi-colon");
-                Fx.Assert(!HasLeadingOrTrailingWhitespace(_name), "Whitespace should have been stripped");
-                Fx.Assert(_package == null || !HasLeadingOrTrailingWhitespace(_package), "Whitespace should have been stripped");
+                Fx.Assert(!this.name.Contains(";"), "Regex should not have matched semi-colon");
+                Fx.Assert(!HasLeadingOrTrailingWhitespace(this.name), "Whitespace should have been stripped");
+                Fx.Assert(this.package == null || !HasLeadingOrTrailingWhitespace(this.package), "Whitespace should have been stripped");
 
-                WorkflowIdentity result = new WorkflowIdentity();
-                result._name = _name;
-                result._version = _version;
-                result._package = _package;
+                WorkflowIdentity result = new WorkflowIdentity
+                {
+                    name = this.name,
+                    version = this.version,
+                    package = this.package
+                };
                 return result;
             }
 
             private bool ExtractName()
             {
-                Group nameMatch = _match.Groups["name"];
+                Group nameMatch = this.match.Groups["name"];
                 Fx.Assert(nameMatch.Success, "RegEx requires name, even if it's empty");
-                _name = Normalize(nameMatch.Value.TrimEnd(), paramName, _throwOnError);
-                return _name != null;
+                this.name = Normalize(nameMatch.Value.TrimEnd(), paramName, this.throwOnError);
+                return this.name != null;
             }
 
             private bool ExtractVersion()
             {
-                Group versionMatch = _match.Groups["version"];
+                Group versionMatch = this.match.Groups["version"];
                 if (versionMatch.Success)
                 {
                     string versionString = versionMatch.Value;
-                    if (_throwOnError)
+                    if (throwOnError)
                     {
-                        _version = Version.Parse(versionString);
+                        this.version = Version.Parse(versionString);
                     }
                     else
                     {
-                        return Version.TryParse(versionString, out _version);
+                        return Version.TryParse(versionString, out this.version);
                     }
                 }
                 return true;
@@ -369,11 +374,11 @@ namespace CoreWf
 
             private bool ExtractPackage()
             {
-                Group packageMatch = _match.Groups["package"];
+                Group packageMatch = match.Groups["package"];
                 if (packageMatch.Success)
                 {
-                    _package = Normalize(packageMatch.Value, paramName, _throwOnError);
-                    return _package != null;
+                    this.package = Normalize(packageMatch.Value, paramName, this.throwOnError);
+                    return this.package != null;
                 }
                 return true;
             }

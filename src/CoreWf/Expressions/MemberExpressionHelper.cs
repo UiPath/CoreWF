@@ -1,14 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Linq.Expressions;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using CoreWf.Validation;
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     internal static class MemberExpressionHelper
     {
         public static void AddOperandArgument<TOperand>(CodeActivityMetadata metadata, InArgument<TOperand> operand, bool isRequired)
@@ -73,9 +74,12 @@ namespace CoreWf.Expressions
             }
             if (result == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.MemberNotFound(memberName, typeof(TOperand).Name)));
+                throw FxTrace.Exception.AsError(new ValidationException(SR.MemberNotFound(memberName, typeof(TOperand).Name)));
             }
             return result;
         }
+
+
     }
+
 }

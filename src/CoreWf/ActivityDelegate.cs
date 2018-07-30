@@ -1,16 +1,19 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+    using System.Collections.ObjectModel;
+    using System;
+    using CoreWf.Runtime;
+
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,
+    //    Justification = "Part of the sanctioned, public WF OM")]
+    [ContentProperty("Handler")]
     public abstract class ActivityDelegate
     {
         internal static string ArgumentName = "Argument";
@@ -31,13 +34,12 @@ namespace CoreWf
         internal static string Argument15Name = "Argument15";
         internal static string Argument16Name = "Argument16";
         internal static string ResultArgumentName = "Result";
-
-        private Activity _owner;
-        private bool _isDisplayNameSet;
-        private string _displayName;
-        private IList<RuntimeDelegateArgument> _delegateParameters;
-        private int _cacheId;
-        private ActivityCollectionType _parentCollectionType;
+        private Activity owner;
+        private bool isDisplayNameSet;
+        private string displayName;
+        private IList<RuntimeDelegateArgument> delegateParameters;
+        private int cacheId;
+        private ActivityCollectionType parentCollectionType;
 
         protected ActivityDelegate()
         {
@@ -47,17 +49,17 @@ namespace CoreWf
         {
             get
             {
-                if (string.IsNullOrEmpty(_displayName))
+                if (string.IsNullOrEmpty(this.displayName))
                 {
-                    _displayName = this.GetType().Name;
+                    this.displayName = this.GetType().Name;
                 }
 
-                return _displayName;
+                return this.displayName;
             }
             set
             {
-                _isDisplayNameSet = true;
-                _displayName = value;
+                this.isDisplayNameSet = true;
+                this.displayName = value;
             }
         }
 
@@ -78,7 +80,7 @@ namespace CoreWf
         {
             get
             {
-                return _owner;
+                return this.owner;
             }
         }
 
@@ -86,7 +88,7 @@ namespace CoreWf
         {
             get
             {
-                return _parentCollectionType;
+                return this.parentCollectionType;
             }
         }
 
@@ -94,9 +96,9 @@ namespace CoreWf
         {
             get
             {
-                if (_delegateParameters != null)
+                if (this.delegateParameters != null)
                 {
-                    return _delegateParameters;
+                    return this.delegateParameters;
                 }
 
                 return new ReadOnlyCollection<RuntimeDelegateArgument>(InternalGetRuntimeDelegateArguments());
@@ -110,13 +112,11 @@ namespace CoreWf
 
         protected virtual void OnGetRuntimeDelegateArguments(IList<RuntimeDelegateArgument> runtimeDelegateArguments)
         {
-            foreach (var property in this.GetType().GetTypeInfo().DeclaredProperties)
+            foreach (PropertyDescriptor propertyDescriptor in TypeDescriptor.GetProperties(this))
             {
-                ArgumentDirection direction;
-                Type innerType;
-                if (ActivityUtilities.TryGetDelegateArgumentDirectionAndType(property.PropertyType, out direction, out innerType))
+                if (ActivityUtilities.TryGetDelegateArgumentDirectionAndType(propertyDescriptor.PropertyType, out ArgumentDirection direction, out Type innerType))
                 {
-                    runtimeDelegateArguments.Add(new RuntimeDelegateArgument(property.Name, innerType, direction, (DelegateArgument)property.GetValue(this)));
+                    runtimeDelegateArguments.Add(new RuntimeDelegateArgument(propertyDescriptor.Name, innerType, direction, (DelegateArgument)propertyDescriptor.GetValue(this)));
                 }
             }
         }
@@ -130,15 +130,15 @@ namespace CoreWf
 
         internal void InternalCacheMetadata()
         {
-            _delegateParameters = new ReadOnlyCollection<RuntimeDelegateArgument>(InternalGetRuntimeDelegateArguments());
+            this.delegateParameters = new ReadOnlyCollection<RuntimeDelegateArgument>(InternalGetRuntimeDelegateArguments());
         }
 
         internal bool CanBeScheduledBy(Activity parent)
         {
             // fast path if we're the sole (or first) child
-            if (object.ReferenceEquals(parent, _owner))
+            if (object.ReferenceEquals(parent, this.owner))
             {
-                return _parentCollectionType != ActivityCollectionType.Imports;
+                return this.parentCollectionType != ActivityCollectionType.Imports;
             }
             else
             {
@@ -148,9 +148,9 @@ namespace CoreWf
 
         internal bool InitializeRelationship(Activity parent, ActivityCollectionType collectionType, ref IList<ValidationError> validationErrors)
         {
-            if (_cacheId == parent.CacheId)
+            if (this.cacheId == parent.CacheId)
             {
-                Fx.Assert(_owner != null, "We must have set the owner when we set the cache ID");
+                Fx.Assert(this.owner != null, "We must have set the owner when we set the cache ID");
 
                 // This means that we've already encountered a parent in the tree
 
@@ -167,11 +167,11 @@ namespace CoreWf
 
                     if (handler == null)
                     {
-                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferencedWithoutTargetNoHandler(parent.DisplayName, _owner.DisplayName), false, parent));
+                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferencedWithoutTargetNoHandler(parent.DisplayName, this.owner.DisplayName), false, parent));
                     }
                     else
                     {
-                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferencedWithoutTarget(handler.DisplayName, parent.DisplayName, _owner.DisplayName), false, parent));
+                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferencedWithoutTarget(handler.DisplayName, parent.DisplayName, this.owner.DisplayName), false, parent));
                     }
 
                     return false;
@@ -182,11 +182,11 @@ namespace CoreWf
 
                     if (handler == null)
                     {
-                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferencedNoHandler(parent.DisplayName, referenceTarget.DisplayName, _owner.DisplayName), false, parent));
+                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferencedNoHandler(parent.DisplayName, referenceTarget.DisplayName, this.owner.DisplayName), false, parent));
                     }
                     else
                     {
-                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferenced(handler.DisplayName, parent.DisplayName, referenceTarget.DisplayName, _owner.DisplayName), false, parent));
+                        ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.ActivityDelegateCannotBeReferenced(handler.DisplayName, parent.DisplayName, referenceTarget.DisplayName, this.owner.DisplayName), false, parent));
                     }
 
                     return false;
@@ -197,9 +197,9 @@ namespace CoreWf
                 return true;
             }
 
-            _owner = parent;
-            _cacheId = parent.CacheId;
-            _parentCollectionType = collectionType;
+            this.owner = parent;
+            this.cacheId = parent.CacheId;
+            this.parentCollectionType = collectionType;
             InternalCacheMetadata();
 
             // We need to setup the delegate environment so that it is
@@ -241,7 +241,7 @@ namespace CoreWf
                         // at runtime we'll actually just place these variables in the
                         // environment of the Handler.  We'll initialize and set an
                         // ID when we process the Handler.
-                        newEnvironment.Declare(delegateArgument, _owner, ref validationErrors);
+                        newEnvironment.Declare(delegateArgument, this.owner, ref validationErrors);
                     }
                 }
             }
@@ -259,7 +259,7 @@ namespace CoreWf
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool ShouldSerializeDisplayName()
         {
-            return _isDisplayNameSet;
+            return this.isDisplayNameSet;
         }
 
         public override string ToString()

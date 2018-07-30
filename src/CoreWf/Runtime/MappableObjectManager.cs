@@ -1,17 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using CoreWf.Hosting;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class MappableObjectManager
     {
-        private List<MappableLocation> _mappableLocations;
+        private List<MappableLocation> mappableLocations;
 
         public MappableObjectManager()
         {
@@ -22,9 +22,9 @@ namespace CoreWf.Runtime
             get
             {
                 int result = 0;
-                if (_mappableLocations != null)
+                if (this.mappableLocations != null)
                 {
-                    result += _mappableLocations.Count;
+                    result += this.mappableLocations.Count;
                 }
 
                 return result;
@@ -34,19 +34,19 @@ namespace CoreWf.Runtime
         [DataMember(EmitDefaultValue = false, Name = "mappableLocations")]
         internal List<MappableLocation> SerializedMappableLocations
         {
-            get { return _mappableLocations; }
-            set { _mappableLocations = value; }
+            get { return this.mappableLocations; }
+            set { this.mappableLocations = value; }
         }
 
         public IDictionary<string, LocationInfo> GatherMappableVariables()
         {
             Dictionary<string, LocationInfo> result = null;
-            if (_mappableLocations != null && _mappableLocations.Count > 0)
+            if (this.mappableLocations != null && this.mappableLocations.Count > 0)
             {
-                result = new Dictionary<string, LocationInfo>(_mappableLocations.Count);
-                for (int locationIndex = 0; locationIndex < _mappableLocations.Count; locationIndex++)
+                result = new Dictionary<string, LocationInfo>(this.mappableLocations.Count);
+                for (int locationIndex = 0; locationIndex < this.mappableLocations.Count; locationIndex++)
                 {
-                    MappableLocation mappableLocation = _mappableLocations[locationIndex];
+                    MappableLocation mappableLocation = this.mappableLocations[locationIndex];
                     result.Add(mappableLocation.MappingKeyName, new LocationInfo(mappableLocation.Name, mappableLocation.OwnerDisplayName, mappableLocation.Location.Value));
                 }
             }
@@ -58,37 +58,37 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(location.CanBeMapped, "should only register mappable locations");
 
-            if (_mappableLocations == null)
+            if (this.mappableLocations == null)
             {
-                _mappableLocations = new List<MappableLocation>();
+                this.mappableLocations = new List<MappableLocation>();
             }
 
-            _mappableLocations.Add(new MappableLocation(locationOwner, activity, activityInstance, location));
+            this.mappableLocations.Add(new MappableLocation(locationOwner, activity, activityInstance, location));
         }
 
         public void Unregister(Location location)
         {
             Fx.Assert(location.CanBeMapped, "should only register mappable locations");
 
-            int mappedLocationsCount = _mappableLocations.Count;
+            int mappedLocationsCount = this.mappableLocations.Count;
             for (int i = 0; i < mappedLocationsCount; i++)
             {
-                if (object.ReferenceEquals(_mappableLocations[i].Location, location))
+                if (object.ReferenceEquals(this.mappableLocations[i].Location, location))
                 {
-                    _mappableLocations.RemoveAt(i);
+                    this.mappableLocations.RemoveAt(i);
                     break;
                 }
             }
-            Fx.Assert(_mappableLocations.Count == mappedLocationsCount - 1, "can only unregister locations that have been registered");
+            Fx.Assert(this.mappableLocations.Count == mappedLocationsCount - 1, "can only unregister locations that have been registered");
         }
 
         [DataContract]
         internal class MappableLocation
         {
-            private string _mappingKeyName;
-            private string _name;
-            private string _ownerDisplayName;
-            private Location _location;
+            private string mappingKeyName;
+            private string name;
+            private string ownerDisplayName;
+            private Location location;
 
             public MappableLocation(LocationReference locationOwner, Activity activity, ActivityInstance activityInstance, Location location)
             {
@@ -97,52 +97,52 @@ namespace CoreWf.Runtime
                 this.Location = location;
                 this.MappingKeyName = string.Format(CultureInfo.InvariantCulture, "activity.{0}-{1}_{2}", activity.Id, locationOwner.Id, activityInstance.Id);
             }
-
+            
             internal string MappingKeyName
             {
                 get
                 {
-                    return _mappingKeyName;
+                    return this.mappingKeyName;
                 }
                 private set
                 {
-                    _mappingKeyName = value;
+                    this.mappingKeyName = value;
                 }
             }
-
+            
             public string Name
             {
                 get
                 {
-                    return _name;
+                    return this.name;
                 }
                 private set
                 {
-                    _name = value;
+                    this.name = value;
                 }
             }
-
+                        
             public string OwnerDisplayName
             {
                 get
                 {
-                    return _ownerDisplayName;
+                    return this.ownerDisplayName;
                 }
                 private set
                 {
-                    _ownerDisplayName = value;
+                    this.ownerDisplayName = value;
                 }
             }
-
+            
             internal Location Location
             {
                 get
                 {
-                    return _location;
+                    return this.location;
                 }
                 private set
                 {
-                    _location = value;
+                    this.location = value;
                 }
             }
 

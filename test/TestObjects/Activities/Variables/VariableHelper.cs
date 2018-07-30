@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Linq.Expressions;
@@ -12,15 +12,19 @@ namespace Test.Common.TestObjects.Activities.Variables
     {
         public static Variable<T> Create<T>(string name)
         {
-            Variable<T> variable = new Variable<T>();
-            variable.Name = name;
+            Variable<T> variable = new Variable<T>
+            {
+                Name = name
+            };
             return variable;
         }
 
         public static Variable<T> Create<T>()
         {
-            Variable<T> variable = new Variable<T>();
-            variable.Name = "Variable" + Guid.NewGuid().ToString().Replace("-", "");
+            Variable<T> variable = new Variable<T>
+            {
+                Name = "Variable" + Guid.NewGuid().ToString().Replace("-", "")
+            };
 
             return variable;
         }

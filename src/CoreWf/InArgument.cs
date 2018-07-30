@@ -1,14 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using System;
-using System.ComponentModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Expressions;
+    using CoreWf.Runtime;
+    using CoreWf.XamlIntegration;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
     public abstract class InArgument : Argument
     {
         internal InArgument()
@@ -18,34 +21,34 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
+        //    Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
         public static InArgument CreateReference(InArgument argumentToReference, string referencedArgumentName)
         {
             if (argumentToReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
             }
 
             return (InArgument)ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, ArgumentDirection.In, referencedArgumentName);
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
+        //    Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
         public static InArgument CreateReference(InOutArgument argumentToReference, string referencedArgumentName)
         {
             if (argumentToReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
             }
 
             // Note that we explicitly pass In since we want an InArgument created
@@ -53,9 +56,9 @@ namespace CoreWf
         }
     }
 
-    //[ContentProperty("Expression")]
-    //[TypeConverter(typeof(InArgumentConverter))]
-    //[ValueSerializer(typeof(ArgumentValueSerializer))]
+    [ContentProperty("Expression")]
+    [TypeConverter(typeof(InArgumentConverter))]
+    [ValueSerializer(typeof(ArgumentValueSerializer))]
     public sealed class InArgument<T> : InArgument
     {
         public InArgument(Variable variable)
@@ -79,14 +82,14 @@ namespace CoreWf
         public InArgument(T constValue)
             : this()
         {
-            this.Expression = new Literal<T> { Value = constValue };
+            this.Expression = new Literal<T> { Value = constValue }; 
         }
 
         public InArgument(Expression<Func<ActivityContext, T>> expression)
             : this()
         {
             if (expression != null)
-            {
+            {                
                 this.Expression = new LambdaValue<T>(expression);
             }
         }
@@ -162,7 +165,7 @@ namespace CoreWf
         {
             if (variable == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw FxTrace.Exception.ArgumentNull(nameof(variable));
             }
             return new InArgument<T>(variable);
         }
@@ -171,7 +174,7 @@ namespace CoreWf
         {
             if (delegateArgument == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("delegateArgument");
+                throw FxTrace.Exception.ArgumentNull(nameof(delegateArgument));
             }
             return new InArgument<T>(delegateArgument);
         }
@@ -180,7 +183,7 @@ namespace CoreWf
         {
             if (expression == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw FxTrace.Exception.ArgumentNull(nameof(expression));
             }
 
             return new InArgument<T>(expression);
@@ -189,9 +192,9 @@ namespace CoreWf
         public static InArgument<T> FromValue(T constValue)
         {
             return new InArgument<T>
-            {
-                Expression = new Literal<T> { Value = constValue }
-            };
+                {
+                    Expression = new Literal<T> { Value = constValue }
+                };
         }
 
         // Soft-Link: This method is referenced through reflection by
@@ -206,7 +209,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             context.SetValue(this, value);

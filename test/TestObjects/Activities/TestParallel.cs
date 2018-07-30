@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -24,10 +24,12 @@ namespace Test.Common.TestObjects.Activities
         public TestParallel()
         {
             this.ProductActivity = new Parallel();
-            _branches = new MemberCollection<TestActivity>(AddBranch);
-            _branches.InsertItem = InsertBranch;
-            _branches.RemoveItem = RemoveBranch;
-            _branches.RemoveAtItem = RemoveAtBranch;
+            _branches = new MemberCollection<TestActivity>(AddBranch)
+            {
+                InsertItem = InsertBranch,
+                RemoveItem = RemoveBranch,
+                RemoveAtItem = RemoveAtBranch
+            };
 
             _compensationHint = new List<Directive>();
         }

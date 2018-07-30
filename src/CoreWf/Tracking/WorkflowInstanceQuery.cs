@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System.Collections.ObjectModel;
+
     public class WorkflowInstanceQuery : TrackingQuery
     {
-        private Collection<string> _states;
+        private Collection<string> states;
 
         public WorkflowInstanceQuery()
         {
@@ -17,11 +17,11 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (_states == null)
+                if (this.states == null)
                 {
-                    _states = new Collection<string>();
+                    this.states = new Collection<string>();
                 }
-                return _states;
+                return this.states;
             }
         }
 
@@ -29,8 +29,9 @@ namespace CoreWf.Tracking
         {
             get
             {
-                return _states != null && _states.Count > 0;
+                return this.states != null && this.states.Count > 0;
             }
         }
+
     }
 }

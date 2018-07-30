@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -262,8 +262,10 @@ namespace TestCases.Activities.Flowchart
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
 
-            TestIncrement increment = new TestIncrement("Inc", 1);
-            increment.CounterVariable = counter;
+            TestIncrement increment = new TestIncrement("Inc", 1)
+            {
+                CounterVariable = counter
+            };
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Ola");
             Dictionary<int, TestActivity> cases = new Dictionary<int, TestActivity>();
@@ -319,8 +321,10 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.Variables.Add(counter);
 
-            TestIncrement increment = new TestIncrement("Inc", 1);
-            increment.CounterVariable = counter;
+            TestIncrement increment = new TestIncrement("Inc", 1)
+            {
+                CounterVariable = counter
+            };
 
             TestWriteLine w1 = new TestWriteLine("One", "Will execute on first iteration");
             TestWriteLine w2 = new TestWriteLine("Two", "Will execute on second iteration");

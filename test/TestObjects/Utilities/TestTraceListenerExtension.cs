@@ -1,9 +1,6 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using System;
-using System.Diagnostics;
-using CoreWf;
 using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.Utilities
@@ -21,21 +18,18 @@ namespace Test.Common.TestObjects.Utilities
         public void TraceData(object data)
         {
             //tracking data is now directly pushed by the tracking participant to the test trace manager.
-            if (data is WorkflowInstanceTrace)
+            if (data is WorkflowInstanceTrace instanceTrace)
             {
-                WorkflowInstanceTrace instanceTrace = (WorkflowInstanceTrace)data;
                 this.testTraceManager.AddTrace(instanceTrace.InstanceName, instanceTrace);
                 //Log.TraceInternal("[TestTraceListener] {0}", instanceTrace.ToString());
             }
-            else if (data is WorkflowExceptionTrace)
+            else if (data is WorkflowExceptionTrace exceptionTrace)
             {
-                WorkflowExceptionTrace exceptionTrace = (WorkflowExceptionTrace)data;
                 this.testTraceManager.AddTrace(exceptionTrace.InstanceName, exceptionTrace);
                 //Log.TraceInternal("[TestTraceListener] {0}", exceptionTrace.ToString());
             }
-            else if (data is UserTrace)
+            else if (data is UserTrace userTrace)
             {
-                UserTrace userTrace = (UserTrace)data;
                 this.testTraceManager.AddTrace(userTrace.InstanceId, userTrace);
                 //Log.TraceInternal("[TestTraceListener] {0}", userTrace.ToString());
             }
@@ -45,9 +39,8 @@ namespace Test.Common.TestObjects.Utilities
                 this.testTraceManager.AddTrace(synchronizeTrace.userTrace.InstanceId, synchronizeTrace);
                 //Log.TraceInternal("[TestTraceListener] {0}", synchronizeTrace.ToString());
             }
-            else if (data is WorkflowAbortedTrace)
+            else if (data is WorkflowAbortedTrace synchronizeTrace)
             {
-                WorkflowAbortedTrace synchronizeTrace = (WorkflowAbortedTrace)data;
                 this.testTraceManager.AddTrace(synchronizeTrace.InstanceId, synchronizeTrace);
                 //Log.TraceInternal("[TestTraceListener] {0}", synchronizeTrace.ToString());
             }

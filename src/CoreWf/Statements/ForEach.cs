@@ -1,23 +1,30 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Body")]
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+    using CoreWf;
+    using CoreWf.Internals;
+    using System;
+    using CoreWf.Runtime;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Body")]
     public sealed class ForEach<T> : NativeActivity
     {
-        private Variable<IEnumerator<T>> _valueEnumerator;
-        private CompletionCallback _onChildComplete;
+        private readonly Variable<IEnumerator<T>> valueEnumerator;
+        private CompletionCallback onChildComplete;
 
         public ForEach()
             : base()
         {
-            _valueEnumerator = new Variable<IEnumerator<T>>();
+            this.valueEnumerator = new Variable<IEnumerator<T>>();
         }
 
         [DefaultValue(null)]
@@ -27,7 +34,7 @@ namespace CoreWf.Statements
             set;
         }
 
-        [RequiredArgument]
+        [RequiredArgument]        
         [DefaultValue(null)]
         public InArgument<IEnumerable<T>> Values
         {
@@ -39,19 +46,21 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_onChildComplete == null)
+                if (this.onChildComplete == null)
                 {
-                    _onChildComplete = new CompletionCallback(GetStateAndExecute);
+                    this.onChildComplete = new CompletionCallback(GetStateAndExecute);
                 }
 
-                return _onChildComplete;
+                return this.onChildComplete;
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -60,7 +69,7 @@ namespace CoreWf.Statements
 
             metadata.AddArgument(valuesArgument);
             metadata.AddDelegate(this.Body);
-            metadata.AddImplementationVariable(_valueEnumerator);
+            metadata.AddImplementationVariable(this.valueEnumerator);
         }
 
         protected override void Execute(NativeActivityContext context)
@@ -68,11 +77,11 @@ namespace CoreWf.Statements
             IEnumerable<T> values = this.Values.Get(context);
             if (values == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ForEachRequiresNonNullValues(this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ForEachRequiresNonNullValues(this.DisplayName)));
             }
 
             IEnumerator<T> valueEnumerator = values.GetEnumerator();
-            _valueEnumerator.Set(context, valueEnumerator);
+            this.valueEnumerator.Set(context, valueEnumerator);
 
             if (this.Body == null || this.Body.Handler == null)
             {
@@ -88,7 +97,7 @@ namespace CoreWf.Statements
 
         private void GetStateAndExecute(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            IEnumerator<T> valueEnumerator = _valueEnumerator.Get(context);
+            IEnumerator<T> valueEnumerator = this.valueEnumerator.Get(context);
             Fx.Assert(valueEnumerator != null, "GetStateAndExecute");
             InternalExecute(context, completedInstance, valueEnumerator);
         }

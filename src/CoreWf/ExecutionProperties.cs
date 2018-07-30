@@ -1,32 +1,33 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using System.Collections;
+    using System.Collections.Generic;
+    using CoreWf.Internals;
+
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldHaveCorrectSuffix)]
     [Fx.Tag.XamlVisible(false)]
     public sealed class ExecutionProperties : IEnumerable<KeyValuePair<string, object>>
     {
-        private static IEnumerable<KeyValuePair<string, object>> s_emptyKeyValues;
-
-        private ActivityContext _context;
-        private ActivityInstance _scope;
-        private ExecutionPropertyManager _properties;
-        private IdSpace _currentIdSpace;
+        private static IEnumerable<KeyValuePair<string, object>> emptyKeyValues;
+        private readonly ActivityContext context;
+        private readonly ActivityInstance scope;
+        private ExecutionPropertyManager properties;
+        private readonly IdSpace currentIdSpace;
 
         internal ExecutionProperties(ActivityContext currentContext, ActivityInstance scope, ExecutionPropertyManager properties)
         {
-            _context = currentContext;
-            _scope = scope;
-            _properties = properties;
+            this.context = currentContext;
+            this.scope = scope;
+            this.properties = properties;
 
-            if (_context != null)
+            if (this.context != null)
             {
-                _currentIdSpace = _context.Activity.MemberOf;
+                this.currentIdSpace = this.context.Activity.MemberOf;
             }
         }
 
@@ -34,7 +35,7 @@ namespace CoreWf
         {
             get
             {
-                return (_properties == null);
+                return (this.properties == null);
             }
         }
 
@@ -42,11 +43,11 @@ namespace CoreWf
         {
             get
             {
-                if (s_emptyKeyValues == null)
+                if (emptyKeyValues == null)
                 {
-                    s_emptyKeyValues = new KeyValuePair<string, object>[0];
+                    emptyKeyValues = new KeyValuePair<string, object>[0];
                 }
-                return s_emptyKeyValues;
+                return emptyKeyValues;
             }
         }
 
@@ -68,48 +69,48 @@ namespace CoreWf
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                    throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
                 }
 
                 if (property == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("property");
+                    throw FxTrace.Exception.ArgumentNull(nameof(property));
                 }
 
                 ThrowIfActivityExecutionContextDisposed();
                 ThrowIfChildrenAreExecuting();
             }
 
-            if (_properties != null)
+            if (this.properties != null)
             {
-                _properties.ThrowIfAlreadyDefined(name, _scope);
+                this.properties.ThrowIfAlreadyDefined(name, this.scope);
             }
 
-            IPropertyRegistrationCallback registrationCallback = property as IPropertyRegistrationCallback;
 
-            if (registrationCallback != null)
+            if (property is IPropertyRegistrationCallback registrationCallback)
             {
-                registrationCallback.Register(new RegistrationContext(_properties, _currentIdSpace));
+                registrationCallback.Register(new RegistrationContext(this.properties, this.currentIdSpace));
             }
 
-            if (_properties == null)
+            if (this.properties == null)
             {
-                _properties = new ExecutionPropertyManager(_scope);
+                this.properties = new ExecutionPropertyManager(this.scope);
             }
-            else if (!_properties.IsOwner(_scope))
+            else if (!this.properties.IsOwner(this.scope))
             {
-                _properties = new ExecutionPropertyManager(_scope, _properties);
+                // TODO, 51474, Thread properties are broken when the this.scope is not the current activity.  This will only happen for NoPersistProperty right now so it doesn't matter.
+                this.properties = new ExecutionPropertyManager(this.scope, this.properties);
             }
 
             IdSpace visibility = null;
 
             if (onlyVisibleToPublicChildren)
             {
-                Fx.Assert(_currentIdSpace != null, "We should never call OnlyVisibleToPublicChildren when we don't have a currentIdSpace");
-                visibility = _currentIdSpace;
+                Fx.Assert(this.currentIdSpace != null, "We should never call OnlyVisibleToPublicChildren when we don't have a currentIdSpace");
+                visibility = this.currentIdSpace;
             }
 
-            _properties.Add(name, property, visibility);
+            this.properties.Add(name, property, visibility);
         }
 
         [Fx.Tag.InheritThrows(From = "Unregister", FromDeclaringType = typeof(IPropertyRegistrationCallback))]
@@ -124,35 +125,33 @@ namespace CoreWf
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                    throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
                 }
 
                 ThrowIfActivityExecutionContextDisposed();
             }
 
-            if (_properties != null && _properties.IsOwner(_scope))
+            if (this.properties != null && this.properties.IsOwner(this.scope))
             {
-                object property = _properties.GetPropertyAtCurrentScope(name);
+                object property = this.properties.GetPropertyAtCurrentScope(name);
 
                 if (property != null)
                 {
                     if (!skipValidations)
                     {
-                        Handle handleProperty = property as Handle;
 
-                        if (handleProperty == null || !handleProperty.CanBeRemovedWithExecutingChildren)
+                        if (!(property is Handle handleProperty) || !handleProperty.CanBeRemovedWithExecutingChildren)
                         {
                             ThrowIfChildrenAreExecuting();
                         }
                     }
 
-                    _properties.Remove(name);
+                    this.properties.Remove(name);
 
-                    IPropertyRegistrationCallback registrationCallback = property as IPropertyRegistrationCallback;
 
-                    if (registrationCallback != null)
+                    if (property is IPropertyRegistrationCallback registrationCallback)
                     {
-                        registrationCallback.Unregister(new RegistrationContext(_properties, _currentIdSpace));
+                        registrationCallback.Unregister(new RegistrationContext(this.properties, this.currentIdSpace));
                     }
 
                     return true;
@@ -166,16 +165,16 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
-            if (_properties == null)
+            if (this.properties == null)
             {
                 return null;
             }
             else
             {
-                return _properties.GetProperty(name, _currentIdSpace);
+                return this.properties.GetProperty(name, this.currentIdSpace);
             }
         }
 
@@ -185,13 +184,13 @@ namespace CoreWf
         {
             Fx.Assert(!string.IsNullOrEmpty(name), "We should only call this with non-null names");
 
-            if (_properties == null || !_properties.IsOwner(_scope))
+            if (this.properties == null || !this.properties.IsOwner(this.scope))
             {
                 return null;
             }
             else
             {
-                return _properties.GetPropertyAtCurrentScope(name);
+                return this.properties.GetPropertyAtCurrentScope(name);
             }
         }
 
@@ -207,9 +206,9 @@ namespace CoreWf
 
         private IEnumerable<KeyValuePair<string, object>> GetKeyValues()
         {
-            if (_properties != null)
+            if (this.properties != null)
             {
-                return _properties.GetFlattenedProperties(_currentIdSpace);
+                return this.properties.GetFlattenedProperties(this.currentIdSpace);
             }
             else
             {
@@ -219,19 +218,20 @@ namespace CoreWf
 
         private void ThrowIfChildrenAreExecuting()
         {
-            if (_scope.HasChildren)
+            if (this.scope.HasChildren)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotAddOrRemoveWithChildren));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotAddOrRemoveWithChildren));
             }
         }
 
         private void ThrowIfActivityExecutionContextDisposed()
         {
-            if (_context.IsDisposed)
+            if (this.context.IsDisposed)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.AECForPropertiesHasBeenDisposed));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.AECForPropertiesHasBeenDisposed));
             }
         }
+
     }
 }
 
