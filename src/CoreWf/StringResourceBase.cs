@@ -99,7 +99,7 @@ namespace CoreWf
                     var locOptions = new LocalizationOptions() { ResourcesPath = "Resources" };
                     var options = Options.Create<LocalizationOptions>(locOptions);
                     var resourceFactory = new ResourceManagerStringLocalizerFactory(options, Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
-                    stringLocalizer = resourceFactory.Create(typeof(StringResourceBase));
+                    stringLocalizer = resourceFactory.Create((typeof(SR)));
                 }
 
                 return stringLocalizer;
