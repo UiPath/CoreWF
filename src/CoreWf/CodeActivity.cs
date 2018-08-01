@@ -191,13 +191,13 @@ namespace CoreWf
             }
         }
 
-#if NET45
         sealed internal override TResult InternalExecuteInResolutionContext(CodeActivityContext context)
         {
             Fx.Assert(this.SkipArgumentResolution, "This method should only be called if SkipArgumentResolution is true");
             return Execute(context);
         }
 
+#if NET45
         internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
             DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
         {
