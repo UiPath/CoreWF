@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Runtime", "..\tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonFileInstanceStore", "..\test\JsonFileInstanceStore\JsonFileInstanceStore.csproj", "{A02ADBAD-8E07-479D-946B-93591EDC487E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamlTestCases", "XamlTestCases\XamlTestCases.csproj", "{36AE306E-FDB2-41A4-861F-67112AA5CB7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{A02ADBAD-8E07-479D-946B-93591EDC487E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A02ADBAD-8E07-479D-946B-93591EDC487E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A02ADBAD-8E07-479D-946B-93591EDC487E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36AE306E-FDB2-41A4-861F-67112AA5CB7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36AE306E-FDB2-41A4-861F-67112AA5CB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36AE306E-FDB2-41A4-861F-67112AA5CB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36AE306E-FDB2-41A4-861F-67112AA5CB7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{E57F197D-6102-44AF-B5DA-478AEF7F7340} = {7B4FEB02-E589-4337-B563-086AF23FB97D}
 		{3BBAAB5F-5EBB-409C-98D4-7693D4C545E0} = {7B4FEB02-E589-4337-B563-086AF23FB97D}
 		{A02ADBAD-8E07-479D-946B-93591EDC487E} = {7B4FEB02-E589-4337-B563-086AF23FB97D}
+		{36AE306E-FDB2-41A4-861F-67112AA5CB7B} = {7B4FEB02-E589-4337-B563-086AF23FB97D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1ED6A6D7-ACEE-4780-B630-50DCAED74BA9}
