@@ -24,6 +24,8 @@ namespace CoreWf.Runtime
         private Delegate callback;
         private ActivityInstance activityInstance;
 
+        protected internal CallbackWrapper() { }
+
         public CallbackWrapper(Delegate callback, ActivityInstance owningInstance)
         {
             this.ActivityInstance = owningInstance;

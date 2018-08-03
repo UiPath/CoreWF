@@ -13,6 +13,8 @@ namespace CoreWf.Runtime
         private static readonly Type bookmarkCallbackType = typeof(BookmarkCallback);
         private static readonly Type[] bookmarkCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(Bookmark), typeof(object) };
 
+        internal BookmarkCallbackWrapper() { }
+
         public BookmarkCallbackWrapper(BookmarkCallback callback, ActivityInstance owningInstance)
             : this(callback, owningInstance, BookmarkOptions.None)
         {           
