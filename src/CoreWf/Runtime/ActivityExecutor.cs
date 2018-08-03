@@ -114,6 +114,8 @@ namespace CoreWf.Runtime
         private bool _persistExceptions;
         private bool _havePersistExceptionsValue;
 
+        internal ActivityExecutor() { }
+
         public ActivityExecutor(WorkflowInstance host)
         {
             Fx.Assert(host != null, "There must be a host.");

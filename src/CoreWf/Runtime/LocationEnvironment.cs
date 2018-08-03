@@ -41,7 +41,9 @@ namespace CoreWf.Runtime
         // be zero and skipped by serialization
         private int referenceCountMinusOne;
         private bool hasOwnerCompleted;
-                
+
+        internal LocationEnvironment() { }
+
         // this ctor overload is to be exclusively used by DU
         // for creating a LocationEnvironment for "noSymbols" ActivityInstance
         internal LocationEnvironment(LocationEnvironment parent, int capacity) 

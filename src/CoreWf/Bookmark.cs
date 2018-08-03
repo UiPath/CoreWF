@@ -23,6 +23,8 @@ namespace CoreWf
         private long id;
         private string externalName;
 
+        internal Bookmark() { }
+
         private Bookmark(long id)
         {
             Fx.Assert(id != 0, "id should not be zero");

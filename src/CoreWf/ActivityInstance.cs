@@ -49,6 +49,8 @@ namespace CoreWf
         private LocationEnvironment environment;
         private ExecutionPropertyManager propertyManager;
 
+        internal ActivityInstance() { }
+
         internal ActivityInstance(Activity activity)
         {
             this.activity = activity;

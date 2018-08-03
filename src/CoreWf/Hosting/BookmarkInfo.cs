@@ -14,6 +14,7 @@ namespace CoreWf.Hosting
         private BookmarkScopeInfo scopeInfo;
         private string ownerDisplayName;
 
+        internal BookmarkInfo() { }
         internal BookmarkInfo(string bookmarkName, string ownerDisplayName, BookmarkScopeInfo scopeInfo)
         {
             this.BookmarkName = bookmarkName;
