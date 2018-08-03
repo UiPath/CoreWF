@@ -147,14 +147,20 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                 Console.WriteLine(ex.ToString());
             }
 
-
             try
             {
                 string ActivityAlone = @"
-            <Activity x:Class=""WFTemplate"" 
-            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities"" 
-            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">   
-            </Activity>";
+<Activity
+ xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
+ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Sequence>
+    <Sequence.Variables>
+      <Variable x:TypeArguments=""x:String"" Default=""My variable text"" Name=""MyVar"" />
+    </Sequence.Variables>
+    <WriteLine Text=""[MyVar]"" />
+  </Sequence>
+</Activity>
+";
                 var act6 = CoreWf.XamlIntegration.ActivityXamlServices.Load(GenerateStreamFromString(ActivityAlone), settings);
                 WorkflowInvoker.Invoke(act6);
             }
