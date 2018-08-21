@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk" InitialTargets="BuildResources">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Core WF</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</Description>
     <Authors>Dustin Metzgar,Jim Carley</Authors>
-    <Copyright>Copyright &#169; Dustin Metzgar 2017</Copyright> 
+    <Copyright>Copyright © Dustin Metzgar 2017</Copyright> 
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
     <PackageIconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</PackageIconUrl>
@@ -26,8 +26,7 @@
   </ItemGroup>
 
   <Target Name="BuildResources">
-    <GenerateResource ExecuteAsTool="false"
-      Sources="@(Resx)">
+    <GenerateResource ExecuteAsTool="false" Sources="@(Resx)">
       <Output TaskParameter="OutputResources" ItemName="Resources" />
     </GenerateResource>
   </Target>
