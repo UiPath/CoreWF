@@ -18,7 +18,7 @@ namespace CoreWf
             {
                 if (_resourceManager == null)
                 {
-                    _resourceManager = new ResourceManager("CoreWf.Resources.strings", typeof(SR).GetTypeInfo().Assembly);
+                    _resourceManager = new ResourceManager("CoreWf.Resources", typeof(SR).GetTypeInfo().Assembly);
                 }
                 return _resourceManager;
             }
