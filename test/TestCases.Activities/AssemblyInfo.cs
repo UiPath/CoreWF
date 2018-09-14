@@ -2,4 +2,4 @@
 // See LICENSE file in the project root for full license information.
 
 // This causes xUnit test runs to fail with a StackOverflowException 
-//[assembly: Xunit.CollectionBehavior(Xunit.CollectionBehavior.CollectionPerAssembly, DisableTestParallelization = true)]
+[assembly: Xunit.CollectionBehavior(Xunit.CollectionBehavior.CollectionPerAssembly, DisableTestParallelization = true)]

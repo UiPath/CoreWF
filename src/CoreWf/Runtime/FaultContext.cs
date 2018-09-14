@@ -45,7 +45,7 @@ namespace CoreWf.Runtime
             }
         }
 
-        [DataMember(Name = "Exception")]
+        //[DataMember(Name = "Exception")]
         internal Exception SerializedException
         {
             get { return this.Exception; }
