@@ -8,9 +8,8 @@
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
     <PackageIconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</PackageIconUrl>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <FileUpgradeFlags>40</FileUpgradeFlags>
-    <UpgradeBackupLocation>C:\dev\corewfxaml\src\Backup3\</UpgradeBackupLocation>
     <OldToolsVersion>15.0</OldToolsVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
