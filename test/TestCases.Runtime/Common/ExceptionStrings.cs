@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System.Resources;
 using System.Reflection;
@@ -12,7 +12,7 @@ namespace TestCases.Runtime.Common
 
         static ExceptionStrings()
         {
-            s_activitiesResourceManager = new ResourceManager("CoreWf.Strings.SR", typeof(CoreWf.Activity).GetTypeInfo().Assembly);
+            s_activitiesResourceManager = new ResourceManager("CoreWf.Resources.SR", typeof(CoreWf.Activity).GetTypeInfo().Assembly);
         }
 
         public static string ActivityAlreadyOpenInOtherWorkflow { get { return s_activitiesResourceManager.GetString("ActivityAlreadyOpenInOtherWorkflow"); } }
@@ -32,9 +32,7 @@ namespace TestCases.Runtime.Common
         public static string AECDisposed { get { return s_activitiesResourceManager.GetString("AECDisposed"); } }
         public static string ArgumentDirectionMismatch { get { return s_activitiesResourceManager.GetString("ArgumentDirectionMismatch"); } }
         public static string ArgumentIsAddedMoreThanOnce { get { return s_activitiesResourceManager.GetString("ArgumentIsAddedMoreThanOnce"); } }
-
         public static string ArgumentNotInTree { get { return s_activitiesResourceManager.GetString("ArgumentNotInTree"); } }
-
         public static string ArgumentNullExceptionHelper = "\r\nParameter name: {0}";
         public static string ArgumentOutOfRangeExceptionHelper = "\r\nParameter name: {0}\r\nActual value was {1}";
         public static string ArgumentTypeMismatch { get { return s_activitiesResourceManager.GetString("ArgumentTypeMismatch"); } }

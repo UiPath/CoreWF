@@ -1,12 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+    using System.Runtime.Serialization;
+
+#if NET45
+    using CoreWf.DynamicUpdate;
+#endif
     public abstract class CodeActivity : Activity
     {
         protected CodeActivity()
@@ -23,14 +27,14 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
 
         [IgnoreDataMember]
         [Fx.Tag.KnownXamlExternal]
-        protected sealed override Func<Activity> Implementation
+        public sealed override Func<Activity> Implementation
         {
             get
             {
@@ -40,7 +44,7 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -76,34 +80,35 @@ namespace CoreWf
         {
             CodeActivityMetadata metadata = new CodeActivityMetadata(this, this.GetParentEnvironment(), createEmptyBindings);
             CacheMetadata(metadata);
-            metadata.Dispose();
+            metadata.Dispose(); 
             if (this.RuntimeArguments == null || this.RuntimeArguments.Count == 0)
             {
                 this.SkipArgumentResolution = true;
             }
         }
 
-        //internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer, 
-        //    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
-        //{
-        //}
+#if NET45
+        internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
+    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
+        {
+        }
 
-        //protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    // NO OP
-        //}
+        protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
+        {
+            // NO OP
+        } 
+#endif
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
-        //protected virtual void CacheMetadata(CodeActivityMetadata metadata)
-        //{
-        //    // We bypass the metadata call to avoid the null checks
-        //    SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
-        //}
-        protected abstract void CacheMetadata(CodeActivityMetadata metadata);
+        protected virtual void CacheMetadata(CodeActivityMetadata metadata)
+        {
+            // We bypass the metadata call to avoid the null checks
+            SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
+        }
     }
 
     public abstract class CodeActivity<TResult> : Activity<TResult>
@@ -122,14 +127,14 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
 
         [IgnoreDataMember]
         [Fx.Tag.KnownXamlExternal]
-        protected sealed override Func<Activity> Implementation
+        public sealed override Func<Activity> Implementation
         {
             get
             {
@@ -139,7 +144,7 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -192,26 +197,27 @@ namespace CoreWf
             return Execute(context);
         }
 
-        //internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
-        //    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
-        //{
-        //}
+#if NET45
+        internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
+            DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
+        {
+        }
 
-        //protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    // NO OP
-        //}
+        protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
+        {
+            // NO OP
+        } 
+#endif
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
-        //protected virtual void CacheMetadata(CodeActivityMetadata metadata)
-        //{
-        //    // We bypass the metadata call to avoid the null checks
-        //    SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
-        //}
-        protected abstract void CacheMetadata(CodeActivityMetadata metadata);
+        protected virtual void CacheMetadata(CodeActivityMetadata metadata)
+        {
+            // We bypass the metadata call to avoid the null checks
+            SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
+        }
     }
 }

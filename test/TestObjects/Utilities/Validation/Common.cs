@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace Test.Common.TestObjects.Utilities.Validation
 {
@@ -77,7 +77,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         internal int startIndex = -1;
         internal int[] endIndexes;
-        private List<WorkflowTraceStep> _steps;
+        private readonly List<WorkflowTraceStep> _steps;
 
         protected TraceGroup(WorkflowTraceStep[] steps, bool ordered)
         {
@@ -115,53 +115,46 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
             foreach (WorkflowTraceStep step in traceGroup.Steps)
             {
-                ActivityTrace activityTrace = step as ActivityTrace;
-                if (activityTrace != null)
+                if (step is ActivityTrace activityTrace)
                 {
                     newTraceGroup.Steps.Add(new ActivityTrace(activityTrace) { Optional = step.Optional });
 
                     continue;
                 }
 
-                WorkflowInstanceTrace workflowInstanceTrace = step as WorkflowInstanceTrace;
-                if (workflowInstanceTrace != null)
+                if (step is WorkflowInstanceTrace workflowInstanceTrace)
                 {
                     newTraceGroup.Steps.Add(new WorkflowInstanceTrace(workflowInstanceTrace.InstanceName, workflowInstanceTrace.InstanceStatus) { Optional = step.Optional });
                     continue;
                 }
 
-                UserTrace userTrace = step as UserTrace;
-                if (userTrace != null)
+                if (step is UserTrace userTrace)
                 {
                     newTraceGroup.Steps.Add(new UserTrace(userTrace.InstanceId, userTrace.ActivityParent, userTrace.Message));
                     continue;
                 }
 
-                BookmarkResumptionTrace bookmarkResumptionTrace = step as BookmarkResumptionTrace;
-                if (bookmarkResumptionTrace != null)
+                if (step is BookmarkResumptionTrace bookmarkResumptionTrace)
                 {
                     newTraceGroup.Steps.Add(new BookmarkResumptionTrace(bookmarkResumptionTrace.BookmarkName,
                         bookmarkResumptionTrace.SubinstanceId, bookmarkResumptionTrace.ActivityName));
                     continue;
                 }
 
-                SynchronizeTrace synchronizeTrace = step as SynchronizeTrace;
-                if (synchronizeTrace != null)
+                if (step is SynchronizeTrace synchronizeTrace)
                 {
                     newTraceGroup.Steps.Add(new SynchronizeTrace(synchronizeTrace.userTrace.InstanceId,
                         synchronizeTrace.userTrace.Message));
                     continue;
                 }
 
-                ActivityPlaceholderTrace activityPlaceholderTrace = step as ActivityPlaceholderTrace;
-                if (activityPlaceholderTrace != null)
+                if (step is ActivityPlaceholderTrace activityPlaceholderTrace)
                 {
                     newTraceGroup.Steps.Add(activityPlaceholderTrace);
                     continue;
                 }
 
-                TraceGroup tempTraceGroup = step as TraceGroup;
-                if (tempTraceGroup != null)
+                if (step is TraceGroup tempTraceGroup)
                 {
                     newTraceGroup.Steps.Add(TraceGroup.GetNewTraceGroup(tempTraceGroup));
                     continue;
@@ -172,8 +165,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         public override bool Equals(object obj)
         {
-            TraceGroup traceGroup = obj as TraceGroup;
-            if (traceGroup != null)
+            if (obj is TraceGroup traceGroup)
             {
                 return (this.ToString() == traceGroup.ToString());
             }

@@ -1,37 +1,36 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Runtime;
+
     // This does not need to be data contract since we'll never persist while one of these is active
     internal class NoPersistProperty : IPropertyRegistrationCallback
     {
         public const string Name = "CoreWf.NoPersistProperty";
-
-        private ActivityExecutor _executor;
-        private int _refCount;
+        private readonly ActivityExecutor executor;
+        private int refCount;
 
         public NoPersistProperty(ActivityExecutor executor)
         {
-            _executor = executor;
+            this.executor = executor;
         }
 
         public void Enter()
         {
-            _refCount++;
-            _executor.EnterNoPersist();
+            this.refCount++;
+            this.executor.EnterNoPersist();
         }
 
         public bool Exit()
         {
-            Fx.Assert(_refCount > 0, "We should guard against too many exits elsewhere.");
+            Fx.Assert(this.refCount > 0, "We should guard against too many exits elsewhere.");
 
-            _refCount--;
-            _executor.ExitNoPersist();
+            this.refCount--;
+            this.executor.ExitNoPersist();
 
-            return _refCount == 0;
+            return this.refCount == 0;
         }
 
         public void Register(RegistrationContext context)
@@ -40,14 +39,14 @@ namespace CoreWf
 
         public void Unregister(RegistrationContext context)
         {
-            if (_refCount > 0)
+            if (this.refCount > 0)
             {
-                for (int i = 0; i < _refCount; i++)
+                for (int i = 0; i < this.refCount; i++)
                 {
-                    _executor.ExitNoPersist();
+                    this.executor.ExitNoPersist();
                 }
 
-                _refCount = 0;
+                this.refCount = 0;
             }
         }
     }

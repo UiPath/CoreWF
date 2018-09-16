@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -167,7 +167,7 @@ namespace Test.Common.TestObjects.Activities
                 return this.Hints[this.Hints.Count == 1 ? 0 : this.iterationNumber];
             }
         }
-        private List<int> _hints; // List of hints of executing cases in switch. -1 is for default case.
+        private readonly List<int> _hints; // List of hints of executing cases in switch. -1 is for default case.
         private List<TestActivity> _caseBodies;
         private TestActivity _defaultCase;
     }

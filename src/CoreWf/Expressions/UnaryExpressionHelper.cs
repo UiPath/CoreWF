@@ -1,14 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq.Expressions;
+
     internal static class UnaryExpressionHelper
     {
         public static void OnGetArguments<TOperand>(CodeActivityMetadata metadata, InArgument<TOperand> operand)
@@ -49,4 +49,5 @@ namespace CoreWf.Expressions
             }
         }
     }
+
 }

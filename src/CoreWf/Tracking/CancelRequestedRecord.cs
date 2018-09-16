@@ -1,19 +1,20 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Globalization;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
     public sealed class CancelRequestedRecord : TrackingRecord
     {
-        private ActivityInfo _activity;
-        private ActivityInfo _child;
+        private ActivityInfo activity;
+        private ActivityInfo child;
 
         internal CancelRequestedRecord(Guid instanceId, ActivityInstance instance, ActivityInstance child)
             : base(instanceId)
@@ -23,7 +24,7 @@ namespace CoreWf.Tracking
             {
                 this.Activity = new ActivityInfo(instance);
             }
-            this.Child = new ActivityInfo(child);
+            this.Child = new ActivityInfo(child);            
         }
 
         //parameter activity is null if the root activity is being cancelled.
@@ -34,43 +35,38 @@ namespace CoreWf.Tracking
             ActivityInfo child)
             : base(instanceId, recordNumber)
         {
-            if (child == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("child");
-            }
-
             this.Activity = activity;
-            this.Child = child;
+            this.Child = child ?? throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(child));
         }
 
         private CancelRequestedRecord(CancelRequestedRecord record)
             : base(record)
         {
             this.Activity = record.Activity;
-            this.Child = record.Child;
+            this.Child = record.Child;            
         }
-
+        
         public ActivityInfo Activity
         {
             get
             {
-                return _activity;
+                return this.activity;
             }
             private set
             {
-                _activity = value;
+                this.activity = value;
             }
         }
-
+        
         public ActivityInfo Child
         {
             get
             {
-                return _child;
+                return this.child;
             }
             private set
             {
-                _child = value;
+                this.child = value;
             }
         }
 
@@ -101,5 +97,6 @@ namespace CoreWf.Tracking
                this.Activity != null ? this.Activity.ToString() : "<null>",
                this.Child.ToString());
         }
+
     }
 }

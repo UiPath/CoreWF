@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf;
 using CoreWf.Runtime.DurableInstancing;
@@ -21,7 +21,7 @@ namespace Test.Common.TestObjects.Runtime
         private bool _usingExpectedWorkflowInstanceTrace;
         private TestActivity _hostActivity;
         private RemoteWorkflowRuntime _remoteWorkflowRuntime;
-        private TestWorkflowRuntimeConfiguration _testWorkflowRuntimeConfiguration;
+        private readonly TestWorkflowRuntimeConfiguration _testWorkflowRuntimeConfiguration;
         private OrderedTraces _workflowInstanceTrace;
         private WorkflowInstanceAction _previousAction;
         private WorkflowIdentity _previousIdentity;
@@ -1016,17 +1016,13 @@ namespace Test.Common.TestObjects.Runtime
         private void Initialize(TestActivity testActivity, WorkflowIdentity definitionIdentity, TestWorkflowRuntimeConfiguration testWorkflowRuntimeConfiguration = null, InstanceStore instanceStore = null,
             PersistableIdleAction idleAction = PersistableIdleAction.None)
         {
-            if (testActivity == null)
-            {
-                throw new ArgumentNullException("activity");
-            }
 
             // if (TestParameters.IsPartialTrustRun)
             // { //For PT we need to compile Workflow having VB value beforehand 
             //     testActivity.ProductActivity = PartialTrustExpressionHelper.ReplaceLambdasAndCompileVB(testActivity.ProductActivity);
             // }
 
-            _hostActivity = testActivity;
+            _hostActivity = testActivity ?? throw new ArgumentNullException("activity");
 
             if (testWorkflowRuntimeConfiguration == null)
             {
@@ -1129,9 +1125,8 @@ namespace Test.Common.TestObjects.Runtime
             {
                 foreach (WorkflowTraceStep step in expectedTraces.Trace.Steps)
                 {
-                    if (step is WorkflowInstanceTrace)
+                    if (step is WorkflowInstanceTrace instanceTrace)
                     {
-                        WorkflowInstanceTrace instanceTrace = (WorkflowInstanceTrace)step;
                         if (instanceTrace.WorkflowDefinitionIdentity == null)
                         {
                             instanceTrace.WorkflowDefinitionIdentity = _remoteWorkflowRuntime.DefinitionIdentity;
@@ -1300,7 +1295,7 @@ namespace Test.Common.TestObjects.Runtime
 
     public class TestWorkflowRuntimeAsyncResult
     {
-        private TestWorkflowRuntime _workflowRuntime;
+        private readonly TestWorkflowRuntime _workflowRuntime;
 
         public TestWorkflowRuntimeAsyncResult(Guid asyncResultId, TestWorkflowRuntime workflowRuntime)
         {

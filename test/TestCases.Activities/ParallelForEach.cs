@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -30,14 +30,18 @@ namespace TestCases.Activities
 
             string[] strArray = new string[] { "var1", "var2", "var3" };
 
-            TestParallelForEach<string> foreachAct = new TestParallelForEach<string>("foreach");
-            foreachAct.HintValues = new string[] { "var1", "var2", "var3" };
-            foreachAct.ValuesExpression = (context => new string[] { "var1", "var2", "var3" });
-            foreachAct.CurrentVariable = i;
-            foreachAct.HintIterationCount = 3;
+            TestParallelForEach<string> foreachAct = new TestParallelForEach<string>("foreach")
+            {
+                HintValues = new string[] { "var1", "var2", "var3" },
+                ValuesExpression = (context => new string[] { "var1", "var2", "var3" }),
+                CurrentVariable = i,
+                HintIterationCount = 3
+            };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.MessageExpression = ((env) => string.Format("WriteLine Argument: {0}", i.Get(env)));
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                MessageExpression = ((env) => string.Format("WriteLine Argument: {0}", i.Get(env)))
+            };
 
             for (int counter = strArray.Length - 1; counter > -1; counter--)
             {
@@ -522,14 +526,18 @@ namespace TestCases.Activities
 
             string[] strArray = new string[] { "var1", "var2", "var3" };
 
-            TestParallelForEach<string> foreachAct = new TestParallelForEach<string>("foreach");
-            foreachAct.HintValues = strArray;
-            foreachAct.ValuesExpression = (context => new string[] { "var1", "var2", "var3" });
-            foreachAct.CurrentVariable = i;
-            foreachAct.HintIterationCount = 3;
+            TestParallelForEach<string> foreachAct = new TestParallelForEach<string>("foreach")
+            {
+                HintValues = strArray,
+                ValuesExpression = (context => new string[] { "var1", "var2", "var3" }),
+                CurrentVariable = i,
+                HintIterationCount = 3
+            };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.MessageExpression = ((env) => string.Format("WriteLine Argument: {0}", i.Get(env)));
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                MessageExpression = ((env) => string.Format("WriteLine Argument: {0}", i.Get(env)))
+            };
 
             for (int counter = strArray.Length - 1; counter > -1; counter--)
             {
@@ -680,16 +688,18 @@ namespace TestCases.Activities
             //TestCase.Current.Parameters.Add("DisableXamlRoundTrip", "true");
             MyRange range = new MyRange(5);
             DelegateInArgument<int> x = new DelegateInArgument<int>("x");
-            TestParallelForEach<int> foreachAct = new TestParallelForEach<int>();
-            foreachAct.CurrentVariable = x;
-            foreachAct.ValuesExpression = context => range;
-            foreachAct.HintValues = new int[] { 0, 1, 2, 3, 4 };
-            foreachAct.Body = new TestWriteLine()
+            TestParallelForEach<int> foreachAct = new TestParallelForEach<int>
             {
-                MessageExpression = (env) => x.Get(env).ToString(),
-                HintMessageList = { "0", "1", "2", "3", "4" }
+                CurrentVariable = x,
+                ValuesExpression = context => range,
+                HintValues = new int[] { 0, 1, 2, 3, 4 },
+                Body = new TestWriteLine()
+                {
+                    MessageExpression = (env) => x.Get(env).ToString(),
+                    HintMessageList = { "0", "1", "2", "3", "4" }
+                },
+                HintIterationCount = 5
             };
-            foreachAct.HintIterationCount = 5;
             TestRuntime.RunAndValidateWorkflow(foreachAct);
 
             // the below code will dispose it
@@ -847,7 +857,7 @@ namespace TestCases.Activities
         /// <summary>
         /// ParallelForEach.CompletionCondition evaluates to true, when a child of Parallel overrides Cancel but does not call base.Cancel(context)
         /// </summary>        
-        [Fact(Skip = "Test cases not executed as part of suites and don't seem to pass on desktop. #72 - https://github.com/dotnet/wf/issues/72 - The aborted reason is NOT a TestCaseException, but it looks like the test framework is creating the exception")]
+        [Fact(Skip = "Test cases not executed as part of suites and don't seem to pass on desktop. The aborted reason is NOT a TestCaseException, but it looks like the test framework is creating the exception")]
         public void ParallelForEachWithAChildThatThrowsInCancelWhileCompletionConditionIsTrue()
         {
             Variable<bool> cancelIt = new Variable<bool> { Name = "cancelIt", Default = false };
@@ -887,8 +897,7 @@ namespace TestCases.Activities
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(root))
             {
                 testWorkflowRuntime.ExecuteWorkflow();
-                Exception outException = null;
-                testWorkflowRuntime.WaitForAborted(out outException, false);
+                testWorkflowRuntime.WaitForAborted(out Exception outException, false);
                 if (outException == null || outException.InnerException == null || !outException.InnerException.GetType().Equals(typeof(TestCaseException)))
                 {
                     throw new TestCaseException(String.Format("Workflow was suuposed to Abort with a TestCaseException, but this is the exception: {0}", outException.ToString()));

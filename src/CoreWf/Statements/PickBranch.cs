@@ -1,63 +1,66 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.Collections;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Action")]
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using CoreWf.Internals;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+
+    [ContentProperty("Action")]
     public sealed class PickBranch
     {
-        private Collection<Variable> _variables;
-        private string _displayName;
+        private Collection<Variable> variables;
+        private string displayName;
 
         public PickBranch()
         {
-            _displayName = "PickBranch";
+            displayName = "PickBranch";
         }
 
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public Activity Trigger { get; set; }
 
         [DefaultValue(null)]
-        //[DependsOn("Trigger")]
+        [DependsOn("Trigger")]
         public Activity Action { get; set; }
 
+        // TODO, 41221, remove this once we have well known attached properties.
         [DefaultValue("PickBranch")]
         public string DisplayName
         {
             get
             {
-                return _displayName;
+                return this.displayName;
             }
             set
             {
-                _displayName = value;
+                this.displayName = value;
             }
         }
     }

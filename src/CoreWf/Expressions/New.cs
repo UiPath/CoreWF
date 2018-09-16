@@ -1,57 +1,60 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using System.Reflection;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using System.Threading;
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords,
-    //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [New])")]
+    //    Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [New])")]
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,
-    //Justification = "Optimizing for XAML naming.")]
-    //[ContentProperty("Arguments")]
-    public sealed class New<TResult> : CodeActivity<TResult>
+    //    Justification = "Optimizing for XAML naming.")]
+    [ContentProperty("Arguments")]
+    public sealed class New<TResult> : CodeActivity<TResult> 
     {
-        private Collection<Argument> _arguments;
-        private Func<object[], TResult> _function;
-        private ConstructorInfo _constructorInfo;
-        private static MruCache<ConstructorInfo, Func<object[], TResult>> s_funcCache =
+        private Collection<Argument> arguments;
+        private Func<object[], TResult> function;
+        private ConstructorInfo constructorInfo;
+        private static readonly MruCache<ConstructorInfo, Func<object[], TResult>> funcCache = 
             new MruCache<ConstructorInfo, Func<object[], TResult>>(MethodCallExpressionHelper.FuncCacheCapacity);
-        private static ReaderWriterLockSlim s_locker = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.PropertyNamesShouldNotMatchGetMethods,
-        //Justification = "Optimizing for XAML naming.")]
+        //    Justification = "Optimizing for XAML naming.")]
         public Collection<Argument> Arguments
         {
             get
             {
-                if (_arguments == null)
+                if (this.arguments == null)
                 {
-                    _arguments = new ValidatingCollection<Argument>
+                    this.arguments = new ValidatingCollection<Argument>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _arguments;
+                return this.arguments;
             }
         }
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
             bool foundError = false;
-            ConstructorInfo oldConstructorInfo = _constructorInfo;
+            ConstructorInfo oldConstructorInfo = this.constructorInfo;
 
             // Loop through each argument, validate it, and if validation
             // passed expose it to the metadata
@@ -66,8 +69,8 @@ namespace CoreWf.Expressions
                 }
                 else
                 {
-                    RuntimeArgument runtimeArgument = new RuntimeArgument("Argument" + i, _arguments[i].ArgumentType, _arguments[i].Direction, true);
-                    metadata.Bind(_arguments[i], runtimeArgument);
+                    RuntimeArgument runtimeArgument = new RuntimeArgument("Argument" + i, this.arguments[i].ArgumentType, this.arguments[i].Direction, true);
+                    metadata.Bind(this.arguments[i], runtimeArgument);
                     metadata.AddArgument(runtimeArgument);
                     types[i] = this.Arguments[i].Direction == ArgumentDirection.In ? this.Arguments[i].ArgumentType : this.Arguments[i].ArgumentType.MakeByRefType();
                 }
@@ -77,17 +80,17 @@ namespace CoreWf.Expressions
             // we can look for an appropriate constructor.
             if (!foundError)
             {
-                _constructorInfo = typeof(TResult).GetConstructor(types);
-                if (_constructorInfo == null && (!typeof(TResult).GetTypeInfo().IsValueType || types.Length > 0))
+                constructorInfo = typeof(TResult).GetConstructor(types);
+                if (constructorInfo == null && (!typeof(TResult).IsValueType || types.Length > 0))
                 {
                     metadata.AddValidationError(SR.ConstructorInfoNotFound(typeof(TResult).Name));
                 }
-                else if ((_constructorInfo != oldConstructorInfo) || (_function == null))
+                else if ((this.constructorInfo != oldConstructorInfo) || (this.function == null))
                 {
-                    _function = MethodCallExpressionHelper.GetFunc<TResult>(metadata, _constructorInfo, s_funcCache, s_locker);
+                    this.function = MethodCallExpressionHelper.GetFunc<TResult>(metadata, constructorInfo, funcCache, locker);
                 }
             }
-        }
+        } 
 
         protected override TResult Execute(CodeActivityContext context)
         {
@@ -96,8 +99,8 @@ namespace CoreWf.Expressions
             {
                 objects[i] = this.Arguments[i].Get(context);
             }
-            TResult result = _function(objects);
-
+            TResult result = this.function(objects);
+            
             for (int i = 0; i < this.Arguments.Count; i++)
             {
                 Argument argument = this.Arguments[i];
@@ -108,5 +111,6 @@ namespace CoreWf.Expressions
             }
             return result;
         }
+
     }
 }

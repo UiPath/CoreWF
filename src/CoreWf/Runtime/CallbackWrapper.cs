@@ -1,48 +1,46 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Internals;
-using System;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Security;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Reflection;
+    using System.Runtime.Serialization;
+    using System.Security;
+    using CoreWf.Internals;
+
     [DataContract]
     internal class CallbackWrapper
     {
-        private static BindingFlags s_bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
+        private static readonly BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
 
-        //static PermissionSet ReflectionMemberAccessPermissionSet = null;
+#if NET45
+        static PermissionSet ReflectionMemberAccessPermissionSet = null; 
+#endif
 
-        private string _callbackName;
-
-        private string _declaringAssemblyName;
-
-        private string _declaringTypeName;
-
-        private Delegate _callback;
-
-        private ActivityInstance _activityInstance;
+        private string callbackName;
+        private string declaringAssemblyName;
+        private string declaringTypeName;
+        private Delegate callback;
+        private ActivityInstance activityInstance;
 
         protected internal CallbackWrapper() { }
 
         public CallbackWrapper(Delegate callback, ActivityInstance owningInstance)
         {
             this.ActivityInstance = owningInstance;
-            _callback = callback;
+            this.callback = callback;
         }
-
+        
         public ActivityInstance ActivityInstance
         {
             get
             {
-                return _activityInstance;
+                return this.activityInstance;
             }
             private set
             {
-                _activityInstance = value;
+                this.activityInstance = value;
             }
         }
 
@@ -50,7 +48,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _callback == null && _callbackName == null;
+                return this.callback == null && this.callbackName == null;
             }
         }
 
@@ -58,29 +56,29 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _callback;
+                return this.callback;
             }
         }
 
         [DataMember(Name = "callbackName")]
         internal string SerializedCallbackName
         {
-            get { return _callbackName; }
-            set { _callbackName = value; }
+            get { return this.callbackName; }
+            set { this.callbackName = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "declaringAssemblyName")]
         internal string SerializedDeclaringAssemblyName
         {
-            get { return _declaringAssemblyName; }
-            set { _declaringAssemblyName = value; }
+            get { return this.declaringAssemblyName; }
+            set { this.declaringAssemblyName = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "declaringTypeName")]
         internal string SerializedDeclaringTypeName
         {
-            get { return _declaringTypeName; }
-            set { _declaringTypeName = value; }
+            get { return this.declaringTypeName; }
+            set { this.declaringTypeName = value; }
         }
 
         [DataMember(Name = "ActivityInstance")]
@@ -99,7 +97,7 @@ namespace CoreWf.Runtime
             // if the target is null, it is static 
             if (target == null)
             {
-                Fx.Assert(callback.GetMethodInfo().IsStatic, "This method should be static when target is null");
+                Fx.Assert(callback.Method.IsStatic, "This method should be static when target is null");
                 return true;
             }
 
@@ -131,10 +129,10 @@ namespace CoreWf.Runtime
         protected void EnsureCallback(Type delegateType, Type[] parameterTypes, Type genericParameter)
         {
             // We were unloaded and have some work to do to rebuild the callback
-            if (_callback == null)
+            if (this.callback == null)
             {
-                _callback = GenerateCallback(delegateType, parameterTypes, genericParameter);
-                Fx.Assert(_callback != null, "GenerateCallback should have been able to produce a non-null callback.");
+                this.callback = GenerateCallback(delegateType, parameterTypes, genericParameter);
+                Fx.Assert(this.callback != null, "GenerateCallback should have been able to produce a non-null callback.");
             }
         }
 
@@ -143,22 +141,22 @@ namespace CoreWf.Runtime
         [SecuritySafeCritical]
         protected void ValidateCallbackResolution(Type delegateType, Type[] parameterTypes, Type genericParameter)
         {
-            Fx.Assert(_callback != null && _callbackName != null, "We must have a callback and a callback name");
-
-            if (!_callback.Equals(GenerateCallback(delegateType, parameterTypes, genericParameter)))
+            Fx.Assert(this.callback != null && this.callbackName != null, "We must have a callback and a callback name");
+            
+            if (!this.callback.Equals(GenerateCallback(delegateType, parameterTypes, genericParameter)))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.GetMethodInfo(), null)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(this.callback.Method, null)));
             }
         }
 
         private MethodInfo FindMatchingGenericMethod(Type declaringType, Type[] parameterTypes, Type genericParameter)
         {
-            MethodInfo[] potentialMatches = declaringType.GetMethods(s_bindingFlags);
+            MethodInfo[] potentialMatches = declaringType.GetMethods(bindingFlags);
             for (int i = 0; i < potentialMatches.Length; i++)
             {
                 MethodInfo potentialMatch = potentialMatches[i];
 
-                if (potentialMatch.IsGenericMethod && potentialMatch.Name == _callbackName)
+                if (potentialMatch.IsGenericMethod && potentialMatch.Name == this.callbackName)
                 {
                     Fx.Assert(potentialMatch.IsGenericMethodDefinition, "We should be getting the generic method definition here.");
 
@@ -191,13 +189,12 @@ namespace CoreWf.Runtime
             }
             return null;
         }
+
         [Fx.Tag.SecurityNote(Critical = "Because we are calling RecreateCallback, which is SecurityCritical.")]
         [SecurityCritical]
-
         private Delegate GenerateCallback(Type delegateType, Type[] parameterTypes, Type genericParameter)
         {
-            Type declaringType;
-            MethodInfo methodInfo = GetMatchingMethod(parameterTypes, out declaringType);
+            MethodInfo methodInfo = GetMatchingMethod(parameterTypes, out Type declaringType);
 
             if (methodInfo == null)
             {
@@ -209,7 +206,7 @@ namespace CoreWf.Runtime
             {
                 return null;
             }
-
+            
             return RecreateCallback(delegateType, methodInfo);
         }
 
@@ -218,24 +215,23 @@ namespace CoreWf.Runtime
         protected void EnsureCallback(Type delegateType, Type[] parameters)
         {
             // We were unloaded and have some work to do to rebuild the callback
-            if (_callback == null)
+            if (this.callback == null)
             {
-                Type unusedDeclaringType;
-                MethodInfo methodInfo = GetMatchingMethod(parameters, out unusedDeclaringType);
+                MethodInfo methodInfo = GetMatchingMethod(parameters, out Type unusedDeclaringType);
 
                 Fx.Assert(methodInfo != null, "We must have a method info by now");
 
-                _callback = RecreateCallback(delegateType, methodInfo);
+                this.callback = RecreateCallback(delegateType, methodInfo);
             }
         }
 
         private MethodInfo GetMatchingMethod(Type[] parameters, out Type declaringType)
         {
-            Fx.Assert(_callbackName != null, "This should only be called when there is actually a callback to run.");
+            Fx.Assert(this.callbackName != null, "This should only be called when there is actually a callback to run.");
 
             object targetInstance = this.ActivityInstance.Activity;
 
-            if (_declaringTypeName == null)
+            if (this.declaringTypeName == null)
             {
                 declaringType = targetInstance.GetType();
             }
@@ -243,32 +239,31 @@ namespace CoreWf.Runtime
             {
                 // make a MethodInfo since it's not hanging directly off of our activity type
                 Assembly callbackAssembly;
-                if (_declaringAssemblyName != null)
+                if (this.declaringAssemblyName != null)
                 {
-                    callbackAssembly = Assembly.Load(new AssemblyName(_declaringAssemblyName));
+                    callbackAssembly = Assembly.Load(this.declaringAssemblyName);
                 }
                 else
                 {
-                    callbackAssembly = targetInstance.GetType().GetTypeInfo().Assembly;
+                    callbackAssembly = targetInstance.GetType().Assembly;
                 }
 
-                declaringType = callbackAssembly.GetType(_declaringTypeName);
+                declaringType = callbackAssembly.GetType(this.declaringTypeName);
             }
 
             Fx.Assert(declaringType != null, "declaring type should be re-constructable from our serialized components");
 
-            //return declaringType.GetMethod(this.callbackName, bindingFlags, null, parameters, null);
-            return declaringType.GetMethod(_callbackName, s_bindingFlags, parameters);
+            return declaringType.GetMethod(this.callbackName, bindingFlags, null, parameters, null);
         }
-        [Fx.Tag.SecurityNote(Critical = "Because we are Asserting ReflectionPermission(MemberAccess) in order to get at private callback methods.")]
-        [SecurityCritical]
 
         // The MethodInfo passed to this method must be derived
+        [Fx.Tag.SecurityNote(Critical = "Because we are Asserting ReflectionPermission(MemberAccess) in order to get at private callback methods.")]
+        [SecurityCritical]
         private Delegate RecreateCallback(Type delegateType, MethodInfo callbackMethod)
         {
             object targetInstance = null;
 
-            // If the declaring type does not derive from Activity, somebody has manipulated the callback in the persistence store.
+            // If the declaring type does not derive from Activity, somebody has manipulated the callback in the persistece store.
             if (!typeof(Activity).IsAssignableFrom(callbackMethod.DeclaringType))
             {
                 return null;
@@ -279,35 +274,38 @@ namespace CoreWf.Runtime
                 targetInstance = this.ActivityInstance.Activity;
             }
 
+#if NET45
             // Asserting ReflectionPermission.MemberAccess because the callback method is most likely internal or private
-            //if (ReflectionMemberAccessPermissionSet == null)
-            //{
-            //    PermissionSet myPermissionSet = new PermissionSet(PermissionState.None);
-            //    myPermissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
-            //    Interlocked.CompareExchange(ref ReflectionMemberAccessPermissionSet, myPermissionSet, null);
-            //}
-            //ReflectionMemberAccessPermissionSet.Assert();
+            if (ReflectionMemberAccessPermissionSet == null)
+            {
+                PermissionSet myPermissionSet = new PermissionSet(PermissionState.None);
+                myPermissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+                Interlocked.CompareExchange(ref ReflectionMemberAccessPermissionSet, myPermissionSet, null);
+            }
+            ReflectionMemberAccessPermissionSet.Assert(); 
+#endif
             try
             {
-                //return Delegate.CreateDelegate(delegateType, targetInstance, callbackMethod);
-                return callbackMethod.CreateDelegate(delegateType, targetInstance);
+                return Delegate.CreateDelegate(delegateType, targetInstance, callbackMethod);
             }
             finally
             {
-                //CodeAccessPermission.RevertAssert();
+#if NET45
+                CodeAccessPermission.RevertAssert(); 
+#endif
             }
         }
 
         [OnSerializing]
         //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.ReviewUnusedParameters)]
         //[SuppressMessage(FxCop.Category.Usage, "CA2238:ImplementSerializationMethodsCorrectly",
-        //Justification = "Needs to be internal for serialization in partial trust. We have set InternalsVisibleTo(System.Runtime.Serialization) to allow this.")]
+        //    Justification = "Needs to be internal for serialization in partial trust. We have set InternalsVisibleTo(System.Runtime.Serialization) to allow this.")]
         internal void OnSerializing(StreamingContext context)
         {
-            if (_callbackName == null && !this.IsCallbackNull)
+            if (this.callbackName == null && !this.IsCallbackNull)
             {
-                MethodInfo method = _callback.GetMethodInfo();
-                _callbackName = method.Name;
+                MethodInfo method = this.callback.Method;
+                this.callbackName = method.Name;
                 Type declaringType = method.DeclaringType;
                 Type activityType = this.ActivityInstance.Activity.GetType();
 
@@ -315,25 +313,25 @@ namespace CoreWf.Runtime
                 {
                     // If we're not directly off of the Activity type being used,
                     // then we need to store the declaringType's name.
-                    _declaringTypeName = declaringType.FullName;
+                    this.declaringTypeName = declaringType.FullName;
 
-                    if (declaringType.GetTypeInfo().Assembly != activityType.GetTypeInfo().Assembly)
+                    if (declaringType.Assembly != activityType.Assembly)
                     {
-                        _declaringAssemblyName = declaringType.GetTypeInfo().Assembly.FullName;
+                        this.declaringAssemblyName = declaringType.Assembly.FullName;
                     }
                 }
-
+                
                 if (method.IsGenericMethod)
                 {
                     OnSerializingGenericCallback();
                 }
             }
         }
-
+        
         protected virtual void OnSerializingGenericCallback()
         {
             // Generics are invalid by default
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.GetMethodInfo(), null)));
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(this.callback.Method, null)));
         }
     }
 }

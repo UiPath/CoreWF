@@ -1,29 +1,26 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using CoreWf.Runtime.DurableInstancing;
+    using System.Runtime.Serialization;
+    using System.Collections.Generic;
+    using CoreWf.Internals;
+
     [DataContract]
     internal abstract class WorkItem
     {
-        private static AsyncCallback s_associateCallback;
-        private static AsyncCallback s_trackingCallback;
+        private static AsyncCallback associateCallback;
+        private static AsyncCallback trackingCallback;
 
         // We use a protected field here because it works well with
         // ref style Cleanup exception handling.
-        protected Exception workflowAbortException;
-
-        private ActivityInstance _activityInstance;
-
-        private bool _isEmpty;
-
-        private Exception _exceptionToPropagate;
+        protected Exception _workflowAbortException;
+        private ActivityInstance activityInstance;
+        private bool isEmpty;
+        private Exception exceptionToPropagate;
 
         // Used by subclasses in the pooled case.
         protected WorkItem()
@@ -32,15 +29,15 @@ namespace CoreWf.Runtime
 
         protected WorkItem(ActivityInstance activityInstance)
         {
-            _activityInstance = activityInstance;
-            _activityInstance.IncrementBusyCount();
+            this.activityInstance = activityInstance;
+            this.activityInstance.IncrementBusyCount();
         }
 
         public ActivityInstance ActivityInstance
         {
             get
             {
-                return _activityInstance;
+                return this.activityInstance;
             }
         }
 
@@ -48,7 +45,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return this.workflowAbortException;
+                return _workflowAbortException;
             }
         }
 
@@ -56,13 +53,13 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _exceptionToPropagate;
+                return this.exceptionToPropagate;
             }
             set
             {
                 Fx.Assert(value != null, "We should never set this back to null explicitly.  Use the ExceptionPropagated method below.");
 
-                _exceptionToPropagate = value;
+                this.exceptionToPropagate = value;
             }
         }
 
@@ -78,16 +75,16 @@ namespace CoreWf.Runtime
                 return this.ActivityInstance;
             }
         }
-
+        
         public bool IsEmpty
         {
             get
             {
-                return _isEmpty;
+                return this.isEmpty;
             }
             protected set
             {
-                _isEmpty = value;
+                this.isEmpty = value;
             }
         }
 
@@ -111,8 +108,8 @@ namespace CoreWf.Runtime
         [DataMember(Name = "activityInstance")]
         internal ActivityInstance SerializedActivityInstance
         {
-            get { return _activityInstance; }
-            set { _activityInstance = value; }
+            get { return this.activityInstance; }
+            set { this.activityInstance = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "IsEmpty")]
@@ -124,7 +121,7 @@ namespace CoreWf.Runtime
 
         public void Dispose(ActivityExecutor executor)
         {
-            if (CoreWf.Internals.FxTrace.ShouldTraceVerboseToTraceSource)
+            if (FxTrace.ShouldTraceVerboseToTraceSource)
             {
                 TraceCompleted();
             }
@@ -137,15 +134,15 @@ namespace CoreWf.Runtime
 
         protected virtual void ClearForReuse()
         {
-            _exceptionToPropagate = null;
-            this.workflowAbortException = null;
-            _activityInstance = null;
+            this.exceptionToPropagate = null;
+            _workflowAbortException = null;
+            this.activityInstance = null;
         }
 
         protected virtual void Reinitialize(ActivityInstance activityInstance)
         {
-            _activityInstance = activityInstance;
-            _activityInstance.IncrementBusyCount();
+            this.activityInstance = activityInstance;
+            this.activityInstance.IncrementBusyCount();
         }
 
         // this isn't just public for performance reasons. We avoid the virtual call
@@ -175,7 +172,7 @@ namespace CoreWf.Runtime
                     throw;
                 }
 
-                data.WorkItem.workflowAbortException = e;
+                data.WorkItem._workflowAbortException = e;
             }
 
             data.Executor.FinishWorkItem(data.WorkItem);
@@ -201,7 +198,7 @@ namespace CoreWf.Runtime
                     throw;
                 }
 
-                data.WorkItem.workflowAbortException = e;
+                data.WorkItem._workflowAbortException = e;
             }
 
             data.Executor.FinishWorkItemAfterTracking(data.WorkItem);
@@ -211,12 +208,12 @@ namespace CoreWf.Runtime
         {
             // We just null this out, but using this API helps with
             // readability over the property setter
-            _exceptionToPropagate = null;
+            this.exceptionToPropagate = null;
         }
 
         public void Release(ActivityExecutor executor)
         {
-            _activityInstance.DecrementBusyCount();
+            this.activityInstance.DecrementBusyCount();
 
             if (this.ExitNoPersistRequired)
             {
@@ -278,12 +275,12 @@ namespace CoreWf.Runtime
                 // if we have keysToAssociate.
                 if (keysToAssociate != null && keysToAssociate.Count > 0)
                 {
-                    if (s_associateCallback == null)
+                    if (associateCallback == null)
                     {
-                        s_associateCallback = Fx.ThunkCallback(new AsyncCallback(OnAssociateComplete));
+                        associateCallback = Fx.ThunkCallback(new AsyncCallback(OnAssociateComplete));
                     }
 
-                    IAsyncResult result = executor.BeginAssociateKeys(keysToAssociate, s_associateCallback, new CallbackData(executor, this));
+                    IAsyncResult result = executor.BeginAssociateKeys(keysToAssociate, associateCallback, new CallbackData(executor, this));
                     if (result.CompletedSynchronously)
                     {
                         executor.EndAssociateKeys(result);
@@ -301,7 +298,7 @@ namespace CoreWf.Runtime
                     throw;
                 }
 
-                this.workflowAbortException = e;
+                _workflowAbortException = e;
             }
 
             return true;
@@ -313,13 +310,13 @@ namespace CoreWf.Runtime
 
             try
             {
-                if (s_trackingCallback == null)
+                if (trackingCallback == null)
                 {
-                    s_trackingCallback = Fx.ThunkCallback(new AsyncCallback(OnTrackingComplete));
+                    trackingCallback = Fx.ThunkCallback(new AsyncCallback(OnTrackingComplete));
                 }
 
                 IAsyncResult result = executor.BeginTrackPendingRecords(
-                    s_trackingCallback,
+                    trackingCallback,
                     new CallbackData(executor, this));
 
                 if (result.CompletedSynchronously)
@@ -339,7 +336,7 @@ namespace CoreWf.Runtime
                     throw;
                 }
 
-                this.workflowAbortException = e;
+                _workflowAbortException = e;
             }
 
             return true;

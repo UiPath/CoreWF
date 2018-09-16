@@ -1,45 +1,43 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using CoreWf.Internals;
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class ExecutionPropertyManager
     {
-        private ActivityInstance _owningInstance;
-
-        private Dictionary<string, ExecutionProperty> _properties;
+        private ActivityInstance owningInstance;
+        private Dictionary<string, ExecutionProperty> properties;
 
         // Since the ExecutionProperty objects in this list
         // could exist in several places we need to make sure
         // that we clean up any booleans before more work items run
-        private List<ExecutionProperty> _threadProperties;
-        private bool _ownsThreadPropertiesList;
-
-        private string _lastPropertyName;
-        private object _lastProperty;
-        private IdSpace _lastPropertyVisibility;
+        private List<ExecutionProperty> threadProperties;
+        private bool ownsThreadPropertiesList;
+        private string lastPropertyName;
+        private object lastProperty;
+        private IdSpace lastPropertyVisibility;
 
         // used by the root activity instance to chain parents correctly
-        private ExecutionPropertyManager _rootPropertyManager;
-
-        private int _exclusiveHandleCount;
+        private ExecutionPropertyManager rootPropertyManager;
+        private int exclusiveHandleCount;
 
         public ExecutionPropertyManager(ActivityInstance owningInstance)
         {
             Fx.Assert(owningInstance != null, "null instance should be using the internal host-based ctor");
-            _owningInstance = owningInstance;
+            this.owningInstance = owningInstance;
 
             // This object is only constructed if we know we have properties to add to it
-            _properties = new Dictionary<string, ExecutionProperty>();
+            this.properties = new Dictionary<string, ExecutionProperty>();
 
             if (owningInstance.HasChildren)
             {
-                ActivityInstance previousOwner = owningInstance.PropertyManager != null ? owningInstance.PropertyManager._owningInstance : null;
+                ActivityInstance previousOwner = owningInstance.PropertyManager != null ? owningInstance.PropertyManager.owningInstance : null;
 
                 // we're setting a handle property. Walk the children and associate the new property manager
                 // then walk our instance list, fixup parent references, and perform basic validation
@@ -55,47 +53,47 @@ namespace CoreWf.Runtime
             : this(owningInstance)
         {
             Fx.Assert(parentPropertyManager != null, "caller must verify");
-            _threadProperties = parentPropertyManager._threadProperties;
+            this.threadProperties = parentPropertyManager.threadProperties;
 
             // if our parent is null, capture any root properties
             if (owningInstance.Parent == null)
             {
-                _rootPropertyManager = parentPropertyManager._rootPropertyManager;
+                this.rootPropertyManager = parentPropertyManager.rootPropertyManager;
             }
         }
 
         internal ExecutionPropertyManager(ActivityInstance owningInstance, Dictionary<string, ExecutionProperty> properties)
         {
             Fx.Assert(properties != null, "properties should never be null");
-            _owningInstance = owningInstance;
-            _properties = properties;
+            this.owningInstance = owningInstance;
+            this.properties = properties;
 
             // owningInstance can be null (for host-provided root properties)
             if (owningInstance == null)
             {
-                _rootPropertyManager = this;
+                this.rootPropertyManager = this;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "properties")]
         internal Dictionary<string, ExecutionProperty> SerializedProperties
         {
-            get { return _properties; }
-            set { _properties = value; }
+            get { return this.properties; }
+            set { this.properties = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "exclusiveHandleCount")]
         internal int SerializedExclusiveHandleCount
         {
-            get { return _exclusiveHandleCount; }
-            set { _exclusiveHandleCount = value; }
+            get { return this.exclusiveHandleCount; }
+            set { this.exclusiveHandleCount = value; }
         }
 
         internal Dictionary<string, ExecutionProperty> Properties
         {
             get
             {
-                return _properties;
+                return this.properties;
             }
         }
 
@@ -103,13 +101,13 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _exclusiveHandleCount > 0;
+                return this.exclusiveHandleCount > 0;
             }
         }
 
         private bool AttachPropertyManager(ActivityInstance instance, ActivityInstance previousOwner)
         {
-            if (instance.PropertyManager == null || instance.PropertyManager._owningInstance == previousOwner)
+            if (instance.PropertyManager == null || instance.PropertyManager.owningInstance == previousOwner)
             {
                 instance.PropertyManager = this;
                 return true;
@@ -124,25 +122,24 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(!string.IsNullOrEmpty(name), "The name should be validated by the caller.");
 
-            if (_lastPropertyName == name && (_lastPropertyVisibility == null || _lastPropertyVisibility == currentIdSpace))
+            if (lastPropertyName == name && (this.lastPropertyVisibility == null || this.lastPropertyVisibility == currentIdSpace))
             {
-                return _lastProperty;
+                return lastProperty;
             }
 
             ExecutionPropertyManager currentManager = this;
 
             while (currentManager != null)
             {
-                ExecutionProperty property;
-                if (currentManager._properties.TryGetValue(name, out property))
+                if (currentManager.properties.TryGetValue(name, out ExecutionProperty property))
                 {
                     if (!property.IsRemoved && (!property.HasRestrictedVisibility || property.Visibility == currentIdSpace))
                     {
-                        _lastPropertyName = name;
-                        _lastProperty = property.Property;
-                        _lastPropertyVisibility = property.Visibility;
+                        this.lastPropertyName = name;
+                        this.lastProperty = property.Property;
+                        this.lastPropertyVisibility = property.Visibility;
 
-                        return _lastProperty;
+                        return this.lastProperty;
                     }
                 }
 
@@ -203,15 +200,15 @@ namespace CoreWf.Runtime
 
         private static ExecutionPropertyManager GetParent(ExecutionPropertyManager currentManager)
         {
-            if (currentManager._owningInstance != null)
+            if (currentManager.owningInstance != null)
             {
-                if (currentManager._owningInstance.Parent != null)
+                if (currentManager.owningInstance.Parent != null)
                 {
-                    return currentManager._owningInstance.Parent.PropertyManager;
+                    return currentManager.owningInstance.Parent.PropertyManager;
                 }
                 else
                 {
-                    return currentManager._rootPropertyManager;
+                    return currentManager.rootPropertyManager;
                 }
             }
             else
@@ -226,16 +223,16 @@ namespace CoreWf.Runtime
             Fx.Assert(property != null, "The property should be validated before caling this collection.");
 
             ExecutionProperty executionProperty = new ExecutionProperty(name, property, visibility);
-            _properties.Add(name, executionProperty);
+            this.properties.Add(name, executionProperty);
 
-            if (_lastPropertyName == name)
+            if (this.lastPropertyName == name)
             {
-                _lastProperty = property;
+                this.lastProperty = property;
             }
 
             if (property is ExclusiveHandle)
             {
-                _exclusiveHandleCount++;
+                this.exclusiveHandleCount++;
 
                 UpdateChildExclusiveHandleCounts(1);
             }
@@ -250,7 +247,7 @@ namespace CoreWf.Runtime
         {
             Queue<HybridCollection<ActivityInstance>> toProcess = null;
 
-            HybridCollection<ActivityInstance> children = _owningInstance.GetRawChildren();
+            HybridCollection<ActivityInstance> children = this.owningInstance.GetRawChildren();
 
             if (children != null && children.Count > 0)
             {
@@ -277,7 +274,7 @@ namespace CoreWf.Runtime
 
                 if (childManager.IsOwner(child))
                 {
-                    childManager._exclusiveHandleCount += amountToUpdate;
+                    childManager.exclusiveHandleCount += amountToUpdate;
                 }
 
                 HybridCollection<ActivityInstance> tempChildren = child.GetRawChildren();
@@ -298,21 +295,21 @@ namespace CoreWf.Runtime
         {
             bool willCleanupBeCalled = !isDeserializationFixup;
 
-            if (_threadProperties == null)
+            if (this.threadProperties == null)
             {
-                _threadProperties = new List<ExecutionProperty>(1);
-                _ownsThreadPropertiesList = true;
+                this.threadProperties = new List<ExecutionProperty>(1);
+                this.ownsThreadPropertiesList = true;
             }
-            else if (!_ownsThreadPropertiesList)
+            else if (!this.ownsThreadPropertiesList)
             {
-                List<ExecutionProperty> updatedProperties = new List<ExecutionProperty>(_threadProperties.Count);
+                List<ExecutionProperty> updatedProperties = new List<ExecutionProperty>(this.threadProperties.Count);
 
                 // We need to copy all properties to our new list and we
                 // need to mark hidden properties as "to be removed" (or just
                 // not copy them on the deserialization path)
-                for (int i = 0; i < _threadProperties.Count; i++)
+                for (int i = 0; i < this.threadProperties.Count; i++)
                 {
-                    ExecutionProperty currentProperty = _threadProperties[i];
+                    ExecutionProperty currentProperty = this.threadProperties[i];
 
                     if (currentProperty.Name == property.Name)
                     {
@@ -332,14 +329,14 @@ namespace CoreWf.Runtime
                     }
                 }
 
-                _threadProperties = updatedProperties;
-                _ownsThreadPropertiesList = true;
+                this.threadProperties = updatedProperties;
+                this.ownsThreadPropertiesList = true;
             }
             else
             {
-                for (int i = _threadProperties.Count - 1; i >= 0; i--)
+                for (int i = this.threadProperties.Count - 1; i >= 0; i--)
                 {
-                    ExecutionProperty currentProperty = _threadProperties[i];
+                    ExecutionProperty currentProperty = this.threadProperties[i];
 
                     if (currentProperty.Name == property.Name)
                     {
@@ -349,7 +346,7 @@ namespace CoreWf.Runtime
                         }
                         else
                         {
-                            _threadProperties.RemoveAt(i);
+                            this.threadProperties.RemoveAt(i);
                         }
 
                         // There will only be at most one property in this list that
@@ -360,40 +357,40 @@ namespace CoreWf.Runtime
             }
 
             property.ShouldSkipNextCleanup = willCleanupBeCalled;
-            _threadProperties.Add(property);
+            this.threadProperties.Add(property);
         }
 
         public void Remove(string name)
         {
             Fx.Assert(!string.IsNullOrEmpty(name), "This should have been validated by the caller.");
 
-            ExecutionProperty executionProperty = _properties[name];
+            ExecutionProperty executionProperty = this.properties[name];
 
             Fx.Assert(executionProperty != null, "This should only be called if we know the property exists");
 
             if (executionProperty.Property is IExecutionProperty)
             {
-                Fx.Assert(_ownsThreadPropertiesList && _threadProperties != null, "We should definitely be the list owner if we have an IExecutionProperty");
+                Fx.Assert(this.ownsThreadPropertiesList && this.threadProperties != null, "We should definitely be the list owner if we have an IExecutionProperty");
 
-                if (!_threadProperties.Remove(executionProperty))
+                if (!this.threadProperties.Remove(executionProperty))
                 {
                     Fx.Assert("We should have had this property in the list.");
                 }
             }
 
-            _properties.Remove(name);
+            this.properties.Remove(name);
 
             if (executionProperty.Property is ExclusiveHandle)
             {
-                _exclusiveHandleCount--;
+                this.exclusiveHandleCount--;
 
                 UpdateChildExclusiveHandleCounts(-1);
             }
 
-            if (_lastPropertyName == name)
+            if (this.lastPropertyName == name)
             {
-                _lastPropertyName = null;
-                _lastProperty = null;
+                this.lastPropertyName = null;
+                this.lastProperty = null;
             }
         }
 
@@ -401,8 +398,7 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(!string.IsNullOrEmpty(name), "This should be validated elsewhere");
 
-            ExecutionProperty property;
-            if (_properties.TryGetValue(name, out property))
+            if (this.properties.TryGetValue(name, out ExecutionProperty property))
             {
                 return property.Property;
             }
@@ -412,22 +408,22 @@ namespace CoreWf.Runtime
 
         public bool IsOwner(ActivityInstance instance)
         {
-            return _owningInstance == instance;
+            return this.owningInstance == instance;
         }
 
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Called from Serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Called from Serialization")]
         internal bool ShouldSerialize(ActivityInstance instance)
         {
-            return IsOwner(instance) && _properties.Count > 0;
+            return IsOwner(instance) && this.properties.Count > 0;
         }
 
         public void SetupWorkflowThread()
         {
-            if (_threadProperties != null)
+            if (this.threadProperties != null)
             {
-                for (int i = 0; i < _threadProperties.Count; i++)
+                for (int i = 0; i < this.threadProperties.Count; i++)
                 {
-                    ExecutionProperty executionProperty = _threadProperties[i];
+                    ExecutionProperty executionProperty = this.threadProperties[i];
                     executionProperty.ShouldSkipNextCleanup = false;
                     IExecutionProperty property = (IExecutionProperty)executionProperty.Property;
 
@@ -439,11 +435,11 @@ namespace CoreWf.Runtime
         // This method only throws fatal exceptions
         public void CleanupWorkflowThread(ref Exception abortException)
         {
-            if (_threadProperties != null)
+            if (this.threadProperties != null)
             {
-                for (int i = _threadProperties.Count - 1; i >= 0; i--)
+                for (int i = this.threadProperties.Count - 1; i >= 0; i--)
                 {
-                    ExecutionProperty current = _threadProperties[i];
+                    ExecutionProperty current = this.threadProperties[i];
 
                     if (current.ShouldSkipNextCleanup)
                     {
@@ -470,7 +466,7 @@ namespace CoreWf.Runtime
 
                     if (current.ShouldBeRemovedAfterCleanup)
                     {
-                        _threadProperties.RemoveAt(i);
+                        this.threadProperties.RemoveAt(i);
                         current.ShouldBeRemovedAfterCleanup = false;
                     }
                 }
@@ -488,15 +484,14 @@ namespace CoreWf.Runtime
             {
                 RegistrationContext registrationContext = new RegistrationContext(this, currentIdSpace);
 
-                foreach (ExecutionProperty property in _properties.Values)
+                foreach (ExecutionProperty property in this.properties.Values)
                 {
                     // We do a soft removal because we're about to throw away this dictionary
                     // and we don't want to mess up our enumerator
                     property.IsRemoved = true;
 
-                    IPropertyRegistrationCallback registrationCallback = property.Property as IPropertyRegistrationCallback;
 
-                    if (registrationCallback != null)
+                    if (property.Property is IPropertyRegistrationCallback registrationCallback)
                     {
                         try
                         {
@@ -516,38 +511,38 @@ namespace CoreWf.Runtime
 
                 // We still need to clear this list in case any non-serializable
                 // properties were being used in a no persist zone
-                _properties.Clear();
+                this.properties.Clear();
             }
         }
 
         public void ThrowIfAlreadyDefined(string name, ActivityInstance executingInstance)
         {
-            if (executingInstance == _owningInstance)
+            if (executingInstance == this.owningInstance)
             {
-                if (_properties.ContainsKey(name))
+                if (this.properties.ContainsKey(name))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("name", SR.ExecutionPropertyAlreadyDefined(name));
+                    throw FxTrace.Exception.Argument(nameof(name), SR.ExecutionPropertyAlreadyDefined(name));
                 }
             }
         }
 
         public void OnDeserialized(ActivityInstance owner, ActivityInstance parent, IdSpace visibility, ActivityExecutor executor)
         {
-            _owningInstance = owner;
+            this.owningInstance = owner;
 
             if (parent != null)
             {
                 if (parent.PropertyManager != null)
                 {
-                    _threadProperties = parent.PropertyManager._threadProperties;
+                    this.threadProperties = parent.PropertyManager.threadProperties;
                 }
             }
             else
             {
-                _rootPropertyManager = executor.RootPropertyManager;
+                this.rootPropertyManager = executor.RootPropertyManager;
             }
 
-            foreach (ExecutionProperty property in _properties.Values)
+            foreach (ExecutionProperty property in this.properties.Values)
             {
                 if (property.Property is IExecutionProperty)
                 {
@@ -564,9 +559,9 @@ namespace CoreWf.Runtime
         [DataContract]
         internal class ExecutionProperty
         {
-            private string _name;
-            private object _property;
-            private bool _hasRestrictedVisibility;
+            private string name;
+            private object property;
+            private bool hasRestrictedVisibility;
 
             public ExecutionProperty(string name, object property, IdSpace visibility)
             {
@@ -579,40 +574,40 @@ namespace CoreWf.Runtime
                     this.HasRestrictedVisibility = true;
                 }
             }
-
-            public string Name
+            
+            public string Name 
             {
                 get
                 {
-                    return _name;
+                    return this.name;
                 }
                 private set
                 {
-                    _name = value;
+                    this.name = value;
                 }
             }
-
+            
             public object Property
             {
                 get
                 {
-                    return _property;
+                    return this.property;
                 }
                 private set
                 {
-                    _property = value;
+                    this.property = value;
                 }
             }
-
+           
             public bool HasRestrictedVisibility
             {
                 get
                 {
-                    return _hasRestrictedVisibility;
+                    return this.hasRestrictedVisibility;
                 }
                 private set
                 {
-                    _hasRestrictedVisibility = value;
+                    this.hasRestrictedVisibility = value;
                 }
             }
 

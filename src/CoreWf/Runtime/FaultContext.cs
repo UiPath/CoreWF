@@ -1,16 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class FaultContext
     {
-        private Exception _exception;
-        private ActivityInstanceReference _source;
+        private Exception exception;
+        private ActivityInstanceReference source;
 
         internal FaultContext(Exception exception, ActivityInstanceReference sourceReference)
         {
@@ -20,32 +20,32 @@ namespace CoreWf.Runtime
             this.Exception = exception;
             this.Source = sourceReference;
         }
-
+        
         public Exception Exception
         {
             get
             {
-                return _exception;
+                return this.exception;
             }
             private set
             {
-                _exception = value;
+                this.exception = value;
             }
         }
-
+        
         public ActivityInstanceReference Source
         {
             get
             {
-                return _source;
+                return this.source;
             }
             private set
             {
-                _source = value;
+                this.source = value;
             }
         }
 
-        [DataMember(Name = "Exception")]
+        //[DataMember(Name = "Exception")]
         internal Exception SerializedException
         {
             get { return this.Exception; }

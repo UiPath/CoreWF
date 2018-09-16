@@ -1,15 +1,17 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix, //Justification = "Optimizing for XAML naming.")]
-    //[ContentProperty("Collection")]
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix, Justification = "Optimizing for XAML naming.")]
+    [ContentProperty("Collection")]
     public sealed class ExistsInCollection<T> : CodeActivity<bool>
     {
         [RequiredArgument]
@@ -50,10 +52,10 @@ namespace CoreWf.Statements
             ICollection<T> collection = this.Collection.Get(context);
             if (collection == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CollectionActivityRequiresCollection(this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CollectionActivityRequiresCollection(this.DisplayName)));
             }
             T item = this.Item.Get(context);
-
+            
             return collection.Contains(item);
         }
     }

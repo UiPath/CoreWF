@@ -1,14 +1,14 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.ComponentModel;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System.ComponentModel;
+    using System.Collections.Generic;
+
     public sealed class ActivityAction : ActivityDelegate
     {
-        private static readonly IList<RuntimeDelegateArgument> s_emptyDelegateParameters = new List<RuntimeDelegateArgument>(0);
+        private static readonly IList<RuntimeDelegateArgument> EmptyDelegateParameters = new List<RuntimeDelegateArgument>(0);
 
         public ActivityAction()
         {
@@ -16,7 +16,7 @@ namespace CoreWf
 
         internal override IList<RuntimeDelegateArgument> InternalGetRuntimeDelegateArguments()
         {
-            return ActivityAction.s_emptyDelegateParameters;
+            return ActivityAction.EmptyDelegateParameters;
         }
     }
 

@@ -1,7 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using System;
 using CoreWf;
 using CoreWf.Tracking;
 using System.Linq;
@@ -139,8 +138,7 @@ namespace Test.Common.TestObjects.Tracking
                 return true;
             }
 
-            ActivityTrace activityTrace = workflowTraceStep as ActivityTrace;
-            if (activityTrace != null)
+            if (workflowTraceStep is ActivityTrace activityTrace)
             {
                 //check the activity track queries
                 foreach (ActivityStateQuery activityQuery in profile.Queries.OfType<ActivityStateQuery>())
@@ -163,8 +161,7 @@ namespace Test.Common.TestObjects.Tracking
                 }
             }
 
-            WorkflowInstanceTrace workflowInstanceTrace = workflowTraceStep as WorkflowInstanceTrace;
-            if (workflowInstanceTrace != null)
+            if (workflowTraceStep is WorkflowInstanceTrace workflowInstanceTrace)
             {
                 foreach (WorkflowInstanceQuery workflowInstanceTrackingQuery in profile.Queries.OfType<WorkflowInstanceQuery>())
                 {
@@ -175,8 +172,7 @@ namespace Test.Common.TestObjects.Tracking
                 }
             }
 
-            UserTrace userTrace = workflowTraceStep as UserTrace;
-            if (userTrace != null)
+            if (workflowTraceStep is UserTrace userTrace)
             {
                 //presently we (trackign team) do not track any userTrace values through profile om.
                 return true;
@@ -249,8 +245,10 @@ namespace Test.Common.TestObjects.Tracking
                 }
                 else if (workflowTraceStep is TraceGroup)
                 {
-                    ExpectedTrace tempExpectedTrace = new ExpectedTrace();
-                    tempExpectedTrace.Trace = TraceGroup.GetNewTraceGroup((TraceGroup)workflowTraceStep);
+                    ExpectedTrace tempExpectedTrace = new ExpectedTrace
+                    {
+                        Trace = TraceGroup.GetNewTraceGroup((TraceGroup)workflowTraceStep)
+                    };
                     //take into account for activities already removed.
                     modifiedTrace.Trace.Steps.RemoveAt(i - removedCount);
 
@@ -289,8 +287,10 @@ namespace Test.Common.TestObjects.Tracking
                 }
                 else if (workflowTraceStep is TraceGroup)
                 {
-                    ExpectedTrace tempExpectedTrace = new ExpectedTrace();
-                    tempExpectedTrace.Trace = TraceGroup.GetNewTraceGroup((TraceGroup)workflowTraceStep);
+                    ExpectedTrace tempExpectedTrace = new ExpectedTrace
+                    {
+                        Trace = TraceGroup.GetNewTraceGroup((TraceGroup)workflowTraceStep)
+                    };
 
                     modifiedTrace.Trace.Steps.RemoveAt(i);
 

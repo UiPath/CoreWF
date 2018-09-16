@@ -1,12 +1,13 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using System.Collections.Generic;
+    using CoreWf.Validation;
+    using CoreWf.Internals;
+
     public static class WorkflowInspectionServices
     {
         public static void CacheMetadata(Activity rootActivity)
@@ -18,12 +19,12 @@ namespace CoreWf
         {
             if (rootActivity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("rootActivity");
+                throw FxTrace.Exception.ArgumentNull(nameof(rootActivity));
             }
 
             if (rootActivity.HasBeenAssociatedWithAnInstance)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(rootActivity.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(rootActivity.DisplayName)));
             }
 
             IList<ValidationError> validationErrors = null;
@@ -42,12 +43,12 @@ namespace CoreWf
         {
             if (root == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("root");
+                throw FxTrace.Exception.ArgumentNull(nameof(root));
             }
 
             if (string.IsNullOrEmpty(id))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("id");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(id));
             }
 
             if (!root.IsMetadataCached)
@@ -61,10 +62,9 @@ namespace CoreWf
 
             QualifiedId parsedId = QualifiedId.Parse(id);
 
-            Activity result;
-            if (!QualifiedId.TryGetElementFromRoot(root, parsedId, out result))
+            if (!QualifiedId.TryGetElementFromRoot(root, parsedId, out Activity result))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("id", SR.IdNotFoundInWorkflow(id));
+                throw FxTrace.Exception.Argument(nameof(id), SR.IdNotFoundInWorkflow(id));
             }
 
             return result;
@@ -74,7 +74,7 @@ namespace CoreWf
         {
             if (activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw FxTrace.Exception.ArgumentNull(nameof(activity));
             }
 
             if (!activity.IsMetadataCached)
@@ -85,7 +85,7 @@ namespace CoreWf
 
                 ActivityValidationServices.ThrowIfViolationsExist(validationErrors);
             }
-
+            
             int i = 0;
             for (; i < activity.RuntimeArguments.Count; i++)
             {
@@ -167,7 +167,7 @@ namespace CoreWf
         {
             if (activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw FxTrace.Exception.ArgumentNull(nameof(activity));
             }
 
             return activity.ImplementationVersion;
@@ -177,7 +177,7 @@ namespace CoreWf
         {
             if (activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw FxTrace.Exception.ArgumentNull(nameof(activity));
             }
 
             if (!activity.IsMetadataCached)

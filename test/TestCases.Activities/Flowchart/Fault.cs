@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -184,8 +184,10 @@ namespace TestCases.Activities.Flowchart
             child2.AddStartLink(child3);
             child3.AddStartLink(child4);
 
-            TestTryCatch tryCatchFinally = new TestTryCatch();
-            tryCatchFinally.Try = child1;
+            TestTryCatch tryCatchFinally = new TestTryCatch
+            {
+                Try = child1
+            };
             tryCatchFinally.Catches.Add(new TestCatch<WorkflowApplicationAbortedException>());
 
             parent.AddStartLink(tryCatchFinally);

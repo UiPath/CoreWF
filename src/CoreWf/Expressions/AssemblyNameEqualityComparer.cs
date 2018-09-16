@@ -1,13 +1,13 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Reflection;
+
     internal class AssemblyNameEqualityComparer : IEqualityComparer, IEqualityComparer<AssemblyName>
     {
         public AssemblyNameEqualityComparer()
@@ -60,14 +60,14 @@ namespace CoreWf.Expressions
                 return false;
             }
 
-            if (x.CultureName != null && y.CultureName != null)
+            if (x.CultureInfo != null && y.CultureInfo != null)
             {
-                if (string.Compare(x.CultureName, y.CultureName, StringComparison.OrdinalIgnoreCase) != 0)
+                if (!x.CultureInfo.Equals(y.CultureInfo))
                 {
                     return false;
                 }
             }
-            else if (!(x.CultureName == null && y.CultureName == null))
+            else if (!(x.CultureInfo == null && y.CultureInfo == null))
             {
                 return false;
             }
@@ -84,8 +84,7 @@ namespace CoreWf.Expressions
 
         public int GetHashCode(object objparam)
         {
-            AssemblyName obj = objparam as AssemblyName;
-            if (obj == null)
+            if (!(objparam is AssemblyName obj))
             {
                 return 0;
             }
@@ -106,9 +105,9 @@ namespace CoreWf.Expressions
                 hashcode ^= obj.Version.GetHashCode();
             }
 
-            if (obj.CultureName != null)
+            if (obj.CultureInfo != null)
             {
-                hashcode ^= obj.CultureName.GetHashCode();
+                hashcode ^= obj.CultureInfo.GetHashCode();
             }
 
             byte[] objArray = obj.GetPublicKeyToken();

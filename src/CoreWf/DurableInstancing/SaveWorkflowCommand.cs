@@ -1,26 +1,25 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Xml.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.DurableInstancing
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using CoreWf.Runtime;
+    using CoreWf.Runtime.DurableInstancing;
+    using CoreWf.Internals;
+    using System.Xml.Linq;
+
     [Fx.Tag.XamlVisible(false)]
     public sealed class SaveWorkflowCommand : InstancePersistenceCommand
     {
-        private Dictionary<Guid, IDictionary<XName, InstanceValue>> _keysToAssociate;
-        private Collection<Guid> _keysToComplete;
-        private Collection<Guid> _keysToFree;
-
-        private Dictionary<XName, InstanceValue> _instanceData;
-
-        private Dictionary<XName, InstanceValue> _instanceMetadataChanges;
-        private Dictionary<Guid, IDictionary<XName, InstanceValue>> _keyMetadataChanges;
+        private Dictionary<Guid, IDictionary<XName, InstanceValue>> keysToAssociate;
+        private Collection<Guid> keysToComplete;
+        private Collection<Guid> keysToFree;
+        private Dictionary<XName, InstanceValue> instanceData;
+        private Dictionary<XName, InstanceValue> instanceMetadataChanges;
+        private Dictionary<Guid, IDictionary<XName, InstanceValue>> keyMetadataChanges;
 
         public SaveWorkflowCommand()
             : base(InstancePersistence.ActivitiesCommandNamespace.GetName("SaveWorkflow"))
@@ -34,11 +33,11 @@ namespace CoreWf.DurableInstancing
         {
             get
             {
-                if (_keysToAssociate == null)
+                if (this.keysToAssociate == null)
                 {
-                    _keysToAssociate = new Dictionary<Guid, IDictionary<XName, InstanceValue>>();
+                    this.keysToAssociate = new Dictionary<Guid, IDictionary<XName, InstanceValue>>();
                 }
-                return _keysToAssociate;
+                return this.keysToAssociate;
             }
         }
 
@@ -46,11 +45,11 @@ namespace CoreWf.DurableInstancing
         {
             get
             {
-                if (_keysToComplete == null)
+                if (this.keysToComplete == null)
                 {
-                    _keysToComplete = new Collection<Guid>();
+                    this.keysToComplete = new Collection<Guid>();
                 }
-                return _keysToComplete;
+                return this.keysToComplete;
             }
         }
 
@@ -58,11 +57,11 @@ namespace CoreWf.DurableInstancing
         {
             get
             {
-                if (_keysToFree == null)
+                if (this.keysToFree == null)
                 {
-                    _keysToFree = new Collection<Guid>();
+                    this.keysToFree = new Collection<Guid>();
                 }
-                return _keysToFree;
+                return this.keysToFree;
             }
         }
 
@@ -70,11 +69,11 @@ namespace CoreWf.DurableInstancing
         {
             get
             {
-                if (_instanceMetadataChanges == null)
+                if (this.instanceMetadataChanges == null)
                 {
-                    _instanceMetadataChanges = new Dictionary<XName, InstanceValue>();
+                    this.instanceMetadataChanges = new Dictionary<XName, InstanceValue>();
                 }
-                return _instanceMetadataChanges;
+                return this.instanceMetadataChanges;
             }
         }
 
@@ -82,11 +81,11 @@ namespace CoreWf.DurableInstancing
         {
             get
             {
-                if (_keyMetadataChanges == null)
+                if (this.keyMetadataChanges == null)
                 {
-                    _keyMetadataChanges = new Dictionary<Guid, IDictionary<XName, InstanceValue>>();
+                    this.keyMetadataChanges = new Dictionary<Guid, IDictionary<XName, InstanceValue>>();
                 }
-                return _keyMetadataChanges;
+                return this.keyMetadataChanges;
             }
         }
 
@@ -94,27 +93,27 @@ namespace CoreWf.DurableInstancing
         {
             get
             {
-                if (_instanceData == null)
+                if (this.instanceData == null)
                 {
-                    _instanceData = new Dictionary<XName, InstanceValue>();
+                    this.instanceData = new Dictionary<XName, InstanceValue>();
                 }
-                return _instanceData;
+                return this.instanceData;
             }
         }
 
-        //protected internal override bool IsTransactionEnlistmentOptional
-        //{
-        //    get
-        //    {
-        //        return !CompleteInstance &&
-        //            (this.instanceData == null || this.instanceData.Count == 0) &&
-        //            (this.keyMetadataChanges == null || this.keyMetadataChanges.Count == 0) &&
-        //            (this.instanceMetadataChanges == null || this.instanceMetadataChanges.Count == 0) &&
-        //            (this.keysToFree == null || this.keysToFree.Count == 0) &&
-        //            (this.keysToComplete == null || this.keysToComplete.Count == 0) &&
-        //            (this.keysToAssociate == null || this.keysToAssociate.Count == 0);
-        //    }
-        //}
+        protected internal override bool IsTransactionEnlistmentOptional
+        {
+            get
+            {
+                return !CompleteInstance &&
+                    (this.instanceData == null || this.instanceData.Count == 0) &&
+                    (this.keyMetadataChanges == null || this.keyMetadataChanges.Count == 0) &&
+                    (this.instanceMetadataChanges == null || this.instanceMetadataChanges.Count == 0) &&
+                    (this.keysToFree == null || this.keysToFree.Count == 0) &&
+                    (this.keysToComplete == null || this.keysToComplete.Count == 0) &&
+                    (this.keysToAssociate == null || this.keysToAssociate.Count == 0);
+            }
+        }
 
         protected internal override bool AutomaticallyAcquiringLock
         {
@@ -128,25 +127,25 @@ namespace CoreWf.DurableInstancing
         {
             if (!view.IsBoundToInstance)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InstanceRequired));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InstanceRequired));
             }
 
             if (!view.IsBoundToInstanceOwner)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OwnerRequired));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OwnerRequired));
             }
 
-            if (_keysToAssociate != null)
+            if (this.keysToAssociate != null)
             {
-                foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> key in _keysToAssociate)
+                foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> key in this.keysToAssociate)
                 {
                     InstancePersistence.ValidatePropertyBag(key.Value);
                 }
             }
 
-            if (_keyMetadataChanges != null)
+            if (this.keyMetadataChanges != null)
             {
-                foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> key in _keyMetadataChanges)
+                foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> key in this.keyMetadataChanges)
                 {
                     InstancePersistence.ValidatePropertyBag(key.Value, true);
                 }
@@ -154,11 +153,11 @@ namespace CoreWf.DurableInstancing
 
             if (this.CompleteInstance && !this.UnlockInstance)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ValidateUnlockInstance));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ValidateUnlockInstance));
             }
-
-            InstancePersistence.ValidatePropertyBag(_instanceMetadataChanges, true);
-            InstancePersistence.ValidatePropertyBag(_instanceData);
+            
+            InstancePersistence.ValidatePropertyBag(this.instanceMetadataChanges, true);
+            InstancePersistence.ValidatePropertyBag(this.instanceData);
         }
     }
 }

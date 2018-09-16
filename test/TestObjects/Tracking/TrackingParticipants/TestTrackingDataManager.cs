@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf.Tracking;
@@ -144,8 +144,7 @@ namespace Test.Common.TestObjects.Tracking
             }
 
             TrackingParticipant trackingParticipant = _trackingParticipants[trackingParticipantName];
-            TestTrackingParticipantBase testTrackingParticipant = trackingParticipant as TestTrackingParticipantBase;
-            if (testTrackingParticipant != null)
+            if (trackingParticipant is TestTrackingParticipantBase testTrackingParticipant)
             {
                 return testTrackingParticipant.GetActualTrackingData(_workflowId);
             }

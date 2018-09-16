@@ -1,16 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System.Collections.ObjectModel;
+
     public class ActivityStateQuery : TrackingQuery
     {
-        private Collection<string> _arguments;
-        private Collection<string> _states;
-        private Collection<string> _variables;
-
+        private Collection<string> arguments;
+        private Collection<string> states;
+        private Collection<string> variables;        
+        
         public ActivityStateQuery()
         {
             this.ActivityName = "*";
@@ -26,12 +26,12 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (_arguments == null)
+                if (this.arguments == null)
                 {
-                    _arguments = new Collection<string>();
+                    this.arguments = new Collection<string>();
                 }
 
-                return _arguments;
+                return this.arguments;
             }
         }
 
@@ -39,24 +39,24 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new Collection<string>();
+                    this.variables = new Collection<string>();
                 }
 
-                return _variables;
+                return this.variables;
             }
-        }
+        }        
 
         public Collection<string> States
         {
             get
             {
-                if (_states == null)
+                if (this.states == null)
                 {
-                    _states = new Collection<string>();
+                    this.states = new Collection<string>();
                 }
-                return _states;
+                return this.states;
             }
         }
 
@@ -64,7 +64,7 @@ namespace CoreWf.Tracking
         {
             get
             {
-                return _states != null && _states.Count > 0;
+                return this.states != null && this.states.Count > 0;
             }
         }
 
@@ -72,7 +72,7 @@ namespace CoreWf.Tracking
         {
             get
             {
-                return _arguments != null && _arguments.Count > 0;
+                return this.arguments != null && this.arguments.Count > 0;
             }
         }
 
@@ -80,8 +80,8 @@ namespace CoreWf.Tracking
         {
             get
             {
-                return _variables != null && _variables.Count > 0;
+                return this.variables != null && this.variables.Count > 0;
             }
-        }
+        }        
     }
 }

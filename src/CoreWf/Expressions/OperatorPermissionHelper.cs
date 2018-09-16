@@ -1,12 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Linq.Expressions;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf.Runtime;
+    using System.Linq.Expressions;
+    using System.Reflection;
+
     internal static class OperatorPermissionHelper
     {
         // The function we are returning from here may be cached in a static during CacheMetadata. This means the function would be used by multiple
@@ -25,22 +25,25 @@ namespace CoreWf.Expressions
              + " Ensure that the function contains a demand for ReflectionPermission(MemberAccess) if the method is non-public.")]
         internal static Expression InjectReflectionPermissionIfNecessary(MethodInfo method, Expression expression)
         {
-            //if (method == null)
-            //{
-            //    return expression;
-            //}
+#if NET45
+            if (method == null)
+            {
+                return expression;
+            }
 
-            //if (method.IsPublic)
-            //{
-            //    return expression;
-            //}
-            //else
-            //{
-            //    ReflectionPermission reflectionMemberAccessPermission = new ReflectionPermission(ReflectionPermissionFlag.MemberAccess);
-            //    Expression demandExpression = Expression.Call(Expression.Constant(reflectionMemberAccessPermission), "Demand", null, null);
-            //    return Expression.Block(expression.Type, demandExpression, expression);
-            //}
+            if (method.IsPublic)
+            {
+                return expression;
+            }
+            else
+            {
+                ReflectionPermission reflectionMemberAccessPermission = new ReflectionPermission(ReflectionPermissionFlag.MemberAccess);
+                Expression demandExpression = Expression.Call(Expression.Constant(reflectionMemberAccessPermission), "Demand", null, null);
+                return Expression.Block(expression.Type, demandExpression, expression);
+            } 
+#else
             return expression;
+#endif
         }
     }
 }

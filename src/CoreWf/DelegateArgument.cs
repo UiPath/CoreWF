@@ -1,20 +1,21 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using CoreWf.Internals;
+
     public abstract class DelegateArgument : LocationReference
     {
-        private ArgumentDirection _direction;
-        private RuntimeDelegateArgument _runtimeArgument;
-        private string _name;
-        private int _cacheId;
+        private ArgumentDirection direction;
+        private RuntimeDelegateArgument runtimeArgument;
+        private string name;
+        private int cacheId;
 
         internal DelegateArgument()
         {
@@ -26,11 +27,11 @@ namespace CoreWf
         {
             get
             {
-                return _name;
+                return this.name;
             }
             set
             {
-                _name = value;
+                this.name = value;
             }
         }
 
@@ -38,7 +39,7 @@ namespace CoreWf
         {
             get
             {
-                return _name;
+                return this.name;
             }
         }
 
@@ -46,11 +47,11 @@ namespace CoreWf
         {
             get
             {
-                return _direction;
+                return this.direction;
             }
             internal set
             {
-                _direction = value;
+                this.direction = value;
             }
         }
 
@@ -72,18 +73,18 @@ namespace CoreWf
         {
             if (!this.IsInTree)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentMustBeReferenced(this.Name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentMustBeReferenced(this.Name)));
             }
         }
 
         internal void Bind(RuntimeDelegateArgument runtimeArgument)
         {
-            _runtimeArgument = runtimeArgument;
+            this.runtimeArgument = runtimeArgument;
         }
 
         internal bool InitializeRelationship(Activity parent, ref IList<ValidationError> validationErrors)
         {
-            if (_cacheId == parent.CacheId)
+            if (this.cacheId == parent.CacheId)
             {
                 Fx.Assert(this.Owner != null, "must have an owner here");
                 ValidationError validationError = new ValidationError(SR.DelegateArgumentAlreadyInUseOnActivity(this.Name, parent.DisplayName, this.Owner.DisplayName), this.Owner);
@@ -94,7 +95,7 @@ namespace CoreWf
             }
 
             this.Owner = parent;
-            _cacheId = parent.CacheId;
+            this.cacheId = parent.CacheId;
 
             return true;
         }
@@ -106,7 +107,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             return context.GetValue<object>((LocationReference)this);
@@ -116,20 +117,19 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();
 
             if (!context.AllowChainedEnvironmentAccess)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(this.runtimeArgument.Name)));
             }
 
-            Location location;
-            if (!context.Environment.TryGetLocation(this.Id, this.Owner, out location))
+            if (!context.Environment.TryGetLocation(this.Id, this.Owner, out Location location))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(this.runtimeArgument.Name)));
             }
 
             return location;
@@ -140,10 +140,9 @@ namespace CoreWf
         {
             Fx.Assert(this.IsInTree, "DelegateArgument must be opened");
 
-            Location location;
-            if (!environment.TryGetLocation(this.Id, this.Owner, out location))
+            if (!environment.TryGetLocation(this.Id, this.Owner, out Location location))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(_runtimeArgument.Name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateArgumentDoesNotExist(this.runtimeArgument.Name)));
             }
             return location;
         }

@@ -1,12 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using CoreWf.Statements;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reflection;
 using Test.Common.TestObjects.Activities.Collections;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Utilities.Validation;
@@ -22,9 +21,11 @@ namespace Test.Common.TestObjects.Activities
         public TestTryCatch()
         {
             this.ProductActivity = new TryCatch();
-            _catches = new MemberCollection<TestCatch>(AddCatch);
-            _catches.RemoveAtItem = RemoveAtCatch;
-            _catches.InsertItem = InsertCatch;
+            _catches = new MemberCollection<TestCatch>(AddCatch)
+            {
+                RemoveAtItem = RemoveAtCatch,
+                InsertItem = InsertCatch
+            };
         }
 
         public TestTryCatch(string displayName)
@@ -116,10 +117,9 @@ namespace Test.Common.TestObjects.Activities
             {
                 Outcome tryOutcome = Try.GetTrace(traceGroup);
 
-                CaughtExceptionOutcome ceo = tryOutcome as CaughtExceptionOutcome;
 
                 // if state is catching exception
-                if (ceo != null)
+                if (tryOutcome is CaughtExceptionOutcome ceo)
                 {
                     // look for a catch to handle this exception
                     TestCatch testcatch = GetCorrectCatchForException(ceo.ExceptionType);

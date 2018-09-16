@@ -1,12 +1,11 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using CoreWf.Statements;
 using CoreWf.Tracking;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
@@ -180,17 +179,19 @@ namespace TestCases.Activities
 
             try
             {
-                WorkflowApplication instance = new WorkflowApplication(seq);
-                instance.Completed = delegate (WorkflowApplicationCompletedEventArgs args)
+                WorkflowApplication instance = new WorkflowApplication(seq)
                 {
-                    Console.WriteLine("Completed workflow status: " + args.CompletionState);
-                    if (args.CompletionState == ActivityInstanceState.Faulted)
+                    Completed = delegate (WorkflowApplicationCompletedEventArgs args)
                     {
-                        Console.WriteLine("Termination Inner exception: " + args.TerminationException.InnerException.GetType());
-                        Console.WriteLine("Termination exception Reason is: " + args.TerminationException.Message);
-                        Console.WriteLine("Termination exception: " + args.TerminationException);
+                        Console.WriteLine("Completed workflow status: " + args.CompletionState);
+                        if (args.CompletionState == ActivityInstanceState.Faulted)
+                        {
+                            Console.WriteLine("Termination Inner exception: " + args.TerminationException.InnerException.GetType());
+                            Console.WriteLine("Termination exception Reason is: " + args.TerminationException.Message);
+                            Console.WriteLine("Termination exception: " + args.TerminationException);
+                        }
+                        waitForWorkflow.Set();
                     }
-                    waitForWorkflow.Set();
                 };
                 Console.WriteLine("Starting");
                 instance.Run();
@@ -678,8 +679,10 @@ namespace TestCases.Activities
             };
 
             TestFlowchart flowchart = new TestFlowchart("FlowChart");
-            TestFlowConditional flowDecision = new TestFlowConditional();
-            flowDecision.Condition = true;
+            TestFlowConditional flowDecision = new TestFlowConditional
+            {
+                Condition = true
+            };
             flowchart.AddConditionalLink(baseSeq, flowDecision, trueBranch, falseBranch);
             RunTestWithWorkflowRuntime(flowchart);
         }

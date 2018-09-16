@@ -1,10 +1,9 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using System.Collections.Generic;
-using Test.Common.TestObjects;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
@@ -15,7 +14,6 @@ using Test.Common.TestObjects.Utilities;
 using Test.Common.TestObjects.Utilities.Validation;
 using CoreWf.Expressions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace TestCases.Activities
 {
@@ -74,8 +72,10 @@ namespace TestCases.Activities
                 HintIterationCount = 10,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
             increment.ToVariable = counter;
             increment.ValueExpression = ((env) => ((int)counter.Get(env)) + 1);
 
@@ -128,8 +128,10 @@ namespace TestCases.Activities
 
             TestSequence ifSequence = new TestSequence("ifSequence");
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             TestIf ifAct = new TestIf("if act", HintThenOrElse.Then)
             {
@@ -197,11 +199,15 @@ namespace TestCases.Activities
         {
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
-            TestWriteLine writeTrue = new TestWriteLine("writeTrue");
-            writeTrue.Message = "I say you are RIGHT!";
+            TestWriteLine writeTrue = new TestWriteLine("writeTrue")
+            {
+                Message = "I say you are RIGHT!"
+            };
 
-            TestWriteLine writeFalse = new TestWriteLine("writeFalse");
-            writeFalse.Message = "I say you are WRONG!";
+            TestWriteLine writeFalse = new TestWriteLine("writeFalse")
+            {
+                Message = "I say you are WRONG!"
+            };
 
             TestIf ifAct = new TestIf("if act",
                 HintThenOrElse.Then,
@@ -214,9 +220,11 @@ namespace TestCases.Activities
                 ElseActivity = writeFalse,
             };
 
-            TestAssign<int> increment = new TestAssign<int>("Add One");
-            increment.ToVariable = counter;
-            increment.ValueExpression = (env) => (((int)counter.Get(env))) + 1;
+            TestAssign<int> increment = new TestAssign<int>("Add One")
+            {
+                ToVariable = counter,
+                ValueExpression = (env) => (((int)counter.Get(env))) + 1
+            };
 
             TestSequence sequence = new TestSequence("innerSequence");
 
@@ -251,8 +259,10 @@ namespace TestCases.Activities
             TestAssign<int> changeCounter = new TestAssign<int>("Elif");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
             changeCounter.ToVariable = counter;
             changeCounter.ValueExpression = (env) => ((int)counter.Get(env)) + 15;
 
@@ -316,8 +326,10 @@ namespace TestCases.Activities
             TestSequence innerSequence = new TestSequence("inner sequence");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 5);
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             TestIf ifAct = new TestIf("if1", HintThenOrElse.Else)
             {
@@ -406,8 +418,10 @@ namespace TestCases.Activities
             TestSequence innerSequence = new TestSequence("inner sequence");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             TestIf ifAct = new TestIf("if act", HintThenOrElse.Then)
             {
@@ -439,8 +453,10 @@ namespace TestCases.Activities
             TestSequence innerSequence = new TestSequence("inner seq");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             TestIf ifAct = new TestIf("if act", HintThenOrElse.Else)
             {

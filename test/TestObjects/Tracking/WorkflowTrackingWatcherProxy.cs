@@ -1,9 +1,8 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf.Tracking;
-using System.Collections.Generic;
 using System.Threading;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Utilities;
@@ -23,9 +22,9 @@ namespace Test.Common.TestObjects.Tracking
     //   instance specific information
     public class WorkflowTrackingWatcher //: MarshalByRefObject
     {
-        private Guid _workflowInstanceId;
+        private readonly Guid _workflowInstanceId;
         private RemoteWorkflowRuntime _remoteworkflowRuntime;
-        private bool _hasPersistenceProvider;
+        private readonly bool _hasPersistenceProvider;
 
         internal WorkflowTrackingWatcher(Guid instanceId, RemoteWorkflowRuntime runtime)
         {
@@ -70,8 +69,7 @@ namespace Test.Common.TestObjects.Tracking
 
         public IActualTraceStep WaitForEitherOfTraces(IActualTraceStep trace, IActualTraceStep otherTrace)
         {
-            IActualTraceStep succesfulTrace;
-            TestTraceManager.Instance.WaitForEitherOfTraces(_workflowInstanceId, trace, otherTrace, out succesfulTrace);
+            TestTraceManager.Instance.WaitForEitherOfTraces(_workflowInstanceId, trace, otherTrace, out IActualTraceStep succesfulTrace);
             return succesfulTrace;
         }
 
@@ -272,8 +270,10 @@ namespace Test.Common.TestObjects.Tracking
                 mergedTrace.Steps.Add(expectedWorkflowInstanceTrace.Trace);
             }
 
-            ExpectedTrace expectedMergedTrace = new ExpectedTrace(expectedTrace);
-            expectedMergedTrace.Trace = mergedTrace;
+            ExpectedTrace expectedMergedTrace = new ExpectedTrace(expectedTrace)
+            {
+                Trace = mergedTrace
+            };
             ValidateTracking(expectedTrace);
 
             //Log.TraceInternal("[TestWorkflowRuntime]***Validate Tracing...");
@@ -379,7 +379,7 @@ namespace Test.Common.TestObjects.Tracking
 
         // marked readonly, should never edit this field to prevent race conditions
         private readonly int _numOccurences;
-        private bool _waitingForDeleted;
+        private readonly bool _waitingForDeleted;
 
         private Guid _instanceId;
 
@@ -429,10 +429,8 @@ namespace Test.Common.TestObjects.Tracking
                         _error = string.Format("While waiting for a {0} trace, received an aborted trace - {1}", _expectedFinalState, ActualTracesAsString());
                     }
                 }
-                else if (step is WorkflowInstanceTrace)
+                else if (step is WorkflowInstanceTrace wit)
                 {
-                    WorkflowInstanceTrace wit = (WorkflowInstanceTrace)step;
-
                     if (wit.InstanceStatus == WorkflowInstanceState.Deleted)
                     {
                         countCopy--;

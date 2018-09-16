@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -36,8 +36,10 @@ namespace TestCases.Activities
                 HintIterationCount = 10,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
             increment.ToVariable = counter;
             increment.ValueExpression = ((env) => (((int)counter.Get(env))) + 1);
 
@@ -67,9 +69,10 @@ namespace TestCases.Activities
                 HintIterationCount = 0,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             increment.ToVariable = counter;
             increment.ValueExpression = ((env) => (((int)counter.Get(env))) + 1);
@@ -256,9 +259,11 @@ namespace TestCases.Activities
             Variable<int> doWhileCounter = VariableHelper.CreateInitialized<int>("counter", 0);
             Variable<int> loopCounter = VariableHelper.CreateInitialized<int>("loopcounter", 0);
 
-            TestAssign<int> loopCounterIncrement = new TestAssign<int>("increase loop counter");
-            loopCounterIncrement.ToVariable = loopCounter;
-            loopCounterIncrement.ValueExpression = ((env) => ((int)loopCounter.Get(env)) + 1);
+            TestAssign<int> loopCounterIncrement = new TestAssign<int>("increase loop counter")
+            {
+                ToVariable = loopCounter,
+                ValueExpression = ((env) => ((int)loopCounter.Get(env)) + 1)
+            };
 
             increment.ToVariable = doWhileCounter;
             increment.ValueExpression = ((env) => ((int)doWhileCounter.Get(env)) + 1);
@@ -293,10 +298,14 @@ namespace TestCases.Activities
                 HintIterationCount = 10,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
-            TestWriteLine writeLine2 = new TestWriteLine("write hello");
-            writeLine2.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
+            TestWriteLine writeLine2 = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
             whileIncrement.ToVariable = whileCounter;
             whileIncrement.ValueExpression = ((env) => ((int)whileCounter.Get(env)) + 1);
 
@@ -359,8 +368,10 @@ namespace TestCases.Activities
                 HintIterationCount = 10,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
             increment.CounterVariable = counter;
 
             innerSequence.Activities.Add(writeLine);
@@ -496,8 +507,10 @@ namespace TestCases.Activities
                 HintIterationCount = 200,
             };
 
-            TestWriteLine writeLine = new TestWriteLine("write hello");
-            writeLine.Message = "Its a small world after all";
+            TestWriteLine writeLine = new TestWriteLine("write hello")
+            {
+                Message = "Its a small world after all"
+            };
 
             increment.CounterVariable = counter;
 
@@ -546,10 +559,12 @@ namespace TestCases.Activities
         [Fact]
         public void WhileWithWorkFlowInvoker()
         {
-            TestWhile whileAct = new TestWhile();
-            whileAct.Body = new TestWriteLine("w1", "This should not be written");
-            whileAct.Condition = false;
-            whileAct.HintIterationCount = -1;
+            TestWhile whileAct = new TestWhile
+            {
+                Body = new TestWriteLine("w1", "This should not be written"),
+                Condition = false,
+                HintIterationCount = -1
+            };
 
             TestRuntime.RunAndValidateUsingWorkflowInvoker(whileAct, null, null, null);
         }
@@ -560,10 +575,12 @@ namespace TestCases.Activities
         [Fact]
         public void WhileWithNullBody()
         {
-            TestWhile whileAct = new TestWhile();
-            whileAct.Body = null;
-            whileAct.Condition = false;
-            whileAct.HintIterationCount = -1;
+            TestWhile whileAct = new TestWhile
+            {
+                Body = null,
+                Condition = false,
+                HintIterationCount = -1
+            };
             TestRuntime.RunAndValidateWorkflow(whileAct);
         }
 
@@ -606,11 +623,10 @@ namespace TestCases.Activities
             expected.AddIgnoreTypes(typeof(WorkflowAbortedTrace));
             expected.AddIgnoreTypes(typeof(SynchronizeTrace));
 
-            Exception exc;
             TestWorkflowRuntime tr = TestRuntime.CreateTestWorkflowRuntime(outerSequence);
             tr.CreateWorkflow();
             tr.ResumeWorkflow();
-            tr.WaitForAborted(out exc, expected);
+            tr.WaitForAborted(out Exception exc, expected);
 
             Assert.True((exc.GetType() == typeof(DataMisalignedException)) && exc.Message == "I am Miss.Aligned!");
         }

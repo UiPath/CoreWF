@@ -1,16 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+    using System.Collections.Generic;
+
     internal class IdSpace
     {
-        private int _lastId;
-        private IList<Activity> _members;
+        private int lastId;
+        private IList<Activity> members;
 
         public IdSpace()
         {
@@ -38,13 +39,13 @@ namespace CoreWf
         {
             get
             {
-                if (_members == null)
+                if (this.members == null)
                 {
                     return 0;
                 }
                 else
                 {
-                    return _members.Count;
+                    return this.members.Count;
                 }
             }
         }
@@ -67,47 +68,47 @@ namespace CoreWf
             get
             {
                 int lookupId = id - 1;
-                if (_members == null || lookupId < 0 || lookupId >= _members.Count)
+                if (this.members == null || lookupId < 0 || lookupId >= this.members.Count)
                 {
                     return null;
                 }
                 else
                 {
-                    return _members[lookupId];
+                    return this.members[lookupId];
                 }
             }
         }
 
         public void AddMember(Activity element)
         {
-            if (_members == null)
+            if (this.members == null)
             {
-                _members = new List<Activity>();
+                this.members = new List<Activity>();
             }
 
-            if (_lastId == int.MaxValue)
+            if (lastId == int.MaxValue)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfIdSpaceIds));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfIdSpaceIds));
             }
 
-            _lastId++;
-
+            lastId++;
+            
             // ID info is cleared inside InternalId.
-            element.InternalId = _lastId;
+            element.InternalId = lastId;
             Fx.Assert(element.MemberOf == this, "We should have already set this.");
-            Fx.Assert(_members.Count == element.InternalId - 1, "We should always be adding the next element");
+            Fx.Assert(this.members.Count == element.InternalId - 1, "We should always be adding the next element");
 
-            _members.Add(element);
+            this.members.Add(element);
         }
-
+        
         public void Dispose()
         {
-            if (_members != null)
+            if (this.members != null)
             {
-                _members.Clear();
+                this.members.Clear();
             }
 
-            _lastId = 0;
+            this.lastId = 0;
             this.Parent = null;
             this.ParentId = 0;
         }

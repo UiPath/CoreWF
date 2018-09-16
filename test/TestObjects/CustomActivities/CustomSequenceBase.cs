@@ -1,13 +1,8 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CoreWf;
-using CoreWf.Statements;
-using Test.Common.TestObjects.Utilities;
-using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.CustomActivities
 {
@@ -16,8 +11,8 @@ namespace Test.Common.TestObjects.CustomActivities
     //[ContentProperty("Activities")]    
     public class CustomSequenceBase : NativeActivity
     {
-        private Collection<Activity> _activities;
-        private Collection<Variable> _variables;
+        private readonly Collection<Activity> _activities;
+        private readonly Collection<Variable> _variables;
         private Variable<int> _lastIndexHint;
         private CompletionCallback _onChildComplete;
 

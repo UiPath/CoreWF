@@ -1,25 +1,26 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
-    [DebuggerDisplay("Name = {Name}, Type = {Type}")]
+    using System;
+    using CoreWf.Expressions;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Linq.Expressions;
+    using System.Runtime.Serialization;
+    using CoreWf.Internals;
+
+    [DebuggerDisplay("Name = {Name}, Type = {Type}")] 
     public abstract class Variable : LocationReference
     {
-        private VariableModifiers _modifiers;
-        private string _name;
-        private int _cacheId;
+        private VariableModifiers modifiers;
+        private string name;
+        private int cacheId;
 
         internal Variable()
             : base()
@@ -38,11 +39,11 @@ namespace CoreWf
         {
             get
             {
-                return _name;
+                return this.name;
             }
             set
             {
-                _name = value;
+                this.name = value;
             }
         }
 
@@ -51,12 +52,12 @@ namespace CoreWf
         {
             get
             {
-                return _modifiers;
+                return this.modifiers;
             }
             set
             {
                 VariableModifiersHelper.Validate(value, "value");
-                _modifiers = value;
+                this.modifiers = value;
             }
         }
 
@@ -78,7 +79,7 @@ namespace CoreWf
         {
             get
             {
-                return _name;
+                return this.name;
             }
         }
 
@@ -86,7 +87,7 @@ namespace CoreWf
         {
             get
             {
-                return _cacheId;
+                return this.cacheId;
             }
         }
 
@@ -129,7 +130,7 @@ namespace CoreWf
 
         internal bool InitializeRelationship(Activity parent, bool isPublic, ref IList<ValidationError> validationErrors)
         {
-            if (_cacheId == parent.CacheId)
+            if (this.cacheId == parent.CacheId)
             {
                 if (this.Owner != null)
                 {
@@ -142,7 +143,7 @@ namespace CoreWf
             }
 
             this.Owner = parent;
-            _cacheId = parent.CacheId;
+            this.cacheId = parent.CacheId;
             this.IsPublic = isPublic;
 
             if (this.Default != null)
@@ -171,7 +172,7 @@ namespace CoreWf
         {
             if (!this.IsInTree)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableNotOpen(this.Name, this.Type)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableNotOpen(this.Name, this.Type)));
             }
         }
 
@@ -179,7 +180,7 @@ namespace CoreWf
         {
             if (this.IsHandle)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
             }
         }
 
@@ -187,7 +188,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             // No need to call context.ThrowIfDisposed explicitly since all
@@ -200,12 +201,12 @@ namespace CoreWf
             {
                 if (this.IsPublic || !object.ReferenceEquals(this.Owner, context.Activity))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableOnlyAccessibleAtScopeOfDeclaration(context.Activity, this.Owner)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableOnlyAccessibleAtScopeOfDeclaration(context.Activity, this.Owner)));
                 }
 
                 if (!context.Environment.TryGetLocation(this.Id, out location))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
                 }
             }
             else
@@ -214,7 +215,7 @@ namespace CoreWf
 
                 if (!context.Environment.TryGetLocation(this.Id, this.Owner, out location))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
                 }
             }
 
@@ -228,7 +229,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             return context.GetValue<object>((LocationReference)this);
@@ -238,7 +239,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             context.SetValue((LocationReference)this, value);
@@ -251,10 +252,9 @@ namespace CoreWf
         {
             Fx.Assert(this.IsInTree, "Variable must be opened");
 
-            Location location;
-            if (!environment.TryGetLocation(this.Id, this.Owner, out location))
+            if (!environment.TryGetLocation(this.Id, this.Owner, out Location location))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VariableDoesNotExist(this.Name)));
             }
             return location;
         }
@@ -269,7 +269,7 @@ namespace CoreWf
 
     public sealed class Variable<T> : Variable
     {
-        private Activity<T> _defaultExpression;
+        private Activity<T> defaultExpression;
 
         public Variable()
             : base()
@@ -323,13 +323,13 @@ namespace CoreWf
         {
             get
             {
-                return _defaultExpression;
+                return this.defaultExpression;
             }
             set
             {
                 ThrowIfHandle();
 
-                _defaultExpression = value;
+                this.defaultExpression = value;
             }
         }
 
@@ -345,17 +345,17 @@ namespace CoreWf
 
                 if (value == null)
                 {
-                    _defaultExpression = null;
+                    this.defaultExpression = null;
                     return;
                 }
 
                 if (value is Activity<T>)
                 {
-                    _defaultExpression = (Activity<T>)value;
+                    this.defaultExpression = (Activity<T>)value;
                 }
                 else
                 {
-                    _defaultExpression = new ActivityWithResultWrapper<T>(value);
+                    this.defaultExpression = new ActivityWithResultWrapper<T>(value);
                 }
             }
         }
@@ -367,7 +367,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             return context.GetLocation<T>(this);
@@ -380,7 +380,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             return context.GetValue<T>((LocationReference)this);
@@ -390,7 +390,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             context.SetValue((LocationReference)this, value);
@@ -445,49 +445,42 @@ namespace CoreWf
         [DataContract]
         internal sealed class VariableLocation : Location<T>, INotifyPropertyChanged
         {
-            private VariableModifiers _modifiers;
-
-            private bool _isHandle;
-
-            private bool _isWaitingOnDefaultValue;
-
-            private PropertyChangedEventHandler _propertyChanged;
-            private NotifyCollectionChangedEventHandler _valueCollectionChanged;
-            private PropertyChangedEventHandler _valuePropertyChanged;
+            private VariableModifiers modifiers;
+            private bool isHandle;
+            private bool isWaitingOnDefaultValue;
+            private PropertyChangedEventHandler propertyChanged;
+            private NotifyCollectionChangedEventHandler valueCollectionChanged;
+            private PropertyChangedEventHandler valuePropertyChanged;
 
             public VariableLocation(VariableModifiers modifiers, bool isHandle)
                 : base()
             {
-                _modifiers = modifiers;
-                _isHandle = isHandle;
+                this.modifiers = modifiers;
+                this.isHandle = isHandle;
             }
 
             public event PropertyChangedEventHandler PropertyChanged
             {
                 add
                 {
-                    _propertyChanged += value;
-                    INotifyPropertyChanged notifyPropertyChanged = this.Value as INotifyPropertyChanged;
-                    if (notifyPropertyChanged != null)
+                    this.propertyChanged += value;
+                    if (this.Value is INotifyPropertyChanged notifyPropertyChanged)
                     {
                         notifyPropertyChanged.PropertyChanged += ValuePropertyChangedHandler;
                     }
-                    INotifyCollectionChanged notifyCollectionChanged = this.Value as INotifyCollectionChanged;
-                    if (notifyCollectionChanged != null)
+                    if (this.Value is INotifyCollectionChanged notifyCollectionChanged)
                     {
                         notifyCollectionChanged.CollectionChanged += ValueCollectionChangedHandler;
                     }
                 }
                 remove
                 {
-                    _propertyChanged -= value;
-                    INotifyPropertyChanged notifyPropertyChanged = this.Value as INotifyPropertyChanged;
-                    if (notifyPropertyChanged != null)
+                    this.propertyChanged -= value;
+                    if (this.Value is INotifyPropertyChanged notifyPropertyChanged)
                     {
                         notifyPropertyChanged.PropertyChanged -= ValuePropertyChangedHandler;
                     }
-                    INotifyCollectionChanged notifyCollectionChanged = this.Value as INotifyCollectionChanged;
-                    if (notifyCollectionChanged != null)
+                    if (this.Value is INotifyCollectionChanged notifyCollectionChanged)
                     {
                         notifyCollectionChanged.CollectionChanged -= ValueCollectionChangedHandler;
                     }
@@ -497,29 +490,29 @@ namespace CoreWf
             [DataMember(EmitDefaultValue = false, Name = "modifiers")]
             internal VariableModifiers SerializedModifiers
             {
-                get { return _modifiers; }
-                set { _modifiers = value; }
+                get { return this.modifiers; }
+                set { this.modifiers = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "isHandle")]
             internal bool SerializedIsHandle
             {
-                get { return _isHandle; }
-                set { _isHandle = value; }
+                get { return this.isHandle; }
+                set { this.isHandle = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "isWaitingOnDefaultValue")]
             internal bool SerializedIsWaitingOnDefaultValue
             {
-                get { return _isWaitingOnDefaultValue; }
-                set { _isWaitingOnDefaultValue = value; }
+                get { return this.isWaitingOnDefaultValue; }
+                set { this.isWaitingOnDefaultValue = value; }
             }
 
             internal override bool CanBeMapped
             {
                 get
                 {
-                    return VariableModifiersHelper.IsMappable(_modifiers);
+                    return VariableModifiersHelper.IsMappable(this.modifiers);
                 }
             }
 
@@ -531,32 +524,31 @@ namespace CoreWf
                 }
                 set
                 {
-                    if (_isHandle)
+                    if (this.isHandle)
                     {
-                        Handle currentValue = base.Value as Handle;
 
                         // We only allow sets on null or uninitialized handles
-                        if (currentValue != null && currentValue.IsInitialized)
+                        if (base.Value is Handle currentValue && currentValue.IsInitialized)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
                         }
 
                         // We only allow setting it to null
                         if (value != null)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationOnHandle));
                         }
                     }
 
-                    if (VariableModifiersHelper.IsReadOnly(_modifiers))
+                    if (VariableModifiersHelper.IsReadOnly(this.modifiers))
                     {
-                        if (_isWaitingOnDefaultValue)
+                        if (this.isWaitingOnDefaultValue)
                         {
-                            _isWaitingOnDefaultValue = false;
+                            this.isWaitingOnDefaultValue = false;
                         }
                         else
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(
+                            throw FxTrace.Exception.AsError(
                                 new InvalidOperationException(SR.ConstVariableCannotBeSet));
                         }
                     }
@@ -570,11 +562,11 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_valueCollectionChanged == null)
+                    if (this.valueCollectionChanged == null)
                     {
-                        _valueCollectionChanged = new NotifyCollectionChangedEventHandler(this.NotifyValueCollectionChanged);
+                        this.valueCollectionChanged = new NotifyCollectionChangedEventHandler(this.NotifyValueCollectionChanged);
                     }
-                    return _valueCollectionChanged;
+                    return this.valueCollectionChanged;
                 }
             }
 
@@ -582,11 +574,11 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_valuePropertyChanged == null)
+                    if (this.valuePropertyChanged == null)
                     {
-                        _valuePropertyChanged = new PropertyChangedEventHandler(this.NotifyValuePropertyChanged);
+                        this.valuePropertyChanged = new PropertyChangedEventHandler(this.NotifyValuePropertyChanged);
                     }
-                    return _valuePropertyChanged;
+                    return this.valuePropertyChanged;
                 }
             }
 
@@ -597,9 +589,9 @@ namespace CoreWf
 
             internal void SetIsWaitingOnDefaultValue()
             {
-                if (VariableModifiersHelper.IsReadOnly(_modifiers))
+                if (VariableModifiersHelper.IsReadOnly(this.modifiers))
                 {
-                    _isWaitingOnDefaultValue = true;
+                    this.isWaitingOnDefaultValue = true;
                 }
             }
 
@@ -610,7 +602,7 @@ namespace CoreWf
 
             private void NotifyValuePropertyChanged(object sender, PropertyChangedEventArgs e)
             {
-                PropertyChangedEventHandler handler = _propertyChanged;
+                PropertyChangedEventHandler handler = this.propertyChanged;
                 if (handler != null)
                 {
                     handler(this, e);
@@ -619,7 +611,7 @@ namespace CoreWf
 
             private void NotifyPropertyChanged()
             {
-                PropertyChangedEventHandler handler = _propertyChanged;
+                PropertyChangedEventHandler handler = this.propertyChanged;
                 if (handler != null)
                 {
                     handler(this, ActivityUtilities.ValuePropertyChangedEventArgs);

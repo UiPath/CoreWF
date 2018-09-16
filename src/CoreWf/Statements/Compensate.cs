@@ -1,30 +1,28 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Expressions;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Statements
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using CoreWf.Validation;
+    using System.Linq;
+    using CoreWf.Expressions;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     public sealed class Compensate : NativeActivity
     {
-        private static Constraint s_compensateWithNoTarget = Compensate.CompensateWithNoTarget();
-
-        private InternalCompensate _internalCompensate;
-        private DefaultCompensation _defaultCompensation;
-
-        private Variable<CompensationToken> _currentCompensationToken;
+        private static readonly Constraint compensateWithNoTarget = Compensate.CompensateWithNoTarget();
+        private InternalCompensate internalCompensate;
+        private DefaultCompensation defaultCompensation;
+        private readonly Variable<CompensationToken> currentCompensationToken;
 
         public Compensate()
             : base()
         {
-            _currentCompensationToken = new Variable<CompensationToken>();
+            this.currentCompensationToken = new Variable<CompensationToken>();
         }
 
         [DefaultValue(null)]
@@ -38,15 +36,15 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_defaultCompensation == null)
+                if (this.defaultCompensation == null)
                 {
-                    _defaultCompensation = new DefaultCompensation()
-                    {
-                        Target = new InArgument<CompensationToken>(_currentCompensationToken),
-                    };
+                    this.defaultCompensation = new DefaultCompensation()
+                        {
+                            Target = new InArgument<CompensationToken>(this.currentCompensationToken),
+                        };
                 }
 
-                return _defaultCompensation;
+                return this.defaultCompensation;
             }
         }
 
@@ -54,15 +52,15 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_internalCompensate == null)
+                if (this.internalCompensate == null)
                 {
-                    _internalCompensate = new InternalCompensate()
-                    {
-                        Target = new InArgument<CompensationToken>(new ArgumentValue<CompensationToken> { ArgumentName = "Target" }),
-                    };
+                    this.internalCompensate = new InternalCompensate()
+                        {
+                            Target = new InArgument<CompensationToken>(new ArgumentValue<CompensationToken> { ArgumentName = "Target" }),
+                        };
                 }
 
-                return _internalCompensate;
+                return this.internalCompensate;
             }
         }
 
@@ -72,7 +70,7 @@ namespace CoreWf.Statements
             metadata.Bind(this.Target, targetArgument);
             metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { targetArgument });
 
-            metadata.SetImplementationVariablesCollection(new Collection<Variable> { _currentCompensationToken });
+            metadata.SetImplementationVariablesCollection(new Collection<Variable> { this.currentCompensationToken });
 
             Fx.Assert(DefaultCompensation != null, "DefaultCompensation must be valid");
             Fx.Assert(InternalCompensate != null, "InternalCompensate must be valid");
@@ -86,7 +84,7 @@ namespace CoreWf.Statements
 
         internal override IList<Constraint> InternalGetConstraints()
         {
-            return new List<Constraint>(1) { s_compensateWithNoTarget };
+            return new List<Constraint>(1) { compensateWithNoTarget };
         }
 
         private static Constraint CompensateWithNoTarget()
@@ -105,7 +103,7 @@ namespace CoreWf.Statements
                     Argument2 = validationContext,
                     Handler = new Sequence
                     {
-                        Variables =
+                        Variables = 
                         {
                             assertFlag,
                             elements,
@@ -123,7 +121,7 @@ namespace CoreWf.Statements
                                 },
                                 Else = new Sequence
                                 {
-                                    Activities =
+                                    Activities = 
                                     {
                                         new Assign<IEnumerable<Activity>>
                                         {
@@ -137,14 +135,14 @@ namespace CoreWf.Statements
                                         {
                                             Body = new Sequence
                                             {
-                                                Activities =
+                                                Activities = 
                                                 {
                                                     new If(env => (elements.Get(env).ElementAt(index.Get(env))).GetType() == typeof(CompensationParticipant))
                                                     {
                                                         Then = new Assign<bool>
                                                         {
                                                             To = assertFlag,
-                                                            Value = true
+                                                            Value = true                                                            
                                                         },
                                                     },
                                                     new Assign<int>
@@ -156,12 +154,12 @@ namespace CoreWf.Statements
                                             }
                                         }
                                     }
-                                }
+                                }                                
                             },
                             new AssertValidation
                             {
                                 Assertion = new InArgument<bool>(assertFlag),
-                                Message = new InArgument<string>(SR.CompensateWithNoTargetConstraint)
+                                Message = new InArgument<string>(SR.CompensateWithNoTargetConstraint)   
                             }
                         }
                     }
@@ -174,7 +172,7 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             if (compensationExtension == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensateWithoutCompensableActivity(this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensateWithoutCompensableActivity(this.DisplayName)));
             }
 
             if (Target.IsEmpty)
@@ -184,7 +182,7 @@ namespace CoreWf.Statements
 
                 if (ambientTokenData != null && ambientTokenData.IsTokenValidInSecondaryRoot)
                 {
-                    _currentCompensationToken.Set(context, ambientCompensationToken);
+                    this.currentCompensationToken.Set(context, ambientCompensationToken);
                     if (ambientTokenData.ExecutionTracker.Count > 0)
                     {
                         context.ScheduleActivity(DefaultCompensation);
@@ -192,7 +190,7 @@ namespace CoreWf.Statements
                 }
                 else
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidCompensateActivityUsage(this.DisplayName)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidCompensateActivityUsage(this.DisplayName)));
                 }
             }
             else
@@ -202,7 +200,7 @@ namespace CoreWf.Statements
 
                 if (compensationToken == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(this.DisplayName));
+                    throw FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(this.DisplayName));
                 }
 
                 if (compensationToken.CompensateCalled)
@@ -213,7 +211,7 @@ namespace CoreWf.Statements
 
                 if (tokenData == null || tokenData.CompensationState != CompensationState.Completed)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
                 }
 
                 // A valid in-arg was passed...            

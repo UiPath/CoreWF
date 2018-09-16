@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -504,11 +504,13 @@ namespace TestCases.Activities
         [Fact]
         public void PersistenceToWriteLineActivity()
         {
-            TestProductWriteline writeLine1 = new TestProductWriteline("writeLine1");
-            writeLine1.TextExpressionActivity = new TestExpressionEvaluatorWithBody<string>()
+            TestProductWriteline writeLine1 = new TestProductWriteline("writeLine1")
             {
-                Body = (new TestBlockingActivity("BlockingActivity")),
-                ExpressionResult = "This should be displayed after the bookmark"
+                TextExpressionActivity = new TestExpressionEvaluatorWithBody<string>()
+                {
+                    Body = (new TestBlockingActivity("BlockingActivity")),
+                    ExpressionResult = "This should be displayed after the bookmark"
+                }
             };
 
             using (StreamWriter writer = new StreamWriter(new FileStream(_tempFilePath, FileMode.Create, FileAccess.Write)))
@@ -679,8 +681,10 @@ namespace TestCases.Activities
         /// <returns>StreamWriter where we redirect the console output</returns>
         private StreamWriter ConsoleSetOut(bool doConsoleSetOut = true)
         {
-            StreamWriter streamWriter = new StreamWriter(new FileStream(_tempFilePath, FileMode.Create, FileAccess.Write));
-            streamWriter.AutoFlush = true;
+            StreamWriter streamWriter = new StreamWriter(new FileStream(_tempFilePath, FileMode.Create, FileAccess.Write))
+            {
+                AutoFlush = true
+            };
 
             if (doConsoleSetOut)
             {
@@ -700,7 +704,7 @@ namespace TestCases.Activities
                 get { return Encoding.UTF8; }
             }
 
-            private Exception _exception;
+            private readonly Exception _exception;
 
             public CustomTextWriter(Exception exception)
             {

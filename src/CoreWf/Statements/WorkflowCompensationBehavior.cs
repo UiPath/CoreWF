@@ -1,32 +1,31 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Collections.ObjectModel;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Statements
 {
+    using System.Collections.ObjectModel;
+    using CoreWf.Runtime;
+
     internal sealed class WorkflowCompensationBehavior : NativeActivity
     {
-        private Variable<CompensationToken> _currentCompensationToken;
+        private readonly Variable<CompensationToken> currentCompensationToken;
 
         public WorkflowCompensationBehavior()
             : base()
         {
-            _currentCompensationToken = new Variable<CompensationToken>
-            {
-                Name = "currentCompensationToken",
-            };
+            currentCompensationToken = new Variable<CompensationToken>
+                {
+                    Name = "currentCompensationToken",
+                };
 
             DefaultCompensation = new DefaultCompensation()
-            {
-                Target = new InArgument<CompensationToken>(_currentCompensationToken),
-            };
+                {
+                    Target = new InArgument<CompensationToken>(this.currentCompensationToken),
+                };
 
             DefaultConfirmation = new DefaultConfirmation()
-            {
-                Target = new InArgument<CompensationToken>(_currentCompensationToken),
-            };
+                {
+                    Target = new InArgument<CompensationToken>(this.currentCompensationToken),
+                };
         }
 
         private Activity DefaultCompensation
@@ -56,11 +55,11 @@ namespace CoreWf.Statements
             metadata.SetImplementationChildrenCollection(
                 new Collection<Activity>
                 {
-                    this.DefaultCompensation,
+                    this.DefaultCompensation, 
                     this.DefaultConfirmation
                 });
 
-            metadata.SetImplementationVariablesCollection(new Collection<Variable> { _currentCompensationToken });
+            metadata.SetImplementationVariablesCollection(new Collection<Variable> { this.currentCompensationToken });
         }
 
         protected override void Execute(NativeActivityContext context)
@@ -105,8 +104,8 @@ namespace CoreWf.Statements
             {
                 // Do nothing. Neither Compensate nor Confirm.
                 // Remove the bookmark to complete the WorkflowCompensationBehavior execution. 
-                context.RemoveBookmark(compensationExtension.WorkflowConfirmation);
-                context.RemoveBookmark(compensationExtension.WorkflowCompensation);
+               context.RemoveBookmark(compensationExtension.WorkflowConfirmation); 
+               context.RemoveBookmark(compensationExtension.WorkflowCompensation);
             }
         }
 
@@ -118,7 +117,7 @@ namespace CoreWf.Statements
             CompensationToken rootToken = (CompensationToken)value;
             Fx.Assert(rootToken != null, "rootToken must be passed");
 
-            _currentCompensationToken.Set(context, rootToken);
+            this.currentCompensationToken.Set(context, rootToken);
 
             CompensationTokenData rootTokenData = compensationExtension.Get(rootToken.CompensationId);
             if (rootTokenData.ExecutionTracker.Count > 0)
@@ -148,7 +147,7 @@ namespace CoreWf.Statements
             CompensationToken rootToken = (CompensationToken)value;
             Fx.Assert(rootToken != null, "rootToken must be passed");
 
-            _currentCompensationToken.Set(context, rootToken);
+            this.currentCompensationToken.Set(context, rootToken);
 
             CompensationTokenData rootTokenData = compensationExtension.Get(rootToken.CompensationId);
             if (rootTokenData.ExecutionTracker.Count > 0)

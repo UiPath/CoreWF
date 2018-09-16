@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf;
 using CoreWf.Runtime.DurableInstancing;
@@ -265,9 +265,8 @@ namespace Test.Common.TestObjects.Runtime
             {
                 testWorkflowRuntime.ExecuteWorkflow();
 
-                Exception exception;
 
-                testWorkflowRuntime.WaitForAborted(out exception, true);
+                testWorkflowRuntime.WaitForAborted(out Exception exception, true);
 
                 ExceptionHelpers.ValidateException(exception, exceptionType, exceptionProperties);
             }

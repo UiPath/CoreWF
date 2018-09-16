@@ -1,40 +1,38 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using CoreWf.Hosting;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Globalization;
+    using CoreWf.Runtime.DurableInstancing;
+    using System.Runtime.Serialization;
+    using CoreWf.Internals;
+
     [DataContract]
     internal class BookmarkScopeManager
     {
-        private Dictionary<BookmarkScope, BookmarkManager> _bookmarkManagers;
-        private List<BookmarkScope> _uninitializedScopes;
-        private List<InstanceKey> _keysToAssociate;
-        private List<InstanceKey> _keysToDisassociate;
-
-        private BookmarkScope _defaultScope;
-
-        private long _nextTemporaryId;
+        private Dictionary<BookmarkScope, BookmarkManager> bookmarkManagers;
+        private List<BookmarkScope> uninitializedScopes;
+        private List<InstanceKey> keysToAssociate;
+        private List<InstanceKey> keysToDisassociate;
+        private BookmarkScope defaultScope;
+        private long nextTemporaryId;
 
         public BookmarkScopeManager()
         {
-            _nextTemporaryId = 1;
-            _defaultScope = CreateAndRegisterScope(Guid.Empty);
+            this.nextTemporaryId = 1;
+            this.defaultScope = CreateAndRegisterScope(Guid.Empty);
         }
 
         public BookmarkScope Default
         {
             get
             {
-                return _defaultScope;
+                return this.defaultScope;
             }
         }
 
@@ -42,12 +40,12 @@ namespace CoreWf.Runtime
         {
             get
             {
-                if (_keysToAssociate != null && _keysToAssociate.Count > 0)
+                if (this.keysToAssociate != null && this.keysToAssociate.Count > 0)
                 {
                     return true;
                 }
 
-                if (_keysToDisassociate != null && _keysToDisassociate.Count > 0)
+                if (this.keysToDisassociate != null && this.keysToDisassociate.Count > 0)
                 {
                     return true;
                 }
@@ -59,60 +57,60 @@ namespace CoreWf.Runtime
         [DataMember(Name = "defaultScope")]
         internal BookmarkScope SerializedDefaultScope
         {
-            get { return _defaultScope; }
-            set { _defaultScope = value; }
+            get { return this.defaultScope; }
+            set { this.defaultScope = value; }
         }
 
         [DataMember(Name = "nextTemporaryId")]
         internal long SerializedNextTemporaryId
         {
-            get { return _nextTemporaryId; }
-            set { _nextTemporaryId = value; }
+            get { return this.nextTemporaryId; }
+            set { this.nextTemporaryId = value; }
         }
 
         [DataMember(EmitDefaultValue = false)]
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Called from Serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Called from Serialization")]
         internal Dictionary<BookmarkScope, BookmarkManager> SerializedBookmarkManagers
         {
             get
             {
-                Fx.Assert(_bookmarkManagers != null && _bookmarkManagers.Count > 0, "We always have the default sub instance.");
+                Fx.Assert(this.bookmarkManagers != null && this.bookmarkManagers.Count > 0, "We always have the default sub instance.");
 
-                return _bookmarkManagers;
+                return this.bookmarkManagers;
             }
             set
             {
                 Fx.Assert(value != null, "We don't serialize null.");
-                _bookmarkManagers = value;
+                this.bookmarkManagers = value;
             }
         }
 
         [DataMember(EmitDefaultValue = false)]
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, //Justification = "Called from Serialization")]
+        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode, Justification = "Called from Serialization")]
         internal List<BookmarkScope> SerializedUninitializedScopes
         {
             get
             {
-                if (_uninitializedScopes == null || _uninitializedScopes.Count == 0)
+                if (this.uninitializedScopes == null || this.uninitializedScopes.Count == 0)
                 {
                     return null;
                 }
                 else
                 {
-                    return _uninitializedScopes;
+                    return this.uninitializedScopes;
                 }
             }
             set
             {
                 Fx.Assert(value != null, "We don't serialize null.");
-                _uninitializedScopes = value;
+                this.uninitializedScopes = value;
             }
         }
 
         private long GetNextTemporaryId()
         {
-            long temp = _nextTemporaryId;
-            _nextTemporaryId++;
+            long temp = this.nextTemporaryId;
+            this.nextTemporaryId++;
 
             return temp;
         }
@@ -121,17 +119,16 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(scope != null, "We should never have a null scope.");
 
-            BookmarkManager manager = null;
             BookmarkScope lookupScope = scope;
 
             if (scope.IsDefault)
             {
-                lookupScope = _defaultScope;
+                lookupScope = this.defaultScope;
             }
 
-            if (!_bookmarkManagers.TryGetValue(lookupScope, out manager))
+            if (!this.bookmarkManagers.TryGetValue(lookupScope, out BookmarkManager manager))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RegisteredBookmarkScopeRequired));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RegisteredBookmarkScopeRequired));
             }
 
             return manager.CreateBookmark(name, callback, owningInstance, options);
@@ -145,11 +142,10 @@ namespace CoreWf.Runtime
 
             if (scope.IsDefault)
             {
-                lookupScope = _defaultScope;
+                lookupScope = this.defaultScope;
             }
 
-            BookmarkManager manager;
-            if (_bookmarkManagers.TryGetValue(lookupScope, out manager))
+            if (this.bookmarkManagers.TryGetValue(lookupScope, out BookmarkManager manager))
             {
                 return manager.Remove(bookmark, instanceAttemptingRemove);
             }
@@ -163,18 +159,17 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(scope != null, "We should never have a null sub instance.");
 
-            BookmarkManager manager = null;
             workItem = null;
             BookmarkScope lookupScope = scope;
 
             if (scope.IsDefault)
             {
-                lookupScope = _defaultScope;
+                lookupScope = this.defaultScope;
             }
 
             // We don't really care about the return value since we'll
             // use null to know we should check uninitialized sub instances
-            _bookmarkManagers.TryGetValue(lookupScope, out manager);
+            this.bookmarkManagers.TryGetValue(lookupScope, out BookmarkManager manager);
 
             if (manager == null)
             {
@@ -183,18 +178,15 @@ namespace CoreWf.Runtime
                 BookmarkResumptionResult finalResult = BookmarkResumptionResult.NotFound;
 
                 // Check the uninitialized sub instances for a matching bookmark
-                if (_uninitializedScopes != null)
+                if (this.uninitializedScopes != null)
                 {
-                    for (int i = 0; i < _uninitializedScopes.Count; i++)
+                    for (int i = 0; i < this.uninitializedScopes.Count; i++)
                     {
-                        BookmarkScope uninitializedScope = _uninitializedScopes[i];
+                        BookmarkScope uninitializedScope = this.uninitializedScopes[i];
 
-                        Fx.Assert(_bookmarkManagers.ContainsKey(uninitializedScope), "We must always have the uninitialized sub instances.");
-
-                        Bookmark internalBookmark;
-                        BookmarkCallbackWrapper callbackWrapper;
+                        Fx.Assert(this.bookmarkManagers.ContainsKey(uninitializedScope), "We must always have the uninitialized sub instances.");
                         BookmarkResumptionResult resumptionResult;
-                        if (!_bookmarkManagers[uninitializedScope].TryGetBookmarkFromInternalList(bookmark, out internalBookmark, out callbackWrapper))
+                        if (!this.bookmarkManagers[uninitializedScope].TryGetBookmarkFromInternalList(bookmark, out Bookmark internalBookmark, out BookmarkCallbackWrapper callbackWrapper))
                         {
                             resumptionResult = BookmarkResumptionResult.NotFound;
                         }
@@ -202,9 +194,9 @@ namespace CoreWf.Runtime
                         {
                             resumptionResult = BookmarkResumptionResult.NotReady;
                         }
-                        else
+                        else 
                         {
-                            resumptionResult = _bookmarkManagers[uninitializedScope].TryGenerateWorkItem(executor, true, ref bookmark, value, isolationInstance, out workItem);
+                            resumptionResult = this.bookmarkManagers[uninitializedScope].TryGenerateWorkItem(executor, true, ref bookmark, value, isolationInstance, out workItem);
                         }
 
                         if (resumptionResult == BookmarkResumptionResult.Success)
@@ -251,10 +243,8 @@ namespace CoreWf.Runtime
             }
             else
             {
-                Bookmark bookmarkFromList;
-                BookmarkCallbackWrapper callbackWrapper;
                 BookmarkResumptionResult resumptionResult;
-                if (!manager.TryGetBookmarkFromInternalList(bookmark, out bookmarkFromList, out callbackWrapper))
+                if (!manager.TryGetBookmarkFromInternalList(bookmark, out Bookmark bookmarkFromList, out BookmarkCallbackWrapper callbackWrapper))
                 {
                     resumptionResult = BookmarkResumptionResult.NotFound;
                 }
@@ -268,7 +258,7 @@ namespace CoreWf.Runtime
                     {
                         resumptionResult = manager.TryGenerateWorkItem(executor, true, ref bookmark, value, isolationInstance, out workItem);
                     }
-                }
+               }
 
 
                 if (resumptionResult == BookmarkResumptionResult.NotFound)
@@ -285,7 +275,7 @@ namespace CoreWf.Runtime
 
         public void PopulateBookmarkInfo(ref List<BookmarkInfo> bookmarks)
         {
-            foreach (BookmarkManager manager in _bookmarkManagers.Values)
+            foreach (BookmarkManager manager in this.bookmarkManagers.Values)
             {
                 if (manager.HasBookmarks)
                 {
@@ -303,15 +293,14 @@ namespace CoreWf.Runtime
         {
             Fx.Assert(scope != null, "We should never be passed null here.");
 
-            BookmarkManager manager = null;
             BookmarkScope lookupScope = scope;
 
             if (scope.IsDefault)
             {
-                lookupScope = _defaultScope;
+                lookupScope = this.defaultScope;
             }
 
-            if (_bookmarkManagers.TryGetValue(lookupScope, out manager))
+            if (this.bookmarkManagers.TryGetValue(lookupScope, out BookmarkManager manager))
             {
                 if (!manager.HasBookmarks)
                 {
@@ -336,25 +325,25 @@ namespace CoreWf.Runtime
 
         public ICollection<InstanceKey> GetKeysToAssociate()
         {
-            if (_keysToAssociate == null || _keysToAssociate.Count == 0)
+            if (this.keysToAssociate == null || this.keysToAssociate.Count == 0)
             {
                 return null;
             }
 
-            ICollection<InstanceKey> result = _keysToAssociate;
-            _keysToAssociate = null;
+            ICollection<InstanceKey> result = this.keysToAssociate;
+            this.keysToAssociate = null;
             return result;
         }
 
         public ICollection<InstanceKey> GetKeysToDisassociate()
         {
-            if (_keysToDisassociate == null || _keysToDisassociate.Count == 0)
+            if (this.keysToDisassociate == null || this.keysToDisassociate.Count == 0)
             {
                 return null;
             }
 
-            ICollection<InstanceKey> result = _keysToDisassociate;
-            _keysToDisassociate = null;
+            ICollection<InstanceKey> result = this.keysToDisassociate;
+            this.keysToDisassociate = null;
             return result;
         }
 
@@ -374,30 +363,30 @@ namespace CoreWf.Runtime
 
             if (scope.IsDefault)
             {
-                lookupScope = _defaultScope;
+                lookupScope = this.defaultScope;
             }
 
-            if (_uninitializedScopes == null || !_uninitializedScopes.Contains(lookupScope))
+            if (this.uninitializedScopes == null || !this.uninitializedScopes.Contains(lookupScope))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForInitialize));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForInitialize));
             }
 
-            Fx.Assert(_bookmarkManagers != null, "This is never null if uninitializedScopes is non-null.");
+            Fx.Assert(this.bookmarkManagers != null, "This is never null if uninitializedScopes is non-null.");
 
-            if (_bookmarkManagers.ContainsKey(new BookmarkScope(id)))
+            if (this.bookmarkManagers.ContainsKey(new BookmarkScope(id)))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeWithIdAlreadyExists(id)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeWithIdAlreadyExists(id)));
             }
 
-            BookmarkManager bookmarks = _bookmarkManagers[lookupScope];
-            _bookmarkManagers.Remove(lookupScope);
-            _uninitializedScopes.Remove(lookupScope);
+            BookmarkManager bookmarks = this.bookmarkManagers[lookupScope];
+            this.bookmarkManagers.Remove(lookupScope);
+            this.uninitializedScopes.Remove(lookupScope);
 
             long temporaryId = lookupScope.TemporaryId;
             // We initialize and re-add to our dictionary.  We have to
             // re-add because the hash has changed.
             lookupScope.Id = id;
-            _bookmarkManagers.Add(lookupScope, bookmarks);
+            this.bookmarkManagers.Add(lookupScope, bookmarks);
 
             if (TD.BookmarkScopeInitializedIsEnabled())
             {
@@ -414,9 +403,9 @@ namespace CoreWf.Runtime
 
         internal BookmarkScope CreateAndRegisterScope(Guid scopeId, BookmarkScopeHandle scopeHandle)
         {
-            if (_bookmarkManagers == null)
+            if (this.bookmarkManagers == null)
             {
-                _bookmarkManagers = new Dictionary<BookmarkScope, BookmarkManager>();
+                this.bookmarkManagers = new Dictionary<BookmarkScope, BookmarkManager>();
             }
 
             BookmarkScope scope = null;
@@ -426,26 +415,26 @@ namespace CoreWf.Runtime
                 // This is the very first activity which started the sub-instance
                 //
                 scope = new BookmarkScope(GetNextTemporaryId());
-                _bookmarkManagers.Add(scope, new BookmarkManager(scope, scopeHandle));
+                this.bookmarkManagers.Add(scope, new BookmarkManager(scope, scopeHandle));
 
                 if (TD.CreateBookmarkScopeIsEnabled())
                 {
                     TD.CreateBookmarkScope(ActivityUtilities.GetTraceString(scope));
                 }
 
-                if (_uninitializedScopes == null)
+                if (this.uninitializedScopes == null)
                 {
-                    _uninitializedScopes = new List<BookmarkScope>();
+                    this.uninitializedScopes = new List<BookmarkScope>();
                 }
 
-                _uninitializedScopes.Add(scope);
+                this.uninitializedScopes.Add(scope);
             }
             else
             {
                 //
                 // Try to find one in the existing sub-instances
                 //
-                foreach (BookmarkScope eachScope in _bookmarkManagers.Keys)
+                foreach (BookmarkScope eachScope in this.bookmarkManagers.Keys)
                 {
                     if (eachScope.Id.Equals(scopeId))
                     {
@@ -461,7 +450,7 @@ namespace CoreWf.Runtime
                 if (scope == null)
                 {
                     scope = new BookmarkScope(scopeId);
-                    _bookmarkManagers.Add(scope, new BookmarkManager(scope, scopeHandle));
+                    this.bookmarkManagers.Add(scope, new BookmarkManager(scope, scopeHandle));
 
                     if (TD.CreateBookmarkScopeIsEnabled())
                     {
@@ -477,58 +466,58 @@ namespace CoreWf.Runtime
 
         private void CreateAssociatedKey(BookmarkScope newScope)
         {
-            if (_keysToAssociate == null)
+            if (this.keysToAssociate == null)
             {
-                _keysToAssociate = new List<InstanceKey>(2);
+                this.keysToAssociate = new List<InstanceKey>(2);
             }
-            _keysToAssociate.Add(new InstanceKey(newScope.Id));
+            this.keysToAssociate.Add(new InstanceKey(newScope.Id));
         }
 
         public void UnregisterScope(BookmarkScope scope)
         {
             Fx.Assert(!scope.IsDefault, "Cannot unregister the default sub instance.");
 
-            if (_bookmarkManagers == null || !_bookmarkManagers.ContainsKey(scope))
+            if (this.bookmarkManagers == null || !this.bookmarkManagers.ContainsKey(scope))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForUnregister));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeNotRegisteredForUnregister));
             }
 
-            if (_bookmarkManagers[scope].HasBookmarks)
+            if (this.bookmarkManagers[scope].HasBookmarks)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeHasBookmarks));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopeHasBookmarks));
             }
 
-            _bookmarkManagers.Remove(scope);
+            this.bookmarkManagers.Remove(scope);
 
             if (!scope.IsInitialized)
             {
-                Fx.Assert(_uninitializedScopes != null && _uninitializedScopes.Contains(scope), "Something is wrong with our housekeeping.");
+                Fx.Assert(this.uninitializedScopes != null && this.uninitializedScopes.Contains(scope), "Something is wrong with our housekeeping.");
 
-                _uninitializedScopes.Remove(scope);
+                this.uninitializedScopes.Remove(scope);
             }
             else
             {
-                if (_keysToDisassociate == null)
+                if (this.keysToDisassociate == null)
                 {
-                    _keysToDisassociate = new List<InstanceKey>(2);
+                    this.keysToDisassociate = new List<InstanceKey>(2);
                 }
-                _keysToDisassociate.Add(new InstanceKey(scope.Id));
-                Fx.Assert(_uninitializedScopes == null || !_uninitializedScopes.Contains(scope), "We shouldn't have this in the uninitialized list.");
+                this.keysToDisassociate.Add(new InstanceKey(scope.Id));
+                Fx.Assert(this.uninitializedScopes == null || !this.uninitializedScopes.Contains(scope), "We shouldn't have this in the uninitialized list.");
             }
         }
 
         private bool IsStable(BookmarkScope scope, bool nonScopedBookmarksExist)
         {
-            Fx.Assert(_bookmarkManagers.ContainsKey(scope), "The caller should have made sure this scope exists in the bookmark managers dictionary.");
+            Fx.Assert(this.bookmarkManagers.ContainsKey(scope), "The caller should have made sure this scope exists in the bookmark managers dictionary.");
 
             if (nonScopedBookmarksExist)
             {
                 return false;
             }
 
-            if (_bookmarkManagers != null)
+            if (this.bookmarkManagers != null)
             {
-                foreach (KeyValuePair<BookmarkScope, BookmarkManager> scopeBookmarks in _bookmarkManagers)
+                foreach (KeyValuePair<BookmarkScope, BookmarkManager> scopeBookmarks in this.bookmarkManagers)
                 {
                     IEquatable<BookmarkScope> comparison = scopeBookmarks.Key;
                     if (!comparison.Equals(scope))
@@ -589,11 +578,11 @@ namespace CoreWf.Runtime
 
                 if (bookmark.Scope.IsDefault)
                 {
-                    lookupScope = _defaultScope;
+                    lookupScope = this.defaultScope;
                 }
 
-                Fx.Assert(_bookmarkManagers.ContainsKey(bookmark.Scope), "We should have the single bookmark's sub instance registered");
-                manager = _bookmarkManagers[bookmark.Scope];
+                Fx.Assert(this.bookmarkManagers.ContainsKey(bookmark.Scope), "We should have the single bookmark's sub instance registered");
+                manager = this.bookmarkManagers[bookmark.Scope];
             }
             else
             {

@@ -1,7 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using System;
 using System.Collections.Generic;
 
 namespace Test.Common.TestObjects.Utilities.Validation
@@ -38,9 +37,11 @@ namespace Test.Common.TestObjects.Utilities.Validation
             // This can be any combination of ordered/unordered traces, and we have to maintain that architecture
 
             // use copy constructor to maintain Expected traces' settings
-            ExpectedTrace expectedTrace = new ExpectedTrace(et);
-            // copy constructor will also copy of the expected traces, need to clear them
-            expectedTrace.Trace = FilterTraceGroup(et.Trace);
+            ExpectedTrace expectedTrace = new ExpectedTrace(et)
+            {
+                // copy constructor will also copy of the expected traces, need to clear them
+                Trace = FilterTraceGroup(et.Trace)
+            };
             return expectedTrace;
         }
 
@@ -91,14 +92,12 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         public override bool IsAllowed(IActualTraceStep actualTrace)
         {
-            ActivityTrace at = actualTrace as ActivityTrace;
-            return at == null || !this.DisplayNames.Contains(at.ActivityName);
+            return !(actualTrace is ActivityTrace at) || !this.DisplayNames.Contains(at.ActivityName);
         }
 
         public override bool IsAllowed(WorkflowTraceStep actualTrace)
         {
-            ActivityTrace at = actualTrace as ActivityTrace;
-            return at == null || !this.DisplayNames.Contains(at.ActivityName);
+            return !(actualTrace is ActivityTrace at) || !this.DisplayNames.Contains(at.ActivityName);
         }
     }
 

@@ -1,11 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Tracking;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+
     [Fx.Tag.XamlVisible(false)]
     public class CodeActivityContext : ActivityContext
     {
@@ -38,14 +39,14 @@ namespace CoreWf
                 return null;
             }
         }
-
+        
         public void Track(CustomTrackingRecord record)
         {
             ThrowIfDisposed();
 
             if (record == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("record");
+                throw FxTrace.Exception.ArgumentNull(nameof(record));
             }
 
             base.TrackCore(record);

@@ -1,34 +1,30 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Hosting;
+    using System.Collections.Generic;
+    using System.Threading;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     public sealed class WorkflowInvoker
     {
-        private static AsyncCallback s_cancelCallback;
-        private static AsyncCallback s_invokeCallback;
-        private WorkflowInstanceExtensionManager _extensions;
-        private Dictionary<object, AsyncInvokeContext> _pendingInvokes;
-        private SendOrPostCallback _raiseInvokeCompletedCallback;
-        private object _thisLock;
-        private Activity _workflow;
+        private static AsyncCallback cancelCallback;
+        private static AsyncCallback invokeCallback;
+        private WorkflowInstanceExtensionManager extensions;
+        private Dictionary<object, AsyncInvokeContext> pendingInvokes;
+        private SendOrPostCallback raiseInvokeCompletedCallback;
+        private readonly object thisLock;
+        private readonly Activity workflow;
 
         public WorkflowInvoker(Activity workflow)
         {
-            if (workflow == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
-            }
-
-            _workflow = workflow;
-            _thisLock = new object();
+            this.workflow = workflow ?? throw FxTrace.Exception.ArgumentNull(nameof(workflow));
+            this.thisLock = new object();
         }
 
         public event EventHandler<InvokeCompletedEventArgs> InvokeCompleted;
@@ -37,12 +33,12 @@ namespace CoreWf
         {
             get
             {
-                if (_extensions == null)
+                if (this.extensions == null)
                 {
-                    _extensions = new WorkflowInstanceExtensionManager();
+                    this.extensions = new WorkflowInstanceExtensionManager();
                 }
 
-                return _extensions;
+                return this.extensions;
             }
         }
 
@@ -50,11 +46,11 @@ namespace CoreWf
         {
             get
             {
-                if (_pendingInvokes == null)
+                if (this.pendingInvokes == null)
                 {
-                    _pendingInvokes = new Dictionary<object, AsyncInvokeContext>();
+                    this.pendingInvokes = new Dictionary<object, AsyncInvokeContext>();
                 }
-                return _pendingInvokes;
+                return this.pendingInvokes;
             }
         }
 
@@ -62,12 +58,12 @@ namespace CoreWf
         {
             get
             {
-                if (_raiseInvokeCompletedCallback == null)
+                if (this.raiseInvokeCompletedCallback == null)
                 {
-                    _raiseInvokeCompletedCallback =
+                    this.raiseInvokeCompletedCallback =
                         Fx.ThunkCallback(new SendOrPostCallback(this.RaiseInvokeCompleted));
                 }
-                return _raiseInvokeCompletedCallback;
+                return this.raiseInvokeCompletedCallback;
             }
         }
 
@@ -75,7 +71,7 @@ namespace CoreWf
         {
             get
             {
-                return _thisLock;
+                return this.thisLock;
             }
         }
 
@@ -105,7 +101,7 @@ namespace CoreWf
 
         [Fx.Tag.InheritThrows(From = "Invoke")]
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public static TResult Invoke<TResult>(Activity<TResult> workflow)
         {
             return Invoke(workflow, null);
@@ -113,7 +109,7 @@ namespace CoreWf
 
         [Fx.Tag.InheritThrows(From = "Invoke")]
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public static TResult Invoke<TResult>(Activity<TResult> workflow, IDictionary<string, object> inputs)
         {
             return Invoke(workflow, inputs, ActivityDefaults.InvokeTimeout);
@@ -121,18 +117,17 @@ namespace CoreWf
 
         [Fx.Tag.InheritThrows(From = "Invoke")]
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public static TResult Invoke<TResult>(Activity<TResult> workflow, IDictionary<string, object> inputs, TimeSpan timeout)
         {
-            IDictionary<string, object> dummyOutputs;
-            return Invoke(workflow, inputs, out dummyOutputs, timeout);
+            return Invoke(workflow, inputs, out IDictionary<string, object> dummyOutputs, timeout);
         }
 
         [Fx.Tag.InheritThrows(From = "Invoke")]
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters,
-        //Justification = "Arch approved design. Requires the out argument for extra information provided")]
+        //    Justification = "Arch approved design. Requires the out argument for extra information provided")]
         public static TResult Invoke<TResult>(Activity<TResult> workflow, IDictionary<string, object> inputs, out IDictionary<string, object> additionalOutputs, TimeSpan timeout)
         {
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
@@ -144,8 +139,7 @@ namespace CoreWf
             {
                 additionalOutputs = Invoke(workflow, timeout, null);
             }
-            object untypedResult;
-            if (additionalOutputs.TryGetValue("Result", out untypedResult))
+            if (additionalOutputs.TryGetValue("Result", out object untypedResult))
             {
                 additionalOutputs.Remove("Result");
                 return (TResult)untypedResult;
@@ -159,7 +153,7 @@ namespace CoreWf
         [Fx.Tag.InheritThrows(From = "Invoke")]
         public IAsyncResult BeginInvoke(AsyncCallback callback, object state)
         {
-            return BeginInvoke(_workflow, ActivityDefaults.InvokeTimeout, _extensions, callback, state);
+            return BeginInvoke(this.workflow, ActivityDefaults.InvokeTimeout, this.extensions, callback, state);
         }
 
         [Fx.Tag.InheritThrows(From = "Invoke")]
@@ -167,13 +161,13 @@ namespace CoreWf
         {
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-            return BeginInvoke(_workflow, timeout, _extensions, callback, state);
+            return BeginInvoke(this.workflow, timeout, this.extensions, callback, state);
         }
 
         [Fx.Tag.InheritThrows(From = "Invoke")]
         public IAsyncResult BeginInvoke(IDictionary<string, object> inputs, AsyncCallback callback, object state)
         {
-            return BeginInvoke(_workflow, inputs, ActivityDefaults.InvokeTimeout, _extensions, callback, state);
+            return BeginInvoke(this.workflow, inputs, ActivityDefaults.InvokeTimeout, this.extensions, callback, state);
         }
 
         [Fx.Tag.InheritThrows(From = "Invoke")]
@@ -181,27 +175,27 @@ namespace CoreWf
         {
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-            return BeginInvoke(_workflow, inputs, timeout, _extensions, callback, state);
+            return BeginInvoke(this.workflow, inputs, timeout, this.extensions, callback, state);
         }
 
         public void CancelAsync(object userState)
         {
             if (userState == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("userState");
+                throw FxTrace.Exception.ArgumentNull(nameof(userState));
             }
 
             AsyncInvokeContext context = this.RemoveFromPendingInvokes(userState);
             if (context != null)
             {
                 // cancel does not need a timeout since it's bounded by the invoke timeout
-                if (s_cancelCallback == null)
+                if (cancelCallback == null)
                 {
-                    s_cancelCallback = Fx.ThunkCallback(new AsyncCallback(CancelCallback));
+                    cancelCallback = Fx.ThunkCallback(new AsyncCallback(CancelCallback));
                 }
                 // cancel only throws TimeoutException and shouldnt throw at all if timeout is infinite
                 // cancel does not need to raise InvokeCompleted since the InvokeAsync invocation would raise it
-                IAsyncResult result = context.WorkflowApplication.BeginCancel(TimeSpan.MaxValue, s_cancelCallback, context);
+                IAsyncResult result = context.WorkflowApplication.BeginCancel(TimeSpan.MaxValue, cancelCallback, context);
                 if (result.CompletedSynchronously)
                 {
                     context.WorkflowApplication.EndCancel(result);
@@ -218,7 +212,7 @@ namespace CoreWf
         [Fx.Tag.Throws.Timeout("A timeout occurred when invoking the workflow")]
         public IDictionary<string, object> Invoke()
         {
-            return WorkflowInvoker.Invoke(_workflow, ActivityDefaults.InvokeTimeout, _extensions);
+            return WorkflowInvoker.Invoke(this.workflow, ActivityDefaults.InvokeTimeout, this.extensions);
         }
 
         [Fx.Tag.Throws.Timeout("A timeout occurred when invoking the workflow")]
@@ -226,13 +220,13 @@ namespace CoreWf
         {
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-            return WorkflowInvoker.Invoke(_workflow, timeout, _extensions);
+            return WorkflowInvoker.Invoke(this.workflow, timeout, this.extensions);
         }
 
         [Fx.Tag.Throws.Timeout("A timeout occurred when invoking the workflow")]
         public IDictionary<string, object> Invoke(IDictionary<string, object> inputs)
         {
-            return WorkflowInvoker.Invoke(_workflow, inputs, ActivityDefaults.InvokeTimeout, _extensions);
+            return WorkflowInvoker.Invoke(this.workflow, inputs, ActivityDefaults.InvokeTimeout, this.extensions);
         }
 
         [Fx.Tag.Throws.Timeout("A timeout occurred when invoking the workflow")]
@@ -240,7 +234,7 @@ namespace CoreWf
         {
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-            return WorkflowInvoker.Invoke(_workflow, inputs, timeout, _extensions);
+            return WorkflowInvoker.Invoke(this.workflow, inputs, timeout, this.extensions);
         }
 
         public void InvokeAsync()
@@ -284,7 +278,7 @@ namespace CoreWf
         {
             if (inputs == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
+                throw FxTrace.Exception.ArgumentNull(nameof(inputs));
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -296,7 +290,7 @@ namespace CoreWf
         {
             if (workflow == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
+                throw FxTrace.Exception.ArgumentNull(nameof(workflow));
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
@@ -318,12 +312,12 @@ namespace CoreWf
         {
             if (workflow == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflow");
+                throw FxTrace.Exception.ArgumentNull(nameof(workflow));
             }
 
             if (inputs == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
+                throw FxTrace.Exception.ArgumentNull(nameof(inputs));
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
@@ -346,26 +340,26 @@ namespace CoreWf
             {
                 if (this.PendingInvokes.ContainsKey(context.UserState))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.SameUserStateUsedForMultipleInvokes));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SameUserStateUsedForMultipleInvokes));
                 }
                 this.PendingInvokes.Add(context.UserState, context);
             }
         }
-        [Fx.Tag.InheritThrows(From = "Invoke")]
 
+        [Fx.Tag.InheritThrows(From = "Invoke")]
         private IAsyncResult BeginInvoke(Activity workflow, IDictionary<string, object> inputs, TimeSpan timeout, WorkflowInstanceExtensionManager extensions, AsyncCallback callback, object state)
         {
             if (inputs == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
+                throw FxTrace.Exception.ArgumentNull(nameof(inputs));
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
             return WorkflowApplication.BeginInvoke(workflow, inputs, extensions, timeout, null, null, callback, state);
         }
-        [Fx.Tag.InheritThrows(From = "Invoke")]
 
+        [Fx.Tag.InheritThrows(From = "Invoke")]
         private IAsyncResult BeginInvoke(Activity workflow, TimeSpan timeout, WorkflowInstanceExtensionManager extensions, AsyncCallback callback, object state)
         {
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
@@ -395,12 +389,12 @@ namespace CoreWf
             bool completedSynchronously = false;
             try
             {
-                if (s_invokeCallback == null)
+                if (invokeCallback == null)
                 {
-                    s_invokeCallback = Fx.ThunkCallback(new AsyncCallback(InvokeCallback));
+                    invokeCallback = Fx.ThunkCallback(new AsyncCallback(InvokeCallback));
                 }
                 context.Operation.OperationStarted();
-                IAsyncResult result = WorkflowApplication.BeginInvoke(_workflow, inputs, _extensions, timeout, SynchronizationContext.Current, context, s_invokeCallback, context);
+                IAsyncResult result = WorkflowApplication.BeginInvoke(this.workflow, inputs, this.extensions, timeout, SynchronizationContext.Current, context, invokeCallback, context);
                 if (result.CompletedSynchronously)
                 {
                     context.Outputs = this.EndInvoke(result);

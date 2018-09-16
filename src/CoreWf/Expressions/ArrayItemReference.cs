@@ -1,13 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf.Internals;
+    using System;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Runtime.Serialization;
+
     public sealed class ArrayItemReference<TItem> : CodeActivity<Location<TItem>>
     {
         public ArrayItemReference()
@@ -57,7 +58,7 @@ namespace CoreWf.Expressions
             TItem[] items = this.Array.Get(context);
             if (items == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Array", this.GetType().Name, this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Array", this.GetType().Name, this.DisplayName)));
             }
             int itemIndex = this.Index.Get(context);
             return new ArrayLocation(items, itemIndex);
@@ -66,41 +67,40 @@ namespace CoreWf.Expressions
         [DataContract]
         internal class ArrayLocation : Location<TItem>
         {
-            private TItem[] _array;
-
-            private int _index;
+            private TItem[] array;
+            private int index;
 
             public ArrayLocation(TItem[] array, int index)
                 : base()
             {
-                _array = array;
-                _index = index;
+                this.array = array;
+                this.index = index;
             }
 
             public override TItem Value
             {
                 get
                 {
-                    return _array[_index];
+                    return this.array[this.index];
                 }
                 set
                 {
-                    _array[_index] = value;
+                    this.array[this.index] = value;
                 }
             }
 
             [DataMember(Name = "array")]
             internal TItem[] SerializedArray
             {
-                get { return _array; }
-                set { _array = value; }
+                get { return this.array; }
+                set { this.array = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "index")]
             internal int SerializedIndex
             {
-                get { return _index; }
-                set { _index = value; }
+                get { return this.index; }
+                set { this.index = value; }
             }
         }
     }

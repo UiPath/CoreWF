@@ -1,66 +1,67 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Statements
 {
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using System.Linq;
+    using CoreWf.Expressions;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
 
-    //[ContentProperty("Body")]
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Body")]
     public sealed class CompensableActivity : NativeActivity<CompensationToken>
     {
-        private static Constraint s_noCompensableActivityInSecondaryRoot = CompensableActivity.NoCompensableActivityInSecondaryRoot();
-
-        private Collection<Variable> _variables;
-
-        private CompensationParticipant _compensationParticipant;
-
-        private Variable<long> _currentCompensationId;
-        private Variable<CompensationToken> _currentCompensationToken;
+        private static readonly Constraint noCompensableActivityInSecondaryRoot = CompensableActivity.NoCompensableActivityInSecondaryRoot();
+        private Collection<Variable> variables;
+        private CompensationParticipant compensationParticipant;
+        private readonly Variable<long> currentCompensationId;
+        private readonly Variable<CompensationToken> currentCompensationToken;
 
         // This id will be passed to secondary root. 
-        private Variable<long> _compensationId;
+        private readonly Variable<long> compensationId;
 
         public CompensableActivity()
             : base()
         {
-            _currentCompensationToken = new Variable<CompensationToken>();
-            _currentCompensationId = new Variable<long>();
-            _compensationId = new Variable<long>();
+            this.currentCompensationToken = new Variable<CompensationToken>();
+            this.currentCompensationId = new Variable<long>();
+            this.compensationId = new Variable<long>();
         }
 
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public Activity Body
         {
             get;
@@ -68,7 +69,7 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Body")]
+        [DependsOn("Body")]
         public Activity CancellationHandler
         {
             get;
@@ -76,7 +77,7 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("CancellationHandler")]
+        [DependsOn("CancellationHandler")]
         public Activity CompensationHandler
         {
             get;
@@ -84,7 +85,7 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("CompensationHandler")]
+        [DependsOn("CompensationHandler")]
         public Activity ConfirmationHandler
         {
             get;
@@ -104,39 +105,41 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_compensationParticipant == null)
+                if (this.compensationParticipant == null)
                 {
-                    _compensationParticipant = new CompensationParticipant(_compensationId);
+                    this.compensationParticipant = new CompensationParticipant(this.compensationId);
 
                     if (CompensationHandler != null)
                     {
-                        _compensationParticipant.CompensationHandler = CompensationHandler;
+                        this.compensationParticipant.CompensationHandler = CompensationHandler;
                     }
 
                     if (ConfirmationHandler != null)
                     {
-                        _compensationParticipant.ConfirmationHandler = ConfirmationHandler;
+                        this.compensationParticipant.ConfirmationHandler = ConfirmationHandler;
                     }
 
                     if (CancellationHandler != null)
                     {
-                        _compensationParticipant.CancellationHandler = CancellationHandler;
+                        this.compensationParticipant.CancellationHandler = CancellationHandler;
                     }
                 }
 
-                return _compensationParticipant;
+                return this.compensationParticipant;
             }
 
             set
             {
-                _compensationParticipant = value;
+                this.compensationParticipant = value;
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -145,11 +148,11 @@ namespace CoreWf.Statements
             metadata.SetImplementationVariablesCollection(
                 new Collection<Variable>
                 {
-                    _currentCompensationId,
-                    _currentCompensationToken,
+                    this.currentCompensationId,
+                    this.currentCompensationToken,
 
                     // Add the variables which are only used by the secondary root
-                    _compensationId
+                    this.compensationId
                 });
 
             if (this.Body != null)
@@ -198,7 +201,7 @@ namespace CoreWf.Statements
 
         internal override IList<Constraint> InternalGetConstraints()
         {
-            return new List<Constraint>(1) { s_noCompensableActivityInSecondaryRoot };
+            return new List<Constraint>(1) { noCompensableActivityInSecondaryRoot };
         }
 
         private static Constraint NoCompensableActivityInSecondaryRoot()
@@ -217,13 +220,13 @@ namespace CoreWf.Statements
                     Argument2 = validationContext,
                     Handler = new Sequence
                     {
-                        Variables =
+                        Variables = 
                         {
                             assertFlag,
                             elements,
                             index
                         },
-                        Activities =
+                        Activities = 
                         {
                             new Assign<IEnumerable<Activity>>
                             {
@@ -247,7 +250,7 @@ namespace CoreWf.Statements
 
                                 Body = new Sequence
                                 {
-                                    Activities =
+                                    Activities = 
                                     {
                                         // Need to replace the lambda expression with a CodeActivity for partial trust.
                                         // new If(env => (elements.Get(env).ElementAt(index.Get(env))).GetType() == typeof(CompensationParticipant))
@@ -263,7 +266,7 @@ namespace CoreWf.Statements
                                             Then = new Assign<bool>
                                             {
                                                 To = assertFlag,
-                                                Value = false
+                                                Value = false                                                            
                                             },
                                         },
                                         new Assign<int>
@@ -286,11 +289,11 @@ namespace CoreWf.Statements
                                         },
                                     }
                                 }
-                            },
+                            },                            
                             new AssertValidation
                             {
                                 Assertion = new InArgument<bool>(assertFlag),
-                                Message = new InArgument<string>(SR.NoCAInSecondaryRoot)
+                                Message = new InArgument<string>(SR.NoCAInSecondaryRoot)   
                             }
                         }
                     }
@@ -339,23 +342,23 @@ namespace CoreWf.Statements
             {
                 if (compensationExtension.Get(parentToken.CompensationId).IsTokenValidInSecondaryRoot)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.NoCAInSecondaryRoot));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.NoCAInSecondaryRoot));
                 }
 
                 parentCompensationId = parentToken.CompensationId;
             }
 
             CompensationTokenData tokenData = new CompensationTokenData(compensationExtension.GetNextId(), parentCompensationId)
-            {
-                CompensationState = CompensationState.Active,
-                DisplayName = this.DisplayName,
-            };
+                {
+                    CompensationState = CompensationState.Active,
+                    DisplayName = this.DisplayName,
+                };
             CompensationToken token = new CompensationToken(tokenData);
 
             context.Properties.Add(CompensationToken.PropertyName, token);
 
-            _currentCompensationId.Set(context, token.CompensationId);
-            _currentCompensationToken.Set(context, token);
+            this.currentCompensationId.Set(context, token.CompensationId);
+            this.currentCompensationToken.Set(context, token);
 
             compensationExtension.Add(token.CompensationId, tokenData);
 
@@ -386,7 +389,7 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            CompensationTokenData token = compensationExtension.Get(_currentCompensationId.Get(context));
+            CompensationTokenData token = compensationExtension.Get(this.currentCompensationId.Get(context));
             Fx.Assert(token != null, "CompensationTokenData must be valid");
 
             if (completedInstance.State == ActivityInstanceState.Closed)
@@ -435,13 +438,13 @@ namespace CoreWf.Statements
             // If we are going to Cancel, don't set the out arg...       
             if (Result != null && token.CompensationState == CompensationState.Completed)
             {
-                Result.Set(context, _currentCompensationToken.Get(context));
+                Result.Set(context, this.currentCompensationToken.Get(context));
             }
 
             Fx.Assert(token.BookmarkTable[CompensationBookmarkName.OnSecondaryRootScheduled] == null, "Bookmark should not be already initialized in the bookmark table.");
             token.BookmarkTable[CompensationBookmarkName.OnSecondaryRootScheduled] = context.CreateBookmark(new BookmarkCallback(OnSecondaryRootScheduled));
 
-            _compensationId.Set(context, token.CompensationId);
+            this.compensationId.Set(context, token.CompensationId);
 
             context.ScheduleSecondaryRoot(CompensationParticipant, context.Environment);
         }

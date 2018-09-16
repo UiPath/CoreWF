@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System.Collections.Generic;
+
     public abstract class TrackingQuery
     {
-        private IDictionary<string, string> _queryAnnotations;
+        private IDictionary<string, string> queryAnnotations;
 
         protected TrackingQuery()
         {
@@ -17,11 +17,11 @@ namespace CoreWf.Tracking
         {
             get
             {
-                if (_queryAnnotations == null)
+                if (this.queryAnnotations == null)
                 {
-                    _queryAnnotations = new Dictionary<string, string>();
+                    this.queryAnnotations = new Dictionary<string, string>();
                 }
-                return _queryAnnotations;
+                return this.queryAnnotations;
             }
         }
 
@@ -29,7 +29,7 @@ namespace CoreWf.Tracking
         {
             get
             {
-                return _queryAnnotations != null && _queryAnnotations.Count > 0;
+                return this.queryAnnotations != null && this.queryAnnotations.Count > 0;
             }
         }
     }

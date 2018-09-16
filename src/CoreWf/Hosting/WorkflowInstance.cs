@@ -1,44 +1,47 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
-using CoreWf.Tracking;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
+    using System.Threading;
+    using CoreWf.Runtime.DurableInstancing;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
     [Fx.Tag.XamlVisible(false)]
     public abstract class WorkflowInstance
     {
-        private static readonly IDictionary<string, LocationInfo> s_emptyMappedVariablesDictionary = new ReadOnlyDictionary<string, LocationInfo>(new Dictionary<string, LocationInfo>(0));
-
+        private static readonly IDictionary<string, LocationInfo> EmptyMappedVariablesDictionary = new ReadOnlyDictionary<string, LocationInfo>(new Dictionary<string, LocationInfo>(0));
         private const int True = 1;
         private const int False = 0;
-
-        private WorkflowInstanceControl _controller;
-        private TrackingProvider _trackingProvider;
-        private SynchronizationContext _syncContext;
-        private LocationReferenceEnvironment _hostEnvironment;
-        private ActivityExecutor _executor;
-        private int _isPerformingOperation;
-        private bool _isInitialized;
-        private WorkflowInstanceExtensionCollection _extensions;
+        private WorkflowInstanceControl controller;
+        private TrackingProvider trackingProvider;
+        private SynchronizationContext syncContext;
+        private LocationReferenceEnvironment hostEnvironment;
+        private ActivityExecutor executor;
+        private int isPerformingOperation;
+        private bool isInitialized;
+        private WorkflowInstanceExtensionCollection extensions;
 
         // Tracking for one-time actions per in-memory instance
-        private bool _hasTrackedResumed;
-        private bool _hasTrackedCompletion;
+        private bool hasTrackedResumed;
+        private bool hasTrackedCompletion;
+        private bool isAborted;
+        private Exception abortedException;
 
-        private bool _isAborted;
-        private Exception _abortedException;
-
-        //#if DEBUG
-        //        StackTrace abortStack;
-        //#endif
+#if DEBUG
+        private readonly StackTrace abortStack;
+#endif
 
         protected WorkflowInstance(Activity workflowDefinition)
             : this(workflowDefinition, null)
@@ -47,12 +50,7 @@ namespace CoreWf.Hosting
 
         protected WorkflowInstance(Activity workflowDefinition, WorkflowIdentity definitionIdentity)
         {
-            if (workflowDefinition == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("workflowDefinition");
-            }
-
-            this.WorkflowDefinition = workflowDefinition;
+            this.WorkflowDefinition = workflowDefinition ?? throw FxTrace.Exception.ArgumentNull(nameof(workflowDefinition));
             this.DefinitionIdentity = definitionIdentity;
         }
 
@@ -83,12 +81,12 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _syncContext;
+                return this.syncContext;
             }
             set
             {
                 ThrowIfReadOnly();
-                _syncContext = value;
+                this.syncContext = value;
             }
         }
 
@@ -96,12 +94,12 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _hostEnvironment;
+                return this.hostEnvironment;
             }
             set
             {
                 ThrowIfReadOnly();
-                _hostEnvironment = value;
+                this.hostEnvironment = value;
             }
         }
 
@@ -121,7 +119,7 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _isInitialized;
+                return this.isInitialized;
             }
         }
 
@@ -136,7 +134,7 @@ namespace CoreWf.Hosting
             get
             {
                 Fx.Assert(HasTrackingParticipant, "we should only be called if we have a tracking participant");
-                return _trackingProvider;
+                return this.trackingProvider;
             }
         }
 
@@ -144,21 +142,21 @@ namespace CoreWf.Hosting
         {
             get
             {
-                if (!_isInitialized)
+                if (!this.isInitialized)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ControllerInvalidBeforeInitialize));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ControllerInvalidBeforeInitialize));
                 }
 
-                return _controller;
+                return this.controller;
             }
         }
 
         // host-facing access to our cascading ExtensionManager resolution
         protected internal T GetExtension<T>() where T : class
         {
-            if (_extensions != null)
+            if (this.extensions != null)
             {
-                return _extensions.Find<T>();
+                return this.extensions.Find<T>();
             }
             else
             {
@@ -168,9 +166,9 @@ namespace CoreWf.Hosting
 
         protected internal IEnumerable<T> GetExtensions<T>() where T : class
         {
-            if (_extensions != null)
+            if (this.extensions != null)
             {
-                return _extensions.FindAll<T>();
+                return this.extensions.FindAll<T>();
             }
             else
             {
@@ -182,55 +180,57 @@ namespace CoreWf.Hosting
         protected void RegisterExtensionManager(WorkflowInstanceExtensionManager extensionManager)
         {
             ValidateWorkflow(extensionManager);
-            _extensions = WorkflowInstanceExtensionManager.CreateInstanceExtensions(this.WorkflowDefinition, extensionManager);
-            if (_extensions != null)
+            this.extensions = WorkflowInstanceExtensionManager.CreateInstanceExtensions(this.WorkflowDefinition, extensionManager);
+            if (this.extensions != null)
             {
-                this.HasPersistenceModule = _extensions.HasPersistenceModule;
+                this.HasPersistenceModule = this.extensions.HasPersistenceModule;
             }
         }
 
         // dispose the extensions that implement IDisposable
         protected void DisposeExtensions()
         {
-            if (_extensions != null)
+            if (this.extensions != null)
             {
-                _extensions.Dispose();
-                _extensions = null;
+                this.extensions.Dispose();
+                this.extensions = null;
             }
         }
 
-        //protected static IList<ActivityBlockingUpdate> GetActivitiesBlockingUpdate(object deserializedRuntimeState, DynamicUpdateMap updateMap)
-        //{
-        //    ActivityExecutor executor = deserializedRuntimeState as ActivityExecutor;
-        //    if (executor == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
-        //    }
-        //    if (updateMap == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("updateMap");
-        //    }
+#if NET45
+        protected static IList<ActivityBlockingUpdate> GetActivitiesBlockingUpdate(object deserializedRuntimeState, DynamicUpdateMap updateMap)
+        {
+            ActivityExecutor executor = deserializedRuntimeState as ActivityExecutor;
+            if (executor == null)
+            {
+                throw FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
+            }
+            if (updateMap == null)
+            {
+                throw FxTrace.Exception.ArgumentNull("updateMap");
+            }
 
-        //    DynamicUpdateMap rootMap = updateMap;
-        //    if (updateMap.IsForImplementation)
-        //    {
-        //        rootMap = updateMap.AsRootMap();
-        //    }
-        //    IList<ActivityBlockingUpdate> result = executor.GetActivitiesBlockingUpdate(rootMap);
-        //    if (result == null)
-        //    {
-        //        result = new List<ActivityBlockingUpdate>();
-        //    }
+            DynamicUpdateMap rootMap = updateMap;
+            if (updateMap.IsForImplementation)
+            {
+                rootMap = updateMap.AsRootMap();
+            }
+            IList<ActivityBlockingUpdate> result = executor.GetActivitiesBlockingUpdate(rootMap);
+            if (result == null)
+            {
+                result = new List<ActivityBlockingUpdate>();
+            }
 
-        //    return result;
-        //}
+            return result;
+        } 
+#endif
 
         // used for Create scenarios where you are providing root information
         protected void Initialize(IDictionary<string, object> workflowArgumentValues, IList<Handle> workflowExecutionProperties)
         {
             ThrowIfAborted();
             ThrowIfReadOnly();
-            _executor = new ActivityExecutor(this);
+            this.executor = new ActivityExecutor(this);
 
             EnsureDefinitionReady();
             // workflowArgumentValues signals whether we are a new or loaded instance, so we can't pass in null.
@@ -238,113 +238,131 @@ namespace CoreWf.Hosting
             InitializeCore(workflowArgumentValues ?? ActivityUtilities.EmptyParameters, workflowExecutionProperties);
         }
 
+#if NET45
+
         // used for Load scenarios where you are rehydrating a WorkflowInstance
         protected void Initialize(object deserializedRuntimeState)
         {
-            //    Initialize(deserializedRuntimeState, null);
-            //}        
+            Initialize(deserializedRuntimeState, null);
+        }
 
-            //protected void Initialize(object deserializedRuntimeState, DynamicUpdateMap updateMap)
-            //{
+        protected void Initialize(object deserializedRuntimeState, DynamicUpdateMap updateMap)
+        {
             ThrowIfAborted();
             ThrowIfReadOnly();
-            _executor = deserializedRuntimeState as ActivityExecutor;
+            this.executor = deserializedRuntimeState as ActivityExecutor;
 
-            if (_executor == null)
+            if (this.executor == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
+                throw FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
             }
-            _executor.ThrowIfNonSerializable();
+            this.executor.ThrowIfNonSerializable();
 
             EnsureDefinitionReady();
 
-            WorkflowIdentity originalDefinitionIdentity = _executor.WorkflowIdentity;
-            //bool success = false;
-            //Collection<ActivityBlockingUpdate> updateErrors = null;
-            //try
-            //{
-            //if (updateMap != null)
-            //{
-            //    // check if map is for implementaiton,                    
-            //    if (updateMap.IsForImplementation)
-            //    {
-            //        // if so, the definition root must be an activity 
-            //        // with no public/imported children and no public/imported delegates.
-            //        if (DynamicUpdateMap.CanUseImplementationMapAsRoot(this.WorkflowDefinition))
-            //        {
-            //            updateMap = updateMap.AsRootMap();
-            //        }
-            //        else
-            //        {
-            //            throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidImplementationAsWorkflowRoot));
-            //        }
-            //    }
+            WorkflowIdentity originalDefinitionIdentity = this.executor.WorkflowIdentity;
+            bool success = false;
+            Collection<ActivityBlockingUpdate> updateErrors = null;
+            try
+            {
+                if (updateMap != null)
+                {
+                    // check if map is for implementaiton,                    
+                    if (updateMap.IsForImplementation)
+                    {
+                        // if so, the definition root must be an activity 
+                        // with no public/imported children and no public/imported delegates.
+                        if (DynamicUpdateMap.CanUseImplementationMapAsRoot(this.WorkflowDefinition))
+                        {
+                            updateMap = updateMap.AsRootMap();
+                        }
+                        else
+                        {
+                            throw FxTrace.Exception.AsError(new InstanceUpdateException(SR.InvalidImplementationAsWorkflowRoot));
+                        }
+                    }
 
-            //    updateMap.ThrowIfInvalid(this.WorkflowDefinition);
+                    updateMap.ThrowIfInvalid(this.WorkflowDefinition);
 
-            //    this.executor.WorkflowIdentity = this.DefinitionIdentity;
+                    this.executor.WorkflowIdentity = this.DefinitionIdentity;
 
-            //    this.executor.UpdateInstancePhase1(updateMap, this.WorkflowDefinition, ref updateErrors);
-            //    ThrowIfDynamicUpdateErrorExists(updateErrors);
-            //}
+                    this.executor.UpdateInstancePhase1(updateMap, this.WorkflowDefinition, ref updateErrors);
+                    ThrowIfDynamicUpdateErrorExists(updateErrors);
+                }
 
-            InitializeCore(null, null);
+                InitializeCore(null, null);
 
-            //if (updateMap != null)
-            //{
-            //    this.executor.UpdateInstancePhase2(updateMap, ref updateErrors);
-            //    ThrowIfDynamicUpdateErrorExists(updateErrors);
-            //    // Track that dynamic update is successful
-            //    if (this.Controller.TrackingEnabled)
-            //    {
-            //        this.Controller.Track(new WorkflowInstanceUpdatedRecord(this.Id, this.WorkflowDefinition.DisplayName, originalDefinitionIdentity, this.executor.WorkflowIdentity));
-            //    }
-            //}
+                if (updateMap != null)
+                {
+                    this.executor.UpdateInstancePhase2(updateMap, ref updateErrors);
+                    ThrowIfDynamicUpdateErrorExists(updateErrors);
+                    // Track that dynamic update is successful
+                    if (this.Controller.TrackingEnabled)
+                    {
+                        this.Controller.Track(new WorkflowInstanceUpdatedRecord(this.Id, this.WorkflowDefinition.DisplayName, originalDefinitionIdentity, this.executor.WorkflowIdentity));
+                    }
+                }
 
-            //success = true;
-            //}
-            //catch (InstanceUpdateException updateException)
-            //{
-            //    // Can't track through the controller because initialization failed
-            //    if (this.HasTrackingParticipant && this.TrackingProvider.ShouldTrackWorkflowInstanceRecords)
-            //    {
-            //        IList<ActivityBlockingUpdate> blockingActivities = updateException.BlockingActivities;
-            //        if (blockingActivities.Count == 0)
-            //        {
-            //            blockingActivities = new List<ActivityBlockingUpdate>
-            //            {
-            //                new ActivityBlockingUpdate(this.WorkflowDefinition, this.WorkflowDefinition.Id, updateException.Message)
-            //            }.AsReadOnly();
-            //        }
-            //        this.TrackingProvider.AddRecord(new WorkflowInstanceUpdatedRecord(this.Id, this.WorkflowDefinition.DisplayName, originalDefinitionIdentity, this.DefinitionIdentity, blockingActivities));
-            //    }
-            //    throw;
-            //}
-            //finally
-            //{
-            //if (updateMap != null && !success)
-            //{
-            //    executor.MakeNonSerializable();
-            //}
-            //}            
+                success = true;
+            }
+            catch (InstanceUpdateException updateException)
+            {
+                // Can't track through the controller because initialization failed
+                if (this.HasTrackingParticipant && this.TrackingProvider.ShouldTrackWorkflowInstanceRecords)
+                {
+                    IList<ActivityBlockingUpdate> blockingActivities = updateException.BlockingActivities;
+                    if (blockingActivities.Count == 0)
+                    {
+                        blockingActivities = new List<ActivityBlockingUpdate>
+                        {
+                            new ActivityBlockingUpdate(this.WorkflowDefinition, this.WorkflowDefinition.Id, updateException.Message)
+                        }.AsReadOnly();
+                    }
+                    this.TrackingProvider.AddRecord(new WorkflowInstanceUpdatedRecord(this.Id, this.WorkflowDefinition.DisplayName, originalDefinitionIdentity, this.DefinitionIdentity, blockingActivities));
+                }
+                throw;
+            }
+            finally
+            {
+                if (updateMap != null && !success)
+                {
+                    executor.MakeNonSerializable();
+                }
+            }
         }
 
-        //void ThrowIfDynamicUpdateErrorExists(Collection<ActivityBlockingUpdate> updateErrors)
-        //{
-        //    if (updateErrors != null && updateErrors.Count > 0)
-        //    {
-        //        // update error found
-        //        // exit early
+        void ThrowIfDynamicUpdateErrorExists(Collection<ActivityBlockingUpdate> updateErrors)
+        {
+            if (updateErrors != null && updateErrors.Count > 0)
+            {
+                // update error found
+                // exit early
 
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceUpdateException(updateErrors));
-        //    }
-        //}
+                throw FxTrace.Exception.AsError(new InstanceUpdateException(updateErrors));
+            }
+        } 
+#else
+        protected void Initialize(object deserializedRuntimeState)
+        {
+            ThrowIfAborted();
+            ThrowIfReadOnly();
+            this.executor = deserializedRuntimeState as ActivityExecutor;
+
+            if (this.executor == null)
+            {
+                throw FxTrace.Exception.Argument(nameof(deserializedRuntimeState), SR.InvalidRuntimeState);
+            }
+            this.executor.ThrowIfNonSerializable();
+
+            EnsureDefinitionReady();
+        }
+#endif
 
         private void ValidateWorkflow(WorkflowInstanceExtensionManager extensionManager)
         {
             if (!WorkflowDefinition.IsRuntimeReady)
             {
-                LocationReferenceEnvironment localEnvironment = _hostEnvironment;
+                LocationReferenceEnvironment localEnvironment = this.hostEnvironment;
                 if (localEnvironment == null)
                 {
                     LocationReferenceEnvironment parentEnvironment = null;
@@ -362,26 +380,26 @@ namespace CoreWf.Hosting
 
         private void EnsureDefinitionReady()
         {
-            if (_extensions != null)
+            if (this.extensions != null)
             {
-                _extensions.Initialize();
-                if (_extensions.HasTrackingParticipant)
+                this.extensions.Initialize();
+                if (this.extensions.HasTrackingParticipant)
                 {
                     this.HasTrackingParticipant = true;
-                    if (_trackingProvider == null)
+                    if (this.trackingProvider == null)
                     {
-                        _trackingProvider = new TrackingProvider(this.WorkflowDefinition);
+                        this.trackingProvider = new TrackingProvider(this.WorkflowDefinition);
                     }
                     else
                     {
                         // TrackingProvider could be non-null if an earlier initialization attempt failed.
                         // This happens when WorkflowApplication calls Abort after a load failure. In this
                         // case we want to preserve any pending tracking records (e.g. DU failure).
-                        _trackingProvider.ClearParticipants();
+                        this.trackingProvider.ClearParticipants();
                     }
                     foreach (TrackingParticipant trackingParticipant in GetExtensions<TrackingParticipant>())
                     {
-                        _trackingProvider.AddParticipant(trackingParticipant);
+                        this.trackingProvider.AddParticipant(trackingParticipant);
                     }
                 }
             }
@@ -395,7 +413,7 @@ namespace CoreWf.Hosting
         private void InitializeCore(IDictionary<string, object> workflowArgumentValues, IList<Handle> workflowExecutionProperties)
         {
             Fx.Assert(this.WorkflowDefinition.IsRuntimeReady, "EnsureDefinitionReady should have been called");
-            Fx.Assert(_executor != null, "at this point, we better have an executor");
+            Fx.Assert(this.executor != null, "at this point, we better have an executor");
 
             // Do Argument validation for root activities
             WorkflowDefinition.HasBeenAssociatedWithAnInstance = true;
@@ -414,24 +432,24 @@ namespace CoreWf.Hosting
                     ActivityValidationServices.ValidateRootInputs(this.WorkflowDefinition, actualInputs);
                 }
 
-                _executor.ScheduleRootActivity(this.WorkflowDefinition, actualInputs, workflowExecutionProperties);
+                this.executor.ScheduleRootActivity(this.WorkflowDefinition, actualInputs, workflowExecutionProperties);
             }
             else
             {
-                _executor.OnDeserialized(this.WorkflowDefinition, this);
+                this.executor.OnDeserialized(this.WorkflowDefinition, this);
             }
 
-            _executor.Open(this.SynchronizationContext);
-            _controller = new WorkflowInstanceControl(this, _executor);
-            _isInitialized = true;
+            this.executor.Open(this.SynchronizationContext);
+            this.controller = new WorkflowInstanceControl(this, this.executor);
+            this.isInitialized = true;
 
-            if (_extensions != null && _extensions.HasWorkflowInstanceExtensions)
+            if (this.extensions != null && this.extensions.HasWorkflowInstanceExtensions)
             {
                 WorkflowInstanceProxy proxy = new WorkflowInstanceProxy(this);
 
-                for (int i = 0; i < _extensions.WorkflowInstanceExtensions.Count; i++)
+                for (int i = 0; i < this.extensions.WorkflowInstanceExtensions.Count; i++)
                 {
-                    IWorkflowInstanceExtension extension = _extensions.WorkflowInstanceExtensions[i];
+                    IWorkflowInstanceExtension extension = this.extensions.WorkflowInstanceExtensions[i];
                     extension.SetInstance(proxy);
                 }
             }
@@ -439,9 +457,9 @@ namespace CoreWf.Hosting
 
         protected void ThrowIfReadOnly()
         {
-            if (_isInitialized)
+            if (this.isInitialized)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceIsReadOnly(this.Id)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceIsReadOnly(this.Id)));
             }
         }
 
@@ -510,7 +528,7 @@ namespace CoreWf.Hosting
 
         internal void NotifyPaused()
         {
-            if (_executor.State != ActivityInstanceState.Executing)
+            if (this.executor.State != ActivityInstanceState.Executing)
             {
                 TrackCompletion();
             }
@@ -522,10 +540,10 @@ namespace CoreWf.Hosting
 
         internal void NotifyUnhandledException(Exception exception, Activity source, string sourceInstanceId)
         {
-            if (_controller.TrackingEnabled)
+            if (this.controller.TrackingEnabled)
             {
                 ActivityInfo faultSourceInfo = new ActivityInfo(source.DisplayName, source.Id, sourceInstanceId, source.GetType().FullName);
-                _controller.Track(new WorkflowInstanceUnhandledExceptionRecord(this.Id, this.WorkflowDefinition.DisplayName, faultSourceInfo, exception, this.DefinitionIdentity));
+                this.controller.Track(new WorkflowInstanceUnhandledExceptionRecord(this.Id, this.WorkflowDefinition.DisplayName, faultSourceInfo, exception, this.DefinitionIdentity));
             }
 
             OnNotifyUnhandledException(exception, source, sourceInstanceId);
@@ -546,9 +564,9 @@ namespace CoreWf.Hosting
 
             // isRunning can only flip to true by an operation and therefore
             // we don't have to worry about this changing under us
-            if (_executor.IsRunning)
+            if (this.executor.IsRunning)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeRunning));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeRunning));
             }
         }
 
@@ -560,7 +578,7 @@ namespace CoreWf.Hosting
             }
             finally
             {
-                wasPerformingOperation = Interlocked.CompareExchange(ref _isPerformingOperation, True, False) == True;
+                wasPerformingOperation = Interlocked.CompareExchange(ref this.isPerformingOperation, True, False) == True;
 
                 if (!wasPerformingOperation)
                 {
@@ -570,7 +588,7 @@ namespace CoreWf.Hosting
 
             if (wasPerformingOperation)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeOperationInProgress));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeOperationInProgress));
             }
         }
 
@@ -578,26 +596,26 @@ namespace CoreWf.Hosting
         {
             if (resetRequired)
             {
-                _isPerformingOperation = False;
+                this.isPerformingOperation = False;
             }
         }
 
         internal void Abort(Exception reason)
         {
-            if (!_isAborted)
+            if (!this.isAborted)
             {
-                _isAborted = true;
+                this.isAborted = true;
                 if (reason != null)
                 {
-                    _abortedException = reason;
+                    this.abortedException = reason;
                 }
 
-                if (_extensions != null)
+                if (this.extensions != null)
                 {
-                    _extensions.Cancel();
+                    this.extensions.Cancel();
                 }
 
-                if (_controller.TrackingEnabled)
+                if (this.controller.TrackingEnabled)
                 {
                     // During abort we only track this one record
                     if (reason != null)
@@ -607,19 +625,19 @@ namespace CoreWf.Hosting
                         {
                             message = SR.WorkflowAbortedReason(reason.Message, reason.InnerException.Message);
                         }
-                        _controller.Track(new WorkflowInstanceAbortedRecord(this.Id, this.WorkflowDefinition.DisplayName, message, this.DefinitionIdentity));
+                        this.controller.Track(new WorkflowInstanceAbortedRecord(this.Id, this.WorkflowDefinition.DisplayName, message, this.DefinitionIdentity));
                     }
                 }
-                //#if DEBUG
-                //                if (!Fx.FastDebug)
-                //                {
-                //                    if (reason != null)
-                //                    {
-                //                        reason.ToString();
-                //                    }
-                //                    this.abortStack = new StackTrace();
-                //                }
-                //#endif
+#if DEBUG && NET45
+                if (!Fx.FastDebug)
+                {
+                    if (reason != null)
+                    {
+                        reason.ToString();
+                    }
+                    this.abortStack = new StackTrace();
+                }
+#endif
             }
         }
 
@@ -628,7 +646,7 @@ namespace CoreWf.Hosting
             ThrowIfAborted();
             if (!this.Controller.IsPersistable)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.PrepareForSerializationRequiresPersistability));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.PrepareForSerializationRequiresPersistability));
             }
         }
 
@@ -653,7 +671,7 @@ namespace CoreWf.Hosting
             ThrowIfAborted();
             if (this.Controller.IsPersistable)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.PauseWhenPersistableInvalidIfPersistable));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.PauseWhenPersistableInvalidIfPersistable));
             }
         }
 
@@ -663,40 +681,41 @@ namespace CoreWf.Hosting
             ThrowIfAborted();
 
             // terminate the runtime
-            _executor.Terminate(reason);
+            this.executor.Terminate(reason);
 
             // and track if necessary
             TrackCompletion();
+
         }
 
         private void TrackCompletion()
         {
-            if (_controller.TrackingEnabled && !_hasTrackedCompletion)
+            if (this.controller.TrackingEnabled && !this.hasTrackedCompletion)
             {
-                ActivityInstanceState completionState = _executor.State;
+                ActivityInstanceState completionState = this.executor.State;
 
                 if (completionState == ActivityInstanceState.Faulted)
                 {
-                    Fx.Assert(_executor.TerminationException != null, "must have a termination exception if we're faulted");
-                    _controller.Track(new WorkflowInstanceTerminatedRecord(this.Id, this.WorkflowDefinition.DisplayName, _executor.TerminationException.Message, this.DefinitionIdentity));
+                    Fx.Assert(this.executor.TerminationException != null, "must have a termination exception if we're faulted");
+                    this.controller.Track(new WorkflowInstanceTerminatedRecord(this.Id, this.WorkflowDefinition.DisplayName, this.executor.TerminationException.Message, this.DefinitionIdentity));
                 }
                 else if (completionState == ActivityInstanceState.Closed)
                 {
-                    _controller.Track(new WorkflowInstanceRecord(this.Id, this.WorkflowDefinition.DisplayName, WorkflowInstanceStates.Completed, this.DefinitionIdentity));
+                    this.controller.Track(new WorkflowInstanceRecord(this.Id, this.WorkflowDefinition.DisplayName, WorkflowInstanceStates.Completed, this.DefinitionIdentity));
                 }
                 else
                 {
                     Fx.AssertAndThrow(completionState == ActivityInstanceState.Canceled, "Cannot be executing a workflow instance when WorkflowState was completed.");
-                    _controller.Track(new WorkflowInstanceRecord(this.Id, this.WorkflowDefinition.DisplayName, WorkflowInstanceStates.Canceled, this.DefinitionIdentity));
+                    this.controller.Track(new WorkflowInstanceRecord(this.Id, this.WorkflowDefinition.DisplayName, WorkflowInstanceStates.Canceled, this.DefinitionIdentity));
                 }
-                _hasTrackedCompletion = true;
+                this.hasTrackedCompletion = true;
             }
         }
 
         private void TrackResumed()
         {
             // track if necessary
-            if (!_hasTrackedResumed)
+            if (!this.hasTrackedResumed)
             {
                 if (this.Controller.TrackingEnabled)
                 {
@@ -710,7 +729,7 @@ namespace CoreWf.Hosting
                         this.TrackingProvider.AddRecord(new WorkflowInstanceRecord(this.Id, this.WorkflowDefinition.DisplayName, WorkflowInstanceStates.Resumed, this.DefinitionIdentity));
                     }
                 }
-                _hasTrackedResumed = true;
+                this.hasTrackedResumed = true;
             }
         }
 
@@ -722,7 +741,7 @@ namespace CoreWf.Hosting
             TrackResumed();
 
             // and let the scheduler go
-            _executor.MarkSchedulerRunning();
+            this.executor.MarkSchedulerRunning();
         }
 
         private void ScheduleCancel()
@@ -732,7 +751,7 @@ namespace CoreWf.Hosting
 
             TrackResumed();
 
-            _executor.CancelRootActivity();
+            this.executor.CancelRootActivity();
         }
 
         private BookmarkResumptionResult ScheduleBookmarkResumption(Bookmark bookmark, object value)
@@ -742,7 +761,7 @@ namespace CoreWf.Hosting
 
             TrackResumed();
 
-            return _executor.TryResumeHostBookmark(bookmark, value);
+            return this.executor.TryResumeHostBookmark(bookmark, value);
         }
 
         private BookmarkResumptionResult ScheduleBookmarkResumption(Bookmark bookmark, object value, BookmarkScope scope)
@@ -752,44 +771,43 @@ namespace CoreWf.Hosting
 
             TrackResumed();
 
-            return _executor.TryResumeBookmark(bookmark, value, scope);
+            return this.executor.TryResumeBookmark(bookmark, value, scope);
         }
-
 
         private void ThrowIfAborted()
         {
-            if (_isAborted || (_executor != null && _executor.IsAbortPending))
+            if (this.isAborted || (this.executor != null && this.executor.IsAbortPending))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceAborted(this.Id)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowInstanceAborted(this.Id)));
             }
         }
 
         private void ThrowIfNotIdle()
         {
-            if (!_executor.IsIdle)
+            if (!this.executor.IsIdle)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarksOnlyResumableWhileIdle));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarksOnlyResumableWhileIdle));
             }
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.NestedTypesShouldNotBeVisible,
-        //Justification = "these are effectively protected methods, but encapsulated in a struct to avoid naming conflicts")]
+        //    Justification = "these are effectively protected methods, but encapsulated in a struct to avoid naming conflicts")]
         protected struct WorkflowInstanceControl
         {
-            private ActivityExecutor _executor;
-            private WorkflowInstance _instance;
+            private readonly ActivityExecutor executor;
+            private WorkflowInstance instance;
 
             internal WorkflowInstanceControl(WorkflowInstance instance, ActivityExecutor executor)
             {
-                _instance = instance;
-                _executor = executor;
+                this.instance = instance;
+                this.executor = executor;
             }
 
             public bool IsPersistable
             {
                 get
                 {
-                    return _executor.IsPersistable;
+                    return this.executor.IsPersistable;
                 }
             }
 
@@ -797,7 +815,7 @@ namespace CoreWf.Hosting
             {
                 get
                 {
-                    return _instance.HasTrackingParticipant && _instance.TrackingProvider.HasPendingRecords;
+                    return this.instance.HasTrackingParticipant && this.instance.TrackingProvider.HasPendingRecords;
                 }
             }
 
@@ -805,7 +823,7 @@ namespace CoreWf.Hosting
             {
                 get
                 {
-                    return _instance.HasTrackingParticipant && _instance.TrackingProvider.ShouldTrackWorkflowInstanceRecords;
+                    return this.instance.HasTrackingParticipant && this.instance.TrackingProvider.ShouldTrackWorkflowInstanceRecords;
                 }
             }
 
@@ -815,17 +833,17 @@ namespace CoreWf.Hosting
                 {
                     WorkflowInstanceState result;
 
-                    if (_instance._isAborted)
+                    if (this.instance.isAborted)
                     {
                         result = WorkflowInstanceState.Aborted;
                     }
-                    else if (!_executor.IsIdle)
+                    else if (!this.executor.IsIdle)
                     {
                         result = WorkflowInstanceState.Runnable;
                     }
                     else
                     {
-                        if (_executor.State == ActivityInstanceState.Executing)
+                        if (this.executor.State == ActivityInstanceState.Executing)
                         {
                             result = WorkflowInstanceState.Idle;
                         }
@@ -847,12 +865,12 @@ namespace CoreWf.Hosting
                 }
 
                 WorkflowInstanceControl other = (WorkflowInstanceControl)obj;
-                return other._instance == _instance;
+                return other.instance == this.instance;
             }
 
             public override int GetHashCode()
             {
-                return _instance.GetHashCode();
+                return this.instance.GetHashCode();
             }
 
             public static bool operator ==(WorkflowInstanceControl left, WorkflowInstanceControl right)
@@ -871,15 +889,15 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartReadOnlyOperation(ref resetRequired);
+                    this.instance.StartReadOnlyOperation(ref resetRequired);
 
-                    _instance.ValidateGetBookmarks();
+                    this.instance.ValidateGetBookmarks();
 
-                    return _executor.GetAllBookmarks();
+                    return this.executor.GetAllBookmarks();
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -889,15 +907,15 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartReadOnlyOperation(ref resetRequired);
+                    this.instance.StartReadOnlyOperation(ref resetRequired);
 
-                    _instance.ValidateGetBookmarks();
+                    this.instance.ValidateGetBookmarks();
 
-                    return _executor.GetBookmarks(scope);
+                    return this.executor.GetBookmarks(scope);
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -907,24 +925,24 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartReadOnlyOperation(ref resetRequired);
+                    this.instance.StartReadOnlyOperation(ref resetRequired);
 
-                    _instance.ValidateGetMappedVariables();
+                    this.instance.ValidateGetMappedVariables();
 
-                    IDictionary<string, LocationInfo> mappedLocations = _instance._executor.GatherMappableVariables();
+                    IDictionary<string, LocationInfo> mappedLocations = this.instance.executor.GatherMappableVariables();
                     if (mappedLocations != null)
                     {
                         mappedLocations = new ReadOnlyDictionary<string, LocationInfo>(mappedLocations);
                     }
                     else
                     {
-                        mappedLocations = WorkflowInstance.s_emptyMappedVariablesDictionary;
+                        mappedLocations = WorkflowInstance.EmptyMappedVariablesDictionary;
                     }
                     return mappedLocations;
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -934,16 +952,16 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
-                    _instance.Run();
+                    this.instance.Run();
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
 
-                _executor.Run();
+                this.executor.Run();
             }
 
             public void RequestPause()
@@ -951,7 +969,7 @@ namespace CoreWf.Hosting
                 // No validations for this because we do not
                 // require calls to Pause to be synchronized
                 // by the caller
-                _executor.PauseScheduler();
+                this.executor.PauseScheduler();
             }
 
             // Calls Pause when IsPersistable goes from false->true
@@ -961,15 +979,15 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
-                    _instance.ValidatePauseWhenPersistable();
+                    this.instance.ValidatePauseWhenPersistable();
 
-                    _executor.PauseWhenPersistable();
+                    this.executor.PauseWhenPersistable();
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -979,13 +997,13 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
-                    _instance.ScheduleCancel();
+                    this.instance.ScheduleCancel();
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -995,13 +1013,13 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
-                    _instance.Terminate(reason);
+                    this.instance.Terminate(reason);
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -1011,13 +1029,13 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
-                    return _instance.ScheduleBookmarkResumption(bookmark, value);
+                    return this.instance.ScheduleBookmarkResumption(bookmark, value);
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -1027,13 +1045,13 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
-                    return _instance.ScheduleBookmarkResumption(bookmark, value, scope);
+                    return this.instance.ScheduleBookmarkResumption(bookmark, value, scope);
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -1043,17 +1061,17 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
                     // No validations
 
-                    _executor.Dispose();
+                    this.executor.Dispose();
 
-                    _instance.Abort(null);
+                    this.instance.Abort(null);
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
@@ -1063,43 +1081,43 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartOperation(ref resetRequired);
+                    this.instance.StartOperation(ref resetRequired);
 
                     // No validations
 
-                    _executor.Abort(reason);
+                    this.executor.Abort(reason);
 
-                    _instance.Abort(reason);
+                    this.instance.Abort(reason);
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
             //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            //Justification = "Only want to allow WorkflowInstanceRecord subclasses for WorkflowInstance-level tracking")]
+            //    Justification = "Only want to allow WorkflowInstanceRecord subclasses for WorkflowInstance-level tracking")]
             public void Track(WorkflowInstanceRecord instanceRecord)
             {
-                if (_instance.HasTrackingParticipant)
+                if (this.instance.HasTrackingParticipant)
                 {
-                    _instance.TrackingProvider.AddRecord(instanceRecord);
+                    this.instance.TrackingProvider.AddRecord(instanceRecord);
                 }
             }
 
             public void FlushTrackingRecords(TimeSpan timeout)
             {
-                _instance.FlushTrackingRecords(timeout);
+                this.instance.FlushTrackingRecords(timeout);
             }
 
             public IAsyncResult BeginFlushTrackingRecords(TimeSpan timeout, AsyncCallback callback, object state)
             {
-                return _instance.BeginFlushTrackingRecords(timeout, callback, state);
+                return this.instance.BeginFlushTrackingRecords(timeout, callback, state);
             }
 
             public void EndFlushTrackingRecords(IAsyncResult result)
             {
-                _instance.EndFlushTrackingRecords(result);
+                this.instance.EndFlushTrackingRecords(result);
             }
 
             public object PrepareForSerialization()
@@ -1108,43 +1126,43 @@ namespace CoreWf.Hosting
 
                 try
                 {
-                    _instance.StartReadOnlyOperation(ref resetRequired);
+                    this.instance.StartReadOnlyOperation(ref resetRequired);
 
-                    _instance.ValidatePrepareForSerialization();
+                    this.instance.ValidatePrepareForSerialization();
 
-                    return _executor.PrepareForSerialization();
+                    return this.executor.PrepareForSerialization();
                 }
                 finally
                 {
-                    _instance.FinishOperation(ref resetRequired);
+                    this.instance.FinishOperation(ref resetRequired);
                 }
             }
 
             public ActivityInstanceState GetCompletionState()
             {
-                return _executor.State;
+                return this.executor.State;
             }
 
             //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters,
-            //Justification = "Arch approved design. Requires the out argument for extra information provided")]
+            //    Justification = "Arch approved design. Requires the out argument for extra information provided")]
             public ActivityInstanceState GetCompletionState(out Exception terminationException)
             {
-                terminationException = _executor.TerminationException;
-                return _executor.State;
+                terminationException = this.executor.TerminationException;
+                return this.executor.State;
             }
 
             //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters,
-            //Justification = "Arch approved design. Requires the out argument for extra information provided")]
+            //    Justification = "Arch approved design. Requires the out argument for extra information provided")]
             public ActivityInstanceState GetCompletionState(out IDictionary<string, object> outputs, out Exception terminationException)
             {
-                outputs = _executor.WorkflowOutputs;
-                terminationException = _executor.TerminationException;
-                return _executor.State;
+                outputs = this.executor.WorkflowOutputs;
+                terminationException = this.executor.TerminationException;
+                return this.executor.State;
             }
 
             public Exception GetAbortReason()
             {
-                return _instance._abortedException;
+                return this.instance.abortedException;
             }
         }
     }

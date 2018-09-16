@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -19,7 +19,7 @@ namespace Test.Common.TestObjects.Activities
 
         // TestCustomActivityDesign createdFrom = null;
 
-        private List<WorkflowTraceStep> _thisActivitySpecificTraces = new List<WorkflowTraceStep>();
+        private readonly List<WorkflowTraceStep> _thisActivitySpecificTraces = new List<WorkflowTraceStep>();
 
         public List<WorkflowTraceStep> CustomActivityTraces
         {
@@ -55,8 +55,10 @@ namespace Test.Common.TestObjects.Activities
 
         public static TestCustomActivity CreateFromProduct(Activity customActivity, string displayName = null)
         {
-            TestCustomActivity testCustomActivity = new TestCustomActivity();
-            testCustomActivity.ProductActivity = customActivity;
+            TestCustomActivity testCustomActivity = new TestCustomActivity
+            {
+                ProductActivity = customActivity
+            };
             if (!String.IsNullOrEmpty(displayName))
             {
                 testCustomActivity.DisplayName = displayName;

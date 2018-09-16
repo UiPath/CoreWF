@@ -1,12 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Text;
+
     internal static class ExtensionMethods
     {
         public static bool IsNullOrEmpty(this ICollection c)
@@ -102,15 +102,16 @@ namespace CoreWf.Validation
 
                 if (pivotIndex + 1 < endIndex)
                 {
-                    bounds.Push(pivotIndex + 1);
+                    bounds.Push(pivotIndex + 1); 
                     bounds.Push(endIndex);
                 }
 
                 if (startIndex < pivotIndex - 1)
                 {
-                    bounds.Push(startIndex);
+                    bounds.Push(startIndex); 
                     bounds.Push(pivotIndex - 1);
                 }
+
             } while (bounds.Count != 0);
         }
 

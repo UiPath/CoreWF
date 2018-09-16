@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -20,10 +20,10 @@ namespace Test.Common.TestObjects.Utilities.Sql
     public class SqlInstance : IDisposable
     {
         private string _databaseName;
-        private string _sqlInstanceName;
-        private string _serverHostName;
+        private readonly string _sqlInstanceName;
+        private readonly string _serverHostName;
 
-        private string _connString;
+        private readonly string _connString;
 
         private SqlConnection _connection;
         private SqlConnection _masterConnection;
@@ -76,9 +76,11 @@ namespace Test.Common.TestObjects.Utilities.Sql
             _sqlInstanceName = sqlInstanceName;
             _databaseName = databaseName;
 
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-            builder.DataSource = string.IsNullOrEmpty(_sqlInstanceName) ? _serverHostName : _serverHostName + @"\" + _sqlInstanceName;
-            builder.InitialCatalog = string.IsNullOrEmpty(this.DatabaseName) ? "master" : _databaseName;
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder
+            {
+                DataSource = string.IsNullOrEmpty(_sqlInstanceName) ? _serverHostName : _serverHostName + @"\" + _sqlInstanceName,
+                InitialCatalog = string.IsNullOrEmpty(this.DatabaseName) ? "master" : _databaseName
+            };
             //builder.IntegratedSecurity = (TestParameters.IsSqlAzureRun) ? false : true;
             //builder.AsynchronousProcessing = builder.InitialCatalog == "master" ? false : true;
 
@@ -241,8 +243,10 @@ namespace Test.Common.TestObjects.Utilities.Sql
 
         private string GenerateConnectionStringInternal(string dbName)
         {
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(_connString);
-            builder.InitialCatalog = dbName;
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(_connString)
+            {
+                InitialCatalog = dbName
+            };
             // builder.AsynchronousProcessing = builder.InitialCatalog == "master" ? false : true;
             return builder.ConnectionString;
         }

@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf.Internals;
 using CoreWf.Runtime;
@@ -49,10 +49,12 @@ namespace CoreWf.Statements
             // So the table MUST be mutable when this method is called
             Fx.Assert(!_isImmutable, "Add timer is called when table is immutable");
             DateTime dueTime = TimeoutHelper.Add(DateTime.UtcNow, timeout);
-            TimerData timerData = new TimerData(bookmark, dueTime);
-            //timerData.IOThreadTimer = new IOThreadTimer(this.timerExtension.OnTimerFiredCallback, bookmark, false, 0);
-            //timerData.IOThreadTimer.Set(timeout);
-            timerData.DelayTimer = new DelayTimer(_timerExtension.OnTimerFiredCallback, bookmark, timeout);
+            TimerData timerData = new TimerData(bookmark, dueTime)
+            {
+                //timerData.IOThreadTimer = new IOThreadTimer(this.timerExtension.OnTimerFiredCallback, bookmark, false, 0);
+                //timerData.IOThreadTimer.Set(timeout);
+                DelayTimer = new DelayTimer(_timerExtension.OnTimerFiredCallback, bookmark, timeout)
+            };
             _sortedTimerList.Add(timerData);
         }
 
@@ -67,8 +69,7 @@ namespace CoreWf.Statements
             // We don't want to remove 
             if (!_isImmutable)
             {
-                TimerData expirationTimeData;
-                if (_sortedTimerList.TryGetValue(bookmark, out expirationTimeData))
+                if (_sortedTimerList.TryGetValue(bookmark, out TimerData expirationTimeData))
                 {
                     _sortedTimerList.Remove(bookmark);
                     //expirationTimeData.IOThreadTimer.Cancel();
@@ -344,8 +345,7 @@ namespace CoreWf.Statements
 
             public void Remove(Bookmark bookmark)
             {
-                TimerData timerData;
-                if (_dictionary.TryGetValue(bookmark, out timerData))
+                if (_dictionary.TryGetValue(bookmark, out TimerData timerData))
                 {
                     int index = _list.BinarySearch(timerData, TimerComparer.Instance);
                     _list.RemoveAt(index);

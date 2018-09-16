@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
@@ -12,13 +12,14 @@ namespace CoreWf.Runtime
     // NOTE: CreateNew is required because T : new() requires that the default
     // ctor is public.  We did not want to put public ctors on some of our
     // pooled resources (like NativeActivityContext).
+
+
     internal abstract class Pool<T>
     {
         private const int DefaultPoolSize = 10;
-
-        private T[] _items;
-        private int _count;
-        private int _poolSize;
+        private readonly T[] items;
+        private int count;
+        private readonly int poolSize;
 
         public Pool()
             : this(DefaultPoolSize)
@@ -27,16 +28,16 @@ namespace CoreWf.Runtime
 
         public Pool(int poolSize)
         {
-            _items = new T[poolSize];
-            _poolSize = poolSize;
+            this.items = new T[poolSize];
+            this.poolSize = poolSize;
         }
 
         public T Acquire()
         {
-            if (_count > 0)
+            if (this.count > 0)
             {
-                _count--;
-                T item = _items[_count];
+                this.count--;
+                T item = this.items[this.count];
 
                 return item;
             }
@@ -50,10 +51,10 @@ namespace CoreWf.Runtime
 
         public void Release(T item)
         {
-            if (_count < _poolSize)
+            if (this.count < this.poolSize)
             {
-                _items[_count] = item;
-                _count++;
+                this.items[this.count] = item;
+                this.count++;
             }
         }
     }

@@ -1,18 +1,20 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.ComponentModel;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System;
+    using System.ComponentModel;
+    using System.Reflection;
+
     public sealed class PropertyValue<TOperand, TResult> : CodeActivity<TResult>
     {
-        private Func<TOperand, TResult> _operationFunction;
-        private bool _isOperationFunctionStatic;
+        private Func<TOperand, TResult> operationFunction;
+        private bool isOperationFunctionStatic;
 
         public InArgument<TOperand> Operand
         {
@@ -30,7 +32,7 @@ namespace CoreWf.Expressions
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
             bool isRequired = false;
-            if (typeof(TOperand).GetTypeInfo().IsEnum)
+            if (typeof(TOperand).IsEnum)
             {
                 metadata.AddValidationError(SR.TargetTypeCannotBeEnum(this.GetType().Name, this.DisplayName));
             }
@@ -53,11 +55,10 @@ namespace CoreWf.Expressions
                 {
                     Fx.Assert(propertyInfo.GetAccessors().Length > 0, "Property should have at least 1 accessor.");
 
-                    _isOperationFunctionStatic = propertyInfo.GetAccessors()[0].IsStatic;
-                    isRequired = !_isOperationFunctionStatic;
+                    this.isOperationFunctionStatic = propertyInfo.GetAccessors()[0].IsStatic;
+                    isRequired = !this.isOperationFunctionStatic;
 
-                    ValidationError validationError;
-                    if (!MemberExpressionHelper.TryGenerateLinqDelegate(this.PropertyName, false, _isOperationFunctionStatic, out _operationFunction, out validationError))
+                    if (!MemberExpressionHelper.TryGenerateLinqDelegate(this.PropertyName, false, this.isOperationFunctionStatic, out this.operationFunction, out ValidationError validationError))
                     {
                         metadata.AddValidationError(validationError);
                     }
@@ -78,12 +79,12 @@ namespace CoreWf.Expressions
         {
             TOperand operandValue = this.Operand.Get(context);
 
-            if (!_isOperationFunctionStatic && operandValue == null)
+            if (!this.isOperationFunctionStatic && operandValue == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
             }
 
-            TResult result = _operationFunction(operandValue);
+            TResult result = this.operationFunction(operandValue);
             return result;
         }
     }

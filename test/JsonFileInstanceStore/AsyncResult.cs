@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Diagnostics;
@@ -13,14 +13,14 @@ namespace JsonFileInstanceStore
     /// </summary>
     internal abstract class FileStoreAsyncResult : IAsyncResult
     {
-        private AsyncCallback _callback;
-        private object _state;
+        private readonly AsyncCallback _callback;
+        private readonly object _state;
         private bool _completedSynchronously;
         private bool _endCalled;
         private Exception _exception;
         private bool _isCompleted;
         private ManualResetEvent _manualResetEvent;
-        private object _thisLock;
+        private readonly object _thisLock;
 
         protected FileStoreAsyncResult(AsyncCallback callback, object state)
         {
@@ -139,9 +139,8 @@ namespace JsonFileInstanceStore
                 throw new ArgumentNullException("result");
             }
 
-            TAsyncResult asyncResult = result as TAsyncResult;
 
-            if (asyncResult == null)
+            if (!(result is TAsyncResult asyncResult))
             {
                 // throw new ArgumentException(Resources.InvalidAsyncResult);
                 throw new ArgumentException("InvalidAsyncResult");

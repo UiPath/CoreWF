@@ -1,26 +1,27 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Tracking
 {
+    using System;
+    using CoreWf;
+    using System.Collections;
+    using System.Collections.Generic;
+    using CoreWf.Runtime;
+
     internal class TrackingProvider
     {
-        private List<TrackingParticipant> _trackingParticipants;
-        private Dictionary<TrackingParticipant, RuntimeTrackingProfile> _profileSubscriptions;
-        private IList<TrackingRecord> _pendingTrackingRecords;
-        private Activity _definition;
-        private bool _filterValuesSetExplicitly;
-        private Dictionary<string, string> _activitySubscriptions;
-
-        private long _nextTrackingRecordNumber;
+        private List<TrackingParticipant> trackingParticipants;
+        private Dictionary<TrackingParticipant, RuntimeTrackingProfile> profileSubscriptions;
+        private IList<TrackingRecord> pendingTrackingRecords;
+        private readonly Activity definition;
+        private bool filterValuesSetExplicitly;
+        private Hashtable activitySubscriptions;
+        private long nextTrackingRecordNumber;
 
         public TrackingProvider(Activity definition)
         {
-            _definition = definition;
+            this.definition = definition;
             this.ShouldTrack = true;
             this.ShouldTrackActivityStateRecords = true;
             this.ShouldTrackActivityStateRecordsExecutingState = true;
@@ -36,8 +37,8 @@ namespace CoreWf.Tracking
         {
             get
             {
-                return (_pendingTrackingRecords != null && _pendingTrackingRecords.Count > 0)
-                    || !_filterValuesSetExplicitly;
+                return (this.pendingTrackingRecords != null && this.pendingTrackingRecords.Count > 0)
+                    || !this.filterValuesSetExplicitly;
             }
         }
 
@@ -45,7 +46,7 @@ namespace CoreWf.Tracking
         {
             get
             {
-                return _nextTrackingRecordNumber;
+                return this.nextTrackingRecordNumber;
             }
         }
 
@@ -108,39 +109,39 @@ namespace CoreWf.Tracking
             // We blindly do this.  On the off chance that a workflow causes it to loop back
             // around it shouldn't cause the workflow to fail and the tracking information
             // will still be salvagable.
-            return _nextTrackingRecordNumber++;
+            return this.nextTrackingRecordNumber++;
         }
 
         public void OnDeserialized(long nextTrackingRecordNumber)
         {
-            _nextTrackingRecordNumber = nextTrackingRecordNumber;
+            this.nextTrackingRecordNumber = nextTrackingRecordNumber;
         }
 
         public void AddRecord(TrackingRecord record)
         {
-            if (_pendingTrackingRecords == null)
+            if (this.pendingTrackingRecords == null)
             {
-                _pendingTrackingRecords = new List<TrackingRecord>();
+                this.pendingTrackingRecords = new List<TrackingRecord>();
             }
 
             record.RecordNumber = GetNextRecordNumber();
-            _pendingTrackingRecords.Add(record);
+            this.pendingTrackingRecords.Add(record);
         }
 
         public void AddParticipant(TrackingParticipant participant)
         {
-            if (_trackingParticipants == null)
+            if (this.trackingParticipants == null)
             {
-                _trackingParticipants = new List<TrackingParticipant>();
-                _profileSubscriptions = new Dictionary<TrackingParticipant, RuntimeTrackingProfile>();
+                this.trackingParticipants = new List<TrackingParticipant>();
+                this.profileSubscriptions = new Dictionary<TrackingParticipant, RuntimeTrackingProfile>();
             }
-            _trackingParticipants.Add(participant);
+            this.trackingParticipants.Add(participant);
         }
 
         public void ClearParticipants()
         {
-            _trackingParticipants = null;
-            _profileSubscriptions = null;
+            this.trackingParticipants = null;
+            this.profileSubscriptions = null;
         }
 
         public void FlushPendingRecords(TimeSpan timeout)
@@ -150,21 +151,21 @@ namespace CoreWf.Tracking
                 if (this.HasPendingRecords)
                 {
                     TimeoutHelper helper = new TimeoutHelper(timeout);
-                    for (int i = 0; i < _trackingParticipants.Count; i++)
+                    for (int i = 0; i < this.trackingParticipants.Count; i++)
                     {
-                        TrackingParticipant participant = _trackingParticipants[i];
+                        TrackingParticipant participant = this.trackingParticipants[i];
                         RuntimeTrackingProfile runtimeProfile = GetRuntimeTrackingProfile(participant);
 
                         // HasPendingRecords can be true for the sole purpose of populating our initial profiles, so check again here
-                        if (_pendingTrackingRecords != null)
+                        if (this.pendingTrackingRecords != null)
                         {
-                            for (int j = 0; j < _pendingTrackingRecords.Count; j++)
+                            for (int j = 0; j < this.pendingTrackingRecords.Count; j++)
                             {
-                                TrackingRecord currentRecord = _pendingTrackingRecords[j];
+                                TrackingRecord currentRecord = this.pendingTrackingRecords[j];
                                 Fx.Assert(currentRecord != null, "We should never come across a null context.");
 
                                 TrackingRecord preparedRecord = null;
-                                bool shouldClone = _trackingParticipants.Count > 1;
+                                bool shouldClone = this.trackingParticipants.Count > 1;
                                 if (runtimeProfile == null)
                                 {
                                     preparedRecord = shouldClone ? currentRecord.Clone() : currentRecord;
@@ -207,17 +208,17 @@ namespace CoreWf.Tracking
 
         public bool ShouldTrackActivity(string name)
         {
-            return _activitySubscriptions == null || _activitySubscriptions.ContainsKey(name) || _activitySubscriptions.ContainsKey("*");
+            return this.activitySubscriptions == null || this.activitySubscriptions.ContainsKey(name) || this.activitySubscriptions.ContainsKey("*");
         }
 
         private void ClearPendingRecords()
         {
-            if (_pendingTrackingRecords != null)
+            if (this.pendingTrackingRecords != null)
             {
                 //since the number of records is small, it is faster to remove from end than to call List.Clear
-                for (int i = _pendingTrackingRecords.Count - 1; i >= 0; i--)
+                for (int i = this.pendingTrackingRecords.Count - 1; i >= 0; i--)
                 {
-                    _pendingTrackingRecords.RemoveAt(i);
+                    this.pendingTrackingRecords.RemoveAt(i);
                 }
             }
         }
@@ -225,15 +226,14 @@ namespace CoreWf.Tracking
         private RuntimeTrackingProfile GetRuntimeTrackingProfile(TrackingParticipant participant)
         {
             TrackingProfile profile;
-            RuntimeTrackingProfile runtimeProfile;
 
-            if (!_profileSubscriptions.TryGetValue(participant, out runtimeProfile))
+            if (!this.profileSubscriptions.TryGetValue(participant, out RuntimeTrackingProfile runtimeProfile))
             {
                 profile = participant.TrackingProfile;
 
                 if (profile != null)
                 {
-                    runtimeProfile = RuntimeTrackingProfile.GetRuntimeTrackingProfile(profile, _definition);
+                    runtimeProfile = RuntimeTrackingProfile.GetRuntimeTrackingProfile(profile, this.definition);
                     Merge(runtimeProfile.Filter);
 
                     //Add the names to the list of activities that have subscriptions.  This provides a quick lookup
@@ -241,19 +241,15 @@ namespace CoreWf.Tracking
                     IEnumerable<string> activityNames = runtimeProfile.GetSubscribedActivityNames();
                     if (activityNames != null)
                     {
-                        if (_activitySubscriptions == null)
+                        if (this.activitySubscriptions == null)
                         {
-                            _activitySubscriptions = new Dictionary<string, string>();
+                            this.activitySubscriptions = new Hashtable();
                         }
                         foreach (string name in activityNames)
                         {
-                            if (_activitySubscriptions.ContainsKey(name))
+                            if (this.activitySubscriptions[name] == null)
                             {
-                                _activitySubscriptions.Add(name, name);
-                            }
-                            else
-                            {
-                                _activitySubscriptions[name] = name;
+                                this.activitySubscriptions[name] = name;
                             }
                         }
                     }
@@ -264,17 +260,17 @@ namespace CoreWf.Tracking
                     Merge(new TrackingRecordPreFilter(true));
                 }
 
-                _profileSubscriptions.Add(participant, runtimeProfile);
+                this.profileSubscriptions.Add(participant, runtimeProfile);
             }
             return runtimeProfile;
         }
 
         private void Merge(TrackingRecordPreFilter filter)
         {
-            if (!_filterValuesSetExplicitly)
+            if (!this.filterValuesSetExplicitly)
             {
                 // This it the first filter we are merging
-                _filterValuesSetExplicitly = true;
+                this.filterValuesSetExplicitly = true;
 
                 this.ShouldTrackActivityStateRecordsExecutingState = filter.TrackActivityStateRecordsExecutingState;
                 this.ShouldTrackActivityScheduledRecords = filter.TrackActivityScheduledRecords;
@@ -300,18 +296,17 @@ namespace CoreWf.Tracking
 
         private class FlushPendingRecordsAsyncResult : AsyncResult
         {
-            private static AsyncCompletion s_trackingCompleteCallback = new AsyncCompletion(OnTrackingComplete);
-
-            private int _currentRecord;
-            private int _currentParticipant;
-            private TrackingProvider _provider;
-            private TimeoutHelper _timeoutHelper;
+            private static readonly AsyncCompletion trackingCompleteCallback = new AsyncCompletion(OnTrackingComplete);
+            private int currentRecord;
+            private int currentParticipant;
+            private TrackingProvider provider;
+            private TimeoutHelper timeoutHelper;
 
             public FlushPendingRecordsAsyncResult(TrackingProvider provider, TimeSpan timeout, AsyncCallback callback, object state)
                 : base(callback, state)
             {
-                _provider = provider;
-                _timeoutHelper = new TimeoutHelper(timeout);
+                this.provider = provider;
+                this.timeoutHelper = new TimeoutHelper(timeout);
 
                 if (RunLoop())
                 {
@@ -321,16 +316,16 @@ namespace CoreWf.Tracking
 
             private bool RunLoop()
             {
-                if (_provider.HasPendingRecords)
+                if (this.provider.HasPendingRecords)
                 {
-                    while (_currentParticipant < _provider._trackingParticipants.Count)
+                    while (this.currentParticipant < this.provider.trackingParticipants.Count)
                     {
-                        TrackingParticipant participant = _provider._trackingParticipants[_currentParticipant];
-                        RuntimeTrackingProfile runtimeProfile = _provider.GetRuntimeTrackingProfile(participant);
+                        TrackingParticipant participant = this.provider.trackingParticipants[this.currentParticipant];
+                        RuntimeTrackingProfile runtimeProfile = this.provider.GetRuntimeTrackingProfile(participant);
 
-                        if (_provider._pendingTrackingRecords != null)
+                        if (this.provider.pendingTrackingRecords != null)
                         {
-                            while (_currentRecord < _provider._pendingTrackingRecords.Count)
+                            while (this.currentRecord < this.provider.pendingTrackingRecords.Count)
                             {
                                 bool completedSynchronously = PostTrackingRecord(participant, runtimeProfile);
                                 if (!completedSynchronously)
@@ -340,13 +335,13 @@ namespace CoreWf.Tracking
                             }
                         }
 
-                        _currentRecord = 0;
-                        _currentParticipant++;
+                        this.currentRecord = 0;
+                        this.currentParticipant++;
                     }
                 }
 
                 // We've now tracked all of the records.
-                _provider.ClearPendingRecords();
+                this.provider.ClearPendingRecords();
                 return true;
             }
 
@@ -355,7 +350,7 @@ namespace CoreWf.Tracking
                 Fx.Assert(!result.CompletedSynchronously, "TrackingAsyncResult.OnTrackingComplete should not get called with a result that is CompletedSynchronously");
 
                 FlushPendingRecordsAsyncResult thisPtr = (FlushPendingRecordsAsyncResult)result.AsyncState;
-                TrackingParticipant participant = thisPtr._provider._trackingParticipants[thisPtr._currentParticipant];
+                TrackingParticipant participant = thisPtr.provider.trackingParticipants[thisPtr.currentParticipant];
                 bool isSuccessful = false;
                 try
                 {
@@ -366,7 +361,7 @@ namespace CoreWf.Tracking
                 {
                     if (!isSuccessful)
                     {
-                        thisPtr._provider.ClearPendingRecords();
+                        thisPtr.provider.ClearPendingRecords();
                     }
                 }
                 return thisPtr.RunLoop();
@@ -374,14 +369,14 @@ namespace CoreWf.Tracking
 
             private bool PostTrackingRecord(TrackingParticipant participant, RuntimeTrackingProfile runtimeProfile)
             {
-                TrackingRecord originalRecord = _provider._pendingTrackingRecords[_currentRecord];
-                _currentRecord++;
+                TrackingRecord originalRecord = this.provider.pendingTrackingRecords[this.currentRecord];
+                this.currentRecord++;
                 bool isSuccessful = false;
 
                 try
                 {
                     TrackingRecord preparedRecord = null;
-                    bool shouldClone = _provider._trackingParticipants.Count > 1;
+                    bool shouldClone = this.provider.trackingParticipants.Count > 1;
                     if (runtimeProfile == null)
                     {
                         preparedRecord = shouldClone ? originalRecord.Clone() : originalRecord;
@@ -393,7 +388,7 @@ namespace CoreWf.Tracking
 
                     if (preparedRecord != null)
                     {
-                        IAsyncResult result = participant.BeginTrack(preparedRecord, _timeoutHelper.RemainingTime(), PrepareAsyncCompletion(s_trackingCompleteCallback), this);
+                        IAsyncResult result = participant.BeginTrack(preparedRecord, this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(trackingCompleteCallback), this);
                         if (TD.TrackingRecordRaisedIsEnabled())
                         {
                             TD.TrackingRecordRaised(preparedRecord.ToString(), participant.GetType().ToString());
@@ -414,7 +409,7 @@ namespace CoreWf.Tracking
                 {
                     if (!isSuccessful)
                     {
-                        _provider.ClearPendingRecords();
+                        this.provider.ClearPendingRecords();
                     }
                 }
                 return true;

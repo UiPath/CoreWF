@@ -1,19 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Runtime.Serialization;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Runtime
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class CollapseTemporaryResolutionLocationWorkItem : WorkItem
     {
-        private Location _location;
+        private Location location;
 
         public CollapseTemporaryResolutionLocationWorkItem(Location location, ActivityInstance instance)
             : base(instance)
         {
-            _location = location;
+            this.location = location;
         }
 
         public override bool IsValid
@@ -29,10 +28,10 @@ namespace CoreWf.Runtime
         [DataMember(EmitDefaultValue = false, Name = "location")]
         internal Location SerializedLocation
         {
-            get { return _location; }
-            set { _location = value; }
+            get { return this.location; }
+            set { this.location = value; }
         }
-
+       
         public override void TraceScheduled()
         {
             TraceRuntimeWorkItemScheduled();
@@ -50,7 +49,7 @@ namespace CoreWf.Runtime
 
         public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
         {
-            _location.TemporaryResolutionEnvironment.CollapseTemporaryResolutionLocation(_location);
+            this.location.TemporaryResolutionEnvironment.CollapseTemporaryResolutionLocation(this.location);
             return true;
         }
 

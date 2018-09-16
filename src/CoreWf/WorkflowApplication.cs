@@ -1,19 +1,26 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.DurableInstancing;
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
-using CoreWf.Tracking;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Xml.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Hosting;
+    using CoreWf.DurableInstancing;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using CoreWf.Runtime.DurableInstancing;
+    using System.Threading;
+    using CoreWf.Transactions;
+    using System.Xml.Linq;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
     // WorkflowApplication is free-threaded. It is responsible for the correct locking and usage of the ActivityExecutor.
     // Given that there are two simultaneous users of ActivityExecutor (WorkflowApplication and NativeActivityContext),
     // it is imperative that WorkflowApplication only calls into ActivityExecutor when there are no activities executing
@@ -41,60 +48,55 @@ namespace CoreWf
     [Fx.Tag.XamlVisible(false)]
     public sealed class WorkflowApplication : WorkflowInstance
     {
-        private static AsyncCallback s_eventFrameCallback;
-        private static IdleEventHandler s_idleHandler;
-        private static CompletedEventHandler s_completedHandler;
-        private static UnhandledExceptionEventHandler s_unhandledExceptionHandler;
-        private static Action<object, TimeoutException> s_waitAsyncCompleteCallback;
-        private static readonly WorkflowIdentity s_unknownIdentity = new WorkflowIdentity();
-
-        private Action<WorkflowApplicationAbortedEventArgs> _onAborted;
-        private Action<WorkflowApplicationEventArgs> _onUnloaded;
-        private Action<WorkflowApplicationCompletedEventArgs> _onCompleted;
-        private Func<WorkflowApplicationUnhandledExceptionEventArgs, UnhandledExceptionAction> _onUnhandledException;
-        private Func<WorkflowApplicationIdleEventArgs, PersistableIdleAction> _onPersistableIdle;
-        private Action<WorkflowApplicationIdleEventArgs> _onIdle;
-
-        private WorkflowEventData _eventData;
-
-        private WorkflowInstanceExtensionManager _extensions;
-        private PersistencePipeline _persistencePipelineInUse;
-        private InstanceStore _instanceStore;
-        private PersistenceManager _persistenceManager;
-        private WorkflowApplicationState _state;
-        private int _handlerThreadId;
-        private bool _isInHandler;
-        private Action _invokeCompletedCallback;
-        private Guid _instanceId;
-        private bool _instanceIdSet;  // Checking for Guid.Empty is expensive.
+        private static AsyncCallback eventFrameCallback;
+        private static IdleEventHandler idleHandler;
+        private static CompletedEventHandler completedHandler;
+        private static UnhandledExceptionEventHandler unhandledExceptionHandler;
+        private static Action<object, TimeoutException> waitAsyncCompleteCallback;
+        private static readonly WorkflowIdentity unknownIdentity = new WorkflowIdentity();
+        private Action<WorkflowApplicationAbortedEventArgs> onAborted;
+        private Action<WorkflowApplicationEventArgs> onUnloaded;
+        private Action<WorkflowApplicationCompletedEventArgs> onCompleted;
+        private Func<WorkflowApplicationUnhandledExceptionEventArgs, UnhandledExceptionAction> onUnhandledException;
+        private Func<WorkflowApplicationIdleEventArgs, PersistableIdleAction> onPersistableIdle;
+        private Action<WorkflowApplicationIdleEventArgs> onIdle;
+        private WorkflowEventData eventData;
+        private WorkflowInstanceExtensionManager extensions;
+        private PersistencePipeline persistencePipelineInUse;
+        private InstanceStore instanceStore;
+        private PersistenceManager persistenceManager;
+        private WorkflowApplicationState state;
+        private int handlerThreadId;
+        private bool isInHandler;
+        private Action invokeCompletedCallback;
+        private Guid instanceId;
+        private bool instanceIdSet;  // Checking for Guid.Empty is expensive.
 
         // Tracking for one-time actions per in-memory pulse
-        private bool _hasCalledAbort;
-        private bool _hasCalledRun;
+        private bool hasCalledAbort;
+        private bool hasCalledRun;
 
         // Tracking for one-time actions per instance lifetime (these end up being persisted)
-        private bool _hasRaisedCompleted;
-
-        private Quack<InstanceOperation> _pendingOperations;
-        private bool _isBusy;
-        private bool _hasExecutionOccurredSinceLastIdle;
+        private bool hasRaisedCompleted;
+        private readonly Quack<InstanceOperation> pendingOperations;
+        private bool isBusy;
+        private bool hasExecutionOccurredSinceLastIdle;
 
         // Count of operations that are about to be enqueued.
         // We use this when enqueueing multiple operations, to avoid raising
         // idle on dequeue of the first operation.
-        private int _pendingUnenqueued;
+        private int pendingUnenqueued;
 
         // We use this to keep track of the number of "interesting" things that have happened.
         // Notifying operations and calling Run on the runtime count as interesting things.
         // All operations are stamped with the actionCount at the time of being enqueued.
-        private int _actionCount;
+        private int actionCount;
 
         // Initial creation data
-        private IDictionary<string, object> _initialWorkflowArguments;
-        private IList<Handle> _rootExecutionProperties;
-
-        private IDictionary<XName, InstanceValue> _instanceMetadata;
-
+        private readonly IDictionary<string, object> initialWorkflowArguments;
+        private readonly IList<Handle> rootExecutionProperties;
+        private IDictionary<XName, InstanceValue> instanceMetadata;
+        
         public WorkflowApplication(Activity workflowDefinition)
             : this(workflowDefinition, (WorkflowIdentity)null)
         {
@@ -108,37 +110,33 @@ namespace CoreWf
         public WorkflowApplication(Activity workflowDefinition, WorkflowIdentity definitionIdentity)
             : base(workflowDefinition, definitionIdentity)
         {
-            _pendingOperations = new Quack<InstanceOperation>();
-            Fx.Assert(_state == WorkflowApplicationState.Paused, "We always start out paused (the default)");
+            this.pendingOperations = new Quack<InstanceOperation>();
+            Fx.Assert(this.state == WorkflowApplicationState.Paused, "We always start out paused (the default)");
         }
 
         public WorkflowApplication(Activity workflowDefinition, IDictionary<string, object> inputs, WorkflowIdentity definitionIdentity)
             : this(workflowDefinition, definitionIdentity)
         {
-            if (inputs == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("inputs");
-            }
-            _initialWorkflowArguments = inputs;
+            this.initialWorkflowArguments = inputs ?? throw FxTrace.Exception.ArgumentNull(nameof(inputs));
         }
 
         private WorkflowApplication(Activity workflowDefinition, IDictionary<string, object> inputs, IList<Handle> executionProperties)
             : this(workflowDefinition)
         {
-            _initialWorkflowArguments = inputs;
-            _rootExecutionProperties = executionProperties;
+            this.initialWorkflowArguments = inputs;
+            this.rootExecutionProperties = executionProperties;
         }
 
         public InstanceStore InstanceStore
         {
             get
             {
-                return _instanceStore;
+                return this.instanceStore;
             }
             set
             {
                 ThrowIfReadOnly();
-                _instanceStore = value;
+                this.instanceStore = value;
             }
         }
 
@@ -146,15 +144,15 @@ namespace CoreWf
         {
             get
             {
-                if (_extensions == null)
+                if (this.extensions == null)
                 {
-                    _extensions = new WorkflowInstanceExtensionManager();
+                    this.extensions = new WorkflowInstanceExtensionManager();
                     if (base.IsReadOnly)
                     {
-                        _extensions.MakeReadOnly();
+                        this.extensions.MakeReadOnly();
                     }
                 }
-                return _extensions;
+                return this.extensions;
             }
         }
 
@@ -162,12 +160,12 @@ namespace CoreWf
         {
             get
             {
-                return _onAborted;
+                return this.onAborted;
             }
             set
             {
                 ThrowIfMulticast(value);
-                _onAborted = value;
+                this.onAborted = value;
             }
         }
 
@@ -175,12 +173,12 @@ namespace CoreWf
         {
             get
             {
-                return _onUnloaded;
+                return this.onUnloaded;
             }
             set
             {
                 ThrowIfMulticast(value);
-                _onUnloaded = value;
+                this.onUnloaded = value;
             }
         }
 
@@ -188,12 +186,12 @@ namespace CoreWf
         {
             get
             {
-                return _onCompleted;
+                return this.onCompleted;
             }
             set
             {
                 ThrowIfMulticast(value);
-                _onCompleted = value;
+                this.onCompleted = value;
             }
         }
 
@@ -201,12 +199,12 @@ namespace CoreWf
         {
             get
             {
-                return _onUnhandledException;
+                return this.onUnhandledException;
             }
             set
             {
                 ThrowIfMulticast(value);
-                _onUnhandledException = value;
+                this.onUnhandledException = value;
             }
         }
 
@@ -214,12 +212,12 @@ namespace CoreWf
         {
             get
             {
-                return _onIdle;
+                return this.onIdle;
             }
             set
             {
                 ThrowIfMulticast(value);
-                _onIdle = value;
+                this.onIdle = value;
             }
         }
 
@@ -227,12 +225,12 @@ namespace CoreWf
         {
             get
             {
-                return _onPersistableIdle;
+                return this.onPersistableIdle;
             }
             set
             {
                 ThrowIfMulticast(value);
-                _onPersistableIdle = value;
+                this.onPersistableIdle = value;
             }
         }
 
@@ -240,18 +238,18 @@ namespace CoreWf
         {
             get
             {
-                if (!_instanceIdSet)
+                if (!this.instanceIdSet)
                 {
-                    lock (_pendingOperations)
+                    lock (this.pendingOperations)
                     {
-                        if (!_instanceIdSet)
+                        if (!this.instanceIdSet)
                         {
-                            _instanceId = Guid.NewGuid();
-                            _instanceIdSet = true;
+                            this.instanceId = Guid.NewGuid();
+                            this.instanceIdSet = true;
                         }
                     }
                 }
-                return _instanceId;
+                return this.instanceId;
             }
         }
 
@@ -267,12 +265,12 @@ namespace CoreWf
         {
             get
             {
-                if (s_eventFrameCallback == null)
+                if (eventFrameCallback == null)
                 {
-                    s_eventFrameCallback = Fx.ThunkCallback(new AsyncCallback(EventFrame));
+                    eventFrameCallback = Fx.ThunkCallback(new AsyncCallback(EventFrame));
                 }
 
-                return s_eventFrameCallback;
+                return eventFrameCallback;
             }
         }
 
@@ -280,12 +278,12 @@ namespace CoreWf
         {
             get
             {
-                if (_eventData == null)
+                if (this.eventData == null)
                 {
-                    _eventData = new WorkflowEventData(this);
+                    this.eventData = new WorkflowEventData(this);
                 }
 
-                return _eventData;
+                return this.eventData;
             }
         }
 
@@ -293,7 +291,7 @@ namespace CoreWf
         {
             get
             {
-                return _persistenceManager != null;
+                return this.persistenceManager != null;
             }
         }
 
@@ -301,8 +299,7 @@ namespace CoreWf
         {
             get
             {
-                //return this.isInHandler && this.handlerThreadId == Thread.CurrentThread.ManagedThreadId;
-                return false;
+                return this.isInHandler && this.handlerThreadId == Thread.CurrentThread.ManagedThreadId;
             }
         }
 
@@ -310,7 +307,7 @@ namespace CoreWf
         {
             get
             {
-                return _state == WorkflowApplicationState.Unloaded || _state == WorkflowApplicationState.Aborted;
+                return this.state == WorkflowApplicationState.Unloaded || this.state == WorkflowApplicationState.Aborted;
             }
         }
 
@@ -320,15 +317,15 @@ namespace CoreWf
 
             if (writeOnlyValues != null)
             {
-                if (_instanceMetadata == null)
+                if (this.instanceMetadata == null)
                 {
-                    _instanceMetadata = new Dictionary<XName, InstanceValue>(writeOnlyValues.Count);
+                    this.instanceMetadata = new Dictionary<XName, InstanceValue>(writeOnlyValues.Count);
                 }
 
                 foreach (KeyValuePair<XName, object> pair in writeOnlyValues)
                 {
                     // We use the indexer so that we can replace keys that already exist
-                    _instanceMetadata[pair.Key] = new InstanceValue(pair.Value, InstanceValueOptions.Optional | InstanceValueOptions.WriteOnly);
+                    this.instanceMetadata[pair.Key] = new InstanceValue(pair.Value, InstanceValueOptions.Optional | InstanceValueOptions.WriteOnly);
                 }
             }
         }
@@ -338,7 +335,6 @@ namespace CoreWf
         {
             return base.GetExtensions<T>();
         }
-
 
         private static void EventFrame(IAsyncResult result)
         {
@@ -387,7 +383,7 @@ namespace CoreWf
 
         private bool ShouldRaiseComplete(WorkflowInstanceState state)
         {
-            return state == WorkflowInstanceState.Complete && !_hasRaisedCompleted;
+            return state == WorkflowInstanceState.Complete && !this.hasRaisedCompleted;
         }
 
         private void Enqueue(InstanceOperation operation)
@@ -397,11 +393,11 @@ namespace CoreWf
 
         private void Enqueue(InstanceOperation operation, bool push)
         {
-            lock (_pendingOperations)
+            lock (this.pendingOperations)
             {
-                operation.ActionId = _actionCount;
+                operation.ActionId = this.actionCount;
 
-                if (_isBusy)
+                if (this.isBusy)
                 {
                     // If base.IsReadOnly == false, we can't call the Controller yet because WorkflowInstance is not initialized.
                     // But that's okay; if the instance isn't initialized then the scheduler's not running yet, so no need to pause it.
@@ -427,7 +423,7 @@ namespace CoreWf
                     else
                     {
                         // Action: Notifying an operation
-                        _actionCount++;
+                        this.actionCount++;
 
                         // We've essentially just notified this
                         // operation that it is free to do its
@@ -438,7 +434,7 @@ namespace CoreWf
                         finally
                         {
                             operation.Notified = true;
-                            _isBusy = true;
+                            this.isBusy = true;
                         }
                     }
                 }
@@ -447,17 +443,17 @@ namespace CoreWf
 
         private void IncrementPendingUnenqueud()
         {
-            lock (_pendingOperations)
+            lock (this.pendingOperations)
             {
-                _pendingUnenqueued++;
+                this.pendingUnenqueued++;
             }
         }
 
         private void DecrementPendingUnenqueud()
         {
-            lock (_pendingOperations)
+            lock (this.pendingOperations)
             {
-                _pendingUnenqueued--;
+                this.pendingUnenqueued--;
             }
         }
 
@@ -471,11 +467,11 @@ namespace CoreWf
 
             if (push)
             {
-                _pendingOperations.PushFront(operation);
+                this.pendingOperations.PushFront(operation);
             }
             else
             {
-                _pendingOperations.Enqueue(operation);
+                this.pendingOperations.Enqueue(operation);
             }
 
             operation.OnEnqueued();
@@ -483,9 +479,9 @@ namespace CoreWf
 
         private bool Remove(InstanceOperation operation)
         {
-            lock (_pendingOperations)
+            lock (this.pendingOperations)
             {
-                return _pendingOperations.Remove(operation);
+                return this.pendingOperations.Remove(operation);
             }
         }
 
@@ -501,7 +497,7 @@ namespace CoreWf
             {
                 if (Remove(operation))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(timeout)));
+                    throw FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(timeout)));
                 }
             }
             return true;
@@ -521,11 +517,11 @@ namespace CoreWf
 
         private bool WaitForTurnNoEnqueueAsync(InstanceOperation operation, TimeSpan timeout, Action<object, TimeoutException> callback, object state)
         {
-            if (s_waitAsyncCompleteCallback == null)
+            if (waitAsyncCompleteCallback == null)
             {
-                s_waitAsyncCompleteCallback = new Action<object, TimeoutException>(OnWaitAsyncComplete);
+                waitAsyncCompleteCallback = new Action<object, TimeoutException>(OnWaitAsyncComplete);
             }
-            return operation.WaitForTurnAsync(timeout, s_waitAsyncCompleteCallback, new WaitForTurnData(callback, state, operation, this));
+            return operation.WaitForTurnAsync(timeout, waitAsyncCompleteCallback, new WaitForTurnData(callback, state, operation, this));
         }
 
         private static void OnWaitAsyncComplete(object state, TimeoutException exception)
@@ -557,10 +553,10 @@ namespace CoreWf
 
         private InstanceOperation FindOperation()
         {
-            if (_pendingOperations.Count > 0)
+            if (this.pendingOperations.Count > 0)
             {
                 // Special case the first one
-                InstanceOperation temp = _pendingOperations[0];
+                InstanceOperation temp = this.pendingOperations[0];
 
                 if (temp.RequiresInitialized)
                 {
@@ -573,17 +569,17 @@ namespace CoreWf
                 if (temp.CanRun(this) || this.IsInTerminalState)
                 {
                     // Action: Notifying an operation
-                    _actionCount++;
+                    this.actionCount++;
 
                     temp.Notified = true;
-                    _pendingOperations.Dequeue();
+                    this.pendingOperations.Dequeue();
                     return temp;
                 }
                 else
                 {
-                    for (int i = 0; i < _pendingOperations.Count; i++)
+                    for (int i = 0; i < this.pendingOperations.Count; i++)
                     {
-                        temp = _pendingOperations[i];
+                        temp = this.pendingOperations[i];
 
                         if (temp.RequiresInitialized)
                         {
@@ -593,10 +589,10 @@ namespace CoreWf
                         if (temp.CanRun(this))
                         {
                             // Action: Notifying an operation
-                            _actionCount++;
+                            this.actionCount++;
 
                             temp.Notified = true;
-                            _pendingOperations.Remove(i);
+                            this.pendingOperations.Remove(i);
                             return temp;
                         }
                     }
@@ -612,28 +608,28 @@ namespace CoreWf
             if (!base.IsReadOnly)
             {
                 // For newly created workflows (e.g. not the Load() case), we need to initialize now
-                base.RegisterExtensionManager(_extensions);
-                base.Initialize(_initialWorkflowArguments, _rootExecutionProperties);
+                base.RegisterExtensionManager(this.extensions);
+                base.Initialize(this.initialWorkflowArguments, this.rootExecutionProperties);
 
                 // make sure we have a persistence manager if necessary
-                if (_persistenceManager == null && _instanceStore != null)
+                if (this.persistenceManager == null && this.instanceStore != null)
                 {
                     Fx.Assert(this.Id != Guid.Empty, "should have a valid Id at this point");
-                    _persistenceManager = new PersistenceManager(_instanceStore, GetInstanceMetadata(), this.Id);
+                    this.persistenceManager = new PersistenceManager(this.instanceStore, GetInstanceMetadata(), this.Id);
                 }
             }
         }
 
         protected override void OnNotifyPaused()
         {
-            Fx.Assert(_isBusy, "We're always busy when we get this notification.");
+            Fx.Assert(this.isBusy, "We're always busy when we get this notification.");
 
             WorkflowInstanceState? localInstanceState = null;
             if (base.IsReadOnly)
             {
                 localInstanceState = this.Controller.State;
             }
-            WorkflowApplicationState localApplicationState = _state;
+            WorkflowApplicationState localApplicationState = this.state;
 
             bool stillSync = true;
 
@@ -647,13 +643,13 @@ namespace CoreWf
                     {
                         // We're about to notify the world that this instance is completed
                         // so let's make it official.
-                        _hasRaisedCompleted = true;
+                        this.hasRaisedCompleted = true;
 
-                        if (s_completedHandler == null)
+                        if (completedHandler == null)
                         {
-                            s_completedHandler = new CompletedEventHandler();
+                            completedHandler = new CompletedEventHandler();
                         }
-                        stillSync = s_completedHandler.Run(this);
+                        stillSync = completedHandler.Run(this);
                     }
                     catch (Exception e)
                     {
@@ -676,7 +672,7 @@ namespace CoreWf
                     bool shouldRunNow;
                     bool shouldRaiseIdleNow;
 
-                    lock (_pendingOperations)
+                    lock (this.pendingOperations)
                     {
                         toRun = FindOperation();
 
@@ -684,13 +680,13 @@ namespace CoreWf
                         // of the decision points in the ensuing "if" statement flip 
                         // when control gets out of the lock.
                         shouldRunNow = (localInstanceState.HasValue && localInstanceState == WorkflowInstanceState.Runnable && localApplicationState == WorkflowApplicationState.Runnable);
-                        shouldRaiseIdleNow = _hasExecutionOccurredSinceLastIdle &&
+                        shouldRaiseIdleNow = this.hasExecutionOccurredSinceLastIdle &&
                             localInstanceState.HasValue && localInstanceState == WorkflowInstanceState.Idle &&
-                            !_hasRaisedCompleted && _pendingUnenqueued == 0;
+                            !this.hasRaisedCompleted && this.pendingUnenqueued == 0;
 
                         if (toRun == null && !shouldRunNow && !shouldRaiseIdleNow)
                         {
-                            _isBusy = false;
+                            this.isBusy = false;
                             stillSync = false;
                         }
                     }
@@ -702,19 +698,19 @@ namespace CoreWf
                     }
                     else if (shouldRaiseIdleNow)
                     {
-                        _hasExecutionOccurredSinceLastIdle = false;
+                        this.hasExecutionOccurredSinceLastIdle = false;
 
-                        Fx.Assert(_isBusy, "we must be busy if we're raising idle");
+                        Fx.Assert(this.isBusy, "we must be busy if we're raising idle");
 
                         Exception abortException = null;
 
                         try
                         {
-                            if (s_idleHandler == null)
+                            if (idleHandler == null)
                             {
-                                s_idleHandler = new IdleEventHandler();
+                                idleHandler = new IdleEventHandler();
                             }
-                            stillSync = s_idleHandler.Run(this);
+                            stillSync = idleHandler.Run(this);
                         }
                         catch (Exception e)
                         {
@@ -733,10 +729,10 @@ namespace CoreWf
                     }
                     else if (shouldRunNow)
                     {
-                        _hasExecutionOccurredSinceLastIdle = true;
+                        this.hasExecutionOccurredSinceLastIdle = true;
 
                         // Action: Running the scheduler
-                        _actionCount++;
+                        this.actionCount++;
 
                         this.Controller.Run();
                         stillSync = false;
@@ -748,8 +744,7 @@ namespace CoreWf
         // used by WorkflowInvoker in the InvokeAsync case
         internal void GetCompletionStatus(out Exception terminationException, out bool cancelled)
         {
-            IDictionary<string, object> dummyOutputs;
-            ActivityInstanceState completionState = this.Controller.GetCompletionState(out dummyOutputs, out terminationException);
+            ActivityInstanceState completionState = this.Controller.GetCompletionState(out IDictionary<string, object> dummyOutputs, out terminationException);
             Fx.Assert(completionState != ActivityInstanceState.Executing, "Activity cannot be executing when this method is called");
             cancelled = (completionState == ActivityInstanceState.Canceled);
         }
@@ -773,7 +768,7 @@ namespace CoreWf
         {
             // This is pretty loose check, but it is okay if we
             // go down the abort path multiple times
-            if (_state != WorkflowApplicationState.Aborted)
+            if (this.state != WorkflowApplicationState.Aborted)
             {
                 AbortInstance(new WorkflowApplicationAbortedException(reason, innerException), false);
             }
@@ -781,12 +776,12 @@ namespace CoreWf
 
         private void AbortPersistence()
         {
-            if (_persistenceManager != null)
+            if (this.persistenceManager != null)
             {
-                _persistenceManager.Abort();
+                this.persistenceManager.Abort();
             }
 
-            PersistencePipeline currentPersistencePipeline = _persistencePipelineInUse;
+            PersistencePipeline currentPersistencePipeline = this.persistencePipelineInUse;
             if (currentPersistencePipeline != null)
             {
                 currentPersistencePipeline.Abort();
@@ -795,10 +790,10 @@ namespace CoreWf
 
         private void AbortInstance(Exception reason, bool isWorkflowThread)
         {
-            _state = WorkflowApplicationState.Aborted;
+            this.state = WorkflowApplicationState.Aborted;
 
             // Need to ensure that either components see the Aborted state, this method sees the components, or both.
-            //Thread.MemoryBarrier();
+            Thread.MemoryBarrier();
 
             // We do this outside of the lock since persistence
             // might currently be blocking access to the lock.
@@ -806,9 +801,9 @@ namespace CoreWf
 
             if (isWorkflowThread)
             {
-                if (!_hasCalledAbort)
+                if (!this.hasCalledAbort)
                 {
-                    _hasCalledAbort = true;
+                    this.hasCalledAbort = true;
                     this.Controller.Abort(reason);
 
                     // We should get off this thread because we're unsure of its state
@@ -828,9 +823,9 @@ namespace CoreWf
 
                     if (completeSelf)
                     {
-                        if (!_hasCalledAbort)
+                        if (!this.hasCalledAbort)
                         {
-                            _hasCalledAbort = true;
+                            this.hasCalledAbort = true;
                             this.Controller.Abort(reason);
 
                             // We need to get off this thread so we don't block the caller
@@ -853,7 +848,7 @@ namespace CoreWf
         {
             if (exception != null)
             {
-                // We eat this exception because we were simply doing our
+                // We swallow this exception because we were simply doing our
                 // best to get the lock.  Note that we won't proceed without
                 // the lock because we may have already succeeded on another
                 // thread.  Technically this abort call has failed.
@@ -866,10 +861,10 @@ namespace CoreWf
 
             try
             {
-                if (!_hasCalledAbort)
+                if (!this.hasCalledAbort)
                 {
                     shouldRaise = true;
-                    _hasCalledAbort = true;
+                    this.hasCalledAbort = true;
                     this.Controller.Abort(reason);
                 }
             }
@@ -928,7 +923,7 @@ namespace CoreWf
                         throw;
                     }
 
-                    // We eat any exception here because we are on the abort path
+                    // We swallow any exception here because we are on the abort path
                     // and are doing a best effort to track this record.
                 }
             }
@@ -956,7 +951,7 @@ namespace CoreWf
                     throw;
                 }
 
-                // We eat any exception here because we are on the abort path
+                // We swallow any exception here because we are on the abort path
                 // and are doing a best effort to track this record.
             }
 
@@ -965,7 +960,7 @@ namespace CoreWf
 
         private void RaiseAborted(Exception reason)
         {
-            if (_invokeCompletedCallback == null)
+            if (this.invokeCompletedCallback == null)
             {
                 Action<WorkflowApplicationAbortedEventArgs> abortedHandler = this.Aborted;
 
@@ -973,20 +968,20 @@ namespace CoreWf
                 {
                     try
                     {
-                        //this.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
-                        _isInHandler = true;
+                        this.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
+                        this.isInHandler = true;
 
                         abortedHandler(new WorkflowApplicationAbortedEventArgs(this, reason));
                     }
                     finally
                     {
-                        _isInHandler = false;
+                        this.isInHandler = false;
                     }
                 }
             }
             else
             {
-                _invokeCompletedCallback();
+                this.invokeCompletedCallback();
             }
 
             if (TD.WorkflowInstanceAbortedIsEnabled())
@@ -1009,7 +1004,7 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(reason))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("reason");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(reason));
             }
 
             Terminate(new WorkflowApplicationTerminatedException(reason, this.Id), timeout);
@@ -1019,7 +1014,7 @@ namespace CoreWf
         {
             if (reason == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("reason");
+                throw FxTrace.Exception.ArgumentNull(nameof(reason));
             }
 
             ThrowIfHandlerThread();
@@ -1066,7 +1061,7 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(reason))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("reason");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(reason));
             }
 
             return BeginTerminate(new WorkflowApplicationTerminatedException(reason, this.Id), timeout, callback, state);
@@ -1076,7 +1071,7 @@ namespace CoreWf
         {
             if (reason == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("reason");
+                throw FxTrace.Exception.ArgumentNull(nameof(reason));
             }
 
             ThrowIfHandlerThread();
@@ -1096,13 +1091,13 @@ namespace CoreWf
         {
             // We only actually do any work if we haven't completed and we aren't
             // unloaded.
-            if (!_hasRaisedCompleted && _state != WorkflowApplicationState.Unloaded)
+            if (!this.hasRaisedCompleted && this.state != WorkflowApplicationState.Unloaded)
             {
                 this.Controller.ScheduleCancel();
 
                 // This is a loose check, but worst case scenario we call
                 // an extra, unnecessary Run
-                if (!_hasCalledRun && !_hasRaisedCompleted)
+                if (!this.hasCalledRun && !this.hasRaisedCompleted)
                 {
                     RunCore();
                 }
@@ -1165,39 +1160,39 @@ namespace CoreWf
         private static WorkflowApplication CreateInstance(Activity activity, IDictionary<string, object> inputs, WorkflowInstanceExtensionManager extensions, SynchronizationContext syncContext, Action invokeCompletedCallback)
         {
             // 1) Create the workflow instance
-            //Transaction ambientTransaction = Transaction.Current;
+            Transaction ambientTransaction = Transaction.Current;
             List<Handle> workflowExecutionProperties = null;
 
-            //if (ambientTransaction != null)
-            //{
-            //    // no need for a NoPersistHandle since the ActivityExecutor performs a no-persist zone
-            //    // as part of the RuntimeTransactionHandle processing
-            //    workflowExecutionProperties = new List<Handle>(1)
-            //    {
-            //        new RuntimeTransactionHandle(ambientTransaction)
-            //    };
-            //}
+            if (ambientTransaction != null)
+            {
+                // no need for a NoPersistHandle since the ActivityExecutor performs a no-persist zone
+                // as part of the RuntimeTransactionHandle processing
+                workflowExecutionProperties = new List<Handle>(1)
+                {
+                    new RuntimeTransactionHandle(ambientTransaction)
+                };
+            }
 
             WorkflowApplication instance = new WorkflowApplication(activity, inputs, workflowExecutionProperties)
-            {
-                SynchronizationContext = syncContext
-            };
+                {
+                    SynchronizationContext = syncContext
+                };
 
             bool success = false;
 
             try
             {
                 // 2) Take the executor lock before allowing extensions to be added
-                instance._isBusy = true;
+                instance.isBusy = true;
 
                 // 3) Add extensions
                 if (extensions != null)
                 {
-                    instance._extensions = extensions;
+                    instance.extensions = extensions;
                 }
 
                 // 4) Setup miscellaneous state
-                instance._invokeCompletedCallback = invokeCompletedCallback;
+                instance.invokeCompletedCallback = invokeCompletedCallback;
 
                 success = true;
             }
@@ -1205,7 +1200,7 @@ namespace CoreWf
             {
                 if (!success)
                 {
-                    instance._isBusy = false;
+                    instance.isBusy = false;
                 }
             }
 
@@ -1222,7 +1217,7 @@ namespace CoreWf
             // Shortcut path for resuming the instance
             instance.RunCore();
 
-            instance._hasExecutionOccurredSinceLastIdle = true;
+            instance.hasExecutionOccurredSinceLastIdle = true;
             instance.Controller.Run();
         }
 
@@ -1249,6 +1244,7 @@ namespace CoreWf
             {
                 RunInstance(instance);
                 syncContext.DoPump();
+
             }
             catch (TimeoutException)
             {
@@ -1272,7 +1268,7 @@ namespace CoreWf
 
             if (completionException != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(completionException);
+                throw FxTrace.Exception.AsError(completionException);
             }
 
             return outputs;
@@ -1322,7 +1318,7 @@ namespace CoreWf
                     // We set this to true here so that idle is raised
                     // regardless of whether the call to Run resulted
                     // in execution.
-                    _hasExecutionOccurredSinceLastIdle = true;
+                    this.hasExecutionOccurredSinceLastIdle = true;
                 }
 
                 RunCore();
@@ -1337,12 +1333,12 @@ namespace CoreWf
 
         private void RunCore()
         {
-            if (!_hasCalledRun)
+            if (!this.hasCalledRun)
             {
-                _hasCalledRun = true;
+                this.hasCalledRun = true;
             }
 
-            _state = WorkflowApplicationState.Runnable;
+            this.state = WorkflowApplicationState.Runnable;
         }
 
         public IAsyncResult BeginRun(AsyncCallback callback, object state)
@@ -1369,33 +1365,33 @@ namespace CoreWf
             RunAsyncResult.End(result);
         }
 
-        //// shared by Load/BeginLoad
-        //bool IsLoadTransactionRequired()
-        //{
-        //    return base.GetExtensions<IPersistencePipelineModule>().Any(module => module.IsLoadTransactionRequired);
-        //}
+        // shared by Load/BeginLoad
+        private bool IsLoadTransactionRequired()
+        {
+            return base.GetExtensions<IPersistencePipelineModule>().Any(module => module.IsLoadTransactionRequired);
+        }
 
         private void CreatePersistenceManager()
         {
-            PersistenceManager newManager = new PersistenceManager(this.InstanceStore, GetInstanceMetadata(), _instanceId);
+            PersistenceManager newManager = new PersistenceManager(this.InstanceStore, GetInstanceMetadata(), this.instanceId);
             SetPersistenceManager(newManager);
         }
 
         // shared by Load(WorkflowApplicationInstance)/BeginLoad*
         private void SetPersistenceManager(PersistenceManager newManager)
         {
-            Fx.Assert(_persistenceManager == null, "SetPersistenceManager should only be called once");
+            Fx.Assert(this.persistenceManager == null, "SetPersistenceManager should only be called once");
 
             // first register our extensions since we'll need them to construct the pipeline
-            base.RegisterExtensionManager(_extensions);
-            _persistenceManager = newManager;
+            base.RegisterExtensionManager(this.extensions);
+            this.persistenceManager = newManager;
         }
 
         // shared by Load/BeginLoad
         private PersistencePipeline ProcessInstanceValues(IDictionary<XName, InstanceValue> values, out object deserializedRuntimeState)
         {
             PersistencePipeline result = null;
-            deserializedRuntimeState = ExtractRuntimeState(values, _persistenceManager.InstanceId);
+            deserializedRuntimeState = ExtractRuntimeState(values, this.persistenceManager.InstanceId);
 
             if (HasPersistenceModule)
             {
@@ -1409,16 +1405,14 @@ namespace CoreWf
 
         private static ActivityExecutor ExtractRuntimeState(IDictionary<XName, InstanceValue> values, Guid instanceId)
         {
-            InstanceValue value;
-            if (values.TryGetValue(WorkflowNamespace.Workflow, out value))
+            if (values.TryGetValue(WorkflowNamespace.Workflow, out InstanceValue value))
             {
-                ActivityExecutor result = value.Value as ActivityExecutor;
-                if (result != null)
+                if (value.Value is ActivityExecutor result)
                 {
                     return result;
                 }
             }
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new InstancePersistenceException(SR.WorkflowInstanceNotFoundInStore(instanceId)));
+            throw FxTrace.Exception.AsError(new InstancePersistenceException(SR.WorkflowInstanceNotFoundInStore(instanceId)));
         }
 
         public static void CreateDefaultInstanceOwner(InstanceStore instanceStore, WorkflowIdentity definitionIdentity, WorkflowIdentityFilter identityFilter)
@@ -1430,11 +1424,11 @@ namespace CoreWf
         {
             if (instanceStore == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
             }
             if (instanceStore.DefaultInstanceOwner != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("instanceStore", SR.InstanceStoreHasDefaultOwner);
+                throw FxTrace.Exception.Argument(nameof(instanceStore), SR.InstanceStoreHasDefaultOwner);
             }
 
             CreateWorkflowOwnerWithIdentityCommand command = GetCreateOwnerCommand(definitionIdentity, identityFilter);
@@ -1442,91 +1436,87 @@ namespace CoreWf
             instanceStore.DefaultInstanceOwner = commandResult.InstanceOwner;
         }
 
-        //public static IAsyncResult BeginCreateDefaultInstanceOwner(InstanceStore instanceStore, WorkflowIdentity definitionIdentity,
-        //    WorkflowIdentityFilter identityFilter, AsyncCallback callback, object state)
-        //{
-        //    return BeginCreateDefaultInstanceOwner(instanceStore, definitionIdentity, identityFilter, ActivityDefaults.OpenTimeout, callback, state);
-        //}
+        public static IAsyncResult BeginCreateDefaultInstanceOwner(InstanceStore instanceStore, WorkflowIdentity definitionIdentity,
+            WorkflowIdentityFilter identityFilter, AsyncCallback callback, object state)
+        {
+            return BeginCreateDefaultInstanceOwner(instanceStore, definitionIdentity, identityFilter, ActivityDefaults.OpenTimeout, callback, state);
+        }
 
-        //public static IAsyncResult BeginCreateDefaultInstanceOwner(InstanceStore instanceStore, WorkflowIdentity definitionIdentity,
-        //    WorkflowIdentityFilter identityFilter, TimeSpan timeout, AsyncCallback callback, object state)
-        //{
-        //    if (instanceStore == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
-        //    }
-        //    if (instanceStore.DefaultInstanceOwner != null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.Argument("instanceStore", SR.InstanceStoreHasDefaultOwner);
-        //    }
+        public static IAsyncResult BeginCreateDefaultInstanceOwner(InstanceStore instanceStore, WorkflowIdentity definitionIdentity,
+            WorkflowIdentityFilter identityFilter, TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            if (instanceStore == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
+            }
+            if (instanceStore.DefaultInstanceOwner != null)
+            {
+                throw FxTrace.Exception.Argument(nameof(instanceStore), SR.InstanceStoreHasDefaultOwner);
+            }
 
-        //    CreateWorkflowOwnerWithIdentityCommand command = GetCreateOwnerCommand(definitionIdentity, identityFilter);
-        //    return new InstanceCommandWithTemporaryHandleAsyncResult(instanceStore, command, timeout, callback, state);
-        //}
+            CreateWorkflowOwnerWithIdentityCommand command = GetCreateOwnerCommand(definitionIdentity, identityFilter);
+            return new InstanceCommandWithTemporaryHandleAsyncResult(instanceStore, command, timeout, callback, state);
+        }
 
-        //public static void EndCreateDefaultInstanceOwner(IAsyncResult asyncResult)
-        //{
-        //    InstanceStore instanceStore;
-        //    InstanceView commandResult;
-        //    InstanceCommandWithTemporaryHandleAsyncResult.End(asyncResult, out instanceStore, out commandResult);
-        //    instanceStore.DefaultInstanceOwner = commandResult.InstanceOwner;
-        //}
+        public static void EndCreateDefaultInstanceOwner(IAsyncResult asyncResult)
+        {
+            InstanceCommandWithTemporaryHandleAsyncResult.End(asyncResult, out InstanceStore instanceStore, out InstanceView commandResult);
+            instanceStore.DefaultInstanceOwner = commandResult.InstanceOwner;
+        }
 
-        //public static void DeleteDefaultInstanceOwner(InstanceStore instanceStore)
-        //{
-        //    DeleteDefaultInstanceOwner(instanceStore, ActivityDefaults.CloseTimeout);
-        //}
+        public static void DeleteDefaultInstanceOwner(InstanceStore instanceStore)
+        {
+            DeleteDefaultInstanceOwner(instanceStore, ActivityDefaults.CloseTimeout);
+        }
 
-        //public static void DeleteDefaultInstanceOwner(InstanceStore instanceStore, TimeSpan timeout)
-        //{
-        //    if (instanceStore == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
-        //    }
-        //    if (instanceStore.DefaultInstanceOwner == null)
-        //    {
-        //        return;
-        //    }
+        public static void DeleteDefaultInstanceOwner(InstanceStore instanceStore, TimeSpan timeout)
+        {
+            if (instanceStore == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
+            }
+            if (instanceStore.DefaultInstanceOwner == null)
+            {
+                return;
+            }
 
-        //    DeleteWorkflowOwnerCommand command = new DeleteWorkflowOwnerCommand();
-        //    ExecuteInstanceCommandWithTemporaryHandle(instanceStore, command, timeout);
-        //    instanceStore.DefaultInstanceOwner = null;
-        //}
+            DeleteWorkflowOwnerCommand command = new DeleteWorkflowOwnerCommand();
+            ExecuteInstanceCommandWithTemporaryHandle(instanceStore, command, timeout);
+            instanceStore.DefaultInstanceOwner = null;
+        }
 
-        //public static IAsyncResult BeginDeleteDefaultInstanceOwner(InstanceStore instanceStore, AsyncCallback callback, object state)
-        //{
-        //    return BeginDeleteDefaultInstanceOwner(instanceStore, ActivityDefaults.CloseTimeout, callback, state);
-        //}
+        public static IAsyncResult BeginDeleteDefaultInstanceOwner(InstanceStore instanceStore, AsyncCallback callback, object state)
+        {
+            return BeginDeleteDefaultInstanceOwner(instanceStore, ActivityDefaults.CloseTimeout, callback, state);
+        }
 
-        //public static IAsyncResult BeginDeleteDefaultInstanceOwner(InstanceStore instanceStore, TimeSpan timeout, AsyncCallback callback, object state)
-        //{
-        //    if (instanceStore == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
-        //    }
-        //    if (instanceStore.DefaultInstanceOwner == null)
-        //    {
-        //        return new CompletedAsyncResult(callback, state);
-        //    }
+        public static IAsyncResult BeginDeleteDefaultInstanceOwner(InstanceStore instanceStore, TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            if (instanceStore == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
+            }
+            if (instanceStore.DefaultInstanceOwner == null)
+            {
+                return new CompletedAsyncResult(callback, state);
+            }
 
-        //    DeleteWorkflowOwnerCommand command = new DeleteWorkflowOwnerCommand();
-        //    return new InstanceCommandWithTemporaryHandleAsyncResult(instanceStore, command, timeout, callback, state);
-        //}
+            DeleteWorkflowOwnerCommand command = new DeleteWorkflowOwnerCommand();
+            return new InstanceCommandWithTemporaryHandleAsyncResult(instanceStore, command, timeout, callback, state);
+        }
 
-        //public static void EndDeleteDefaultInstanceOwner(IAsyncResult asyncResult)
-        //{
-        //    InstanceStore instanceStore;
-        //    InstanceView commandResult;
+        public static void EndDeleteDefaultInstanceOwner(IAsyncResult asyncResult)
+        {
 
-        //    if (asyncResult is CompletedAsyncResult)
-        //    {
-        //        CompletedAsyncResult.End(asyncResult);
-        //        return;
-        //    }
+            if (asyncResult is CompletedAsyncResult)
+            {
+                CompletedAsyncResult.End(asyncResult);
+                return;
+            }
 
-        //    InstanceCommandWithTemporaryHandleAsyncResult.End(asyncResult, out instanceStore, out commandResult);            
-        //    instanceStore.DefaultInstanceOwner = null;
-        //}
+            InstanceCommandWithTemporaryHandleAsyncResult.End(asyncResult, out InstanceStore instanceStore, out InstanceView commandResult);            
+            instanceStore.DefaultInstanceOwner = null;
+        }
 
         private static InstanceView ExecuteInstanceCommandWithTemporaryHandle(InstanceStore instanceStore, InstancePersistenceCommand command, TimeSpan timeout)
         {
@@ -1549,13 +1539,13 @@ namespace CoreWf
         {
             if (!identityFilter.IsValid())
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ArgumentOutOfRangeException("identityFilter"));
+                throw FxTrace.Exception.AsError(new ArgumentOutOfRangeException(nameof(identityFilter)));
             }
             if (definitionIdentity == null && identityFilter != WorkflowIdentityFilter.Any)
             {
                 // This API isn't useful for null identity, because WFApp only adds a default WorkflowHostType
                 // to instances with non-null identity.
-                throw CoreWf.Internals.FxTrace.Exception.Argument("definitionIdentity", SR.CannotCreateOwnerWithoutIdentity);
+                throw FxTrace.Exception.Argument(nameof(definitionIdentity), SR.CannotCreateOwnerWithoutIdentity);
             }
             return new CreateWorkflowOwnerWithIdentityCommand
             {
@@ -1577,43 +1567,43 @@ namespace CoreWf
         {
             if (instanceStore == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
             if (instanceStore.DefaultInstanceOwner == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
             }
 
             PersistenceManager newManager = new PersistenceManager(instanceStore, null);
             return LoadCore(timeout, true, newManager);
         }
 
-        //   public static IAsyncResult BeginGetRunnableInstance(InstanceStore instanceStore, AsyncCallback callback, object state)
-        //   {
-        //       return BeginGetRunnableInstance(instanceStore, ActivityDefaults.LoadTimeout, callback, state);
-        //   }
+        public static IAsyncResult BeginGetRunnableInstance(InstanceStore instanceStore, AsyncCallback callback, object state)
+        {
+            return BeginGetRunnableInstance(instanceStore, ActivityDefaults.LoadTimeout, callback, state);
+        }
 
-        //   public static IAsyncResult BeginGetRunnableInstance(InstanceStore instanceStore, TimeSpan timeout, AsyncCallback callback, object state)
-        //   {
-        //       if (instanceStore == null)
-        //       {
-        //           throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
-        //       }
-        //       TimeoutHelper.ThrowIfNegativeArgument(timeout);
-        //       if (instanceStore.DefaultInstanceOwner == null)
-        //       {
-        //           throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
-        //       }
+        public static IAsyncResult BeginGetRunnableInstance(InstanceStore instanceStore, TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            if (instanceStore == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
+            }
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
+            if (instanceStore.DefaultInstanceOwner == null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.GetRunnableRequiresOwner));
+            }
 
-        //       PersistenceManager newManager = new PersistenceManager(instanceStore, null);
-        //       return new LoadAsyncResult(null, newManager, true, timeout, callback, state);
-        //}
+            PersistenceManager newManager = new PersistenceManager(instanceStore, null);
+            return new LoadAsyncResult(null, newManager, true, timeout, callback, state);
+     }
 
-        //   public static WorkflowApplicationInstance EndGetRunnableInstance(IAsyncResult asyncResult)
-        //   {
-        //       return LoadAsyncResult.EndAndCreateInstance(asyncResult);
-        //   }
+        public static WorkflowApplicationInstance EndGetRunnableInstance(IAsyncResult asyncResult)
+        {
+            return LoadAsyncResult.EndAndCreateInstance(asyncResult);
+        }
 
         public static WorkflowApplicationInstance GetInstance(Guid instanceId, InstanceStore instanceStore)
         {
@@ -1624,11 +1614,11 @@ namespace CoreWf
         {
             if (instanceId == Guid.Empty)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(instanceId));
             }
             if (instanceStore == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
             }
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
@@ -1636,69 +1626,70 @@ namespace CoreWf
             return LoadCore(timeout, false, newManager);
         }
 
-        //public static IAsyncResult BeginGetInstance(Guid instanceId, InstanceStore instanceStore, AsyncCallback callback, object state)
-        //{
-        //    return BeginGetInstance(instanceId, instanceStore, ActivityDefaults.LoadTimeout, callback, state);
-        //}
+        public static IAsyncResult BeginGetInstance(Guid instanceId, InstanceStore instanceStore, AsyncCallback callback, object state)
+        {
+            return BeginGetInstance(instanceId, instanceStore, ActivityDefaults.LoadTimeout, callback, state);
+        }
 
-        //public static IAsyncResult BeginGetInstance(Guid instanceId, InstanceStore instanceStore, TimeSpan timeout, AsyncCallback callback, object state)
-        //{
-        //    if (instanceId == Guid.Empty)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
-        //    }
-        //    if (instanceStore == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instanceStore");
-        //    }
-        //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
+        public static IAsyncResult BeginGetInstance(Guid instanceId, InstanceStore instanceStore, TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            if (instanceId == Guid.Empty)
+            {
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(instanceId));
+            }
+            if (instanceStore == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(instanceStore));
+            }
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-        //    PersistenceManager newManager = new PersistenceManager(instanceStore, null, instanceId);
-        //    return new LoadAsyncResult(null, newManager, false, timeout, callback, state);
-        //}
+            PersistenceManager newManager = new PersistenceManager(instanceStore, null, instanceId);
+            return new LoadAsyncResult(null, newManager, false, timeout, callback, state);
+        }
 
-        //public static WorkflowApplicationInstance EndGetInstance(IAsyncResult asyncResult)
-        //{
-        //    return LoadAsyncResult.EndAndCreateInstance(asyncResult);
-        //}
+        public static WorkflowApplicationInstance EndGetInstance(IAsyncResult asyncResult)
+        {
+            return LoadAsyncResult.EndAndCreateInstance(asyncResult);
+        }
 
+#if NET45
         public void Load(WorkflowApplicationInstance instance)
         {
             Load(instance, ActivityDefaults.LoadTimeout);
         }
 
-        //public void Load(WorkflowApplicationInstance instance, TimeSpan timeout)
-        //{
-        //    Load(instance, null, timeout);
-        //}
+        public void Load(WorkflowApplicationInstance instance, TimeSpan timeout)
+        {
+            Load(instance, null, timeout);
+        }
 
-        //public void Load(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap)
-        //{
-        //    Load(instance, updateMap, ActivityDefaults.LoadTimeout);
-        //}
+        public void Load(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap)
+        {
+            Load(instance, updateMap, ActivityDefaults.LoadTimeout);
+        }
 
-        public void Load(WorkflowApplicationInstance instance, /*DynamicUpdateMap updateMap,*/ TimeSpan timeout)
+        public void Load(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap, TimeSpan timeout)
         {
             ThrowIfAborted();
             ThrowIfReadOnly(); // only allow a single Load() or Run()
             if (instance == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instance");
+                throw FxTrace.Exception.ArgumentNull("instance");
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-            if (_instanceIdSet)
+            if (this.instanceIdSet)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
-            if (_initialWorkflowArguments != null)
+            if (this.initialWorkflowArguments != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
             }
             if (this.InstanceStore != null && this.InstanceStore != instance.InstanceStore)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
+                throw FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
             }
 
             instance.MarkAsLoaded();
@@ -1712,24 +1703,82 @@ namespace CoreWf
 
                 ValidateStateForLoad();
 
-                _instanceId = instance.InstanceId;
-                _instanceIdSet = true;
-                if (_instanceStore == null)
+                this.instanceId = instance.InstanceId;
+                this.instanceIdSet = true;
+                if (this.instanceStore == null)
                 {
-                    _instanceStore = instance.InstanceStore;
+                    this.instanceStore = instance.InstanceStore;
                 }
 
                 PersistenceManager newManager = (PersistenceManager)instance.PersistenceManager;
                 newManager.SetInstanceMetadata(GetInstanceMetadata());
                 SetPersistenceManager(newManager);
 
-                LoadCore(/*updateMap,*/ timeoutHelper, false, instance.Values);
+                LoadCore(updateMap, timeoutHelper, false, instance.Values);
+            }
+            finally
+            {
+                NotifyOperationComplete(operation);
+            }
+        } 
+#else
+        public void Load(WorkflowApplicationInstance instance)
+        {
+            Load(instance, ActivityDefaults.LoadTimeout);
+        }
+
+        public void Load(WorkflowApplicationInstance instance, TimeSpan timeout)
+        {
+            ThrowIfAborted();
+            ThrowIfReadOnly(); // only allow a single Load() or Run()
+            if (instance == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(instance));
+            }
+
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
+
+            if (this.instanceIdSet)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+            }
+            if (this.initialWorkflowArguments != null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+            }
+            if (this.InstanceStore != null && this.InstanceStore != instance.InstanceStore)
+            {
+                throw FxTrace.Exception.Argument(nameof(instance), SR.InstanceStoreDoesntMatchWorkflowApplication);
+            }
+
+            instance.MarkAsLoaded();
+
+            InstanceOperation operation = new InstanceOperation { RequiresInitialized = false };
+
+            try
+            {
+                TimeoutHelper timeoutHelper = new TimeoutHelper(timeout);
+                WaitForTurn(operation, timeoutHelper.RemainingTime());
+
+                ValidateStateForLoad();
+
+                this.instanceId = instance.InstanceId;
+                this.instanceIdSet = true;
+                if (this.instanceStore == null)
+                {
+                    this.instanceStore = instance.InstanceStore;
+                }
+
+                PersistenceManager newManager = (PersistenceManager)instance.PersistenceManager;
+                newManager.SetInstanceMetadata(GetInstanceMetadata());
+                SetPersistenceManager(newManager);
             }
             finally
             {
                 NotifyOperationComplete(operation);
             }
         }
+#endif
 
         public void LoadRunnableInstance()
         {
@@ -1744,19 +1793,19 @@ namespace CoreWf
 
             if (this.InstanceStore == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
             }
-            if (_instanceIdSet)
+            if (this.instanceIdSet)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
-            if (_initialWorkflowArguments != null)
+            if (this.initialWorkflowArguments != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
             }
-            if (_persistenceManager != null)
+            if (this.persistenceManager != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
             }
 
             InstanceOperation operation = new InstanceOperation { RequiresInitialized = false };
@@ -1768,15 +1817,19 @@ namespace CoreWf
 
                 ValidateStateForLoad();
 
-                RegisterExtensionManager(_extensions);
-                _persistenceManager = new PersistenceManager(InstanceStore, GetInstanceMetadata());
+                RegisterExtensionManager(this.extensions);
+                this.persistenceManager = new PersistenceManager(InstanceStore, GetInstanceMetadata());
 
-                if (!_persistenceManager.IsInitialized)
+                if (!this.persistenceManager.IsInitialized)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
                 }
 
-                LoadCore(/*null,*/ timeoutHelper, true);
+#if NET45
+                LoadCore(null, timeoutHelper, true); 
+#else
+                LoadCore(timeoutHelper, true);
+#endif
             }
             finally
             {
@@ -1795,22 +1848,22 @@ namespace CoreWf
             ThrowIfReadOnly(); // only allow a single Load() or Run()
             if (instanceId == Guid.Empty)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(instanceId));
             }
 
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
             if (this.InstanceStore == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
             }
-            if (_instanceIdSet)
+            if (this.instanceIdSet)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
-            if (_initialWorkflowArguments != null)
+            if (this.initialWorkflowArguments != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
             }
 
             InstanceOperation operation = new InstanceOperation { RequiresInitialized = false };
@@ -1822,11 +1875,15 @@ namespace CoreWf
 
                 ValidateStateForLoad();
 
-                _instanceId = instanceId;
-                _instanceIdSet = true;
+                this.instanceId = instanceId;
+                this.instanceIdSet = true;
 
                 CreatePersistenceManager();
-                LoadCore(/*null,*/ timeoutHelper, false);
+#if NET45
+                LoadCore(null, timeoutHelper, false); 
+#else
+                LoadCore(timeoutHelper, false);
+#endif
             }
             finally
             {
@@ -1834,80 +1891,91 @@ namespace CoreWf
             }
         }
 
-        private void LoadCore(/*DynamicUpdateMap updateMap,*/ TimeoutHelper timeoutHelper, bool loadAny, IDictionary<XName, InstanceValue> values = null)
+#if NET45
+        void LoadCore(DynamicUpdateMap updateMap, TimeoutHelper timeoutHelper, bool loadAny, IDictionary<XName, InstanceValue> values = null) 
+#else
+        private void LoadCore(TimeoutHelper timeoutHelper, bool loadAny, IDictionary<XName, InstanceValue> values = null)
+#endif
         {
             if (values == null)
             {
-                if (!_persistenceManager.IsInitialized)
+                if (!this.persistenceManager.IsInitialized)
                 {
-                    _persistenceManager.Initialize(this.DefinitionIdentity, timeoutHelper.RemainingTime());
+                    this.persistenceManager.Initialize(this.DefinitionIdentity, timeoutHelper.RemainingTime());
                 }
             }
             else
             {
-                Fx.Assert(_persistenceManager.IsInitialized, "Caller should have initialized Persistence Manager");
-                Fx.Assert(_instanceIdSet, "Caller should have set InstanceId");
+                Fx.Assert(this.persistenceManager.IsInitialized, "Caller should have initialized Persistence Manager");
+                Fx.Assert(this.instanceIdSet, "Caller should have set InstanceId");
             }
 
             PersistencePipeline pipeline = null;
-            //WorkflowPersistenceContext context = null;
-            //TransactionScope scope = null;
+            WorkflowPersistenceContext context = null;
+            TransactionScope scope = null;
             bool success = false;
             Exception abortReasonInnerException = null;
             try
             {
-                //InitializePersistenceContext(timeoutHelper, out context);
+                InitializePersistenceContext(IsLoadTransactionRequired(), timeoutHelper, out context, out scope);
 
                 if (values == null)
                 {
-                    values = LoadValues(_persistenceManager, timeoutHelper, loadAny);
+                    values = LoadValues(this.persistenceManager, timeoutHelper, loadAny);
                     if (loadAny)
                     {
-                        if (_instanceIdSet)
+                        if (this.instanceIdSet)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
                         }
 
-                        _instanceId = _persistenceManager.InstanceId;
-                        _instanceIdSet = true;
+                        this.instanceId = this.persistenceManager.InstanceId;
+                        this.instanceIdSet = true;
                     }
                 }
-                object deserializedRuntimeState;
-                pipeline = ProcessInstanceValues(values, out deserializedRuntimeState);
+                pipeline = ProcessInstanceValues(values, out object deserializedRuntimeState);
 
                 if (pipeline != null)
                 {
                     try
                     {
-                        _persistencePipelineInUse = pipeline;
+                        this.persistencePipelineInUse = pipeline;
 
                         // Need to ensure that either we see the Aborted state, AbortInstance sees us, or both.
-                        if (_state == WorkflowApplicationState.Aborted)
+                        Thread.MemoryBarrier();
+
+                        if (this.state == WorkflowApplicationState.Aborted)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                            throw FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
                         }
 
                         pipeline.EndLoad(pipeline.BeginLoad(timeoutHelper.RemainingTime(), null, null));
                     }
                     finally
                     {
-                        _persistencePipelineInUse = null;
+                        this.persistencePipelineInUse = null;
                     }
                 }
-
+                
                 try
                 {
+#if NET45
+                    base.Initialize(deserializedRuntimeState, updateMap);
+                    if (updateMap != null)
+                    {
+                        UpdateInstanceMetadata();
+                    } 
+#else
                     base.Initialize(deserializedRuntimeState);
-                    //if (updateMap != null)
-                    //{
-                    //    UpdateInstanceMetadata();
-                    //}
+#endif
                 }
-                //catch (InstanceUpdateException e)
-                //{
-                //    abortReasonInnerException = e;
-                //    throw;
-                //}
+#if NET45
+                catch (InstanceUpdateException e)
+                {
+                    abortReasonInnerException = e;
+                    throw;
+                } 
+#endif
                 catch (VersionMismatchException e)
                 {
                     abortReasonInnerException = e;
@@ -1918,7 +1986,7 @@ namespace CoreWf
             }
             finally
             {
-                //CompletePersistenceContext(context, success);
+                CompletePersistenceContext(context, scope, success);
                 if (!success)
                 {
                     this.AbortDueToException(abortReasonInnerException);
@@ -1933,11 +2001,13 @@ namespace CoreWf
 
         private void AbortDueToException(Exception e)
         {
-            //if (e is InstanceUpdateException)
-            //{
-            //    this.Abort(SR.AbortingDueToDynamicUpdateFailure, e);
-            //}
-            //else 
+#if NET45
+            if (e is InstanceUpdateException)
+            {
+                this.Abort(SR.AbortingDueToDynamicUpdateFailure, e);
+            }
+            else  
+#endif
             if (e is VersionMismatchException)
             {
                 this.Abort(SR.AbortingDueToVersionMismatch, e);
@@ -1954,15 +2024,15 @@ namespace CoreWf
 
             if (!persistenceManager.IsInitialized)
             {
-                persistenceManager.Initialize(s_unknownIdentity, timeoutHelper.RemainingTime());
+                persistenceManager.Initialize(unknownIdentity, timeoutHelper.RemainingTime());
             }
 
-            //WorkflowPersistenceContext context = null;
-            //TransactionScope scope = null;
+            WorkflowPersistenceContext context = null;
+            TransactionScope scope = null;
             WorkflowApplicationInstance result = null;
             try
             {
-                //InitializePersistenceContext(timeoutHelper, out context);
+                InitializePersistenceContext(false, timeoutHelper, out context, out scope);
 
                 IDictionary<XName, InstanceValue> values = LoadValues(persistenceManager, timeoutHelper, loadAny);
                 ActivityExecutor deserializedRuntimeState = ExtractRuntimeState(values, persistenceManager.InstanceId);
@@ -1971,7 +2041,7 @@ namespace CoreWf
             finally
             {
                 bool success = (result != null);
-                //CompletePersistenceContext(context, success);
+                CompletePersistenceContext(context, scope, success);
                 if (!success)
                 {
                     persistenceManager.Abort();
@@ -1981,50 +2051,30 @@ namespace CoreWf
             return result;
         }
 
-        //static void InitializePersistenceContext(bool isTransactionRequired, TimeoutHelper timeoutHelper,
-        //    out WorkflowPersistenceContext context, out TransactionScope scope)
-        //{
-        //    context = new WorkflowPersistenceContext(isTransactionRequired, timeoutHelper.OriginalTimeout);
-        //    scope = TransactionHelper.CreateTransactionScope(context.PublicTransaction);
-        //}
+        private static void InitializePersistenceContext(bool isTransactionRequired, TimeoutHelper timeoutHelper,
+            out WorkflowPersistenceContext context, out TransactionScope scope)
+        {
+            context = new WorkflowPersistenceContext(isTransactionRequired, timeoutHelper.OriginalTimeout);
+            scope = TransactionHelper.CreateTransactionScope(context.PublicTransaction);
+        }
 
-        //static void InitializePersistenceContext(TimeoutHelper timeoutHelper, out WorkflowPersistenceContext context)
-        //{
-        //    context = new WorkflowPersistenceContext(false, timeoutHelper.OriginalTimeout);
-        //}
+        private static void CompletePersistenceContext(WorkflowPersistenceContext context, TransactionScope scope, bool success)
+        {
+            // Clean up the transaction scope regardless of failure
+            TransactionHelper.CompleteTransactionScope(ref scope);
 
-        //static void CompletePersistenceContext(WorkflowPersistenceContext context, TransactionScope scope, bool success)
-        //{
-        //    // Clean up the transaction scope regardless of failure
-        //    TransactionHelper.CompleteTransactionScope(ref scope);
-
-        //    if (context != null)
-        //    {
-        //        if (success)
-        //        {
-        //            context.Complete();
-        //        }
-        //        else
-        //        {
-        //            context.Abort();
-        //        }
-        //    }
-        //}
-
-        //static void CompletePersistenceContext(WorkflowPersistenceContext context, bool success)
-        //{
-        //    if (context != null)
-        //    {
-        //        if (success)
-        //        {
-        //            context.Complete();
-        //        }
-        //        else
-        //        {
-        //            context.Abort();
-        //        }
-        //    }
-        //}
+            if (context != null)
+            {
+                if (success)
+                {
+                    context.Complete();
+                }
+                else
+                {
+                    context.Abort();
+                }
+            }
+        }
 
         private static IDictionary<XName, InstanceValue> LoadValues(PersistenceManager persistenceManager, TimeoutHelper timeoutHelper, bool loadAny)
         {
@@ -2033,7 +2083,7 @@ namespace CoreWf
             {
                 if (!persistenceManager.TryLoad(timeoutHelper.RemainingTime(), out values))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
+                    throw FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
                 }
             }
             else
@@ -2051,17 +2101,17 @@ namespace CoreWf
             UnlockInstance(manager, timeoutHelper);
         }
 
-        //internal static IAsyncResult BeginDiscardInstance(PersistenceManagerBase persistanceManager, TimeSpan timeout, AsyncCallback callback, object state)
-        //{
-        //    PersistenceManager manager = (PersistenceManager)persistanceManager;
-        //    TimeoutHelper timeoutHelper = new TimeoutHelper(timeout);
-        //    return new UnlockInstanceAsyncResult(manager, timeoutHelper, callback, state);
-        //}
+        internal static IAsyncResult BeginDiscardInstance(PersistenceManagerBase persistanceManager, TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            PersistenceManager manager = (PersistenceManager)persistanceManager;
+            TimeoutHelper timeoutHelper = new TimeoutHelper(timeout);
+            return new UnlockInstanceAsyncResult(manager, timeoutHelper, callback, state);
+        }
 
-        //internal static void EndDiscardInstance(IAsyncResult asyncResult)
-        //{
-        //    UnlockInstanceAsyncResult.End(asyncResult);
-        //}
+        internal static void EndDiscardInstance(IAsyncResult asyncResult)
+        {
+            UnlockInstanceAsyncResult.End(asyncResult);
+        }
 
         private static void UnlockInstance(PersistenceManager persistenceManager, TimeoutHelper timeoutHelper)
         {
@@ -2084,141 +2134,182 @@ namespace CoreWf
             }
         }
 
-        //internal static IList<ActivityBlockingUpdate> GetActivitiesBlockingUpdate(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap)
-        //{
-        //    object deserializedRuntimeState = ExtractRuntimeState(instance.Values, instance.InstanceId);
-        //    return WorkflowInstance.GetActivitiesBlockingUpdate(deserializedRuntimeState, updateMap);
-        //}
+#if NET45
+        internal static IList<ActivityBlockingUpdate> GetActivitiesBlockingUpdate(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap)
+        {
+            object deserializedRuntimeState = ExtractRuntimeState(instance.Values, instance.InstanceId);
+            return WorkflowInstance.GetActivitiesBlockingUpdate(deserializedRuntimeState, updateMap);
+        } 
+#endif
 
-        //public IAsyncResult BeginLoadRunnableInstance(AsyncCallback callback, object state)
-        //{
-        //    return BeginLoadRunnableInstance(ActivityDefaults.LoadTimeout, callback, state);
-        //}
+        public IAsyncResult BeginLoadRunnableInstance(AsyncCallback callback, object state)
+        {
+            return BeginLoadRunnableInstance(ActivityDefaults.LoadTimeout, callback, state);
+        }
 
-        //public IAsyncResult BeginLoadRunnableInstance(TimeSpan timeout, AsyncCallback callback, object state)
-        //{
-        //    ThrowIfReadOnly(); // only allow a single Load() or Run()
+        public IAsyncResult BeginLoadRunnableInstance(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            ThrowIfReadOnly(); // only allow a single Load() or Run()
 
-        //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-        //    if (this.InstanceStore == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
-        //    }
-        //    if (this.instanceIdSet)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
-        //    }
-        //    if (this.initialWorkflowArguments != null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
-        //    }
-        //    if (this.persistenceManager != null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
-        //    }
+            if (this.InstanceStore == null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+            }
+            if (this.instanceIdSet)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+            }
+            if (this.initialWorkflowArguments != null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+            }
+            if (this.persistenceManager != null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+            }
 
-        //    PersistenceManager newManager = new PersistenceManager(InstanceStore, GetInstanceMetadata());
-        //    if (!newManager.IsInitialized)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
-        //    }
+            PersistenceManager newManager = new PersistenceManager(InstanceStore, GetInstanceMetadata());
+            if (!newManager.IsInitialized)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.TryLoadRequiresOwner));
+            }
 
-        //    return new LoadAsyncResult(this, newManager, true, timeout, callback, state);
-        //}
+            return new LoadAsyncResult(this, newManager, true, timeout, callback, state);
+        }
 
-        //public IAsyncResult BeginLoad(Guid instanceId, AsyncCallback callback, object state)
-        //{
-        //    return BeginLoad(instanceId, ActivityDefaults.LoadTimeout, callback, state);
-        //}
+        public IAsyncResult BeginLoad(Guid instanceId, AsyncCallback callback, object state)
+        {
+            return BeginLoad(instanceId, ActivityDefaults.LoadTimeout, callback, state);
+        }
 
-        //public IAsyncResult BeginLoad(Guid instanceId, TimeSpan timeout, AsyncCallback callback, object state)
-        //{
-        //    ThrowIfAborted();
-        //    ThrowIfReadOnly(); // only allow a single Load() or Run()
-        //    if (instanceId == Guid.Empty)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("instanceId");
-        //    }
+        public IAsyncResult BeginLoad(Guid instanceId, TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            ThrowIfAborted();
+            ThrowIfReadOnly(); // only allow a single Load() or Run()
+            if (instanceId == Guid.Empty)
+            {
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(instanceId));
+            }
 
-        //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-        //    if (this.InstanceStore == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
-        //    }
-        //    if (this.instanceIdSet)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
-        //    }
-        //    if (this.initialWorkflowArguments != null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
-        //    }
+            if (this.InstanceStore == null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadingWorkflowApplicationRequiresInstanceStore));
+            }
+            if (this.instanceIdSet)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+            }
+            if (this.initialWorkflowArguments != null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+            }
 
-        //    PersistenceManager newManager = new PersistenceManager(this.InstanceStore, GetInstanceMetadata(), instanceId);
+            PersistenceManager newManager = new PersistenceManager(this.InstanceStore, GetInstanceMetadata(), instanceId);
 
-        //    return new LoadAsyncResult(this, newManager, false, timeout, callback, state);
-        //}
+            return new LoadAsyncResult(this, newManager, false, timeout, callback, state);
+        }
 
-        //public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, AsyncCallback callback, object state)
-        //{
-        //    return BeginLoad(instance, /*null,*/ ActivityDefaults.LoadTimeout, callback, state);
-        //}
+#if NET45
+        public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, AsyncCallback callback, object state)
+        {
+            return BeginLoad(instance, null, ActivityDefaults.LoadTimeout, callback, state);
+        }
 
-        //public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, TimeSpan timeout,
-        //    AsyncCallback callback, object state)
-        //{
-        //    return BeginLoad(instance, null, timeout, callback, state);
-        //}
+        public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, TimeSpan timeout,
+            AsyncCallback callback, object state)
+        {
+            return BeginLoad(instance, null, timeout, callback, state);
+        }
 
-        //public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap,
-        //    AsyncCallback callback, object state)
-        //{
-        //    return BeginLoad(instance, updateMap, ActivityDefaults.LoadTimeout, callback, state);
-        //}
+        public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap,
+            AsyncCallback callback, object state)
+        {
+            return BeginLoad(instance, updateMap, ActivityDefaults.LoadTimeout, callback, state);
+        }
 
-        //public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, /*DynamicUpdateMap updateMap,*/ TimeSpan timeout,
-        //    AsyncCallback callback, object state)
-        //{
-        //    ThrowIfAborted();
-        //    ThrowIfReadOnly(); // only allow a single Load() or Run()
-        //    if (instance == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("instance");
-        //    }
+        public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, DynamicUpdateMap updateMap, TimeSpan timeout,
+            AsyncCallback callback, object state)
+        {
+            ThrowIfAborted();
+            ThrowIfReadOnly(); // only allow a single Load() or Run()
+            if (instance == null)
+            {
+                throw FxTrace.Exception.ArgumentNull("instance");
+            }
 
-        //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-        //    if (this.instanceIdSet)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
-        //    }
-        //    if (this.initialWorkflowArguments != null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
-        //    }
-        //    if (this.InstanceStore != null && this.InstanceStore != instance.InstanceStore)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
-        //    }
+            if (this.instanceIdSet)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+            }
+            if (this.initialWorkflowArguments != null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+            }
+            if (this.InstanceStore != null && this.InstanceStore != instance.InstanceStore)
+            {
+                throw FxTrace.Exception.Argument("instance", SR.InstanceStoreDoesntMatchWorkflowApplication);
+            }
 
-        //    instance.MarkAsLoaded();
-        //    PersistenceManager newManager = (PersistenceManager)instance.PersistenceManager;
-        //    newManager.SetInstanceMetadata(GetInstanceMetadata());
+            instance.MarkAsLoaded();
+            PersistenceManager newManager = (PersistenceManager)instance.PersistenceManager;
+            newManager.SetInstanceMetadata(GetInstanceMetadata());
 
-        //    return new LoadAsyncResult(this, newManager, instance.Values, /*updateMap,*/ timeout, callback, state);
-        //}
+            return new LoadAsyncResult(this, newManager, instance.Values, updateMap, timeout, callback, state);
+        } 
+#else
+        public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, AsyncCallback callback, object state)
+        {
+            return BeginLoad(instance, ActivityDefaults.LoadTimeout, callback, state);
+        }
 
-        //public void EndLoad(IAsyncResult result)
-        //{
-        //    LoadAsyncResult.End(result);
-        //}
+        public IAsyncResult BeginLoad(WorkflowApplicationInstance instance, TimeSpan timeout,
+            AsyncCallback callback, object state)
+        {
+            ThrowIfAborted();
+            ThrowIfReadOnly(); // only allow a single Load() or Run()
+            if (instance == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(instance));
+            }
 
-        //public void EndLoadRunnableInstance(IAsyncResult result)
-        //{
-        //    LoadAsyncResult.End(result);
-        //}
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
+
+            if (this.instanceIdSet)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+            }
+            if (this.initialWorkflowArguments != null)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
+            }
+            if (this.InstanceStore != null && this.InstanceStore != instance.InstanceStore)
+            {
+                throw FxTrace.Exception.Argument(nameof(instance), SR.InstanceStoreDoesntMatchWorkflowApplication);
+            }
+
+            instance.MarkAsLoaded();
+            PersistenceManager newManager = (PersistenceManager)instance.PersistenceManager;
+            newManager.SetInstanceMetadata(GetInstanceMetadata());
+
+            return new LoadAsyncResult(this, newManager, instance.Values, timeout, callback, state); 
+        }
+#endif
+
+        public void EndLoad(IAsyncResult result)
+        {
+            LoadAsyncResult.End(result);
+        }
+
+        public void EndLoadRunnableInstance(IAsyncResult result)
+        {
+            LoadAsyncResult.End(result);
+        }
 
         protected override void OnNotifyUnhandledException(Exception exception, Activity exceptionSource, string exceptionSourceInstanceId)
         {
@@ -2230,12 +2321,12 @@ namespace CoreWf
 
                 try
                 {
-                    if (s_unhandledExceptionHandler == null)
+                    if (unhandledExceptionHandler == null)
                     {
-                        s_unhandledExceptionHandler = new UnhandledExceptionEventHandler();
+                        unhandledExceptionHandler = new UnhandledExceptionEventHandler();
                     }
 
-                    done = s_unhandledExceptionHandler.Run(this, exception, exceptionSource, exceptionSourceInstanceId);
+                    done = unhandledExceptionHandler.Run(this, exception, exceptionSource, exceptionSourceInstanceId);
                 }
                 catch (Exception e)
                 {
@@ -2294,14 +2385,14 @@ namespace CoreWf
         {
             if (HasPersistenceProvider)
             {
-                if (!_persistenceManager.IsInitialized)
+                if (!this.persistenceManager.IsInitialized)
                 {
-                    _persistenceManager.Initialize(this.DefinitionIdentity, timeoutHelper.RemainingTime());
+                    this.persistenceManager.Initialize(this.DefinitionIdentity, timeoutHelper.RemainingTime());
                 }
-                //if (!this.persistenceManager.IsLocked && Transaction.Current != null)
-                //{
-                //    this.persistenceManager.EnsureReadyness(timeoutHelper.RemainingTime());
-                //}
+                if (!this.persistenceManager.IsLocked && Transaction.Current != null)
+                {
+                    this.persistenceManager.EnsureReadyness(timeoutHelper.RemainingTime());
+                }
 
                 // Do the tracking before preparing in case the tracking data is being pushed into
                 // an extension and persisted transactionally with the instance state.
@@ -2311,8 +2402,8 @@ namespace CoreWf
             }
 
             bool success = false;
-            //WorkflowPersistenceContext context = null;
-            //TransactionScope scope = null;
+            WorkflowPersistenceContext context = null;
+            TransactionScope scope = null;
 
             try
             {
@@ -2334,40 +2425,40 @@ namespace CoreWf
                         data = PersistenceManager.GenerateInitialData(this);
                     }
 
-                    //if (context == null)
-                    //{
-                    //    //Fx.Assert(scope == null, "Should not have been able to set up a scope.");
-                    //    InitializePersistenceContext(timeoutHelper, out context);
-                    //}
+                    if (context == null)
+                    {
+                        Fx.Assert(scope == null, "Should not have been able to set up a scope.");
+                        InitializePersistenceContext(pipeline != null && pipeline.IsSaveTransactionRequired, timeoutHelper, out context, out scope);
+                    }
 
-                    _persistenceManager.Save(data, operation, timeoutHelper.RemainingTime());
+                    this.persistenceManager.Save(data, operation, timeoutHelper.RemainingTime());
                 }
 
                 if (pipeline != null)
                 {
-                    //if (context == null)
-                    //{
-                    //    //Fx.Assert(scope == null, "Should not have been able to set up a scope if we had no context.");
-                    //    InitializePersistenceContext(timeoutHelper, out context);
-                    //}
+                    if (context == null)
+                    {
+                        Fx.Assert(scope == null, "Should not have been able to set up a scope if we had no context.");
+                        InitializePersistenceContext(pipeline.IsSaveTransactionRequired, timeoutHelper, out context, out scope);
+                    }
 
                     try
                     {
-                        _persistencePipelineInUse = pipeline;
+                        this.persistencePipelineInUse = pipeline;
 
                         // Need to ensure that either we see the Aborted state, AbortInstance sees us, or both.
-                        //Thread.MemoryBarrier();
+                        Thread.MemoryBarrier();
 
-                        if (_state == WorkflowApplicationState.Aborted)
+                        if (this.state == WorkflowApplicationState.Aborted)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                            throw FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
                         }
 
                         pipeline.EndSave(pipeline.BeginSave(timeoutHelper.RemainingTime(), null, null));
                     }
                     finally
                     {
-                        _persistencePipelineInUse = null;
+                        this.persistencePipelineInUse = null;
                     }
                 }
 
@@ -2375,14 +2466,14 @@ namespace CoreWf
             }
             finally
             {
-                //CompletePersistenceContext(context, success);
+                CompletePersistenceContext(context, scope, success);
 
                 if (success)
                 {
                     if (operation != PersistenceOperation.Save)
                     {
                         // Stop execution if we've given up the instance lock
-                        _state = WorkflowApplicationState.Paused;
+                        this.state = WorkflowApplicationState.Paused;
 
                         if (TD.WorkflowApplicationUnloadedIsEnabled())
                         {
@@ -2400,10 +2491,11 @@ namespace CoreWf
                     if (operation == PersistenceOperation.Complete || operation == PersistenceOperation.Unload)
                     {
                         // We did a Delete or Unload, so if we have a persistence provider, tell it to delete the owner.
-                        if (HasPersistenceProvider && _persistenceManager.OwnerWasCreated)
+                        if (HasPersistenceProvider && this.persistenceManager.OwnerWasCreated)
                         {
                             // This will happen to be under the caller's transaction, if there is one.
-                            _persistenceManager.DeleteOwner(timeoutHelper.RemainingTime());
+                            // TODO, 124600, suppress the transaction
+                            this.persistenceManager.DeleteOwner(timeoutHelper.RemainingTime());
                         }
 
                         MarkUnloaded();
@@ -2525,12 +2617,12 @@ namespace CoreWf
 
         private bool AreBookmarksInvalid(out BookmarkResumptionResult result)
         {
-            if (_hasRaisedCompleted)
+            if (this.hasRaisedCompleted)
             {
                 result = BookmarkResumptionResult.NotFound;
                 return true;
             }
-            else if (_state == WorkflowApplicationState.Unloaded || _state == WorkflowApplicationState.Aborted)
+            else if (this.state == WorkflowApplicationState.Unloaded || this.state == WorkflowApplicationState.Aborted)
             {
                 result = BookmarkResumptionResult.NotReady;
                 return true;
@@ -2545,7 +2637,7 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(bookmarkName));
             }
 
             return ResumeBookmark(new Bookmark(bookmarkName), value);
@@ -2562,7 +2654,7 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(bookmarkName));
             }
 
             return ResumeBookmark(new Bookmark(bookmarkName), value, timeout);
@@ -2583,7 +2675,7 @@ namespace CoreWf
             {
                 // This is a loose check, but worst case scenario we call
                 // an extra, unnecessary Run
-                if (!_hasCalledRun)
+                if (!this.hasCalledRun)
                 {
                     // Increment the pending unenqueued count so we don't raise idle in the time between
                     // when the Run completes and when we enqueue our InstanceOperation.
@@ -2649,7 +2741,7 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(bookmarkName));
             }
 
             return BeginResumeBookmark(new Bookmark(bookmarkName), value, callback, state);
@@ -2660,7 +2752,7 @@ namespace CoreWf
         {
             if (string.IsNullOrEmpty(bookmarkName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("bookmarkName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(bookmarkName));
             }
 
             return BeginResumeBookmark(new Bookmark(bookmarkName), value, timeout, callback, state);
@@ -2726,8 +2818,8 @@ namespace CoreWf
 
                 if (idleHandler != null)
                 {
-                    //this.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
-                    _isInHandler = true;
+                    this.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
+                    this.isInHandler = true;
 
                     idleHandler(new WorkflowApplicationIdleEventArgs(this));
                 }
@@ -2743,7 +2835,7 @@ namespace CoreWf
             }
             finally
             {
-                _isInHandler = false;
+                this.isInHandler = false;
             }
 
             if (abortException != null)
@@ -2757,7 +2849,7 @@ namespace CoreWf
 
         private void MarkUnloaded()
         {
-            _state = WorkflowApplicationState.Unloaded;
+            this.state = WorkflowApplicationState.Unloaded;
 
             // don't abort completed instances
             if (this.Controller.State != WorkflowInstanceState.Complete)
@@ -2777,8 +2869,8 @@ namespace CoreWf
 
                 if (handler != null)
                 {
-                    //this.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
-                    _isInHandler = true;
+                    this.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
+                    this.isInHandler = true;
 
                     handler(new WorkflowApplicationEventArgs(this));
                 }
@@ -2794,7 +2886,7 @@ namespace CoreWf
             }
             finally
             {
-                _isInHandler = false;
+                this.isInHandler = false;
             }
 
             if (abortException != null)
@@ -2827,7 +2919,7 @@ namespace CoreWf
                 WaitForTurn(operation, timeoutHelper.RemainingTime());
 
                 ValidateStateForUnload();
-                if (_state != WorkflowApplicationState.Unloaded) // Unload on unload is a no-op
+                if (this.state != WorkflowApplicationState.Unloaded) // Unload on unload is a no-op
                 {
                     PersistenceOperation persistenceOperation;
 
@@ -2875,24 +2967,24 @@ namespace CoreWf
         {
             if (this.DefinitionIdentity != null)
             {
-                if (_instanceMetadata == null)
+                if (this.instanceMetadata == null)
                 {
-                    _instanceMetadata = new Dictionary<XName, InstanceValue>(2);
+                    this.instanceMetadata = new Dictionary<XName, InstanceValue>(2);
                 }
-                if (!_instanceMetadata.ContainsKey(WorkflowNamespace.WorkflowHostType))
+                if (!this.instanceMetadata.ContainsKey(WorkflowNamespace.WorkflowHostType))
                 {
-                    _instanceMetadata.Add(WorkflowNamespace.WorkflowHostType, new InstanceValue(Workflow45Namespace.WorkflowApplication));
+                    this.instanceMetadata.Add(WorkflowNamespace.WorkflowHostType, new InstanceValue(Workflow45Namespace.WorkflowApplication));
                 }
-                _instanceMetadata[Workflow45Namespace.DefinitionIdentity] =
+                this.instanceMetadata[Workflow45Namespace.DefinitionIdentity] =
                     new InstanceValue(this.DefinitionIdentity, InstanceValueOptions.Optional);
             }
-            return _instanceMetadata;
+            return this.instanceMetadata;
         }
 
         private void UpdateInstanceMetadata()
         {
             // Update the metadata to reflect the new identity after a Dynamic Update
-            _persistenceManager.SetMutablemetadata(new Dictionary<XName, InstanceValue>
+            this.persistenceManager.SetMutablemetadata(new Dictionary<XName, InstanceValue>
             {
                 { Workflow45Namespace.DefinitionIdentity, new InstanceValue(this.DefinitionIdentity, InstanceValueOptions.Optional) }
             });
@@ -2902,40 +2994,39 @@ namespace CoreWf
         {
             if (value != null && value.GetInvocationList().Length > 1)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("value", SR.OnlySingleCastDelegatesAllowed);
+                throw FxTrace.Exception.Argument(nameof(value), SR.OnlySingleCastDelegatesAllowed);
             }
         }
 
         private void ThrowIfAborted()
         {
-            if (_state == WorkflowApplicationState.Aborted)
+            if (this.state == WorkflowApplicationState.Aborted)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationAbortedException(SR.WorkflowApplicationAborted(this.Id), this.Id));
+                throw FxTrace.Exception.AsError(new WorkflowApplicationAbortedException(SR.WorkflowApplicationAborted(this.Id), this.Id));
             }
         }
 
         private void ThrowIfTerminatedOrCompleted()
         {
-            if (_hasRaisedCompleted)
+            if (this.hasRaisedCompleted)
             {
-                Exception completionException;
-                this.Controller.GetCompletionState(out completionException);
+                this.Controller.GetCompletionState(out Exception completionException);
                 if (completionException != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationTerminatedException(SR.WorkflowApplicationTerminated(this.Id), this.Id, completionException));
+                    throw FxTrace.Exception.AsError(new WorkflowApplicationTerminatedException(SR.WorkflowApplicationTerminated(this.Id), this.Id, completionException));
                 }
                 else
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationCompletedException(SR.WorkflowApplicationCompleted(this.Id), this.Id));
+                    throw FxTrace.Exception.AsError(new WorkflowApplicationCompletedException(SR.WorkflowApplicationCompleted(this.Id), this.Id));
                 }
             }
         }
 
         private void ThrowIfUnloaded()
         {
-            if (_state == WorkflowApplicationState.Unloaded)
+            if (this.state == WorkflowApplicationState.Unloaded)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new WorkflowApplicationUnloadedException(SR.WorkflowApplicationUnloaded(this.Id), this.Id));
+                throw FxTrace.Exception.AsError(new WorkflowApplicationUnloadedException(SR.WorkflowApplicationUnloaded(this.Id), this.Id));
             }
         }
 
@@ -2943,7 +3034,7 @@ namespace CoreWf
         {
             if (!HasPersistenceProvider)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InstanceStoreRequiredToPersist));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InstanceStoreRequiredToPersist));
             }
         }
 
@@ -2951,7 +3042,7 @@ namespace CoreWf
         {
             if (this.IsHandlerThread)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationFromHandlerThread));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPerformOperationFromHandlerThread));
             }
         }
 
@@ -2986,9 +3077,9 @@ namespace CoreWf
         {
             ThrowIfAborted();
             ThrowIfReadOnly(); // only allow a single Load() or Run()
-            if (_instanceIdSet)
+            if (this.instanceIdSet)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
             }
         }
 
@@ -3040,7 +3131,7 @@ namespace CoreWf
 
         internal class SynchronousSynchronizationContext : SynchronizationContext
         {
-            private static SynchronousSynchronizationContext s_value;
+            private static SynchronousSynchronizationContext value;
 
             private SynchronousSynchronizationContext()
             {
@@ -3050,11 +3141,11 @@ namespace CoreWf
             {
                 get
                 {
-                    if (s_value == null)
+                    if (value == null)
                     {
-                        s_value = new SynchronousSynchronizationContext();
+                        value = new SynchronousSynchronizationContext();
                     }
-                    return s_value;
+                    return value;
                 }
             }
 
@@ -3071,31 +3162,31 @@ namespace CoreWf
 
         private class InvokeAsyncResult : AsyncResult
         {
-            private static Action<object, TimeoutException> s_waitCompleteCallback;
-            private WorkflowApplication _instance;
-            private AsyncWaitHandle _completionWaiter;
-            private IDictionary<string, object> _outputs;
-            private Exception _completionException;
+            private static Action<object, TimeoutException> waitCompleteCallback;
+            private WorkflowApplication instance;
+            private readonly AsyncWaitHandle completionWaiter;
+            private IDictionary<string, object> outputs;
+            private Exception completionException;
 
             public InvokeAsyncResult(Activity activity, IDictionary<string, object> inputs, WorkflowInstanceExtensionManager extensions, TimeSpan timeout, SynchronizationContext syncContext, AsyncInvokeContext invokeContext, AsyncCallback callback, object state)
                 : base(callback, state)
             {
                 Fx.Assert(activity != null, "Need an activity");
 
-                _completionWaiter = new AsyncWaitHandle();
+                this.completionWaiter = new AsyncWaitHandle();
                 syncContext = syncContext ?? SynchronousSynchronizationContext.Value;
 
-                _instance = WorkflowApplication.StartInvoke(activity, inputs, extensions, syncContext, new Action(this.OnInvokeComplete), invokeContext);
+                this.instance = WorkflowApplication.StartInvoke(activity, inputs, extensions, syncContext, new Action(this.OnInvokeComplete), invokeContext);
 
-                if (_completionWaiter.WaitAsync(WaitCompleteCallback, this, timeout))
+                if (this.completionWaiter.WaitAsync(WaitCompleteCallback, this, timeout))
                 {
                     bool completeSelf = OnWorkflowCompletion();
 
                     if (completeSelf)
                     {
-                        if (_completionException != null)
+                        if (this.completionException != null)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(_completionException);
+                            throw FxTrace.Exception.AsError(this.completionException);
                         }
                         else
                         {
@@ -3109,24 +3200,24 @@ namespace CoreWf
             {
                 get
                 {
-                    if (s_waitCompleteCallback == null)
+                    if (waitCompleteCallback == null)
                     {
-                        s_waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
+                        waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
                     }
 
-                    return s_waitCompleteCallback;
+                    return waitCompleteCallback;
                 }
             }
 
             public static IDictionary<string, object> End(IAsyncResult result)
             {
                 InvokeAsyncResult thisPtr = AsyncResult.End<InvokeAsyncResult>(result);
-                return thisPtr._outputs;
+                return thisPtr.outputs;
             }
 
             private void OnInvokeComplete()
             {
-                _completionWaiter.Set();
+                this.completionWaiter.Set();
             }
 
             private static void OnWaitComplete(object state, TimeoutException asyncException)
@@ -3135,7 +3226,7 @@ namespace CoreWf
 
                 if (asyncException != null)
                 {
-                    thisPtr._instance.Abort(SR.AbortingDueToInstanceTimeout);
+                    thisPtr.instance.Abort(SR.AbortingDueToInstanceTimeout);
                     thisPtr.Complete(false, asyncException);
                     return;
                 }
@@ -3153,47 +3244,46 @@ namespace CoreWf
                         throw;
                     }
 
-                    thisPtr._completionException = e;
+                    thisPtr.completionException = e;
                 }
 
                 if (completeSelf)
                 {
-                    thisPtr.Complete(false, thisPtr._completionException);
+                    thisPtr.Complete(false, thisPtr.completionException);
                 }
             }
 
             private bool OnWorkflowCompletion()
             {
-                if (_instance.Controller.State == WorkflowInstanceState.Aborted)
+                if (this.instance.Controller.State == WorkflowInstanceState.Aborted)
                 {
-                    _completionException = new WorkflowApplicationAbortedException(SR.DefaultAbortReason, _instance.Controller.GetAbortReason());
+                    this.completionException = new WorkflowApplicationAbortedException(SR.DefaultAbortReason, this.instance.Controller.GetAbortReason());
                 }
                 else
                 {
-                    Fx.Assert(_instance.Controller.State == WorkflowInstanceState.Complete, "We should only get here when we are completed.");
+                    Fx.Assert(this.instance.Controller.State == WorkflowInstanceState.Complete, "We should only get here when we are completed.");
 
-                    _instance.Controller.GetCompletionState(out _outputs, out _completionException);
+                    this.instance.Controller.GetCompletionState(out this.outputs, out this.completionException);
                 }
 
                 return true;
             }
+
         }
 
         private class ResumeBookmarkAsyncResult : AsyncResult
         {
-            private static AsyncCompletion s_resumedCallback = new AsyncCompletion(OnResumed);
-            private static Action<object, TimeoutException> s_waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
-            private static AsyncCompletion s_trackingCompleteCallback = new AsyncCompletion(OnTrackingComplete);
-
-            private WorkflowApplication _instance;
-            private Bookmark _bookmark;
-            private object _value;
-            private BookmarkResumptionResult _resumptionResult;
-            private TimeoutHelper _timeoutHelper;
-            private bool _isFromExtension;
-            private bool _pendedUnenqueued;
-
-            private InstanceOperation _currentOperation;
+            private static AsyncCompletion resumedCallback = new AsyncCompletion(OnResumed);
+            private static readonly Action<object, TimeoutException> waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
+            private static readonly AsyncCompletion trackingCompleteCallback = new AsyncCompletion(OnTrackingComplete);
+            private WorkflowApplication instance;
+            private readonly Bookmark bookmark;
+            private readonly object value;
+            private BookmarkResumptionResult resumptionResult;
+            private TimeoutHelper timeoutHelper;
+            private readonly bool isFromExtension;
+            private bool pendedUnenqueued;
+            private InstanceOperation currentOperation;
 
             public ResumeBookmarkAsyncResult(WorkflowApplication instance, Bookmark bookmark, object value, TimeSpan timeout, AsyncCallback callback, object state)
                 : this(instance, bookmark, value, false, timeout, callback, state)
@@ -3203,11 +3293,11 @@ namespace CoreWf
             public ResumeBookmarkAsyncResult(WorkflowApplication instance, Bookmark bookmark, object value, bool isFromExtension, TimeSpan timeout, AsyncCallback callback, object state)
                 : base(callback, state)
             {
-                _instance = instance;
-                _bookmark = bookmark;
-                _value = value;
-                _isFromExtension = isFromExtension;
-                _timeoutHelper = new TimeoutHelper(timeout);
+                this.instance = instance;
+                this.bookmark = bookmark;
+                this.value = value;
+                this.isFromExtension = isFromExtension;
+                this.timeoutHelper = new TimeoutHelper(timeout);
 
                 bool completeSelf = false;
                 bool success = false;
@@ -3216,14 +3306,14 @@ namespace CoreWf
 
                 try
                 {
-                    if (!_instance._hasCalledRun && !_isFromExtension)
+                    if (!this.instance.hasCalledRun && !this.isFromExtension)
                     {
                         // Increment the pending unenqueued count so we don't raise idle in the time between
                         // when the Run completes and when we enqueue our InstanceOperation.
-                        _pendedUnenqueued = true;
-                        _instance.IncrementPendingUnenqueud();
+                        this.pendedUnenqueued = true;
+                        this.instance.IncrementPendingUnenqueud();
 
-                        IAsyncResult result = _instance.BeginInternalRun(_timeoutHelper.RemainingTime(), false, PrepareAsyncCompletion(s_resumedCallback), this);
+                        IAsyncResult result = this.instance.BeginInternalRun(this.timeoutHelper.RemainingTime(), false, PrepareAsyncCompletion(resumedCallback), this);
                         if (result.CompletedSynchronously)
                         {
                             completeSelf = OnResumed(result);
@@ -3255,23 +3345,23 @@ namespace CoreWf
             {
                 ResumeBookmarkAsyncResult thisPtr = AsyncResult.End<ResumeBookmarkAsyncResult>(result);
 
-                return thisPtr._resumptionResult;
+                return thisPtr.resumptionResult;
             }
 
             private void ClearPendedUnenqueued()
             {
-                if (_pendedUnenqueued)
+                if (this.pendedUnenqueued)
                 {
-                    _pendedUnenqueued = false;
-                    _instance.DecrementPendingUnenqueud();
+                    this.pendedUnenqueued = false;
+                    this.instance.DecrementPendingUnenqueud();
                 }
             }
 
             private void NotifyOperationComplete()
             {
-                InstanceOperation lastOperation = _currentOperation;
-                _currentOperation = null;
-                _instance.NotifyOperationComplete(lastOperation);
+                InstanceOperation lastOperation = this.currentOperation;
+                this.currentOperation = null;
+                this.instance.NotifyOperationComplete(lastOperation);
             }
 
             private void Finally(AsyncResult result, Exception completionException)
@@ -3283,13 +3373,13 @@ namespace CoreWf
             private static bool OnResumed(IAsyncResult result)
             {
                 ResumeBookmarkAsyncResult thisPtr = (ResumeBookmarkAsyncResult)result.AsyncState;
-                thisPtr._instance.EndRun(result);
+                thisPtr.instance.EndRun(result);
                 return thisPtr.StartResumptionLoop();
             }
 
             private bool StartResumptionLoop()
             {
-                _currentOperation = new RequiresIdleOperation(_isFromExtension);
+                this.currentOperation = new RequiresIdleOperation(this.isFromExtension);
                 return WaitOnCurrentOperation();
             }
 
@@ -3302,9 +3392,9 @@ namespace CoreWf
                 {
                     tryOneMore = false;
 
-                    Fx.Assert(_currentOperation != null, "We should always have a current operation here.");
+                    Fx.Assert(this.currentOperation != null, "We should always have a current operation here.");
 
-                    if (_instance.WaitForTurnAsync(_currentOperation, _timeoutHelper.RemainingTime(), s_waitCompleteCallback, this))
+                    if (this.instance.WaitForTurnAsync(this.currentOperation, this.timeoutHelper.RemainingTime(), waitCompleteCallback, this))
                     {
                         ClearPendedUnenqueued();
 
@@ -3316,7 +3406,7 @@ namespace CoreWf
                         {
                             stillSync = ProcessResumption();
 
-                            tryOneMore = _resumptionResult == BookmarkResumptionResult.NotReady;
+                            tryOneMore = this.resumptionResult == BookmarkResumptionResult.NotReady;
                         }
                     }
                     else
@@ -3353,7 +3443,7 @@ namespace CoreWf
                     {
                         completeSelf = thisPtr.ProcessResumption();
 
-                        if (thisPtr._resumptionResult == BookmarkResumptionResult.NotReady)
+                        if (thisPtr.resumptionResult == BookmarkResumptionResult.NotReady)
                         {
                             completeSelf = thisPtr.WaitOnCurrentOperation();
                         }
@@ -3378,7 +3468,7 @@ namespace CoreWf
 
             private bool CheckIfBookmarksAreInvalid()
             {
-                if (_instance.AreBookmarksInvalid(out _resumptionResult))
+                if (this.instance.AreBookmarksInvalid(out this.resumptionResult))
                 {
                     return true;
                 }
@@ -3390,13 +3480,13 @@ namespace CoreWf
             {
                 bool stillSync = true;
 
-                _resumptionResult = _instance.ResumeBookmarkCore(_bookmark, _value);
+                this.resumptionResult = this.instance.ResumeBookmarkCore(this.bookmark, this.value);
 
-                if (_resumptionResult == BookmarkResumptionResult.Success)
+                if (this.resumptionResult == BookmarkResumptionResult.Success)
                 {
-                    if (_instance.Controller.HasPendingTrackingRecords)
+                    if (this.instance.Controller.HasPendingTrackingRecords)
                     {
-                        IAsyncResult result = _instance.Controller.BeginFlushTrackingRecords(_timeoutHelper.RemainingTime(), PrepareAsyncCompletion(s_trackingCompleteCallback), this);
+                        IAsyncResult result = this.instance.Controller.BeginFlushTrackingRecords(this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(trackingCompleteCallback), this);
 
                         if (result.CompletedSynchronously)
                         {
@@ -3408,10 +3498,10 @@ namespace CoreWf
                         }
                     }
                 }
-                else if (_resumptionResult == BookmarkResumptionResult.NotReady)
+                else if (this.resumptionResult == BookmarkResumptionResult.NotReady)
                 {
                     NotifyOperationComplete();
-                    _currentOperation = new DeferredRequiresIdleOperation();
+                    this.currentOperation = new DeferredRequiresIdleOperation();
                 }
 
                 return stillSync;
@@ -3421,46 +3511,45 @@ namespace CoreWf
             {
                 ResumeBookmarkAsyncResult thisPtr = (ResumeBookmarkAsyncResult)result.AsyncState;
 
-                thisPtr._instance.Controller.EndFlushTrackingRecords(result);
+                thisPtr.instance.Controller.EndFlushTrackingRecords(result);
 
                 return true;
             }
         }
 
-        private class UnloadOrPersistAsyncResult : AsyncResult
+        private class UnloadOrPersistAsyncResult : TransactedAsyncResult
         {
-            private static Action<object, TimeoutException> s_waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
-            private static AsyncCompletion s_savedCallback = new AsyncCompletion(OnSaved);
-            private static AsyncCompletion s_persistedCallback = new AsyncCompletion(OnPersisted);
-            private static AsyncCompletion s_initializedCallback = new AsyncCompletion(OnProviderInitialized);
-            private static AsyncCompletion s_readynessEnsuredCallback = new AsyncCompletion(OnProviderReadynessEnsured);
-            private static AsyncCompletion s_trackingCompleteCallback = new AsyncCompletion(OnTrackingComplete);
-            private static AsyncCompletion s_deleteOwnerCompleteCallback = new AsyncCompletion(OnOwnerDeleted);
-            private static AsyncCompletion s_completeContextCallback = new AsyncCompletion(OnCompleteContext);
-            private static Action<AsyncResult, Exception> s_completeCallback = new Action<AsyncResult, Exception>(OnComplete);
-
-            //DependentTransaction dependentTransaction;
-            private WorkflowApplication _instance;
-            private bool _isUnloaded;
-            private TimeoutHelper _timeoutHelper;
-            private PersistenceOperation _operation;
-            private RequiresPersistenceOperation _instanceOperation;
-            //WorkflowPersistenceContext context;
-            private IDictionary<XName, InstanceValue> _data;
-            private PersistencePipeline _pipeline;
-            private bool _isInternalPersist;
+            private static Action<object, TimeoutException> waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
+            private static readonly AsyncCompletion savedCallback = new AsyncCompletion(OnSaved);
+            private static readonly AsyncCompletion persistedCallback = new AsyncCompletion(OnPersisted);
+            private static AsyncCompletion initializedCallback = new AsyncCompletion(OnProviderInitialized);
+            private static AsyncCompletion readynessEnsuredCallback = new AsyncCompletion(OnProviderReadynessEnsured);
+            private static readonly AsyncCompletion trackingCompleteCallback = new AsyncCompletion(OnTrackingComplete);
+            private static AsyncCompletion deleteOwnerCompleteCallback = new AsyncCompletion(OnOwnerDeleted);
+            private static readonly AsyncCompletion completeContextCallback = new AsyncCompletion(OnCompleteContext);
+            private static Action<AsyncResult, Exception> completeCallback = new Action<AsyncResult, Exception>(OnComplete);
+            private DependentTransaction dependentTransaction;
+            private WorkflowApplication instance;
+            private readonly bool isUnloaded;
+            private TimeoutHelper timeoutHelper;
+            private PersistenceOperation operation;
+            private RequiresPersistenceOperation instanceOperation;
+            private WorkflowPersistenceContext context;
+            private IDictionary<XName, InstanceValue> data;
+            private PersistencePipeline pipeline;
+            private readonly bool isInternalPersist;
 
             public UnloadOrPersistAsyncResult(WorkflowApplication instance, TimeSpan timeout, PersistenceOperation operation,
                 bool isWorkflowThread, bool isInternalPersist, AsyncCallback callback, object state)
                 : base(callback, state)
             {
-                _instance = instance;
-                _timeoutHelper = new TimeoutHelper(timeout);
-                _operation = operation;
-                _isInternalPersist = isInternalPersist;
-                _isUnloaded = (operation == PersistenceOperation.Unload || operation == PersistenceOperation.Complete);
+                this.instance = instance;
+                this.timeoutHelper = new TimeoutHelper(timeout);
+                this.operation = operation;
+                this.isInternalPersist = isInternalPersist;
+                this.isUnloaded = (operation == PersistenceOperation.Unload || operation == PersistenceOperation.Complete);
 
-                this.OnCompleting = UnloadOrPersistAsyncResult.s_completeCallback;
+                this.OnCompleting = UnloadOrPersistAsyncResult.completeCallback;
 
                 bool completeSelf;
                 bool success = false;
@@ -3470,17 +3559,17 @@ namespace CoreWf
                 // we will complete when we are completed.
                 //
                 // This will throw TransactionAbortedException by design, if the transaction is already rolled back.
-                //Transaction currentTransaction = Transaction.Current;
-                //if (currentTransaction != null)
-                //{
-                //    this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
-                //}
+                Transaction currentTransaction = Transaction.Current;
+                if (currentTransaction != null)
+                {
+                    this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
+                }
 
                 try
                 {
                     if (isWorkflowThread)
                     {
-                        Fx.Assert(_instance.Controller.IsPersistable, "The runtime won't schedule this work item unless we've passed the guard");
+                        Fx.Assert(this.instance.Controller.IsPersistable, "The runtime won't schedule this work item unless we've passed the guard");
 
                         // We're an internal persistence on the workflow thread which means
                         // that we are passed the guard already, we have the lock, and we know
@@ -3491,10 +3580,10 @@ namespace CoreWf
                     }
                     else
                     {
-                        _instanceOperation = new RequiresPersistenceOperation();
+                        this.instanceOperation = new RequiresPersistenceOperation();
                         try
                         {
-                            if (_instance.WaitForTurnAsync(_instanceOperation, _timeoutHelper.RemainingTime(), s_waitCompleteCallback, this))
+                            if (this.instance.WaitForTurnAsync(this.instanceOperation, this.timeoutHelper.RemainingTime(), waitCompleteCallback, this))
                             {
                                 completeSelf = ValidateState();
                             }
@@ -3518,10 +3607,10 @@ namespace CoreWf
                     // If we had an exception, we need to complete the dependent transaction.
                     if (!success)
                     {
-                        //if (this.dependentTransaction != null)
-                        //{
-                        //    this.dependentTransaction.Complete();
-                        //}
+                        if (this.dependentTransaction != null)
+                        {
+                            this.dependentTransaction.Complete();
+                        }
                     }
                 }
 
@@ -3534,14 +3623,14 @@ namespace CoreWf
             private bool ValidateState()
             {
                 bool alreadyUnloaded = false;
-                if (_operation == PersistenceOperation.Unload)
+                if (this.operation == PersistenceOperation.Unload)
                 {
-                    _instance.ValidateStateForUnload();
-                    alreadyUnloaded = _instance._state == WorkflowApplicationState.Unloaded;
+                    this.instance.ValidateStateForUnload();
+                    alreadyUnloaded = this.instance.state == WorkflowApplicationState.Unloaded;
                 }
                 else
                 {
-                    _instance.ValidateStateForPersist();
+                    this.instance.ValidateStateForPersist();
                 }
 
                 if (alreadyUnloaded)
@@ -3590,15 +3679,15 @@ namespace CoreWf
             private bool InitializeProvider()
             {
                 // We finally have the lock and are passed the guard.  Let's update our operation if this is an Unload.
-                if (_operation == PersistenceOperation.Unload && _instance.Controller.State == WorkflowInstanceState.Complete)
+                if (this.operation == PersistenceOperation.Unload && this.instance.Controller.State == WorkflowInstanceState.Complete)
                 {
-                    _operation = PersistenceOperation.Complete;
+                    this.operation = PersistenceOperation.Complete;
                 }
 
-                if (_instance.HasPersistenceProvider && !_instance._persistenceManager.IsInitialized)
+                if (this.instance.HasPersistenceProvider && !this.instance.persistenceManager.IsInitialized)
                 {
-                    IAsyncResult result = _instance._persistenceManager.BeginInitialize(_instance.DefinitionIdentity, _timeoutHelper.RemainingTime(),
-                        PrepareAsyncCompletion(UnloadOrPersistAsyncResult.s_initializedCallback), this);
+                    IAsyncResult result = this.instance.persistenceManager.BeginInitialize(this.instance.DefinitionIdentity, this.timeoutHelper.RemainingTime(),
+                        PrepareAsyncCompletion(UnloadOrPersistAsyncResult.initializedCallback), this);
                     return SyncContinue(result);
                 }
                 else
@@ -3610,28 +3699,28 @@ namespace CoreWf
             private static bool OnProviderInitialized(IAsyncResult result)
             {
                 UnloadOrPersistAsyncResult thisPtr = (UnloadOrPersistAsyncResult)result.AsyncState;
-                thisPtr._instance._persistenceManager.EndInitialize(result);
+                thisPtr.instance.persistenceManager.EndInitialize(result);
                 return thisPtr.EnsureProviderReadyness();
             }
 
             private bool EnsureProviderReadyness()
             {
-                //if (this.instance.HasPersistenceProvider && !this.instance.persistenceManager.IsLocked && this.dependentTransaction != null)
-                //{
-                //    IAsyncResult result = this.instance.persistenceManager.BeginEnsureReadyness(this.timeoutHelper.RemainingTime(),
-                //        PrepareAsyncCompletion(UnloadOrPersistAsyncResult.readynessEnsuredCallback), this);
-                //    return SyncContinue(result);
-                //}
-                //else
-                //{
-                return Track();
-                //}
+                if (this.instance.HasPersistenceProvider && !this.instance.persistenceManager.IsLocked && this.dependentTransaction != null)
+                {
+                    IAsyncResult result = this.instance.persistenceManager.BeginEnsureReadyness(this.timeoutHelper.RemainingTime(),
+                        PrepareAsyncCompletion(UnloadOrPersistAsyncResult.readynessEnsuredCallback), this);
+                    return SyncContinue(result);
+                }
+                else
+                {
+                    return Track();
+                }
             }
 
             private static bool OnProviderReadynessEnsured(IAsyncResult result)
             {
                 UnloadOrPersistAsyncResult thisPtr = (UnloadOrPersistAsyncResult)result.AsyncState;
-                thisPtr._instance._persistenceManager.EndEnsureReadyness(result);
+                thisPtr.instance.persistenceManager.EndEnsureReadyness(result);
                 return thisPtr.Track();
             }
 
@@ -3642,9 +3731,9 @@ namespace CoreWf
 
             private void NotifyOperationComplete()
             {
-                RequiresPersistenceOperation localInstanceOperation = _instanceOperation;
-                _instanceOperation = null;
-                _instance.NotifyOperationComplete(localInstanceOperation);
+                RequiresPersistenceOperation localInstanceOperation = this.instanceOperation;
+                this.instanceOperation = null;
+                this.instance.NotifyOperationComplete(localInstanceOperation);
             }
 
             private bool Track()
@@ -3652,18 +3741,18 @@ namespace CoreWf
                 // Do the tracking before preparing in case the tracking data is being pushed into
                 // an extension and persisted transactionally with the instance state.
 
-                if (_instance.HasPersistenceProvider)
+                if (this.instance.HasPersistenceProvider)
                 {
                     // We only track the persistence operation if we actually
                     // are persisting (and not just hitting PersistenceParticipants)
-                    _instance.TrackPersistence(_operation);
+                    this.instance.TrackPersistence(this.operation);
                 }
 
-                if (_instance.Controller.HasPendingTrackingRecords)
+                if (this.instance.Controller.HasPendingTrackingRecords)
                 {
                     TimeSpan flushTrackingRecordsTimeout;
 
-                    if (_isInternalPersist)
+                    if (this.isInternalPersist)
                     {
                         // If we're an internal persist we're using TimeSpan.MaxValue
                         // for our persistence and we want to use a smaller timeout
@@ -3672,10 +3761,10 @@ namespace CoreWf
                     }
                     else
                     {
-                        flushTrackingRecordsTimeout = _timeoutHelper.RemainingTime();
+                        flushTrackingRecordsTimeout = this.timeoutHelper.RemainingTime();
                     }
 
-                    IAsyncResult result = _instance.Controller.BeginFlushTrackingRecords(flushTrackingRecordsTimeout, PrepareAsyncCompletion(s_trackingCompleteCallback), this);
+                    IAsyncResult result = this.instance.Controller.BeginFlushTrackingRecords(flushTrackingRecordsTimeout, PrepareAsyncCompletion(trackingCompleteCallback), this);
                     return SyncContinue(result);
                 }
 
@@ -3685,7 +3774,7 @@ namespace CoreWf
             private static bool OnTrackingComplete(IAsyncResult result)
             {
                 UnloadOrPersistAsyncResult thisPtr = (UnloadOrPersistAsyncResult)result.AsyncState;
-                thisPtr._instance.Controller.EndFlushTrackingRecords(result);
+                thisPtr.instance.Controller.EndFlushTrackingRecords(result);
                 return thisPtr.CollectAndMap();
             }
 
@@ -3694,25 +3783,25 @@ namespace CoreWf
                 bool success = false;
                 try
                 {
-                    if (_instance.HasPersistenceModule)
+                    if (this.instance.HasPersistenceModule)
                     {
-                        IEnumerable<IPersistencePipelineModule> modules = _instance.GetExtensions<IPersistencePipelineModule>();
-                        _pipeline = new PersistencePipeline(modules, PersistenceManager.GenerateInitialData(_instance));
-                        _pipeline.Collect();
-                        _pipeline.Map();
-                        _data = _pipeline.Values;
+                        IEnumerable<IPersistencePipelineModule> modules = this.instance.GetExtensions<IPersistencePipelineModule>();
+                        this.pipeline = new PersistencePipeline(modules, PersistenceManager.GenerateInitialData(this.instance));
+                        this.pipeline.Collect();
+                        this.pipeline.Map();
+                        this.data = this.pipeline.Values;
                     }
                     success = true;
                 }
                 finally
                 {
-                    //if (!success && this.context != null)
-                    //{
-                    //    this.context.Abort();
-                    //}
+                    if (!success && this.context != null)
+                    {
+                        this.context.Abort();
+                    }
                 }
 
-                if (_instance.HasPersistenceProvider)
+                if (this.instance.HasPersistenceProvider)
                 {
                     return Persist();
                 }
@@ -3727,29 +3816,28 @@ namespace CoreWf
                 IAsyncResult result = null;
                 try
                 {
-                    if (_data == null)
+                    if (this.data == null)
                     {
-                        _data = PersistenceManager.GenerateInitialData(_instance);
+                        this.data = PersistenceManager.GenerateInitialData(this.instance);
                     }
 
-                    //if (this.context == null)
-                    //{
-                    //    //this.context = new WorkflowPersistenceContext(this.pipeline != null && this.pipeline.IsSaveTransactionRequired,
-                    //    //    this.dependentTransaction, this.timeoutHelper.OriginalTimeout);
-                    //    this.context = new WorkflowPersistenceContext(false, this.timeoutHelper.OriginalTimeout);
-                    //}
+                    if (this.context == null)
+                    {
+                        this.context = new WorkflowPersistenceContext(this.pipeline != null && this.pipeline.IsSaveTransactionRequired,
+                            this.dependentTransaction, this.timeoutHelper.OriginalTimeout);
+                    }
 
-                    //using (PrepareTransactionalCall(this.context.PublicTransaction))
-                    //{
-                    result = _instance._persistenceManager.BeginSave(_data, _operation, _timeoutHelper.RemainingTime(), PrepareAsyncCompletion(s_persistedCallback), this);
-                    //}
+                    using (PrepareTransactionalCall(this.context.PublicTransaction))
+                    {
+                        result = this.instance.persistenceManager.BeginSave(this.data, this.operation, this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(persistedCallback), this);
+                    }
                 }
                 finally
                 {
-                    //if (result == null && this.context != null)
-                    //{
-                    //    this.context.Abort();
-                    //}
+                    if (result == null && this.context != null)
+                    {
+                        this.context.Abort();
+                    }
                 }
                 return SyncContinue(result);
             }
@@ -3760,54 +3848,53 @@ namespace CoreWf
                 bool success = false;
                 try
                 {
-                    thisPtr._instance._persistenceManager.EndSave(result);
+                    thisPtr.instance.persistenceManager.EndSave(result);
                     success = true;
                 }
                 finally
                 {
-                    //if (!success)
-                    //{
-                    //    thisPtr.context.Abort();
-                    //}
+                    if (!success)
+                    {
+                        thisPtr.context.Abort();
+                    }
                 }
                 return thisPtr.Save();
             }
 
             private bool Save()
             {
-                if (_pipeline != null)
+                if (this.pipeline != null)
                 {
                     IAsyncResult result = null;
                     try
                     {
-                        //if (this.context == null)
-                        //{
-                        //    //this.context = new WorkflowPersistenceContext(this.pipeline.IsSaveTransactionRequired,
-                        //    //    this.dependentTransaction, this.timeoutHelper.RemainingTime());
-                        //    this.context = new WorkflowPersistenceContext(false, this.timeoutHelper.RemainingTime());
-                        //}
-
-                        _instance._persistencePipelineInUse = _pipeline;
-                        //Thread.MemoryBarrier();
-                        if (_instance._state == WorkflowApplicationState.Aborted)
+                        if (this.context == null)
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                            this.context = new WorkflowPersistenceContext(this.pipeline.IsSaveTransactionRequired,
+                                this.dependentTransaction, this.timeoutHelper.RemainingTime());
                         }
 
-                        //using (PrepareTransactionalCall(this.context.PublicTransaction))
-                        //{
-                        result = _pipeline.BeginSave(_timeoutHelper.RemainingTime(), PrepareAsyncCompletion(s_savedCallback), this);
-                        //}
+                        this.instance.persistencePipelineInUse = this.pipeline;
+                        Thread.MemoryBarrier();
+                        if (this.instance.state == WorkflowApplicationState.Aborted)
+                        {
+                            throw FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                        }
+
+                        using (PrepareTransactionalCall(this.context.PublicTransaction))
+                        {
+                            result = this.pipeline.BeginSave(this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(savedCallback), this);
+                        }
                     }
                     finally
                     {
                         if (result == null)
                         {
-                            _instance._persistencePipelineInUse = null;
-                            //if (this.context != null)
-                            //{
-                            //    this.context.Abort();
-                            //}
+                            this.instance.persistencePipelineInUse = null;
+                            if (this.context != null)
+                            {
+                                this.context.Abort();
+                            }
                         }
                     }
                     return SyncContinue(result);
@@ -3825,15 +3912,15 @@ namespace CoreWf
                 bool success = false;
                 try
                 {
-                    thisPtr._pipeline.EndSave(result);
+                    thisPtr.pipeline.EndSave(result);
                     success = true;
                 }
                 finally
                 {
-                    thisPtr._instance._persistencePipelineInUse = null;
+                    thisPtr.instance.persistencePipelineInUse = null;
                     if (!success)
                     {
-                        //thisPtr.context.Abort();
+                        thisPtr.context.Abort();
                     }
                 }
 
@@ -3845,10 +3932,10 @@ namespace CoreWf
                 bool wentAsync = false;
                 IAsyncResult completeResult = null;
 
-                //if (this.context != null)
-                //{
-                //    wentAsync = this.context.TryBeginComplete(this.PrepareAsyncCompletion(completeContextCallback), this, out completeResult);
-                //}
+                if (this.context != null)
+                {
+                    wentAsync = this.context.TryBeginComplete(this.PrepareAsyncCompletion(completeContextCallback), this, out completeResult);
+                }
 
                 if (wentAsync)
                 {
@@ -3866,23 +3953,24 @@ namespace CoreWf
             private static bool OnCompleteContext(IAsyncResult result)
             {
                 UnloadOrPersistAsyncResult thisPtr = (UnloadOrPersistAsyncResult)result.AsyncState;
-                //thisPtr.context.EndComplete(result);
+                thisPtr.context.EndComplete(result);
 
                 return thisPtr.DeleteOwner();
             }
 
             private bool DeleteOwner()
             {
-                if (_instance.HasPersistenceProvider && _instance._persistenceManager.OwnerWasCreated &&
-                    (_operation == PersistenceOperation.Unload || _operation == PersistenceOperation.Complete))
+                if (this.instance.HasPersistenceProvider && this.instance.persistenceManager.OwnerWasCreated &&
+                    (this.operation == PersistenceOperation.Unload || this.operation == PersistenceOperation.Complete))
                 {
                     // This call uses the ambient transaction directly if there was one, to mimic the sync case.
+                    // TODO, 124600, suppress the transaction always.
                     IAsyncResult deleteOwnerResult = null;
-                    //using (PrepareTransactionalCall(this.dependentTransaction))
-                    //{
-                    deleteOwnerResult = _instance._persistenceManager.BeginDeleteOwner(_timeoutHelper.RemainingTime(),
-                        this.PrepareAsyncCompletion(UnloadOrPersistAsyncResult.s_deleteOwnerCompleteCallback), this);
-                    //}
+                    using (PrepareTransactionalCall(this.dependentTransaction))
+                    {
+                        deleteOwnerResult = this.instance.persistenceManager.BeginDeleteOwner(this.timeoutHelper.RemainingTime(),
+                            this.PrepareAsyncCompletion(UnloadOrPersistAsyncResult.deleteOwnerCompleteCallback), this);
+                    }
                     return this.SyncContinue(deleteOwnerResult);
                 }
                 else
@@ -3894,7 +3982,7 @@ namespace CoreWf
             private static bool OnOwnerDeleted(IAsyncResult result)
             {
                 UnloadOrPersistAsyncResult thisPtr = (UnloadOrPersistAsyncResult)result.AsyncState;
-                thisPtr._instance._persistenceManager.EndDeleteOwner(result);
+                thisPtr.instance.persistenceManager.EndDeleteOwner(result);
                 return thisPtr.CloseInstance();
             }
 
@@ -3904,15 +3992,15 @@ namespace CoreWf
                 // here are appropriately ported to WorkflowApplication's
                 // CompletionHandler.OnStage1Complete method in the case
                 // where we don't call BeginPersist.
-                if (_operation != PersistenceOperation.Save)
+                if (this.operation != PersistenceOperation.Save)
                 {
                     // Stop execution if we've given up the instance lock
-                    _instance._state = WorkflowApplicationState.Paused;
+                    this.instance.state = WorkflowApplicationState.Paused;
                 }
 
-                if (_isUnloaded)
+                if (this.isUnloaded)
                 {
-                    _instance.MarkUnloaded();
+                    this.instance.MarkUnloaded();
                 }
 
                 return true;
@@ -3927,39 +4015,38 @@ namespace CoreWf
                 }
                 finally
                 {
-                    //if (thisPtr.dependentTransaction != null)
-                    //{
-                    //    thisPtr.dependentTransaction.Complete();
-                    //}
+                    if (thisPtr.dependentTransaction != null)
+                    {
+                        thisPtr.dependentTransaction.Complete();
+                    }
                 }
             }
         }
 
         private abstract class SimpleOperationAsyncResult : AsyncResult
         {
-            private static Action<object, TimeoutException> s_waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
-            private static AsyncCallback s_trackingCompleteCallback = Fx.ThunkCallback(new AsyncCallback(OnTrackingComplete));
-
-            private WorkflowApplication _instance;
-            private TimeoutHelper _timeoutHelper;
+            private static readonly Action<object, TimeoutException> waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
+            private static readonly AsyncCallback trackingCompleteCallback = Fx.ThunkCallback(new AsyncCallback(OnTrackingComplete));
+            private WorkflowApplication instance;
+            private TimeoutHelper timeoutHelper;
 
             protected SimpleOperationAsyncResult(WorkflowApplication instance, AsyncCallback callback, object state)
                 : base(callback, state)
             {
-                _instance = instance;
+                this.instance = instance;
             }
 
             protected WorkflowApplication Instance
             {
                 get
                 {
-                    return _instance;
+                    return this.instance;
                 }
             }
 
             protected void Run(TimeSpan timeout)
             {
-                _timeoutHelper = new TimeoutHelper(timeout);
+                this.timeoutHelper = new TimeoutHelper(timeout);
 
                 InstanceOperation operation = new InstanceOperation();
 
@@ -3967,7 +4054,7 @@ namespace CoreWf
 
                 try
                 {
-                    completeSelf = _instance.WaitForTurnAsync(operation, _timeoutHelper.RemainingTime(), s_waitCompleteCallback, this);
+                    completeSelf = this.instance.WaitForTurnAsync(operation, this.timeoutHelper.RemainingTime(), waitCompleteCallback, this);
 
                     if (completeSelf)
                     {
@@ -3980,7 +4067,7 @@ namespace CoreWf
                 {
                     if (completeSelf)
                     {
-                        _instance.NotifyOperationComplete(operation);
+                        this.instance.NotifyOperationComplete(operation);
                     }
                 }
 
@@ -3996,13 +4083,13 @@ namespace CoreWf
 
                 bool completedSync = true;
 
-                if (_instance.Controller.HasPendingTrackingRecords)
+                if (this.instance.Controller.HasPendingTrackingRecords)
                 {
-                    IAsyncResult trackingResult = _instance.Controller.BeginFlushTrackingRecords(_timeoutHelper.RemainingTime(), s_trackingCompleteCallback, this);
+                    IAsyncResult trackingResult = this.instance.Controller.BeginFlushTrackingRecords(this.timeoutHelper.RemainingTime(), trackingCompleteCallback, this);
 
                     if (trackingResult.CompletedSynchronously)
                     {
-                        _instance.Controller.EndFlushTrackingRecords(trackingResult);
+                        this.instance.Controller.EndFlushTrackingRecords(trackingResult);
                     }
                     else
                     {
@@ -4045,7 +4132,7 @@ namespace CoreWf
                     {
                         if (completeSelf)
                         {
-                            thisPtr._instance.ForceNotifyOperationComplete();
+                            thisPtr.instance.ForceNotifyOperationComplete();
                         }
                     }
 
@@ -4069,7 +4156,7 @@ namespace CoreWf
 
                 try
                 {
-                    thisPtr._instance.Controller.EndFlushTrackingRecords(result);
+                    thisPtr.instance.Controller.EndFlushTrackingRecords(result);
                 }
                 catch (Exception e)
                 {
@@ -4082,7 +4169,7 @@ namespace CoreWf
                 }
                 finally
                 {
-                    thisPtr._instance.ForceNotifyOperationComplete();
+                    thisPtr.instance.ForceNotifyOperationComplete();
                 }
 
                 thisPtr.Complete(false, completionException);
@@ -4094,12 +4181,12 @@ namespace CoreWf
 
         private class TerminateAsyncResult : SimpleOperationAsyncResult
         {
-            private Exception _reason;
+            private readonly Exception reason;
 
             private TerminateAsyncResult(WorkflowApplication instance, Exception reason, AsyncCallback callback, object state)
                 : base(instance, callback, state)
             {
-                _reason = reason;
+                this.reason = reason;
             }
 
             public static TerminateAsyncResult Create(WorkflowApplication instance, Exception reason, TimeSpan timeout, AsyncCallback callback, object state)
@@ -4121,7 +4208,7 @@ namespace CoreWf
 
             protected override void PerformOperation()
             {
-                this.Instance.TerminateCore(_reason);
+                this.Instance.TerminateCore(this.reason);
             }
         }
 
@@ -4157,12 +4244,12 @@ namespace CoreWf
 
         private class RunAsyncResult : SimpleOperationAsyncResult
         {
-            private bool _isUserRun;
+            private readonly bool isUserRun;
 
             private RunAsyncResult(WorkflowApplication instance, bool isUserRun, AsyncCallback callback, object state)
                 : base(instance, callback, state)
             {
-                _isUserRun = isUserRun;
+                this.isUserRun = isUserRun;
             }
 
             public static RunAsyncResult Create(WorkflowApplication instance, bool isUserRun, TimeSpan timeout, AsyncCallback callback, object state)
@@ -4184,557 +4271,567 @@ namespace CoreWf
 
             protected override void PerformOperation()
             {
-                if (_isUserRun)
+                if (this.isUserRun)
                 {
                     // We set this to true here so that idle will be raised
                     // regardless of whether any work is performed.
-                    this.Instance._hasExecutionOccurredSinceLastIdle = true;
+                    this.Instance.hasExecutionOccurredSinceLastIdle = true;
                 }
 
                 this.Instance.RunCore();
             }
         }
 
-        //class UnlockInstanceAsyncResult : TransactedAsyncResult
-        //{
-        //    static AsyncCompletion instanceUnlockedCallback = new AsyncCompletion(OnInstanceUnlocked);
-        //    static AsyncCompletion ownerDeletedCallback = new AsyncCompletion(OnOwnerDeleted);
-        //    static Action<AsyncResult, Exception> completeCallback = new Action<AsyncResult, Exception>(OnComplete);
+        private class UnlockInstanceAsyncResult : TransactedAsyncResult
+        {
+            private static AsyncCompletion instanceUnlockedCallback = new AsyncCompletion(OnInstanceUnlocked);
+            private static AsyncCompletion ownerDeletedCallback = new AsyncCompletion(OnOwnerDeleted);
+            private static Action<AsyncResult, Exception> completeCallback = new Action<AsyncResult, Exception>(OnComplete);
+            private readonly PersistenceManager persistenceManager;
+            private readonly TimeoutHelper timeoutHelper;
+            private DependentTransaction dependentTransaction;
 
-        //    readonly PersistenceManager persistenceManager;
-        //    readonly TimeoutHelper timeoutHelper;
+            public UnlockInstanceAsyncResult(PersistenceManager persistenceManager, TimeoutHelper timeoutHelper, AsyncCallback callback, object state)
+                : base(callback, state)
+            {
+                this.persistenceManager = persistenceManager;
+                this.timeoutHelper = timeoutHelper;
 
-        //    DependentTransaction dependentTransaction;
+                Transaction currentTransaction = Transaction.Current;
+                if (currentTransaction != null)
+                {
+                    this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
+                }
 
-        //    public UnlockInstanceAsyncResult(PersistenceManager persistenceManager, TimeoutHelper timeoutHelper, AsyncCallback callback, object state)
-        //        : base(callback, state)
-        //    {
-        //        this.persistenceManager = persistenceManager;
-        //        this.timeoutHelper = timeoutHelper;
+                OnCompleting = UnlockInstanceAsyncResult.completeCallback;
 
-        //        Transaction currentTransaction = Transaction.Current;
-        //        if (currentTransaction != null)
-        //        {
-        //            this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
-        //        }
+                bool success = false;
+                try
+                {
+                    IAsyncResult result;
+                    using (this.PrepareTransactionalCall(this.dependentTransaction))
+                    {
+                        if (this.persistenceManager.OwnerWasCreated)
+                        {
+                            // if the owner was created by this WorkflowApplication, delete it.
+                            // This implicitly unlocks the instance.
+                            result = this.persistenceManager.BeginDeleteOwner(this.timeoutHelper.RemainingTime(), this.PrepareAsyncCompletion(ownerDeletedCallback), this);
+                        }
+                        else
+                        {
+                            result = this.persistenceManager.BeginUnlock(this.timeoutHelper.RemainingTime(), this.PrepareAsyncCompletion(instanceUnlockedCallback), this);
+                        }
+                    }
 
-        //        OnCompleting = UnlockInstanceAsyncResult.completeCallback;
+                    if (SyncContinue(result))
+                    {
+                        Complete(true);
+                    }
 
-        //        bool success = false;
-        //        try
-        //        {
-        //            IAsyncResult result;
-        //            using (this.PrepareTransactionalCall(this.dependentTransaction))
-        //            {
-        //                if (this.persistenceManager.OwnerWasCreated)
-        //                {
-        //                    // if the owner was created by this WorkflowApplication, delete it.
-        //                    // This implicitly unlocks the instance.
-        //                    result = this.persistenceManager.BeginDeleteOwner(this.timeoutHelper.RemainingTime(), this.PrepareAsyncCompletion(ownerDeletedCallback), this);
-        //                }
-        //                else
-        //                {
-        //                    result = this.persistenceManager.BeginUnlock(this.timeoutHelper.RemainingTime(), this.PrepareAsyncCompletion(instanceUnlockedCallback), this);
-        //                }
-        //            }
+                    success = true;
+                }
+                finally
+                {
+                    if (!success)
+                    {
+                        this.persistenceManager.Abort();
+                    }
+                }
+            }
 
-        //            if (SyncContinue(result))
-        //            {
-        //                Complete(true);
-        //            }
+            public static void End(IAsyncResult result)
+            {
+                AsyncResult.End<UnlockInstanceAsyncResult>(result);
+            }
 
-        //            success = true;
-        //        }
-        //        finally
-        //        {
-        //            if (!success)
-        //            {
-        //                this.persistenceManager.Abort();
-        //            }
-        //        }
-        //    }
+            private static bool OnInstanceUnlocked(IAsyncResult result)
+            {
+                UnlockInstanceAsyncResult thisPtr = (UnlockInstanceAsyncResult)result.AsyncState;
+                thisPtr.persistenceManager.EndUnlock(result);
+                return true;
+            }
 
-        //    public static void End(IAsyncResult result)
-        //    {
-        //        AsyncResult.End<UnlockInstanceAsyncResult>(result);
-        //    }
+            private static bool OnOwnerDeleted(IAsyncResult result)
+            {
+                UnlockInstanceAsyncResult thisPtr = (UnlockInstanceAsyncResult)result.AsyncState;
+                thisPtr.persistenceManager.EndDeleteOwner(result);
+                return true;
+            }
 
-        //    static bool OnInstanceUnlocked(IAsyncResult result)
-        //    {
-        //        UnlockInstanceAsyncResult thisPtr = (UnlockInstanceAsyncResult)result.AsyncState;
-        //        thisPtr.persistenceManager.EndUnlock(result);
-        //        return true;
-        //    }
+            private static void OnComplete(AsyncResult result, Exception exception)
+            {
+                UnlockInstanceAsyncResult thisPtr = (UnlockInstanceAsyncResult)result;
+                if (thisPtr.dependentTransaction != null)
+                {
+                    thisPtr.dependentTransaction.Complete();
+                }
+                thisPtr.persistenceManager.Abort();
+            }
+        }
 
-        //    static bool OnOwnerDeleted(IAsyncResult result)
-        //    {
-        //        UnlockInstanceAsyncResult thisPtr = (UnlockInstanceAsyncResult)result.AsyncState;
-        //        thisPtr.persistenceManager.EndDeleteOwner(result);
-        //        return true;
-        //    }
+        private class LoadAsyncResult : TransactedAsyncResult
+        {
+            private static readonly Action<object, TimeoutException> waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
+            private static readonly AsyncCompletion providerRegisteredCallback = new AsyncCompletion(OnProviderRegistered);
+            private static readonly AsyncCompletion loadCompleteCallback = new AsyncCompletion(OnLoadComplete);
+            private static readonly AsyncCompletion loadPipelineCallback = new AsyncCompletion(OnLoadPipeline);
+            private static readonly AsyncCompletion completeContextCallback = new AsyncCompletion(OnCompleteContext);
+            private static Action<AsyncResult, Exception> completeCallback = new Action<AsyncResult, Exception>(OnComplete);
+            private readonly WorkflowApplication application;
+            private readonly PersistenceManager persistenceManager;
+            private readonly TimeoutHelper timeoutHelper;
+            private readonly bool loadAny;
+            private object deserializedRuntimeState;
+            private PersistencePipeline pipeline;
+            private WorkflowPersistenceContext context;
+            private DependentTransaction dependentTransaction;
+            private IDictionary<XName, InstanceValue> values;
+#if NET45
+            DynamicUpdateMap updateMap; 
+#endif
+            private InstanceOperation instanceOperation;
 
-        //    static void OnComplete(AsyncResult result, Exception exception)
-        //    {
-        //        UnlockInstanceAsyncResult thisPtr = (UnlockInstanceAsyncResult)result;
-        //        if (thisPtr.dependentTransaction != null)
-        //        {
-        //            thisPtr.dependentTransaction.Complete();
-        //        }
-        //        thisPtr.persistenceManager.Abort();
-        //    }
-        //}
+            public LoadAsyncResult(WorkflowApplication application, PersistenceManager persistenceManager,
+                IDictionary<XName, InstanceValue> values,
+#if NET45
+                        DynamicUpdateMap updateMap,
 
-        //class LoadAsyncResult : TransactedAsyncResult
-        //{
-        //    static Action<object, TimeoutException> waitCompleteCallback = new Action<object, TimeoutException>(OnWaitComplete);
-        //    static AsyncCompletion providerRegisteredCallback = new AsyncCompletion(OnProviderRegistered);
-        //    static AsyncCompletion loadCompleteCallback = new AsyncCompletion(OnLoadComplete);
-        //    static AsyncCompletion loadPipelineCallback = new AsyncCompletion(OnLoadPipeline);
-        //    static AsyncCompletion completeContextCallback = new AsyncCompletion(OnCompleteContext);
-        //    static Action<AsyncResult, Exception> completeCallback = new Action<AsyncResult, Exception>(OnComplete);
+#endif                
+                TimeSpan timeout, 
+                AsyncCallback callback, object state)
+                : base(callback, state)
+            {
+                this.application = application;
+                this.persistenceManager = persistenceManager;
+                this.values = values;
+                this.timeoutHelper = new TimeoutHelper(timeout);
+#if NET45
+                this.updateMap = updateMap; 
+#endif
 
-        //    readonly WorkflowApplication application;
-        //    readonly PersistenceManager persistenceManager;
-        //    readonly TimeoutHelper timeoutHelper;
-        //    readonly bool loadAny;
+                Initialize();
+            }
 
-        //    object deserializedRuntimeState;
-        //    PersistencePipeline pipeline;
-        //    WorkflowPersistenceContext context;
-        //    DependentTransaction dependentTransaction;
-        //    IDictionary<XName, InstanceValue> values;
-        //    DynamicUpdateMap updateMap;
-        //    InstanceOperation instanceOperation;
+            public LoadAsyncResult(WorkflowApplication application, PersistenceManager persistenceManager,
+                bool loadAny, TimeSpan timeout, AsyncCallback callback, object state)
+                : base(callback, state)
+            {
+                this.application = application;
+                this.persistenceManager = persistenceManager;
+                this.loadAny = loadAny;
+                this.timeoutHelper = new TimeoutHelper(timeout);
 
-        //    public LoadAsyncResult(WorkflowApplication application, PersistenceManager persistenceManager,
-        //        IDictionary<XName, InstanceValue> values, DynamicUpdateMap updateMap, TimeSpan timeout, 
-        //        AsyncCallback callback, object state)
-        //        : base(callback, state)
-        //    {
-        //        this.application = application;
-        //        this.persistenceManager = persistenceManager;
-        //        this.values = values;
-        //        this.timeoutHelper = new TimeoutHelper(timeout);
-        //        this.updateMap = updateMap;
+                Initialize();
+            }
 
-        //        Initialize();
-        //    }
+            private void Initialize()
+            {
+                OnCompleting = LoadAsyncResult.completeCallback;
 
-        //    public LoadAsyncResult(WorkflowApplication application, PersistenceManager persistenceManager,
-        //        bool loadAny, TimeSpan timeout, AsyncCallback callback, object state)
-        //        : base(callback, state)
-        //    {
-        //        this.application = application;
-        //        this.persistenceManager = persistenceManager;
-        //        this.loadAny = loadAny;
-        //        this.timeoutHelper = new TimeoutHelper(timeout);
+                // Save off the current transaction in case we have an async operation before we end up creating
+                // the WorkflowPersistenceContext and create it on another thread. Do a simple clone here to prevent
+                // the object referenced by Transaction.Current from disposing before we get around to referencing it
+                // when we create the WorkflowPersistenceContext.
+                //
+                // This will throw TransactionAbortedException by design, if the transaction is already rolled back.
+                Transaction currentTransaction = Transaction.Current;
+                if (currentTransaction != null)
+                {
+                    this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
+                }
 
-        //        Initialize();
-        //    }
+                bool completeSelf;
+                bool success = false;
+                Exception updateException = null;
+                try
+                {
+                    if (this.application == null)
+                    {
+                        completeSelf = RegisterProvider();
+                    }
+                    else
+                    {
+                        completeSelf = WaitForTurn();
+                    }
+                    success = true;
+                }
+#if NET45
+                catch (InstanceUpdateException e)
+                {
+                    updateException = e;
+                    throw;
+                } 
+#endif
+                catch (VersionMismatchException e)
+                {
+                    updateException = e;
+                    throw;
+                }
+                finally
+                {
+                    if (!success)
+                    {
+                        if (this.dependentTransaction != null)
+                        {
+                            this.dependentTransaction.Complete();
+                        }
+                        Abort(this, updateException);
+                    }
+                }
 
-        //    void Initialize()
-        //    {
-        //        OnCompleting = LoadAsyncResult.completeCallback;
+                if (completeSelf)
+                {
+                    Complete(true);
+                }
+            }
 
-        //        // Save off the current transaction in case we have an async operation before we end up creating
-        //        // the WorkflowPersistenceContext and create it on another thread. Do a simple clone here to prevent
-        //        // the object referenced by Transaction.Current from disposing before we get around to referencing it
-        //        // when we create the WorkflowPersistenceContext.
-        //        //
-        //        // This will throw TransactionAbortedException by design, if the transaction is already rolled back.
-        //        Transaction currentTransaction = Transaction.Current;
-        //        if (currentTransaction != null)
-        //        {
-        //            this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
-        //        }
+            public static void End(IAsyncResult result)
+            {
+                AsyncResult.End<LoadAsyncResult>(result);
+            }
 
-        //        bool completeSelf;
-        //        bool success = false;
-        //        Exception updateException = null;
-        //        try
-        //        {
-        //            if (this.application == null)
-        //            {
-        //                completeSelf = RegisterProvider();
-        //            }
-        //            else
-        //            {
-        //                completeSelf = WaitForTurn();
-        //            }
-        //            success = true;
-        //        }
-        //        catch (InstanceUpdateException e)
-        //        {
-        //            updateException = e;
-        //            throw;
-        //        }
-        //        catch (VersionMismatchException e)
-        //        {
-        //            updateException = e;
-        //            throw;
-        //        }
-        //        finally
-        //        {
-        //            if (!success)
-        //            {
-        //                if (this.dependentTransaction != null)
-        //                {
-        //                    this.dependentTransaction.Complete();
-        //                }
-        //                Abort(this, updateException);
-        //            }
-        //        }
+            public static WorkflowApplicationInstance EndAndCreateInstance(IAsyncResult result)
+            {
+                LoadAsyncResult thisPtr = AsyncResult.End<LoadAsyncResult>(result);
+                Fx.AssertAndThrow(thisPtr.application == null, "Should not create a WorkflowApplicationInstance if we already have a WorkflowApplication");
 
-        //        if (completeSelf)
-        //        {
-        //            Complete(true);
-        //        }
-        //    }
+                ActivityExecutor deserializedRuntimeState = WorkflowApplication.ExtractRuntimeState(thisPtr.values, thisPtr.persistenceManager.InstanceId);
+                return new WorkflowApplicationInstance(thisPtr.persistenceManager, thisPtr.values, deserializedRuntimeState.WorkflowIdentity);
+            }
 
-        //    public static void End(IAsyncResult result)
-        //    {
-        //        AsyncResult.End<LoadAsyncResult>(result);
-        //    }
+            private bool WaitForTurn()
+            {
+                bool completeSelf;
+                bool success = false;
+                this.instanceOperation = new InstanceOperation { RequiresInitialized = false };
+                try
+                {
+                    if (this.application.WaitForTurnAsync(this.instanceOperation, this.timeoutHelper.RemainingTime(), waitCompleteCallback, this))
+                    {
+                        completeSelf = ValidateState();
+                    }
+                    else
+                    {
+                        completeSelf = false;
+                    }
+                    success = true;
+                }
+                finally
+                {
+                    if (!success)
+                    {
+                        NotifyOperationComplete();
+                    }
+                }
 
-        //    public static WorkflowApplicationInstance EndAndCreateInstance(IAsyncResult result)
-        //    {
-        //        LoadAsyncResult thisPtr = AsyncResult.End<LoadAsyncResult>(result);
-        //        Fx.AssertAndThrow(thisPtr.application == null, "Should not create a WorkflowApplicationInstance if we already have a WorkflowApplication");
+                return completeSelf;
+            }
 
-        //        ActivityExecutor deserializedRuntimeState = WorkflowApplication.ExtractRuntimeState(thisPtr.values, thisPtr.persistenceManager.InstanceId);
-        //        return new WorkflowApplicationInstance(thisPtr.persistenceManager, thisPtr.values, deserializedRuntimeState.WorkflowIdentity);
-        //    }
+            private static void OnWaitComplete(object state, TimeoutException asyncException)
+            {
+                LoadAsyncResult thisPtr = (LoadAsyncResult)state;
+                if (asyncException != null)
+                {
+                    thisPtr.Complete(false, asyncException);
+                    return;
+                }
 
-        //    bool WaitForTurn()
-        //    {
-        //        bool completeSelf;
-        //        bool success = false;
-        //        this.instanceOperation = new InstanceOperation { RequiresInitialized = false };
-        //        try
-        //        {
-        //            if (this.application.WaitForTurnAsync(this.instanceOperation, this.timeoutHelper.RemainingTime(), waitCompleteCallback, this))
-        //            {
-        //                completeSelf = ValidateState();
-        //            }
-        //            else
-        //            {
-        //                completeSelf = false;
-        //            }
-        //            success = true;
-        //        }
-        //        finally
-        //        {
-        //            if (!success)
-        //            {
-        //                NotifyOperationComplete();
-        //            }
-        //        }
+                bool completeSelf;
+                Exception completionException = null;
 
-        //        return completeSelf;
-        //    }
+                try
+                {
+                    completeSelf = thisPtr.ValidateState();
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
 
-        //    static void OnWaitComplete(object state, TimeoutException asyncException)
-        //    {
-        //        LoadAsyncResult thisPtr = (LoadAsyncResult)state;
-        //        if (asyncException != null)
-        //        {
-        //            thisPtr.Complete(false, asyncException);
-        //            return;
-        //        }
+                    completionException = e;
+                    completeSelf = true;
+                }
 
-        //        bool completeSelf;
-        //        Exception completionException = null;
+                if (completeSelf)
+                {
+                    thisPtr.Complete(false, completionException);
+                }
+            }
 
-        //        try
-        //        {
-        //            completeSelf = thisPtr.ValidateState();
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            if (Fx.IsFatal(e))
-        //            {
-        //                throw;
-        //            }
+            private bool ValidateState()
+            {
+                this.application.ValidateStateForLoad();
 
-        //            completionException = e;
-        //            completeSelf = true;
-        //        }
+                this.application.SetPersistenceManager(this.persistenceManager);
+                if (!this.loadAny)
+                {
+                    this.application.instanceId = this.persistenceManager.InstanceId;
+                    this.application.instanceIdSet = true;
+                }
+                if (this.application.InstanceStore == null)
+                {
+                    this.application.InstanceStore = this.persistenceManager.InstanceStore;
+                }
 
-        //        if (completeSelf)
-        //        {
-        //            thisPtr.Complete(false, completionException);
-        //        }
-        //    }
+                return RegisterProvider();
+            }
 
-        //    bool ValidateState()
-        //    {
-        //        this.application.ValidateStateForLoad();
+            private bool RegisterProvider()
+            {
+                if (!this.persistenceManager.IsInitialized)
+                {
+                    WorkflowIdentity definitionIdentity = this.application != null ? this.application.DefinitionIdentity : WorkflowApplication.unknownIdentity;
+                    IAsyncResult result = this.persistenceManager.BeginInitialize(definitionIdentity, this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(providerRegisteredCallback), this);
+                    return SyncContinue(result);
+                }
+                else
+                {
+                    return Load();
+                }
+            }
 
-        //        this.application.SetPersistenceManager(this.persistenceManager);
-        //        if (!this.loadAny)
-        //        {
-        //            this.application.instanceId = this.persistenceManager.InstanceId;
-        //            this.application.instanceIdSet = true;
-        //        }
-        //        if (this.application.InstanceStore == null)
-        //        {
-        //            this.application.InstanceStore = this.persistenceManager.InstanceStore;
-        //        }
+            private static bool OnProviderRegistered(IAsyncResult result)
+            {
+                LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
+                thisPtr.persistenceManager.EndInitialize(result);
+                return thisPtr.Load();
+            }
 
-        //        return RegisterProvider();
-        //    }
+            private bool Load()
+            {
+                bool success = false;
+                IAsyncResult result = null;
+                try
+                {
+                    bool transactionRequired = this.application != null ? this.application.IsLoadTransactionRequired() : false;
+                    this.context = new WorkflowPersistenceContext(transactionRequired,
+                        this.dependentTransaction, this.timeoutHelper.OriginalTimeout);
 
-        //    bool RegisterProvider()
-        //    {
-        //        if (!this.persistenceManager.IsInitialized)
-        //        {
-        //            WorkflowIdentity definitionIdentity = this.application != null ? this.application.DefinitionIdentity : WorkflowApplication.unknownIdentity;
-        //            IAsyncResult result = this.persistenceManager.BeginInitialize(definitionIdentity, this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(providerRegisteredCallback), this);
-        //            return SyncContinue(result);
-        //        }
-        //        else
-        //        {
-        //            return Load();
-        //        }
-        //    }
+                    // Values is null if this is an initial load from the database.
+                    // It is non-null if we already loaded values into a WorkflowApplicationInstance,
+                    // and are now loading from that WAI.
+                    if (this.values == null)
+                    {
+                        using (PrepareTransactionalCall(this.context.PublicTransaction))
+                        {
+                            if (this.loadAny)
+                            {
+                                result = this.persistenceManager.BeginTryLoad(this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(loadCompleteCallback), this);
+                            }
+                            else
+                            {
+                                result = this.persistenceManager.BeginLoad(this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(loadCompleteCallback), this);
+                            }
+                        }
+                    }
+                    success = true;
+                }
+                finally
+                {
+                    if (!success && this.context != null)
+                    {
+                        this.context.Abort();
+                    }
+                }
 
-        //    static bool OnProviderRegistered(IAsyncResult result)
-        //    {
-        //        LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
-        //        thisPtr.persistenceManager.EndInitialize(result);
-        //        return thisPtr.Load();
-        //    }
+                if (result == null)
+                {
+                    return LoadValues(null);
+                }
+                else
+                {
+                    return SyncContinue(result);
+                }
+            }
 
-        //    bool Load()
-        //    {
-        //        bool success = false;
-        //        IAsyncResult result = null;
-        //        try
-        //        {
-        //            bool transactionRequired = this.application != null ? this.application.IsLoadTransactionRequired() : false;
-        //            this.context = new WorkflowPersistenceContext(transactionRequired,
-        //                this.dependentTransaction, this.timeoutHelper.OriginalTimeout);
+            private static bool OnLoadComplete(IAsyncResult result)
+            {
+                LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
+                return thisPtr.LoadValues(result);
+            }
 
-        //            // Values is null if this is an initial load from the database.
-        //            // It is non-null if we already loaded values into a WorkflowApplicationInstance,
-        //            // and are now loading from that WAI.
-        //            if (this.values == null)
-        //            {
-        //                using (PrepareTransactionalCall(this.context.PublicTransaction))
-        //                {
-        //                    if (this.loadAny)
-        //                    {
-        //                        result = this.persistenceManager.BeginTryLoad(this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(loadCompleteCallback), this);
-        //                    }
-        //                    else
-        //                    {
-        //                        result = this.persistenceManager.BeginLoad(this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(loadCompleteCallback), this);
-        //                    }
-        //                }
-        //            }
-        //            success = true;
-        //        }
-        //        finally
-        //        {
-        //            if (!success && this.context != null)
-        //            {
-        //                this.context.Abort();
-        //            }
-        //        }
+            private bool LoadValues(IAsyncResult result)
+            {
+                IAsyncResult loadResult = null;
+                bool success = false;
+                try
+                {
+                    Fx.Assert((result == null) != (this.values == null), "We should either have values already retrieved, or an IAsyncResult to retrieve them");
 
-        //        if (result == null)
-        //        {
-        //            return LoadValues(null);
-        //        }
-        //        else
-        //        {
-        //            return SyncContinue(result);
-        //        }
-        //    }
+                    if (result != null)
+                    {
+                        if (this.loadAny)
+                        {
+                            if (!this.persistenceManager.EndTryLoad(result, out this.values))
+                            {
+                                throw FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
+                            }
+                            if (this.application != null)
+                            {
+                                if (this.application.instanceIdSet)
+                                {
+                                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
+                                }
 
-        //    static bool OnLoadComplete(IAsyncResult result)
-        //    {
-        //        LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
-        //        return thisPtr.LoadValues(result);
-        //    }
+                                this.application.instanceId = this.persistenceManager.InstanceId;
+                                this.application.instanceIdSet = true;
+                            }
+                        }
+                        else
+                        {
+                            this.values = this.persistenceManager.EndLoad(result);
+                        }
+                    }
 
-        //    bool LoadValues(IAsyncResult result)
-        //    {
-        //        IAsyncResult loadResult = null;
-        //        bool success = false;
-        //        try
-        //        {
-        //            Fx.Assert((result == null) != (this.values == null), "We should either have values already retrieved, or an IAsyncResult to retrieve them");
+                    if (this.application != null)
+                    {
+                        this.pipeline = this.application.ProcessInstanceValues(this.values, out this.deserializedRuntimeState);
 
-        //            if (result != null)
-        //            {
-        //                if (this.loadAny)
-        //                {
-        //                    if (!this.persistenceManager.EndTryLoad(result, out this.values))
-        //                    {
-        //                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InstanceNotReadyException(SR.NoRunnableInstances));
-        //                    }
-        //                    if (this.application != null)
-        //                    {
-        //                        if (this.application.instanceIdSet)
-        //                        {
-        //                            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
-        //                        }
+                        if (this.pipeline != null)
+                        {
+                            this.pipeline.SetLoadedValues(this.values);
 
-        //                        this.application.instanceId = this.persistenceManager.InstanceId;
-        //                        this.application.instanceIdSet = true;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    this.values = this.persistenceManager.EndLoad(result);
-        //                }
-        //            }
+                            this.application.persistencePipelineInUse = this.pipeline;
+                            Thread.MemoryBarrier();
+                            if (this.application.state == WorkflowApplicationState.Aborted)
+                            {
+                                throw FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
+                            }
 
-        //            if (this.application != null)
-        //            {
-        //                this.pipeline = this.application.ProcessInstanceValues(this.values, out this.deserializedRuntimeState);
+                            using (this.PrepareTransactionalCall(this.context.PublicTransaction))
+                            {
+                                loadResult = this.pipeline.BeginLoad(this.timeoutHelper.RemainingTime(), this.PrepareAsyncCompletion(loadPipelineCallback), this);
+                            }
+                        }
+                    }
 
-        //                if (this.pipeline != null)
-        //                {
-        //                    this.pipeline.SetLoadedValues(this.values);
+                    success = true;
+                }
+                finally
+                {
+                    if (!success)
+                    {
+                        this.context.Abort();
+                    }
+                }
 
-        //                    this.application.persistencePipelineInUse = this.pipeline;
-        //                    Thread.MemoryBarrier();
-        //                    if (this.application.state == WorkflowApplicationState.Aborted)
-        //                    {
-        //                        throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.DefaultAbortReason));
-        //                    }
+                if (this.pipeline != null)
+                {
+                    return this.SyncContinue(loadResult);
+                }
+                else
+                {
+                    return this.CompleteContext();
+                }
+            }
 
-        //                    using (this.PrepareTransactionalCall(this.context.PublicTransaction))
-        //                    {
-        //                        loadResult = this.pipeline.BeginLoad(this.timeoutHelper.RemainingTime(), this.PrepareAsyncCompletion(loadPipelineCallback), this);
-        //                    }
-        //                }
-        //            }
+            private static bool OnLoadPipeline(IAsyncResult result)
+            {
+                LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
 
-        //            success = true;
-        //        }
-        //        finally
-        //        {
-        //            if (!success)
-        //            {
-        //                this.context.Abort();
-        //            }
-        //        }
+                bool success = false;
+                try
+                {
+                    thisPtr.pipeline.EndLoad(result);
+                    success = true;
+                }
+                finally
+                {
+                    if (!success)
+                    {
+                        thisPtr.context.Abort();
+                    }
+                }
+                return thisPtr.CompleteContext();
+            }
 
-        //        if (this.pipeline != null)
-        //        {
-        //            return this.SyncContinue(loadResult);
-        //        }
-        //        else
-        //        {
-        //            return this.CompleteContext();
-        //        }
-        //    }
+            private bool CompleteContext()
+            {
+                if (this.application != null)
+                {
+#if NET45
+                    this.application.Initialize(this.deserializedRuntimeState, this.updateMap);
+                    if (this.updateMap != null)
+                    {
+                        this.application.UpdateInstanceMetadata();
+                    } 
+#else
+                    this.application.Initialize(this.deserializedRuntimeState);
+#endif
+                }
 
-        //    static bool OnLoadPipeline(IAsyncResult result)
-        //    {
-        //        LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
+                if (this.context.TryBeginComplete(PrepareAsyncCompletion(completeContextCallback), this, out IAsyncResult completeResult))
+                {
+                    Fx.Assert(completeResult != null, "We shouldn't have null here.");
+                    return SyncContinue(completeResult);
+                }
+                else
+                {
+                    return Finish();
+                }
+            }
 
-        //        bool success = false;
-        //        try
-        //        {
-        //            thisPtr.pipeline.EndLoad(result);
-        //            success = true;
-        //        }
-        //        finally
-        //        {
-        //            if (!success)
-        //            {
-        //                thisPtr.context.Abort();
-        //            }
-        //        }
-        //        return thisPtr.CompleteContext();
-        //    }
+            private static bool OnCompleteContext(IAsyncResult result)
+            {
+                LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
+                thisPtr.context.EndComplete(result);
+                return thisPtr.Finish();
+            }
 
-        //    bool CompleteContext()
-        //    {
-        //        if (this.application != null)
-        //        {
-        //            this.application.Initialize(this.deserializedRuntimeState, this.updateMap);
-        //            if (this.updateMap != null)
-        //            {
-        //                this.application.UpdateInstanceMetadata();
-        //            }
-        //        }
+            private bool Finish()
+            {
+                if (this.pipeline != null)
+                {
+                    this.pipeline.Publish();
+                }
+                return true;
+            }
 
-        //        IAsyncResult completeResult;
-        //        if (this.context.TryBeginComplete(PrepareAsyncCompletion(completeContextCallback), this, out completeResult))
-        //        {
-        //            Fx.Assert(completeResult != null, "We shouldn't have null here.");
-        //            return SyncContinue(completeResult);
-        //        }
-        //        else
-        //        {
-        //            return Finish();
-        //        }
-        //    }
+            private void NotifyOperationComplete()
+            {
+                if (this.application != null)
+                {
+                    InstanceOperation localInstanceOperation = this.instanceOperation;
+                    this.instanceOperation = null;
+                    this.application.NotifyOperationComplete(localInstanceOperation);
+                }
+            }
 
-        //    static bool OnCompleteContext(IAsyncResult result)
-        //    {
-        //        LoadAsyncResult thisPtr = (LoadAsyncResult)result.AsyncState;
-        //        thisPtr.context.EndComplete(result);
-        //        return thisPtr.Finish();
-        //    }
+            private static void OnComplete(AsyncResult result, Exception exception)
+            {
+                LoadAsyncResult thisPtr = (LoadAsyncResult)result;
+                try
+                {
+                    if (thisPtr.dependentTransaction != null)
+                    {
+                        thisPtr.dependentTransaction.Complete();
+                    }
 
-        //    bool Finish()
-        //    {
-        //        if (this.pipeline != null)
-        //        {
-        //            this.pipeline.Publish();
-        //        }
-        //        return true;
-        //    }
+                    if (exception != null)
+                    {
+                        Abort(thisPtr, exception);
+                    }
+                }
+                finally
+                {
+                    thisPtr.NotifyOperationComplete();
+                }
+            }
 
-        //    void NotifyOperationComplete()
-        //    {
-        //        if (this.application != null)
-        //        {
-        //            InstanceOperation localInstanceOperation = this.instanceOperation;
-        //            this.instanceOperation = null;
-        //            this.application.NotifyOperationComplete(localInstanceOperation);
-        //        }
-        //    }
-
-        //    static void OnComplete(AsyncResult result, Exception exception)
-        //    {
-        //        LoadAsyncResult thisPtr = (LoadAsyncResult)result;
-        //        try
-        //        {
-        //            if (thisPtr.dependentTransaction != null)
-        //            {
-        //                thisPtr.dependentTransaction.Complete();
-        //            }
-
-        //            if (exception != null)
-        //            {
-        //                Abort(thisPtr, exception);
-        //            }
-        //        }
-        //        finally
-        //        {
-        //            thisPtr.NotifyOperationComplete();
-        //        }
-        //    }
-
-        //    static void Abort(LoadAsyncResult thisPtr, Exception exception)
-        //    {
-        //        if (thisPtr.application == null)
-        //        {
-        //            thisPtr.persistenceManager.Abort();
-        //        }
-        //        else
-        //        {
-        //            thisPtr.application.AbortDueToException(exception);
-        //        }
-        //    }
-        //}
+            private static void Abort(LoadAsyncResult thisPtr, Exception exception)
+            {
+                if (thisPtr.application == null)
+                {
+                    thisPtr.persistenceManager.Abort();
+                }
+                else
+                {
+                    thisPtr.application.AbortDueToException(exception);
+                }
+            }
+        }
 
         // this class is not a general purpose SyncContext and is only meant to work for workflow scenarios, where the scheduler ensures 
         // at most one work item pending. The scheduler ensures that Invoke must run before Post is called on a different thread.
@@ -4743,16 +4840,16 @@ namespace CoreWf
             // The waitObject is cached per thread so that we can avoid the cost of creating
             // events for multiple synchronous invokes.
             [ThreadStatic]
-            private static AutoResetEvent t_waitObject;
-            private AutoResetEvent _queueWaiter;
-            private WorkItem _currentWorkItem;
-            private object _thisLock;
-            private TimeoutHelper _timeoutHelper;
+            private static AutoResetEvent waitObject;
+            private AutoResetEvent queueWaiter;
+            private WorkItem currentWorkItem;
+            private readonly object thisLock;
+            private TimeoutHelper timeoutHelper;
 
             public PumpBasedSynchronizationContext(TimeSpan timeout)
             {
-                _timeoutHelper = new TimeoutHelper(timeout);
-                _thisLock = new object();
+                this.timeoutHelper = new TimeoutHelper(timeout);
+                this.thisLock = new object();
             }
 
             private bool IsInvokeCompleted
@@ -4763,29 +4860,29 @@ namespace CoreWf
 
             public void DoPump()
             {
-                Fx.Assert(_currentWorkItem != null, "the work item cannot be null");
+                Fx.Assert(this.currentWorkItem != null, "the work item cannot be null");
                 WorkItem workItem;
 
-                lock (_thisLock)
+                lock (this.thisLock)
                 {
-                    if (PumpBasedSynchronizationContext.t_waitObject == null)
+                    if (PumpBasedSynchronizationContext.waitObject == null)
                     {
-                        PumpBasedSynchronizationContext.t_waitObject = new AutoResetEvent(false);
+                        PumpBasedSynchronizationContext.waitObject = new AutoResetEvent(false);
                     }
-                    _queueWaiter = PumpBasedSynchronizationContext.t_waitObject;
+                    this.queueWaiter = PumpBasedSynchronizationContext.waitObject;
 
-                    workItem = _currentWorkItem;
-                    _currentWorkItem = null;
+                    workItem = this.currentWorkItem;
+                    this.currentWorkItem = null;
                     workItem.Invoke();
                 }
 
-                Fx.Assert(_queueWaiter != null, "queue waiter cannot be null");
+                Fx.Assert(this.queueWaiter != null, "queue waiter cannot be null");
 
                 while (this.WaitForNextItem())
                 {
-                    Fx.Assert(_currentWorkItem != null, "the work item cannot be null");
-                    workItem = _currentWorkItem;
-                    _currentWorkItem = null;
+                    Fx.Assert(this.currentWorkItem != null, "the work item cannot be null");
+                    workItem = this.currentWorkItem;
+                    this.currentWorkItem = null;
                     workItem.Invoke();
                 }
             }
@@ -4797,7 +4894,7 @@ namespace CoreWf
 
             public override void Send(SendOrPostCallback d, object state)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException(SR.SendNotSupported));
+                throw FxTrace.Exception.AsError(new NotSupportedException(SR.SendNotSupported));
             }
 
             // Since tracking can go async this may or may not be called directly
@@ -4806,34 +4903,34 @@ namespace CoreWf
             // if runtime goes async (post-work item tracking, AsyncCodeActivity).
             public void OnInvokeCompleted()
             {
-                Fx.AssertAndFailFast(_currentWorkItem == null, "There can be no pending work items when complete");
+                Fx.AssertAndFailFast(this.currentWorkItem == null, "There can be no pending work items when complete");
 
                 this.IsInvokeCompleted = true;
 
-                lock (_thisLock)
+                lock (this.thisLock)
                 {
-                    if (_queueWaiter != null)
+                    if (this.queueWaiter != null)
                     {
                         // Since we don't know which thread this is being called
                         // from we just set the waiter directly rather than
                         // doing our SetWaiter cleanup.
-                        _queueWaiter.Set();
+                        this.queueWaiter.Set();
                     }
                 }
             }
 
             private void ScheduleWorkItem(WorkItem item)
             {
-                lock (_thisLock)
+                lock (this.thisLock)
                 {
-                    Fx.AssertAndFailFast(_currentWorkItem == null, "There cannot be more than 1 work item at a given time");
-                    _currentWorkItem = item;
-                    if (_queueWaiter != null)
+                    Fx.AssertAndFailFast(this.currentWorkItem == null, "There cannot be more than 1 work item at a given time");
+                    this.currentWorkItem = item;
+                    if (this.queueWaiter != null)
                     {
                         // Since we don't know which thread this is being called
                         // from we just set the waiter directly rather than
                         // doing our SetWaiter cleanup.
-                        _queueWaiter.Set();
+                        this.queueWaiter.Set();
                     }
                 }
             }
@@ -4852,16 +4949,16 @@ namespace CoreWf
                 {
                     if (!success)
                     {
-                        PumpBasedSynchronizationContext.t_waitObject = null;
+                        PumpBasedSynchronizationContext.waitObject = null;
                     }
                 }
             }
 
             private bool WaitForNextItem()
             {
-                if (!WaitOne(_queueWaiter, _timeoutHelper.RemainingTime()))
+                if (!WaitOne(this.queueWaiter, timeoutHelper.RemainingTime()))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(_timeoutHelper.OriginalTimeout)));
+                    throw FxTrace.Exception.AsError(new TimeoutException(SR.TimeoutOnOperation(timeoutHelper.OriginalTimeout)));
                 }
 
                 // We need to check this after the wait as well in 
@@ -4876,18 +4973,18 @@ namespace CoreWf
 
             private class WorkItem
             {
-                private SendOrPostCallback _callback;
-                private object _state;
+                private readonly SendOrPostCallback callback;
+                private readonly object state;
 
                 public WorkItem(SendOrPostCallback callback, object state)
                 {
-                    _callback = callback;
-                    _state = state;
+                    this.callback = callback;
+                    this.state = state;
                 }
 
                 public void Invoke()
                 {
-                    _callback(_state);
+                    this.callback(this.state);
                 }
             }
         }
@@ -4932,8 +5029,8 @@ namespace CoreWf
 
         private class IdleEventHandler
         {
-            private Func<IAsyncResult, WorkflowApplication, bool, bool> _stage1Callback;
-            private Func<IAsyncResult, WorkflowApplication, bool, bool> _stage2Callback;
+            private Func<IAsyncResult, WorkflowApplication, bool, bool> stage1Callback;
+            private Func<IAsyncResult, WorkflowApplication, bool, bool> stage2Callback;
 
             public IdleEventHandler()
             {
@@ -4943,12 +5040,12 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_stage1Callback == null)
+                    if (this.stage1Callback == null)
                     {
-                        _stage1Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage1Complete);
+                        this.stage1Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage1Complete);
                     }
 
-                    return _stage1Callback;
+                    return this.stage1Callback;
                 }
             }
 
@@ -4956,12 +5053,12 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_stage2Callback == null)
+                    if (this.stage2Callback == null)
                     {
-                        _stage2Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage2Complete);
+                        this.stage2Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage2Complete);
                     }
 
-                    return _stage2Callback;
+                    return this.stage2Callback;
                 }
             }
 
@@ -4996,7 +5093,7 @@ namespace CoreWf
 
                 if (application.RaiseIdleEvent())
                 {
-                    if (application.Controller.IsPersistable && application._persistenceManager != null)
+                    if (application.Controller.IsPersistable && application.persistenceManager != null)
                     {
                         Func<WorkflowApplicationIdleEventArgs, PersistableIdleAction> persistableIdleHandler = application.PersistableIdle;
 
@@ -5004,16 +5101,16 @@ namespace CoreWf
                         {
                             PersistableIdleAction action = PersistableIdleAction.None;
 
-                            //application.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
+                            application.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
 
                             try
                             {
-                                application._isInHandler = true;
+                                application.isInHandler = true;
                                 action = persistableIdleHandler(new WorkflowApplicationIdleEventArgs(application));
                             }
                             finally
                             {
-                                application._isInHandler = false;
+                                application.isInHandler = false;
                             }
 
                             if (TD.WorkflowApplicationPersistableIdleIsEnabled())
@@ -5031,7 +5128,7 @@ namespace CoreWf
                                 }
                                 else if (action != PersistableIdleAction.Unload)
                                 {
-                                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidIdleAction));
+                                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidIdleAction));
                                 }
 
                                 application.EventData.NextCallback = this.Stage2Callback;
@@ -5070,8 +5167,8 @@ namespace CoreWf
 
         private class CompletedEventHandler
         {
-            private Func<IAsyncResult, WorkflowApplication, bool, bool> _stage1Callback;
-            private Func<IAsyncResult, WorkflowApplication, bool, bool> _stage2Callback;
+            private Func<IAsyncResult, WorkflowApplication, bool, bool> stage1Callback;
+            private Func<IAsyncResult, WorkflowApplication, bool, bool> stage2Callback;
 
             public CompletedEventHandler()
             {
@@ -5081,12 +5178,12 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_stage1Callback == null)
+                    if (this.stage1Callback == null)
                     {
-                        _stage1Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage1Complete);
+                        this.stage1Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage1Complete);
                     }
 
-                    return _stage1Callback;
+                    return this.stage1Callback;
                 }
             }
 
@@ -5094,12 +5191,12 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_stage2Callback == null)
+                    if (this.stage2Callback == null)
                     {
-                        _stage2Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage2Complete);
+                        this.stage2Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage2Complete);
                     }
 
-                    return _stage2Callback;
+                    return this.stage2Callback;
                 }
             }
 
@@ -5126,27 +5223,24 @@ namespace CoreWf
                 {
                     instance.Controller.EndFlushTrackingRecords(lastResult);
                 }
+                ActivityInstanceState completionState = instance.Controller.GetCompletionState(out IDictionary<string, object> outputs, out Exception completionException);
 
-                IDictionary<string, object> outputs;
-                Exception completionException;
-                ActivityInstanceState completionState = instance.Controller.GetCompletionState(out outputs, out completionException);
-
-                if (instance._invokeCompletedCallback == null)
+                if (instance.invokeCompletedCallback == null)
                 {
                     Action<WorkflowApplicationCompletedEventArgs> handler = instance.Completed;
 
                     if (handler != null)
                     {
-                        //instance.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
+                        instance.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
 
                         try
                         {
-                            instance._isInHandler = true;
+                            instance.isInHandler = true;
                             handler(new WorkflowApplicationCompletedEventArgs(instance, completionException, completionState, outputs));
                         }
                         finally
                         {
-                            instance._isInHandler = false;
+                            instance.isInHandler = false;
                         }
                     }
                 }
@@ -5175,7 +5269,7 @@ namespace CoreWf
 
                 IAsyncResult result = null;
                 Fx.Assert(instance.Controller.IsPersistable, "Should not be in a No Persist Zone once the instance is complete.");
-                if (instance._persistenceManager != null || instance.HasPersistenceModule)
+                if (instance.persistenceManager != null || instance.HasPersistenceModule)
                 {
                     instance.EventData.NextCallback = this.Stage2Callback;
                     result = instance.BeginInternalPersist(PersistenceOperation.Unload, ActivityDefaults.InternalSaveTimeout, true, EventFrameCallback, instance.EventData);
@@ -5200,9 +5294,9 @@ namespace CoreWf
                     instance.EndInternalPersist(lastResult);
                 }
 
-                if (instance._invokeCompletedCallback != null)
+                if (instance.invokeCompletedCallback != null)
                 {
-                    instance._invokeCompletedCallback();
+                    instance.invokeCompletedCallback();
                 }
 
                 return true;
@@ -5211,7 +5305,7 @@ namespace CoreWf
 
         private class UnhandledExceptionEventHandler
         {
-            private Func<IAsyncResult, WorkflowApplication, bool, bool> _stage1Callback;
+            private Func<IAsyncResult, WorkflowApplication, bool, bool> stage1Callback;
 
             public UnhandledExceptionEventHandler()
             {
@@ -5221,12 +5315,12 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_stage1Callback == null)
+                    if (this.stage1Callback == null)
                     {
-                        _stage1Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage1Complete);
+                        this.stage1Callback = new Func<IAsyncResult, WorkflowApplication, bool, bool>(OnStage1Complete);
                     }
 
-                    return _stage1Callback;
+                    return this.stage1Callback;
                 }
             }
 
@@ -5271,18 +5365,18 @@ namespace CoreWf
                 {
                     try
                     {
-                        instance._isInHandler = true;
-                        //instance.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
+                        instance.isInHandler = true;
+                        instance.handlerThreadId = Thread.CurrentThread.ManagedThreadId;
 
                         action = handler(new WorkflowApplicationUnhandledExceptionEventArgs(instance, exception, source, sourceInstanceId));
                     }
                     finally
                     {
-                        instance._isInHandler = false;
+                        instance.isInHandler = false;
                     }
                 }
 
-                if (instance._invokeCompletedCallback != null)
+                if (instance.invokeCompletedCallback != null)
                 {
                     action = UnhandledExceptionAction.Terminate;
                 }
@@ -5304,80 +5398,79 @@ namespace CoreWf
                         instance.TerminateCore(exception);
                         break;
                     default:
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidUnhandledExceptionAction));
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidUnhandledExceptionAction));
                 }
 
                 return true;
             }
         }
 
-        //class InstanceCommandWithTemporaryHandleAsyncResult : TransactedAsyncResult
-        //{
-        //    static AsyncCompletion commandCompletedCallback = new AsyncCompletion(OnCommandCompleted);
-        //    static Action<AsyncResult, Exception> completeCallback = new Action<AsyncResult, Exception>(OnComplete);
+        private class InstanceCommandWithTemporaryHandleAsyncResult : TransactedAsyncResult
+        {
+            private static AsyncCompletion commandCompletedCallback = new AsyncCompletion(OnCommandCompleted);
+            private static Action<AsyncResult, Exception> completeCallback = new Action<AsyncResult, Exception>(OnComplete);
+            private readonly InstancePersistenceCommand command;
+            private DependentTransaction dependentTransaction;
+            private InstanceStore instanceStore;
+            private InstanceHandle temporaryHandle;
+            private InstanceView commandResult;
 
-        //    InstancePersistenceCommand command;
-        //    DependentTransaction dependentTransaction;
-        //    InstanceStore instanceStore;
-        //    InstanceHandle temporaryHandle;
-        //    InstanceView commandResult;
+            public InstanceCommandWithTemporaryHandleAsyncResult(InstanceStore instanceStore, InstancePersistenceCommand command,
+                TimeSpan timeout, AsyncCallback callback, object state)
+                : base(callback, state)
+            {
+                this.instanceStore = instanceStore;
+                this.command = command;
+                this.temporaryHandle = instanceStore.CreateInstanceHandle();
 
-        //    public InstanceCommandWithTemporaryHandleAsyncResult(InstanceStore instanceStore, InstancePersistenceCommand command,
-        //        TimeSpan timeout, AsyncCallback callback, object state)
-        //        : base(callback, state)
-        //    {
-        //        this.instanceStore = instanceStore;
-        //        this.command = command;
-        //        this.temporaryHandle = instanceStore.CreateInstanceHandle();
+                Transaction currentTransaction = Transaction.Current;
+                if (currentTransaction != null)
+                {
+                    this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
+                }
 
-        //        Transaction currentTransaction = Transaction.Current;
-        //        if (currentTransaction != null)
-        //        {
-        //            this.dependentTransaction = currentTransaction.DependentClone(DependentCloneOption.BlockCommitUntilComplete);
-        //        }
+                OnCompleting = completeCallback;
 
-        //        OnCompleting = completeCallback;
+                IAsyncResult result;
+                using (this.PrepareTransactionalCall(this.dependentTransaction))
+                {
+                    result = instanceStore.BeginExecute(this.temporaryHandle, command, timeout, PrepareAsyncCompletion(commandCompletedCallback), this);
+                }
 
-        //        IAsyncResult result;
-        //        using (this.PrepareTransactionalCall(this.dependentTransaction))
-        //        {
-        //            result = instanceStore.BeginExecute(this.temporaryHandle, command, timeout, PrepareAsyncCompletion(commandCompletedCallback), this);
-        //        }
+                if (SyncContinue(result))
+                {
+                    Complete(true);
+                }
+            }
 
-        //        if (SyncContinue(result))
-        //        {
-        //            Complete(true);
-        //        }
-        //    }
+            public static void End(IAsyncResult result, out InstanceStore instanceStore, out InstanceView commandResult)
+            {
+                InstanceCommandWithTemporaryHandleAsyncResult thisPtr = AsyncResult.End<InstanceCommandWithTemporaryHandleAsyncResult>(result);
+                instanceStore = thisPtr.instanceStore;
+                commandResult = thisPtr.commandResult;
+            }
 
-        //    public static void End(IAsyncResult result, out InstanceStore instanceStore, out InstanceView commandResult)
-        //    {
-        //        InstanceCommandWithTemporaryHandleAsyncResult thisPtr = AsyncResult.End<InstanceCommandWithTemporaryHandleAsyncResult>(result);
-        //        instanceStore = thisPtr.instanceStore;
-        //        commandResult = thisPtr.commandResult;
-        //    }
+            private static bool OnCommandCompleted(IAsyncResult result)
+            {
+                InstanceCommandWithTemporaryHandleAsyncResult thisPtr = (InstanceCommandWithTemporaryHandleAsyncResult)result.AsyncState;
+                thisPtr.commandResult = thisPtr.instanceStore.EndExecute(result);
+                return true;
+            }
 
-        //    static bool OnCommandCompleted(IAsyncResult result)
-        //    {
-        //        InstanceCommandWithTemporaryHandleAsyncResult thisPtr = (InstanceCommandWithTemporaryHandleAsyncResult)result.AsyncState;
-        //        thisPtr.commandResult = thisPtr.instanceStore.EndExecute(result);
-        //        return true;
-        //    }
-
-        //    static void OnComplete(AsyncResult result, Exception exception)
-        //    {
-        //        InstanceCommandWithTemporaryHandleAsyncResult thisPtr = (InstanceCommandWithTemporaryHandleAsyncResult)result;
-        //        if (thisPtr.dependentTransaction != null)
-        //        {
-        //            thisPtr.dependentTransaction.Complete();
-        //        }
-        //        thisPtr.temporaryHandle.Free();
-        //    }
-        //}
+            private static void OnComplete(AsyncResult result, Exception exception)
+            {
+                InstanceCommandWithTemporaryHandleAsyncResult thisPtr = (InstanceCommandWithTemporaryHandleAsyncResult)result;
+                if (thisPtr.dependentTransaction != null)
+                {
+                    thisPtr.dependentTransaction.Complete();
+                }
+                thisPtr.temporaryHandle.Free();
+            }
+        }
 
         private class InstanceOperation
         {
-            private AsyncWaitHandle _waitHandle;
+            private AsyncWaitHandle waitHandle;
 
             public InstanceOperation()
             {
@@ -5411,7 +5504,7 @@ namespace CoreWf
 
             public void OnEnqueued()
             {
-                _waitHandle = new AsyncWaitHandle();
+                this.waitHandle = new AsyncWaitHandle();
             }
 
             public virtual bool CanRun(WorkflowApplication instance)
@@ -5421,16 +5514,16 @@ namespace CoreWf
 
             public void NotifyTurn()
             {
-                Fx.Assert(_waitHandle != null, "We must have a wait handle.");
+                Fx.Assert(this.waitHandle != null, "We must have a wait handle.");
 
-                _waitHandle.Set();
+                waitHandle.Set();
             }
 
             public bool WaitForTurn(TimeSpan timeout)
             {
-                if (_waitHandle != null)
+                if (this.waitHandle != null)
                 {
-                    return _waitHandle.Wait(timeout);
+                    return this.waitHandle.Wait(timeout);
                 }
 
                 return true;
@@ -5438,9 +5531,9 @@ namespace CoreWf
 
             public bool WaitForTurnAsync(TimeSpan timeout, Action<object, TimeoutException> callback, object state)
             {
-                if (_waitHandle != null)
+                if (this.waitHandle != null)
                 {
-                    return _waitHandle.WaitAsync(callback, state, timeout);
+                    return this.waitHandle.WaitAsync(callback, state, timeout);
                 }
 
                 return true;
@@ -5449,7 +5542,7 @@ namespace CoreWf
 
         private class RequiresIdleOperation : InstanceOperation
         {
-            private bool _requiresRunnableInstance;
+            private readonly bool requiresRunnableInstance;
 
             public RequiresIdleOperation()
                 : this(false)
@@ -5459,12 +5552,12 @@ namespace CoreWf
             public RequiresIdleOperation(bool requiresRunnableInstance)
             {
                 this.InterruptsScheduler = false;
-                _requiresRunnableInstance = requiresRunnableInstance;
+                this.requiresRunnableInstance = requiresRunnableInstance;
             }
 
             public override bool CanRun(WorkflowApplication instance)
             {
-                if (_requiresRunnableInstance && instance._state != WorkflowApplicationState.Runnable)
+                if (requiresRunnableInstance && instance.state != WorkflowApplicationState.Runnable)
                 {
                     return false;
                 }
@@ -5482,7 +5575,7 @@ namespace CoreWf
 
             public override bool CanRun(WorkflowApplication instance)
             {
-                return (this.ActionId != instance._actionCount && instance.Controller.State == WorkflowInstanceState.Idle) || instance.Controller.State == WorkflowInstanceState.Complete;
+                return (this.ActionId != instance.actionCount && instance.Controller.State == WorkflowInstanceState.Idle) || instance.Controller.State == WorkflowInstanceState.Complete;
             }
         }
 
@@ -5547,61 +5640,63 @@ namespace CoreWf
 
         private class PersistenceManager : PersistenceManagerBase
         {
-            private InstanceHandle _handle;
-            private InstanceHandle _temporaryHandle;
-            private InstanceOwner _owner;
-            private bool _ownerWasCreated;
-            private bool _isLocked;
-            private bool _aborted;
-            private bool _isTryLoad;
-            private Guid _instanceId;
-            private InstanceStore _store;
+            private InstanceHandle handle;
+            private InstanceHandle temporaryHandle;
+            private InstanceOwner owner;
+            private bool ownerWasCreated;
+            private bool isLocked;
+            private bool aborted;
+            private readonly bool isTryLoad;
+            private Guid instanceId;
+            private readonly InstanceStore store;
+
             // Initializing metadata, used when instance is created
-            private IDictionary<XName, InstanceValue> _instanceMetadata;
+            private IDictionary<XName, InstanceValue> instanceMetadata;
+
             // Updateable metadata, used when instance is saved
-            private IDictionary<XName, InstanceValue> _mutableMetadata;
+            private IDictionary<XName, InstanceValue> mutableMetadata;
 
             public PersistenceManager(InstanceStore store, IDictionary<XName, InstanceValue> instanceMetadata, Guid instanceId)
             {
                 Fx.Assert(store != null, "We should never gets here without a store.");
 
-                _instanceId = instanceId;
-                _instanceMetadata = instanceMetadata;
+                this.instanceId = instanceId;
+                this.instanceMetadata = instanceMetadata;
 
                 InitializeInstanceMetadata();
 
-                _owner = store.DefaultInstanceOwner;
-                if (_owner != null)
+                this.owner = store.DefaultInstanceOwner;
+                if (this.owner != null)
                 {
-                    _handle = store.CreateInstanceHandle(_owner, instanceId);
+                    this.handle = store.CreateInstanceHandle(this.owner, instanceId);
                 }
 
-                _store = store;
+                this.store = store;
             }
 
             public PersistenceManager(InstanceStore store, IDictionary<XName, InstanceValue> instanceMetadata)
             {
                 Fx.Assert(store != null, "We should never get here without a store.");
 
-                _isTryLoad = true;
-                _instanceMetadata = instanceMetadata;
+                this.isTryLoad = true;
+                this.instanceMetadata = instanceMetadata;
 
                 InitializeInstanceMetadata();
 
-                _owner = store.DefaultInstanceOwner;
-                if (_owner != null)
+                this.owner = store.DefaultInstanceOwner;
+                if (this.owner != null)
                 {
-                    _handle = store.CreateInstanceHandle(_owner);
+                    this.handle = store.CreateInstanceHandle(this.owner);
                 }
 
-                _store = store;
+                this.store = store;
             }
 
             public sealed override Guid InstanceId
             {
                 get
                 {
-                    return _instanceId;
+                    return this.instanceId;
                 }
             }
 
@@ -5609,7 +5704,7 @@ namespace CoreWf
             {
                 get
                 {
-                    return _store;
+                    return this.store;
                 }
             }
 
@@ -5617,7 +5712,7 @@ namespace CoreWf
             {
                 get
                 {
-                    return (_handle != null);
+                    return (this.handle != null);
                 }
             }
 
@@ -5625,7 +5720,7 @@ namespace CoreWf
             {
                 get
                 {
-                    return _isLocked;
+                    return this.isLocked;
                 }
             }
 
@@ -5633,71 +5728,71 @@ namespace CoreWf
             {
                 get
                 {
-                    return _ownerWasCreated;
+                    return this.ownerWasCreated;
                 }
             }
 
             private void InitializeInstanceMetadata()
             {
-                if (_instanceMetadata == null)
+                if (this.instanceMetadata == null)
                 {
-                    _instanceMetadata = new Dictionary<XName, InstanceValue>(1);
+                    this.instanceMetadata = new Dictionary<XName, InstanceValue>(1);
                 }
 
                 // We always set this key explicitly so that users can't override
                 // this metadata value
-                _instanceMetadata[PersistenceMetadataNamespace.InstanceType] = new InstanceValue(WorkflowNamespace.WorkflowHostType, InstanceValueOptions.WriteOnly);
+                this.instanceMetadata[PersistenceMetadataNamespace.InstanceType] = new InstanceValue(WorkflowNamespace.WorkflowHostType, InstanceValueOptions.WriteOnly);
             }
 
             public void SetInstanceMetadata(IDictionary<XName, InstanceValue> metadata)
             {
-                Fx.Assert(_instanceMetadata.Count == 1, "We should only have the default metadata from InitializeInstanceMetadata");
+                Fx.Assert(this.instanceMetadata.Count == 1, "We should only have the default metadata from InitializeInstanceMetadata");
                 if (metadata != null)
                 {
-                    _instanceMetadata = metadata;
+                    this.instanceMetadata = metadata;
                     InitializeInstanceMetadata();
                 }
             }
 
             public void SetMutablemetadata(IDictionary<XName, InstanceValue> metadata)
             {
-                _mutableMetadata = metadata;
+                this.mutableMetadata = metadata;
             }
 
             public void Initialize(WorkflowIdentity definitionIdentity, TimeSpan timeout)
             {
-                Fx.Assert(_handle == null, "We are already initialized by now");
+                Fx.Assert(this.handle == null, "We are already initialized by now");
 
-                //using (new TransactionScope(TransactionScopeOption.Suppress))
-                //{
-                try
+                using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    CreateTemporaryHandle(null);
-                    _owner = _store.Execute(_temporaryHandle, GetCreateOwnerCommand(definitionIdentity), timeout).InstanceOwner;
-                    _ownerWasCreated = true;
-                }
-                finally
-                {
-                    FreeTemporaryHandle();
-                }
+                    try
+                    {
+                        CreateTemporaryHandle(null);
+                        this.owner = this.store.Execute(this.temporaryHandle, GetCreateOwnerCommand(definitionIdentity), timeout).InstanceOwner;
+                        this.ownerWasCreated = true;
+                    }
+                    finally
+                    {
+                        FreeTemporaryHandle();
+                    }
 
-                _handle = _isTryLoad ? _store.CreateInstanceHandle(_owner) : _store.CreateInstanceHandle(_owner, InstanceId);
+                    this.handle = this.isTryLoad ? this.store.CreateInstanceHandle(this.owner) : this.store.CreateInstanceHandle(this.owner, InstanceId);
 
-                //Thread.MemoryBarrier();
-                if (_aborted)
-                {
-                    _handle.Free();
+                    Thread.MemoryBarrier();
+                    if (this.aborted)
+                    {
+                        this.handle.Free();
+                    }
                 }
-                //}
             }
 
             private void CreateTemporaryHandle(InstanceOwner owner)
             {
-                _temporaryHandle = _store.CreateInstanceHandle(owner);
+                this.temporaryHandle = this.store.CreateInstanceHandle(owner);
 
-                //Thread.MemoryBarrier();
+                Thread.MemoryBarrier();
 
-                if (_aborted)
+                if (this.aborted)
                 {
                     FreeTemporaryHandle();
                 }
@@ -5705,7 +5800,7 @@ namespace CoreWf
 
             private void FreeTemporaryHandle()
             {
-                InstanceHandle handle = _temporaryHandle;
+                InstanceHandle handle = this.temporaryHandle;
 
                 if (handle != null)
                 {
@@ -5715,46 +5810,46 @@ namespace CoreWf
 
             public IAsyncResult BeginInitialize(WorkflowIdentity definitionIdentity, TimeSpan timeout, AsyncCallback callback, object state)
             {
-                Fx.Assert(_handle == null, "We are already initialized by now");
+                Fx.Assert(this.handle == null, "We are already initialized by now");
 
-                //using (new TransactionScope(TransactionScopeOption.Suppress))
-                //{
-                IAsyncResult result = null;
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    IAsyncResult result = null;
 
-                try
-                {
-                    CreateTemporaryHandle(null);
-                    result = _store.BeginExecute(_temporaryHandle, GetCreateOwnerCommand(definitionIdentity), timeout, callback, state);
-                }
-                finally
-                {
-                    // We've encountered an exception
-                    if (result == null)
+                    try
                     {
-                        FreeTemporaryHandle();
+                        CreateTemporaryHandle(null);
+                        result = this.store.BeginExecute(this.temporaryHandle, GetCreateOwnerCommand(definitionIdentity), timeout, callback, state);
                     }
+                    finally
+                    {
+                        // We've encountered an exception
+                        if (result == null)
+                        {
+                            FreeTemporaryHandle();
+                        }
+                    }
+                    return result;
                 }
-                return result;
-                //}
             }
 
             public void EndInitialize(IAsyncResult result)
             {
                 try
                 {
-                    _owner = _store.EndExecute(result).InstanceOwner;
-                    _ownerWasCreated = true;
+                    this.owner = this.store.EndExecute(result).InstanceOwner;
+                    this.ownerWasCreated = true;
                 }
                 finally
                 {
                     FreeTemporaryHandle();
                 }
 
-                _handle = _isTryLoad ? _store.CreateInstanceHandle(_owner) : _store.CreateInstanceHandle(_owner, InstanceId);
-                //Thread.MemoryBarrier();
-                if (_aborted)
+                this.handle = this.isTryLoad ? this.store.CreateInstanceHandle(this.owner) : this.store.CreateInstanceHandle(this.owner, InstanceId);
+                Thread.MemoryBarrier();
+                if (this.aborted)
                 {
-                    _handle.Free();
+                    this.handle.Free();
                 }
             }
 
@@ -5762,8 +5857,8 @@ namespace CoreWf
             {
                 try
                 {
-                    CreateTemporaryHandle(_owner);
-                    _store.Execute(_temporaryHandle, new DeleteWorkflowOwnerCommand(), timeout);
+                    CreateTemporaryHandle(this.owner);
+                    this.store.Execute(this.temporaryHandle, new DeleteWorkflowOwnerCommand(), timeout);
                 }
                 // Ignore some exceptions because DeleteWorkflowOwner is best effort.
                 catch (InstancePersistenceCommandException) { }
@@ -5780,8 +5875,8 @@ namespace CoreWf
                 IAsyncResult result = null;
                 try
                 {
-                    CreateTemporaryHandle(_owner);
-                    result = _store.BeginExecute(_temporaryHandle, new DeleteWorkflowOwnerCommand(), timeout, callback, state);
+                    CreateTemporaryHandle(this.owner);
+                    result = this.store.BeginExecute(this.temporaryHandle, new DeleteWorkflowOwnerCommand(), timeout, callback, state);
                 }
                 // Ignore some exceptions because DeleteWorkflowOwner is best effort.
                 catch (InstancePersistenceCommandException) { }
@@ -5801,7 +5896,7 @@ namespace CoreWf
             {
                 try
                 {
-                    _store.EndExecute(result);
+                    this.store.EndExecute(result);
                 }
                 // Ignore some exceptions because DeleteWorkflowOwner is best effort.
                 catch (InstancePersistenceCommandException) { }
@@ -5815,33 +5910,33 @@ namespace CoreWf
 
             public void EnsureReadyness(TimeSpan timeout)
             {
-                Fx.Assert(_handle != null, "We should already be initialized by now");
+                Fx.Assert(this.handle != null, "We should already be initialized by now");
                 Fx.Assert(!IsLocked, "We are already ready for persistence; why are we being called?");
-                Fx.Assert(!_isTryLoad, "Should not be on an initial save path if we tried load.");
+                Fx.Assert(!this.isTryLoad, "Should not be on an initial save path if we tried load.");
 
-                //using (new TransactionScope(TransactionScopeOption.Suppress))
-                //{
-                _store.Execute(_handle, CreateSaveCommand(null, _instanceMetadata, PersistenceOperation.Save), timeout);
-                _isLocked = true;
-                //}
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    this.store.Execute(this.handle, CreateSaveCommand(null, this.instanceMetadata, PersistenceOperation.Save), timeout);
+                    this.isLocked = true;
+                }
             }
 
             public IAsyncResult BeginEnsureReadyness(TimeSpan timeout, AsyncCallback callback, object state)
             {
-                Fx.Assert(_handle != null, "We should already be initialized by now");
+                Fx.Assert(this.handle != null, "We should already be initialized by now");
                 Fx.Assert(!IsLocked, "We are already ready for persistence; why are we being called?");
-                Fx.Assert(!_isTryLoad, "Should not be on an initial save path if we tried load.");
+                Fx.Assert(!this.isTryLoad, "Should not be on an initial save path if we tried load.");
 
-                //using (new TransactionScope(TransactionScopeOption.Suppress))
-                //{
-                return _store.BeginExecute(_handle, CreateSaveCommand(null, _instanceMetadata, PersistenceOperation.Save), timeout, callback, state);
-                //}
+                using (new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    return this.store.BeginExecute(this.handle, CreateSaveCommand(null, this.instanceMetadata, PersistenceOperation.Save), timeout, callback, state);
+                }
             }
 
             public void EndEnsureReadyness(IAsyncResult result)
             {
-                _store.EndExecute(result);
-                _isLocked = true;
+                this.store.EndExecute(result);
+                this.isLocked = true;
             }
 
             public static Dictionary<XName, InstanceValue> GenerateInitialData(WorkflowApplication instance)
@@ -5864,10 +5959,7 @@ namespace CoreWf
                 else
                 {
                     data[WorkflowNamespace.Workflow] = new InstanceValue(instance.Controller.PrepareForSerialization(), InstanceValueOptions.Optional);
-
-                    Exception completionException;
-                    IDictionary<string, object> outputs;
-                    ActivityInstanceState completionState = instance.Controller.GetCompletionState(out outputs, out completionException);
+                    ActivityInstanceState completionState = instance.Controller.GetCompletionState(out IDictionary<string, object> outputs, out Exception completionException);
 
                     if (completionState == ActivityInstanceState.Faulted)
                     {
@@ -5904,7 +5996,7 @@ namespace CoreWf
                 if (definitionIdentity != null)
                 {
                     CreateWorkflowOwnerWithIdentityCommand result = new CreateWorkflowOwnerWithIdentityCommand();
-                    if (!object.ReferenceEquals(definitionIdentity, WorkflowApplication.s_unknownIdentity))
+                    if (!object.ReferenceEquals(definitionIdentity, WorkflowApplication.unknownIdentity))
                     {
                         result.InstanceOwnerMetadata.Add(Workflow45Namespace.DefinitionIdentities,
                             new InstanceValue(new Collection<WorkflowIdentity> { definitionIdentity }));
@@ -5951,12 +6043,12 @@ namespace CoreWf
                     data = null;
                     return false;
                 }
-                _instanceId = view.InstanceId;
-                _isLocked = true;
+                this.instanceId = view.InstanceId;
+                this.isLocked = true;
 
-                if (!_handle.IsValid)
+                if (!this.handle.IsValid)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
+                    throw FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
                 }
 
                 data = view.InstanceData;
@@ -5965,18 +6057,18 @@ namespace CoreWf
 
             public void Save(IDictionary<XName, InstanceValue> instance, PersistenceOperation operation, TimeSpan timeout)
             {
-                _store.Execute(_handle, CreateSaveCommand(instance, (_isLocked ? _mutableMetadata : _instanceMetadata), operation), timeout);
-                _isLocked = true;
+                this.store.Execute(this.handle, CreateSaveCommand(instance, (this.isLocked ? this.mutableMetadata : this.instanceMetadata), operation), timeout);
+                this.isLocked = true;
             }
 
             public IDictionary<XName, InstanceValue> Load(TimeSpan timeout)
             {
-                InstanceView view = _store.Execute(_handle, new LoadWorkflowCommand(), timeout);
-                _isLocked = true;
+                InstanceView view = this.store.Execute(this.handle, new LoadWorkflowCommand(), timeout);
+                this.isLocked = true;
 
-                if (!_handle.IsValid)
+                if (!this.handle.IsValid)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
+                    throw FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
                 }
 
                 return view.InstanceData;
@@ -5984,34 +6076,34 @@ namespace CoreWf
 
             public bool TryLoad(TimeSpan timeout, out IDictionary<XName, InstanceValue> data)
             {
-                InstanceView view = _store.Execute(_handle, new TryLoadRunnableWorkflowCommand(), timeout);
+                InstanceView view = this.store.Execute(this.handle, new TryLoadRunnableWorkflowCommand(), timeout);
                 return TryLoadHelper(view, out data);
             }
 
             public IAsyncResult BeginSave(IDictionary<XName, InstanceValue> instance, PersistenceOperation operation, TimeSpan timeout, AsyncCallback callback, object state)
             {
-                return _store.BeginExecute(_handle, CreateSaveCommand(instance, (_isLocked ? _mutableMetadata : _instanceMetadata), operation), timeout, callback, state);
+                return this.store.BeginExecute(this.handle, CreateSaveCommand(instance, (this.isLocked ? this.mutableMetadata : this.instanceMetadata), operation), timeout, callback, state);
             }
 
             public void EndSave(IAsyncResult result)
             {
-                _store.EndExecute(result);
-                _isLocked = true;
+                this.store.EndExecute(result);
+                this.isLocked = true;
             }
 
             public IAsyncResult BeginLoad(TimeSpan timeout, AsyncCallback callback, object state)
             {
-                return _store.BeginExecute(_handle, new LoadWorkflowCommand(), timeout, callback, state);
+                return this.store.BeginExecute(this.handle, new LoadWorkflowCommand(), timeout, callback, state);
             }
 
             public IDictionary<XName, InstanceValue> EndLoad(IAsyncResult result)
             {
-                InstanceView view = _store.EndExecute(result);
-                _isLocked = true;
+                InstanceView view = this.store.EndExecute(result);
+                this.isLocked = true;
 
-                if (!_handle.IsValid)
+                if (!this.handle.IsValid)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
+                    throw FxTrace.Exception.AsError(new OperationCanceledException(SR.WorkflowInstanceAborted(InstanceId)));
                 }
 
                 return view.InstanceData;
@@ -6019,23 +6111,23 @@ namespace CoreWf
 
             public IAsyncResult BeginTryLoad(TimeSpan timeout, AsyncCallback callback, object state)
             {
-                return _store.BeginExecute(_handle, new TryLoadRunnableWorkflowCommand(), timeout, callback, state);
+                return this.store.BeginExecute(this.handle, new TryLoadRunnableWorkflowCommand(), timeout, callback, state);
             }
 
             public bool EndTryLoad(IAsyncResult result, out IDictionary<XName, InstanceValue> data)
             {
-                InstanceView view = _store.EndExecute(result);
+                InstanceView view = this.store.EndExecute(result);
                 return TryLoadHelper(view, out data);
             }
 
             public void Abort()
             {
-                _aborted = true;
+                this.aborted = true;
 
                 // Make sure the setter of handle sees aborted, or v.v., or both.
-                //Thread.MemoryBarrier();
+                Thread.MemoryBarrier();
 
-                InstanceHandle handle = _handle;
+                InstanceHandle handle = this.handle;
                 if (handle != null)
                 {
                     handle.Free();
@@ -6051,7 +6143,7 @@ namespace CoreWf
                     UnlockInstance = true,
                 };
 
-                _store.Execute(_handle, saveCmd, timeout);
+                this.store.Execute(this.handle, saveCmd, timeout);
             }
 
             public IAsyncResult BeginUnlock(TimeSpan timeout, AsyncCallback callback, object state)
@@ -6061,12 +6153,12 @@ namespace CoreWf
                     UnlockInstance = true,
                 };
 
-                return _store.BeginExecute(_handle, saveCmd, timeout, callback, state);
+                return this.store.BeginExecute(this.handle, saveCmd, timeout, callback, state);
             }
 
             public void EndUnlock(IAsyncResult result)
             {
-                _store.EndExecute(result);
+                this.store.EndExecute(result);
             }
         }
     }

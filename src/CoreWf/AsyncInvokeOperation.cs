@@ -1,20 +1,20 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System.Threading;
+    using CoreWf.Runtime;
+
     internal class AsyncInvokeOperation
     {
-        private object _thisLock;
+        private readonly object thisLock;
 
         public AsyncInvokeOperation(SynchronizationContext syncContext)
         {
             Fx.Assert(syncContext != null, "syncContext cannot be null");
             this.SyncContext = syncContext;
-            _thisLock = new object();
+            thisLock = new object();
         }
 
         private SynchronizationContext SyncContext
@@ -36,7 +36,7 @@ namespace CoreWf
 
         public void OperationCompleted()
         {
-            lock (_thisLock)
+            lock (thisLock)
             {
                 Fx.AssertAndThrowFatal(!this.Completed, "Async operation has already been completed");
                 this.Completed = true;
@@ -46,7 +46,7 @@ namespace CoreWf
 
         public void PostOperationCompleted(SendOrPostCallback callback, object arg)
         {
-            lock (_thisLock)
+            lock (thisLock)
             {
                 Fx.AssertAndThrowFatal(!this.Completed, "Async operation has already been completed");
                 this.Completed = true;

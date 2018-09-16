@@ -1,11 +1,10 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
-    [DataContract]
+    using System.Runtime.Serialization;
+
     // Users of this class need to be VERY careful because TypedLocationWrapper
     // will happily wrap an inner location of any type.  This, however, could
     // cause an issue when attempting to get or set the value unless the inner
@@ -15,21 +14,22 @@ namespace CoreWf
     // with an out argument.  Since out arguments buffer reads from their own
     // location, we know that only set will be called on this underlying
     // wrapper.
+    [DataContract]
     internal class TypedLocationWrapper<T> : Location<T>
     {
-        private Location _innerLocation;
+        private Location innerLocation;
 
         public TypedLocationWrapper(Location innerLocation)
             : base()
         {
-            _innerLocation = innerLocation;
+            this.innerLocation = innerLocation;
         }
 
         internal override bool CanBeMapped
         {
             get
             {
-                return _innerLocation.CanBeMapped;
+                return this.innerLocation.CanBeMapped;
             }
         }
 
@@ -37,24 +37,24 @@ namespace CoreWf
         {
             get
             {
-                return (T)_innerLocation.Value;
+                return (T)this.innerLocation.Value;
             }
             set
             {
-                _innerLocation.Value = value;
+                this.innerLocation.Value = value;
             }
         }
 
         [DataMember(Name = "innerLocation")]
         internal Location SerializedInnerLocation
         {
-            get { return _innerLocation; }
-            set { _innerLocation = value; }
+            get { return this.innerLocation; }
+            set { this.innerLocation = value; }
         }
 
         public override string ToString()
         {
-            return _innerLocation.ToString();
+            return this.innerLocation.ToString();
         }
     }
 }

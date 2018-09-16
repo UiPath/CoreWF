@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -28,16 +28,20 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestAssign<int> assign = new TestAssign<int>("Assign1");
-            assign.ValueExpression = ((env) => counter.Get(env) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("Assign1")
+            {
+                ValueExpression = ((env) => counter.Get(env) + 1),
+                ToVariable = counter
+            };
 
             List<HintTrueFalse> hints = new List<HintTrueFalse>();
             hints.Add(HintTrueFalse.False);
             hints.Add(HintTrueFalse.False);
             hints.Add(HintTrueFalse.True);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray());
-            flowDecision.ConditionExpression = (context => counter.Get(context) == 3);
+            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            {
+                ConditionExpression = (context => counter.Get(context) == 3)
+            };
 
             flowchart.AddLink(writeLine1, assign);
 
@@ -62,10 +66,11 @@ namespace TestCases.Activities.Flowchart
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestAssign<int> assign = new TestAssign<int>("Assign1");
-
-            assign.ValueExpression = ((env) => ((int)counter.Get(env)) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("Assign1")
+            {
+                ValueExpression = ((env) => ((int)counter.Get(env)) + 1),
+                ToVariable = counter
+            };
 
             List<HintTrueFalse> hints = new List<HintTrueFalse>();
             for (int i = 0; i < 49; i++)
@@ -73,8 +78,10 @@ namespace TestCases.Activities.Flowchart
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray());
-            flowDecision.ConditionExpression = (context => counter.Get(context) < 50);
+            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            {
+                ConditionExpression = (context => counter.Get(context) < 50)
+            };
 
             flowchart.AddLink(writeLine1, assign);
 
@@ -108,15 +115,17 @@ namespace TestCases.Activities.Flowchart
             Variable<IEnumerator<int>> intEnumerator = VariableHelper.Create<IEnumerator<int>>("intEnumerator");
             flowchart.Variables.Add(intEnumerator);
 
-            TestAssign<IEnumerator<int>> assign1 = new TestAssign<IEnumerator<int>>("Assign1");
+            TestAssign<IEnumerator<int>> assign1 = new TestAssign<IEnumerator<int>>("Assign1")
+            {
+                ValueExpression = ((env) => ((List<int>)listOfInts.Get(env)).GetEnumerator()),
+                ToVariable = intEnumerator
+            };
 
-            assign1.ValueExpression = ((env) => ((List<int>)listOfInts.Get(env)).GetEnumerator());
-            assign1.ToVariable = intEnumerator;
-
-            TestAssign<bool> assign2 = new TestAssign<bool>("Assign2");
-
-            assign2.ValueExpression = ((env) => ((IEnumerator<int>)intEnumerator.Get(env)).MoveNext());
-            assign2.ToVariable = boolVar;
+            TestAssign<bool> assign2 = new TestAssign<bool>("Assign2")
+            {
+                ValueExpression = ((env) => ((IEnumerator<int>)intEnumerator.Get(env)).MoveNext()),
+                ToVariable = boolVar
+            };
 
             List<HintTrueFalse> hints = new List<HintTrueFalse>();
             for (int i = 0; i < 10; i++)
@@ -124,8 +133,10 @@ namespace TestCases.Activities.Flowchart
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray());
-            flowDecision.ConditionExpression = (context => boolVar.Get(context) == true);
+            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            {
+                ConditionExpression = (context => boolVar.Get(context) == true)
+            };
 
             flowchart.AddStartLink(assign1);
 
@@ -148,9 +159,11 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.Variables.Add(counter);
 
-            TestAssign<int> assign = new TestAssign<int>("Assign1");
-            assign.ValueExpression = ((env) => ((int)counter.Get(env)) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("Assign1")
+            {
+                ValueExpression = ((env) => ((int)counter.Get(env)) + 1),
+                ToVariable = counter
+            };
 
             List<HintTrueFalse> hints = new List<HintTrueFalse>();
             for (int i = 0; i < 9; i++)
@@ -158,8 +171,10 @@ namespace TestCases.Activities.Flowchart
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray());
-            flowDecision.ConditionExpression = (context => counter.Get(context) < 10);
+            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            {
+                ConditionExpression = (context => counter.Get(context) < 10)
+            };
 
             flowchart.AddLink(new TestWriteLine("Start", "Flowchart started"), assign);
 
@@ -182,17 +197,23 @@ namespace TestCases.Activities.Flowchart
             Variable<int> outerLoopCounter = VariableHelper.CreateInitialized<int>("OuterLoopCounter", 0);
             flowchart.Variables.Add(outerLoopCounter);
 
-            TestAssign<int> outerAssign = new TestAssign<int>("OuterAssign");
-            outerAssign.ValueExpression = ((env) => ((int)outerLoopCounter.Get(env)) + 1);
-            outerAssign.ToVariable = outerLoopCounter;
+            TestAssign<int> outerAssign = new TestAssign<int>("OuterAssign")
+            {
+                ValueExpression = ((env) => ((int)outerLoopCounter.Get(env)) + 1),
+                ToVariable = outerLoopCounter
+            };
 
-            TestAssign<int> innerAssign = new TestAssign<int>("InnerAssign");
-            innerAssign.ValueExpression = (env) => ((int)innerLoopcounter.Get(env)) + 1;
-            innerAssign.ToVariable = innerLoopcounter;
+            TestAssign<int> innerAssign = new TestAssign<int>("InnerAssign")
+            {
+                ValueExpression = (env) => ((int)innerLoopcounter.Get(env)) + 1,
+                ToVariable = innerLoopcounter
+            };
 
-            TestAssign<int> resetInnerCounter = new TestAssign<int>("ResetInnerCounter");
-            resetInnerCounter.Value = 0;
-            resetInnerCounter.ToVariable = innerLoopcounter;
+            TestAssign<int> resetInnerCounter = new TestAssign<int>("ResetInnerCounter")
+            {
+                Value = 0,
+                ToVariable = innerLoopcounter
+            };
 
             List<HintTrueFalse> outerHints = new List<HintTrueFalse>();
             for (int i = 0; i < 9; i++)
@@ -200,8 +221,10 @@ namespace TestCases.Activities.Flowchart
                 outerHints.Add(HintTrueFalse.True);
             }
             outerHints.Add(HintTrueFalse.False);
-            TestFlowConditional outerFlowDecision = new TestFlowConditional(outerHints.ToArray());
-            outerFlowDecision.ConditionExpression = (context => outerLoopCounter.Get(context) < 10);
+            TestFlowConditional outerFlowDecision = new TestFlowConditional(outerHints.ToArray())
+            {
+                ConditionExpression = (context => outerLoopCounter.Get(context) < 10)
+            };
 
             List<HintTrueFalse> innerHints = new List<HintTrueFalse>();
             for (int i = 0; i < 4; i++)
@@ -209,9 +232,11 @@ namespace TestCases.Activities.Flowchart
                 innerHints.Add(HintTrueFalse.True);
             }
             innerHints.Add(HintTrueFalse.False);
-            TestFlowConditional innerFlowDecision = new TestFlowConditional(innerHints.ToArray());
-            innerFlowDecision.ConditionExpression = (context => innerLoopcounter.Get(context) < 5);
-            innerFlowDecision.ResetHints = true;
+            TestFlowConditional innerFlowDecision = new TestFlowConditional(innerHints.ToArray())
+            {
+                ConditionExpression = (context => innerLoopcounter.Get(context) < 5),
+                ResetHints = true
+            };
 
             flowchart.AddLink(new TestWriteLine("Start", "Flowchart started"), outerAssign);
 
@@ -243,10 +268,11 @@ namespace TestCases.Activities.Flowchart
 
             TestFlowchart f = new TestFlowchart("Flow1");
 
-            TestAssign<int> assign = new TestAssign<int>("Assign1");
-
-            assign.ValueExpression = (env => ((int)counter.Get(env)) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("Assign1")
+            {
+                ValueExpression = (env => ((int)counter.Get(env)) + 1),
+                ToVariable = counter
+            };
 
             w.ConditionExpression = (env => counter.Get(env) < 5);
             w.HintIterationCount = 5;
@@ -272,9 +298,11 @@ namespace TestCases.Activities.Flowchart
 
             parentFlowchart.Variables.Add(counter);
 
-            TestAssign<int> assign = new TestAssign<int>("Assign1");
-            assign.ValueExpression = (env => ((int)counter.Get(env)) + 1);
-            assign.ToVariable = counter;
+            TestAssign<int> assign = new TestAssign<int>("Assign1")
+            {
+                ValueExpression = (env => ((int)counter.Get(env)) + 1),
+                ToVariable = counter
+            };
 
             List<HintTrueFalse> hints = new List<HintTrueFalse>();
             for (int i = 0; i < 5; i++)
@@ -282,8 +310,10 @@ namespace TestCases.Activities.Flowchart
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray());
-            flowDecision.ConditionExpression = (env => counter.Get(env) <= 5);
+            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            {
+                ConditionExpression = (env => counter.Get(env) <= 5)
+            };
 
             parentFlowchart.AddLink(new TestWriteLine("Start", "Parent started"), childFlowchart);
 
@@ -317,25 +347,35 @@ namespace TestCases.Activities.Flowchart
             Variable<int> loop5Counter = VariableHelper.CreateInitialized<int>("Loop5Counter", 0);
             flowchart.Variables.Add(loop5Counter);
 
-            TestAssign<int> assign1 = new TestAssign<int>("Assign1");
-            assign1.ValueExpression = ((env) => (int)loop1Counter.Get(env) + 1);
-            assign1.ToVariable = loop1Counter;
+            TestAssign<int> assign1 = new TestAssign<int>("Assign1")
+            {
+                ValueExpression = ((env) => (int)loop1Counter.Get(env) + 1),
+                ToVariable = loop1Counter
+            };
 
-            TestAssign<int> assign2 = new TestAssign<int>("Assign2");
-            assign2.ValueExpression = ((env) => (int)loop2Counter.Get(env) + 1);
-            assign2.ToVariable = loop2Counter;
+            TestAssign<int> assign2 = new TestAssign<int>("Assign2")
+            {
+                ValueExpression = ((env) => (int)loop2Counter.Get(env) + 1),
+                ToVariable = loop2Counter
+            };
 
-            TestAssign<int> assign3 = new TestAssign<int>("Assign3");
-            assign3.ValueExpression = ((env) => (int)loop3Counter.Get(env) + 1);
-            assign3.ToVariable = loop3Counter;
+            TestAssign<int> assign3 = new TestAssign<int>("Assign3")
+            {
+                ValueExpression = ((env) => (int)loop3Counter.Get(env) + 1),
+                ToVariable = loop3Counter
+            };
 
-            TestAssign<int> assign4 = new TestAssign<int>("Assign4");
-            assign4.ValueExpression = ((env) => (int)loop4Counter.Get(env) + 1);
-            assign4.ToVariable = loop4Counter;
+            TestAssign<int> assign4 = new TestAssign<int>("Assign4")
+            {
+                ValueExpression = ((env) => (int)loop4Counter.Get(env) + 1),
+                ToVariable = loop4Counter
+            };
 
-            TestAssign<int> assign5 = new TestAssign<int>("Assign5");
-            assign5.ValueExpression = ((env) => (int)loop5Counter.Get(env) + 1);
-            assign5.ToVariable = loop5Counter;
+            TestAssign<int> assign5 = new TestAssign<int>("Assign5")
+            {
+                ValueExpression = ((env) => (int)loop5Counter.Get(env) + 1),
+                ToVariable = loop5Counter
+            };
 
             List<HintTrueFalse> hintsList = new List<HintTrueFalse>();
             for (int i = 0; i < 5; i++)
@@ -345,20 +385,30 @@ namespace TestCases.Activities.Flowchart
             hintsList.Add(HintTrueFalse.False);
 
             HintTrueFalse[] hints = hintsList.ToArray();
-            TestFlowConditional flowDecision1 = new TestFlowConditional(hints);
-            flowDecision1.ConditionExpression = (env => loop1Counter.Get(env) <= 5);
+            TestFlowConditional flowDecision1 = new TestFlowConditional(hints)
+            {
+                ConditionExpression = (env => loop1Counter.Get(env) <= 5)
+            };
 
-            TestFlowConditional flowDecision2 = new TestFlowConditional(hints);
-            flowDecision2.ConditionExpression = (env => loop2Counter.Get(env) <= 5);
+            TestFlowConditional flowDecision2 = new TestFlowConditional(hints)
+            {
+                ConditionExpression = (env => loop2Counter.Get(env) <= 5)
+            };
 
-            TestFlowConditional flowDecision3 = new TestFlowConditional(hints);
-            flowDecision3.ConditionExpression = (env => loop3Counter.Get(env) <= 5);
+            TestFlowConditional flowDecision3 = new TestFlowConditional(hints)
+            {
+                ConditionExpression = (env => loop3Counter.Get(env) <= 5)
+            };
 
-            TestFlowConditional flowDecision4 = new TestFlowConditional(hints);
-            flowDecision4.ConditionExpression = (env => loop4Counter.Get(env) <= 5);
+            TestFlowConditional flowDecision4 = new TestFlowConditional(hints)
+            {
+                ConditionExpression = (env => loop4Counter.Get(env) <= 5)
+            };
 
-            TestFlowConditional flowDecision5 = new TestFlowConditional(hints);
-            flowDecision5.ConditionExpression = (env => loop5Counter.Get(env) <= 5);
+            TestFlowConditional flowDecision5 = new TestFlowConditional(hints)
+            {
+                ConditionExpression = (env => loop5Counter.Get(env) <= 5)
+            };
 
             flowchart.AddLink(new TestWriteLine("Start", "Flowchart started"), assign1);
 
@@ -391,8 +441,10 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.Variables.Add(counter);
 
-            TestIncrement increment = new TestIncrement("Inc", 1);
-            increment.CounterVariable = counter;
+            TestIncrement increment = new TestIncrement("Inc", 1)
+            {
+                CounterVariable = counter
+            };
 
             TestWriteLine w1 = new TestWriteLine("One", "Will execute on first iteration");
             TestWriteLine w2 = new TestWriteLine("Two", "Will execute on second iteration");
@@ -434,11 +486,15 @@ namespace TestCases.Activities.Flowchart
             flowchart.Variables.Add(switchVariable);
             flowchart.Variables.Add(ifVariable);
 
-            TestIncrement incrementIfVariable = new TestIncrement("Inc", 1);
-            incrementIfVariable.CounterVariable = ifVariable;
+            TestIncrement incrementIfVariable = new TestIncrement("Inc", 1)
+            {
+                CounterVariable = ifVariable
+            };
 
-            TestIncrement incrementSwitchVariable = new TestIncrement("IncSwitch", 1);
-            incrementSwitchVariable.CounterVariable = switchVariable;
+            TestIncrement incrementSwitchVariable = new TestIncrement("IncSwitch", 1)
+            {
+                CounterVariable = switchVariable
+            };
 
             TestWriteLine writeBegin = new TestWriteLine("Loop", "Looping");
 
@@ -449,8 +505,10 @@ namespace TestCases.Activities.Flowchart
             }
             hintsList.Add(HintTrueFalse.False);
 
-            TestFlowConditional conditional = new TestFlowConditional(hintsList.ToArray());
-            conditional.ConditionExpression = env => ifVariable.Get(env) < 5;
+            TestFlowConditional conditional = new TestFlowConditional(hintsList.ToArray())
+            {
+                ConditionExpression = env => ifVariable.Get(env) < 5
+            };
 
             Dictionary<object, TestActivity> cases = new Dictionary<object, TestActivity>();
             cases.Add(0, writeBegin);

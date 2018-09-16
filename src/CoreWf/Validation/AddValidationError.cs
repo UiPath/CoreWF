@@ -1,11 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+
     public sealed class AddValidationError : NativeActivity
     {
         public AddValidationError()
@@ -43,7 +43,7 @@ namespace CoreWf.Validation
             RuntimeArgument isWarningArgument = new RuntimeArgument("IsWarning", typeof(bool), ArgumentDirection.In, false);
             metadata.Bind(this.IsWarning, isWarningArgument);
             arguments.Add(isWarningArgument);
-
+            
             RuntimeArgument propertyNameArgument = new RuntimeArgument("PropertyName", typeof(string), ArgumentDirection.In, false);
             metadata.Bind(this.PropertyName, propertyNameArgument);
             arguments.Add(propertyNameArgument);
@@ -56,17 +56,17 @@ namespace CoreWf.Validation
             bool isWarning = false;
             string propertyName = string.Empty;
             string errorCode = string.Empty;
-
+            
             if (this.IsWarning != null)
             {
                 isWarning = this.IsWarning.Get(context);
             }
-
+            
             if (this.PropertyName != null)
             {
-                propertyName = this.PropertyName.Get(context);
+                propertyName = this.PropertyName.Get(context);            
             }
-
+            
             Constraint.AddValidationError(context, new ValidationError(this.Message.Get(context), isWarning, propertyName));
         }
     }

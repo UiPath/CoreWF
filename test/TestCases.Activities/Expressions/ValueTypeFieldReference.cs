@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf;
 using CoreWf.Expressions;
@@ -24,8 +24,10 @@ namespace TestCases.Activities.Expressions
             //  
             //  Test case description:
             //  Set a public field on value type.
-            TheStruct valueType = new TheStruct();
-            valueType.publicField = 123;
+            TheStruct valueType = new TheStruct
+            {
+                publicField = 123
+            };
 
             Variable<TheStruct> var = new Variable<TheStruct>() { Default = valueType, Name = "var" };
             TestValueTypeFieldReference<TheStruct, int> valueTypeFieldReference = new TestValueTypeFieldReference<TheStruct, int>()
@@ -57,8 +59,10 @@ namespace TestCases.Activities.Expressions
             //  Test case description:
             //  Set a public enum field on value type.
 
-            TheStruct valueType = new TheStruct();
-            valueType.enumField = FileAccess.Write;
+            TheStruct valueType = new TheStruct
+            {
+                enumField = FileAccess.Write
+            };
 
             Variable<TheStruct> var = new Variable<TheStruct>() { Default = valueType, Name = "var" };
             TestValueTypeFieldReference<TheStruct, FileAccess> valueTypeFieldReference = new TestValueTypeFieldReference<TheStruct, FileAccess>()

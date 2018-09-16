@@ -1,15 +1,12 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Linq.Expressions;
 using CoreWf;
-using CoreWf.Expressions;
 using CoreWf.Statements;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
-using System.Collections.Generic;
-using Test.Common.TestObjects.Utilities;
 
 namespace Test.Common.TestObjects.Activities
 {
@@ -75,10 +72,9 @@ namespace Test.Common.TestObjects.Activities
 
         protected override void GetActivitySpecificTrace(TraceGroup traceGroup)
         {
-            CaughtExceptionOutcome ceo = ExpectedOutcome as CaughtExceptionOutcome;
 
             // stuff the exception type in so we dont always have to do that manually
-            if (ceo != null)
+            if (ExpectedOutcome is CaughtExceptionOutcome ceo)
             {
                 if (ceo.ExceptionType == null)
                 {
@@ -87,8 +83,7 @@ namespace Test.Common.TestObjects.Activities
             }
             else
             {
-                UncaughtExceptionOutcome ueo = ExpectedOutcome as UncaughtExceptionOutcome;
-                if (ueo != null && ueo.ExceptionType == null)
+                if (ExpectedOutcome is UncaughtExceptionOutcome ueo && ueo.ExceptionType == null)
                 {
                     ueo.ExceptionType = typeof(TException);
                 }

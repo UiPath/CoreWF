@@ -1,66 +1,67 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Globalization;
-using System.Reflection;
-using System.Text;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Expressions;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Reflection;
+    using System.Text;
+    using CoreWf.Internals;
+
     internal static class ActivityUtilities
     {
-        private static Pop s_popActivity = new Pop();
-        private static Type s_activityType = typeof(Activity);
-        private static Type s_activityGenericType = typeof(Activity<>);
-        private static Type s_activityDelegateType = typeof(ActivityDelegate);
-        private static Type s_constraintType = typeof(Constraint);
-        private static Type s_variableType = typeof(Variable);
-        private static Type s_variableGenericType = typeof(Variable<>);
-        private static Type s_delegateInArgumentType = typeof(DelegateInArgument);
-        private static Type s_delegateOutArgumentType = typeof(DelegateOutArgument);
-        private static Type s_delegateInArgumentGenericType = typeof(DelegateInArgument<>);
-        private static Type s_delegateOutArgumentGenericType = typeof(DelegateOutArgument<>);
-        private static Type s_inArgumentType = typeof(InArgument);
-        private static Type s_inArgumentGenericType = typeof(InArgument<>);
-        private static Type s_inOutArgumentType = typeof(InOutArgument);
-        private static Type s_inOutArgumentGenericType = typeof(InOutArgument<>);
-        private static Type s_outArgumentType = typeof(OutArgument);
-        private static Type s_outArgumentGenericType = typeof(OutArgument<>);
-        private static Type s_argumentType = typeof(Argument);
-        private static Type s_argumentReferenceGenericType = typeof(ArgumentReference<>);
-        private static Type s_argumentValueGenericType = typeof(ArgumentValue<>);
-        private static Type s_runtimeArgumentType = typeof(RuntimeArgument);
-        private static Type s_locationGenericType = typeof(Location<>);
-        private static Type s_variableReferenceGenericType = typeof(VariableReference<>);
-        private static Type s_variableValueGenericType = typeof(VariableValue<>);
-        private static Type s_delegateArgumentValueGenericType = typeof(DelegateArgumentValue<>);
-        private static Type s_handleType = typeof(Handle);
-        private static Type s_iDictionaryGenericType = typeof(IDictionary<,>);
-        private static Type s_locationReferenceValueType = typeof(LocationReferenceValue<>);
-        private static Type s_environmentLocationValueType = typeof(EnvironmentLocationValue<>);
-        private static Type s_environmentLocationReferenceType = typeof(EnvironmentLocationReference<>);
-        private static IList<Type> s_collectionInterfaces;
-        private static Type s_inArgumentOfObjectType = typeof(InArgument<object>);
-        private static Type s_outArgumentOfObjectType = typeof(OutArgument<object>);
-        private static Type s_inOutArgumentOfObjectType = typeof(InOutArgument<object>);
-        private static PropertyChangedEventArgs s_propertyChangedEventArgs;
+        private static readonly Pop popActivity = new Pop();
+        private static readonly Type activityType = typeof(Activity);
+        private static Type activityGenericType = typeof(Activity<>);
+        private static readonly Type activityDelegateType = typeof(ActivityDelegate);
+        private static readonly Type constraintType = typeof(Constraint);
+        private static readonly Type variableType = typeof(Variable);
+        private static Type variableGenericType = typeof(Variable<>);
+        private static readonly Type delegateInArgumentType = typeof(DelegateInArgument);
+        private static readonly Type delegateOutArgumentType = typeof(DelegateOutArgument);
+        private static readonly Type delegateInArgumentGenericType = typeof(DelegateInArgument<>);
+        private static readonly Type delegateOutArgumentGenericType = typeof(DelegateOutArgument<>);
+        private static readonly Type inArgumentType = typeof(InArgument);
+        private static Type inArgumentGenericType = typeof(InArgument<>);
+        private static readonly Type inOutArgumentType = typeof(InOutArgument);
+        private static Type inOutArgumentGenericType = typeof(InOutArgument<>);
+        private static readonly Type outArgumentType = typeof(OutArgument);
+        private static Type outArgumentGenericType = typeof(OutArgument<>);
+        private static readonly Type argumentType = typeof(Argument);
+        private static Type argumentReferenceGenericType = typeof(ArgumentReference<>);
+        private static Type argumentValueGenericType = typeof(ArgumentValue<>);
+        private static readonly Type runtimeArgumentType = typeof(RuntimeArgument);
+        private static Type locationGenericType = typeof(Location<>);
+        private static Type variableReferenceGenericType = typeof(VariableReference<>);
+        private static readonly Type variableValueGenericType = typeof(VariableValue<>);
+        private static readonly Type delegateArgumentValueGenericType = typeof(DelegateArgumentValue<>);
+        private static Type handleType = typeof(Handle);
+        private static readonly Type iDictionaryGenericType = typeof(IDictionary<,>);
+        private static readonly Type locationReferenceValueType = typeof(LocationReferenceValue<>);
+        private static readonly Type environmentLocationValueType = typeof(EnvironmentLocationValue<>);
+        private static readonly Type environmentLocationReferenceType = typeof(EnvironmentLocationReference<>);
+        private static IList<Type> collectionInterfaces;
+        private static readonly Type inArgumentOfObjectType = typeof(InArgument<object>);
+        private static readonly Type outArgumentOfObjectType = typeof(OutArgument<object>);
+        private static readonly Type inOutArgumentOfObjectType = typeof(InOutArgument<object>);
+        private static PropertyChangedEventArgs propertyChangedEventArgs;
 
         // Can't delay create this one because we use object.ReferenceEquals on it in WorkflowInstance
-        private static ReadOnlyDictionary<string, object> s_emptyParameters = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(0));
+        private static readonly ReadOnlyDictionary<string, object> emptyParameters = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(0));
 
         public static ReadOnlyDictionary<string, object> EmptyParameters
         {
             get
             {
-                return s_emptyParameters;
+                return emptyParameters;
             }
         }
 
@@ -68,11 +69,11 @@ namespace CoreWf
         {
             get
             {
-                if (s_propertyChangedEventArgs == null)
+                if (propertyChangedEventArgs == null)
                 {
-                    s_propertyChangedEventArgs = new PropertyChangedEventArgs("Value");
+                    propertyChangedEventArgs = new PropertyChangedEventArgs("Value");
                 }
-                return s_propertyChangedEventArgs;
+                return propertyChangedEventArgs;
             }
         }
 
@@ -80,15 +81,15 @@ namespace CoreWf
         {
             get
             {
-                if (s_collectionInterfaces == null)
+                if (collectionInterfaces == null)
                 {
-                    s_collectionInterfaces = new List<Type>(2)
+                    collectionInterfaces = new List<Type>(2)
                         {
                             typeof(IList<>),
                             typeof(ICollection<>)
                         };
                 }
-                return s_collectionInterfaces;
+                return collectionInterfaces;
             }
         }
 
@@ -112,7 +113,7 @@ namespace CoreWf
 
         public static bool IsHandle(Type type)
         {
-            return s_handleType.GetTypeInfo().IsAssignableFrom(type.GetTypeInfo());
+            return handleType.IsAssignableFrom(type);
         }
 
         public static bool IsCompletedState(ActivityInstanceState state)
@@ -125,24 +126,24 @@ namespace CoreWf
             direction = ArgumentDirection.In; // default to In
             argumentType = TypeHelper.ObjectType;  // default to object
 
-            if (propertyType.GetTypeInfo().IsGenericType)
+            if (propertyType.IsGenericType)
             {
-                argumentType = propertyType.GetTypeInfo().GenericTypeArguments[0];
+                argumentType = propertyType.GetGenericArguments()[0];
 
                 Type genericType = propertyType.GetGenericTypeDefinition();
 
-                if (genericType == s_inArgumentGenericType)
+                if (genericType == inArgumentGenericType)
                 {
                     return true;
                 }
 
-                if (genericType == s_outArgumentGenericType)
+                if (genericType == outArgumentGenericType)
                 {
                     direction = ArgumentDirection.Out;
                     return true;
                 }
 
-                if (genericType == s_inOutArgumentGenericType)
+                if (genericType == inOutArgumentGenericType)
                 {
                     direction = ArgumentDirection.InOut;
                     return true;
@@ -150,18 +151,18 @@ namespace CoreWf
             }
             else
             {
-                if (propertyType == s_inArgumentType)
+                if (propertyType == inArgumentType)
                 {
                     return true;
                 }
 
-                if (propertyType == s_outArgumentType)
+                if (propertyType == outArgumentType)
                 {
                     direction = ArgumentDirection.Out;
                     return true;
                 }
 
-                if (propertyType == s_inOutArgumentType)
+                if (propertyType == inOutArgumentType)
                 {
                     direction = ArgumentDirection.InOut;
                     return true;
@@ -173,22 +174,22 @@ namespace CoreWf
 
         public static bool IsArgumentType(Type propertyType)
         {
-            return TypeHelper.AreTypesCompatible(propertyType, s_argumentType);
+            return TypeHelper.AreTypesCompatible(propertyType, argumentType);
         }
 
         public static bool IsRuntimeArgumentType(Type propertyType)
         {
-            return TypeHelper.AreTypesCompatible(propertyType, s_runtimeArgumentType);
+            return TypeHelper.AreTypesCompatible(propertyType, runtimeArgumentType);
         }
 
         public static bool IsArgumentDictionaryType(Type type, out Type innerType)
         {
-            if (type.GetTypeInfo().IsGenericType)
+            if (type.IsGenericType)
             {
                 bool implementsIDictionary = false;
                 Type dictionaryInterfaceType = null;
 
-                if (type.GetGenericTypeDefinition() == s_iDictionaryGenericType)
+                if (type.GetGenericTypeDefinition() == iDictionaryGenericType)
                 {
                     implementsIDictionary = true;
                     dictionaryInterfaceType = type;
@@ -197,8 +198,8 @@ namespace CoreWf
                 {
                     foreach (Type interfaceType in type.GetInterfaces())
                     {
-                        if (interfaceType.GetTypeInfo().IsGenericType &&
-                            interfaceType.GetGenericTypeDefinition() == s_iDictionaryGenericType)
+                        if (interfaceType.IsGenericType &&
+                            interfaceType.GetGenericTypeDefinition() == iDictionaryGenericType)
                         {
                             implementsIDictionary = true;
                             dictionaryInterfaceType = interfaceType;
@@ -225,9 +226,9 @@ namespace CoreWf
 
         public static bool IsKnownCollectionType(Type type, out Type innerType)
         {
-            if (type.GetTypeInfo().IsGenericType)
+            if (type.IsGenericType)
             {
-                if (type.GetTypeInfo().IsInterface)
+                if (type.IsInterface)
                 {
                     Type localInterface = type.GetGenericTypeDefinition();
                     foreach (Type knownInterface in CollectionInterfaces)
@@ -249,7 +250,7 @@ namespace CoreWf
                     Type[] interfaceTypes = type.GetInterfaces();
                     foreach (Type interfaceType in interfaceTypes)
                     {
-                        if (interfaceType.GetTypeInfo().IsGenericType)
+                        if (interfaceType.IsGenericType)
                         {
                             Type localInterface = interfaceType.GetGenericTypeDefinition();
 
@@ -276,9 +277,9 @@ namespace CoreWf
 
         public static bool IsActivityDelegateType(Type propertyType)
         {
-            return TypeHelper.AreTypesCompatible(propertyType, s_activityDelegateType);
+            return TypeHelper.AreTypesCompatible(propertyType, activityDelegateType);
         }
-
+        
         public static bool IsActivityType(Type propertyType)
         {
             return IsActivityType(propertyType, true);
@@ -286,13 +287,13 @@ namespace CoreWf
 
         public static bool IsActivityType(Type propertyType, bool includeConstraints)
         {
-            if (!TypeHelper.AreTypesCompatible(propertyType, s_activityType))
+            if (!TypeHelper.AreTypesCompatible(propertyType, activityType))
             {
                 return false;
             }
 
             // sometimes (for reflection analysis of Activity properties) we don't want constraints to count
-            return includeConstraints || !TypeHelper.AreTypesCompatible(propertyType, s_constraintType);
+            return includeConstraints || !TypeHelper.AreTypesCompatible(propertyType, constraintType);
         }
 
         public static bool TryGetDelegateArgumentDirectionAndType(Type propertyType, out ArgumentDirection direction, out Type argumentType)
@@ -300,18 +301,18 @@ namespace CoreWf
             direction = ArgumentDirection.In; // default to In
             argumentType = TypeHelper.ObjectType;  // default to object
 
-            if (propertyType.GetTypeInfo().IsGenericType)
+            if (propertyType.IsGenericType)
             {
                 argumentType = propertyType.GetGenericArguments()[0];
 
                 Type genericType = propertyType.GetGenericTypeDefinition();
 
-                if (genericType == s_delegateInArgumentGenericType)
+                if (genericType == delegateInArgumentGenericType)
                 {
                     return true;
                 }
 
-                if (genericType == s_delegateOutArgumentGenericType)
+                if (genericType == delegateOutArgumentGenericType)
                 {
                     direction = ArgumentDirection.Out;
                     return true;
@@ -319,12 +320,12 @@ namespace CoreWf
             }
             else
             {
-                if (propertyType == s_delegateInArgumentType)
+                if (propertyType == delegateInArgumentType)
                 {
                     return true;
                 }
 
-                if (propertyType == s_delegateOutArgumentType)
+                if (propertyType == delegateOutArgumentType)
                 {
                     direction = ArgumentDirection.Out;
                     return true;
@@ -336,29 +337,29 @@ namespace CoreWf
 
         public static bool IsVariableType(Type propertyType, out Type innerType)
         {
-            if (propertyType.GetTypeInfo().IsGenericType && propertyType.GetGenericTypeDefinition() == s_variableGenericType)
+            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == variableGenericType)
             {
                 innerType = propertyType.GetGenericArguments()[0];
                 return true;
             }
 
             innerType = null;
-            return TypeHelper.AreTypesCompatible(propertyType, s_variableType);
+            return TypeHelper.AreTypesCompatible(propertyType, variableType);
         }
 
         public static bool IsVariableType(Type propertyType)
         {
-            if (propertyType.GetTypeInfo().IsGenericType && propertyType.GetGenericTypeDefinition() == s_variableGenericType)
+            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == variableGenericType)
             {
                 return true;
             }
 
-            return TypeHelper.AreTypesCompatible(propertyType, s_variableType);
+            return TypeHelper.AreTypesCompatible(propertyType, variableType);
         }
 
         public static bool IsLocationGenericType(Type type, out Type genericArgumentType)
         {
-            if (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == s_locationGenericType)
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == locationGenericType)
             {
                 genericArgumentType = type.GetGenericArguments()[0];
                 return true;
@@ -370,7 +371,7 @@ namespace CoreWf
 
         public static object CreateVariableReference(Variable variable)
         {
-            Type genericVariableReferenceType = s_variableReferenceGenericType.MakeGenericType(variable.Type);
+            Type genericVariableReferenceType = variableReferenceGenericType.MakeGenericType(variable.Type);
             object variableReference = Activator.CreateInstance(genericVariableReferenceType);
             genericVariableReferenceType.GetProperty("Variable").SetValue(variableReference, variable, null);
             return variableReference;
@@ -396,15 +397,15 @@ namespace CoreWf
 
             if (direction == ArgumentDirection.In)
             {
-                argument = (Argument)Activator.CreateInstance(s_inArgumentOfObjectType);
+                argument = (Argument)Activator.CreateInstance(inArgumentOfObjectType);
             }
             else if (direction == ArgumentDirection.Out)
             {
-                argument = (Argument)Activator.CreateInstance(s_outArgumentOfObjectType);
+                argument = (Argument)Activator.CreateInstance(outArgumentOfObjectType);
             }
             else
             {
-                argument = (Argument)Activator.CreateInstance(s_inOutArgumentOfObjectType);
+                argument = (Argument)Activator.CreateInstance(inOutArgumentOfObjectType);
             }
 
             return argument;
@@ -412,29 +413,29 @@ namespace CoreWf
 
         public static Type CreateLocation(Type locationType)
         {
-            return s_locationGenericType.MakeGenericType(locationType);
+            return locationGenericType.MakeGenericType(locationType);
         }
 
         public static Type CreateActivityWithResult(Type resultType)
         {
-            return s_activityGenericType.MakeGenericType(resultType);
+            return activityGenericType.MakeGenericType(resultType);
         }
 
         public static Argument CreateReferenceArgument(Type argumentType, ArgumentDirection direction, string referencedArgumentName)
         {
             Argument argument = Argument.Create(argumentType, direction);
-
+            
             object argumentReference = null;
 
             if (direction == ArgumentDirection.In)
             {
                 // If it is an In then we need an ArgumentValue<T>
-                argumentReference = Activator.CreateInstance(s_argumentValueGenericType.MakeGenericType(argumentType), referencedArgumentName);
+                argumentReference = Activator.CreateInstance(argumentValueGenericType.MakeGenericType(argumentType), referencedArgumentName);
             }
             else
             {
                 // If it is InOut or Out we need an ArgumentReference<T>
-                argumentReference = Activator.CreateInstance(s_argumentReferenceGenericType.MakeGenericType(argumentType), referencedArgumentName);
+                argumentReference = Activator.CreateInstance(argumentReferenceGenericType.MakeGenericType(argumentType), referencedArgumentName);
             }
 
             argument.Expression = (ActivityWithResult)argumentReference;
@@ -443,7 +444,7 @@ namespace CoreWf
 
         public static Variable CreateVariable(string name, Type type, VariableModifiers modifiers)
         {
-            Type variableType = s_variableGenericType.MakeGenericType(type);
+            Type variableType = variableGenericType.MakeGenericType(type);
             Variable variable = (Variable)Activator.CreateInstance(variableType);
             variable.Name = name;
             variable.Modifiers = modifiers;
@@ -482,7 +483,7 @@ namespace CoreWf
 
         private static string GetDisplayName(Type sourceType)
         {
-            if (sourceType.GetTypeInfo().IsGenericType)
+            if (sourceType.IsGenericType)
             {
                 // start with the type name
                 string displayName = sourceType.Name;
@@ -490,11 +491,11 @@ namespace CoreWf
 
                 // remove the tick+number of parameters "generics format". Note that the
                 // tick won't exist for nested implicitly generic classes, such as Foo`1+Bar
-                if (tickIndex > 0)
+                if (tickIndex > 0) 
                 {
                     displayName = displayName.Substring(0, tickIndex);
                 }
-
+    
                 // and provide a more readable version based on the closure type names
                 Type[] genericArguments = sourceType.GetGenericArguments();
                 StringBuilder stringBuilder = new StringBuilder(displayName);
@@ -508,7 +509,7 @@ namespace CoreWf
             }
             else
             {
-                Fx.Assert(!sourceType.GetTypeInfo().IsGenericTypeDefinition, "we have an actual object, so we should never have a generic type definition");
+                Fx.Assert(!sourceType.IsGenericTypeDefinition, "we have an actual object, so we should never have a generic type definition");
                 return sourceType.Name;
             }
         }
@@ -623,8 +624,7 @@ namespace CoreWf
 
             if (options.CancellationToken.IsCancellationRequested)
             {
-                //throw CoreWf.Internals.FxTrace.Exception.AsError(new OperationCanceledException(options.CancellationToken));
-                throw new OperationCanceledException(options.CancellationToken);
+                throw FxTrace.Exception.AsError(new OperationCanceledException(options.CancellationToken));
             }
 
             Activity activity = childActivity.Activity;
@@ -730,8 +730,7 @@ namespace CoreWf
                     {
                         validationErrors = new List<ValidationError>();
                     }
-                    Activity source;
-                    string prefix = ActivityValidationServices.GenerateValidationErrorPrefix(childActivity.Activity, parentChain, options, out source);
+                    string prefix = ActivityValidationServices.GenerateValidationErrorPrefix(childActivity.Activity, parentChain, options, out Activity source);
 
                     for (int i = 0; i < tempValidationErrors.Count; i++)
                     {
@@ -793,14 +792,14 @@ namespace CoreWf
                 {
                     childActivity.Activity.TransferTempValidationErrors(ref validationErrors);
                 }
-            }
+            }           
 
             // We only run constraints if the activity could possibly
             // execute and we aren't explicitly skipping them.
             if (!options.SkipConstraints && parentChain.WillExecute && childActivity.CanBeExecuted && constraints.Count > 0)
             {
                 ActivityValidationServices.RunConstraints(childActivity, parentChain, constraints, options, false, ref validationErrors);
-            }
+            }           
         }
 
         // We explicitly call this CacheRootMetadata since it treats the provided
@@ -819,8 +818,7 @@ namespace CoreWf
                     {
                         if (activity.HasBeenAssociatedWithAnInstance)
                         {
-                            //throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(activity.DisplayName)));
-                            throw new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(activity.DisplayName));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RootActivityAlreadyAssociatedWithInstance(activity.DisplayName)));
                         }
 
                         activity.InitializeAsRoot(hostEnvironment);
@@ -901,14 +899,14 @@ namespace CoreWf
             {
                 while (!currentActivity.Equals(ChildActivity.Empty))
                 {
-                    if (object.ReferenceEquals(currentActivity.Activity, s_popActivity))
+                    if (object.ReferenceEquals(currentActivity.Activity, popActivity))
                     {
                         ChildActivity completedParent = parentChain.Pop();
                         completedParent.Activity.SetCached(isSkippingPrivateChildren: options.SkipPrivateChildren);
                     }
                     else
                     {
-                        SetupForProcessing(s_popActivity, true, ref nextActivity, ref activitiesRemaining);
+                        SetupForProcessing(popActivity, true, ref nextActivity, ref activitiesRemaining);
                         ProcessActivity(currentActivity, ref nextActivity, ref activitiesRemaining, parentChain, ref validationErrors, options, callback);
                         parentChain.Push(currentActivity);
                     }
@@ -1153,9 +1151,9 @@ namespace CoreWf
 
         public class TreeProcessingList
         {
-            private ActivityInstance _singleItem;
-            private IList<ActivityInstance> _multipleItems;
-            private bool _addRequiresNewList;
+            private ActivityInstance singleItem;
+            private IList<ActivityInstance> multipleItems;
+            private bool addRequiresNewList;
 
             public TreeProcessingList()
             {
@@ -1165,14 +1163,14 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_singleItem != null)
+                    if (this.singleItem != null)
                     {
                         return 1;
                     }
 
-                    if (_multipleItems != null)
+                    if (this.multipleItems != null)
                     {
-                        return _multipleItems.Count;
+                        return this.multipleItems.Count;
                     }
 
                     return 0;
@@ -1183,51 +1181,51 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_singleItem != null)
+                    if (this.singleItem != null)
                     {
                         Fx.Assert(index == 0, "We expect users of TreeProcessingList never to be out of range.");
-                        return _singleItem;
+                        return this.singleItem;
                     }
                     else
                     {
-                        Fx.Assert(_multipleItems != null, "Users shouldn't call this if we have no items.");
-                        Fx.Assert(_multipleItems.Count > index, "Users should never be out of range.");
+                        Fx.Assert(this.multipleItems != null, "Users shouldn't call this if we have no items.");
+                        Fx.Assert(this.multipleItems.Count > index, "Users should never be out of range.");
 
-                        return _multipleItems[index];
+                        return this.multipleItems[index];
                     }
                 }
             }
 
             public void Set(IList<ActivityInstance> listToSet)
             {
-                Fx.Assert(_singleItem == null && (_multipleItems == null || _multipleItems.Count == 0), "We should not have any items if calling set.");
+                Fx.Assert(singleItem == null && (this.multipleItems == null || this.multipleItems.Count == 0), "We should not have any items if calling set.");
 
-                _multipleItems = listToSet;
-                _addRequiresNewList = true;
+                this.multipleItems = listToSet;
+                this.addRequiresNewList = true;
             }
 
             public void Add(ActivityInstance item)
             {
-                if (_multipleItems != null)
+                if (this.multipleItems != null)
                 {
-                    if (_addRequiresNewList)
+                    if (this.addRequiresNewList)
                     {
-                        _multipleItems = new List<ActivityInstance>(_multipleItems);
-                        _addRequiresNewList = false;
+                        this.multipleItems = new List<ActivityInstance>(this.multipleItems);
+                        this.addRequiresNewList = false;
                     }
 
-                    _multipleItems.Add(item);
+                    this.multipleItems.Add(item);
                 }
-                else if (_singleItem != null)
+                else if (this.singleItem != null)
                 {
-                    _multipleItems = new List<ActivityInstance>(2);
-                    _multipleItems.Add(_singleItem);
-                    _multipleItems.Add(item);
-                    _singleItem = null;
+                    this.multipleItems = new List<ActivityInstance>(2);
+                    this.multipleItems.Add(this.singleItem);
+                    this.multipleItems.Add(item);
+                    this.singleItem = null;
                 }
                 else
                 {
-                    _singleItem = item;
+                    this.singleItem = item;
                 }
             }
 
@@ -1236,16 +1234,16 @@ namespace CoreWf
             // list and hanging onto it.
             public void Reset()
             {
-                _addRequiresNewList = false;
-                _multipleItems = null;
-                _singleItem = null;
+                this.addRequiresNewList = false;
+                this.multipleItems = null;
+                this.singleItem = null;
             }
 
             public void TransferTo(TreeProcessingList otherList)
             {
-                otherList._singleItem = _singleItem;
-                otherList._multipleItems = _multipleItems;
-                otherList._addRequiresNewList = _addRequiresNewList;
+                otherList.singleItem = this.singleItem;
+                otherList.multipleItems = this.multipleItems;
+                otherList.addRequiresNewList = this.addRequiresNewList;
 
                 Reset();
             }
@@ -1256,11 +1254,6 @@ namespace CoreWf
         private class Pop : Activity
         {
             internal override void InternalExecute(ActivityInstance instance, ActivityExecutor executor, BookmarkManager bookmarkManager)
-            {
-                throw Fx.AssertAndThrow("should never get here");
-            }
-
-            protected override void CacheMetadata(ActivityMetadata metadata)
             {
                 throw Fx.AssertAndThrow("should never get here");
             }
@@ -1308,19 +1301,19 @@ namespace CoreWf
 
         public class ActivityCallStack
         {
-            private int _nonExecutingParentCount;
-            private Quack<ChildActivity> _callStack;
+            private int nonExecutingParentCount;
+            private readonly Quack<ChildActivity> callStack;
 
             public ActivityCallStack()
             {
-                _callStack = new Quack<ChildActivity>();
+                callStack = new Quack<ChildActivity>();
             }
 
             public bool WillExecute
             {
                 get
                 {
-                    return _nonExecutingParentCount == 0;
+                    return nonExecutingParentCount == 0;
                 }
             }
 
@@ -1328,7 +1321,7 @@ namespace CoreWf
             {
                 get
                 {
-                    return _callStack[index];
+                    return this.callStack[index];
                 }
             }
 
@@ -1336,7 +1329,7 @@ namespace CoreWf
             {
                 get
                 {
-                    return _callStack.Count;
+                    return this.callStack.Count;
                 }
             }
 
@@ -1344,19 +1337,19 @@ namespace CoreWf
             {
                 if (!childActivity.CanBeExecuted)
                 {
-                    _nonExecutingParentCount++;
+                    this.nonExecutingParentCount++;
                 }
 
-                _callStack.PushFront(childActivity);
+                this.callStack.PushFront(childActivity);
             }
 
             public ChildActivity Pop()
             {
-                ChildActivity childActivity = _callStack.Dequeue();
+                ChildActivity childActivity = this.callStack.Dequeue();
 
                 if (!childActivity.CanBeExecuted)
                 {
-                    _nonExecutingParentCount--;
+                    this.nonExecutingParentCount--;
                 }
 
                 return childActivity;
@@ -1365,29 +1358,29 @@ namespace CoreWf
 
         private static class ArgumentTypeDefinitionsCache
         {
-            private static Dictionary<Type, Type> s_inArgumentTypeDefinitions = new Dictionary<Type, Type>();
-            private static Dictionary<Type, Type> s_outArgumentTypeDefinitions = new Dictionary<Type, Type>();
-            private static Dictionary<Type, Type> s_inOutArgumentTypeDefinitions = new Dictionary<Type, Type>();
+            private static readonly Hashtable inArgumentTypeDefinitions = new Hashtable();
+            private static readonly Hashtable outArgumentTypeDefinitions = new Hashtable();
+            private static readonly Hashtable inOutArgumentTypeDefinitions = new Hashtable();
 
             public static Type GetArgumentType(Type type, ArgumentDirection direction)
             {
-                Dictionary<Type, Type> lookupTable = null;
+                Hashtable lookupTable = null;
 
                 if (direction == ArgumentDirection.In)
                 {
-                    lookupTable = s_inArgumentTypeDefinitions;
+                    lookupTable = inArgumentTypeDefinitions;
                 }
                 else if (direction == ArgumentDirection.Out)
                 {
-                    lookupTable = s_outArgumentTypeDefinitions;
+                    lookupTable = outArgumentTypeDefinitions;
                 }
                 else
                 {
-                    lookupTable = s_inOutArgumentTypeDefinitions;
+                    lookupTable = inOutArgumentTypeDefinitions;
                 }
 
-                Type argumentType;
-                if (!lookupTable.TryGetValue(type, out argumentType))
+                Type argumentType = lookupTable[type] as Type;
+                if (argumentType == null)
                 {
                     argumentType = CreateArgumentType(type, direction);
                     lock (lookupTable)
@@ -1405,15 +1398,15 @@ namespace CoreWf
 
                 if (direction == ArgumentDirection.In)
                 {
-                    argumentType = ActivityUtilities.s_inArgumentGenericType.MakeGenericType(type);
+                    argumentType = ActivityUtilities.inArgumentGenericType.MakeGenericType(type);
                 }
                 else if (direction == ArgumentDirection.Out)
                 {
-                    argumentType = ActivityUtilities.s_outArgumentGenericType.MakeGenericType(type);
+                    argumentType = ActivityUtilities.outArgumentGenericType.MakeGenericType(type);
                 }
                 else
                 {
-                    argumentType = ActivityUtilities.s_inOutArgumentGenericType.MakeGenericType(type);
+                    argumentType = ActivityUtilities.inOutArgumentGenericType.MakeGenericType(type);
                 }
 
                 return argumentType;
@@ -1422,14 +1415,12 @@ namespace CoreWf
 
         private static class LocationAccessExpressionTypeDefinitionsCache
         {
-            private static object s_locationReferenceValueTypeDefinitionsLock = new object();
-            private static Dictionary<Type, ILocationReferenceExpression> s_locationReferenceValueTypeDefinitions = new Dictionary<Type, ILocationReferenceExpression>();
-
-            private static object s_environmentLocationReferenceTypeDefinitionsLock = new object();
-            private static Dictionary<Type, ILocationReferenceExpression> s_environmentLocationReferenceTypeDefinitions = new Dictionary<Type, ILocationReferenceExpression>();
-
-            private static object s_environmentLocationValueTypeDefinitionsLock = new object();
-            private static Dictionary<Type, ILocationReferenceExpression> s_environmentLocationValueTypeDefinitions = new Dictionary<Type, ILocationReferenceExpression>();
+            private static readonly object locationReferenceValueTypeDefinitionsLock = new object();
+            private static readonly Dictionary<Type, ILocationReferenceExpression> locationReferenceValueTypeDefinitions = new Dictionary<Type, ILocationReferenceExpression>();
+            private static readonly object environmentLocationReferenceTypeDefinitionsLock = new object();
+            private static readonly Dictionary<Type, ILocationReferenceExpression> environmentLocationReferenceTypeDefinitions = new Dictionary<Type, ILocationReferenceExpression>();
+            private static readonly object environmentLocationValueTypeDefinitionsLock = new object();
+            private static readonly Dictionary<Type, ILocationReferenceExpression> environmentLocationValueTypeDefinitions = new Dictionary<Type, ILocationReferenceExpression>();
 
             public static ActivityWithResult CreateNewLocationAccessExpression(Type type, bool isReference, bool useLocationReferenceValue, LocationReference locationReference)
             {
@@ -1438,39 +1429,31 @@ namespace CoreWf
 
                 if (useLocationReferenceValue)
                 {
-                    lookupTable = s_locationReferenceValueTypeDefinitions;
-                    tableLock = s_locationReferenceValueTypeDefinitionsLock;
+                    lookupTable = locationReferenceValueTypeDefinitions;
+                    tableLock = locationReferenceValueTypeDefinitionsLock;
                 }
                 else
                 {
-                    lookupTable = isReference ? s_environmentLocationReferenceTypeDefinitions : s_environmentLocationValueTypeDefinitions;
-                    tableLock = isReference ? s_environmentLocationReferenceTypeDefinitionsLock : s_environmentLocationValueTypeDefinitionsLock;
+                    lookupTable = isReference ? environmentLocationReferenceTypeDefinitions : environmentLocationValueTypeDefinitions;
+                    tableLock = isReference ? environmentLocationReferenceTypeDefinitionsLock : environmentLocationValueTypeDefinitionsLock;
                 }
 
                 ILocationReferenceExpression existingInstance;
                 lock (tableLock)
-                {
+                {                    
                     if (!lookupTable.TryGetValue(type, out existingInstance))
                     {
-                        Type locationAccessExpressionType = CreateLocationAccessExpressionType(type, isReference, useLocationReferenceValue);
+                        Type locationAccessExpressionType = CreateLocationAccessExpressionType(type, isReference, useLocationReferenceValue);                        
 
                         // Create an "empty" (locationReference = null) instance to put in the cache. This empty instance will only be used to create other instances,
                         // including the instance returned from this method. The cached instance will never be included in an activity tree, so the cached instance's
                         // rootActivity field will not be filled in and thus will not pin all the objects in the activity tree. The cached empty instance has a null
                         // locationReference because locationReference also pins parts of activity tree.
-                        //existingInstance = (ILocationReferenceExpression)Activator.CreateInstance(
-                        //    locationAccessExpressionType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { null }, null);
+                        existingInstance = (ILocationReferenceExpression)Activator.CreateInstance(
+                            locationAccessExpressionType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { null }, null);
 
-                        foreach (var constructor in locationAccessExpressionType.GetTypeInfo().DeclaredConstructors)
-                        {
-                            if (constructor.GetParameters().Length == 0)
-                            {
-                                existingInstance = (ILocationReferenceExpression)constructor.Invoke(null);
-                                break;
-                            }
-                        }
                         lookupTable[type] = existingInstance;
-                    }
+                    }                  
                 }
 
                 return existingInstance.CreateNewInstance(locationReference);
@@ -1481,11 +1464,11 @@ namespace CoreWf
                 Type openType;
                 if (useLocationReferenceValue)
                 {
-                    openType = s_locationReferenceValueType;
+                    openType = locationReferenceValueType;
                 }
                 else
                 {
-                    openType = isReference ? s_environmentLocationReferenceType : s_environmentLocationValueType;
+                    openType = isReference ? environmentLocationReferenceType : environmentLocationValueType;
                 }
 
                 return openType.MakeGenericType(type);

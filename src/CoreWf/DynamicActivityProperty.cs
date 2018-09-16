@@ -1,15 +1,15 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+
     public class DynamicActivityProperty
     {
-        private Collection<Attribute> _attributes;
+        private Collection<Attribute> attributes;
 
         public DynamicActivityProperty()
         {
@@ -19,11 +19,11 @@ namespace CoreWf
         {
             get
             {
-                if (_attributes == null)
+                if (this.attributes == null)
                 {
-                    _attributes = new Collection<Attribute>();
+                    this.attributes = new Collection<Attribute>();
                 }
-                return _attributes;
+                return this.attributes;
             }
         }
 
@@ -36,7 +36,7 @@ namespace CoreWf
 
         [DefaultValue(null)]
         //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.PropertyNamesShouldNotMatchGetMethods, 
-        //Justification = "Workflow normalizes on Type for Type properties")]
+        //    Justification = "Workflow normalizes on Type for Type properties")]
         public Type Type
         {
             get;

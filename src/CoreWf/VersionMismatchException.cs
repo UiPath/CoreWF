@@ -1,11 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
-    //[Serializable]
+    using System;
+    using System.Runtime.Serialization;
+    using System.Security;
+    using CoreWf.Runtime;
+
+    [Serializable]
     public class VersionMismatchException : Exception
     {
         public VersionMismatchException()
@@ -44,12 +47,12 @@ namespace CoreWf
             this.ActualVersion = actualVersion;
         }
 
-        //protected VersionMismatchException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{
-        //    this.ExpectedVersion = (WorkflowIdentity)info.GetValue("expectedVersion", typeof(WorkflowIdentity));
-        //    this.ActualVersion = (WorkflowIdentity)info.GetValue("actualVersion", typeof(WorkflowIdentity));
-        //}
+        protected VersionMismatchException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            this.ExpectedVersion = (WorkflowIdentity)info.GetValue("expectedVersion", typeof(WorkflowIdentity));
+            this.ActualVersion = (WorkflowIdentity)info.GetValue("actualVersion", typeof(WorkflowIdentity));
+        }
 
         public WorkflowIdentity ExpectedVersion
         {
@@ -63,14 +66,14 @@ namespace CoreWf
             private set;
         }
 
-        //[Fx.Tag.SecurityNote(Critical = "Critical because we are overriding a critical method in the base class.")]
-        //[SecurityCritical]
-        //public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        //{
-        //    base.GetObjectData(info, context);
-        //    info.AddValue("expectedVersion", this.ExpectedVersion);
-        //    info.AddValue("actualVersion", this.ActualVersion);
-        //}
+        [Fx.Tag.SecurityNote(Critical = "Critical because we are overriding a critical method in the base class.")]
+        [SecurityCritical]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue("expectedVersion", this.ExpectedVersion);
+            info.AddValue("actualVersion", this.ActualVersion);
+        }
 
         private static string GetMessage(WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion)
         {
@@ -91,5 +94,5 @@ namespace CoreWf
                 return null;
             }
         }
-    }
+    }    
 }

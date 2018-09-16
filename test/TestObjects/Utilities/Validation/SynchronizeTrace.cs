@@ -1,10 +1,9 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Xml;
 
 namespace Test.Common.TestObjects.Utilities.Validation
 {
@@ -41,8 +40,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         public override bool Equals(object obj)
         {
-            SynchronizeTrace trace = obj as SynchronizeTrace;
-            if (trace != null)
+            if (obj is SynchronizeTrace trace)
             {
                 if (this.ToString() == trace.ToString())
                 {
@@ -61,9 +59,8 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         bool IActualTraceStep.Equals(IActualTraceStep trace)
         {
-            SynchronizeTrace synchronizeTrace = trace as SynchronizeTrace;
 
-            if (synchronizeTrace != null &&
+            if (trace is SynchronizeTrace synchronizeTrace &&
                 synchronizeTrace.userTrace.Message == this.userTrace.Message)
             {
                 return true;

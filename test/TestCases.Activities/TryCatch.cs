@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -101,17 +101,21 @@ namespace TestCases.Activities
         [Fact]
         public void TryCatchFinallyActivityOnly()
         {
-            TestTryCatch tcf = new TestTryCatch();
-
-            // try
-            tcf.Try = new TestThrow<ArgumentException>()
+            TestTryCatch tcf = new TestTryCatch
             {
-                ExpectedOutcome = Outcome.CaughtException()
+
+                // try
+                Try = new TestThrow<ArgumentException>()
+                {
+                    ExpectedOutcome = Outcome.CaughtException()
+                }
             };
 
             // catch
-            TestCatch<ArgumentException> tc = new TestCatch<ArgumentException>();
-            tc.Body = new TestWriteLine("Hello world!", "Hello world!");
+            TestCatch<ArgumentException> tc = new TestCatch<ArgumentException>
+            {
+                Body = new TestWriteLine("Hello world!", "Hello world!")
+            };
             tcf.Catches.Add(tc);
 
             // finally
@@ -888,17 +892,21 @@ namespace TestCases.Activities
         [Fact]
         public void TryCatchWithWorkflowInvoker()
         {
-            TestTryCatch tcf = new TestTryCatch();
-
-            // try
-            tcf.Try = new TestThrow<ArgumentException>()
+            TestTryCatch tcf = new TestTryCatch
             {
-                ExpectedOutcome = Outcome.CaughtException()
+
+                // try
+                Try = new TestThrow<ArgumentException>()
+                {
+                    ExpectedOutcome = Outcome.CaughtException()
+                }
             };
 
             // catch
-            TestCatch<ArgumentException> tc = new TestCatch<ArgumentException>();
-            tc.Body = new TestWriteLine("Hello world!", "Hello world!");
+            TestCatch<ArgumentException> tc = new TestCatch<ArgumentException>
+            {
+                Body = new TestWriteLine("Hello world!", "Hello world!")
+            };
             tcf.Catches.Add(tc);
 
             // finally
@@ -1100,12 +1108,14 @@ namespace TestCases.Activities
         [Fact]
         public void CatchWithEmptyHandler()
         {
-            TestTryCatch tcf = new TestTryCatch();
-
-            // try
-            tcf.Try = new TestThrow<IOException>()
+            TestTryCatch tcf = new TestTryCatch
             {
-                ExpectedOutcome = Outcome.CaughtException()
+
+                // try
+                Try = new TestThrow<IOException>()
+                {
+                    ExpectedOutcome = Outcome.CaughtException()
+                }
             };
 
             // catch

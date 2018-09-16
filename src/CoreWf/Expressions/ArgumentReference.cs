@@ -1,11 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
     public sealed class ArgumentReference<T> : EnvironmentLocationReference<T>
     {
-        private RuntimeArgument _targetArgument;
+        private RuntimeArgument targetArgument;
 
         public ArgumentReference()
         {
@@ -24,12 +24,12 @@ namespace CoreWf.Expressions
 
         public override LocationReference LocationReference
         {
-            get { return _targetArgument; }
+            get { return this.targetArgument; }
         }
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
-            _targetArgument = null;
+            this.targetArgument = null;
 
             if (string.IsNullOrEmpty(this.ArgumentName))
             {
@@ -37,15 +37,15 @@ namespace CoreWf.Expressions
             }
             else
             {
-                _targetArgument = ActivityUtilities.FindArgument(this.ArgumentName, this);
+                this.targetArgument = ActivityUtilities.FindArgument(this.ArgumentName, this);
 
-                if (_targetArgument == null)
+                if (this.targetArgument == null)
                 {
                     metadata.AddValidationError(SR.ArgumentNotFound(this.ArgumentName));
                 }
-                else if (_targetArgument.Type != typeof(T))
+                else if (this.targetArgument.Type != typeof(T))
                 {
-                    metadata.AddValidationError(SR.ArgumentTypeMustBeCompatible(this.ArgumentName, _targetArgument.Type, typeof(T)));
+                    metadata.AddValidationError(SR.ArgumentTypeMustBeCompatible(this.ArgumentName, this.targetArgument.Type, typeof(T)));
                 }
             }
         }

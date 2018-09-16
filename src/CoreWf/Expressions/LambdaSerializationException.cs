@@ -1,11 +1,12 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
-    //[Serializable]
+    using System;
+    using System.Runtime.Serialization;
+
+    [Serializable]
     public class LambdaSerializationException : Exception
     {
         public LambdaSerializationException()
@@ -23,9 +24,9 @@ namespace CoreWf.Expressions
         {
         }
 
-        //protected LambdaSerializationException(SerializationInfo info, StreamingContext context)
-        //    : base(info, context)
-        //{            
-        //}
+        protected LambdaSerializationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {            
+        }
     }
 }

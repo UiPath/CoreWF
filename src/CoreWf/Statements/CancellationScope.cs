@@ -1,49 +1,56 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Body")]
+    using System;
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
+    [ContentProperty("Body")]
     public sealed class CancellationScope : NativeActivity
     {
-        private Collection<Variable> _variables;
-        private Variable<bool> _suppressCancel;
+        private Collection<Variable> variables;
+        private readonly Variable<bool> suppressCancel;
 
         public CancellationScope()
             : base()
         {
-            _suppressCancel = new Variable<bool>();
+            this.suppressCancel = new Variable<bool>();
         }
 
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public Activity Body
         {
             get;
@@ -51,24 +58,26 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Body")]
+        [DependsOn("Body")]
         public Activity CancellationHandler
         {
             get;
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             metadata.AddChild(this.Body);
             metadata.AddChild(this.CancellationHandler);
             metadata.SetVariablesCollection(this.Variables);
-            metadata.AddImplementationVariable(_suppressCancel);
+            metadata.AddImplementationVariable(this.suppressCancel);
         }
 
         protected override void Execute(NativeActivityContext context)
@@ -87,7 +96,7 @@ namespace CoreWf.Statements
                 (context.IsCancellationRequested && completedInstance.State == ActivityInstanceState.Faulted))
             {
                 // We don't cancel the cancel handler
-                _suppressCancel.Set(context, true);
+                this.suppressCancel.Set(context, true);
 
                 context.MarkCanceled();
 
@@ -100,7 +109,7 @@ namespace CoreWf.Statements
 
         protected override void Cancel(NativeActivityContext context)
         {
-            bool suppressCancel = _suppressCancel.Get(context);
+            bool suppressCancel = this.suppressCancel.Get(context);
             if (!suppressCancel)
             {
                 context.CancelChildren();
@@ -109,7 +118,7 @@ namespace CoreWf.Statements
 
         private void OnExceptionFromCancelHandler(NativeActivityFaultContext context, Exception propagatedException, ActivityInstance propagatedFrom)
         {
-            _suppressCancel.Set(context, false);
+            this.suppressCancel.Set(context, false);
         }
     }
 }

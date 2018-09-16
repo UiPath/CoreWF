@@ -1,17 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class BookmarkWorkItem : ActivityExecutionWorkItem
     {
-        private BookmarkCallbackWrapper _callbackWrapper;
-        private Bookmark _bookmark;
-        private object _state;
+        private BookmarkCallbackWrapper callbackWrapper;
+        private Bookmark bookmark;
+        private object state;
 
         public BookmarkWorkItem(ActivityExecutor executor, bool isExternal, BookmarkCallbackWrapper callbackWrapper, Bookmark bookmark, object value)
             : this(callbackWrapper, bookmark, value)
@@ -27,37 +27,37 @@ namespace CoreWf.Runtime
         protected BookmarkWorkItem(BookmarkCallbackWrapper callbackWrapper, Bookmark bookmark, object value)
             : base(callbackWrapper.ActivityInstance)
         {
-            _callbackWrapper = callbackWrapper;
-            _bookmark = bookmark;
-            _state = value;
+            this.callbackWrapper = callbackWrapper;
+            this.bookmark = bookmark;
+            this.state = value;
         }
 
         [DataMember(Name = "callbackWrapper")]
         internal BookmarkCallbackWrapper SerializedCallbackWrapper
         {
-            get { return _callbackWrapper; }
-            set { _callbackWrapper = value; }
+            get { return this.callbackWrapper; }
+            set { this.callbackWrapper = value; }
         }
 
         [DataMember(Name = "bookmark")]
         internal Bookmark SerializedBookmark
         {
-            get { return _bookmark; }
-            set { _bookmark = value; }
+            get { return this.bookmark; }
+            set { this.bookmark = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "state")]
         internal object SerializedState
         {
-            get { return _state; }
-            set { _state = value; }
+            get { return this.state; }
+            set { this.state = value; }
         }
 
         public override void TraceCompleted()
         {
             if (TD.CompleteBookmarkWorkItemIsEnabled())
             {
-                TD.CompleteBookmarkWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, ActivityUtilities.GetTraceString(_bookmark), ActivityUtilities.GetTraceString(_bookmark.Scope));
+                TD.CompleteBookmarkWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, ActivityUtilities.GetTraceString(this.bookmark), ActivityUtilities.GetTraceString(this.bookmark.Scope));
             }
         }
 
@@ -65,7 +65,7 @@ namespace CoreWf.Runtime
         {
             if (TD.ScheduleBookmarkWorkItemIsEnabled())
             {
-                TD.ScheduleBookmarkWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, ActivityUtilities.GetTraceString(_bookmark), ActivityUtilities.GetTraceString(_bookmark.Scope));
+                TD.ScheduleBookmarkWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, ActivityUtilities.GetTraceString(this.bookmark), ActivityUtilities.GetTraceString(this.bookmark.Scope));
             }
         }
 
@@ -73,7 +73,7 @@ namespace CoreWf.Runtime
         {
             if (TD.StartBookmarkWorkItemIsEnabled())
             {
-                TD.StartBookmarkWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, ActivityUtilities.GetTraceString(_bookmark), ActivityUtilities.GetTraceString(_bookmark.Scope));
+                TD.StartBookmarkWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id, ActivityUtilities.GetTraceString(this.bookmark), ActivityUtilities.GetTraceString(this.bookmark.Scope));
             }
         }
 
@@ -84,7 +84,7 @@ namespace CoreWf.Runtime
             try
             {
                 nativeContext.Initialize(this.ActivityInstance, executor, bookmarkManager);
-                _callbackWrapper.Invoke(nativeContext, _bookmark, _state);
+                this.callbackWrapper.Invoke(nativeContext, this.bookmark, this.state);
             }
             catch (Exception e)
             {

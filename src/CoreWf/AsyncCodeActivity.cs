@@ -1,15 +1,19 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+    using System.Runtime.Serialization;
+
+#if NET45
+    using CoreWf.DynamicUpdate;
+#endif
     public abstract class AsyncCodeActivity : Activity, IAsyncCodeActivity
     {
-        private static AsyncCallback s_onExecuteComplete;
+        private static AsyncCallback onExecuteComplete;
 
         protected AsyncCodeActivity()
         {
@@ -25,14 +29,14 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
 
         [IgnoreDataMember]
         [Fx.Tag.KnownXamlExternal]
-        protected sealed override Func<Activity> Implementation
+        public sealed override Func<Activity> Implementation
         {
             get
             {
@@ -42,7 +46,7 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -51,12 +55,12 @@ namespace CoreWf
         {
             get
             {
-                if (s_onExecuteComplete == null)
+                if (onExecuteComplete == null)
                 {
-                    s_onExecuteComplete = Fx.ThunkCallback(new AsyncCallback(CompleteAsynchronousExecution));
+                    onExecuteComplete = Fx.ThunkCallback(new AsyncCallback(CompleteAsynchronousExecution));
                 }
 
-                return s_onExecuteComplete;
+                return onExecuteComplete;
             }
         }
 
@@ -90,12 +94,12 @@ namespace CoreWf
 
                 if (result == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustNotReturnANullAsyncResult));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustNotReturnANullAsyncResult));
                 }
 
                 if (!object.ReferenceEquals(result.AsyncState, asyncContext))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustUseProvidedStateAsAsyncResultState));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustUseProvidedStateAsAsyncResultState));
                 }
 
                 if (result.CompletedSynchronously)
@@ -126,13 +130,12 @@ namespace CoreWf
             {
                 return;
             }
-            AsyncOperationContext asyncContext = result.AsyncState as AsyncOperationContext;
 
             // User code may not have correctly passed the AsyncOperationContext thru as the "state" parameter for
             // BeginInvoke. If is null, don't bother going any further. We would have thrown an exception out of the
             // workflow from InternalExecute. In that case, AsyncOperationContext.CancelOperation will be called in
             // InternalExecute.
-            if (asyncContext != null)
+            if (result.AsyncState is AsyncOperationContext asyncContext)
             {
                 asyncContext.CompleteAsyncCodeActivity(new CompleteAsyncCodeActivityData(asyncContext, result));
             }
@@ -140,8 +143,7 @@ namespace CoreWf
 
         sealed internal override void InternalCancel(ActivityInstance instance, ActivityExecutor executor, BookmarkManager bookmarkManager)
         {
-            AsyncOperationContext asyncContext;
-            if (executor.TryGetPendingOperation(instance, out asyncContext))
+            if (executor.TryGetPendingOperation(instance, out AsyncOperationContext asyncContext))
             {
                 AsyncCodeActivityContext context = new AsyncCodeActivityContext(asyncContext, instance, executor);
                 try
@@ -158,8 +160,7 @@ namespace CoreWf
 
         sealed internal override void InternalAbort(ActivityInstance instance, ActivityExecutor executor, Exception terminationReason)
         {
-            AsyncOperationContext asyncContext;
-            if (executor.TryGetPendingOperation(instance, out asyncContext))
+            if (executor.TryGetPendingOperation(instance, out AsyncOperationContext asyncContext))
             {
                 try
                 {
@@ -187,55 +188,55 @@ namespace CoreWf
             metadata.Dispose();
         }
 
-        //internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
-        //    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
-        //{
-        //}
+#if NET45
+        internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
+    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
+        {
+        }
 
-        //protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    // NO OP
-        //}
+        protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
+        {
+            // NO OP
+        } 
+#endif
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
-        //protected virtual void CacheMetadata(CodeActivityMetadata metadata)
-        //{
-        //    // We bypass the metadata call to avoid the null checks
-        //    SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
-        //}
-
-        protected abstract void CacheMetadata(CodeActivityMetadata metadata);
+        protected virtual void CacheMetadata(CodeActivityMetadata metadata)
+        {
+            // We bypass the metadata call to avoid the null checks
+            SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
+        }
 
         private class CompleteAsyncCodeActivityData : AsyncOperationContext.CompleteData
         {
-            private IAsyncResult _result;
+            private readonly IAsyncResult result;
 
             public CompleteAsyncCodeActivityData(AsyncOperationContext context, IAsyncResult result)
                 : base(context, false)
             {
-                _result = result;
+                this.result = result;
             }
 
             protected override void OnCallExecutor()
             {
-                this.Executor.CompleteOperation(new CompleteAsyncCodeActivityWorkItem(this.AsyncContext, this.Instance, _result));
+                this.Executor.CompleteOperation(new CompleteAsyncCodeActivityWorkItem(this.AsyncContext, this.Instance, this.result));
             }
 
             // not [DataContract] since this workitem will never happen when persistable
             private class CompleteAsyncCodeActivityWorkItem : ActivityExecutionWorkItem
             {
-                private IAsyncResult _result;
-                private AsyncOperationContext _asyncContext;
+                private readonly IAsyncResult result;
+                private readonly AsyncOperationContext asyncContext;
 
                 public CompleteAsyncCodeActivityWorkItem(AsyncOperationContext asyncContext, ActivityInstance instance, IAsyncResult result)
                     : base(instance)
                 {
-                    _result = result;
-                    _asyncContext = asyncContext;
+                    this.result = result;
+                    this.asyncContext = asyncContext;
                     this.ExitNoPersistRequired = true;
                 }
 
@@ -269,9 +270,9 @@ namespace CoreWf
 
                     try
                     {
-                        context = new AsyncCodeActivityContext(_asyncContext, this.ActivityInstance, executor);
+                        context = new AsyncCodeActivityContext(this.asyncContext, this.ActivityInstance, executor);
                         IAsyncCodeActivity owner = (IAsyncCodeActivity)this.ActivityInstance.Activity;
-                        owner.FinishExecution(context, _result);
+                        owner.FinishExecution(context, this.result);
                     }
                     catch (Exception e)
                     {
@@ -312,14 +313,14 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
 
         [IgnoreDataMember]
         [Fx.Tag.KnownXamlExternal]
-        protected sealed override Func<Activity> Implementation
+        public sealed override Func<Activity> Implementation
         {
             get
             {
@@ -329,7 +330,7 @@ namespace CoreWf
             {
                 if (value != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new NotSupportedException());
+                    throw FxTrace.Exception.AsError(new NotSupportedException());
                 }
             }
         }
@@ -364,12 +365,12 @@ namespace CoreWf
 
                 if (result == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustNotReturnANullAsyncResult));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustNotReturnANullAsyncResult));
                 }
 
                 if (!object.ReferenceEquals(result.AsyncState, asyncContext))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustUseProvidedStateAsAsyncResultState));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BeginExecuteMustUseProvidedStateAsAsyncResultState));
                 }
 
                 if (result.CompletedSynchronously)
@@ -397,8 +398,7 @@ namespace CoreWf
 
         sealed internal override void InternalCancel(ActivityInstance instance, ActivityExecutor executor, BookmarkManager bookmarkManager)
         {
-            AsyncOperationContext asyncContext;
-            if (executor.TryGetPendingOperation(instance, out asyncContext))
+            if (executor.TryGetPendingOperation(instance, out AsyncOperationContext asyncContext))
             {
                 AsyncCodeActivityContext context = new AsyncCodeActivityContext(asyncContext, instance, executor);
                 try
@@ -415,8 +415,7 @@ namespace CoreWf
 
         sealed internal override void InternalAbort(ActivityInstance instance, ActivityExecutor executor, Exception terminationReason)
         {
-            AsyncOperationContext asyncContext;
-            if (executor.TryGetPendingOperation(instance, out asyncContext))
+            if (executor.TryGetPendingOperation(instance, out AsyncOperationContext asyncContext))
             {
                 try
                 {
@@ -444,26 +443,27 @@ namespace CoreWf
             metadata.Dispose();
         }
 
-        //internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer, 
-        //    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
-        //{
-        //}
+#if NET45
+        internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
+    DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
+        {
+        }
 
-        //protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    // NO OP
-        //}
+        protected sealed override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
+        {
+            // NO OP
+        } 
+#endif
 
         protected sealed override void CacheMetadata(ActivityMetadata metadata)
         {
-            throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongCacheMetadataForCodeActivity));
         }
 
-        //protected virtual void CacheMetadata(CodeActivityMetadata metadata)
-        //{
-        //    // We bypass the metadata call to avoid the null checks
-        //    SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
-        //}
-        protected abstract void CacheMetadata(CodeActivityMetadata metadata);
+        protected virtual void CacheMetadata(CodeActivityMetadata metadata)
+        {
+            // We bypass the metadata call to avoid the null checks
+            SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
+        }
     }
 }

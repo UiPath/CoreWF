@@ -1,14 +1,14 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf.Runtime;
+
     [Fx.Tag.XamlVisible(false)]
     public class EnvironmentLocationValue<T> : CodeActivity<T>, IExpressionContainer, ILocationReferenceExpression
     {
-        private LocationReference _locationReference;
+        private readonly LocationReference locationReference;
 
         // Ctors are internal because we rely on validation from creator or descendant
         internal EnvironmentLocationValue()
@@ -19,14 +19,14 @@ namespace CoreWf.Expressions
         internal EnvironmentLocationValue(LocationReference locationReference)
             : this()
         {
-            _locationReference = locationReference;
+            this.locationReference = locationReference;
         }
 
         public virtual LocationReference LocationReference
         {
             get
             {
-                return _locationReference;
+                return this.locationReference;
             }
         }
 

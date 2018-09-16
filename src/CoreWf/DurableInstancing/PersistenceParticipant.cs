@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Persistence
 {
+    using System;
+    using System.Collections.Generic;
+    using CoreWf.Runtime;
+    using System.Xml.Linq;
+
     public abstract class PersistenceParticipant : IPersistencePipelineModule
     {
-        private bool _isSaveTransactionRequired;
-        private bool _isLoadTransactionRequired;
-        private bool _isIOParticipant;
+        private readonly bool isSaveTransactionRequired;
+        private readonly bool isLoadTransactionRequired;
+        private readonly bool isIOParticipant;
 
         protected PersistenceParticipant()
         {
@@ -20,13 +20,13 @@ namespace CoreWf.Persistence
 
         internal PersistenceParticipant(bool isSaveTransactionRequired, bool isLoadTransactionRequired)
         {
-            _isIOParticipant = true;
-            _isSaveTransactionRequired = isSaveTransactionRequired;
-            _isLoadTransactionRequired = isLoadTransactionRequired;
+            this.isIOParticipant = true;
+            this.isSaveTransactionRequired = isSaveTransactionRequired;
+            this.isLoadTransactionRequired = isLoadTransactionRequired;
         }
-
+        
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters, 
-        //Justification = "arch approved design. requires the two out dictionaries to avoid complex structures")]
+        //    Justification = "arch approved design. requires the two out dictionaries to avoid complex structures")]
         protected virtual void CollectValues(out IDictionary<XName, object> readWriteValues, out IDictionary<XName, object> writeOnlyValues)
         {
             readWriteValues = null;
@@ -63,7 +63,7 @@ namespace CoreWf.Persistence
         {
             get
             {
-                return _isIOParticipant;
+                return this.isIOParticipant;
             }
         }
 
@@ -71,7 +71,7 @@ namespace CoreWf.Persistence
         {
             get
             {
-                return _isSaveTransactionRequired;
+                return this.isSaveTransactionRequired;
             }
         }
 
@@ -79,7 +79,7 @@ namespace CoreWf.Persistence
         {
             get
             {
-                return _isLoadTransactionRequired;
+                return this.isLoadTransactionRequired;
             }
         }
 

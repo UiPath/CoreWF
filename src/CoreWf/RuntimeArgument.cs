@@ -1,28 +1,30 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Security;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     public sealed class RuntimeArgument : LocationReference
     {
-        private static InternalEvaluationOrderComparer s_evaluationOrderComparer;
-        private Argument _boundArgument;
-        //PropertyDescriptor bindingProperty;
-        //object bindingPropertyOwner;        
-        private List<string> _overloadGroupNames;
-        private int _cacheId;
-        private string _name;
-        private UInt32 _nameHash;
-        private bool _isNameHashSet;
-        private Type _type;
+        private static InternalEvaluationOrderComparer evaluationOrderComparer;
+        private Argument boundArgument;
+        private readonly PropertyDescriptor bindingProperty;
+        private readonly object bindingPropertyOwner;
+        private List<string> overloadGroupNames;
+        private int cacheId;
+        private readonly string name;
+        private UInt32 nameHash;
+        private bool isNameHashSet;
+        private readonly Type type;
 
         public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction)
             : this(name, argumentType, direction, false)
@@ -32,40 +34,35 @@ namespace CoreWf
         public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, List<string> overloadGroupNames)
             : this(name, argumentType, direction, false, overloadGroupNames)
         {
-        }
+        }        
 
         public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired)
             : this(name, argumentType, direction, isRequired, null)
         {
-        }
+        }       
 
         public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroupNames)
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
-            }
-
-            if (argumentType == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentType");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
             ArgumentDirectionHelper.Validate(direction, "direction");
 
-            _name = name;
-            _type = argumentType;
+            this.name = name;
+            this.type = argumentType ?? throw FxTrace.Exception.ArgumentNull(nameof(argumentType));
             this.Direction = direction;
-            this.IsRequired = isRequired;
-            _overloadGroupNames = overloadGroupNames;
+            this.IsRequired = isRequired;            
+            this.overloadGroupNames = overloadGroupNames;
         }
 
-        //internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, PropertyDescriptor bindingProperty, object propertyOwner)
-        //    : this(name, argumentType, direction, isRequired, overloadGroups)
-        //{
-        //    this.bindingProperty = bindingProperty;
-        //    this.bindingPropertyOwner = propertyOwner;
-        //}
+        internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, PropertyDescriptor bindingProperty, object propertyOwner)
+            : this(name, argumentType, direction, isRequired, overloadGroups)
+        {
+            this.bindingProperty = bindingProperty;
+            this.bindingPropertyOwner = propertyOwner;
+        }
 
         internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, Argument argument)
             : this(name, argumentType, direction, isRequired, overloadGroups)
@@ -80,11 +77,11 @@ namespace CoreWf
         {
             get
             {
-                if (RuntimeArgument.s_evaluationOrderComparer == null)
+                if (RuntimeArgument.evaluationOrderComparer == null)
                 {
-                    RuntimeArgument.s_evaluationOrderComparer = new InternalEvaluationOrderComparer();
+                    RuntimeArgument.evaluationOrderComparer = new InternalEvaluationOrderComparer();
                 }
-                return RuntimeArgument.s_evaluationOrderComparer;
+                return RuntimeArgument.evaluationOrderComparer;
             }
         }
 
@@ -92,7 +89,7 @@ namespace CoreWf
         {
             get
             {
-                return _name;
+                return this.name;
             }
         }
 
@@ -100,7 +97,7 @@ namespace CoreWf
         {
             get
             {
-                return _type;
+                return this.type;
             }
         }
 
@@ -120,14 +117,14 @@ namespace CoreWf
         {
             get
             {
-                if (_overloadGroupNames == null)
+                if (this.overloadGroupNames == null)
                 {
-                    _overloadGroupNames = new List<string>(0);
+                    this.overloadGroupNames = new List<string>(0);
                 }
 
-                return new ReadOnlyCollection<string>(_overloadGroupNames);
+                return new ReadOnlyCollection<string>(this.overloadGroupNames);
             }
-        }
+        }       
 
         internal Activity Owner
         {
@@ -147,7 +144,7 @@ namespace CoreWf
         {
             get
             {
-                return _boundArgument != null;
+                return this.boundArgument != null;
             }
         }
 
@@ -163,13 +160,13 @@ namespace CoreWf
         {
             get
             {
-                return _boundArgument;
+                return this.boundArgument;
             }
             set
             {
                 // We allow this to be set an unlimited number of times.  We also allow it
                 // to be set back to null.                
-                _boundArgument = value;
+                this.boundArgument = value;
             }
         }
 
@@ -185,16 +182,43 @@ namespace CoreWf
 
         internal void SetupBinding(Activity owningElement, bool createEmptyBinding)
         {
-            if (!this.IsBound)
+            if (this.bindingProperty != null)
             {
-                PropertyInfo targetProperty = null;
-                foreach (var property in owningElement.GetType().GetProperties())
+                Argument argument = (Argument)this.bindingProperty.GetValue(this.bindingPropertyOwner);
+
+                if (argument == null)
                 {
-                    if (property.Name == this.Name && property.PropertyType.GetTypeInfo().IsGenericType)
+                    Fx.Assert(this.bindingProperty.PropertyType.IsGenericType, "We only support arguments that are generic types in our reflection walk.");
+
+                    argument = (Argument) Activator.CreateInstance(this.bindingProperty.PropertyType);
+                    argument.WasDesignTimeNull = true;
+
+                    if (createEmptyBinding && !this.bindingProperty.IsReadOnly)
                     {
-                        ArgumentDirection direction;
-                        Type argumentType;
-                        if (ActivityUtilities.TryGetArgumentDirectionAndType(property.PropertyType, out direction, out argumentType))
+                        this.bindingProperty.SetValue(this.bindingPropertyOwner, argument);
+                    }
+                }
+
+                Argument.Bind(argument, this);
+            }
+            else if (!this.IsBound)
+            {
+                PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(owningElement);
+
+                PropertyDescriptor targetProperty = null;
+
+                for (int i = 0; i < properties.Count; i++)
+                {
+                    PropertyDescriptor property = properties[i];
+
+                    // We only support auto-setting the property
+                    // for generic types.  Otherwise we have no
+                    // guarantee that the argument returned by the
+                    // property still matches the runtime argument's
+                    // type.
+                    if (property.Name == this.Name && property.PropertyType.IsGenericType)
+                    {
+                        if (ActivityUtilities.TryGetArgumentDirectionAndType(property.PropertyType, out ArgumentDirection direction, out Type argumentType))
                         {
                             if (this.Type == argumentType && this.Direction == direction)
                             {
@@ -216,7 +240,7 @@ namespace CoreWf
                 {
                     if (targetProperty != null)
                     {
-                        if (targetProperty.PropertyType.GetTypeInfo().IsGenericType)
+                        if (targetProperty.PropertyType.IsGenericType)
                         {
                             argument = (Argument)Activator.CreateInstance(targetProperty.PropertyType);
                         }
@@ -224,6 +248,7 @@ namespace CoreWf
                         {
                             argument = ActivityUtilities.CreateArgument(this.Type, this.Direction);
                         }
+
                     }
                     else
                     {
@@ -232,7 +257,7 @@ namespace CoreWf
 
                     argument.WasDesignTimeNull = true;
 
-                    if (targetProperty != null && createEmptyBinding && targetProperty.CanWrite)
+                    if (targetProperty != null && createEmptyBinding && !targetProperty.IsReadOnly)
                     {
                         targetProperty.SetValue(owningElement, argument);
                     }
@@ -246,7 +271,7 @@ namespace CoreWf
 
         internal bool InitializeRelationship(Activity parent, ref IList<ValidationError> validationErrors)
         {
-            if (_cacheId == parent.CacheId)
+            if (this.cacheId == parent.CacheId)
             {
                 // We're part of the same tree walk
                 if (this.Owner == parent)
@@ -265,19 +290,19 @@ namespace CoreWf
                 return false;
             }
 
-            if (_boundArgument != null && _boundArgument.RuntimeArgument != this)
+            if (this.boundArgument != null && this.boundArgument.RuntimeArgument != this)
             {
-                ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.RuntimeArgumentBindingInvalid(this.Name, _boundArgument.RuntimeArgument.Name)));
+                ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.RuntimeArgumentBindingInvalid(this.Name, this.boundArgument.RuntimeArgument.Name)));
 
                 return false;
             }
 
             this.Owner = parent;
-            _cacheId = parent.CacheId;
+            this.cacheId = parent.CacheId;
 
-            if (_boundArgument != null)
+            if (this.boundArgument != null)
             {
-                _boundArgument.Validate(parent, ref validationErrors);
+                this.boundArgument.Validate(parent, ref validationErrors);
 
                 if (!this.BoundArgument.IsEmpty)
                 {
@@ -305,12 +330,12 @@ namespace CoreWf
                     "need to deal with potential issues around someone providing and override for " +
                     "a result - with the current code it wouldn't end up in the resultLocation.");
 
-                Location location = _boundArgument.CreateDefaultLocation();
+                Location location = this.boundArgument.CreateDefaultLocation();
                 targetEnvironment.Declare(this, location, targetActivityInstance);
                 location.Value = argumentValueOverride;
                 return true;
             }
-            else if (!_boundArgument.IsEmpty)
+            else if (!this.boundArgument.IsEmpty)
             {
                 if (skipFastPath)
                 {
@@ -319,7 +344,7 @@ namespace CoreWf
                 }
                 else
                 {
-                    return _boundArgument.TryPopulateValue(targetEnvironment, targetActivityInstance, executor);
+                    return this.boundArgument.TryPopulateValue(targetEnvironment, targetActivityInstance, executor);
                 }
             }
             else if (resultLocation != null && this.IsResult)
@@ -329,7 +354,7 @@ namespace CoreWf
             }
             else
             {
-                Location location = _boundArgument.CreateDefaultLocation();
+                Location location = this.boundArgument.CreateDefaultLocation();
                 targetEnvironment.Declare(this, location, targetActivityInstance);
                 return true;
             }
@@ -339,7 +364,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             // No need to call context.ThrowIfDisposed explicitly since all
@@ -352,18 +377,19 @@ namespace CoreWf
             {
                 if (!object.ReferenceEquals(this.Owner, context.Activity))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(
+                    throw FxTrace.Exception.AsError(
                         new InvalidOperationException(SR.CanOnlyGetOwnedArguments(
                             context.Activity.DisplayName,
                             this.Name,
                             this.Owner.DisplayName)));
+
                 }
 
                 if (object.ReferenceEquals(context.Environment.Definition, context.Activity))
                 {
                     if (!context.Environment.TryGetLocation(this.Id, out location))
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
                     }
                 }
                 else
@@ -382,7 +408,7 @@ namespace CoreWf
 
                 if (!context.Environment.TryGetLocation(this.Id, this.Owner, out location))
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
                 }
             }
 
@@ -415,10 +441,9 @@ namespace CoreWf
         {
             Fx.Assert(this.IsInTree, "Argument must be opened");
 
-            Location location;
-            if (!environment.TryGetLocation(this.Id, this.Owner, out location))
+            if (!environment.TryGetLocation(this.Id, this.Owner, out Location location))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
             }
             return location;
         }
@@ -436,55 +461,54 @@ namespace CoreWf
         {
             if (!this.IsInTree)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeArgumentNotOpen(this.Name)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeArgumentNotOpen(this.Name)));
             }
         }
 
         private void EnsureHash()
         {
-            if (!_isNameHashSet)
+            if (!this.isNameHashSet)
             {
-                //this.nameHash = CRCHashCode.Calculate(this.Name);
-                _nameHash = (uint)this.Name.GetHashCode();
-                _isNameHashSet = true;
+                this.nameHash = CRCHashCode.Calculate(this.Name);
+                this.isNameHashSet = true;
             }
         }
 
-        //// This class implements iSCSI CRC-32 check outlined in IETF RFC 3720.
-        //// it's marked internal so that DataModel CIT can access it
-        //internal static class CRCHashCode
-        //{
-        //    // Reflected value for iSCSI CRC-32 polynomial 0x1edc6f41
-        //    const UInt32 polynomial = 0x82f63b78;
+        // This class implements iSCSI CRC-32 check outlined in IETF RFC 3720.
+        // it's marked internal so that DataModel CIT can access it
+        internal static class CRCHashCode
+        {
+            // Reflected value for iSCSI CRC-32 polynomial 0x1edc6f41
+            private const UInt32 polynomial = 0x82f63b78;
 
-        //    [Fx.Tag.SecurityNote(Critical = "Critical because it is marked unsafe.",
-        //        Safe = "Safe because we aren't leaking anything. We are just using pointers to get into the string.")]
-        //    [SecuritySafeCritical]
-        //    public unsafe static UInt32 Calculate(string s)
-        //    {
-        //        UInt32 result = 0xffffffff;
-        //        int byteLength = s.Length * sizeof(char);
+            [Fx.Tag.SecurityNote(Critical = "Critical because it is marked unsafe.",
+                Safe = "Safe because we aren't leaking anything. We are just using pointers to get into the string.")]
+            [SecuritySafeCritical]
+            public unsafe static UInt32 Calculate(string s)
+            {
+                UInt32 result = 0xffffffff;
+                int byteLength = s.Length * sizeof(char);
 
-        //        fixed (char* pString = s)
-        //        {
-        //            byte* pbString = (byte*)pString;
-        //            for (int i = 0; i < byteLength; i++)
-        //            {
-        //                result ^= pbString[i];
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //                result = ((result & 1) * polynomial) ^ (result >> 1);
-        //            }
-        //        }
-        //        return ~result;
-        //    }
+                fixed (char* pString = s)
+                {
+                    byte* pbString = (byte*)pString;
+                    for (int i = 0; i < byteLength; i++)
+                    {
+                        result ^= pbString[i];
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                        result = ((result & 1) * polynomial) ^ (result >> 1);
+                    }
+                }
+                return ~result;
+            }
 
-        //}
+        }
 
         private class InternalEvaluationOrderComparer : IComparer<RuntimeArgument>
         {
@@ -519,9 +543,9 @@ namespace CoreWf
                 x.EnsureHash();
                 y.EnsureHash();
 
-                if (x._nameHash != y._nameHash)
+                if (x.nameHash != y.nameHash)
                 {
-                    return x._nameHash.CompareTo(y._nameHash);
+                    return x.nameHash.CompareTo(y.nameHash);
                 }
                 else
                 {

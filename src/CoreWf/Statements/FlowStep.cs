@@ -1,12 +1,14 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.Generic;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Action")]
+    using System.Collections.Generic;
+    using CoreWf;
+    using System.ComponentModel;
+    using Portable.Xaml.Markup;
+
+    [ContentProperty("Action")]
     public sealed class FlowStep : FlowNode
     {
         public FlowStep()
@@ -21,7 +23,7 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Action")]
+        [DependsOn("Action")]
         public FlowNode Next
         {
             get;
@@ -53,7 +55,7 @@ namespace CoreWf.Statements
                 {
                     TD.FlowchartNextNull(this.Owner.DisplayName);
                 }
-            }
+            }    
             if (Action == null)
             {
                 nextNode = Next;

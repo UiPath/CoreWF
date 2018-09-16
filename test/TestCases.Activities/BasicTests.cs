@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf;
 using Test.Common.TestObjects.Activities;
@@ -39,22 +39,28 @@ namespace TestCases.Activities
             DelegateInArgument<string> arg = new DelegateInArgument<string> { Name = "Apple" };
             string[] values = { "a", "b" };
 
-            TestSwitch<string> switchAct = new TestSwitch<string>();
-            switchAct.ExpressionVariable = value;
+            TestSwitch<string> switchAct = new TestSwitch<string>
+            {
+                ExpressionVariable = value
+            };
             switchAct.AddCase("Apple", new TestWriteLine("Apple", "this is an apple"));
             switchAct.AddCase("Orange", new TestWriteLine("Orange", "this is an orange"));
             switchAct.Hints.Add(0);
 
-            TestIf ifAct = new TestIf(HintThenOrElse.Then);
-            ifAct.ConditionVariable = cond;
-            ifAct.ThenActivity = new TestWriteLine("W", "Yes thats true");
-            ifAct.ElseActivity = new TestWriteLine("W", "No thats not true");
+            TestIf ifAct = new TestIf(HintThenOrElse.Then)
+            {
+                ConditionVariable = cond,
+                ThenActivity = new TestWriteLine("W", "Yes thats true"),
+                ElseActivity = new TestWriteLine("W", "No thats not true")
+            };
 
-            TestForEach<string> forEachAct = new TestForEach<string>();
-            forEachAct.Values = values;
-            forEachAct.CurrentVariable = arg;
-            forEachAct.HintIterationCount = 2;
-            forEachAct.Body = new TestWriteLine { DisplayName = "w1", MessageExpression = context => arg.Get(context), HintMessageList = { "a", "b" } };
+            TestForEach<string> forEachAct = new TestForEach<string>
+            {
+                Values = values,
+                CurrentVariable = arg,
+                HintIterationCount = 2,
+                Body = new TestWriteLine { DisplayName = "w1", MessageExpression = context => arg.Get(context), HintMessageList = { "a", "b" } }
+            };
 
             TestSequence seq = new TestSequence
             {

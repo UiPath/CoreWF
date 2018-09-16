@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 
@@ -393,9 +393,8 @@ namespace TestCases.Activities.Common.Expressions
 
         public override bool Equals(object obj)
         {
-            Derived d = obj as Derived;
 
-            if (d == null)
+            if (!(obj is Derived d))
             {
                 return false;
             }
@@ -410,7 +409,7 @@ namespace TestCases.Activities.Common.Expressions
 
     public struct TheStruct
     {
-        private int _privateField;
+        private readonly int _privateField;
         public int publicField;
         public int publicField1;
         public System.IO.FileAccess enumField;
@@ -535,7 +534,7 @@ namespace TestCases.Activities.Common.Expressions
     {
         public string stringField;
 
-        private int[] _oneDimIndexField = new int[100];
+        private readonly int[] _oneDimIndexField = new int[100];
         public int this[int indice]
         {
             get
@@ -548,7 +547,7 @@ namespace TestCases.Activities.Common.Expressions
             }
         }
 
-        private int[,,] _multiDimIndexField = new int[10, 10, 10];
+        private readonly int[,,] _multiDimIndexField = new int[10, 10, 10];
         public int this[int i, int j, int k]
         {
             get
@@ -561,7 +560,7 @@ namespace TestCases.Activities.Common.Expressions
             }
         }
 
-        private string[,] _twoDimStringIndexField = new string[100, 100];
+        private readonly string[,] _twoDimStringIndexField = new string[100, 100];
         public string this[int i, int j]
         {
             get
@@ -599,7 +598,7 @@ namespace TestCases.Activities.Common.Expressions
 
     public class ChildOfTheClass : TheClass
     {
-        private int[] _oneDimIndexField = new int[100];
+        private readonly int[] _oneDimIndexField = new int[100];
         public override int this[long i]
         {
             get

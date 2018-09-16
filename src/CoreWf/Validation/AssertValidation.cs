@@ -1,17 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+
     public sealed class AssertValidation : NativeActivity
     {
         public AssertValidation()
         {
         }
-
+        
         public InArgument<bool> Assertion
         {
             get;
@@ -36,7 +36,7 @@ namespace CoreWf.Validation
         {
             get;
             set;
-        }
+        }      
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -73,12 +73,12 @@ namespace CoreWf.Validation
                 {
                     isWarning = this.IsWarning.Get(context);
                 }
-
+                
                 if (this.PropertyName != null)
                 {
-                    propertyName = this.PropertyName.Get(context);
+                   propertyName = this.PropertyName.Get(context);            
                 }
-
+            
                 Constraint.AddValidationError(context, new ValidationError(this.Message.Get(context), isWarning, propertyName));
             }
         }

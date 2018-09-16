@@ -1,11 +1,7 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
-using CoreWf;
 using CoreWf.Statements;
-using Test.Common.TestObjects.Activities.Collections;
-using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.Activities

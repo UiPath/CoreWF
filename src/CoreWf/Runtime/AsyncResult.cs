@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using System.Threading;
@@ -11,13 +11,13 @@ namespace CoreWf.Runtime
     internal abstract class AsyncResult : IAsyncResult
     {
         private static AsyncCallback s_asyncCompletionWrapperCallback;
-        private AsyncCallback _callback;
+        private readonly AsyncCallback _callback;
         private bool _completedSynchronously;
         private bool _endCalled;
         private Exception _exception;
         private bool _isCompleted;
         private AsyncCompletion _nextAsyncCompletion;
-        private object _state;
+        private readonly object _state;
         private Action _beforePrepareAsyncCompletionAction;
         private Func<IAsyncResult, bool> _checkSyncValidationFunc;
         [Fx.Tag.SynchronizationObject]
@@ -25,7 +25,7 @@ namespace CoreWf.Runtime
         private ManualResetEvent _manualResetEvent;
         [Fx.Tag.SynchronizationObject(Blocking = false)]
 
-        private object _thisLock;
+        private readonly object _thisLock;
 
         //#if DEBUG
         //        StackTrace endStack;
@@ -282,14 +282,12 @@ namespace CoreWf.Runtime
 
         protected bool CheckSyncContinue(IAsyncResult result)
         {
-            AsyncCompletion dummy;
-            return TryContinueHelper(result, out dummy);
+            return TryContinueHelper(result, out AsyncCompletion dummy);
         }
 
         protected bool SyncContinue(IAsyncResult result)
         {
-            AsyncCompletion callback;
-            if (TryContinueHelper(result, out callback))
+            if (TryContinueHelper(result, out AsyncCompletion callback))
             {
                 return callback(result);
             }
@@ -357,14 +355,13 @@ namespace CoreWf.Runtime
         {
             if (result == null)
             {
-                throw Fx.Exception.ArgumentNull("result");
+                throw Fx.Exception.ArgumentNull(nameof(result));
             }
 
-            TAsyncResult asyncResult = result as TAsyncResult;
 
-            if (asyncResult == null)
+            if (!(result is TAsyncResult asyncResult))
             {
-                throw Fx.Exception.Argument("result", SR.InvalidAsyncResult);
+                throw Fx.Exception.Argument(nameof(result), SR.InvalidAsyncResult);
             }
 
             if (asyncResult._endCalled)

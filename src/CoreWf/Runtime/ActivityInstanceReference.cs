@@ -1,32 +1,32 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     internal class ActivityInstanceReference : ActivityInstanceMap.IActivityReference
     {
-        private ActivityInstance _activityInstance;
+        private ActivityInstance activityInstance;
 
         internal ActivityInstanceReference(ActivityInstance activity)
         {
-            _activityInstance = activity;
+            this.activityInstance = activity;
         }
 
         [DataMember(Name = "activityInstance")]
         internal ActivityInstance SerializedActivityInstance
         {
-            get { return _activityInstance; }
-            set { _activityInstance = value; }
+            get { return this.activityInstance; }
+            set { this.activityInstance = value; }
         }
 
         Activity ActivityInstanceMap.IActivityReference.Activity
         {
             get
             {
-                return _activityInstance.Activity;
+                return this.activityInstance.Activity;
             }
         }
 
@@ -35,7 +35,7 @@ namespace CoreWf.Runtime
         {
             get
             {
-                return _activityInstance;
+                return this.activityInstance;
             }
         }
 
@@ -45,9 +45,9 @@ namespace CoreWf.Runtime
             // added by this wrapper class.  This is because we can't guarantee
             // that multiple activities won't have a reference to the same
             // ActivityInstance.
-            if (_activityInstance.Activity == null)
+            if (this.activityInstance.Activity == null)
             {
-                ((ActivityInstanceMap.IActivityReference)_activityInstance).Load(activity, instanceMap);
+                ((ActivityInstanceMap.IActivityReference)this.activityInstance).Load(activity, instanceMap);
             }
         }
     }

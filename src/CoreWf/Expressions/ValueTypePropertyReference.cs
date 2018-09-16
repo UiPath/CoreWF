@@ -1,27 +1,26 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System;
+    using System.ComponentModel;
+    using System.Reflection;
+    using System.Runtime.Serialization;
+    using System.Threading;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     public sealed class ValueTypePropertyReference<TOperand, TResult> : CodeActivity<Location<TResult>>
     {
-        private PropertyInfo _propertyInfo;
-        private Func<object, object[], object> _getFunc;
-        private Func<object, object[], object> _setFunc;
-
-        private MethodInfo _getMethod;
-        private MethodInfo _setMethod;
-
-        private static MruCache<MethodInfo, Func<object, object[], object>> s_funcCache =
+        private PropertyInfo propertyInfo;
+        private Func<object, object[], object> getFunc;
+        private Func<object, object[], object> setFunc;
+        private MethodInfo getMethod;
+        private MethodInfo setMethod;
+        private static readonly MruCache<MethodInfo, Func<object, object[], object>> funcCache =
             new MruCache<MethodInfo, Func<object, object[], object>>(MethodCallExpressionHelper.FuncCacheCapacity);
-        private static ReaderWriterLockSlim s_locker = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         [DefaultValue(null)]
         public string PropertyName
@@ -39,15 +38,15 @@ namespace CoreWf.Expressions
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
-            MethodInfo oldGetMethod = _getMethod;
-            MethodInfo oldSetMethod = _setMethod;
+            MethodInfo oldGetMethod = this.getMethod;
+            MethodInfo oldSetMethod = this.setMethod;
 
-            if (!typeof(TOperand).GetTypeInfo().IsValueType)
+            if (!typeof(TOperand).IsValueType)
             {
                 metadata.AddValidationError(SR.TypeMustbeValueType(typeof(TOperand).Name));
             }
 
-            if (typeof(TOperand).GetTypeInfo().IsEnum)
+            if (typeof(TOperand).IsEnum)
             {
                 metadata.AddValidationError(SR.TargetTypeCannotBeEnum(this.GetType().Name, this.DisplayName));
             }
@@ -57,39 +56,39 @@ namespace CoreWf.Expressions
             }
             else
             {
-                _propertyInfo = typeof(TOperand).GetProperty(this.PropertyName);
-                if (_propertyInfo == null)
+                this.propertyInfo = typeof(TOperand).GetProperty(this.PropertyName);
+                if (this.propertyInfo == null)
                 {
                     metadata.AddValidationError(SR.MemberNotFound(PropertyName, typeof(TOperand).Name));
                 }
             }
 
             bool isRequired = false;
-            if (_propertyInfo != null)
+            if (this.propertyInfo != null)
             {
-                _setMethod = _propertyInfo.GetSetMethod();
-                _getMethod = _propertyInfo.GetGetMethod();
+                this.setMethod = this.propertyInfo.GetSetMethod();
+                this.getMethod = this.propertyInfo.GetGetMethod();
 
-                if (_setMethod == null)
+                if (setMethod == null)
                 {
-                    metadata.AddValidationError(SR.MemberIsReadOnly(_propertyInfo.Name, typeof(TOperand)));
+                    metadata.AddValidationError(SR.MemberIsReadOnly(propertyInfo.Name, typeof(TOperand)));
                 }
-                if (_setMethod != null && !_setMethod.IsStatic)
+                if (setMethod != null && !setMethod.IsStatic)
                 {
                     isRequired = true;
                 }
             }
             MemberExpressionHelper.AddOperandLocationArgument<TOperand>(metadata, this.OperandLocation, isRequired);
 
-            if (_propertyInfo != null)
+            if (this.propertyInfo != null)
             {
-                if (MethodCallExpressionHelper.NeedRetrieve(_getMethod, oldGetMethod, _getFunc))
+                if (MethodCallExpressionHelper.NeedRetrieve(this.getMethod, oldGetMethod, this.getFunc))
                 {
-                    _getFunc = MethodCallExpressionHelper.GetFunc(metadata, _getMethod, s_funcCache, s_locker);
+                    this.getFunc = MethodCallExpressionHelper.GetFunc(metadata, this.getMethod, funcCache, locker);
                 }
-                if (MethodCallExpressionHelper.NeedRetrieve(_setMethod, oldSetMethod, _setFunc))
+                if (MethodCallExpressionHelper.NeedRetrieve(this.setMethod, oldSetMethod, this.setFunc))
                 {
-                    _setFunc = MethodCallExpressionHelper.GetFunc(metadata, _setMethod, s_funcCache, s_locker, true);
+                    this.setFunc = MethodCallExpressionHelper.GetFunc(metadata, this.setMethod, funcCache, locker, true);
                 }
             }
         }
@@ -98,29 +97,27 @@ namespace CoreWf.Expressions
         {
             Location<TOperand> operandLocationValue = this.OperandLocation.GetLocation(context);
             Fx.Assert(operandLocationValue != null, "OperandLocation must not be null");
-            Fx.Assert(_propertyInfo != null, "propertyInfo must not be null");
-            return new PropertyLocation(_propertyInfo, _getFunc, _setFunc, operandLocationValue);
+            Fx.Assert(this.propertyInfo != null, "propertyInfo must not be null");
+            return new PropertyLocation(this.propertyInfo, this.getFunc, this.setFunc, operandLocationValue);
         }
 
         [DataContract]
         internal class PropertyLocation : Location<TResult>
         {
-            private Location<TOperand> _ownerLocation;
-
-            private PropertyInfo _propertyInfo;
-
-            private Func<object, object[], object> _getFunc;
-            private Func<object, object[], object> _setFunc;
+            private Location<TOperand> ownerLocation;
+            private PropertyInfo propertyInfo;
+            private readonly Func<object, object[], object> getFunc;
+            private readonly Func<object, object[], object> setFunc;
 
             public PropertyLocation(PropertyInfo propertyInfo, Func<object, object[], object> getFunc,
                 Func<object, object[], object> setFunc, Location<TOperand> ownerLocation)
                 : base()
             {
-                _propertyInfo = propertyInfo;
-                _ownerLocation = ownerLocation;
+                this.propertyInfo = propertyInfo;
+                this.ownerLocation = ownerLocation;
 
-                _getFunc = getFunc;
-                _setFunc = setFunc;
+                this.getFunc = getFunc;
+                this.setFunc = setFunc;
             }
 
             public override TResult Value
@@ -131,31 +128,31 @@ namespace CoreWf.Expressions
                     // from the other's perspective, not internal properties, so they're okay as a special case.
                     // E.g. "[N]" from the user's perspective is not accessing a nonpublic property, even though
                     // at an implementation level it is.
-                    if (_getFunc != null)
+                    if (this.getFunc != null)
                     {
-                        return (TResult)_getFunc(_ownerLocation.Value, new object[0]);
+                        return (TResult)this.getFunc(this.ownerLocation.Value, new object[0]);
                     }
-                    if (_propertyInfo.GetGetMethod() == null && TypeHelper.AreTypesCompatible(_propertyInfo.DeclaringType, typeof(Location)) == false)
+                    if (this.propertyInfo.GetGetMethod() == null && TypeHelper.AreTypesCompatible(this.propertyInfo.DeclaringType, typeof(Location)) == false)
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteonlyPropertyCannotBeRead(_propertyInfo.DeclaringType, _propertyInfo.Name)));
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteonlyPropertyCannotBeRead(this.propertyInfo.DeclaringType, this.propertyInfo.Name)));
                     }
 
-                    return (TResult)_propertyInfo.GetValue(_ownerLocation.Value, null);
+                    return (TResult)this.propertyInfo.GetValue(this.ownerLocation.Value, null);
                 }
                 set
                 {
-                    object copy = _ownerLocation.Value;
-                    if (_getFunc != null)
+                    object copy = this.ownerLocation.Value;
+                    if (this.getFunc != null)
                     {
-                        copy = _setFunc(copy, new object[] { value });
+                        copy = this.setFunc(copy, new object[] { value });
                     }
                     else
                     {
-                        _propertyInfo.SetValue(copy, value, null);
+                        this.propertyInfo.SetValue(copy, value, null);
                     }
                     if (copy != null)
                     {
-                        _ownerLocation.Value = (TOperand)copy;
+                        this.ownerLocation.Value = (TOperand)copy;
                     }
                 }
             }
@@ -163,15 +160,15 @@ namespace CoreWf.Expressions
             [DataMember(EmitDefaultValue = false, Name = "ownerLocation")]
             internal Location<TOperand> SerializedOwnerLocation
             {
-                get { return _ownerLocation; }
-                set { _ownerLocation = value; }
+                get { return this.ownerLocation; }
+                set { this.ownerLocation = value; }
             }
 
             [DataMember(Name = "propertyInfo")]
             internal PropertyInfo SerializedPropertyInfo
             {
-                get { return _propertyInfo; }
-                set { _propertyInfo = value; }
+                get { return this.propertyInfo; }
+                set { this.propertyInfo = value; }
             }
         }
     }

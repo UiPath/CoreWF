@@ -1,59 +1,59 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using System.Runtime.Serialization;
+    using CoreWf.Runtime;
+
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
     public sealed class LocationInfo
     {
-        private string _name;
-        private string _ownerDisplayName;
-        private object _value;
+        private string name;
+        private string ownerDisplayName;
+        private object value;
 
         internal LocationInfo(string name, string ownerDisplayName, object value)
         {
             this.Name = name;
             this.OwnerDisplayName = ownerDisplayName;
             this.Value = value;
-        }
+        }        
 
         public string Name
         {
             get
             {
-                return _name;
+                return this.name;
             }
             private set
             {
-                _name = value;
+                this.name = value;
             }
         }
-
+        
         public string OwnerDisplayName
         {
             get
             {
-                return _ownerDisplayName;
+                return this.ownerDisplayName;
             }
             private set
             {
-                _ownerDisplayName = value;
+                this.ownerDisplayName = value;
             }
         }
-
+        
         public object Value
         {
             get
             {
-                return _value;
+                return this.value;
             }
             private set
             {
-                _value = value;
+                this.value = value;
             }
         }
 

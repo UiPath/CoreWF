@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using Newtonsoft.Json;
 using System;
@@ -250,7 +250,7 @@ namespace CoreWf.EtwTracking
                         unhandled.FaultSource.Name, unhandled.FaultSource.Id, unhandled.FaultSource.InstanceId, unhandled.FaultSource.TypeName,
                         unhandled.UnhandledException == null ? string.Empty : unhandled.UnhandledException.ToString(),
                         unhandled.HasAnnotations ? JsonConvert.SerializeObject(unhandled.Annotations, Formatting.Indented) : emptyItemsTag,
-                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name == null ? string.Empty : this.TrackingProfile.Name,
+                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name ?? string.Empty,
                         unhandled.WorkflowDefinitionIdentity.ToString(), this.ApplicationReference);
                 }
             }
@@ -276,7 +276,7 @@ namespace CoreWf.EtwTracking
                     WfEtwTrackingEventSource.Instance.WorkflowInstanceAbortedRecordWithId(aborted.InstanceId, aborted.RecordNumber,
                         aborted.EventTime, aborted.ActivityDefinitionId, aborted.Reason,
                         aborted.HasAnnotations ? JsonConvert.SerializeObject(aborted.Annotations, Formatting.Indented) : emptyItemsTag,
-                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name == null ? string.Empty : this.TrackingProfile.Name,
+                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name ?? string.Empty,
                         aborted.WorkflowDefinitionIdentity.ToString(), this.ApplicationReference);
                 }
             }
@@ -302,7 +302,7 @@ namespace CoreWf.EtwTracking
                     WfEtwTrackingEventSource.Instance.WorkflowInstanceSuspendedRecordWithId(suspended.InstanceId, suspended.RecordNumber,
                         suspended.EventTime, suspended.ActivityDefinitionId, suspended.Reason,
                         suspended.HasAnnotations ? JsonConvert.SerializeObject(suspended.Annotations, Formatting.Indented) : emptyItemsTag,
-                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name == null ? string.Empty : this.TrackingProfile.Name,
+                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name ?? string.Empty,
                         suspended.WorkflowDefinitionIdentity.ToString(), this.ApplicationReference);
                 }
             }
@@ -328,7 +328,7 @@ namespace CoreWf.EtwTracking
                     WfEtwTrackingEventSource.Instance.WorkflowInstanceTerminatedRecordWithId(terminated.InstanceId, terminated.RecordNumber,
                         terminated.EventTime, terminated.ActivityDefinitionId, terminated.Reason,
                         terminated.HasAnnotations ? JsonConvert.SerializeObject(terminated.Annotations, Formatting.Indented) : emptyItemsTag,
-                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name == null ? string.Empty : this.TrackingProfile.Name,
+                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name ?? string.Empty,
                         terminated.WorkflowDefinitionIdentity.ToString(), this.ApplicationReference);
                 }
             }
@@ -355,7 +355,7 @@ namespace CoreWf.EtwTracking
                         record.EventTime, record.ActivityDefinitionId,
                         record.State,
                         record.HasAnnotations ? JsonConvert.SerializeObject(record.Annotations, Formatting.Indented) : emptyItemsTag,
-                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name == null ? string.Empty : this.TrackingProfile.Name,
+                        this.TrackingProfile == null ? string.Empty : this.TrackingProfile.Name ?? string.Empty,
                         record.WorkflowDefinitionIdentity.ToString(), this.ApplicationReference);
                 }
             }

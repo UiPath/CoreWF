@@ -1,25 +1,27 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Cases")]
+    using CoreWf;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using CoreWf.Runtime;
+
+    [ContentProperty("Cases")]
     public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
     {
         private const string DefaultDisplayName = "Switch";
         internal IDictionary<T, FlowNode> cases;
-        private CompletionCallback<T> _onSwitchCompleted;
-        private string _displayName;
+        private CompletionCallback<T> onSwitchCompleted;
+        private string displayName;
 
         public FlowSwitch()
         {
             this.cases = new NullableKeyDictionary<T, FlowNode>();
-            _displayName = FlowSwitch<T>.DefaultDisplayName;
+            this.displayName = FlowSwitch<T>.DefaultDisplayName;
         }
 
         [DefaultValue(null)]
@@ -50,11 +52,11 @@ namespace CoreWf.Statements
         {
             get
             {
-                return _displayName;
+                return this.displayName;
             }
             set
             {
-                _displayName = value;
+                this.displayName = value;
             }
         }
 
@@ -91,9 +93,8 @@ namespace CoreWf.Statements
 
         FlowNode IFlowSwitch.GetNextNode(object value)
         {
-            FlowNode result;
             T newValue = (T)value;
-            if (Cases.TryGetValue(newValue, out result))
+            if (Cases.TryGetValue(newValue, out FlowNode result))
             {
                 if (TD.FlowchartSwitchCaseIsEnabled())
                 {
@@ -123,11 +124,11 @@ namespace CoreWf.Statements
 
         private CompletionCallback<T> GetSwitchCompletedCallback(Flowchart parent)
         {
-            if (_onSwitchCompleted == null)
+            if (onSwitchCompleted == null)
             {
-                _onSwitchCompleted = new CompletionCallback<T>(parent.OnSwitchCompleted<T>);
+                onSwitchCompleted = new CompletionCallback<T>(parent.OnSwitchCompleted<T>);
             }
-            return _onSwitchCompleted;
+            return onSwitchCompleted;
         }
     }
 }

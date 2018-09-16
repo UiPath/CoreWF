@@ -1,14 +1,15 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Tracking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+
     // One workflow host should have one manager, and one manager should have one catalog.
     // One workflow instance should have one container as the instance itself would be
     // added as one extension to the container as well
@@ -17,13 +18,11 @@ namespace CoreWf.Hosting
         // using an empty list instead of null simplifies our calculations immensely
         internal static List<KeyValuePair<Type, WorkflowInstanceExtensionProvider>> EmptyExtensionProviders = new List<KeyValuePair<Type, WorkflowInstanceExtensionProvider>>(0);
         internal static List<object> EmptySingletonExtensions = new List<object>(0);
-
-        private bool _isReadonly;
-        private List<object> _additionalSingletonExtensions;
-        private List<object> _allSingletonExtensions;
-
-        private bool _hasSingletonTrackingParticipant;
-        private bool _hasSingletonPersistenceModule;
+        private bool isReadonly;
+        private List<object> additionalSingletonExtensions;
+        private List<object> allSingletonExtensions;
+        private bool hasSingletonTrackingParticipant;
+        private bool hasSingletonPersistenceModule;
 
         public WorkflowInstanceExtensionManager()
         {
@@ -45,7 +44,7 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _additionalSingletonExtensions;
+                return this.additionalSingletonExtensions;
             }
         }
 
@@ -65,7 +64,7 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _hasSingletonTrackingParticipant;
+                return this.hasSingletonTrackingParticipant;
             }
         }
 
@@ -73,7 +72,7 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _hasSingletonPersistenceModule;
+                return this.hasSingletonPersistenceModule;
             }
         }
 
@@ -88,7 +87,7 @@ namespace CoreWf.Hosting
         {
             if (singletonExtension == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("singletonExtension");
+                throw FxTrace.Exception.ArgumentNull(nameof(singletonExtension));
             }
 
             ThrowIfReadOnly();
@@ -97,7 +96,7 @@ namespace CoreWf.Hosting
             {
                 if (this.SymbolResolver != null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("singletonExtension", SR.SymbolResolverAlreadyExists);
+                    throw FxTrace.Exception.Argument(nameof(singletonExtension), SR.SymbolResolverAlreadyExists);
                 }
                 this.SymbolResolver = (SymbolResolver)singletonExtension;
             }
@@ -109,11 +108,11 @@ namespace CoreWf.Hosting
                 }
                 if (!this.HasSingletonTrackingParticipant && singletonExtension is TrackingParticipant)
                 {
-                    _hasSingletonTrackingParticipant = true;
+                    this.hasSingletonTrackingParticipant = true;
                 }
                 if (!this.HasSingletonPersistenceModule && singletonExtension is IPersistencePipelineModule)
                 {
-                    _hasSingletonPersistenceModule = true;
+                    this.hasSingletonPersistenceModule = true;
                 }
             }
 
@@ -130,7 +129,7 @@ namespace CoreWf.Hosting
         {
             if (extensionCreationFunction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionCreationFunction");
+                throw FxTrace.Exception.ArgumentNull(nameof(extensionCreationFunction));
             }
             ThrowIfReadOnly();
 
@@ -144,12 +143,12 @@ namespace CoreWf.Hosting
 
         internal List<object> GetAllSingletonExtensions()
         {
-            return _allSingletonExtensions;
+            return this.allSingletonExtensions;
         }
 
         internal void AddAllExtensionTypes(HashSet<Type> extensionTypes)
         {
-            Fx.Assert(_isReadonly, "should be read only at this point");
+            Fx.Assert(this.isReadonly, "should be read only at this point");
             for (int i = 0; i < this.SingletonExtensions.Count; i++)
             {
                 extensionTypes.Add(this.SingletonExtensions[i].GetType());
@@ -181,8 +180,7 @@ namespace CoreWf.Hosting
         internal static void AddExtensionClosure(object newExtension, ref List<object> targetCollection, ref bool addedTrackingParticipant, ref bool addedPersistenceModule)
         {
             // see if we need to process "additional" extensions
-            IWorkflowInstanceExtension currentInstanceExtension = newExtension as IWorkflowInstanceExtension;
-            if (currentInstanceExtension == null)
+            if (!(newExtension is IWorkflowInstanceExtension currentInstanceExtension))
             {
                 return; // bail early
             }
@@ -235,7 +233,7 @@ namespace CoreWf.Hosting
         {
             // if any singleton extensions have dependents, calculate them now so that we're only
             // doing this process once per-host
-            if (!_isReadonly)
+            if (!this.isReadonly)
             {
                 if (this.SingletonExtensions != null)
                 {
@@ -243,7 +241,7 @@ namespace CoreWf.Hosting
                     {
                         foreach (IWorkflowInstanceExtension additionalExtensionProvider in this.SingletonExtensions.OfType<IWorkflowInstanceExtension>())
                         {
-                            AddExtensionClosure(additionalExtensionProvider, ref _additionalSingletonExtensions, ref _hasSingletonTrackingParticipant, ref _hasSingletonPersistenceModule);
+                            AddExtensionClosure(additionalExtensionProvider, ref this.additionalSingletonExtensions, ref this.hasSingletonTrackingParticipant, ref this.hasSingletonPersistenceModule);
                         }
 
                         if (this.AdditionalSingletonExtensions != null)
@@ -260,17 +258,17 @@ namespace CoreWf.Hosting
                         }
                     }
 
-                    _allSingletonExtensions = this.SingletonExtensions;
+                    this.allSingletonExtensions = this.SingletonExtensions;
                     if (this.AdditionalSingletonExtensions != null && this.AdditionalSingletonExtensions.Count > 0)
                     {
-                        _allSingletonExtensions = new List<object>(this.SingletonExtensions);
-                        _allSingletonExtensions.AddRange(this.AdditionalSingletonExtensions);
+                        this.allSingletonExtensions = new List<object>(this.SingletonExtensions);
+                        this.allSingletonExtensions.AddRange(this.AdditionalSingletonExtensions);
                     }
                 }
                 else
                 {
                     this.SingletonExtensions = EmptySingletonExtensions;
-                    _allSingletonExtensions = EmptySingletonExtensions;
+                    this.allSingletonExtensions = EmptySingletonExtensions;
                 }
 
                 if (this.ExtensionProviders == null)
@@ -278,15 +276,15 @@ namespace CoreWf.Hosting
                     this.ExtensionProviders = EmptyExtensionProviders;
                 }
 
-                _isReadonly = true;
+                this.isReadonly = true;
             }
         }
 
         private void ThrowIfReadOnly()
         {
-            if (_isReadonly)
+            if (this.isReadonly)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ExtensionsCannotBeModified));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExtensionsCannotBeModified));
             }
         }
     }

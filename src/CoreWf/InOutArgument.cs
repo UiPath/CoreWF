@@ -1,14 +1,16 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using System;
-using System.ComponentModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Expressions;
+    using CoreWf.XamlIntegration;
+    using CoreWf.Runtime;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using Portable.Xaml.Markup;
+    using CoreWf.Internals;
 
     public abstract class InOutArgument : Argument
     {
@@ -18,26 +20,26 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
+        //    Justification = "Subclass needed to enforce rules about which directions can be referenced.")]
         public static InOutArgument CreateReference(InOutArgument argumentToReference, string referencedArgumentName)
         {
             if (argumentToReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("argumentToReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
             }
 
             if (string.IsNullOrEmpty(referencedArgumentName))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("referencedArgumentName");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
             }
 
             return (InOutArgument)ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, ArgumentDirection.InOut, referencedArgumentName);
         }
     }
 
-    //[ContentProperty("Expression")]
-    //[TypeConverter(typeof(InOutArgumentConverter))]
-    //[ValueSerializer(typeof(ArgumentValueSerializer))]
+    [ContentProperty("Expression")]
+    [TypeConverter(typeof(InOutArgumentConverter))]
+    [ValueSerializer(typeof(ArgumentValueSerializer))]
     public sealed class InOutArgument<T> : InOutArgument
     {
         public InOutArgument(Variable variable)
@@ -100,9 +102,8 @@ namespace CoreWf
                     return;
                 }
 
-                Activity<Location<T>> typedActivity = value as Activity<Location<T>>;
 
-                if (typedActivity != null)
+                if (value is Activity<Location<T>> typedActivity)
                 {
                     this.Expression = typedActivity;
                 }
@@ -126,7 +127,7 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]    
+        //    Justification = "Generic needed for type inference")]    
         public static InOutArgument<T> FromVariable(Variable<T> variable)
         {
             return new InOutArgument<T>
@@ -139,7 +140,7 @@ namespace CoreWf
         {
             if (expression == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("expression");
+                throw FxTrace.Exception.ArgumentNull(nameof(expression));
             }
 
             return new InOutArgument<T>
@@ -155,7 +156,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();
@@ -175,7 +176,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             ThrowIfNotInTree();

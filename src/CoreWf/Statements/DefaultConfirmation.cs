@@ -1,27 +1,27 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.ObjectModel;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Statements
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using System;
+    using System.Collections.ObjectModel;
+
     internal sealed class DefaultConfirmation : NativeActivity
     {
-        private Activity _body;
-        private Variable<CompensationToken> _toConfirmToken;
-        private CompletionCallback _onChildConfirmed;
+        private readonly Activity body;
+        private readonly Variable<CompensationToken> toConfirmToken;
+        private CompletionCallback onChildConfirmed;
 
         public DefaultConfirmation()
             : base()
         {
-            _toConfirmToken = new Variable<CompensationToken>();
+            this.toConfirmToken = new Variable<CompensationToken>();
 
-            _body = new InternalConfirm()
-            {
-                Target = new InArgument<CompensationToken>(_toConfirmToken),
-            };
+            this.body = new InternalConfirm()
+                {
+                    Target = new InArgument<CompensationToken>(toConfirmToken),
+                };
         }
 
         public InArgument<CompensationToken> Target
@@ -32,7 +32,7 @@ namespace CoreWf.Statements
 
         private Activity Body
         {
-            get { return _body; }
+            get { return this.body; }
         }
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
@@ -41,7 +41,7 @@ namespace CoreWf.Statements
             metadata.Bind(this.Target, targetArgument);
             metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { targetArgument });
 
-            metadata.SetImplementationVariablesCollection(new Collection<Variable> { _toConfirmToken });
+            metadata.SetImplementationVariablesCollection(new Collection<Variable> { this.toConfirmToken });
 
             Fx.Assert(this.Body != null, "Body must be valid");
             metadata.SetImplementationChildrenCollection(new Collection<Activity> { this.Body });
@@ -57,7 +57,7 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             if (compensationExtension == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ConfirmWithoutCompensableActivity(this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ConfirmWithoutCompensableActivity(this.DisplayName)));
             }
 
             CompensationToken token = Target.Get(context);
@@ -67,15 +67,15 @@ namespace CoreWf.Statements
 
             if (tokenData.ExecutionTracker.Count > 0)
             {
-                if (_onChildConfirmed == null)
+                if (this.onChildConfirmed == null)
                 {
-                    _onChildConfirmed = new CompletionCallback(InternalExecute);
+                    this.onChildConfirmed = new CompletionCallback(InternalExecute);
                 }
 
-                _toConfirmToken.Set(context, new CompensationToken(tokenData.ExecutionTracker.Get()));
+                this.toConfirmToken.Set(context, new CompensationToken(tokenData.ExecutionTracker.Get()));
 
                 Fx.Assert(Body != null, "Body must be valid");
-                context.ScheduleActivity(Body, _onChildConfirmed);
+                context.ScheduleActivity(Body, this.onChildConfirmed);
             }
         }
 
@@ -84,5 +84,6 @@ namespace CoreWf.Statements
             // Suppress Cancel   
         }
     }
+
 }
 

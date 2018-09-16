@@ -1,12 +1,11 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Validation
 {
+    using CoreWf.Runtime;
+    using System.Collections.Generic;
+
     public sealed class GetParentChain : CodeActivity<IEnumerable<Activity>>
     {
         public GetParentChain()
@@ -18,14 +17,6 @@ namespace CoreWf.Validation
         {
             get;
             set;
-        }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            RuntimeArgument runtimeArgument = new RuntimeArgument("ValidationContext", typeof(ValidationContext), ArgumentDirection.In, true);
-            metadata.Bind(this.ValidationContext, runtimeArgument);
-
-            metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { runtimeArgument });
         }
 
         protected override IEnumerable<Activity> Execute(CodeActivityContext context)

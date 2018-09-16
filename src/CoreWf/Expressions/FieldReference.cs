@@ -1,17 +1,17 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using CoreWf.Runtime;
+    using System;
+    using System.ComponentModel;
+    using System.Reflection;
+    using System.Runtime.Serialization;
+
     public sealed class FieldReference<TOperand, TResult> : CodeActivity<Location<TResult>>
     {
-        private FieldInfo _fieldInfo;
+        private FieldInfo fieldInfo;
 
         public FieldReference()
             : base()
@@ -35,11 +35,11 @@ namespace CoreWf.Expressions
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
             bool isRequired = false;
-            if (typeof(TOperand).GetTypeInfo().IsEnum)
+            if (typeof(TOperand).IsEnum)
             {
                 metadata.AddValidationError(SR.TargetTypeCannotBeEnum(this.GetType().Name, this.DisplayName));
             }
-            else if (typeof(TOperand).GetTypeInfo().IsValueType)
+            else if (typeof(TOperand).IsValueType)
             {
                 metadata.AddValidationError(SR.TargetTypeIsValueType(this.GetType().Name, this.DisplayName));
             }
@@ -51,19 +51,19 @@ namespace CoreWf.Expressions
             else
             {
                 Type operandType = typeof(TOperand);
-                _fieldInfo = operandType.GetField(this.FieldName);
+                this.fieldInfo = operandType.GetField(this.FieldName);
 
-                if (_fieldInfo == null)
+                if (this.fieldInfo == null)
                 {
                     metadata.AddValidationError(SR.MemberNotFound(this.FieldName, typeof(TOperand).Name));
                 }
                 else
                 {
-                    if (_fieldInfo.IsInitOnly)
+                    if (fieldInfo.IsInitOnly)
                     {
                         metadata.AddValidationError(SR.MemberIsReadOnly(this.FieldName, typeof(TOperand).Name));
                     }
-                    isRequired = !_fieldInfo.IsStatic;
+                    isRequired = !this.fieldInfo.IsStatic;
                 }
             }
             MemberExpressionHelper.AddOperandArgument(metadata, this.Operand, isRequired);
@@ -71,22 +71,21 @@ namespace CoreWf.Expressions
 
         protected override Location<TResult> Execute(CodeActivityContext context)
         {
-            Fx.Assert(_fieldInfo != null, "fieldInfo must not be null.");
-            return new FieldLocation(_fieldInfo, this.Operand.Get(context));
+            Fx.Assert(this.fieldInfo != null, "fieldInfo must not be null.");
+            return new FieldLocation(this.fieldInfo, this.Operand.Get(context));
         }
 
         [DataContract]
         internal class FieldLocation : Location<TResult>
         {
-            private FieldInfo _fieldInfo;
-
-            private object _owner;
+            private FieldInfo fieldInfo;
+            private object owner;
 
             public FieldLocation(FieldInfo fieldInfo, object owner)
                 : base()
             {
-                _fieldInfo = fieldInfo;
-                _owner = owner;
+                this.fieldInfo = fieldInfo;
+                this.owner = owner;
             }
 
             public override TResult Value
@@ -98,14 +97,14 @@ namespace CoreWf.Expressions
                     //    // The field is non-static, and obj is a null reference 
                     //    if (this.fieldInfo.DeclaringType != null)
                     //    {
-                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
+                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
                     //    }
                     //    else
                     //    {
-                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
+                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
                     //    }
                     //}
-                    return (TResult)_fieldInfo.GetValue(_owner);
+                    return (TResult)this.fieldInfo.GetValue(this.owner);
                 }
                 set
                 {
@@ -114,29 +113,29 @@ namespace CoreWf.Expressions
                     //    if (this.fieldInfo.DeclaringType != null)
                     //    {
                     //        // The field is non-static, and obj is a null reference 
-                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
+                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
                     //    }
                     //    else
                     //    {
-                    //        throw CoreWf.Internals.FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
+                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
                     //    }
                     //}
-                    _fieldInfo.SetValue(_owner, value);
+                    this.fieldInfo.SetValue(this.owner, value);
                 }
             }
 
             [DataMember(Name = "fieldInfo")]
             internal FieldInfo SerializedFieldInfo
             {
-                get { return _fieldInfo; }
-                set { _fieldInfo = value; }
+                get { return this.fieldInfo; }
+                set { this.fieldInfo = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "owner")]
             internal object SerializedOwner
             {
-                get { return _owner; }
-                set { _owner = value; }
+                get { return this.owner; }
+                set { this.owner = value; }
             }
         }
     }

@@ -1,38 +1,41 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.ObjectModel;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
-    //[ContentProperty("Bounds")]
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using System.Reflection;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using System;
+    using CoreWf.Internals;
+
+    [ContentProperty("Bounds")]
     public sealed class NewArray<TResult> : CodeActivity<TResult>
     {
-        private Collection<Argument> _bounds;
-        private ConstructorInfo _constructorInfo;
+        private Collection<Argument> bounds;
+        private ConstructorInfo constructorInfo;
 
         public Collection<Argument> Bounds
         {
             get
             {
-                if (_bounds == null)
+                if (this.bounds == null)
                 {
-                    _bounds = new ValidatingCollection<Argument>
+                    this.bounds = new ValidatingCollection<Argument>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _bounds;
+                return this.bounds;
             }
         }
 
@@ -68,7 +71,7 @@ namespace CoreWf.Expressions
                     }
                     else
                     {
-                        RuntimeArgument runtimeArgument = new RuntimeArgument("Argument" + i, this.Bounds[i].ArgumentType, _bounds[i].Direction, true);
+                        RuntimeArgument runtimeArgument = new RuntimeArgument("Argument" + i, this.Bounds[i].ArgumentType, this.bounds[i].Direction, true);
                         metadata.Bind(this.Bounds[i], runtimeArgument);
                         metadata.AddArgument(runtimeArgument);
 
@@ -81,13 +84,13 @@ namespace CoreWf.Expressions
             // we can look for an appropriate constructor.
             if (!foundError)
             {
-                _constructorInfo = typeof(TResult).GetConstructor(types);
-                if (_constructorInfo == null)
+                this.constructorInfo = typeof(TResult).GetConstructor(types);
+                if (this.constructorInfo == null)
                 {
                     metadata.AddValidationError(SR.ConstructorInfoNotFound(typeof(TResult).Name));
                 }
             }
-        }
+        } 
 
         protected override TResult Execute(CodeActivityContext context)
         {
@@ -98,13 +101,13 @@ namespace CoreWf.Expressions
                 objects[i] = argument.Get(context);
                 i++;
             }
-            TResult result = (TResult)_constructorInfo.Invoke(objects);
+            TResult result = (TResult)this.constructorInfo.Invoke(objects);
             return result;
         }
 
         private bool isIntegralType(Type type)
         {
-            if (type == typeof(sbyte) || type == typeof(byte) || type == typeof(char) || type == typeof(short) ||
+            if (type == typeof(sbyte) || type == typeof(byte) || type == typeof(char) || type == typeof(short) || 
                 type == typeof(ushort) || type == typeof(int) || type == typeof(uint) || type == typeof(long) || type == typeof(ulong))
             {
                 return true;
@@ -114,5 +117,6 @@ namespace CoreWf.Expressions
                 return false;
             }
         }
+
     }
 }

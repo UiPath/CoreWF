@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -27,8 +27,10 @@ namespace TestCases.Activities.Expressions
             //  Test case description:
             //  Set a public property on value type.
 
-            TheStruct valueType = new TheStruct();
-            valueType.PublicProperty = 123;
+            TheStruct valueType = new TheStruct
+            {
+                PublicProperty = 123
+            };
 
             Variable<TheStruct> var = new Variable<TheStruct>() { Default = valueType, Name = "var" };
             TestValueTypePropertyReference<TheStruct, int> valueTypePropertyReference = new TestValueTypePropertyReference<TheStruct, int>()
@@ -59,8 +61,10 @@ namespace TestCases.Activities.Expressions
             //  
             //  Test case description:
             //  Set a public enum property on value type.
-            TheStruct valueType = new TheStruct();
-            valueType.EnumProperty = FileAccess.Write;
+            TheStruct valueType = new TheStruct
+            {
+                EnumProperty = FileAccess.Write
+            };
 
             Variable<TheStruct> var = new Variable<TheStruct>() { Default = valueType, Name = "var" };
             TestValueTypePropertyReference<TheStruct, FileAccess> valueTypePropertyReference = new TestValueTypePropertyReference<TheStruct, FileAccess>()

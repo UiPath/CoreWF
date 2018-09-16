@@ -1,20 +1,21 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Tracking;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Tracking;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using CoreWf.Internals;
+
     [Fx.Tag.XamlVisible(false)]
     public class NativeActivityContext : ActivityContext
     {
-        private BookmarkManager _bookmarkManager;
-        private ActivityExecutor _executor;
+        private BookmarkManager bookmarkManager;
+        private ActivityExecutor executor;
 
         // This is called by the Pool.
         internal NativeActivityContext()
@@ -26,8 +27,8 @@ namespace CoreWf
         internal NativeActivityContext(ActivityInstance instance, ActivityExecutor executor, BookmarkManager bookmarkManager)
             : base(instance, executor)
         {
-            _executor = executor;
-            _bookmarkManager = bookmarkManager;
+            this.executor = executor;
+            this.bookmarkManager = bookmarkManager;
         }
 
         public BookmarkScope DefaultBookmarkScope
@@ -35,7 +36,7 @@ namespace CoreWf
             get
             {
                 ThrowIfDisposed();
-                return _executor.BookmarkScopeManager.Default;
+                return this.executor.BookmarkScopeManager.Default;
             }
         }
 
@@ -57,27 +58,27 @@ namespace CoreWf
             }
         }
 
-        //internal bool HasRuntimeTransaction
-        //{
-        //    get
-        //    {
-        //        return this.executor.HasRuntimeTransaction;
-        //    }
-        //}
+        internal bool HasRuntimeTransaction
+        {
+            get
+            {
+                return this.executor.HasRuntimeTransaction;
+            }
+        }
 
-        //internal bool RequiresTransactionContextWaiterExists
-        //{
-        //    get
-        //    {
-        //        return this.executor.RequiresTransactionContextWaiterExists;
-        //    }
-        //}
+        internal bool RequiresTransactionContextWaiterExists
+        {
+            get
+            {
+                return this.executor.RequiresTransactionContextWaiterExists;
+            }
+        }
 
         internal bool IsInNoPersistScope
         {
             get
             {
-                if ((this.Properties.Find(NoPersistProperty.Name) != null) /*|| (this.executor.HasRuntimeTransaction)*/)
+                if ((this.Properties.Find(NoPersistProperty.Name) != null) || (this.executor.HasRuntimeTransaction))
                 {
                     return true;
                 }
@@ -88,61 +89,61 @@ namespace CoreWf
         internal void Initialize(ActivityInstance instance, ActivityExecutor executor, BookmarkManager bookmarkManager)
         {
             base.Reinitialize(instance, executor);
-            _executor = executor;
-            _bookmarkManager = bookmarkManager;
+            this.executor = executor;
+            this.bookmarkManager = bookmarkManager;
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public T GetValue<T>(Variable<T> variable)
         {
             ThrowIfDisposed();
 
             if (variable == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw FxTrace.Exception.ArgumentNull(nameof(variable));
             }
 
             return GetValueCore<T>(variable);
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
+        //    Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
         public object GetValue(Variable variable)
         {
             ThrowIfDisposed();
 
             if (variable == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw FxTrace.Exception.ArgumentNull(nameof(variable));
             }
 
             return GetValueCore<object>(variable);
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
+        //    Justification = "Generic needed for type inference")]
         public void SetValue<T>(Variable<T> variable, T value)
         {
             ThrowIfDisposed();
 
             if (variable == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw FxTrace.Exception.ArgumentNull(nameof(variable));
             }
 
             SetValueCore(variable, value);
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
+        //    Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
         public void SetValue(Variable variable, object value)
         {
             ThrowIfDisposed();
 
             if (variable == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("variable");
+                throw FxTrace.Exception.ArgumentNull(nameof(variable));
             }
 
             SetValueCore(variable, value);
@@ -173,7 +174,7 @@ namespace CoreWf
 
             if (activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw FxTrace.Exception.ArgumentNull(nameof(activity));
             }
 
             if (activity.IsCompleted)
@@ -186,10 +187,10 @@ namespace CoreWf
 
             if (!object.ReferenceEquals(activity.Parent, this.CurrentInstance))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyAbortDirectChildren));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyAbortDirectChildren));
             }
 
-            _executor.AbortActivityInstance(activity, reason);
+            this.executor.AbortActivityInstance(activity, reason);
         }
 
         public void Abort()
@@ -200,12 +201,12 @@ namespace CoreWf
         public void Abort(Exception reason)
         {
             ThrowIfDisposed();
-            _executor.AbortWorkflowInstance(reason);
+            this.executor.AbortWorkflowInstance(reason);
         }
 
         internal void Terminate(Exception reason)
         {
-            _executor.ScheduleTerminate(reason);
+            this.executor.ScheduleTerminate(reason);
         }
 
         public void Track(CustomTrackingRecord record)
@@ -214,7 +215,7 @@ namespace CoreWf
 
             if (record == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("record");
+                throw FxTrace.Exception.ArgumentNull(nameof(record));
             }
 
             base.TrackCore(record);
@@ -225,7 +226,7 @@ namespace CoreWf
             ThrowIfDisposed();
             if (activityInstance == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityInstance");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityInstance));
             }
 
             if (activityInstance.IsCompleted)
@@ -238,11 +239,11 @@ namespace CoreWf
 
             if (!object.ReferenceEquals(activityInstance.Parent, this.CurrentInstance))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(
+                throw FxTrace.Exception.AsError(
                     new InvalidOperationException(SR.CanOnlyCancelDirectChildren));
             }
 
-            _executor.CancelActivity(activityInstance);
+            this.executor.CancelActivity(activityInstance);
         }
 
         internal void Cancel()
@@ -261,10 +262,10 @@ namespace CoreWf
 
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
-            return _bookmarkManager.CreateBookmark(name, null, this.CurrentInstance, BookmarkOptions.None);
+            return this.bookmarkManager.CreateBookmark(name, null, this.CurrentInstance, BookmarkOptions.None);
         }
 
         public Bookmark CreateBookmark(string name, BookmarkCallback callback)
@@ -278,22 +279,22 @@ namespace CoreWf
             ThrowIfCanInduceIdleNotSet();
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
             if (callback == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("callback");
+                throw FxTrace.Exception.ArgumentNull(nameof(callback));
             }
 
             if (!CallbackWrapper.IsValidCallback(callback, this.CurrentInstance))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(callback), SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
             }
 
             BookmarkOptionsHelper.Validate(options, "options");
 
-            return _bookmarkManager.CreateBookmark(name, callback, this.CurrentInstance, options);
+            return this.bookmarkManager.CreateBookmark(name, callback, this.CurrentInstance, options);
         }
 
         public Bookmark CreateBookmark(string name, BookmarkCallback callback, BookmarkScope scope)
@@ -308,22 +309,22 @@ namespace CoreWf
 
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
             if (!CallbackWrapper.IsValidCallback(callback, this.CurrentInstance))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(callback), SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
             }
 
             if (scope == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("scope");
+                throw FxTrace.Exception.ArgumentNull(nameof(scope));
             }
 
             BookmarkOptionsHelper.Validate(options, "options");
 
-            return _executor.BookmarkScopeManager.CreateBookmark(name, scope, callback, this.CurrentInstance, options);
+            return this.executor.BookmarkScopeManager.CreateBookmark(name, scope, callback, this.CurrentInstance, options);
         }
 
         // we don't just do CreateBookmark(BookmarkCallback callback = null, BookmarkOptions options = BookmarkOptions.None) below
@@ -345,12 +346,12 @@ namespace CoreWf
 
             if (callback != null && !CallbackWrapper.IsValidCallback(callback, this.CurrentInstance))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("callback", SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(callback), SR.InvalidExecutionCallback(callback, this.Activity.ToString()));
             }
 
             BookmarkOptionsHelper.Validate(options, "options");
 
-            return _bookmarkManager.CreateBookmark(callback, this.CurrentInstance, options);
+            return this.bookmarkManager.CreateBookmark(callback, this.CurrentInstance, options);
         }
 
         internal BookmarkScope CreateBookmarkScope()
@@ -367,12 +368,12 @@ namespace CoreWf
         {
             Fx.Assert(!IsDisposed, "This should not be disposed.");
 
-            if (scopeId != Guid.Empty && !_executor.KeysAllowed)
+            if (scopeId != Guid.Empty && !this.executor.KeysAllowed)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
             }
 
-            return _executor.BookmarkScopeManager.CreateAndRegisterScope(scopeId, scopeHandle);
+            return this.executor.BookmarkScopeManager.CreateAndRegisterScope(scopeId, scopeHandle);
         }
 
         internal void UnregisterBookmarkScope(BookmarkScope scope)
@@ -380,7 +381,7 @@ namespace CoreWf
             Fx.Assert(!IsDisposed, "This should not be disposed.");
             Fx.Assert(scope != null, "The scope should not equal null.");
 
-            _executor.BookmarkScopeManager.UnregisterScope(scope);
+            this.executor.BookmarkScopeManager.UnregisterScope(scope);
         }
 
         internal void InitializeBookmarkScope(BookmarkScope scope, Guid id)
@@ -389,26 +390,26 @@ namespace CoreWf
             Fx.Assert(id != Guid.Empty, "The caller should make sure this isn't empty.");
 
             ThrowIfDisposed();
-            if (!_executor.KeysAllowed)
+            if (!this.executor.KeysAllowed)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.BookmarkScopesRequireKeys));
             }
 
-            _executor.BookmarkScopeManager.InitializeScope(scope, id);
+            this.executor.BookmarkScopeManager.InitializeScope(scope, id);
         }
 
         internal void RethrowException(FaultContext context)
         {
             Fx.Assert(!this.IsDisposed, "Must not be disposed.");
 
-            _executor.RethrowException(this.CurrentInstance, context);
+            this.executor.RethrowException(this.CurrentInstance, context);
         }
 
         public void RemoveAllBookmarks()
         {
             ThrowIfDisposed();
 
-            this.CurrentInstance.RemoveAllBookmarks(_executor.RawBookmarkScopeManager, _bookmarkManager);
+            this.CurrentInstance.RemoveAllBookmarks(this.executor.RawBookmarkScopeManager, this.bookmarkManager);
         }
 
         public void MarkCanceled()
@@ -417,7 +418,7 @@ namespace CoreWf
 
             if (!this.CurrentInstance.IsCancellationRequested)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
             }
 
             this.CurrentInstance.MarkCanceled();
@@ -428,7 +429,7 @@ namespace CoreWf
             ThrowIfDisposed();
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("name");
+                throw FxTrace.Exception.ArgumentNull(nameof(name));
             }
 
             return RemoveBookmark(new Bookmark(name));
@@ -439,9 +440,9 @@ namespace CoreWf
             ThrowIfDisposed();
             if (bookmark == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmark");
+                throw FxTrace.Exception.ArgumentNull(nameof(bookmark));
             }
-            return _bookmarkManager.Remove(bookmark, this.CurrentInstance);
+            return this.bookmarkManager.Remove(bookmark, this.CurrentInstance);
         }
 
         public bool RemoveBookmark(string name, BookmarkScope scope)
@@ -450,15 +451,15 @@ namespace CoreWf
 
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
             if (scope == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("scope");
+                throw FxTrace.Exception.ArgumentNull(nameof(scope));
             }
 
-            return _executor.BookmarkScopeManager.RemoveBookmark(new Bookmark(name), scope, this.CurrentInstance);
+            return this.executor.BookmarkScopeManager.RemoveBookmark(new Bookmark(name), scope, this.CurrentInstance);
         }
 
         public BookmarkResumptionResult ResumeBookmark(Bookmark bookmark, object value)
@@ -466,9 +467,9 @@ namespace CoreWf
             ThrowIfDisposed();
             if (bookmark == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("bookmark");
+                throw FxTrace.Exception.ArgumentNull(nameof(bookmark));
             }
-            return _executor.TryResumeUserBookmark(bookmark, value, false);
+            return this.executor.TryResumeUserBookmark(bookmark, value, false);
         }
 
         internal void RegisterMainRootCompleteCallback(Bookmark bookmark)
@@ -476,7 +477,7 @@ namespace CoreWf
             Fx.Assert(!this.IsDisposed, "Shouldn't call this on a disposed object.");
             Fx.Assert(bookmark != null, "Must have a bookmark.");
 
-            _executor.RegisterMainRootCompleteCallback(bookmark);
+            this.executor.RegisterMainRootCompleteCallback(bookmark);
         }
 
         internal ActivityInstance ScheduleSecondaryRoot(Activity activity, LocationEnvironment environment)
@@ -484,7 +485,7 @@ namespace CoreWf
             Fx.Assert(!IsDisposed, "Shouldn't call this on a disposed object.");
             Fx.Assert(activity != null, "Activity must not be null.");
 
-            return _executor.ScheduleSecondaryRootActivity(activity, environment);
+            return this.executor.ScheduleSecondaryRootActivity(activity, environment);
         }
 
         public ActivityInstance ScheduleActivity(Activity activity)
@@ -508,7 +509,7 @@ namespace CoreWf
 
             if (activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw FxTrace.Exception.ArgumentNull(nameof(activity));
             }
             CompletionBookmark completionBookmark = null;
             FaultBookmark faultBookmark = null;
@@ -521,7 +522,7 @@ namespace CoreWf
                 }
                 else
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, this.Activity.ToString()));
+                    throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, this.Activity.ToString()));
                 }
             }
 
@@ -533,7 +534,7 @@ namespace CoreWf
                 }
                 else
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, this.Activity.ToString()));
+                    throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, this.Activity.ToString()));
                 }
             }
 
@@ -546,22 +547,22 @@ namespace CoreWf
 
             if (!activity.IsMetadataCached || activity.CacheId != parent.Activity.CacheId)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
+                throw FxTrace.Exception.Argument(nameof(activity), SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
             }
 
             if (!activity.CanBeScheduledBy(parent.Activity))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activity.DisplayName, activity.Parent.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activity.DisplayName, activity.Parent.DisplayName)));
             }
 
             if (activity.HandlerOf != null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateHandlersCannotBeScheduledDirectly(parent.Activity.DisplayName, activity.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.DelegateHandlersCannotBeScheduledDirectly(parent.Activity.DisplayName, activity.DisplayName)));
             }
 
             if (parent.WaitingForTransactionContext)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
             }
 
             if (parent.IsPerformingDefaultCancelation)
@@ -570,13 +571,13 @@ namespace CoreWf
                 return ActivityInstance.CreateCanceledInstance(activity);
             }
 
-            return _executor.ScheduleActivity(activity, parent, onCompleted,
+            return this.executor.ScheduleActivity(activity, parent, onCompleted,
                 onFaulted, null);
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction(ActivityAction activityAction, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
@@ -585,17 +586,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             return InternalScheduleDelegate(activityAction, ActivityUtilities.EmptyParameters,
@@ -604,8 +605,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T>(ActivityAction<T> activityAction, T argument, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
@@ -614,17 +615,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(1)
@@ -638,8 +639,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2>(ActivityAction<T1, T2> activityAction, T1 argument1, T2 argument2, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
@@ -648,17 +649,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(2)
@@ -673,8 +674,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3>(ActivityAction<T1, T2, T3> activityAction, T1 argument1, T2 argument2, T3 argument3, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
@@ -683,17 +684,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(3)
@@ -709,8 +710,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4>(ActivityAction<T1, T2, T3, T4> activityAction, T1 argument1, T2 argument2, T3 argument3, T4 argument4,
             CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
@@ -720,17 +721,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(4)
@@ -747,8 +748,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5>(
             ActivityAction<T1, T2, T3, T4, T5> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5,
@@ -760,17 +761,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(5)
@@ -788,8 +789,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6>(
             ActivityAction<T1, T2, T3, T4, T5, T6> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6,
@@ -801,17 +802,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(6)
@@ -830,8 +831,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7,
@@ -843,17 +844,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(7)
@@ -873,8 +874,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -886,17 +887,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(8)
@@ -917,8 +918,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -931,17 +932,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(9)
@@ -963,8 +964,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -977,17 +978,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(10)
@@ -1010,8 +1011,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1024,17 +1025,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(11)
@@ -1058,8 +1059,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1072,17 +1073,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(12)
@@ -1107,8 +1108,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1121,17 +1122,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(13)
@@ -1157,8 +1158,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1171,17 +1172,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(14)
@@ -1208,8 +1209,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1222,17 +1223,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(15)
@@ -1260,8 +1261,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> activityAction,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1274,17 +1275,17 @@ namespace CoreWf
 
             if (activityAction == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityAction");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityAction));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(16)
@@ -1313,8 +1314,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleActivity<TResult>(Activity<TResult> activity, CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
@@ -1323,25 +1324,25 @@ namespace CoreWf
 
             if (activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activity");
+                throw FxTrace.Exception.ArgumentNull(nameof(activity));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             return InternalScheduleActivity(activity, ActivityUtilities.CreateCompletionBookmark(onCompleted, parent), ActivityUtilities.CreateFaultBookmark(onFaulted, parent));
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<TResult>(ActivityFunc<TResult> activityFunc, CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
@@ -1350,17 +1351,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             return InternalScheduleDelegate(activityFunc, ActivityUtilities.EmptyParameters,
@@ -1369,8 +1370,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T, TResult>(ActivityFunc<T, TResult> activityFunc, T argument, CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
@@ -1379,17 +1380,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(1)
@@ -1403,8 +1404,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, TResult>(ActivityFunc<T1, T2, TResult> activityFunc, T1 argument1, T2 argument2,
             CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
@@ -1414,17 +1415,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(2)
@@ -1439,8 +1440,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, TResult>(ActivityFunc<T1, T2, T3, TResult> activityFunc, T1 argument1, T2 argument2, T3 argument3,
             CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
@@ -1450,17 +1451,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(3)
@@ -1476,8 +1477,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, TResult>(ActivityFunc<T1, T2, T3, T4, TResult> activityFunc, T1 argument1, T2 argument2, T3 argument3, T4 argument4,
             CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
@@ -1487,17 +1488,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(4)
@@ -1514,8 +1515,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //   Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5,
@@ -1527,17 +1528,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(5)
@@ -1555,8 +1556,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6,
@@ -1568,17 +1569,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(6)
@@ -1597,8 +1598,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7,
@@ -1610,17 +1611,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(7)
@@ -1640,8 +1641,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1653,17 +1654,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(8)
@@ -1684,8 +1685,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1698,17 +1699,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(9)
@@ -1730,8 +1731,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1744,17 +1745,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(10)
@@ -1777,8 +1778,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1791,17 +1792,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(11)
@@ -1825,8 +1826,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1839,17 +1840,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(12)
@@ -1874,8 +1875,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1888,17 +1889,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(13)
@@ -1924,8 +1925,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1938,17 +1939,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(14)
@@ -1975,8 +1976,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -1989,17 +1990,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(15)
@@ -2027,8 +2028,8 @@ namespace CoreWf
         }
 
         //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        //Justification = "Generic needed for type inference")]
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //    Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> activityFunc,
             T1 argument1, T2 argument2, T3 argument3, T4 argument4, T5 argument5, T6 argument6, T7 argument7, T8 argument8,
@@ -2041,17 +2042,17 @@ namespace CoreWf
 
             if (activityFunc == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityFunc");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityFunc));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             Dictionary<string, object> inputParameters = new Dictionary<string, object>(16)
@@ -2079,7 +2080,7 @@ namespace CoreWf
                 ActivityUtilities.CreateFaultBookmark(onFaulted, parent));
         }
 
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, //Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public ActivityInstance ScheduleDelegate(ActivityDelegate activityDelegate, IDictionary<string, object> inputParameters,
             DelegateCompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
@@ -2089,17 +2090,17 @@ namespace CoreWf
 
             if (activityDelegate == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("activityDelegate");
+                throw FxTrace.Exception.ArgumentNull(nameof(activityDelegate));
             }
 
             if (onCompleted != null && !CallbackWrapper.IsValidCallback(onCompleted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onCompleted", SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onCompleted), SR.InvalidExecutionCallback(onCompleted, parent.Activity.ToString()));
             }
 
             if (onFaulted != null && !CallbackWrapper.IsValidCallback(onFaulted, parent))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("onFaulted", SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
+                throw FxTrace.Exception.Argument(nameof(onFaulted), SR.InvalidExecutionCallback(onFaulted, parent.Activity.ToString()));
             }
 
             // Check if the inputParameters collection matches the expected inputs for activityDelegate
@@ -2108,24 +2109,23 @@ namespace CoreWf
             if ((inputParameters == null && expectedParameterCount > 0) ||
                 (inputParameters != null && inputParameters.Count != expectedParameterCount))
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersCountMismatch(inputParameters == null ? 0 : inputParameters.Count, expectedParameterCount));
+                throw FxTrace.Exception.Argument(nameof(inputParameters), SR.InputParametersCountMismatch(inputParameters == null ? 0 : inputParameters.Count, expectedParameterCount));
             }
             else if (expectedParameterCount > 0)
             {
                 foreach (RuntimeDelegateArgument expectedParameter in expectedParameters)
                 {
-                    object inputParameterValue = null;
                     string parameterName = expectedParameter.Name;
-                    if (inputParameters.TryGetValue(parameterName, out inputParameterValue))
+                    if (inputParameters.TryGetValue(parameterName, out object inputParameterValue))
                     {
                         if (!TypeHelper.AreTypesCompatible(inputParameterValue, expectedParameter.Type))
                         {
-                            throw CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersTypeMismatch(expectedParameter.Type, parameterName));
+                            throw FxTrace.Exception.Argument(nameof(inputParameters), SR.InputParametersTypeMismatch(expectedParameter.Type, parameterName));
                         }
                     }
                     else
                     {
-                        throw CoreWf.Internals.FxTrace.Exception.Argument("inputParameters", SR.InputParametersMissing(expectedParameter.Name));
+                        throw FxTrace.Exception.Argument(nameof(inputParameters), SR.InputParametersMissing(expectedParameter.Name));
                     }
                 }
             }
@@ -2145,23 +2145,23 @@ namespace CoreWf
 
                 if (!activity.IsMetadataCached || activity.CacheId != parent.Activity.CacheId)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
+                    throw FxTrace.Exception.Argument("activity", SR.ActivityNotPartOfThisTree(activity.DisplayName, parent.Activity.DisplayName));
                 }
             }
 
             if (activityDelegate.Owner == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityDelegateOwnerMissing(activityDelegate)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityDelegateOwnerMissing(activityDelegate)));
             }
 
             if (!activityDelegate.CanBeScheduledBy(parent.Activity))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activityDelegate.DisplayName, activityDelegate.Owner.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CanOnlyScheduleDirectChildren(parent.Activity.DisplayName, activityDelegate.DisplayName, activityDelegate.Owner.DisplayName)));
             }
 
             if (parent.WaitingForTransactionContext)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotScheduleChildrenWhileEnteringIsolation));
             }
 
             ActivityInstance declaringActivityInstance = this.FindDeclaringActivityInstance(this.CurrentInstance, activityDelegate.Owner);
@@ -2173,7 +2173,7 @@ namespace CoreWf
             }
 
             // Activity delegates execute in the environment of the declaring actvity and not the invoking activity.
-            return _executor.ScheduleDelegate(activityDelegate, inputParameters, parent, declaringActivityInstance.Environment, completionBookmark, faultBookmark);
+            return this.executor.ScheduleDelegate(activityDelegate, inputParameters, parent, declaringActivityInstance.Environment, completionBookmark, faultBookmark);
         }
 
         internal void EnterNoPersist(NoPersistHandle handle)
@@ -2186,7 +2186,7 @@ namespace CoreWf
 
             if (property == null)
             {
-                property = _executor.CreateNoPersistProperty();
+                property = this.executor.CreateNoPersistProperty();
                 properties.Add(NoPersistProperty.Name, property, true, false);
             }
 
@@ -2204,9 +2204,9 @@ namespace CoreWf
             {
                 if (handle.Owner == null)
                 {
-                    Fx.Assert(_executor.RootPropertyManager != null, "should only have a null owner for host-declared properties");
+                    Fx.Assert(this.executor.RootPropertyManager != null, "should only have a null owner for host-declared properties");
                     // null owner means we have a root property. Use the propertyManager from the ActivityExecutor
-                    return new ExecutionProperties(this, null, _executor.RootPropertyManager);
+                    return new ExecutionProperties(this, null, this.executor.RootPropertyManager);
                 }
                 else
                 {
@@ -2225,7 +2225,7 @@ namespace CoreWf
 
             if (property == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.UnmatchedNoPersistExit));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.UnmatchedNoPersistExit));
             }
 
             if (property.Exit())
@@ -2234,19 +2234,19 @@ namespace CoreWf
             }
         }
 
-        //internal void RequestTransactionContext(bool isRequires, RuntimeTransactionHandle handle, Action<NativeActivityTransactionContext, object> callback, object state)
-        //{
-        //    this.executor.RequestTransactionContext(this.CurrentInstance, isRequires, handle, callback, state);
-        //}
+        internal void RequestTransactionContext(bool isRequires, RuntimeTransactionHandle handle, Action<NativeActivityTransactionContext, object> callback, object state)
+        {
+            this.executor.RequestTransactionContext(this.CurrentInstance, isRequires, handle, callback, state);
+        }
 
-        //internal void CompleteTransaction(RuntimeTransactionHandle handle, BookmarkCallback callback)
-        //{
-        //    if (callback != null)
-        //    {
-        //        ThrowIfCanInduceIdleNotSet();
-        //    }
-        //    this.executor.CompleteTransaction(handle, callback, this.CurrentInstance);
-        //}
+        internal void CompleteTransaction(RuntimeTransactionHandle handle, BookmarkCallback callback)
+        {
+            if (callback != null)
+            {
+                ThrowIfCanInduceIdleNotSet();
+            }
+            this.executor.CompleteTransaction(handle, callback, this.CurrentInstance);
+        }
 
         internal void RequestPersist(BookmarkCallback onPersistComplete)
         {
@@ -2254,7 +2254,7 @@ namespace CoreWf
             Fx.Assert(onPersistComplete != null, "We must have a persist complete callback.");
 
             Bookmark onPersistBookmark = CreateBookmark(onPersistComplete);
-            _executor.RequestPersist(onPersistBookmark, this.CurrentInstance);
+            this.executor.RequestPersist(onPersistBookmark, this.CurrentInstance);
         }
 
         private ActivityInstance FindDeclaringActivityInstance(ActivityInstance startingInstance, Activity activityToMatch)
@@ -2282,7 +2282,7 @@ namespace CoreWf
             Activity associatedActivity = this.Activity;
             if (!associatedActivity.InternalCanInduceIdle)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CanInduceIdleNotSpecified(associatedActivity.GetType().FullName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CanInduceIdleNotSpecified(associatedActivity.GetType().FullName)));
             }
         }
     }

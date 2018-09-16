@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 
@@ -8,7 +8,7 @@ namespace CoreWf.Runtime
     // An AsyncResult that schedules work for later on the IOThreadScheduler
     internal abstract class ScheduleActionItemAsyncResult : AsyncResult
     {
-        private static Action<object> s_doWork = new Action<object>(DoWork);
+        private static readonly Action<object> s_doWork = new Action<object>(DoWork);
 
         // Implement your own constructor taking in necessary parameters
         // Constructor needs to call "Schedule()" to schedule work 

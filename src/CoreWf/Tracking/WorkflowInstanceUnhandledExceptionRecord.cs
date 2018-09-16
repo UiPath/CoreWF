@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using CoreWf.Runtime;
 using System;
@@ -26,18 +26,11 @@ namespace CoreWf.Tracking
         {
             if (string.IsNullOrEmpty(activityDefinitionId))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("activityDefinitionId");
+                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty(nameof(activityDefinitionId));
             }
-            if (exception == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("exception");
-            }
-            if (faultSource == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("faultSource");
-            }
-            this.FaultSource = faultSource;
-            this.UnhandledException = exception;
+
+            this.FaultSource = faultSource ?? throw CoreWf.Internals.FxTrace.Exception.ArgumentNull(nameof(faultSource));
+            this.UnhandledException = exception ?? throw CoreWf.Internals.FxTrace.Exception.ArgumentNull(nameof(exception));
             this.Level = EventLevel.Error;
         }
 

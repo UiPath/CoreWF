@@ -1,31 +1,36 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Runtime.DurableInstancing;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Xml.Linq;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using System.Collections.Generic;
+    using CoreWf.Runtime.DurableInstancing;
+    using System.Threading;
+    using System.Xml.Linq;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
     // Wrapper over instance data retrieved from the Instance Store but not yet loaded into a WorkflowApplication.
     // Once this instance is loaded into a WFApp using WFApp.Load(), this object is stale and trying to abort or reload it wil throw.
     // Free-threaded: needs to be resillient to simultaneous loads/aborts on multiple threads
     public class WorkflowApplicationInstance
     {
-        private int _state;
+        private int state;
 
         internal WorkflowApplicationInstance(
-            WorkflowApplication.PersistenceManagerBase persistenceManager,
-            IDictionary<XName, InstanceValue> values,
+            WorkflowApplication.PersistenceManagerBase persistenceManager, 
+            IDictionary<XName, InstanceValue> values, 
             WorkflowIdentity definitionIdentity)
         {
             this.PersistenceManager = persistenceManager;
             this.Values = values;
             this.DefinitionIdentity = definitionIdentity;
-            _state = (int)State.Initialized;
+            this.state = (int)State.Initialized;
         }
 
         private enum State
@@ -82,45 +87,47 @@ namespace CoreWf
             WorkflowApplication.DiscardInstance(this.PersistenceManager, timeout);
         }
 
-        //public IAsyncResult BeginAbandon(AsyncCallback callback, object state)
-        //{
-        //    return this.BeginAbandon(ActivityDefaults.DeleteTimeout, callback, state);
-        //}
+        public IAsyncResult BeginAbandon(AsyncCallback callback, object state)
+        {
+            return this.BeginAbandon(ActivityDefaults.DeleteTimeout, callback, state);
+        }
 
-        //public IAsyncResult BeginAbandon(TimeSpan timeout, AsyncCallback callback, object state)
-        //{
-        //    TimeoutHelper.ThrowIfNegativeArgument(timeout);
+        public IAsyncResult BeginAbandon(TimeSpan timeout, AsyncCallback callback, object state)
+        {
+            TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-        //    this.MarkAsAbandoned();
-        //    return WorkflowApplication.BeginDiscardInstance(this.PersistenceManager, timeout, callback, state);
-        //}
+            this.MarkAsAbandoned();
+            return WorkflowApplication.BeginDiscardInstance(this.PersistenceManager, timeout, callback, state);
+        }
 
-        //public void EndAbandon(IAsyncResult asyncResult)
-        //{
-        //    WorkflowApplication.EndDiscardInstance(asyncResult);
-        //}
+        public void EndAbandon(IAsyncResult asyncResult)
+        {
+            WorkflowApplication.EndDiscardInstance(asyncResult);
+        }
 
-        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters, //Justification = "Approved Design. Returning a bool makes the intent much clearer than something that just returns a list.")]
-        //public bool CanApplyUpdate(DynamicUpdateMap updateMap, out IList<ActivityBlockingUpdate> activitiesBlockingUpdate)
-        //{
-        //    if (updateMap == null)
-        //    {
-        //        throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("updateMap");
-        //    }
+#if NET45
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters, Justification = "Approved Design. Returning a bool makes the intent much clearer than something that just returns a list.")]
+        public bool CanApplyUpdate(DynamicUpdateMap updateMap, out IList<ActivityBlockingUpdate> activitiesBlockingUpdate)
+        {
+            if (updateMap == null)
+            {
+                throw FxTrace.Exception.ArgumentNull("updateMap");
+            }
 
-        //    activitiesBlockingUpdate = WorkflowApplication.GetActivitiesBlockingUpdate(this, updateMap);
-        //    return activitiesBlockingUpdate == null || activitiesBlockingUpdate.Count == 0;
-        //}
+            activitiesBlockingUpdate = WorkflowApplication.GetActivitiesBlockingUpdate(this, updateMap);
+            return activitiesBlockingUpdate == null || activitiesBlockingUpdate.Count == 0;
+        } 
+#endif
 
         internal void MarkAsLoaded()
         {
-            int oldState = Interlocked.CompareExchange(ref _state, (int)State.Loaded, (int)State.Initialized);
+            int oldState = Interlocked.CompareExchange(ref this.state, (int)State.Loaded, (int)State.Initialized);
             this.ThrowIfLoadedOrAbandoned((State)oldState);
         }
 
         private void MarkAsAbandoned()
         {
-            int oldState = Interlocked.CompareExchange(ref _state, (int)State.Aborted, (int)State.Initialized);
+            int oldState = Interlocked.CompareExchange(ref this.state, (int)State.Aborted, (int)State.Initialized);
             this.ThrowIfLoadedOrAbandoned((State)oldState);
         }
 
@@ -128,12 +135,12 @@ namespace CoreWf
         {
             if (oldState == State.Loaded)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceLoaded));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceLoaded));
             }
 
             if (oldState == State.Aborted)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceAbandoned));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationInstanceAbandoned));
             }
         }
     }

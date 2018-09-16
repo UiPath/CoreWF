@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -10,7 +10,7 @@ namespace Test.Common.TestObjects.CustomActivities
     public class CustomCompensationScope : Activity
     {
         private Variable<CompensationToken> _handle = new Variable<CompensationToken>() { Name = "handle" };
-        private Variable<Exception> _exception = new Variable<Exception>() { Name = "exception" };
+        private readonly Variable<Exception> _exception = new Variable<Exception>() { Name = "exception" };
 
         public CustomCompensationScope()
         {

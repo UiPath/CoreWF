@@ -1,6 +1,7 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
+using CoreWf.Internals;
 using System;
 
 namespace CoreWf
@@ -12,6 +13,7 @@ namespace CoreWf
         {
             this.Direction = ArgumentDirection.Out;
         }
+
     }
 
     public sealed class DelegateOutArgument<T> : DelegateOutArgument
@@ -42,7 +44,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             return context.GetValue<T>((LocationReference)this);
@@ -55,7 +57,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             return context.GetLocation<T>(this);
@@ -65,7 +67,7 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
 
             context.SetValue((LocationReference)this, value);

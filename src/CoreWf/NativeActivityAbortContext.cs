@@ -1,20 +1,20 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+
     [Fx.Tag.XamlVisible(false)]
     public sealed class NativeActivityAbortContext : ActivityContext
     {
-        private Exception _reason;
+        private readonly Exception reason;
 
         internal NativeActivityAbortContext(ActivityInstance instance, ActivityExecutor executor, Exception reason)
             : base(instance, executor)
         {
-            _reason = reason;
+            this.reason = reason;
         }
 
         public Exception Reason
@@ -23,7 +23,7 @@ namespace CoreWf
             {
                 ThrowIfDisposed();
 
-                return _reason;
+                return this.reason;
             }
         }
     }

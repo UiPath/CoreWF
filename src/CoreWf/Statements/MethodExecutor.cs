@@ -1,14 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+
     // Inverted Template Method pattern. MethodExecutor is the base class for executing a method; created by MethodResolver.
     // Private concrete implementations are created by MethodResolver, but this is the "public" API used by InvokeMethod.
     internal abstract class MethodExecutor
@@ -17,10 +18,10 @@ namespace CoreWf.Statements
         protected Activity invokingActivity;
 
         // We may still need to know targetType if we're autocreating targets during ExecuteMethod
-        private Type _targetType;
-        private InArgument _targetObject;
-        private Collection<Argument> _parameters;
-        private RuntimeArgument _returnObject;
+        private readonly Type targetType;
+        private readonly InArgument targetObject;
+        private Collection<Argument> parameters;
+        private readonly RuntimeArgument returnObject;
 
         public MethodExecutor(Activity invokingActivity, Type targetType, InArgument targetObject,
             Collection<Argument> parameters, RuntimeArgument returnObject)
@@ -31,10 +32,10 @@ namespace CoreWf.Statements
             // returnObject is optional 
 
             this.invokingActivity = invokingActivity;
-            _targetType = targetType;
-            _targetObject = targetObject;
-            _parameters = parameters;
-            _returnObject = returnObject;
+            this.targetType = targetType;
+            this.targetObject = targetObject;
+            this.parameters = parameters;
+            this.returnObject = returnObject;
         }
 
         public abstract bool MethodIsStatic { get; }
@@ -47,7 +48,7 @@ namespace CoreWf.Statements
             if (parameters.Length > 0)
             {
                 ParameterInfo last = parameters[parameters.Length - 1];
-                return last.GetCustomAttributes(typeof(ParamArrayAttribute), true).FirstOrDefault() != null;
+                return last.GetCustomAttributes(typeof(ParamArrayAttribute), true).GetLength(0) > 0;
             }
             else
             {
@@ -72,13 +73,13 @@ namespace CoreWf.Statements
             {
                 if (i == formalParamCount - 1 && !usingAsyncPattern && haveParameterArray)
                 {
-                    int paramArrayCount = _parameters.Count - formalParamCount + 1;
+                    int paramArrayCount = this.parameters.Count - formalParamCount + 1;
 
                     // If params are given explicitly, that's okay.
-                    if (paramArrayCount == 1 && TypeHelper.AreTypesCompatible(_parameters[i].ArgumentType,
+                    if (paramArrayCount == 1 && TypeHelper.AreTypesCompatible(this.parameters[i].ArgumentType,
                         formalParameters[i].ParameterType))
                     {
-                        actualParameters[i] = _parameters[i].Get<object>(context);
+                        actualParameters[i] = this.parameters[i].Get<object>(context);
                     }
                     else
                     {
@@ -87,28 +88,28 @@ namespace CoreWf.Statements
                             Activator.CreateInstance(formalParameters[i].ParameterType, paramArrayCount);
                         for (int j = 0; j < paramArrayCount; j++)
                         {
-                            ((object[])actualParameters[i])[j] = _parameters[i + j].Get<object>(context);
+                            ((object[])actualParameters[i])[j] = this.parameters[i + j].Get<object>(context);
                         }
                     }
                     continue;
                 }
-                actualParameters[i] = _parameters[i].Get<object>(context);
+                actualParameters[i] = parameters[i].Get<object>(context);
             }
 
             return actualParameters;
         }
 
-        //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.InstantiateArgumentExceptionsCorrectly, //Justification = "TargetObject is a parameter to InvokeMethod, rather than this specific method.")]
+        //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.InstantiateArgumentExceptionsCorrectly, Justification = "TargetObject is a parameter to InvokeMethod, rather than this specific method.")]
         public IAsyncResult BeginExecuteMethod(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
             object targetInstance = null;
 
             if (!this.MethodIsStatic)
             {
-                targetInstance = _targetObject.Get(context);
+                targetInstance = this.targetObject.Get(context);
                 if (targetInstance == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("TargetObject");
+                    throw FxTrace.Exception.ArgumentNull("TargetObject");
                 }
             }
 
@@ -120,8 +121,8 @@ namespace CoreWf.Statements
             EndMakeMethodCall(context, result); // defer to concrete instance for sync/async variations
         }
 
-        //[SuppressMessage("Reliability", "Reliability108:IsFatalRule",
-        //Justification = "We need throw out all exceptions from method invocation.")]
+        [SuppressMessage("Reliability", "Reliability108:IsFatalRule",
+            Justification = "We need throw out all exceptions from method invocation.")]
         internal object InvokeAndUnwrapExceptions(Func<object, object[], object> func, object targetInstance, object[] actualParameters)
         {
             try
@@ -134,23 +135,23 @@ namespace CoreWf.Statements
                 {
                     TD.InvokedMethodThrewException(this.invokingActivity.DisplayName, e.ToString());
                 }
-                throw CoreWf.Internals.FxTrace.Exception.AsError(e);
+                throw FxTrace.Exception.AsError(e);
             }
         }
 
         public void SetOutArgumentAndReturnValue(ActivityContext context, object state, object[] actualParameters)
         {
-            for (int index = 0; index < _parameters.Count; index++)
+            for (int index = 0; index < parameters.Count; index++)
             {
-                if (_parameters[index].Direction != ArgumentDirection.In)
+                if (parameters[index].Direction != ArgumentDirection.In)
                 {
-                    _parameters[index].Set(context, actualParameters[index]);
+                    parameters[index].Set(context, actualParameters[index]);
                 }
             }
 
-            if (_returnObject != null)
+            if (this.returnObject != null)
             {
-                _returnObject.Set(context, state);
+                this.returnObject.Set(context, state);
             }
         }
 
@@ -171,5 +172,7 @@ namespace CoreWf.Statements
                 }
             }
         }
+
+
     }
 }

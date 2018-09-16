@@ -1,11 +1,13 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
+    using System;
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using CoreWf.Internals;
+
     public sealed class DeleteBookmarkScope : NativeActivity
     {
         public DeleteBookmarkScope()
@@ -32,12 +34,12 @@ namespace CoreWf.Statements
 
             if (toUnregister == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterNullBookmarkScope));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterNullBookmarkScope));
             }
 
             if (toUnregister.Equals(context.DefaultBookmarkScope))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterDefaultBookmarkScope));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUnregisterDefaultBookmarkScope));
             }
 
             context.UnregisterBookmarkScope(toUnregister);

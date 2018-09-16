@@ -1,14 +1,15 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    [DataContract]
+    using CoreWf;
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// TriggerCompletedEvent represents an event which is triggered when a trigger is completed.
     /// </summary>
+    [DataContract]
     internal class TriggerCompletedEvent
     {
         /// <summary>

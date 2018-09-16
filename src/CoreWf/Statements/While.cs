@@ -1,24 +1,25 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using CoreWf.Runtime.Collections;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [While])")]
-    //[ContentProperty("Body")]
+    using CoreWf.Expressions;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using CoreWf.Runtime.Collections;
+    using Portable.Xaml.Markup;
+    using System;
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [While])")]
+    [ContentProperty("Body")]
     public sealed class While : NativeActivity
     {
-        private CompletionCallback _onBodyComplete;
-        private CompletionCallback<bool> _onConditionComplete;
-
-        private Collection<Variable> _variables;
+        private CompletionCallback onBodyComplete;
+        private CompletionCallback<bool> onConditionComplete;
+        private Collection<Variable> variables;
 
         public While()
             : base()
@@ -30,7 +31,7 @@ namespace CoreWf.Statements
         {
             if (condition == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw FxTrace.Exception.ArgumentNull(nameof(condition));
             }
 
             this.Condition = new LambdaValue<bool>(condition);
@@ -39,38 +40,33 @@ namespace CoreWf.Statements
         public While(Activity<bool> condition)
             : this()
         {
-            if (condition == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
-            }
-
-            this.Condition = condition;
+            this.Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
         }
 
         public Collection<Variable> Variables
         {
             get
             {
-                if (_variables == null)
+                if (this.variables == null)
                 {
-                    _variables = new ValidatingCollection<Variable>
+                    this.variables = new ValidatingCollection<Variable>
                     {
                         // disallow null values
                         OnAddValidationCallback = item =>
                         {
                             if (item == null)
                             {
-                                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("item");
+                                throw FxTrace.Exception.ArgumentNull(nameof(item));
                             }
                         }
                     };
                 }
-                return _variables;
+                return this.variables;
             }
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Variables")]
+        [DependsOn("Variables")]
         public Activity<bool> Condition
         {
             get;
@@ -78,17 +74,19 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Condition")]
+        [DependsOn("Condition")]
         public Activity Body
         {
             get;
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        }
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
@@ -114,12 +112,12 @@ namespace CoreWf.Statements
         private void ScheduleCondition(NativeActivityContext context)
         {
             Fx.Assert(this.Condition != null, "validated in OnOpen");
-            if (_onConditionComplete == null)
+            if (this.onConditionComplete == null)
             {
-                _onConditionComplete = new CompletionCallback<bool>(OnConditionComplete);
+                this.onConditionComplete = new CompletionCallback<bool>(OnConditionComplete);
             }
 
-            context.ScheduleActivity(this.Condition, _onConditionComplete);
+            context.ScheduleActivity(this.Condition, this.onConditionComplete);
         }
 
         private void OnConditionComplete(NativeActivityContext context, ActivityInstance completedInstance, bool result)
@@ -128,12 +126,12 @@ namespace CoreWf.Statements
             {
                 if (this.Body != null)
                 {
-                    if (_onBodyComplete == null)
+                    if (this.onBodyComplete == null)
                     {
-                        _onBodyComplete = new CompletionCallback(OnBodyComplete);
+                        this.onBodyComplete = new CompletionCallback(OnBodyComplete);
                     }
 
-                    context.ScheduleActivity(this.Body, _onBodyComplete);
+                    context.ScheduleActivity(this.Body, this.onBodyComplete);
                 }
                 else
                 {

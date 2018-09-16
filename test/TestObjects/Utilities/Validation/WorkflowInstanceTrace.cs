@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -105,8 +105,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         public override bool Equals(object obj)
         {
-            WorkflowInstanceTrace trace = obj as WorkflowInstanceTrace;
-            if (trace != null)
+            if (obj is WorkflowInstanceTrace trace)
             {
                 if (this.InstanceStatus == trace.InstanceStatus &&
                     WorkflowInstanceTrace.CompareIdentities(trace.WorkflowDefinitionIdentity, this.WorkflowDefinitionIdentity))
@@ -127,9 +126,8 @@ namespace Test.Common.TestObjects.Utilities.Validation
 
         bool IActualTraceStep.Equals(IActualTraceStep trace)
         {
-            WorkflowInstanceTrace instanceTrace = trace as WorkflowInstanceTrace;
 
-            if (instanceTrace != null)
+            if (trace is WorkflowInstanceTrace instanceTrace)
             {
                 if (this.InstanceStatus == instanceTrace.InstanceStatus &&
                     WorkflowInstanceTrace.CompareIdentities(instanceTrace.WorkflowDefinitionIdentity, this.WorkflowDefinitionIdentity))

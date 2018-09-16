@@ -1,16 +1,19 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Collections.ObjectModel;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[ContentProperty("Body")]
-    public sealed class HandleScope<THandle> : NativeActivity
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using Portable.Xaml.Markup;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
+    [ContentProperty("Body")]
+    public sealed class HandleScope<THandle> : NativeActivity 
         where THandle : Handle
     {
-        private Variable<THandle> _declaredHandle;
+        private Variable<THandle> declaredHandle;
 
         public HandleScope()
         {
@@ -43,19 +46,19 @@ namespace CoreWf.Statements
 
             if ((this.Handle == null) || this.Handle.IsEmpty)
             {
-                if (_declaredHandle == null)
+                if (this.declaredHandle == null)
                 {
-                    _declaredHandle = new Variable<THandle>();
+                    this.declaredHandle = new Variable<THandle>();
                 }
             }
             else
             {
-                _declaredHandle = null;
+                this.declaredHandle = null;
             }
 
-            if (_declaredHandle != null)
+            if (this.declaredHandle != null)
             {
-                ActivityUtilities.Add(ref implementationVariables, _declaredHandle);
+                ActivityUtilities.Add(ref implementationVariables, this.declaredHandle);
             }
 
             metadata.SetImplementationVariablesCollection(implementationVariables);
@@ -71,8 +74,8 @@ namespace CoreWf.Statements
 
             if ((this.Handle == null) || this.Handle.IsEmpty)
             {
-                Fx.Assert(_declaredHandle != null, "We should have declared the variable if we didn't have the argument set.");
-                scopedHandle = _declaredHandle.Get(context);
+                Fx.Assert(this.declaredHandle != null, "We should have declared the variable if we didn't have the argument set.");
+                scopedHandle = this.declaredHandle.Get(context);
             }
             else
             {
@@ -81,7 +84,7 @@ namespace CoreWf.Statements
 
             if (scopedHandle == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("Handle");
+                throw FxTrace.Exception.ArgumentNull("Handle");
             }
 
             context.Properties.Add(scopedHandle.ExecutionPropertyName, scopedHandle);

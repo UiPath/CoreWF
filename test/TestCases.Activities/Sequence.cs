@@ -1,11 +1,10 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
@@ -38,14 +37,22 @@ namespace TestCases.Activities
             TestSequence sequence8 = new TestSequence("seq7");
             TestSequence sequence9 = new TestSequence("seq8");
 
-            TestWriteLine writeLine1 = new TestWriteLine("Hello One");
-            writeLine1.Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence2.DisplayName, sequence6.DisplayName);
-            TestWriteLine writeLine2 = new TestWriteLine("Hello Two");
-            writeLine2.Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence3.DisplayName, sequence7.DisplayName);
-            TestWriteLine writeLine3 = new TestWriteLine("Hello Three");
-            writeLine3.Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence4.DisplayName, sequence8.DisplayName);
-            TestWriteLine writeLine4 = new TestWriteLine("Hello Four");
-            writeLine4.Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence5.DisplayName, sequence9.DisplayName);
+            TestWriteLine writeLine1 = new TestWriteLine("Hello One")
+            {
+                Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence2.DisplayName, sequence6.DisplayName)
+            };
+            TestWriteLine writeLine2 = new TestWriteLine("Hello Two")
+            {
+                Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence3.DisplayName, sequence7.DisplayName)
+            };
+            TestWriteLine writeLine3 = new TestWriteLine("Hello Three")
+            {
+                Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence4.DisplayName, sequence8.DisplayName)
+            };
+            TestWriteLine writeLine4 = new TestWriteLine("Hello Four")
+            {
+                Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence5.DisplayName, sequence9.DisplayName)
+            };
 
             sequence6.Activities.Add(writeLine1);
             sequence7.Activities.Add(writeLine2);
@@ -106,9 +113,9 @@ namespace TestCases.Activities
         public void DisplayNameLong()
         {
             // display name more than 256 characters... 
-            TestSequence sequence = new TestSequence("seq");
-
-            sequence.DisplayName =
+            TestSequence sequence = new TestSequence("seq")
+            {
+                DisplayName =
                 "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    " +
                 "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    " +
                 "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    " +
@@ -136,7 +143,8 @@ namespace TestCases.Activities
                 "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    " +
                 "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    " +
                 "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    " +
-                "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    ";
+                "123456789 abcdefghijklmnopqrstuvwxyz    123456789 abcdefghijklmnopqrstuvwxyz    "
+            };
             sequence.Activities.Add(new TestWriteLine("w1", "I'm a funny writeLine") { HintMessage = "I'm a funny writeLine" });
             TestRuntime.RunAndValidateWorkflow(sequence);
         }
@@ -144,10 +152,11 @@ namespace TestCases.Activities
         [Fact]
         public void DisplayNameWithPunctuations()
         {
-            TestSequence sequence = new TestSequence("seq");
-
-            sequence.DisplayName =
-                "!@#$%^&*()_+-={}|[]\\:\";\'.../////\\\\\\\\<>?,./~` !@#$%^&*()_+-={}|[]\\:\";\'<>?,./~`";
+            TestSequence sequence = new TestSequence("seq")
+            {
+                DisplayName =
+                "!@#$%^&*()_+-={}|[]\\:\";\'.../////\\\\\\\\<>?,./~` !@#$%^&*()_+-={}|[]\\:\";\'<>?,./~`"
+            };
             sequence.Activities.Add(new TestWriteLine("w1", "I'm a funny writeLine") { HintMessage = "I'm a funny writeLine" });
             TestRuntime.RunAndValidateWorkflow(sequence);
         }
@@ -183,11 +192,15 @@ namespace TestCases.Activities
 
             TestSequence sequence2 = new TestSequence("Seq");
 
-            TestWriteLine writeLine1 = new TestWriteLine("Hello One");
-            writeLine1.Message = "Hello world!";
+            TestWriteLine writeLine1 = new TestWriteLine("Hello One")
+            {
+                Message = "Hello world!"
+            };
 
-            TestWriteLine writeLine2 = new TestWriteLine("Hello Two");
-            writeLine2.Message = "Hello world!";
+            TestWriteLine writeLine2 = new TestWriteLine("Hello Two")
+            {
+                Message = "Hello world!"
+            };
 
             //begin:same sequence object with default name in a sequence
             sequence.Activities.Add(sequence2);
@@ -208,8 +221,10 @@ namespace TestCases.Activities
             //  Test case description:
             //  Add same activity multiple times to different sequences
 
-            TestWriteLine writeLine1 = new TestWriteLine("Hello One");
-            writeLine1.Message = "Hello world!";
+            TestWriteLine writeLine1 = new TestWriteLine("Hello One")
+            {
+                Message = "Hello world!"
+            };
 
             //this test case has the same writeline activity in different levels of the sequence chains
             //  sequence 2
@@ -448,8 +463,10 @@ namespace TestCases.Activities
 
             Variable<Stack<Guid>> stack = VariableHelper.Create<Stack<Guid>>("keyed_collection");
 
-            TestInvokeMethod invokeact = new TestInvokeMethod("method invoke act", typeof(Sequence).GetMethod("CheckValue"));
-            invokeact.TargetObject = new TestArgument<Sequence>(Direction.In, "TargetObject", (context => new Sequence()));
+            TestInvokeMethod invokeact = new TestInvokeMethod("method invoke act", typeof(Sequence).GetMethod("CheckValue"))
+            {
+                TargetObject = new TestArgument<Sequence>(Direction.In, "TargetObject", (context => new Sequence()))
+            };
             invokeact.Arguments.Add(new TestArgument<Stack<Guid>>(Direction.In, "stack", stack));
             TestSequence sequence6 = new TestSequence("seq5")
             {
@@ -477,12 +494,18 @@ namespace TestCases.Activities
             TestSequence sequence9 = new TestSequence("seq8");
 
 
-            TestWriteLine writeLine2 = new TestWriteLine("Hello Two");
-            writeLine2.Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence3.DisplayName, sequence7.DisplayName);
-            TestWriteLine writeLine3 = new TestWriteLine("Hello Three");
-            writeLine3.Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence4.DisplayName, sequence8.DisplayName);
-            TestWriteLine writeLine4 = new TestWriteLine("Hello Four");
-            writeLine4.Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence5.DisplayName, sequence9.DisplayName);
+            TestWriteLine writeLine2 = new TestWriteLine("Hello Two")
+            {
+                Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence3.DisplayName, sequence7.DisplayName)
+            };
+            TestWriteLine writeLine3 = new TestWriteLine("Hello Three")
+            {
+                Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence4.DisplayName, sequence8.DisplayName)
+            };
+            TestWriteLine writeLine4 = new TestWriteLine("Hello Four")
+            {
+                Message = string.Format("Hello world in {0} , {1} , {2}!", sequence.DisplayName, sequence5.DisplayName, sequence9.DisplayName)
+            };
 
             sequence7.Activities.Add(writeLine2);
             sequence8.Activities.Add(writeLine3);
@@ -524,8 +547,10 @@ namespace TestCases.Activities
             //  Execute empty sequence activity - expected to pass
             TestSequence sequence = new TestSequence("Seq");
 
-            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinvoke", this.GetType().GetMethod("DummyMethod"));
-            methodInvokeAct.TargetObject = new TestArgument<Sequence>(Direction.In, "TargetObject", (context => this));
+            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinvoke", this.GetType().GetMethod("DummyMethod"))
+            {
+                TargetObject = new TestArgument<Sequence>(Direction.In, "TargetObject", (context => this))
+            };
             sequence.Activities.Add(methodInvokeAct);
             TestRuntime.RunAndValidateWorkflow(sequence);
         }

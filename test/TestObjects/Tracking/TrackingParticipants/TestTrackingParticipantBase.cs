@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -130,8 +130,7 @@ namespace Test.Common.TestObjects.Tracking
             else if (data is ActivityStateRecord)
             {
                 ActivityStateRecord record = (ActivityStateRecord)data;
-                ActivityInstanceState state;
-                if (TryConvertToEnum(record.State, out state))
+                if (TryConvertToEnum(record.State, out ActivityInstanceState state))
                 {
                     string displayName = record.Activity.Name;
                     if (this.TestTraceManager.TraceFilter.Contains(displayName))
@@ -166,9 +165,8 @@ namespace Test.Common.TestObjects.Tracking
 
                 AddWorkflowInstanceTrace(eventType, record.InstanceId, record.WorkflowDefinitionIdentity, state);
             }
-            else if (data is BookmarkResumptionRecord)
+            else if (data is BookmarkResumptionRecord record)
             {
-                BookmarkResumptionRecord record = (BookmarkResumptionRecord)data;
                 AddBookmarkResumptionTrace(eventType, record.InstanceId, record.Owner.Name, record.BookmarkName,
                     record.BookmarkScope);
             }

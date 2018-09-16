@@ -1,14 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Statements
 {
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, //Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [If])")]
+    using CoreWf;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using Portable.Xaml.Markup;
+    using System;
+    using CoreWf.Internals;
+
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [If])")]
     public sealed class If : NativeActivity
     {
         public If()
@@ -21,7 +24,7 @@ namespace CoreWf.Statements
         {
             if (condition == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw FxTrace.Exception.ArgumentNull(nameof(condition));
             }
 
             this.Condition = new InArgument<bool>(condition);
@@ -32,7 +35,7 @@ namespace CoreWf.Statements
         {
             if (condition == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
+                throw FxTrace.Exception.ArgumentNull(nameof(condition));
             }
 
             this.Condition = new InArgument<bool>(condition);
@@ -41,12 +44,7 @@ namespace CoreWf.Statements
         public If(InArgument<bool> condition)
             : this()
         {
-            if (condition == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("condition");
-            }
-
-            this.Condition = condition;
+            this.Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
         }
 
         [RequiredArgument]
@@ -58,7 +56,7 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Condition")]
+        [DependsOn("Condition")]
         public Activity Then
         {
             get;
@@ -66,17 +64,19 @@ namespace CoreWf.Statements
         }
 
         [DefaultValue(null)]
-        //[DependsOn("Then")]
+        [DependsOn("Then")]
         public Activity Else
         {
             get;
             set;
         }
 
-        //protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void Execute(NativeActivityContext context)
         {

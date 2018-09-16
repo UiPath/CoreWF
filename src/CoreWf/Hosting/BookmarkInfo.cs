@@ -1,61 +1,60 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using System.Runtime.Serialization;
+    using CoreWf.Runtime;
+
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
     public sealed class BookmarkInfo
     {
-        private string _bookmarkName;
-        private BookmarkScopeInfo _scopeInfo;
-        private string _ownerDisplayName;
+        private string bookmarkName;
+        private BookmarkScopeInfo scopeInfo;
+        private string ownerDisplayName;
 
         internal BookmarkInfo() { }
-
         internal BookmarkInfo(string bookmarkName, string ownerDisplayName, BookmarkScopeInfo scopeInfo)
         {
             this.BookmarkName = bookmarkName;
             this.OwnerDisplayName = ownerDisplayName;
             this.ScopeInfo = scopeInfo;
         }
-
+        
         public string BookmarkName
         {
             get
             {
-                return _bookmarkName;
+                return this.bookmarkName;
             }
             private set
             {
-                _bookmarkName = value;
+                this.bookmarkName = value;
             }
         }
-
+        
         public string OwnerDisplayName
         {
             get
             {
-                return _ownerDisplayName;
+                return this.ownerDisplayName;
             }
             private set
             {
-                _ownerDisplayName = value;
+                this.ownerDisplayName = value;
             }
         }
-
+        
         public BookmarkScopeInfo ScopeInfo
         {
             get
             {
-                return _scopeInfo;
+                return this.scopeInfo;
             }
             private set
             {
-                _scopeInfo = value;
+                this.scopeInfo = value;
             }
         }
 

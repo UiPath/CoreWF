@@ -1,31 +1,31 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     internal class AsyncOperationContext
     {
-        private static AsyncCallback s_onResumeAsyncCodeActivityBookmark;
-
-        private ActivityExecutor _executor;
-        private ActivityInstance _owningActivityInstance;
-        private bool _hasCanceled;
-        private bool _hasCompleted;
+        private static AsyncCallback onResumeAsyncCodeActivityBookmark;
+        private ActivityExecutor executor;
+        private ActivityInstance owningActivityInstance;
+        private bool hasCanceled;
+        private bool hasCompleted;
 
         internal AsyncOperationContext(ActivityExecutor executor, ActivityInstance owningActivityInstance)
         {
-            _executor = executor;
-            _owningActivityInstance = owningActivityInstance;
+            this.executor = executor;
+            this.owningActivityInstance = owningActivityInstance;
         }
 
         internal bool IsStillActive
         {
             get
             {
-                return !_hasCanceled && !_hasCompleted;
+                return !this.hasCanceled && !this.hasCompleted;
             }
         }
 
@@ -54,14 +54,14 @@ namespace CoreWf
 
         private bool ShouldComplete()
         {
-            if (_hasCanceled)
+            if (this.hasCanceled)
             {
                 return false;
             }
 
-            if (_hasCompleted)
+            if (this.hasCompleted)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.OperationAlreadyCompleted));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OperationAlreadyCompleted));
             }
 
             return true;
@@ -71,19 +71,19 @@ namespace CoreWf
         {
             if (ShouldCancel())
             {
-                _executor.CompleteOperation(_owningActivityInstance);
+                this.executor.CompleteOperation(this.owningActivityInstance);
             }
 
-            _hasCanceled = true;
+            this.hasCanceled = true;
         }
 
         public void CompleteOperation()
         {
             if (ShouldComplete())
             {
-                _executor.CompleteOperation(_owningActivityInstance);
+                this.executor.CompleteOperation(this.owningActivityInstance);
 
-                _hasCompleted = true;
+                this.hasCompleted = true;
             }
         }
 
@@ -98,18 +98,18 @@ namespace CoreWf
                 return;
             }
 
-            if (s_onResumeAsyncCodeActivityBookmark == null)
+            if (onResumeAsyncCodeActivityBookmark == null)
             {
-                s_onResumeAsyncCodeActivityBookmark = Fx.ThunkCallback(new AsyncCallback(OnResumeAsyncCodeActivityBookmark));
+                onResumeAsyncCodeActivityBookmark = Fx.ThunkCallback(new AsyncCallback(OnResumeAsyncCodeActivityBookmark));
             }
 
             try
             {
-                IAsyncResult result = _executor.BeginResumeBookmark(Bookmark.AsyncOperationCompletionBookmark,
-                    completeData, TimeSpan.MaxValue, s_onResumeAsyncCodeActivityBookmark, _executor);
+                IAsyncResult result = this.executor.BeginResumeBookmark(Bookmark.AsyncOperationCompletionBookmark,
+                    completeData, TimeSpan.MaxValue, onResumeAsyncCodeActivityBookmark, this.executor);
                 if (result.CompletedSynchronously)
                 {
-                    _executor.EndResumeBookmark(result);
+                    this.executor.EndResumeBookmark(result);
                 }
             }
             catch (Exception e)
@@ -119,7 +119,7 @@ namespace CoreWf
                     throw;
                 }
 
-                _executor.AbortWorkflowInstance(e);
+                this.executor.AbortWorkflowInstance(e);
             }
         }
 
@@ -149,21 +149,21 @@ namespace CoreWf
 
         internal abstract class CompleteData
         {
-            private AsyncOperationContext _context;
-            private bool _isCancel;
+            private readonly AsyncOperationContext context;
+            private readonly bool isCancel;
 
             protected CompleteData(AsyncOperationContext context, bool isCancel)
             {
                 Fx.Assert(context != null, "Cannot have a null context.");
-                _context = context;
-                _isCancel = isCancel;
+                this.context = context;
+                this.isCancel = isCancel;
             }
 
             protected ActivityExecutor Executor
             {
                 get
                 {
-                    return _context._executor;
+                    return this.context.executor;
                 }
             }
 
@@ -171,7 +171,7 @@ namespace CoreWf
             {
                 get
                 {
-                    return _context._owningActivityInstance;
+                    return this.context.owningActivityInstance;
                 }
             }
 
@@ -179,7 +179,7 @@ namespace CoreWf
             {
                 get
                 {
-                    return _context;
+                    return this.context;
                 }
             }
 
@@ -188,13 +188,13 @@ namespace CoreWf
             // should be ignored.
             private bool ShouldCallExecutor()
             {
-                if (_isCancel)
+                if (this.isCancel)
                 {
-                    return _context.ShouldCancel();
+                    return this.context.ShouldCancel();
                 }
                 else
                 {
-                    return _context.ShouldComplete();
+                    return this.context.ShouldComplete();
                 }
             }
 
@@ -207,17 +207,17 @@ namespace CoreWf
 
                     // We only update hasCompleted if we just did the completion work.
                     // Calling Cancel followed by Complete does not mean you've completed.
-                    if (!_isCancel)
+                    if (!this.isCancel)
                     {
-                        _context._hasCompleted = true;
+                        this.context.hasCompleted = true;
                     }
                 }
 
                 // We update hasCanceled even if we skipped the actual work.
                 // Calling Complete followed by Cancel does imply that you have canceled.
-                if (_isCancel)
+                if (this.isCancel)
                 {
-                    _context._hasCanceled = true;
+                    this.context.hasCanceled = true;
                 }
             }
 

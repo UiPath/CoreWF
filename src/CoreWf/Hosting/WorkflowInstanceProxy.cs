@@ -1,25 +1,25 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Hosting
 {
+    using CoreWf.Runtime;
+    using System;
+
     public sealed class WorkflowInstanceProxy
     {
-        private WorkflowInstance _instance;
+        private readonly WorkflowInstance instance;
 
         internal WorkflowInstanceProxy(WorkflowInstance instance)
         {
-            _instance = instance;
+            this.instance = instance;
         }
 
         public Guid Id
         {
             get
             {
-                return _instance.Id;
+                return this.instance.Id;
             }
         }
 
@@ -27,7 +27,7 @@ namespace CoreWf.Hosting
         {
             get
             {
-                return _instance.WorkflowDefinition;
+                return this.instance.WorkflowDefinition;
             }
         }
 
@@ -40,12 +40,12 @@ namespace CoreWf.Hosting
         {
             TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-            return _instance.OnBeginResumeBookmark(bookmark, value, timeout, callback, state);
+            return this.instance.OnBeginResumeBookmark(bookmark, value, timeout, callback, state);
         }
 
         public BookmarkResumptionResult EndResumeBookmark(IAsyncResult result)
         {
-            return _instance.OnEndResumeBookmark(result);
+            return this.instance.OnEndResumeBookmark(result);
         }
     }
 }

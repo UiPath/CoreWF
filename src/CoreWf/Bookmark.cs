@@ -1,52 +1,51 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Hosting;
+    using CoreWf.Runtime;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using System.Globalization;
+    using CoreWf.Internals;
+
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
     public class Bookmark : IEquatable<Bookmark>
     {
-        private static Bookmark s_asyncOperationCompletionBookmark = new Bookmark(-1);
-        private static IEqualityComparer<Bookmark> s_comparer;
+        private static readonly Bookmark asyncOperationCompletionBookmark = new Bookmark(-1);
+        private static IEqualityComparer<Bookmark> comparer;
 
         //Used only when exclusive scopes are involved
-        private ExclusiveHandleList _exclusiveHandlesThatReferenceThis;
+        private ExclusiveHandleList exclusiveHandlesThatReferenceThis;
+        private long id;
+        private string externalName;
 
-        private long _id;
-
-        private string _externalName;
+        internal Bookmark() { }
 
         private Bookmark(long id)
         {
             Fx.Assert(id != 0, "id should not be zero");
-            _id = id;
+            this.id = id;
         }
-
-        internal Bookmark() { }
 
         public Bookmark(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty("name");
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
             }
 
-            _externalName = name;
+            this.externalName = name;
         }
 
         internal static Bookmark AsyncOperationCompletionBookmark
         {
             get
             {
-                return s_asyncOperationCompletionBookmark;
+                return asyncOperationCompletionBookmark;
             }
         }
 
@@ -54,34 +53,34 @@ namespace CoreWf
         {
             get
             {
-                if (s_comparer == null)
+                if (comparer == null)
                 {
-                    s_comparer = new BookmarkComparer();
+                    comparer = new BookmarkComparer();
                 }
 
-                return s_comparer;
+                return comparer;
             }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "exclusiveHandlesThatReferenceThis", Order = 2)]
         internal ExclusiveHandleList SerializedExclusiveHandlesThatReferenceThis
         {
-            get { return _exclusiveHandlesThatReferenceThis; }
-            set { _exclusiveHandlesThatReferenceThis = value; }
+            get { return this.exclusiveHandlesThatReferenceThis; }
+            set { this.exclusiveHandlesThatReferenceThis = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "id", Order = 0)]
         internal long SerializedId
         {
-            get { return _id; }
-            set { _id = value; }
+            get { return this.id; }
+            set { this.id = value; }
         }
 
         [DataMember(EmitDefaultValue = false, Name = "externalName", Order = 1)]
         internal string SerializedExternalName
         {
-            get { return _externalName; }
-            set { _externalName = value; }
+            get { return this.externalName; }
+            set { this.externalName = value; }
         }
 
         [DataMember(EmitDefaultValue = false)]
@@ -95,7 +94,7 @@ namespace CoreWf
         {
             get
             {
-                return _id == 0;
+                return this.id == 0;
             }
         }
 
@@ -105,7 +104,7 @@ namespace CoreWf
             {
                 if (this.IsNamed)
                 {
-                    return _externalName;
+                    return this.externalName;
                 }
                 else
                 {
@@ -120,7 +119,7 @@ namespace CoreWf
             {
                 Fx.Assert(!this.IsNamed, "We should only get the id for unnamed bookmarks.");
 
-                return _id;
+                return this.id;
             }
         }
 
@@ -128,11 +127,11 @@ namespace CoreWf
         {
             get
             {
-                return _exclusiveHandlesThatReferenceThis;
+                return this.exclusiveHandlesThatReferenceThis;
             }
             set
             {
-                _exclusiveHandlesThatReferenceThis = value;
+                this.exclusiveHandlesThatReferenceThis = value;
             }
         }
 
@@ -153,7 +152,7 @@ namespace CoreWf
                 scopeInfo = this.Scope.GenerateScopeInfo();
             }
 
-            return new BookmarkInfo(_externalName, bookmarkCallback.ActivityInstance.Activity.DisplayName, scopeInfo);
+            return new BookmarkInfo(this.externalName, bookmarkCallback.ActivityInstance.Activity.DisplayName, scopeInfo);
         }
 
         public bool Equals(Bookmark other)
@@ -165,11 +164,11 @@ namespace CoreWf
 
             if (this.IsNamed)
             {
-                return other.IsNamed && _externalName == other._externalName;
+                return other.IsNamed && this.externalName == other.externalName;
             }
             else
             {
-                return _id == other._id;
+                return this.id == other.id;
             }
         }
 
@@ -182,11 +181,11 @@ namespace CoreWf
         {
             if (this.IsNamed)
             {
-                return _externalName.GetHashCode();
+                return this.externalName.GetHashCode();
             }
             else
             {
-                return _id.GetHashCode();
+                return this.id.GetHashCode();
             }
         }
 

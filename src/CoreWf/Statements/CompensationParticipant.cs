@@ -1,34 +1,36 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Collections.ObjectModel;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Statements
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using CoreWf.Runtime;
+
+#if NET45
+    using CoreWf.DynamicUpdate; 
+#endif
+
     internal sealed class CompensationParticipant : NativeActivity
     {
-        private InArgument<long> _compensationId;
-
-        private Variable<CompensationToken> _currentCompensationToken;
+        private readonly InArgument<long> compensationId;
+        private readonly Variable<CompensationToken> currentCompensationToken;
 
         public CompensationParticipant(Variable<long> compensationId)
             : base()
         {
-            _compensationId = compensationId;
+            this.compensationId = compensationId;
 
-            _currentCompensationToken = new Variable<CompensationToken>();
+            this.currentCompensationToken = new Variable<CompensationToken>();
 
             DefaultCompensation = new DefaultCompensation()
-            {
-                Target = new InArgument<CompensationToken>(_currentCompensationToken),
-            };
+                {
+                    Target = new InArgument<CompensationToken>(this.currentCompensationToken),
+                };
 
             DefaultConfirmation = new DefaultConfirmation()
-            {
-                Target = new InArgument<CompensationToken>(_currentCompensationToken),
-            };
+                {
+                    Target = new InArgument<CompensationToken>(this.currentCompensationToken),
+                };
         }
 
         public Activity CompensationHandler
@@ -69,17 +71,19 @@ namespace CoreWf.Statements
             }
         }
 
-        //protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        //{
-        //    metadata.AllowUpdateInsideThisActivity();
-        //}
+#if NET45
+        protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+        {
+            metadata.AllowUpdateInsideThisActivity();
+        } 
+#endif
 
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             metadata.SetImplementationVariablesCollection(
                 new Collection<Variable>
                 {
-                    _currentCompensationToken,
+                    this.currentCompensationToken,
                 });
 
             Collection<Activity> children = new Collection<Activity>();
@@ -111,7 +115,7 @@ namespace CoreWf.Statements
             metadata.SetImplementationChildrenCollection(implementationChildren);
 
             RuntimeArgument compensationIdArgument = new RuntimeArgument("CompensationId", typeof(long), ArgumentDirection.In);
-            metadata.Bind(_compensationId, compensationIdArgument);
+            metadata.Bind(this.compensationId, compensationIdArgument);
             metadata.AddArgument(compensationIdArgument);
         }
 
@@ -120,14 +124,14 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            long compensationId = _compensationId.Get(context);
+            long compensationId = this.compensationId.Get(context);
             Fx.Assert(compensationId != CompensationToken.RootCompensationId, "CompensationId passed to the SecondaryRoot must be valid");
 
             CompensationTokenData compensationToken = compensationExtension.Get(compensationId);
             Fx.Assert(compensationToken != null, "CompensationTokenData must be valid");
 
             CompensationToken token = new CompensationToken(compensationToken);
-            _currentCompensationToken.Set(context, token);
+            this.currentCompensationToken.Set(context, token);
 
             compensationToken.IsTokenValidInSecondaryRoot = true;
             context.Properties.Add(CompensationToken.PropertyName, token);
@@ -176,7 +180,7 @@ namespace CoreWf.Statements
             }
             else
             {
-                _currentCompensationToken.Set(context, new CompensationToken(compensationToken));
+                this.currentCompensationToken.Set(context, new CompensationToken(compensationToken));
                 if (compensationToken.ExecutionTracker.Count > 0)
                 {
                     context.ScheduleActivity(DefaultConfirmation, new CompletionCallback(this.OnConfirmationComplete));
@@ -196,14 +200,14 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            CompensationTokenData compensationToken = compensationExtension.Get(_compensationId.Get(context));
+            CompensationTokenData compensationToken = compensationExtension.Get(this.compensationId.Get(context));
             Fx.Assert(compensationToken != null, "CompensationTokenData must be valid");
 
             if (completedInstance.State == ActivityInstanceState.Closed)
             {
                 Fx.Assert(compensationToken.CompensationState == CompensationState.Confirming, "CompensationParticipant should be in Confirming State");
 
-                _currentCompensationToken.Set(context, new CompensationToken(compensationToken));
+                this.currentCompensationToken.Set(context, new CompensationToken(compensationToken));
                 if (compensationToken.ExecutionTracker.Count > 0)
                 {
                     context.ScheduleActivity(DefaultConfirmation, new CompletionCallback(this.OnConfirmationComplete));
@@ -223,7 +227,7 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            CompensationTokenData compensationToken = compensationExtension.Get(_compensationId.Get(context));
+            CompensationTokenData compensationToken = compensationExtension.Get(this.compensationId.Get(context));
             Fx.Assert(compensationToken != null, "CompensationTokenData must be valid");
 
             if (completedInstance.State == ActivityInstanceState.Closed)
@@ -260,7 +264,7 @@ namespace CoreWf.Statements
             }
             else
             {
-                _currentCompensationToken.Set(context, new CompensationToken(compensationToken));
+                this.currentCompensationToken.Set(context, new CompensationToken(compensationToken));
                 if (compensationToken.ExecutionTracker.Count > 0)
                 {
                     context.ScheduleActivity(DefaultCompensation, new CompletionCallback(this.OnCompensationComplete));
@@ -280,14 +284,14 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            CompensationTokenData compensationToken = compensationExtension.Get(_compensationId.Get(context));
+            CompensationTokenData compensationToken = compensationExtension.Get(this.compensationId.Get(context));
             Fx.Assert(compensationToken != null, "CompensationTokenData must be valid");
 
             if (completedInstance.State == ActivityInstanceState.Closed)
             {
                 Fx.Assert(compensationToken.CompensationState == CompensationState.Compensating, "CompensationParticipant should be in Compensating State");
 
-                _currentCompensationToken.Set(context, new CompensationToken(compensationToken));
+                this.currentCompensationToken.Set(context, new CompensationToken(compensationToken));
                 if (compensationToken.ExecutionTracker.Count > 0)
                 {
                     context.ScheduleActivity(DefaultConfirmation, new CompletionCallback(this.OnCompensationComplete));
@@ -321,7 +325,7 @@ namespace CoreWf.Statements
             compensationToken.RemoveBookmark(context, CompensationBookmarkName.OnCompensation);
             compensationToken.RemoveBookmark(context, CompensationBookmarkName.OnConfirmation);
 
-            _currentCompensationToken.Set(context, new CompensationToken(compensationToken));
+            this.currentCompensationToken.Set(context, new CompensationToken(compensationToken));
             if (CancellationHandler != null)
             {
                 context.ScheduleActivity(CancellationHandler, new CompletionCallback(this.OnCancellationHandlerComplete), new FaultCallback(OnExceptionFromHandler));
@@ -344,14 +348,14 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            CompensationTokenData compensationToken = compensationExtension.Get(_compensationId.Get(context));
+            CompensationTokenData compensationToken = compensationExtension.Get(this.compensationId.Get(context));
             Fx.Assert(compensationToken != null, "CompensationTokenData must be valid");
 
             if (completedInstance.State == ActivityInstanceState.Closed)
             {
                 Fx.Assert(compensationToken.CompensationState == CompensationState.Canceling, "CompensationParticipant should be in Canceling State");
 
-                _currentCompensationToken.Set(context, new CompensationToken(compensationToken));
+                this.currentCompensationToken.Set(context, new CompensationToken(compensationToken));
                 if (compensationToken.ExecutionTracker.Count > 0)
                 {
                     context.ScheduleActivity(DefaultConfirmation, new CompletionCallback(this.OnCompensationComplete));
@@ -368,7 +372,7 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            CompensationTokenData compensationToken = compensationExtension.Get(_compensationId.Get(context));
+            CompensationTokenData compensationToken = compensationExtension.Get(this.compensationId.Get(context));
             Fx.Assert(compensationToken != null, "CompensationTokenData must be valid");
 
             InternalOnCompensationComplete(context, compensationExtension, compensationToken);
@@ -395,7 +399,7 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
 
-            CompensationTokenData compensationToken = compensationExtension.Get(_compensationId.Get(context));
+            CompensationTokenData compensationToken = compensationExtension.Get(this.compensationId.Get(context));
             Fx.Assert(compensationToken != null, "CompensationTokenData must be valid");
 
             InvalidOperationException exception = null;

@@ -1,29 +1,32 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Diagnostics;
-using System.Linq.Expressions;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Expressions
 {
+    using System;
+    using CoreWf.XamlIntegration;
+    using System.Diagnostics;
+    using System.Linq.Expressions;
+    using Portable.Xaml.Markup;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
+#if NET45
+    using CoreWf.ExpressionParser; 
+#endif
+
     // consciously not XAML-friendly since Linq Expressions aren't create-set-use
     [Fx.Tag.XamlVisible(false)]
     [DebuggerStepThrough]
-    public sealed class LambdaValue<TResult> : CodeActivity<TResult>, IExpressionContainer/*, IValueSerializableExpression*/
+    public sealed class LambdaValue<TResult> : CodeActivity<TResult>, IExpressionContainer, IValueSerializableExpression
     {
-        private Func<ActivityContext, TResult> _compiledLambdaValue;
-        private Expression<Func<ActivityContext, TResult>> _lambdaValue;
-        private Expression<Func<ActivityContext, TResult>> _rewrittenTree;
+        private Func<ActivityContext, TResult> compiledLambdaValue;
+        private readonly Expression<Func<ActivityContext, TResult>> lambdaValue;
+        private Expression<Func<ActivityContext, TResult>> rewrittenTree;
 
         public LambdaValue(Expression<Func<ActivityContext, TResult>> lambdaValue)
         {
-            if (lambdaValue == null)
-            {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("lambdaValue");
-            }
-            _lambdaValue = lambdaValue;
+            this.lambdaValue = lambdaValue ?? throw FxTrace.Exception.ArgumentNull(nameof(lambdaValue));
             this.UseOldFastPath = true;
         }
 
@@ -32,7 +35,7 @@ namespace CoreWf.Expressions
         {
             get
             {
-                return _lambdaValue;
+                return this.lambdaValue;
             }
         }
 
@@ -41,39 +44,38 @@ namespace CoreWf.Expressions
             CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
 
             // We need to rewrite the tree.
-            Expression newTree;
-            if (ExpressionUtilities.TryRewriteLambdaExpression(_lambdaValue, out newTree, publicAccessor))
+            if (ExpressionUtilities.TryRewriteLambdaExpression(this.lambdaValue, out Expression newTree, publicAccessor))
             {
-                _rewrittenTree = (Expression<Func<ActivityContext, TResult>>)newTree;
+                this.rewrittenTree = (Expression<Func<ActivityContext, TResult>>)newTree;
             }
             else
             {
-                _rewrittenTree = _lambdaValue;
+                this.rewrittenTree = this.lambdaValue;
             }
         }
 
         protected override TResult Execute(CodeActivityContext context)
         {
-            if (_compiledLambdaValue == null)
+            if (this.compiledLambdaValue == null)
             {
-                _compiledLambdaValue = _rewrittenTree.Compile();
+                this.compiledLambdaValue = this.rewrittenTree.Compile();
             }
-            return _compiledLambdaValue(context);
+            return this.compiledLambdaValue(context);
         }
 
-        //public bool CanConvertToString(IValueSerializerContext context)
-        //{
-        //    return true;
-        //}
+        public bool CanConvertToString(IValueSerializerContext context)
+        {
+            return true;
+        }
 
-        //public string ConvertToString(IValueSerializerContext context)
-        //{
-        //    // This workflow contains lambda expressions specified in code. 
-        //    // These expressions are not XAML serializable. 
-        //    // In order to make your workflow XAML-serializable, 
-        //    // use either VisualBasicValue/Reference or ExpressionServices.Convert 
-        //    // This will convert your lambda expressions into expression activities.
-        //    throw CoreWf.Internals.FxTrace.Exception.AsError(new LambdaSerializationException());
-        //}
+        public string ConvertToString(IValueSerializerContext context)
+        {
+            // This workflow contains lambda expressions specified in code. 
+            // These expressions are not XAML serializable. 
+            // In order to make your workflow XAML-serializable, 
+            // use either VisualBasicValue/Reference or ExpressionServices.Convert 
+            // This will convert your lambda expressions into expression activities.
+            throw FxTrace.Exception.AsError(new LambdaSerializationException());
+        }
     }
 }

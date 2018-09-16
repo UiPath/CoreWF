@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 using System;
 using CoreWf;
@@ -15,7 +15,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Three activities connected by AND join in flowchart.
         /// </summary>        
-        [Fact(Skip = "To be compared with Desktop testcase")]
+        [Fact]
         public void ThreeActivitiesInAndJoin()
         {
             TestFlowchart flowchart = new TestFlowchart("Flow1");
@@ -41,7 +41,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Three activities connected by OR join in flowchart.
         /// </summary>        
-        [Fact(Skip = "To be compared with Desktop testcase")]
+        [Fact]
         public void ThreeActivitiesInOrJoin()
         {
             TestFlowchart flowchart = new TestFlowchart("Flow1");

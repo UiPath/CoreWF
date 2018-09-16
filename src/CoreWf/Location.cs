@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using System;
-using System.Diagnostics;
-using System.Runtime.Serialization;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Runtime;
+    using System.Diagnostics;
+    using System.Runtime.Serialization;
+
     [DataContract]
     [DebuggerDisplay("{Value}")]
     public abstract class Location
     {
-        private TemporaryResolutionData _temporaryResolutionData;
+        private TemporaryResolutionData temporaryResolutionData;
 
         protected Location()
         {
@@ -38,8 +38,8 @@ namespace CoreWf
         [DataMember(EmitDefaultValue = false, Name = "temporaryResolutionData")]
         internal TemporaryResolutionData SerializedTemporaryResolutionData
         {
-            get { return _temporaryResolutionData; }
-            set { _temporaryResolutionData = value; }
+            get { return this.temporaryResolutionData; }
+            set { this.temporaryResolutionData = value; }
         }
 
         internal virtual bool CanBeMapped
@@ -61,7 +61,7 @@ namespace CoreWf
         {
             get
             {
-                return _temporaryResolutionData.TemporaryResolutionEnvironment;
+                return this.temporaryResolutionData.TemporaryResolutionEnvironment;
             }
         }
 
@@ -69,7 +69,7 @@ namespace CoreWf
         {
             get
             {
-                return _temporaryResolutionData.BufferGetsOnCollapse;
+                return this.temporaryResolutionData.BufferGetsOnCollapse;
             }
         }
 
@@ -81,7 +81,7 @@ namespace CoreWf
 
         internal void SetTemporaryResolutionData(LocationEnvironment resolutionEnvironment, bool bufferGetsOnCollapse)
         {
-            _temporaryResolutionData = new TemporaryResolutionData
+            this.temporaryResolutionData = new TemporaryResolutionData
             {
                 TemporaryResolutionEnvironment = resolutionEnvironment,
                 BufferGetsOnCollapse = bufferGetsOnCollapse
@@ -125,21 +125,21 @@ namespace CoreWf
         [DataContract]
         internal class ReferenceLocation : Location
         {
-            private Location _innerLocation;
-            private bool _bufferGets;
-            private object _bufferedValue;
+            private Location innerLocation;
+            private bool bufferGets;
+            private object bufferedValue;
 
             public ReferenceLocation(Location innerLocation, bool bufferGets)
             {
-                _innerLocation = innerLocation;
-                _bufferGets = bufferGets;
+                this.innerLocation = innerLocation;
+                this.bufferGets = bufferGets;
             }
 
             public override Type LocationType
             {
                 get
                 {
-                    return _innerLocation.LocationType;
+                    return this.innerLocation.LocationType;
                 }
             }
 
@@ -147,52 +147,52 @@ namespace CoreWf
             {
                 get
                 {
-                    if (_bufferGets)
+                    if (this.bufferGets)
                     {
-                        return _bufferedValue;
+                        return this.bufferedValue;
                     }
                     else
                     {
-                        return _innerLocation.Value;
+                        return this.innerLocation.Value;
                     }
                 }
                 set
                 {
-                    _innerLocation.Value = value;
-                    _bufferedValue = value;
+                    this.innerLocation.Value = value;
+                    this.bufferedValue = value;
                 }
             }
 
             [DataMember(Name = "innerLocation")]
             internal Location SerializedInnerLocation
             {
-                get { return _innerLocation; }
-                set { _innerLocation = value; }
+                get { return this.innerLocation; }
+                set { this.innerLocation = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "bufferGets")]
             internal bool SerializedBufferGets
             {
-                get { return _bufferGets; }
-                set { _bufferGets = value; }
+                get { return this.bufferGets; }
+                set { this.bufferGets = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "bufferedValue")]
             internal object SerializedBufferedValue
             {
-                get { return _bufferedValue; }
-                set { _bufferedValue = value; }
+                get { return this.bufferedValue; }
+                set { this.bufferedValue = value; }
             }
 
             public override string ToString()
             {
-                if (_bufferGets)
+                if (bufferGets)
                 {
                     return base.ToString();
                 }
                 else
                 {
-                    return _innerLocation.ToString();
+                    return this.innerLocation.ToString();
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace CoreWf
     [DataContract]
     public class Location<T> : Location
     {
-        private T _value;
+        private T value;
 
         public Location()
             : base()
@@ -220,11 +220,11 @@ namespace CoreWf
         {
             get
             {
-                return _value;
+                return this.value;
             }
             set
             {
-                _value = value;
+                this.value = value;
             }
         }
 
@@ -257,8 +257,8 @@ namespace CoreWf
         [DataMember(EmitDefaultValue = false, Name = "value")]
         internal T SerializedValue
         {
-            get { return _value; }
-            set { _value = value; }
+            get { return this.value; }
+            set { this.value = value; }
         }
 
         internal override Location CreateReference(bool bufferGets)
@@ -280,41 +280,41 @@ namespace CoreWf
 
         public override string ToString()
         {
-            return _value != null ? _value.ToString() : "<null>";
+            return this.value != null ? this.value.ToString() : "<null>";
         }
 
         [DataContract]
         internal new class ReferenceLocation : Location<T>
         {
-            private Location<T> _innerLocation;
-            private bool _bufferGets;
+            private Location<T> innerLocation;
+            private bool bufferGets;
 
             public ReferenceLocation(Location<T> innerLocation, bool bufferGets)
             {
-                _innerLocation = innerLocation;
-                _bufferGets = bufferGets;
+                this.innerLocation = innerLocation;
+                this.bufferGets = bufferGets;
             }
 
             public override T Value
             {
                 get
                 {
-                    if (_bufferGets)
+                    if (this.bufferGets)
                     {
-                        return _value;
+                        return this.value;
                     }
                     else
                     {
-                        return _innerLocation.Value;
+                        return this.innerLocation.Value;
                     }
                 }
                 set
                 {
-                    _innerLocation.Value = value;
+                    this.innerLocation.Value = value;
 
-                    if (_bufferGets)
+                    if (this.bufferGets)
                     {
-                        _value = value;
+                        this.value = value;
                     }
                 }
             }
@@ -322,26 +322,26 @@ namespace CoreWf
             [DataMember(Name = "innerLocation")]
             internal Location<T> SerializedInnerLocation
             {
-                get { return _innerLocation; }
-                set { _innerLocation = value; }
+                get { return this.innerLocation; }
+                set { this.innerLocation = value; }
             }
 
             [DataMember(EmitDefaultValue = false, Name = "bufferGets")]
             internal bool SerializedBufferGets
             {
-                get { return _bufferGets; }
-                set { _bufferGets = value; }
+                get { return this.bufferGets; }
+                set { this.bufferGets = value; }
             }
 
             public override string ToString()
             {
-                if (_bufferGets)
+                if (this.bufferGets)
                 {
                     return base.ToString();
                 }
                 else
                 {
-                    return _innerLocation.ToString();
+                    return this.innerLocation.ToString();
                 }
             }
         }

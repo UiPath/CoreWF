@@ -1,25 +1,25 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System.Threading;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System.Threading;
+
     internal class ProcessActivityTreeOptions
     {
-        private static ProcessActivityTreeOptions s_validationOptions;
-        private static ProcessActivityTreeOptions s_validationAndPrepareForRuntimeOptions;
-        private static ProcessActivityTreeOptions s_singleLevelValidationOptions;
-        private static ProcessActivityTreeOptions s_fullCachingOptions;
-        private static ProcessActivityTreeOptions s_dynamicUpdateOptions;
-        private static ProcessActivityTreeOptions s_dynamicUpdateOptionsForImplementation;
-        private static ProcessActivityTreeOptions s_finishCachingSubtreeOptionsWithCreateEmptyBindings;
-        private static ProcessActivityTreeOptions s_finishCachingSubtreeOptionsWithoutCreateEmptyBindings;
-        private static ProcessActivityTreeOptions s_skipRootFinishCachingSubtreeOptions;
-        private static ProcessActivityTreeOptions s_skipRootConfigurationValidationOptions;
-        private static ProcessActivityTreeOptions s_singleLevelSkipRootConfigurationValidationOptions;
+        private static ProcessActivityTreeOptions validationOptions;
+        private static ProcessActivityTreeOptions validationAndPrepareForRuntimeOptions;
+        private static ProcessActivityTreeOptions singleLevelValidationOptions;
+        private static ProcessActivityTreeOptions fullCachingOptions;
+        private static ProcessActivityTreeOptions dynamicUpdateOptions;
+        private static ProcessActivityTreeOptions dynamicUpdateOptionsForImplementation;
+        private static ProcessActivityTreeOptions finishCachingSubtreeOptionsWithCreateEmptyBindings;
+        private static ProcessActivityTreeOptions finishCachingSubtreeOptionsWithoutCreateEmptyBindings;
+        private static ProcessActivityTreeOptions skipRootFinishCachingSubtreeOptions;
+        private static ProcessActivityTreeOptions skipRootConfigurationValidationOptions;
+        private static ProcessActivityTreeOptions singleLevelSkipRootConfigurationValidationOptions;
 
         private ProcessActivityTreeOptions()
         {
@@ -98,9 +98,9 @@ namespace CoreWf
         {
             get
             {
-                if (s_fullCachingOptions == null)
+                if (fullCachingOptions == null)
                 {
-                    s_fullCachingOptions = new ProcessActivityTreeOptions
+                    fullCachingOptions = new ProcessActivityTreeOptions
                     {
                         SkipIfCached = true,
                         CreateEmptyBindings = true,
@@ -108,7 +108,7 @@ namespace CoreWf
                     };
                 }
 
-                return s_fullCachingOptions;
+                return fullCachingOptions;
             }
         }
 
@@ -116,9 +116,9 @@ namespace CoreWf
         {
             get
             {
-                if (s_validationOptions == null)
+                if (validationOptions == null)
                 {
-                    s_validationOptions = new ProcessActivityTreeOptions
+                    validationOptions = new ProcessActivityTreeOptions
                     {
                         SkipPrivateChildren = false,
                         // We don't want to interfere with activities doing null-checks
@@ -127,7 +127,7 @@ namespace CoreWf
                     };
                 }
 
-                return s_validationOptions;
+                return validationOptions;
             }
         }
 
@@ -135,17 +135,17 @@ namespace CoreWf
         {
             get
             {
-                if (s_validationAndPrepareForRuntimeOptions == null)
+                if (validationAndPrepareForRuntimeOptions == null)
                 {
-                    s_validationAndPrepareForRuntimeOptions = new ProcessActivityTreeOptions
+                    validationAndPrepareForRuntimeOptions = new ProcessActivityTreeOptions
                     {
                         SkipIfCached = false,
-                        SkipPrivateChildren = false,
+                        SkipPrivateChildren = false,                        
                         CreateEmptyBindings = true,
                     };
                 }
 
-                return s_validationAndPrepareForRuntimeOptions;
+                return validationAndPrepareForRuntimeOptions;
             }
         }
 
@@ -153,19 +153,20 @@ namespace CoreWf
         {
             get
             {
-                if (s_skipRootConfigurationValidationOptions == null)
+                if (skipRootConfigurationValidationOptions == null)
                 {
-                    s_skipRootConfigurationValidationOptions = new ProcessActivityTreeOptions
+                    skipRootConfigurationValidationOptions = new ProcessActivityTreeOptions
                     {
                         SkipPrivateChildren = false,
                         // We don't want to interfere with activities doing null-checks
                         // by creating empty bindings.
                         CreateEmptyBindings = false,
                         SkipRootConfigurationValidation = true
+
                     };
                 }
 
-                return s_skipRootConfigurationValidationOptions;
+                return skipRootConfigurationValidationOptions;
             }
         }
 
@@ -173,9 +174,9 @@ namespace CoreWf
         {
             get
             {
-                if (s_singleLevelSkipRootConfigurationValidationOptions == null)
+                if (singleLevelSkipRootConfigurationValidationOptions == null)
                 {
-                    s_singleLevelSkipRootConfigurationValidationOptions = new ProcessActivityTreeOptions
+                    singleLevelSkipRootConfigurationValidationOptions = new ProcessActivityTreeOptions
                     {
                         SkipPrivateChildren = false,
                         // We don't want to interfere with activities doing null-checks
@@ -186,7 +187,7 @@ namespace CoreWf
                     };
                 }
 
-                return s_singleLevelSkipRootConfigurationValidationOptions;
+                return singleLevelSkipRootConfigurationValidationOptions;
             }
         }
 
@@ -194,9 +195,9 @@ namespace CoreWf
         {
             get
             {
-                if (s_singleLevelValidationOptions == null)
+                if (singleLevelValidationOptions == null)
                 {
-                    s_singleLevelValidationOptions = new ProcessActivityTreeOptions
+                    singleLevelValidationOptions = new ProcessActivityTreeOptions
                     {
                         SkipPrivateChildren = false,
                         // We don't want to interfere with activities doing null-checks
@@ -206,7 +207,7 @@ namespace CoreWf
                     };
                 }
 
-                return s_singleLevelValidationOptions;
+                return singleLevelValidationOptions;
             }
         }
 
@@ -214,18 +215,18 @@ namespace CoreWf
         {
             get
             {
-                if (s_finishCachingSubtreeOptionsWithoutCreateEmptyBindings == null)
+                if (finishCachingSubtreeOptionsWithoutCreateEmptyBindings == null)
                 {
                     // We don't want to run constraints and we only want to hit
                     // the public path.
-                    s_finishCachingSubtreeOptionsWithoutCreateEmptyBindings = new ProcessActivityTreeOptions
+                    finishCachingSubtreeOptionsWithoutCreateEmptyBindings = new ProcessActivityTreeOptions
                     {
                         SkipConstraints = true,
                         StoreTempViolations = true
                     };
                 }
 
-                return s_finishCachingSubtreeOptionsWithoutCreateEmptyBindings;
+                return finishCachingSubtreeOptionsWithoutCreateEmptyBindings;
             }
         }
 
@@ -233,11 +234,11 @@ namespace CoreWf
         {
             get
             {
-                if (s_skipRootFinishCachingSubtreeOptions == null)
+                if (skipRootFinishCachingSubtreeOptions == null)
                 {
                     // We don't want to run constraints and we only want to hit
                     // the public path.
-                    s_skipRootFinishCachingSubtreeOptions = new ProcessActivityTreeOptions
+                    skipRootFinishCachingSubtreeOptions = new ProcessActivityTreeOptions
                     {
                         SkipConstraints = true,
                         SkipRootConfigurationValidation = true,
@@ -245,7 +246,7 @@ namespace CoreWf
                     };
                 }
 
-                return s_skipRootFinishCachingSubtreeOptions;
+                return skipRootFinishCachingSubtreeOptions;
             }
         }
 
@@ -253,11 +254,11 @@ namespace CoreWf
         {
             get
             {
-                if (s_finishCachingSubtreeOptionsWithCreateEmptyBindings == null)
+                if (finishCachingSubtreeOptionsWithCreateEmptyBindings == null)
                 {
                     // We don't want to run constraints and we only want to hit
                     // the public path.
-                    s_finishCachingSubtreeOptionsWithCreateEmptyBindings = new ProcessActivityTreeOptions
+                    finishCachingSubtreeOptionsWithCreateEmptyBindings = new ProcessActivityTreeOptions
                     {
                         SkipConstraints = true,
                         CreateEmptyBindings = true,
@@ -265,7 +266,7 @@ namespace CoreWf
                     };
                 }
 
-                return s_finishCachingSubtreeOptionsWithCreateEmptyBindings;
+                return finishCachingSubtreeOptionsWithCreateEmptyBindings;
             }
         }
 
@@ -273,16 +274,16 @@ namespace CoreWf
         {
             get
             {
-                if (s_dynamicUpdateOptions == null)
+                if (dynamicUpdateOptions == null)
                 {
-                    s_dynamicUpdateOptions = new ProcessActivityTreeOptions
+                    dynamicUpdateOptions = new ProcessActivityTreeOptions
                     {
                         OnlyCallCallbackForDeclarations = true,
                         SkipConstraints = true,
                     };
                 }
 
-                return s_dynamicUpdateOptions;
+                return dynamicUpdateOptions;
             }
         }
 
@@ -290,9 +291,9 @@ namespace CoreWf
         {
             get
             {
-                if (s_dynamicUpdateOptionsForImplementation == null)
+                if (dynamicUpdateOptionsForImplementation == null)
                 {
-                    s_dynamicUpdateOptionsForImplementation = new ProcessActivityTreeOptions
+                    dynamicUpdateOptionsForImplementation = new ProcessActivityTreeOptions
                     {
                         SkipRootConfigurationValidation = true,
                         OnlyCallCallbackForDeclarations = true,
@@ -300,7 +301,7 @@ namespace CoreWf
                     };
                 }
 
-                return s_dynamicUpdateOptionsForImplementation;
+                return dynamicUpdateOptionsForImplementation;
             }
         }
 

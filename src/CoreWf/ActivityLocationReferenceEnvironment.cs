@@ -1,17 +1,18 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System.Collections.Generic;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
+    using CoreWf.Validation;
+    using System.Collections.Generic;
+
     [Fx.Tag.XamlVisible(false)]
     internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEnvironment
     {
-        private Dictionary<string, LocationReference> _declarations;
-        private List<LocationReference> _unnamedDeclarations;
+        private Dictionary<string, LocationReference> declarations;
+        private List<LocationReference> unnamedDeclarations;
 
         public ActivityLocationReferenceEnvironment()
         {
@@ -45,12 +46,12 @@ namespace CoreWf
         {
             get
             {
-                if (_declarations == null)
+                if (this.declarations == null)
                 {
-                    _declarations = new Dictionary<string, LocationReference>();
+                    this.declarations = new Dictionary<string, LocationReference>();
                 }
 
-                return _declarations;
+                return this.declarations;
             }
         }
 
@@ -58,20 +59,19 @@ namespace CoreWf
         {
             if (locationReference == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("locationReference");
+                throw FxTrace.Exception.ArgumentNull(nameof(locationReference));
             }
 
             LocationReferenceEnvironment currentScope = this;
 
             while (currentScope != null)
             {
-                ActivityLocationReferenceEnvironment activityEnvironment = currentScope as ActivityLocationReferenceEnvironment;
 
-                if (activityEnvironment != null)
+                if (currentScope is ActivityLocationReferenceEnvironment activityEnvironment)
                 {
-                    if (activityEnvironment._declarations != null)
+                    if (activityEnvironment.declarations != null)
                     {
-                        foreach (LocationReference declaration in activityEnvironment._declarations.Values)
+                        foreach (LocationReference declaration in activityEnvironment.declarations.Values)
                         {
                             if (locationReference == declaration)
                             {
@@ -80,11 +80,11 @@ namespace CoreWf
                         }
                     }
 
-                    if (activityEnvironment._unnamedDeclarations != null)
+                    if (activityEnvironment.unnamedDeclarations != null)
                     {
-                        for (int i = 0; i < activityEnvironment._unnamedDeclarations.Count; i++)
+                        for (int i = 0; i < activityEnvironment.unnamedDeclarations.Count; i++)
                         {
-                            if (locationReference == activityEnvironment._unnamedDeclarations[i])
+                            if (locationReference == activityEnvironment.unnamedDeclarations[i])
                             {
                                 return true;
                             }
@@ -108,12 +108,12 @@ namespace CoreWf
 
             if (locationReference.Name == null)
             {
-                if (_unnamedDeclarations == null)
+                if (this.unnamedDeclarations == null)
                 {
-                    _unnamedDeclarations = new List<LocationReference>();
+                    this.unnamedDeclarations = new List<LocationReference>();
                 }
 
-                _unnamedDeclarations.Add(locationReference);
+                this.unnamedDeclarations.Add(locationReference);
             }
             else
             {
@@ -165,7 +165,7 @@ namespace CoreWf
             }
             else
             {
-                if (_declarations != null && _declarations.TryGetValue(name, out result))
+                if (this.declarations != null && this.declarations.TryGetValue(name, out result))
                 {
                     return true;
                 }
@@ -178,7 +178,7 @@ namespace CoreWf
                 while (currentEnvironment != null && currentEnvironment is ActivityLocationReferenceEnvironment)
                 {
                     ActivityLocationReferenceEnvironment activityEnvironment = (ActivityLocationReferenceEnvironment)currentEnvironment;
-                    if (activityEnvironment._declarations != null && activityEnvironment._declarations.TryGetValue(name, out result))
+                    if (activityEnvironment.declarations != null && activityEnvironment.declarations.TryGetValue(name, out result))
                     {
                         return true;
                     }

@@ -1,49 +1,50 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using System;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Expressions;
+    using CoreWf.Internals;
+
     internal class InlinedLocationReference : LocationReference, ILocationReferenceWrapper
     {
-        private LocationReference _innerReference;
-        private Activity _validAccessor;
-        private bool _allowReads;
-        private bool _allowWrites;
-        private bool _allowGetLocation;
+        private readonly LocationReference innerReference;
+        private readonly Activity validAccessor;
+        private readonly bool allowReads;
+        private readonly bool allowWrites;
+        private readonly bool allowGetLocation;
 
         public InlinedLocationReference(LocationReference innerReference, Activity validAccessor, ArgumentDirection accessDirection)
         {
-            _innerReference = innerReference;
-            _validAccessor = validAccessor;
-            _allowReads = accessDirection != ArgumentDirection.Out;
-            _allowWrites = accessDirection != ArgumentDirection.In;
+            this.innerReference = innerReference;
+            this.validAccessor = validAccessor;
+            this.allowReads = accessDirection != ArgumentDirection.Out;
+            this.allowWrites = accessDirection != ArgumentDirection.In;
         }
 
         public InlinedLocationReference(LocationReference innerReference, Activity validAccessor)
         {
-            _innerReference = innerReference;
-            _validAccessor = validAccessor;
-            _allowReads = true;
-            _allowWrites = true;
-            _allowGetLocation = true;
+            this.innerReference = innerReference;
+            this.validAccessor = validAccessor;
+            this.allowReads = true;
+            this.allowWrites = true;
+            this.allowGetLocation = true;
         }
 
         protected override string NameCore
         {
             get
             {
-                return _innerReference.Name;
+                return this.innerReference.Name;
             }
         }
-
+        
         protected override Type TypeCore
         {
             get
             {
-                return _innerReference.Type;
+                return this.innerReference.Type;
             }
         }
 
@@ -51,12 +52,12 @@ namespace CoreWf
         {
             if (context == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("context");
+                throw FxTrace.Exception.ArgumentNull(nameof(context));
             }
             ValidateAccessor(context);
-            if (!_allowGetLocation)
+            if (!this.allowGetLocation)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.GetLocationOnPublicAccessReference(context.Activity)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.GetLocationOnPublicAccessReference(context.Activity)));
             }
             return GetLocationCore(context);
         }
@@ -64,9 +65,9 @@ namespace CoreWf
         internal override Location GetLocationForRead(ActivityContext context)
         {
             ValidateAccessor(context);
-            if (!_allowReads)
+            if (!this.allowReads)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadAccessToWriteOnlyPublicReference(context.Activity)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadAccessToWriteOnlyPublicReference(context.Activity)));
             }
             return GetLocationCore(context);
         }
@@ -75,9 +76,9 @@ namespace CoreWf
         internal override Location GetLocationForWrite(ActivityContext context)
         {
             ValidateAccessor(context);
-            if (!_allowWrites)
+            if (!this.allowWrites)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteAccessToReadOnlyPublicReference(context.Activity)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteAccessToReadOnlyPublicReference(context.Activity)));
             }
             return GetLocationCore(context);
         }
@@ -88,9 +89,9 @@ namespace CoreWf
             // context.Activity does not check isDisposed
             context.ThrowIfDisposed();
 
-            if (!object.ReferenceEquals(context.Activity, _validAccessor))
+            if (!object.ReferenceEquals(context.Activity, this.validAccessor))
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InlinedLocationReferenceOnlyAccessibleByOwner(context.Activity, _validAccessor)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InlinedLocationReferenceOnlyAccessibleByOwner(context.Activity, this.validAccessor)));
             }
         }
 
@@ -99,7 +100,7 @@ namespace CoreWf
             try
             {
                 context.AllowChainedEnvironmentAccess = true;
-                return _innerReference.GetLocation(context);
+                return this.innerReference.GetLocation(context);
             }
             finally
             {
@@ -111,7 +112,7 @@ namespace CoreWf
         {
             get
             {
-                return _innerReference;
+                return this.innerReference;
             }
         }
     }

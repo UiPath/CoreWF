@@ -1,29 +1,27 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Expressions;
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 namespace CoreWf.Statements
 {
+    using System;
+    using System.Collections.Generic;
+    using CoreWf.Validation;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using CoreWf.Expressions;
+    using CoreWf.Runtime;
+    using CoreWf.Internals;
+
     public sealed class Confirm : NativeActivity
     {
-        private static Constraint s_confirmWithNoTarget = Confirm.ConfirmWithNoTarget();
-
-        private InternalConfirm _internalConfirm;
-        private DefaultConfirmation _defaultConfirmation;
-
-        private Variable<CompensationToken> _currentCompensationToken;
+        private static readonly Constraint confirmWithNoTarget = Confirm.ConfirmWithNoTarget();
+        private InternalConfirm internalConfirm;
+        private DefaultConfirmation defaultConfirmation;
+        private readonly Variable<CompensationToken> currentCompensationToken;
 
         public Confirm()
             : base()
         {
-            _currentCompensationToken = new Variable<CompensationToken>();
+            this.currentCompensationToken = new Variable<CompensationToken>();
         }
 
         public InArgument<CompensationToken> Target
@@ -36,15 +34,15 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_defaultConfirmation == null)
+                if (this.defaultConfirmation == null)
                 {
-                    _defaultConfirmation = new DefaultConfirmation()
-                    {
-                        Target = new InArgument<CompensationToken>(_currentCompensationToken),
-                    };
+                    this.defaultConfirmation = new DefaultConfirmation()
+                        {
+                            Target = new InArgument<CompensationToken>(this.currentCompensationToken),
+                        };
                 }
 
-                return _defaultConfirmation;
+                return this.defaultConfirmation;
             }
         }
 
@@ -52,15 +50,15 @@ namespace CoreWf.Statements
         {
             get
             {
-                if (_internalConfirm == null)
+                if (this.internalConfirm == null)
                 {
-                    _internalConfirm = new InternalConfirm()
-                    {
-                        Target = new InArgument<CompensationToken>(new ArgumentValue<CompensationToken> { ArgumentName = "Target" }),
-                    };
+                    this.internalConfirm = new InternalConfirm()
+                        {
+                            Target = new InArgument<CompensationToken>(new ArgumentValue<CompensationToken> { ArgumentName = "Target" }),
+                        };
                 }
 
-                return _internalConfirm;
+                return this.internalConfirm;
             }
         }
 
@@ -78,7 +76,7 @@ namespace CoreWf.Statements
             metadata.SetImplementationVariablesCollection(
                 new Collection<Variable>
                 {
-                    _currentCompensationToken
+                    this.currentCompensationToken
                 });
 
             Fx.Assert(DefaultConfirmation != null, "DefaultConfirmation must be valid");
@@ -86,14 +84,14 @@ namespace CoreWf.Statements
             metadata.SetImplementationChildrenCollection(
                 new Collection<Activity>
                 {
-                    DefaultConfirmation,
+                    DefaultConfirmation, 
                     InternalConfirm
                 });
         }
 
         internal override IList<Constraint> InternalGetConstraints()
         {
-            return new List<Constraint>(1) { s_confirmWithNoTarget };
+            return new List<Constraint>(1) { confirmWithNoTarget };
         }
 
         private static Constraint ConfirmWithNoTarget()
@@ -112,7 +110,7 @@ namespace CoreWf.Statements
                     Argument2 = validationContext,
                     Handler = new Sequence
                     {
-                        Variables =
+                        Variables = 
                         {
                             assertFlag,
                             elements,
@@ -130,7 +128,7 @@ namespace CoreWf.Statements
                                 },
                                 Else = new Sequence
                                 {
-                                    Activities =
+                                    Activities = 
                                     {
                                         new Assign<IEnumerable<Activity>>
                                         {
@@ -145,14 +143,14 @@ namespace CoreWf.Statements
                                         {
                                             Body = new Sequence
                                             {
-                                                Activities =
+                                                Activities = 
                                                 {
                                                     new If(env => (elements.Get(env).ElementAt(index.Get(env))).GetType() == typeof(CompensationParticipant))
                                                     {
                                                         Then = new Assign<bool>
                                                         {
                                                             To = assertFlag,
-                                                            Value = true
+                                                            Value = true                                                            
                                                         },
                                                     },
                                                     new Assign<int>
@@ -164,12 +162,12 @@ namespace CoreWf.Statements
                                             }
                                         }
                                     }
-                                }
+                                }                                
                             },
                             new AssertValidation
                             {
                                 Assertion = new InArgument<bool>(assertFlag),
-                                Message = new InArgument<string>(SR.ConfirmWithNoTargetConstraint)
+                                Message = new InArgument<string>(SR.ConfirmWithNoTargetConstraint)   
                             }
                         }
                     }
@@ -182,7 +180,7 @@ namespace CoreWf.Statements
             CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
             if (compensationExtension == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.ConfirmWithoutCompensableActivity(this.DisplayName)));
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ConfirmWithoutCompensableActivity(this.DisplayName)));
             }
 
             if (Target.IsEmpty)
@@ -192,7 +190,7 @@ namespace CoreWf.Statements
 
                 if (ambientTokenData != null && ambientTokenData.IsTokenValidInSecondaryRoot)
                 {
-                    _currentCompensationToken.Set(context, ambientCompensationToken);
+                    this.currentCompensationToken.Set(context, ambientCompensationToken);
                     if (ambientTokenData.ExecutionTracker.Count > 0)
                     {
                         context.ScheduleActivity(DefaultConfirmation);
@@ -200,7 +198,7 @@ namespace CoreWf.Statements
                 }
                 else
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidConfirmActivityUsage(this.DisplayName)));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidConfirmActivityUsage(this.DisplayName)));
                 }
             }
             else
@@ -210,7 +208,7 @@ namespace CoreWf.Statements
 
                 if (compensationToken == null)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(this.DisplayName));
+                    throw FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(this.DisplayName));
                 }
 
                 if (compensationToken.ConfirmCalled)
@@ -221,7 +219,7 @@ namespace CoreWf.Statements
 
                 if (tokenData == null || tokenData.CompensationState != CompensationState.Completed)
                 {
-                    throw CoreWf.Internals.FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
                 }
 
                 // A valid in-arg was passed...     

@@ -1,17 +1,17 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using System;
-using System.Runtime.Serialization;
-using System.Security;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf.Runtime
 {
+    using System;
+    using System.Runtime.Serialization;
+    using System.Security;
+
     [DataContract]
     internal class ActivityCompletionCallbackWrapper : CompletionCallbackWrapper
     {
-        private static readonly Type s_completionCallbackType = typeof(CompletionCallback);
-        private static readonly Type[] s_completionCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(ActivityInstance) };
+        private static readonly Type completionCallbackType = typeof(CompletionCallback);
+        private static readonly Type[] completionCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(ActivityInstance) };
 
         public ActivityCompletionCallbackWrapper(CompletionCallback callback, ActivityInstance owningInstance)
             : base(callback, owningInstance)
@@ -23,7 +23,7 @@ namespace CoreWf.Runtime
         [SecuritySafeCritical]
         protected internal override void Invoke(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            EnsureCallback(s_completionCallbackType, s_completionCallbackParameters);
+            EnsureCallback(completionCallbackType, completionCallbackParameters);
             CompletionCallback completionCallback = (CompletionCallback)this.Callback;
             completionCallback(context, completedInstance);
         }

@@ -1,31 +1,31 @@
-// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-using CoreWf.Validation;
-using System;
-using System.Collections.ObjectModel;
-using System.Reflection;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace CoreWf
 {
+    using System;
+    using CoreWf.Validation;
+    using System.Collections.ObjectModel;
+    using CoreWf.Internals;
+
     public struct NativeActivityMetadata
     {
-        private Activity _activity;
-        private LocationReferenceEnvironment _environment;
-        private bool _createEmptyBindings;
+        private Activity activity;
+        private readonly LocationReferenceEnvironment environment;
+        private readonly bool createEmptyBindings;
 
         internal NativeActivityMetadata(Activity activity, LocationReferenceEnvironment environment, bool createEmptyBindings)
         {
-            _activity = activity;
-            _environment = environment;
-            _createEmptyBindings = createEmptyBindings;
+            this.activity = activity;
+            this.environment = environment;
+            this.createEmptyBindings = createEmptyBindings;
         }
 
         internal bool CreateEmptyBindings
         {
             get
             {
-                return _createEmptyBindings;
+                return this.createEmptyBindings;
             }
         }
 
@@ -33,7 +33,7 @@ namespace CoreWf
         {
             get
             {
-                return _environment;
+                return this.environment;
             }
         }
 
@@ -41,13 +41,13 @@ namespace CoreWf
         {
             get
             {
-                if (_activity == null)
+                if (this.activity == null)
                 {
                     return false;
                 }
                 else
                 {
-                    return _activity.HasTempViolations;
+                    return this.activity.HasTempViolations;
                 }
             }
         }
@@ -70,19 +70,19 @@ namespace CoreWf
             }
 
             NativeActivityMetadata other = (NativeActivityMetadata)obj;
-            return other._activity == _activity && other.Environment == this.Environment
+            return other.activity == this.activity && other.Environment == this.Environment
                 && other.CreateEmptyBindings == this.CreateEmptyBindings;
         }
 
         public override int GetHashCode()
         {
-            if (_activity == null)
+            if (this.activity == null)
             {
                 return 0;
             }
             else
             {
-                return _activity.GetHashCode();
+                return this.activity.GetHashCode();
             }
         }
 
@@ -90,7 +90,7 @@ namespace CoreWf
         {
             ThrowIfDisposed();
 
-            Argument.TryBind(binding, argument, _activity);
+            Argument.TryBind(binding, argument, this.activity);
         }
 
         public void SetValidationErrorsCollection(Collection<ValidationError> validationErrors)
@@ -99,7 +99,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(validationErrors);
 
-            _activity.SetTempValidationErrorCollection(validationErrors);
+            this.activity.SetTempValidationErrorCollection(validationErrors);
         }
 
         public void AddValidationError(string validationErrorMessage)
@@ -113,7 +113,7 @@ namespace CoreWf
 
             if (validationError != null)
             {
-                _activity.AddTempValidationError(validationError);
+                this.activity.AddTempValidationError(validationError);
             }
         }
 
@@ -123,7 +123,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(arguments);
 
-            _activity.SetArgumentsCollection(arguments, _createEmptyBindings);
+            this.activity.SetArgumentsCollection(arguments, this.createEmptyBindings);
         }
 
         public void AddArgument(RuntimeArgument argument)
@@ -132,7 +132,7 @@ namespace CoreWf
 
             if (argument != null)
             {
-                _activity.AddArgument(argument, _createEmptyBindings);
+                this.activity.AddArgument(argument, this.createEmptyBindings);
             }
         }
 
@@ -142,7 +142,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(children);
 
-            _activity.SetChildrenCollection(children);
+            this.activity.SetChildrenCollection(children);
         }
 
         public void AddChild(Activity child)
@@ -153,12 +153,12 @@ namespace CoreWf
         public void AddChild(Activity child, object origin)
         {
             ThrowIfDisposed();
-            ActivityUtilities.ValidateOrigin(origin, _activity);
+            ActivityUtilities.ValidateOrigin(origin, this.activity);
 
             if (child != null)
             {
-                _activity.AddChild(child);
-                if (child.CacheId != _activity.CacheId)
+                this.activity.AddChild(child);
+                if (child.CacheId != this.activity.CacheId)
                 {
                     child.Origin = origin;
                 }
@@ -171,7 +171,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(implementationChildren);
 
-            _activity.SetImplementationChildrenCollection(implementationChildren);
+            this.activity.SetImplementationChildrenCollection(implementationChildren);
         }
 
         public void AddImplementationChild(Activity implementationChild)
@@ -180,18 +180,18 @@ namespace CoreWf
 
             if (implementationChild != null)
             {
-                _activity.AddImplementationChild(implementationChild);
+                this.activity.AddImplementationChild(implementationChild);
             }
         }
 
-        //public void SetImportedChildrenCollection(Collection<Activity> importedChildren)
-        //{
-        //    ThrowIfDisposed();
+        public void SetImportedChildrenCollection(Collection<Activity> importedChildren)
+        {
+            ThrowIfDisposed();
 
-        //    ActivityUtilities.RemoveNulls(importedChildren);
+            ActivityUtilities.RemoveNulls(importedChildren);
 
-        //    this.activity.SetImportedChildrenCollection(importedChildren);
-        //}
+            this.activity.SetImportedChildrenCollection(importedChildren);
+        }
 
         public void AddImportedChild(Activity importedChild)
         {
@@ -201,12 +201,12 @@ namespace CoreWf
         public void AddImportedChild(Activity importedChild, object origin)
         {
             ThrowIfDisposed();
-            ActivityUtilities.ValidateOrigin(origin, _activity);
+            ActivityUtilities.ValidateOrigin(origin, this.activity);
 
             if (importedChild != null)
             {
-                _activity.AddImportedChild(importedChild);
-                if (importedChild.CacheId != _activity.CacheId)
+                this.activity.AddImportedChild(importedChild);
+                if (importedChild.CacheId != this.activity.CacheId)
                 {
                     importedChild.Origin = origin;
                 }
@@ -219,7 +219,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(delegates);
 
-            _activity.SetDelegatesCollection(delegates);
+            this.activity.SetDelegatesCollection(delegates);
         }
 
         public void AddDelegate(ActivityDelegate activityDelegate)
@@ -230,12 +230,12 @@ namespace CoreWf
         public void AddDelegate(ActivityDelegate activityDelegate, object origin)
         {
             ThrowIfDisposed();
-            ActivityUtilities.ValidateOrigin(origin, _activity);
+            ActivityUtilities.ValidateOrigin(origin, this.activity);
 
             if (activityDelegate != null)
             {
-                _activity.AddDelegate(activityDelegate);
-                if (activityDelegate.Handler != null && activityDelegate.Handler.CacheId != _activity.CacheId)
+                this.activity.AddDelegate(activityDelegate);
+                if (activityDelegate.Handler != null && activityDelegate.Handler.CacheId != this.activity.CacheId)
                 {
                     activityDelegate.Handler.Origin = origin;
                 }
@@ -250,7 +250,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(implementationDelegates);
 
-            _activity.SetImplementationDelegatesCollection(implementationDelegates);
+            this.activity.SetImplementationDelegatesCollection(implementationDelegates);
         }
 
         public void AddImplementationDelegate(ActivityDelegate implementationDelegate)
@@ -259,7 +259,7 @@ namespace CoreWf
 
             if (implementationDelegate != null)
             {
-                _activity.AddImplementationDelegate(implementationDelegate);
+                this.activity.AddImplementationDelegate(implementationDelegate);
             }
         }
 
@@ -269,7 +269,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(importedDelegates);
 
-            _activity.SetImportedDelegatesCollection(importedDelegates);
+            this.activity.SetImportedDelegatesCollection(importedDelegates);
         }
 
         public void AddImportedDelegate(ActivityDelegate importedDelegate)
@@ -280,12 +280,12 @@ namespace CoreWf
         public void AddImportedDelegate(ActivityDelegate importedDelegate, object origin)
         {
             ThrowIfDisposed();
-            ActivityUtilities.ValidateOrigin(origin, _activity);
+            ActivityUtilities.ValidateOrigin(origin, this.activity);
 
             if (importedDelegate != null)
             {
-                _activity.AddImportedDelegate(importedDelegate);
-                if (importedDelegate.Handler != null && importedDelegate.Handler.CacheId != _activity.CacheId)
+                this.activity.AddImportedDelegate(importedDelegate);
+                if (importedDelegate.Handler != null && importedDelegate.Handler.CacheId != this.activity.CacheId)
                 {
                     importedDelegate.Handler.Origin = origin;
                 }
@@ -300,7 +300,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(variables);
 
-            _activity.SetVariablesCollection(variables);
+            this.activity.SetVariablesCollection(variables);
         }
 
         public void AddVariable(Variable variable)
@@ -311,15 +311,15 @@ namespace CoreWf
         public void AddVariable(Variable variable, object origin)
         {
             ThrowIfDisposed();
-            ActivityUtilities.ValidateOrigin(origin, _activity);
+            ActivityUtilities.ValidateOrigin(origin, this.activity);
 
             if (variable != null)
             {
-                _activity.AddVariable(variable);
-                if (variable.CacheId != _activity.CacheId)
+                this.activity.AddVariable(variable);
+                if (variable.CacheId != this.activity.CacheId)
                 {
                     variable.Origin = origin;
-                    if (variable.Default != null && variable.Default.CacheId != _activity.CacheId)
+                    if (variable.Default != null && variable.Default.CacheId != this.activity.CacheId)
                     {
                         variable.Default.Origin = origin;
                     }
@@ -333,7 +333,7 @@ namespace CoreWf
 
             ActivityUtilities.RemoveNulls(implementationVariables);
 
-            _activity.SetImplementationVariablesCollection(implementationVariables);
+            this.activity.SetImplementationVariablesCollection(implementationVariables);
         }
 
         public void AddImplementationVariable(Variable implementationVariable)
@@ -342,69 +342,69 @@ namespace CoreWf
 
             if (implementationVariable != null)
             {
-                _activity.AddImplementationVariable(implementationVariable);
+                this.activity.AddImplementationVariable(implementationVariable);
             }
         }
 
-        //public Collection<RuntimeArgument> GetArgumentsWithReflection()
-        //{
-        //    return Activity.ReflectedInformation.GetArguments(this.activity);
-        //}
+        public Collection<RuntimeArgument> GetArgumentsWithReflection()
+        {
+            return Activity.ReflectedInformation.GetArguments(this.activity);
+        }
 
-        //public Collection<Activity> GetChildrenWithReflection()
-        //{
-        //    return Activity.ReflectedInformation.GetChildren(this.activity);
-        //}
+        public Collection<Activity> GetChildrenWithReflection()
+        {
+            return Activity.ReflectedInformation.GetChildren(this.activity);
+        }
 
-        //public Collection<Variable> GetVariablesWithReflection()
-        //{
-        //    return Activity.ReflectedInformation.GetVariables(this.activity);
-        //}
+        public Collection<Variable> GetVariablesWithReflection()
+        {
+            return Activity.ReflectedInformation.GetVariables(this.activity);
+        }
 
-        //public Collection<ActivityDelegate> GetDelegatesWithReflection()
-        //{
-        //    return Activity.ReflectedInformation.GetDelegates(this.activity);
-        //}
+        public Collection<ActivityDelegate> GetDelegatesWithReflection()
+        {
+            return Activity.ReflectedInformation.GetDelegates(this.activity);
+        }
 
         public void AddDefaultExtensionProvider<T>(Func<T> extensionProvider)
             where T : class
         {
             if (extensionProvider == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionProvider");
+                throw FxTrace.Exception.ArgumentNull(nameof(extensionProvider));
             }
-            _activity.AddDefaultExtensionProvider(extensionProvider);
+            this.activity.AddDefaultExtensionProvider(extensionProvider);
         }
 
         public void RequireExtension<T>()
             where T : class
         {
-            _activity.RequireExtension(typeof(T));
+            this.activity.RequireExtension(typeof(T));
         }
 
         public void RequireExtension(Type extensionType)
         {
             if (extensionType == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNull("extensionType");
+                throw FxTrace.Exception.ArgumentNull(nameof(extensionType));
             }
-            if (extensionType.GetTypeInfo().IsValueType)
+            if (extensionType.IsValueType)
             {
-                throw CoreWf.Internals.FxTrace.Exception.Argument("extensionType", SR.RequireExtensionOnlyAcceptsReferenceTypes(extensionType.FullName));
+                throw FxTrace.Exception.Argument(nameof(extensionType), SR.RequireExtensionOnlyAcceptsReferenceTypes(extensionType.FullName));
             }
-            _activity.RequireExtension(extensionType);
+            this.activity.RequireExtension(extensionType);
         }
 
         internal void Dispose()
         {
-            _activity = null;
+            this.activity = null;
         }
 
         private void ThrowIfDisposed()
         {
-            if (_activity == null)
+            if (this.activity == null)
             {
-                throw CoreWf.Internals.FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
+                throw FxTrace.Exception.AsError(new ObjectDisposedException(ToString()));
             }
         }
     }
