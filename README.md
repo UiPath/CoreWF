@@ -18,47 +18,13 @@ is needed before it can substitute for the .NET Framework version.
 The problem with porting is that WF integrates heavily with other features of the .NET 
 Framework that are not being ported to .NET Core. The most sizable features are:
 
-* XAML
+* XAML - replaced with Portable.Xaml
 * VB/C# expression compilation
 * WCF services
 * WPF - for the WF designer
 
 None of these components are trivial. I'll do my best to describe the options for each 
 one.
-
-### XAML
-Here's a very simplified WF XAML file:
-
-```xml
-<Activity  
-    x:Class="WorkflowConsoleApplication1.Workflow1" 
-    xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Sequence />
-</Activity>
-```
-
-All WF workflows are activities, meaning they inherit from the 
-[`Activity`](http://referencesource.microsoft.com/#System.Activities/System/Activities/Activity.cs) 
-base class. The workflow you design in the WF designer turns into a class. To make this happen, WF uses 
-the [x:Class directive](https://docs.microsoft.com/en-us/dotnet/framework/xaml-services/x-class-directive).
-
-The magic all starts with a class called 
-[`ActivityXamlServices`](http://referencesource.microsoft.com/#System.Activities/System/Activities/XamlIntegration/ActivityXamlServices.cs), 
-which uses a custom [`XamlReader`](http://referencesource.microsoft.com/#System.Xaml/System/Xaml/XamlReader.cs) and 
-[`XamlServices`](http://referencesource.microsoft.com/#System.Xaml/System/Xaml/XamlServices.cs) to turn the XAML into a 
-[`DynamicActivity`](http://referencesource.microsoft.com/#System.Activities/System/Activities/DynamicActivity.cs) object. 
-
-`DynamicActivity` was not part of our initial port of WF because of some missing parts in 
-[System.ComponentModel](https://github.com/dotnet/corefx/tree/master/src/System.ComponentModel). More of this namespace 
-has been filled out since .NET Core 1.0 so it is possible that there is enough there to implement `DynamicActivity`. 
-Implementing `DynamicActivity` is the first foundational task that the community could help with 
-([issue link](https://github.com/dmetzgar/corewf/issues/3)).
-
-Once `DynamicActivity` is implemented, we'll need a XAML parser. We've spent some time experimenting with @cwensley's 
-adaption of [Portable.Xaml](https://github.com/cwensley/Portable.Xaml) to the .NET Standard. It seems promising so far. 
-The second task for the community is to use Portable.Xaml to implement the System.Activities.XamlIntegration
-([issue link](https://github.com/dmetzgar/corewf/issues/6)).
 
 ### Expressions
 A significant portion of XAML workflows use expressions. Expressions can be written in either C# or VB. The 
