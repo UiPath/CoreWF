@@ -19,6 +19,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(OfficialBuild)'=='true'">
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\CoreWF.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.1">
       <PrivateAssets>all</PrivateAssets>

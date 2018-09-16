@@ -256,3 +256,6 @@ paket-files/
 
 # VS Code files 
 .vscode/
+
+# Signing keys
+*.snk

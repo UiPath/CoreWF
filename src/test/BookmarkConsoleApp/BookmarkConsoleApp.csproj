@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/CoreWf/CoreWf.csproj" />
+    <ProjectReference Include="../../CoreWf/CoreWf.csproj" />
     <ProjectReference Include="../JsonFileInstanceStore/JsonFileInstanceStore.csproj" />
   </ItemGroup>
 
