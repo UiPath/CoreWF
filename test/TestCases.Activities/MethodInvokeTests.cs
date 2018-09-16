@@ -461,7 +461,7 @@ namespace TestCases.Activities
                 Arguments =
                 {
                     // NonGenericClass.SimpleStaticMethod expects a parameter of type "double".
-                    // But due to https://github.com/dotnet/wf/issues/78 - limitations in GetMethod, the
+                    // But due to limitations in GetMethod, the
                     // check for the ability to convert an int to a double does not happen.
                     // So changing the argument passed to a double, rather than marking this test as Skip
                     //new TestArgument<int>(Direction.In, "input", 2342)

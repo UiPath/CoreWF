@@ -227,7 +227,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Throw while evaluating expression.
         /// </summary>        
-        [Fact(Skip = "Dependency on Null Handler in TD")]
+        [Fact]
         public void ThrowWhileEvaluatingExpression()
         {
             TestFlowchart flowchart = new TestFlowchart();
@@ -330,7 +330,7 @@ namespace TestCases.Activities.Flowchart
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
 
-        [Fact(Skip = "Dependency on Null Handler in TD")]
+        [Fact]
         public void FlowSwitchHavingCaseWithNullKeyEvaluateNull()
         {
             TestFlowchart flowchart = new TestFlowchart();

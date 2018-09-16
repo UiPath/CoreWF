@@ -1041,7 +1041,7 @@ namespace TestCases.Activities
         /// Foreach test with persistence. After persistence happens the loop should continue from the last point it left and number of iterations should not change.
         /// ForeachWithPersistence
         /// </summary>        
-        [Fact(Skip = "JSON serialization issue with IEnumerator<int>.Current in ForEach test. #93")]
+        [Fact]
         public void ForeachWithPersistence()
         {
             int[] intArray = new int[] { 1, 2, 3 };

@@ -489,7 +489,7 @@ namespace TestCases.Activities
         /// <summary>
         /// Parallel.CompletionCondition evaluates to true, if a child of Parallel overrides Cancel and throws an exception there.
         /// </summary>     
-        [Fact(Skip = "Test cases not executed as part of suites and don't seem to pass on desktop. #72 - https://github.com/dotnet/wf/issues/72 - The aborted reason is NOT a TestCaseException, but it looks like the test framework is creating the exception")]
+        [Fact(Skip = "Test cases not executed as part of suites and don't seem to pass on desktop. The aborted reason is NOT a TestCaseException, but it looks like the test framework is creating the exception")]
         public void ParallelWithAChildThatThrowsInCancelAndCompletionConditionIsTrue()
         {
             Variable<bool> cancelIt = new Variable<bool> { Name = "cancelIt", Default = false };

@@ -282,7 +282,7 @@ namespace TestCases.Activities.Flowchart
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
 
-        [Fact(Skip = "Dependency on Null Handler in TD")]
+        [Fact]
         public void FlowSwitchHavingCaseWithNullKeyEvaluateNull()
         {
             TestFlowchart flowchart = new TestFlowchart();

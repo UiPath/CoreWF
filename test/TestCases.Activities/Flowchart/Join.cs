@@ -15,7 +15,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Three activities connected by AND join in flowchart.
         /// </summary>        
-        [Fact(Skip = "To be compared with Desktop testcase")]
+        [Fact]
         public void ThreeActivitiesInAndJoin()
         {
             TestFlowchart flowchart = new TestFlowchart("Flow1");
@@ -41,7 +41,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Three activities connected by OR join in flowchart.
         /// </summary>        
-        [Fact(Skip = "To be compared with Desktop testcase")]
+        [Fact]
         public void ThreeActivitiesInOrJoin()
         {
             TestFlowchart flowchart = new TestFlowchart("Flow1");

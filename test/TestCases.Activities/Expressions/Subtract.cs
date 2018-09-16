@@ -119,7 +119,7 @@ namespace Test.TestCases.Activities.Expressions
         /// <summary>
         /// Subtract DateTime type with TimeSpan.
         /// </summary>        
-        [Fact(Skip = "Additional steps after adding XAML support, need to revisit")]
+        [Fact]
         public void SubtractTwoCompatibleDifferentTypes()
         {
             TestSubtract<DateTime, TimeSpan, DateTime> sub = new TestSubtract<DateTime, TimeSpan, DateTime>

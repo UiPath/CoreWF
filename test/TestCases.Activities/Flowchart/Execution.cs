@@ -188,7 +188,6 @@ namespace TestCases.Activities.Flowchart
         }
 
         /// <summary>
-        /// Cancel flowchart.
         /// Cancel flowchart with multiple flows executing.
         /// </summary>        
         [Fact]
@@ -236,7 +235,6 @@ namespace TestCases.Activities.Flowchart
         }
 
         /// <summary>
-        /// Cancel flowchart while evaluating switch expression.
         /// Cancel flowchart while executing expression of flow switch.
         /// </summary>        
         [Fact]
@@ -280,7 +278,6 @@ namespace TestCases.Activities.Flowchart
         }
 
         /// <summary>
-        /// Cancel flowchart while evaluating flow decision condition.
         /// Cancel flowchart while executing condition of flow conditional
         /// </summary>        
         [Fact]
@@ -408,7 +405,6 @@ namespace TestCases.Activities.Flowchart
 
         /// <summary>
         /// Execute multiple (5) levels nested flowchart
-        /// Execute multiple (5) level nested flowchart
         /// </summary>        
         [Fact]
         public void ExecuteFiveLevelDeepNestedFlowchart()
@@ -429,7 +425,6 @@ namespace TestCases.Activities.Flowchart
         }
 
         /// <summary>
-        /// Have blocking activity in flowchart and raise the event unblocking it.
         /// Have blocking activity (Receive) in flowchart and raise the event unblocking it.
         /// </summary> 
         /// /// Disabled and failed in desktop         
@@ -456,7 +451,6 @@ namespace TestCases.Activities.Flowchart
 
         /// <summary>
         /// Execute five level deep empty nested flowchart.
-        /// Five level deep empty nested flowchart.
         /// </summary>        
         [Fact]
         public void FiveLevelDeepEmptyNestedFlowchart()
@@ -520,7 +514,6 @@ namespace TestCases.Activities.Flowchart
 
         /// <summary>
         /// Define and run flowchart with only a flowconditional without associating start event to it.
-        /// Define and run flowchart with only a flowconditional without associating start event to it. Validation exception.
         /// </summary>        
         [Fact]
         public void FlowchartWithOnlyFlowConditionalWithoutStartEvent()
@@ -540,9 +533,8 @@ namespace TestCases.Activities.Flowchart
 
         /// <summary>
         /// Unload and load flowchart while executing condition of flow conditional.
-        /// Unload and load flowchart while executing condition of flow conditional
         /// </summary>        
-        [Fact]
+        [Fact(Skip = "Duplicate activities found in validation")]
         public void UnloadFlowchartWhileExecutingFlowConditionalCondition()
         {
             TestFlowchart flowchart = new TestFlowchart();
@@ -564,7 +556,7 @@ namespace TestCases.Activities.Flowchart
                                          new TestWriteLine("False", "False Action"));
 
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(System.Environment.CurrentDirectory);
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(flowchart, null, jsonStore, PersistableIdleAction.Unload))
             {
@@ -584,9 +576,9 @@ namespace TestCases.Activities.Flowchart
         }
 
         /// <summary>
-        /// Unload and load flowchart while executing flow switchâ€™s expression.
+        /// Unload and load flowchart while executing flow switch's expression.
         /// </summary>        
-        [Fact]
+        [Fact(Skip = "Duplicate activities found in validation")]
         public void UnloadFlowchartWhileExecutingFlowSwitchExpression()
         {
             TestFlowchart flowchart = new TestFlowchart();
@@ -632,7 +624,6 @@ namespace TestCases.Activities.Flowchart
 
         /// <summary>
         /// Model listen in flowchart.
-        /// Model listen in flowchart
         /// </summary>        
         [Fact]
         public void Flowchart_Listen()
@@ -693,7 +684,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Unload and load flowchart while executing flow step
         /// </summary>        
-        [Fact]
+        [Fact(Skip = "Duplicate activities found in validation")]
         public void UnloadFlowchartWhileExecutingFlowStep()
         {
             TestFlowchart flowchart = new TestFlowchart();
