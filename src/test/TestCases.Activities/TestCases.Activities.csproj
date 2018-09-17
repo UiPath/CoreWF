@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-    <ProjectReference Include="../../src/CoreWf/CoreWf.csproj" />
+    <ProjectReference Include="../../CoreWf/CoreWf.csproj" />
     <ProjectReference Include="../JsonFileInstanceStore/JsonFileInstanceStore.csproj" />
     <ProjectReference Include="../TestObjects/TestObjects.csproj" />
   </ItemGroup>

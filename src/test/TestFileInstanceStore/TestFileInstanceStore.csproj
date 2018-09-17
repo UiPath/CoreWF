@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
-    <ProjectReference Include="../../src/CoreWf/CoreWf.csproj" />
+    <ProjectReference Include="../../CoreWf/CoreWf.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreWf.EtwTracking", "CoreW
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7B4FEB02-E589-4337-B563-086AF23FB97D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestObjects", "..\test\TestObjects\TestObjects.csproj", "{E73908B0-BC1A-4CB1-BD6A-35790B1815D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestObjects", "test\TestObjects\TestObjects.csproj", "{E73908B0-BC1A-4CB1-BD6A-35790B1815D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Activities", "..\test\TestCases.Activities\TestCases.Activities.csproj", "{E57F197D-6102-44AF-B5DA-478AEF7F7340}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Activities", "test\TestCases.Activities\TestCases.Activities.csproj", "{E57F197D-6102-44AF-B5DA-478AEF7F7340}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Runtime", "..\test\TestCases.Runtime\TestCases.Runtime.csproj", "{3BBAAB5F-5EBB-409C-98D4-7693D4C545E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Runtime", "test\TestCases.Runtime\TestCases.Runtime.csproj", "{3BBAAB5F-5EBB-409C-98D4-7693D4C545E0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonFileInstanceStore", "..\test\JsonFileInstanceStore\JsonFileInstanceStore.csproj", "{A02ADBAD-8E07-479D-946B-93591EDC487E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonFileInstanceStore", "test\JsonFileInstanceStore\JsonFileInstanceStore.csproj", "{A02ADBAD-8E07-479D-946B-93591EDC487E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamlTestCases", "XamlTestCases\XamlTestCases.csproj", "{36AE306E-FDB2-41A4-861F-67112AA5CB7B}"
 EndProject
