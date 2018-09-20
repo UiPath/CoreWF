@@ -32,7 +32,7 @@ namespace CoreWf
         private static readonly IList<RuntimeArgument> emptyArguments = new List<RuntimeArgument>(0);
         private static readonly IList<ActivityDelegate> emptyDelegates = new List<ActivityDelegate>(0);
 
-        internal static readonly ReadOnlyCollection<Constraint> EmptyConstraints = new ReadOnlyCollection<Constraint>(new Constraint[0]);
+        internal static readonly ReadOnlyCollection<Constraint> EmptyConstraints = new ReadOnlyCollection<Constraint>(Array.Empty<Constraint>());
         private string displayName;
         private bool isDisplayNameSet;
         private int id;

@@ -5,7 +5,7 @@
 using CoreWf;
 using CoreWf.Statements;
 
-namespace Microsoft.Samples.NestedTransactionScope
+namespace ImperativeTestCases
 {
 
     sealed class TransactionScopeTest : Activity
