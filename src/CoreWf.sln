@@ -19,9 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Runtime", "test\T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonFileInstanceStore", "test\JsonFileInstanceStore\JsonFileInstanceStore.csproj", "{A02ADBAD-8E07-479D-946B-93591EDC487E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamlTestCases", "XamlTestCases\XamlTestCases.csproj", "{36AE306E-FDB2-41A4-861F-67112AA5CB7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XamlTestCases", "XamlTestCases\XamlTestCases.csproj", "{36AE306E-FDB2-41A4-861F-67112AA5CB7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImperativeTestCases", "ImperativeTestCases\ImperativeTestCases.csproj", "{A31AC815-D67E-46DD-920F-7D9B5CC63932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImperativeTestCases", "ImperativeTestCases\ImperativeTestCases.csproj", "{A31AC815-D67E-46DD-920F-7D9B5CC63932}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -22,10 +22,9 @@ namespace XamlTestCases
         {
             get
             {
-                // xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                 yield return new object[] { @"
                     <Activity x:Class=""WFTemplate""
-                              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
                               xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
@@ -33,54 +32,49 @@ namespace XamlTestCases
                     </Activity>" };
                 yield return new object[] { @"
                     <Activity x:Class=""WFTemplate""
-                              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
-                              xmlns:stmt=""clr-namespace:CoreWf.Statements;assembly=CoreWf""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                        <stmt:Sequence>
-                            <stmt:WriteLine Text=""HelloWorld"" />
-                        </stmt:Sequence>
+                        <Sequence>
+                            <WriteLine Text=""HelloWorld"" />
+                        </Sequence>
                     </Activity>" };
                 yield return new object[] { @"
                     <Activity x:Class=""WFTemplate""
-                              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
-                              xmlns:stmt=""clr-namespace:CoreWf.Statements;assembly=CoreWf""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                        <stmt:Sequence>
-                            <stmt:WriteLine Text=""HelloWorld"" />
-                        </stmt:Sequence>
+                        <Sequence>
+                            <WriteLine Text=""HelloWorld"" />
+                        </Sequence>
                     </Activity>" };
                 // This test is broken
                 //yield return new object[] { @"
                 //    <Activity x:Class=""WFTemplate""
-                //              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
-                //              xmlns:stmt=""clr-namespace:CoreWf.Statements;assembly=CoreWf""
+                //              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                 //              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                //        <stmt:Sequence>
-                //            <stmt:WriteLine>
-                //                <stmt:Content>
-                //                    <stmt:Text>""HelloWorld""</stmt:Text>
-                //                </stmt:Content>
-                //            </stmt:WriteLine>
-                //        </stmt:Sequence>
+                //        <Sequence>
+                //            <WriteLine>
+                //                <Content>
+                //                    <Text>""HelloWorld""</Text>
+                //                </Content>
+                //            </WriteLine>
+                //        </Sequence>
                 //    </Activity>" };
                 yield return new object[] { @"
                     <Activity
-                              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
-                              xmlns:stmt=""clr-namespace:CoreWf.Statements;assembly=CoreWf""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                        <stmt:Sequence>
-                            <stmt:Sequence.Variables>
+                        <Sequence>
+                            <Sequence.Variables>
                                 <Variable x:TypeArguments=""x:String"" Default=""My variable text"" Name=""MyVar"" />
-                            </stmt:Sequence.Variables>
-                            <stmt:WriteLine Text=""[MyVar]"" />
-                        </stmt:Sequence>
+                            </Sequence.Variables>
+                            <WriteLine Text=""[MyVar]"" />
+                        </Sequence>
                     </Activity>" };
                 yield return new object[] { @"
                     <Activity x:Class=""WFTemplate""
-                              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
-                              xmlns:stmt=""clr-namespace:CoreWf.Statements;assembly=CoreWf""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                        <stmt:WriteLine Text=""HelloWorld"" />
+                        <WriteLine Text=""HelloWorld"" />
                     </Activity>" };
             }
         }
@@ -100,8 +94,7 @@ namespace XamlTestCases
             {
                 yield return new object[] { @"
                     <Activity x:Class=""WFTemplate""
-                              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
-                              xmlns:stmt=""clr-namespace:CoreWf.Statements;assembly=CoreWf""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
                               xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
@@ -109,11 +102,11 @@ namespace XamlTestCases
                         <x:Members>
                             <x:Property Name=""myInput"" Type=""InArgument(x:String)"" />
                         </x:Members>
-                        <stmt:WriteLine Text=""[myInput]"" />
+                        <WriteLine Text=""[myInput]"" />
                     </Activity>" };
                 yield return new object[] { @"
                     <Activity x:Class=""WFTemplate""
-                              xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
                               xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
@@ -143,8 +136,7 @@ namespace XamlTestCases
         {
             var xamlString = @"
             <Activity x:Class=""WFTemplate""
-                      xmlns=""clr-namespace:CoreWf;assembly=CoreWf""
-                      xmlns:stmt=""clr-namespace:CoreWf.Statements;assembly=CoreWf""
+                      xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                       xmlns:s=""clr-namespace:System;assembly=mscorlib""
                       xmlns:s1=""clr-namespace:System;assembly=System""
                       xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
@@ -153,14 +145,14 @@ namespace XamlTestCases
                     <x:Property Name=""myOutput"" Type=""OutArgument(x:Int32)"" />
                     <x:Property Name=""myInput"" Type=""InArgument(x:Int32)"" />
                 </x:Members>
-                <stmt:Assign>
-                    <stmt:Assign.To>
+                <Assign>
+                    <Assign.To>
                         <OutArgument x:TypeArguments=""x:Int32"">[myOutput]</OutArgument>
-                    </stmt:Assign.To>
-                    <stmt:Assign.Value>
+                    </Assign.To>
+                    <Assign.Value>
                         <InArgument x:TypeArguments=""x:Int32"">[myInput]</InArgument>
-                    </stmt:Assign.Value>
-                </stmt:Assign>
+                    </Assign.Value>
+                </Assign>
             </Activity>";
             var settings = new ActivityXamlServicesSettings { CompileExpressions = true };
             var activity = ActivityXamlServices.Load(GenerateStreamFromString(xamlString), settings);
