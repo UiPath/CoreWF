@@ -1633,7 +1633,7 @@ namespace CoreWf
                 {
                     if (emptyChildren == null)
                     {
-                        emptyChildren = new ReadOnlyCollection<ActivityInstance>(new ActivityInstance[0]);
+                        emptyChildren = new ReadOnlyCollection<ActivityInstance>(Array.Empty<ActivityInstance>());
                     }
 
                     return emptyChildren;

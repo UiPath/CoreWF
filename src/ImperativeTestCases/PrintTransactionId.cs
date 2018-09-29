@@ -5,7 +5,7 @@
 using System;
 using CoreWf;
 
-namespace Microsoft.Samples.NestedTransactionScope
+namespace ImperativeTestCases
 {
 
     sealed class PrintTransactionId : NativeActivity

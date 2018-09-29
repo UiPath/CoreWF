@@ -1,19 +1,18 @@
-﻿    using CoreWf;
-    using CoreWf.Statements;
-using Microsoft.Samples.NestedTransactionScope;
+﻿using CoreWf;
+using CoreWf.Statements;
 using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Threading;
+using System.Collections.Generic;
+using Xunit;
 
 namespace ImperativeTestCases
 {
     /// <summary>
     /// Sample DynamicActivity based on https://docs.microsoft.com/en-us/dotnet/framework/windows-workflow-foundation/creating-an-activity-at-runtime-with-dynamicactivity
     /// </summary>
-    public class DynamicDemo
+    public class DynamicTests
     {
-        public static void RunDynamicWriteLine()
+        [Fact]
+        public void DynamicWriteLine()
         {
             //Define the input argument for the activity  
             var textOut = new InArgument<string>();
@@ -44,7 +43,8 @@ namespace ImperativeTestCases
             WorkflowInvoker.Invoke(dynamicWorkflow, new Dictionary<string, object> { { "Text", "Hello World!" } });
         }
 
-        public static void ParameterlessDelay()
+        [Fact]
+        public void ParameterlessDelay()
         {
             //Define the input argument for the activity  
             var textOut = new InArgument<string>();
@@ -70,7 +70,8 @@ namespace ImperativeTestCases
             WorkflowInvoker.Invoke(dynamicWorkflow);
         }
 
-        public static void ParameterDelay()
+        [Fact]
+        public void ParameterDelay()
         {
             //Define the input argument for the activity  
             var delayValue = new InArgument<TimeSpan>();
@@ -105,7 +106,8 @@ namespace ImperativeTestCases
             WorkflowInvoker.Invoke(dynamicWorkflow, new Dictionary<string, object> { { "DelayDuration", new TimeSpan(200) } });
         }
 
-        public static void ParameterAssign()
+        [Fact]
+        public void ParameterAssign()
         {
             //Define the input argument for the activity  
             var inputValue = new InArgument<int>();
@@ -150,15 +152,16 @@ namespace ImperativeTestCases
             {
                 Console.WriteLine(kvp.Key + " : " + kvp.Value.ToString());
             }
+
             if(o.TryGetValue("OutputInteger", out object value))
             {
-                int ReturnedInt = (int)value;
-                if (ReturnedInt == 42) Console.WriteLine("Output successful expected answer was 42"); 
+                int returnedInt = (int)value;
+                Assert.Equal(42, returnedInt);
             }
         }
 
-
-        public static void TransactionScopeTest()
+        [Fact]
+        public void TransactionScopeTest()
         {
             Activity transactionTest = new DynamicActivity()
             {
@@ -184,51 +187,6 @@ namespace ImperativeTestCases
                 }
             };
             WorkflowInvoker.Invoke(transactionTest);
-        }
-
-        static void Main(string[] args)
-        {
-            Console.WriteLine("------------- ParameterlessDelay ------------- ");
-            DynamicDemo.ParameterlessDelay();
-
-            Console.WriteLine("------------- Hello World ------------- ");
-            try
-            {
-                DynamicDemo.RunDynamicWriteLine();
-            }
-            catch (CoreWf.InvalidWorkflowException iwe)
-            {
-                Console.WriteLine("Invalid Workflow WriteLine" + iwe.ToString());
-            }
-            Console.WriteLine("------------- ParameterDelay ------------- ");
-            try
-            {
-                DynamicDemo.ParameterDelay();
-            }
-            catch (CoreWf.InvalidWorkflowException iwe)
-            {
-                Console.WriteLine("Invalid Workflow ParameterDelay" + iwe.ToString());
-            }
-            Console.WriteLine("------------- ParameterDelayAssigned ------------- ");
-            try
-            {
-                DynamicDemo.ParameterAssign();
-            }
-            catch (CoreWf.InvalidWorkflowException iwe)
-            {
-                Console.WriteLine("Invalid Workflow ParameterDelay" + iwe.ToString());
-            }
-            Console.WriteLine("------------- TransactionScopeTest ------------- ");
-            try
-            {
-                DynamicDemo.TransactionScopeTest();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            Console.WriteLine("------------- Done ------------- ");
-            Console.ReadLine();
         }
     }
 }
