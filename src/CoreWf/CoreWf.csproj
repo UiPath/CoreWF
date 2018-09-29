@@ -12,6 +12,7 @@
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <OldToolsVersion>15.0</OldToolsVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>7.1</LangVersion>
@@ -56,4 +57,9 @@
       <Output TaskParameter="OutputResources" ItemName="Resources" />
     </GenerateResource>
   </Target>
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveProjectReferences">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(_ResolvedProjectReferencePaths)" />
+    </ItemGroup>
+   </Target>
 </Project>
