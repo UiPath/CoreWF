@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>CoreWf</id>
+    <version>1.2.1</version>
+    <title>Core WF</title>
+    <authors>Dustin Metzgar,Jim Carley</authors>
+    <owners>Dustin Metzgar,Jim Carley</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/dmetzgar/corewf</projectUrl>
+    <iconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</iconUrl>
+    <description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</description>
+    <copyright>Copyright © Dustin Metzgar 2018</copyright>
+    <tags>.NET Core workflow</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.Extensions.Localization" version="2.1.1" exclude="Build,Analyzers" />
+        <dependency id="Portable.Xaml" version="0.23.0" exclude="Build,Analyzers" />
+        <dependency id="System.ComponentModel.EventBasedAsync" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="System.Reflection.TypeExtensions" version="4.5.0" exclude="Build,Analyzers" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\dev\corewf\src\CoreWf.Transactions\bin\Release\netstandard2.0\CoreWf.Transactions.dll" target="lib\netstandard2.0\CoreWf.Transactions.dll" />
+    <file src="C:\dev\corewf\src\CoreWf\bin\Release\netstandard2.0\CoreWf.dll" target="lib\netstandard2.0\CoreWf.dll" />
+  </files>
+</package>
