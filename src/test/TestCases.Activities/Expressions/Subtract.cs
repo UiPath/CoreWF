@@ -128,7 +128,9 @@ namespace Test.TestCases.Activities.Expressions
                 Right = new TimeSpan(17, 58, 59)
             };
 
-            TestSequence seq = TestExpressionTracer.GetTraceableBinaryExpressionActivity<DateTime, TimeSpan, DateTime>(sub, @"2/11/2009 6:01:01 AM");
+            DateTime expectedDateTime = new DateTime(2009, 2, 11, 6, 1, 1);
+
+            TestSequence seq = TestExpressionTracer.GetTraceableBinaryExpressionActivity<DateTime, TimeSpan, DateTime>(sub, expectedDateTime.ToString());
 
             TestRuntime.RunAndValidateWorkflow(seq);
         }
