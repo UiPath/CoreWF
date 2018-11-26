@@ -2,10 +2,11 @@
 // See LICENSE file in the project root for full license information.
 namespace CoreWf.Debugger.Symbol
 {
+    using CoreWf.Runtime;
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
-    using System.Runtime;
     using System.Security;
     using System.Security.Cryptography;
 
@@ -133,8 +134,8 @@ namespace CoreWf.Debugger.Symbol
             }
         }
 
-        [SuppressMessage("Microsoft.Cryptographic.Standard", "CA5350:MD5CannotBeUsed",
-            Justification = "Design has been approved.  We are not using MD5 for any security or cryptography purposes but rather as a hash.")]
+        //[SuppressMessage("Microsoft.Cryptographic.Standard", "CA5350:MD5CannotBeUsed",
+        //    Justification = "Design has been approved.  We are not using MD5 for any security or cryptography purposes but rather as a hash.")]
         static HashAlgorithm CreateHashProvider()
         {
             if (LocalAppContextSwitches.UseMD5ForWFDebugger)

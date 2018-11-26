@@ -31,6 +31,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Localization" Version="2.1.1" />
     <PackageReference Include="Portable.Xaml" Version="0.23.0" />
+    <PackageReference Include="System.CodeDom" Version="4.5.0" />
     <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
@@ -62,4 +63,13 @@
       <BuildOutputInPackage Include="@(_ResolvedProjectReferencePaths)" />
     </ItemGroup>
    </Target>
+  <ItemGroup>
+    <Compile Include="Debugger\SourceLocation.cs" />
+    <Compile Include="Debugger\SourceLocationProvider.cs" />
+    <Compile Include="Debugger\Symbol\ActivitySymbol.cs" />
+    <Compile Include="Debugger\Symbol\DebugSymbol.cs" />
+    <Compile Include="Debugger\Symbol\SymbolHelper.cs" />
+    <Compile Include="Debugger\Symbol\WorkflowSymbol.cs" />
+    <Compile Include="ExpressionParser\SourceExpressionException.cs" />
+  </ItemGroup>
 </Project>

@@ -131,7 +131,7 @@ namespace XamlTestCases
             WorkflowInvoker.Invoke(activity, inputs);
         }
 
-        [Fact(Skip = "[myOutput] is not recognized as a Location")]
+        [Fact]
         public void XamlWorkflowWithInputsOutputs()
         {
             var xamlString = @"

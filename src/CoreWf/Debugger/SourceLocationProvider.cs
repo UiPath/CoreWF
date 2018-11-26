@@ -9,7 +9,7 @@ namespace CoreWf.Debugger
     using System.Diagnostics;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Runtime;
+    using CoreWf.Runtime;
     using System.Reflection;
     using System.Security;
     using System.Security.Permissions;
@@ -21,7 +21,6 @@ namespace CoreWf.Debugger
     using System.Runtime.Serialization;
     using CoreWf.Debugger.Symbol;
     using System.Globalization;
-    using CoreWf.Runtime;
 
     // Provide SourceLocation information for activities in given root activity.
     // This is integration point with Workflow project system (TBD).

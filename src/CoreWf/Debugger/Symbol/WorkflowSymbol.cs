@@ -5,7 +5,7 @@ namespace CoreWf.Debugger.Symbol
     using System;
     using System.IO;
     using System.IO.Compression;
-    using System.Runtime;
+    using CoreWf.Runtime;
     using System.Runtime.Serialization;
     using System.Text;
     using System.Globalization;

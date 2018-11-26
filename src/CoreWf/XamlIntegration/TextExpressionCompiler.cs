@@ -1,7 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-#if NET45
 namespace CoreWf.XamlIntegration
 {
     using System;
@@ -21,7 +20,7 @@ namespace CoreWf.XamlIntegration
     using CoreWf.Debugger;
     using System.IO;
     using CoreWf.Expressions;
-    using System.Runtime;
+    using CoreWf.Runtime;
     using System.Diagnostics.CodeAnalysis;
     using System.Security;
     using System.Security.Permissions;
@@ -29,6 +28,7 @@ namespace CoreWf.XamlIntegration
     using CoreWf.Debugger.Symbol;
     using System.Linq.Expressions;
     using System.Diagnostics;
+    using CoreWf.Internals;
 
     public class TextExpressionCompiler
     {
@@ -81,22 +81,22 @@ namespace CoreWf.XamlIntegration
         {
             if (settings == null)
             {
-                throw FxTrace.Exception.ArgumentNull("settings");
+                throw FxTrace.Exception.ArgumentNull(nameof(settings));
             }
 
             if (settings.Activity == null)
             {
-                throw FxTrace.Exception.Argument("settings", SR.TextExpressionCompilerActivityRequired);
+                throw FxTrace.Exception.Argument(nameof(settings), SR.TextExpressionCompilerActivityRequired);
             }
 
             if (settings.ActivityName == null)
             {
-                throw FxTrace.Exception.Argument("settings", SR.TextExpressionCompilerActivityNameRequired);
+                throw FxTrace.Exception.Argument(nameof(settings), SR.TextExpressionCompilerActivityNameRequired);
             }
 
             if (settings.Language == null)
             {
-                throw FxTrace.Exception.Argument("settings", SR.TextExpressionCompilerLanguageRequired);
+                throw FxTrace.Exception.Argument(nameof(settings), SR.TextExpressionCompilerLanguageRequired);
             }
 
             this.expressionDescriptors = new List<CompiledExpressionDescriptor>();
@@ -195,7 +195,7 @@ namespace CoreWf.XamlIntegration
         {
             if (textWriter == null)
             {
-                throw FxTrace.Exception.ArgumentNull("textWriter");
+                throw FxTrace.Exception.ArgumentNull(nameof(textWriter));
             }
 
             Parse();
@@ -579,7 +579,7 @@ namespace CoreWf.XamlIntegration
         [Fx.Tag.SecurityNote(Critical = "Critical because we are accessing CodeDom.",
             Safe = "Safe because we are demanding FullTrust")]
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         bool IsValidTextIdentifierName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -2335,7 +2335,7 @@ namespace CoreWf.XamlIntegration
         [Fx.Tag.SecurityNote(Critical = "Critical because we are accessing CodeDom.",
             Safe = "Safe because we are demanding FullTrust")]
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         void WriteCode(TextWriter textWriter)
         {
             using (CodeDomProvider codeDomProvider = CodeDomProvider.CreateProvider(this.settings.Language))
@@ -2350,7 +2350,7 @@ namespace CoreWf.XamlIntegration
         [Fx.Tag.SecurityNote(Critical = "Critical because we are using the CodeDomProvider class, which has a link demand for Full Trust.",
             Safe = "Safe because we are demanding FullTrust")]
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         TextExpressionCompilerResults CompileInMemory()
         {
             List<TextExpressionCompilerError> messages = new List<TextExpressionCompilerError>();
@@ -2410,7 +2410,7 @@ namespace CoreWf.XamlIntegration
         [Fx.Tag.SecurityNote(Critical = "Critical because we are using the CompilerParameters class, which has a link demand for Full Trust.",
             Safe = "Safe because we are demanding FullTrust")]
         [SecuritySafeCritical]
-        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         CompilerParameters GetCompilerParameters(IList<TextExpressionCompilerError> messages)
         {
             CompilerParameters compilerParameters = new CompilerParameters();
@@ -2897,4 +2897,3 @@ namespace CoreWf.XamlIntegration
         }
     }
 }
-#endif

@@ -3,11 +3,12 @@
 
 namespace CoreWf.ExpressionParser
 {
+    using CoreWf.Internals;
+    using CoreWf.Runtime;
     using System;
     using System.CodeDom.Compiler;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Runtime;
     using System.Runtime.Serialization;
     using System.Security;
     using System.Security.Permissions;
@@ -44,7 +45,7 @@ namespace CoreWf.ExpressionParser
         {
             if (info == null)
             {
-                throw FxTrace.Exception.ArgumentNull("info");
+                throw FxTrace.Exception.ArgumentNull(nameof(info));
             }
             int length = info.GetInt32("count");
             this.errors = new CompilerError[length];
@@ -78,7 +79,7 @@ namespace CoreWf.ExpressionParser
         {
             if (info == null)
             {
-                throw FxTrace.Exception.ArgumentNull("info");
+                throw FxTrace.Exception.ArgumentNull(nameof(info));
             }
             if (this.errors == null)
             {
