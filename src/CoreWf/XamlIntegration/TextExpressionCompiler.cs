@@ -1571,7 +1571,7 @@ namespace CoreWf.XamlIntegration
         {
             string paramName = "value";
 
-            if (string.Compare(expressionText, paramName, true, Globalization.CultureInfo.CurrentCulture) == 0)
+            if (string.Compare(expressionText, paramName, true, System.Globalization.CultureInfo.CurrentCulture) == 0)
             {
                 paramName += "1";
             }

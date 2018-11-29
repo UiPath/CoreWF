@@ -1,7 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-#if NET45
 namespace CoreWf.Debugger
 {
 
@@ -399,7 +398,7 @@ namespace CoreWf.Debugger
             }
 
             // Pop the state most recently pushed by EnterState.
-            //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.ReviewUnusedParameters, Justification = "Revisit for bug 36860")]
+            ////[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.ReviewUnusedParameters, Justification = "Revisit for bug 36860")]
             public void LeaveState(State state)
             {
                 if (this.callStack.Count > 0)
@@ -461,10 +460,10 @@ namespace CoreWf.Debugger
                 this.islandsWithPriming = new Dictionary<State, MethodInfo>();
                 this.sourceDocuments = new Dictionary<string, ISymbolDocumentWriter>();
 
-                if (!PartialTrustHelpers.AppDomainFullyTrusted)
-                {
-                    moduleNamePrefix = State.ValidateIdentifierString(moduleNamePrefix);
-                }
+                //if (!PartialTrustHelpers.AppDomainFullyTrusted)
+                //{
+                //    moduleNamePrefix = State.ValidateIdentifierString(moduleNamePrefix);
+                //}
 
                 InitDynamicModule(moduleNamePrefix);
             }
@@ -496,33 +495,33 @@ namespace CoreWf.Debugger
             [SecuritySafeCritical]
             public void Bake(string typeName, string typeNamePrefix, Dictionary<string, byte[]> checksumCache)
             {
-                // In partial trust, validate the typeName and typeNamePrefix.
-                if (!PartialTrustHelpers.AppDomainFullyTrusted)
-                {
-                    typeName = State.ValidateIdentifierString(typeName);
-                    typeNamePrefix = State.ValidateIdentifierString(typeNamePrefix);
+                //// In partial trust, validate the typeName and typeNamePrefix.
+                //if (!PartialTrustHelpers.AppDomainFullyTrusted)
+                //{
+                //    typeName = State.ValidateIdentifierString(typeName);
+                //    typeNamePrefix = State.ValidateIdentifierString(typeNamePrefix);
 
-                    if (checksumCache != null)
-                    {
-                        bool nullifyChecksumCache = false;
-                        foreach (KeyValuePair<string, byte[]> kvpair in checksumCache)
-                        {
-                            // We use an MD5 hash for the checksum, so the byte array should be 16 elements long.
-                            if (!SymbolHelper.ValidateChecksum(kvpair.Value))
-                            {
-                                nullifyChecksumCache = true;
-                                Trace.WriteLine(SR.DebugSymbolChecksumValueInvalid);
-                                break;
-                            }
-                        }
+                //    if (checksumCache != null)
+                //    {
+                //        bool nullifyChecksumCache = false;
+                //        foreach (KeyValuePair<string, byte[]> kvpair in checksumCache)
+                //        {
+                //            // We use an MD5 hash for the checksum, so the byte array should be 16 elements long.
+                //            if (!SymbolHelper.ValidateChecksum(kvpair.Value))
+                //            {
+                //                nullifyChecksumCache = true;
+                //                Trace.WriteLine(SR.DebugSymbolChecksumValueInvalid);
+                //                break;
+                //            }
+                //        }
 
-                        // If we found an invalid checksum, just don't use the cache.
-                        if (nullifyChecksumCache)
-                        {
-                            checksumCache = null;
-                        }
-                    }
-                }
+                //        // If we found an invalid checksum, just don't use the cache.
+                //        if (nullifyChecksumCache)
+                //        {
+                //            checksumCache = null;
+                //        }
+                //    }
+                //}
 
                 lock (this)
                 {
@@ -561,7 +560,7 @@ namespace CoreWf.Debugger
                         }
 
                         // Actual baking.
-                        typeBuilder.CreateType();
+                        typeBuilder.CreateTypeInfo();
 
                         // Calling Type.GetMethod() is slow (10,000 calls can take ~1 minute).
                         // So defer that to later.
@@ -660,13 +659,13 @@ namespace CoreWf.Debugger
                 // breakpoints at the beginning during priming the callstack.
                 if (withPrimingTest)
                 {
-                    ilGenerator.MarkSequencePoint(document, lineHidden, 1, lineHidden, 100);
+                    //ilGenerator.MarkSequencePoint(document, lineHidden, 1, lineHidden, 100);
                     ilGenerator.Emit(OpCodes.Ldarg_0);
                     ilGenerator.Emit(OpCodes.Brtrue, islandWorkerLabel);
                 }
 
                 // Emit sequence point before the IL instructions to map it to a source location.
-                ilGenerator.MarkSequencePoint(document, stateLocation.StartLine, stateLocation.StartColumn, stateLocation.EndLine, stateLocation.EndColumn);
+                //ilGenerator.MarkSequencePoint(document, stateLocation.StartLine, stateLocation.StartColumn, stateLocation.EndLine, stateLocation.EndColumn);
                 ilGenerator.Emit(OpCodes.Nop);
 
                 ilGenerator.MarkLabel(islandWorkerLabel);
@@ -677,7 +676,7 @@ namespace CoreWf.Debugger
                 return methodbuilder;
             }
 
-            [SuppressMessage(FxCop.Category.Security, FxCop.Rule.SecureAsserts, Justification = "The validations of the user input are done elsewhere.")]
+            //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.SecureAsserts, Justification = "The validations of the user input are done elsewhere.")]
             [Fx.Tag.SecurityNote(Critical = "Because we Assert UnmanagedCode in order to be able to emit symbols.")]
             [SecurityCritical]
             void InitDynamicModule(string asmName)
@@ -700,7 +699,7 @@ namespace CoreWf.Debugger
                     transparentCtor,
                     new Object[] { });
 
-                assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run, null, true, new CustomAttributeBuilder[] { transparent });
+                assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run, new CustomAttributeBuilder[] { transparent });
 
                 // Mark generated code as debuggable. 
                 // See http://blogs.msdn.com/rmbyers/archive/2005/06/26/432922.aspx for explanation.        
@@ -720,7 +719,7 @@ namespace CoreWf.Debugger
                 try
                 {
 
-                    dynamicModule = assemblyBuilder.DefineDynamicModule(asmName, true); // <-- pass 'true' to track debug info.
+                    dynamicModule = assemblyBuilder.DefineDynamicModule(asmName);//, true); // <-- pass 'true' to track debug info.
 
                 }
                 finally
@@ -770,35 +769,35 @@ namespace CoreWf.Debugger
             [SecurityCritical]
             private ISymbolDocumentWriter GetSourceDocument(string fileName, byte[] checksum, Dictionary<string, byte[]> checksumCache)
             {
-                ISymbolDocumentWriter documentWriter;
-                string sourceDocKey = fileName + SymbolHelper.GetHexStringFromChecksum(checksum);
+                throw new NotImplementedException();
+                //ISymbolDocumentWriter documentWriter;
+                //string sourceDocKey = fileName + SymbolHelper.GetHexStringFromChecksum(checksum);
 
-                if (!this.sourceDocuments.TryGetValue(sourceDocKey, out documentWriter))
-                {
-                    documentWriter =
-                        dynamicModule.DefineDocument(
-                        fileName,
-                        StateManager.WorkflowLanguageGuid,
-                        SymLanguageVendor.Microsoft,
-                        SymDocumentType.Text);
-                    this.sourceDocuments.Add(sourceDocKey, documentWriter);
+                //if (!this.sourceDocuments.TryGetValue(sourceDocKey, out documentWriter))
+                //{
+                //    documentWriter =
+                //        dynamicModule.DefineDocument(
+                //        fileName,
+                //        StateManager.WorkflowLanguageGuid,
+                //        SymLanguageVendor.Microsoft,
+                //        SymDocumentType.Text);
+                //    this.sourceDocuments.Add(sourceDocKey, documentWriter);
 
-                    byte[] checksumBytes;
+                //    byte[] checksumBytes;
 
-                    if (checksumCache == null || !checksumCache.TryGetValue(fileName.ToUpperInvariant(), out checksumBytes))
-                    {
-                        checksumBytes = SymbolHelper.CalculateChecksum(fileName);
-                    }
+                //    if (checksumCache == null || !checksumCache.TryGetValue(fileName.ToUpperInvariant(), out checksumBytes))
+                //    {
+                //        checksumBytes = SymbolHelper.CalculateChecksum(fileName);
+                //    }
 
-                    if (checksumBytes != null)
-                    {
-                        documentWriter.SetCheckSum(SymbolHelper.ChecksumProviderId, checksumBytes);
-                    }
-                }
-                return documentWriter;
+                //    if (checksumBytes != null)
+                //    {
+                //        documentWriter.SetCheckSum(SymbolHelper.ChecksumProviderId, checksumBytes);
+                //    }
+                //}
+                //return documentWriter;
             }
 
         }
     }
 }
-#endif

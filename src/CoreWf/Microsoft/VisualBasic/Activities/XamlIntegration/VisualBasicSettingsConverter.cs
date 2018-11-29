@@ -9,6 +9,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
     using CoreWf.Runtime;
     using System.Globalization;
     using CoreWf;
+    using CoreWf.Internals;
 
     // this class is necessary in order for our value serializer to get called by XAML,
     // even though the functionality is a no-op

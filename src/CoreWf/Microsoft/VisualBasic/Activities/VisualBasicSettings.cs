@@ -13,6 +13,7 @@ namespace Microsoft.VisualBasic.Activities
     using Portable.Xaml;
     using System.ComponentModel;
     using System.Reflection;
+    using CoreWf.Internals;
 
     [ValueSerializer(typeof(VisualBasicSettingsValueSerializer))]
     [TypeConverter(typeof(VisualBasicSettingsConverter))]

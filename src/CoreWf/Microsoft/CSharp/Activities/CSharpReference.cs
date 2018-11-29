@@ -13,6 +13,7 @@ namespace Microsoft.CSharp.Activities
     using System.Diagnostics;
     using System.Linq.Expressions;
     using Portable.Xaml.Markup;
+    using CoreWf.Internals;
 
     [DebuggerStepThrough]
     [ContentProperty("ExpressionText")]

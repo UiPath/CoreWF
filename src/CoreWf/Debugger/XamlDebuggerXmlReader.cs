@@ -13,22 +13,24 @@ namespace CoreWf.Debugger
     using System.ComponentModel;
     using Portable.Xaml.Markup;
     using CoreWf.XamlIntegration;
+    using System;
+    using CoreWf.Runtime;
 
     public class XamlDebuggerXmlReader : XamlReader, IXamlLineInfo
     {
-        [SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
+        //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
         public static readonly AttachableMemberIdentifier StartLineName = new AttachableMemberIdentifier(typeof(XamlDebuggerXmlReader), StartLineMemberName);
 
-        [SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
+        //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
         public static readonly AttachableMemberIdentifier StartColumnName = new AttachableMemberIdentifier(typeof(XamlDebuggerXmlReader), StartColumnMemberName);
 
-        [SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
+        //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
         public static readonly AttachableMemberIdentifier EndLineName = new AttachableMemberIdentifier(typeof(XamlDebuggerXmlReader), EndLineMemberName);
 
-        [SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
+        //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
         public static readonly AttachableMemberIdentifier EndColumnName = new AttachableMemberIdentifier(typeof(XamlDebuggerXmlReader), EndColumnMemberName);
 
-        [SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
+        //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
         public static readonly AttachableMemberIdentifier FileNameName = new AttachableMemberIdentifier(typeof(XamlDebuggerXmlReader), FileNameMemberName);
 
         private const string StartLineMemberName = "StartLine";

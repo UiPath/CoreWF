@@ -16,6 +16,7 @@ namespace Microsoft.CSharp.Activities
     using System.Reflection;
     using CoreWf.Runtime;
     using Portable.Xaml.Markup;
+    using CoreWf.Internals;
 
     [DebuggerStepThrough]
     [ContentProperty("ExpressionText")]

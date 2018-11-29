@@ -15,6 +15,7 @@ namespace Microsoft.VisualBasic.Activities
     using Portable.Xaml.Markup;
     using System.ComponentModel;
     using CoreWf.Runtime;
+    using CoreWf.Internals;
 
     [DebuggerStepThrough]
     public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSerializableExpression, IExpressionContainer, ITextExpression

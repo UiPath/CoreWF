@@ -27,6 +27,7 @@ namespace Microsoft.VisualBasic.Activities
     using System.Security;
     using System.Security.Permissions;
     using CoreWf.Internals;
+    using Microsoft.CodeAnalysis.Scripting;
 
     class VisualBasicHelper
     {
@@ -134,7 +135,7 @@ namespace Microsoft.VisualBasic.Activities
                     }                    
                 }
 
-                hcompilerWrapper = new HostedCompilerWrapper(new HostedCompiler(assemblySet.ToList()));
+                hcompilerWrapper = new HostedCompilerWrapper(new HostedCompiler());
                 HostedCompilerCache[assemblySet] = hcompilerWrapper;
                 hcompilerWrapper.Reserve(unchecked(++VisualBasicHelper.lastTimestamp));
 
@@ -291,22 +292,12 @@ namespace Microsoft.VisualBasic.Activities
         {
             bool abort;
             Expression finalBody;
-            Microsoft.Compiler.VisualBasic.CompilerResults results;
             this.environment = environment;
             if (this.referencedAssemblies == null)
             {
                 this.referencedAssemblies = new HashSet<Assembly>();
             }
             this.referencedAssemblies.UnionWith(DefaultReferencedAssemblies);
-
-            List<Import> importList = new List<Import>();
-            foreach (string namespaceImport in this.namespaceImports)
-            {
-                if (!String.IsNullOrEmpty(namespaceImport))
-                {
-                    importList.Add(new Import(namespaceImport));
-                }
-            }
 
             RawTreeCacheKey rawTreeKey = new RawTreeCacheKey(
                 this.textToCompile,
@@ -337,24 +328,29 @@ namespace Microsoft.VisualBasic.Activities
                 this.environment,
                 this.referencedAssemblies.ToList<Assembly>());
 
-            IImportScope importScope = new VisualBasicImportScope(importList);
-            CompilerOptions options = new CompilerOptions();
-            options.OptionStrict = OptionStrictSetting.On;
-            CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
+            //IImportScope importScope = new VisualBasicImportScope(importList);
+            //CompilerOptions options = new CompilerOptions();
+            //options.OptionStrict = OptionStrictSetting.On;
+            //CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
 
             HostedCompilerWrapper compilerWrapper = GetCachedHostedCompiler(this.referencedAssemblies);
             HostedCompiler compiler = compilerWrapper.Compiler;
+            LambdaExpression lambda = null;
             try
             {
                 lock (compiler)
                 {
                     try
                     {
-                        results = compiler.CompileExpression(this.textToCompile, context);
+                        lambda = compiler.CompileExpression(this.textToCompile, scriptAndTypeScope.FindVariable, GetScriptOptions());
                     }
-                    catch (Exception e)
+                    catch(CompilationErrorException ex)
                     {
-                        if (Fx.IsFatal(e))
+                        throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(textToCompile, ex.ToString())));
+                    }
+                    catch(Exception e)
+                    {
+                        if(Fx.IsFatal(e))
                         {
                             throw;
                         }
@@ -374,21 +370,8 @@ namespace Microsoft.VisualBasic.Activities
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(textToCompile, scriptAndTypeScope.ErrorMessage)));
             }
 
-            if (results.Errors != null && results.Errors.Count > 0)
-            {
-                // this expression has problems, so report them
-                StringBuilder errorString = new StringBuilder();
-                errorString.AppendLine();
-                foreach (Error error in results.Errors)
-                {
-                    errorString.AppendLine(error.Description);
-                }
-                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(textToCompile, errorString.ToString())));
-            }
-
             // replace the field references with variable references to our dummy variables
             // and rewrite lambda.body.Type to equal the lambda return type T            
-            LambdaExpression lambda = results.CodeBlock;
             if (lambda == null)
             {
                 // ExpressionText was either an empty string or Null
@@ -404,6 +387,11 @@ namespace Microsoft.VisualBasic.Activities
 
             return Expression.Lambda(lambda.Type, finalBody, lambda.Parameters);
         }
+
+        ScriptOptions GetScriptOptions() =>
+            ScriptOptions.Default
+            .AddReferences(referencedAssemblies)
+            .AddImports(namespaceImports.Where(n=>!string.IsNullOrEmpty(n)));
 
         public Expression<Func<ActivityContext, T>> Compile<T>(CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationReference = false)
         {
@@ -427,7 +415,6 @@ namespace Microsoft.VisualBasic.Activities
         {
             bool abort;
             Expression finalBody;
-            Microsoft.Compiler.VisualBasic.CompilerResults results;
             Type lambdaReturnType = typeof(T);
 
             this.environment = environment;
@@ -436,15 +423,6 @@ namespace Microsoft.VisualBasic.Activities
                 this.referencedAssemblies = new HashSet<Assembly>();
             }
             this.referencedAssemblies.UnionWith(DefaultReferencedAssemblies);
-
-            List<Import> importList = new List<Import>();
-            foreach (string namespaceImport in this.namespaceImports)
-            {
-                if (!String.IsNullOrEmpty(namespaceImport))
-                {
-                    importList.Add(new Import(namespaceImport));
-                }
-            }
 
             RawTreeCacheKey rawTreeKey = new RawTreeCacheKey(
                 this.textToCompile,
@@ -496,10 +474,10 @@ namespace Microsoft.VisualBasic.Activities
                 this.environment,
                 this.referencedAssemblies.ToList<Assembly>());
 
-            IImportScope importScope = new VisualBasicImportScope(importList);
-            CompilerOptions options = new CompilerOptions();
-            options.OptionStrict = OptionStrictSetting.On;
-            CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
+            //IImportScope importScope = new VisualBasicImportScope(importList);
+            //CompilerOptions options = new CompilerOptions();
+            //options.OptionStrict = OptionStrictSetting.On;
+            //CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
             HostedCompilerWrapper compilerWrapper = GetCachedHostedCompiler(this.referencedAssemblies);
             HostedCompiler compiler = compilerWrapper.Compiler;
 
@@ -507,16 +485,20 @@ namespace Microsoft.VisualBasic.Activities
             {
                 TD.CompileVbExpressionStart(this.textToCompile);
             }
-
+            LambdaExpression lambda = null;
             try
             {
                 lock (compiler)
                 {
                     try
                     {
-                        results = compiler.CompileExpression(this.textToCompile, context, lambdaReturnType);
+                        lambda = compiler.CompileExpression(this.textToCompile, scriptAndTypeScope.FindVariable, GetScriptOptions(), lambdaReturnType);
                     }
-                    catch (Exception e)
+                    catch(CompilationErrorException ex)
+                    {
+                        throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(textToCompile, ex.ToString())));
+                    }
+                    catch(Exception e)
                     {
                         if (Fx.IsFatal(e))
                         {
@@ -544,21 +526,8 @@ namespace Microsoft.VisualBasic.Activities
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(textToCompile, scriptAndTypeScope.ErrorMessage)));
             }
 
-            if (results.Errors != null && results.Errors.Count > 0)
-            {
-                // this expression has problems, so report them
-                StringBuilder errorString = new StringBuilder();
-                errorString.AppendLine();
-                foreach (Error error in results.Errors)
-                {
-                    errorString.AppendLine(error.Description);
-                }
-                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(textToCompile, errorString.ToString())));
-            }
-
             // replace the field references with variable references to our dummy variables
             // and rewrite lambda.body.Type to equal the lambda return type T            
-            LambdaExpression lambda = results.CodeBlock;
             if (lambda == null)
             {
                 // ExpressionText was either an empty string or Null
@@ -1587,21 +1556,7 @@ namespace Microsoft.VisualBasic.Activities
             }
         }
 
-        class VisualBasicImportScope : IImportScope
-        {
-            IList<Import> importList;
-
-            public VisualBasicImportScope(IList<Import> importList)
-            {
-                this.importList = importList;
-            }
-            public IList<Import> GetImports()
-            {
-                return this.importList;
-            }
-        }
-
-        class VisualBasicScriptAndTypeScope : IScriptScope, ITypeScope
+        class VisualBasicScriptAndTypeScope
         {
             LocationReferenceEnvironment environmentProvider;
             List<Assembly> assemblies;

@@ -11,6 +11,7 @@ namespace CoreWf.Debugger.Symbol
     using System.Globalization;
     using System.Collections.Generic;
     using System.Security.Cryptography;
+    using CoreWf.Internals;
 
     // Represent debug symbol of a workflow tree (similar to pdb file).
     // It contains the absolute path of the xaml file and the location of each activity in the workflow tree.
