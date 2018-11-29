@@ -85,10 +85,10 @@ namespace CoreWf.Expressions
             SetCollection(target, namespacesProperty, namespaces);
         }
 
-        public static void SetNamespaces(object target, params string[] namespaces)
-        {
-            SetCollection(target, namespacesProperty, namespaces);
-        }
+        //public static void SetNamespaces(object target, params string[] namespaces)
+        //{
+        //    SetCollection(target, namespacesProperty, namespaces);
+        //}
 
         public static bool ShouldSerializeNamespaces(object target)
         {
@@ -105,10 +105,10 @@ namespace CoreWf.Expressions
             SetCollection(target, namespacesForImplementationProperty, namespaces);
         }
 
-        public static void SetNamespacesForImplementation(object target, params string[] namespaces)
-        {
-            SetCollection(target, namespacesForImplementationProperty, namespaces);
-        }
+        //public static void SetNamespacesForImplementation(object target, params string[] namespaces)
+        //{
+        //    SetCollection(target, namespacesForImplementationProperty, namespaces);
+        //}
 
         // Implementation namespaces only serialize when the activity is being defined (target is ActivityBuilder),
         // not when it is being consumed (target is Activity)
@@ -143,10 +143,10 @@ namespace CoreWf.Expressions
             SetCollection(target, referencesProperty, references);
         }
 
-        public static void SetReferences(object target, params AssemblyReference[] references)
-        {
-            SetCollection(target, referencesProperty, references);
-        }
+        //public static void SetReferences(object target, params AssemblyReference[] references)
+        //{
+        //    SetCollection(target, referencesProperty, references);
+        //}
 
         public static bool ShouldSerializeReferences(object target)
         {
@@ -163,10 +163,10 @@ namespace CoreWf.Expressions
             SetCollection(target, referencesForImplementationProperty, references);
         }
 
-        public static void SetReferencesForImplementation(object target, params AssemblyReference[] references)
-        {
-            SetCollection(target, referencesForImplementationProperty, references);
-        }
+        //public static void SetReferencesForImplementation(object target, params AssemblyReference[] references)
+        //{
+        //    SetCollection(target, referencesForImplementationProperty, references);
+        //}
 
         // Implementation references only serialize when the activity is being defined (target is ActivityBuilder),
         // not when it is being consumed (target is Activity)
