@@ -30,9 +30,9 @@ namespace Microsoft.VisualBasic.Activities
             new VisualBasicImportReference { Import = "System", Assembly = "system" },
             new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = "system" },
             //"System.Activities"
-            new VisualBasicImportReference { Import = "System.Activities", Assembly = "System.Activities" },
-            new VisualBasicImportReference { Import = "System.Activities.Statements", Assembly = "System.Activities" },
-            new VisualBasicImportReference { Import = "System.Activities.Expressions", Assembly = "System.Activities" },
+            new VisualBasicImportReference { Import = "CoreWf", Assembly = "CoreWf" },
+            new VisualBasicImportReference { Import = "CoreWf.Statements", Assembly = "CoreWf" },
+            new VisualBasicImportReference { Import = "CoreWf.Expressions", Assembly = "CoreWf" },
         };
 
         static VisualBasicSettings defaultSettings = new VisualBasicSettings(defaultImportReferences);

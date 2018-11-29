@@ -167,6 +167,7 @@ namespace Microsoft.VisualBasic.Activities
 
         void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
         {
+            namespaceImportsNames.Add("System.Linq.Expressions");
             this.namespaceImports = namespaceImportsNames;
 
             foreach (AssemblyName assemblyName in refAssemNames)
