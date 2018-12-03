@@ -17,9 +17,9 @@ namespace Microsoft.VisualBasic.Activities
         public LambdaExpression CompileExpression(string expressionString, Func<string, Type> getVariableType, ScriptOptions options, Type lambdaReturnType = null)
         {
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionString}", options);
-            var notFoundIdentifiers = InvalidIdentifiersWalker.GetInvalidIdentifiers(untypedExpressionScript);
+            var identifiers = IdentifiersWalker.GetInvalidIdentifiers(untypedExpressionScript);
             var resolvedIdentifiers =
-                notFoundIdentifiers
+                identifiers
                 .Select(name => (Name: name, Type: getVariableType(name)))
                 .Where(var => var.Type != null)
                 .ToArray();
@@ -36,14 +36,13 @@ namespace Microsoft.VisualBasic.Activities
             return (LambdaExpression)typedExpressionScript.RunAsync().GetAwaiter().GetResult().ReturnValue;
         }
 
-        class InvalidIdentifiersWalker : VisualBasicSyntaxWalker
+        class IdentifiersWalker : VisualBasicSyntaxWalker
         {
-            private const string NotDeclared = "BC30451";
-            private readonly HashSet<string> _invalidIdentifiers = new HashSet<string>();
+            private readonly HashSet<string> _identifiers = new HashSet<string>();
 
             public SemanticModel SemanticModel { get; }
 
-            private InvalidIdentifiersWalker(SemanticModel semanticModel) => SemanticModel = semanticModel;
+            private IdentifiersWalker(SemanticModel semanticModel) => SemanticModel = semanticModel;
 
             public static string[] GetInvalidIdentifiers(Script script)
             {
@@ -51,18 +50,14 @@ namespace Microsoft.VisualBasic.Activities
                 var syntaxTree = compilation.SyntaxTrees.First();
                 var semanticModel = compilation.GetSemanticModel(syntaxTree);
                 var root = syntaxTree.GetRoot();
-                var walker = new InvalidIdentifiersWalker(semanticModel);
+                var walker = new IdentifiersWalker(semanticModel);
                 walker.Visit(root);
-                return walker._invalidIdentifiers.ToArray();
+                return walker._identifiers.ToArray();
             }
 
             public override void VisitIdentifierName(IdentifierNameSyntax node)
             {
-                var diagnostics = SemanticModel.GetDiagnostics(node.FullSpan);
-                if(diagnostics.Any(d => d.Id == NotDeclared))
-                {
-                    _invalidIdentifiers.Add(node.Identifier.Text);
-                }
+                _identifiers.Add(node.Identifier.Text);
                 base.VisitIdentifierName(node);
             }
         }

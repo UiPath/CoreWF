@@ -76,6 +76,17 @@ namespace XamlTestCases
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                         <WriteLine Text=""HelloWorld"" />
                     </Activity>" };
+                yield return new object[] { @"
+                    <Activity
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
+                              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                        <Sequence>
+                            <Sequence.Variables>
+                                <Variable x:TypeArguments=""x:String"" Default=""My variable text"" Name=""text"" />
+                            </Sequence.Variables>
+                            <WriteLine Text=""[text]"" />
+                        </Sequence>
+                    </Activity>" };
             }
         }
 

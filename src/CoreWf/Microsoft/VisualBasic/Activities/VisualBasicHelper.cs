@@ -176,10 +176,21 @@ namespace Microsoft.VisualBasic.Activities
                 {
                     this.referencedAssemblies = new HashSet<Assembly>();
                 }
-                Assembly loaded = AssemblyReference.GetAssembly(assemblyName);
-                if (loaded != null)
+                try
                 {
-                    this.referencedAssemblies.Add(loaded);
+                    Assembly loaded = AssemblyReference.GetAssembly(assemblyName);
+                    if(loaded != null)
+                    {
+                        this.referencedAssemblies.Add(loaded);
+                    }
+                }
+                catch(Exception e)
+                {
+                    if(Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+                    FxTrace.Exception.TraceUnhandledException(e);
                 }
             }
         }
