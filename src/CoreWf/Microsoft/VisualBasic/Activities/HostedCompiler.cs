@@ -17,7 +17,7 @@ namespace Microsoft.VisualBasic.Activities
         public LambdaExpression CompileExpression(string expressionString, Func<string, Type> getVariableType, ScriptOptions options, Type lambdaReturnType = null)
         {
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionString}", options);
-            var identifiers = IdentifiersWalker.GetInvalidIdentifiers(untypedExpressionScript);
+            var identifiers = IdentifiersWalker.GetIdentifiers(untypedExpressionScript);
             var resolvedIdentifiers =
                 identifiers
                 .Select(name => (Name: name, Type: getVariableType(name)))
@@ -30,7 +30,8 @@ namespace Microsoft.VisualBasic.Activities
                 .Select(var => var.Type)
                 .Concat(new[] { lambdaReturnType ?? typeof(object) })
                 .Select(type => GetTypeName(type)));
-            var typedExpressionScript = VisualBasicScript
+            var typedExpressionScript = 
+                VisualBasicScript
                 .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({expressionString})", options)
                 .ContinueWith("? resultExpression", options);
             return (LambdaExpression)typedExpressionScript.RunAsync().GetAwaiter().GetResult().ReturnValue;
@@ -44,7 +45,7 @@ namespace Microsoft.VisualBasic.Activities
 
             private IdentifiersWalker(SemanticModel semanticModel) => SemanticModel = semanticModel;
 
-            public static string[] GetInvalidIdentifiers(Script script)
+            public static string[] GetIdentifiers(Script script)
             {
                 var compilation = script.GetCompilation();
                 var syntaxTree = compilation.SyntaxTrees.First();
