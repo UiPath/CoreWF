@@ -39,7 +39,7 @@ namespace Microsoft.VisualBasic.Activities
 
         class IdentifiersWalker : VisualBasicSyntaxWalker
         {
-            private readonly HashSet<string> _identifiers = new HashSet<string>();
+            private readonly HashSet<string> _identifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             public SemanticModel SemanticModel { get; }
 
