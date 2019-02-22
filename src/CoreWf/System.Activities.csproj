@@ -49,14 +49,14 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\*.resources" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CoreWf.Transactions\CoreWf.Transactions.csproj" />
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
     <Compile Remove="DynamicUpdate\**\*.cs" />
     <Compile Remove="XamlIntegration\DynamicUpdate*.cs" />
     <Compile Remove="Tracking\WorkflowInstanceUpdatedRecord.cs" />
     <Compile Remove="XamlIntegration\ObjectMatchInfoConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreWf.Transactions\System.Activities.Transactions.csproj" />
   </ItemGroup>
   <Target Name="BuildResources">
     <GenerateResource ExecuteAsTool="false" Sources="@(Resx)">

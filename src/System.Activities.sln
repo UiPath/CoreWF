@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27818.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreWf", "CoreWf\CoreWf.csproj", "{41C9737E-5FAA-4E9E-8264-B2BC10F56DA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Activities", "CoreWf\System.Activities.csproj", "{41C9737E-5FAA-4E9E-8264-B2BC10F56DA8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreWf.Transactions", "CoreWf.Transactions\CoreWf.Transactions.csproj", "{76CE83E9-74BA-45F2-9710-C1103B48A17E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Activities.Transactions", "CoreWf.Transactions\System.Activities.Transactions.csproj", "{76CE83E9-74BA-45F2-9710-C1103B48A17E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreWf.EtwTracking", "CoreWf.EtwTracking\CoreWf.EtwTracking.csproj", "{B6738F70-5DBF-4BF5-9FEB-F504D56886FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Activities.EtwTracking", "CoreWf.EtwTracking\System.Activities.EtwTracking.csproj", "{B6738F70-5DBF-4BF5-9FEB-F504D56886FA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7B4FEB02-E589-4337-B563-086AF23FB97D}"
 EndProject

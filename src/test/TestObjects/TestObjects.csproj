@@ -21,7 +21,10 @@
     <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
     <PackageReference Include="System.Xml.XPath" Version="4.3.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
-    <ProjectReference Include="../../CoreWf/CoreWf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
   </ItemGroup>
 
 </Project>
