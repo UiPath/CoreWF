@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf.Tracking;
+using System.Activities.Tracking;
 
 namespace Test.Common.TestObjects.Tracking
 {

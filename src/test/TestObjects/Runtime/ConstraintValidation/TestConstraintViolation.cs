@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Validation;
+using System.Activities;
+using System.Activities.Validation;
 using System.Collections.Generic;
 
 namespace Test.Common.TestObjects.Runtime.ConstraintValidation

@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Xml.Linq;
 
-namespace CoreWf.Runtime.DurableInstancing
+namespace System.Activities.Runtime.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
     public sealed class InstanceView

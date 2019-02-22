@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //-----------------------------------------------------------------------------
 
-namespace CoreWf.Tracking
+namespace System.Activities.Tracking
 {
     public static class WorkflowInstanceStates
     {

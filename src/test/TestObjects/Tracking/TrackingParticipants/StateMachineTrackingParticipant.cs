@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf.Statements.Tracking;
-using CoreWf.Tracking;
+using System.Activities.Statements.Tracking;
+using System.Activities.Tracking;
 using System.Diagnostics;
 using Test.Common.TestObjects.Utilities.Validation;
 
@@ -37,7 +37,7 @@ namespace Test.Common.TestObjects.Tracking
                                 stateMachineRecord.StateMachineName,
                                 stateMachineRecord.StateName));
 
-            TraceSource ts = new TraceSource("CoreWf.Tracking", SourceLevels.Information);
+            TraceSource ts = new TraceSource("System.Activities.Tracking", SourceLevels.Information);
             //PartialTrustTrace.TraceData(ts, TraceEventType.Information, 1, userTrace);
         }
     }

@@ -1,15 +1,15 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.XamlIntegration
+namespace System.Activities.XamlIntegration
 {
     using System;
-    using CoreWf.Expressions;
+    using System.Activities.Expressions;
     using System.ComponentModel;
     using System.Text.RegularExpressions;
     using Portable.Xaml;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
     using Microsoft.VisualBasic.Activities;
 
     public sealed class ActivityWithResultConverter : TypeConverterBase

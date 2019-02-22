@@ -3,7 +3,7 @@
 
 using System;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     /// <summary>
     /// This identifier is used in tracing to distiguish transaction

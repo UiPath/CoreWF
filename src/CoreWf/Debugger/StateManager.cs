@@ -1,7 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Debugger
+namespace System.Activities.Debugger
 {
 
     using System;
@@ -15,8 +15,8 @@ namespace CoreWf.Debugger
     using System.Runtime;
     using System.Security;
     using System.Security.Permissions;
-    using CoreWf.Debugger.Symbol;
-    using CoreWf.Runtime;
+    using System.Activities.Debugger.Symbol;
+    using System.Activities.Runtime;
 
     // Manager for supporting debugging a state machine.
     // The general usage is to call:

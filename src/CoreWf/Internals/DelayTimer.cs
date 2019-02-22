@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoreWf.Internals
+namespace System.Activities.Internals
 {
     internal sealed class DelayTimer : CancellationTokenSource, IDisposable
     {

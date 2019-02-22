@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     internal enum EnlistmentType
     {
@@ -64,9 +64,9 @@ namespace CoreWf.Transactions
     }
     /// <summary>Provides an event source for tracing Transactions information.</summary>
     [EventSource(
-        Name = "CoreWf.Transactions.TransactionsEventSource",
+        Name = "System.Activities.Transactions.TransactionsEventSource",
         Guid = "8ac2d80a-1f1a-431b-ace4-bff8824aef0b",
-        LocalizationResources = "FxResources.CoreWf.Transactions.Local.SR")]
+        LocalizationResources = "FxResources.System.Activities.Transactions.Local.SR")]
     internal sealed class TransactionsEtwProvider : EventSource
     {
         /// <summary>

@@ -1,7 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Runtime.DurableInstancing
+namespace System.Activities.Runtime.DurableInstancing
 {
     // This class serves as a reference back to an InstanceHandle from the perspective of an InstanceOwner for tracking lock binds in progress.
     // It works in two modes, one as a pure cancelable handle reference (where cancelling means nulling out the reference) and the

@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     internal delegate void FinishVolatileDelegate(InternalEnlistment enlistment);
 

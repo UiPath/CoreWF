@@ -122,8 +122,8 @@ namespace Test.Common.TestObjects.Utilities.Sql
 
                     string[] sqlInstanceStore40Roles =
                     {
-                        "CoreWf.DurableInstancing.InstanceStoreObservers",
-                        "CoreWf.DurableInstancing.InstanceStoreUsers"
+                        "System.Activities.DurableInstancing.InstanceStoreObservers",
+                        "System.Activities.DurableInstancing.InstanceStoreUsers"
                     };
 
                     return new DatabaseConfiguration()
@@ -203,8 +203,8 @@ namespace Test.Common.TestObjects.Utilities.Sql
 
                     string[] sqlInstanceStoreRoles =
                     {
-                        "CoreWf.DurableInstancing.InstanceStoreObservers",
-                        "CoreWf.DurableInstancing.InstanceStoreUsers"
+                        "System.Activities.DurableInstancing.InstanceStoreObservers",
+                        "System.Activities.DurableInstancing.InstanceStoreUsers"
                     };
 
                     return new DatabaseConfiguration()

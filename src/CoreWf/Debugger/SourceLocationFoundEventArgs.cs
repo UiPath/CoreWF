@@ -3,7 +3,7 @@
 
 using System;
 
-namespace CoreWf.Debugger
+namespace System.Activities.Debugger
 {
     public sealed class SourceLocationFoundEventArgs : EventArgs
     {

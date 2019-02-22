@@ -5,9 +5,9 @@
 namespace Microsoft.VisualBasic.Activities
 {
     using System;
-    using CoreWf;
+    using System.Activities;
     using System.Diagnostics.CodeAnalysis;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using Portable.Xaml;
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.TypeNamesShouldNotMatchNamespaces,

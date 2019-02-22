@@ -2,9 +2,9 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf.Statements;
+using System.Activities.Statements;
 using System.Collections.Generic;
-using Act = CoreWf.Statements;
+using Act = System.Activities.Statements;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;

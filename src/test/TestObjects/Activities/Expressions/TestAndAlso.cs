@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using CoreWf.Expressions;
-using CoreWf;
+using System.Activities.Expressions;
+using System.Activities;
 using Test.Common.TestObjects.Utilities.Validation;
-using CoreWf.Statements;
+using System.Activities.Statements;
 using System.ComponentModel;
 using Test.Common.TestObjects.Activities.Tracing;
 

@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Tracking;
+using System.Activities;
+using System.Activities.Tracking;
 using System.Runtime.Serialization;
 using System.Xml;
 

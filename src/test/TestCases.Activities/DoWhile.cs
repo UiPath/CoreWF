@@ -2,14 +2,14 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
+using System.Activities;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Utilities.Validation;
-using CoreWf.Expressions;
+using System.Activities.Expressions;
 using Xunit;
 
 namespace TestCases.Activities
@@ -166,7 +166,7 @@ namespace TestCases.Activities
                 Body = new TestSequence("inner seq"),
                 HintIterationCount = 0,
             };
-            CoreWf.Statements.DoWhile productDoWhile = (CoreWf.Statements.DoWhile)doWhile.ProductActivity;
+            System.Activities.Statements.DoWhile productDoWhile = (System.Activities.Statements.DoWhile)doWhile.ProductActivity;
             productDoWhile.Condition = null;
 
             TestRuntime.ValidateInstantiationException(doWhile, String.Format("Condition must be set before DoWhile activity '{0}' can be used.", doWhile.DisplayName));
@@ -951,33 +951,33 @@ namespace TestCases.Activities
                     {
                         Argument = delegateInArgument,
                         Result = delegateOutArgument,
-                        Handler = new CoreWf.Statements.Sequence
+                        Handler = new System.Activities.Statements.Sequence
                         {
                             DisplayName = "sequence1",
                             Activities =
                             {
-                                new CoreWf.Statements.DoWhile
+                                new System.Activities.Statements.DoWhile
                                 {
                                     DisplayName = "DoWhile1",
                                     Condition =  ExpressionServices.Convert<bool>( ctx=> delegateInArgument.Get(ctx) ),
-                                    Body = new CoreWf.Statements.Assign<bool>
+                                    Body = new System.Activities.Statements.Assign<bool>
                                     {
                                         DisplayName = "Assign1",
                                         To = delegateInArgument,
                                         Value =  new Not<bool, bool>{ DisplayName = "Not1",  Operand = delegateInArgument}
                                     },
                                 },
-                                new CoreWf.Statements.Assign<bool>
+                                new System.Activities.Statements.Assign<bool>
                                 {
                                     DisplayName = "Assign2",
                                     To = delegateOutArgument,
                                     Value =  new Not<bool, bool>{ DisplayName = "Not2", Operand = delegateInArgument},
                                 },
-                                new CoreWf.Statements.DoWhile
+                                new System.Activities.Statements.DoWhile
                                 {
                                     DisplayName = "DoWhile2",
                                     Condition =  ExpressionServices.Convert<bool>( ctx=> !delegateOutArgument.Get(ctx) ),
-                                    Body = new CoreWf.Statements.Assign<bool>
+                                    Body = new System.Activities.Statements.Assign<bool>
                                     {
                                         DisplayName = "Assign3",
                                         To = delegateOutArgument,

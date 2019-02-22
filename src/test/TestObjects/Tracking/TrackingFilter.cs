@@ -1,8 +1,8 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf;
-using CoreWf.Tracking;
+using System.Activities;
+using System.Activities.Tracking;
 using System.Linq;
 using Test.Common.TestObjects.Utilities;
 using Test.Common.TestObjects.Utilities.Validation;

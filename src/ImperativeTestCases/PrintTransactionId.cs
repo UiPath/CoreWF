@@ -3,7 +3,7 @@
 //----------------------------------------------------------------
 
 using System;
-using CoreWf;
+using System.Activities;
 
 namespace ImperativeTestCases
 {

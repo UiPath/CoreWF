@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Xml.Linq;
 
-namespace CoreWf.Runtime.DurableInstancing
+namespace System.Activities.Runtime.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]

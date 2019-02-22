@@ -5,7 +5,7 @@
 namespace Microsoft.VisualBasic.Activities.XamlIntegration
 {
     using System;
-    using CoreWf.Expressions;
+    using System.Activities.Expressions;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -17,7 +17,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
     using Portable.Xaml.Markup;
     using System.Security;
     using System.Security.Permissions;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using System.Threading;
 
     static class VisualBasicExpressionConverter

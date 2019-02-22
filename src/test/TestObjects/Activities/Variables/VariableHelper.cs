@@ -3,8 +3,8 @@
 
 using System;
 using System.Linq.Expressions;
-using CoreWf;
-using CoreWf.Expressions;
+using System.Activities;
+using System.Activities.Expressions;
 
 namespace Test.Common.TestObjects.Activities.Variables
 {

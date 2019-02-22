@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace CoreWf.EtwTracking
+namespace System.Activities.EtwTracking
 {
     /// <summary>
     /// A generic base class for IAsyncResult implementations

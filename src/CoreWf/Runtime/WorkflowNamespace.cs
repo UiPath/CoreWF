@@ -3,12 +3,12 @@
 
 using System.Xml.Linq;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     [Fx.Tag.XamlVisible(false)]
     internal static class WorkflowNamespace
     {
-        private const string baseNamespace = "urn:schemas-microsoft-com:CoreWf/4.0/properties";
+        private const string baseNamespace = "urn:schemas-microsoft-com:System.Activities/4.0/properties";
         private static readonly XNamespace s_workflowNamespace = XNamespace.Get(baseNamespace);
         private static readonly XNamespace s_variablesNamespace = XNamespace.Get(baseNamespace + "/variables");
         private static readonly XNamespace s_outputNamespace = XNamespace.Get(baseNamespace + "/output");

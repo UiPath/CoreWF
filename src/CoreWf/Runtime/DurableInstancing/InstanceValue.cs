@@ -3,7 +3,7 @@
 
 using System.Runtime.Serialization;
 
-namespace CoreWf.Runtime.DurableInstancing
+namespace System.Activities.Runtime.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]

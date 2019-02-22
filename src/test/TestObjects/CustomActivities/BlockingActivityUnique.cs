@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
+using System.Activities;
 
 namespace Test.Common.TestObjects.CustomActivities
 {

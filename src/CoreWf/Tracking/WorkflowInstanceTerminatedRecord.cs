@@ -1,13 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf.Runtime;
+using System.Activities.Runtime;
 using System;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace CoreWf.Tracking
+namespace System.Activities.Tracking
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]
@@ -20,7 +20,7 @@ namespace CoreWf.Tracking
         {
             if (string.IsNullOrEmpty(reason))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty(nameof(reason));
+                throw System.Activities.Internals.FxTrace.Exception.ArgumentNullOrEmpty(nameof(reason));
             }
             this.Reason = reason;
             this.Level = EventLevel.Error;
@@ -31,7 +31,7 @@ namespace CoreWf.Tracking
         {
             if (string.IsNullOrEmpty(reason))
             {
-                throw CoreWf.Internals.FxTrace.Exception.ArgumentNullOrEmpty(nameof(reason));
+                throw System.Activities.Internals.FxTrace.Exception.ArgumentNullOrEmpty(nameof(reason));
             }
 
             this.Reason = reason;

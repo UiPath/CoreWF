@@ -1,16 +1,16 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System;
-    using CoreWf;
-    using CoreWf.Expressions;
+    using System.Activities;
+    using System.Activities.Expressions;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq.Expressions;
     using Portable.Xaml.Markup;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     public sealed class FlowDecision : FlowNode
     {

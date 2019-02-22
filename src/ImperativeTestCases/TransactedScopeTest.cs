@@ -2,8 +2,8 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 //----------------------------------------------------------------
 
-using CoreWf;
-using CoreWf.Statements;
+using System.Activities;
+using System.Activities.Statements;
 
 namespace ImperativeTestCases
 {

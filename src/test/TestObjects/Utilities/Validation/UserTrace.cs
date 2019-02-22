@@ -128,7 +128,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
             if (listenerExtension != null)
             {
                 UserTrace userTrace = new UserTrace(instanceId, message);
-                //TraceSource ts = new TraceSource("CoreWf.Tracking", SourceLevels.Information);
+                //TraceSource ts = new TraceSource("System.Activities.Tracking", SourceLevels.Information);
                 //ts.TraceData(TraceEventType.Information, 1, userTrace);
                 listenerExtension.TraceData(userTrace);
             }

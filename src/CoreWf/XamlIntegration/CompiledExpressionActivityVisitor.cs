@@ -1,10 +1,10 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.XamlIntegration
+namespace System.Activities.XamlIntegration
 {
-    using CoreWf;
-    using CoreWf.Expressions;
+    using System.Activities;
+    using System.Activities.Expressions;
 
     internal abstract class CompiledExpressionActivityVisitor
     {

@@ -1,16 +1,16 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System;
-    using CoreWf;
-    using CoreWf.Persistence;
+    using System.Activities;
+    using System.Activities.Persistence;
     using System.Collections.Generic;
     using System.Xml.Linq;
-    using CoreWf.Hosting;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Hosting;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     [Fx.Tag.XamlVisible(false)]
     public class DurableTimerExtension : TimerExtension, IWorkflowInstanceExtension, IDisposable, ICancelable
@@ -20,8 +20,8 @@ namespace CoreWf.Statements
         private readonly Action<object> onTimerFiredCallback;
         private readonly TimerPersistenceParticipant timerPersistenceParticipant;
         private static readonly AsyncCallback onResumeBookmarkComplete = Fx.ThunkCallback(new AsyncCallback(OnResumeBookmarkComplete));
-        private static readonly XName timerTableName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("RegisteredTimers");
-        private static readonly XName timerExpirationTimeName = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties").GetName("TimerExpirationTime");
+        private static readonly XName timerTableName = XNamespace.Get("urn:schemas-microsoft-com:System.Activities/4.0/properties").GetName("RegisteredTimers");
+        private static readonly XName timerExpirationTimeName = XNamespace.Get("urn:schemas-microsoft-com:System.Activities/4.0/properties").GetName("TimerExpirationTime");
         private bool isDisposed; 
 
         [Fx.Tag.SynchronizationObject()]

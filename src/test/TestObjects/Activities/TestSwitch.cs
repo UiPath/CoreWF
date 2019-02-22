@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Statements;
+using System.Activities;
+using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Test.Common.TestObjects.Activities.Tracing;

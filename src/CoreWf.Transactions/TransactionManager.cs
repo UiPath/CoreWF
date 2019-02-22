@@ -8,10 +8,10 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using CoreWf.Transactions.Configuration;
-using CoreWf.Transactions.Distributed;
+using System.Activities.Transactions.Configuration;
+using System.Activities.Transactions.Distributed;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     public delegate Transaction HostCurrentTransactionCallback();
 

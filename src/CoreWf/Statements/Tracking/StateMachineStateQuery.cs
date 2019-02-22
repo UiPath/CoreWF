@@ -1,9 +1,9 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements.Tracking
+namespace System.Activities.Statements.Tracking
 {
-    using CoreWf.Tracking;
+    using System.Activities.Tracking;
 
     /// <summary>
     /// When added to the Queries, subscribes to state machine state execution records.

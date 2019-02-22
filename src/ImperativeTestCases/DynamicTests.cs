@@ -1,5 +1,5 @@
-﻿using CoreWf;
-using CoreWf.Statements;
+﻿using System.Activities;
+using System.Activities.Statements;
 using System;
 using System.Collections.Generic;
 using Xunit;

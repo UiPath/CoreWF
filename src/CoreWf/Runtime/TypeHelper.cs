@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using CoreWf.Internals;
+using System.Activities.Internals;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     internal static class TypeHelper
     {

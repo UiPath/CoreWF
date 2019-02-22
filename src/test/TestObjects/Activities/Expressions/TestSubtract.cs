@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Expressions;
+using System.Activities;
+using System.Activities.Expressions;
 using System.Linq.Expressions;
 
 namespace Test.Common.TestObjects.Activities.Expressions

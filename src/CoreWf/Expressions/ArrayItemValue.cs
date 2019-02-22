@@ -1,12 +1,12 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Expressions
+namespace System.Activities.Expressions
 {
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     public sealed class ArrayItemValue<TItem> : CodeActivity<TItem>
     {

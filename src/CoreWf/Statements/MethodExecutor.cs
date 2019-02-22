@@ -1,14 +1,14 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Reflection;
-    using CoreWf.Internals;
-    using CoreWf.Runtime;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
 
     // Inverted Template Method pattern. MethodExecutor is the base class for executing a method; created by MethodResolver.
     // Private concrete implementations are created by MethodResolver, but this is the "public" API used by InvokeMethod.

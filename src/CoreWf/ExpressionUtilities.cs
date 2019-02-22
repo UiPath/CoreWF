@@ -1,7 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
     using System;
     using System.Collections.ObjectModel;
@@ -11,9 +11,9 @@ namespace CoreWf
     using System.Reflection;
     using System.Runtime.Serialization;
     using System.Collections.Generic;
-    using CoreWf.XamlIntegration;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.XamlIntegration;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     internal static class ExpressionUtilities
     {

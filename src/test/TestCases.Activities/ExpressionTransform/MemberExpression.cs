@@ -2,9 +2,9 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Expressions;
-using CoreWf.Statements;
+using System.Activities;
+using System.Activities.Expressions;
+using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Test.Common.TestObjects.Activities.ExpressionTransform;
@@ -166,7 +166,7 @@ namespace TestCases.Activities.ExpressionTransform
 
             Expression<Func<ActivityContext, string>> expression = (env) => var.Get(env);
 
-            CoreWf.Statements.Sequence expectedSequence = new CoreWf.Statements.Sequence()
+            System.Activities.Statements.Sequence expectedSequence = new System.Activities.Statements.Sequence()
             {
                 Variables =
                 {
@@ -181,7 +181,7 @@ namespace TestCases.Activities.ExpressionTransform
                 }
             };
 
-            CoreWf.Statements.Sequence actualSequence = new CoreWf.Statements.Sequence()
+            System.Activities.Statements.Sequence actualSequence = new System.Activities.Statements.Sequence()
             {
                 Variables =
                 {

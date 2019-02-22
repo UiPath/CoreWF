@@ -1,25 +1,25 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     using System;
-    using CoreWf.Hosting;
-    using CoreWf.Tracking;
+    using System.Activities.Hosting;
+    using System.Activities.Tracking;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Runtime.Serialization;
     using System.Security;
     using System.Threading;
-    using CoreWf.Transactions;
-    using CoreWf.Internals;
+    using System.Activities.Transactions;
+    using System.Activities.Internals;
     using System.Diagnostics.Tracing;
-    using CoreWf.Runtime.DurableInstancing;
+    using System.Activities.Runtime.DurableInstancing;
 
 #if NET45
-    using CoreWf.Debugger;
-    using CoreWf.DynamicUpdate; 
+    using System.Activities.Debugger;
+    using System.Activities.DynamicUpdate; 
 #endif
 
     [DataContract(Name = XD.Executor.Name, Namespace = XD.Runtime.Namespace)]

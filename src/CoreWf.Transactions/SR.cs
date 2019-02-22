@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     internal static class SR
     {

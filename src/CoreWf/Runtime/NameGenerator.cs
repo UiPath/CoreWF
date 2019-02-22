@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using System.Threading;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     internal class NameGenerator
     {

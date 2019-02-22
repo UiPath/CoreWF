@@ -1,19 +1,19 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
     using System;
-    using CoreWf.Expressions;
-    using CoreWf.Runtime;
-    using CoreWf.Validation;
+    using System.Activities.Expressions;
+    using System.Activities.Runtime;
+    using System.Activities.Validation;
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq.Expressions;
     using System.Runtime.Serialization;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     [DebuggerDisplay("Name = {Name}, Type = {Type}")] 
     public abstract class Variable : LocationReference

@@ -2,9 +2,9 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using CoreWf;
-using CoreWf.Statements;
-using CoreWf.Validation;
+using System.Activities;
+using System.Activities.Statements;
+using System.Activities.Validation;
 
 namespace Test.Common.TestObjects.CustomActivities
 {

@@ -6,9 +6,9 @@ using System.Collections;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
-using CoreWf.Transactions.Distributed;
+using System.Activities.Transactions.Distributed;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     // The TransactionState object defines the basic set of operations that
     // are available for a transaction.  It is a base type and the base 

@@ -16,15 +16,15 @@ using Portable.Xaml.Markup;
 [assembly: Guid("97bdccfe-43bf-4c17-991d-c797c2ef2243")]
 
 // Define XAML namespace mappings
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "CoreWf")]
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "CoreWf.Statements")]
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "CoreWf.Expressions")]
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "CoreWf.Validation")]
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "CoreWf.XamlIntegration")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities.Statements")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities.Expressions")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities.Validation")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities.XamlIntegration")]
 
 #if NET45
 
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "CoreWf.Debugger.Symbol")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "System.Activities.Debugger.Symbol")]
 [assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "sads")]
 
 #endif

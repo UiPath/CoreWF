@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using CoreWf;
-using CoreWf.Statements;
-using CoreWf.Expressions;
+using System.Activities;
+using System.Activities.Statements;
+using System.Activities.Expressions;
 using System.ComponentModel;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;

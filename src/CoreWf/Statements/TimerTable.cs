@@ -1,13 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf.Internals;
-using CoreWf.Runtime;
+using System.Activities.Internals;
+using System.Activities.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     [DataContract]
     // This class won't be thread safe, it relies on the callers to synchronize addTimer and removeTimer

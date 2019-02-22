@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
+using System.Activities;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
@@ -551,47 +551,47 @@ namespace TestCases.Activities
         //           {
         //               Argument = delegateInArgument,
         //               Result = delegateOutArgument,
-        //               Handler = new CoreWf.Statements.Sequence
+        //               Handler = new System.Activities.Statements.Sequence
         //               {
         //                   DisplayName = "Sequence1",
         //                   Activities =
         //                    {
-        //                        new CoreWf.Statements.Parallel
+        //                        new System.Activities.Statements.Parallel
         //                        {
         //                            DisplayName = "Parallel1",
         //                            CompletionCondition =  ExpressionServices.Convert<bool>( ctx=> delegateInArgument.Get(ctx) ),
         //                            Branches =
         //                            {
-        //                                new CoreWf.Statements.WriteLine{ DisplayName = "W1", Text = new InArgument<string>( new VisualBasicValue<string>("Condition & \"\" ") ) },
-        //                                new CoreWf.Statements.Assign<bool>
+        //                                new System.Activities.Statements.WriteLine{ DisplayName = "W1", Text = new InArgument<string>( new VisualBasicValue<string>("Condition & \"\" ") ) },
+        //                                new System.Activities.Statements.Assign<bool>
         //                                {
         //                                    DisplayName = "Assign1",
         //                                    Value = true,
         //                                    To = delegateInArgument,
         //                                },
-        //                                new CoreWf.Statements.Delay { DisplayName = "Delay1", Duration = new TimeSpan(0, 0, 1) }
+        //                                new System.Activities.Statements.Delay { DisplayName = "Delay1", Duration = new TimeSpan(0, 0, 1) }
         //                            }
         //                        },
-        //                        new CoreWf.Statements.Assign<bool>
+        //                        new System.Activities.Statements.Assign<bool>
         //                                {
         //                                    DisplayName = "Assign2",
         //                                    Value = false,
         //                                    To = delegateOutArgument,
         //                                },
-        //                        new CoreWf.Statements.Parallel
+        //                        new System.Activities.Statements.Parallel
         //                        {
         //                            DisplayName = "Parallel2",
         //                            CompletionCondition =  ExpressionServices.Convert<bool>( ctx=> delegateOutArgument.Get(ctx) ),
         //                            Branches =
         //                            {
-        //                                new CoreWf.Statements.WriteLine{ DisplayName = "W2", Text = new InArgument<string>( new VisualBasicValue<string>("Output & \"\" ") ) },
-        //                                new CoreWf.Statements.Assign<bool>
+        //                                new System.Activities.Statements.WriteLine{ DisplayName = "W2", Text = new InArgument<string>( new VisualBasicValue<string>("Output & \"\" ") ) },
+        //                                new System.Activities.Statements.Assign<bool>
         //                                {
         //                                    DisplayName = "Assign3",
         //                                    Value = true,
         //                                    To = delegateOutArgument,
         //                                },
-        //                                new CoreWf.Statements.Delay { DisplayName = "Delay2", Duration = new TimeSpan(0, 0, 1) }
+        //                                new System.Activities.Statements.Delay { DisplayName = "Delay2", Duration = new TimeSpan(0, 0, 1) }
         //                            }
         //                        }
         //                    },

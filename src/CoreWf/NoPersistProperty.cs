@@ -1,14 +1,14 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
 
     // This does not need to be data contract since we'll never persist while one of these is active
     internal class NoPersistProperty : IPropertyRegistrationCallback
     {
-        public const string Name = "CoreWf.NoPersistProperty";
+        public const string Name = "System.Activities.NoPersistProperty";
         private readonly ActivityExecutor executor;
         private int refCount;
 

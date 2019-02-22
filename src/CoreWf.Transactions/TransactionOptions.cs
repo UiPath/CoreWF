@@ -3,7 +3,7 @@
 
 using System;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     public struct TransactionOptions
     {

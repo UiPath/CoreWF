@@ -2,12 +2,12 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
-using CoreWf;
+using System.Activities;
 
 namespace Test.Common.TestObjects.CustomActivities
 {
     // Allows variable declaration and activity scheduling, as well as extension points (OnSequenceComplete and Execute)
-    // for other test code to hook into. Based on CoreWf.Sequence.
+    // for other test code to hook into. Based on System.Activities.Sequence.
     //[ContentProperty("Activities")]    
     public class CustomSequenceBase : NativeActivity
     {

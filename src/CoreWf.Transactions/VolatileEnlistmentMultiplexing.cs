@@ -4,7 +4,7 @@
 using System.Diagnostics;
 using System.Threading;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     // The volatile Demultiplexer is a fanout point for promoted volatile enlistments.
     // When a transaction is promoted a single volatile enlistment is created in the new

@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using CoreWf;
+using System.Activities;
 using Test.Common.TestObjects.Activities.Collections;
 using Test.Common.TestObjects.CustomActivities;
 

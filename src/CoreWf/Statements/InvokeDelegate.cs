@@ -1,17 +1,17 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Globalization;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using Portable.Xaml.Markup;
 
 #if NET45
-    using CoreWf.DynamicUpdate; 
+    using System.Activities.DynamicUpdate; 
 #endif
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,

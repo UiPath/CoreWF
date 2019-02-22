@@ -143,7 +143,7 @@ namespace TestCases.Activities.Pick
 
         //    TestRuntime.ValidateInstantiationException(
         //        pick,
-        //       typeof(CoreWf.InvalidWorkflowException),
+        //       typeof(System.Activities.InvalidWorkflowException),
         //       "var2");
         //}
 
@@ -155,17 +155,17 @@ namespace TestCases.Activities.Pick
         [Fact]
         public void SealedTest()
         {
-            Type pickType = typeof(CoreWf.Statements.Pick);
-            Type pickBranchType = typeof(CoreWf.Statements.PickBranch);
+            Type pickType = typeof(System.Activities.Statements.Pick);
+            Type pickBranchType = typeof(System.Activities.Statements.PickBranch);
 
             if (!pickType.GetTypeInfo().IsSealed)
             {
-                throw new Exception("CoreWf.Statements.Pick should be sealed.");
+                throw new Exception("System.Activities.Statements.Pick should be sealed.");
             }
 
             if (!pickBranchType.GetTypeInfo().IsSealed)
             {
-                throw new Exception("CoreWf.Statements.PickBranch should be sealed.");
+                throw new Exception("System.Activities.Statements.PickBranch should be sealed.");
             }
         }
     }

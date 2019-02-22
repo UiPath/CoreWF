@@ -1,18 +1,18 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System;
-    using CoreWf.Hosting;
-    using CoreWf.Persistence;
+    using System.Activities.Hosting;
+    using System.Activities.Persistence;
     using System.Collections.Generic;
     using System.Xml.Linq;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     public class CompensationExtension : PersistenceParticipant, IWorkflowInstanceExtension
     {
-        private static readonly XNamespace compensationNamespace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/compensation");
+        private static readonly XNamespace compensationNamespace = XNamespace.Get("urn:schemas-microsoft-com:System.Activities/4.0/compensation");
         private static readonly XName compensationExtensionData = compensationNamespace.GetName("Data");
 
         [Fx.Tag.SynchronizationObject(Blocking = false)]

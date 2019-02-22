@@ -5,7 +5,7 @@ using System;
 using System.Security;
 using System.Threading;
 
-namespace CoreWf.Runtime.Diagnostics
+namespace System.Activities.Runtime.Diagnostics
 {
     internal class EventTraceActivity
     {

@@ -1,13 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf.Runtime;
-using CoreWf.Tracking;
+using System.Activities.Runtime;
+using System.Activities.Tracking;
 using System;
 using System.Diagnostics.Tracing;
 using System.Runtime.Serialization;
 
-namespace CoreWf.Statements.Tracking
+namespace System.Activities.Statements.Tracking
 {
     /// <summary>
     /// Represents a tracking record that is created when an state machine instance transitions to a state.
@@ -16,7 +16,7 @@ namespace CoreWf.Statements.Tracking
     [DataContract]
     public sealed class StateMachineStateRecord : CustomTrackingRecord
     {
-        internal static readonly string StateMachineStateRecordName = "CoreWf.Statements.StateMachine";
+        internal static readonly string StateMachineStateRecordName = "System.Activities.Statements.StateMachine";
 
         private const string StateKey = "currentstate";
         private const string StateMachineKey = "stateMachine";

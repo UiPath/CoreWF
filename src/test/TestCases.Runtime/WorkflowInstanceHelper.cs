@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Persistence;
+using System.Activities;
+using System.Activities.Persistence;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;

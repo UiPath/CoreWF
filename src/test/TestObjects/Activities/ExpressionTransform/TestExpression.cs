@@ -2,9 +2,9 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Expressions;
-using CoreWf.Statements;
+using System.Activities;
+using System.Activities.Expressions;
+using System.Activities.Statements;
 using System.Linq.Expressions;
 
 namespace Test.Common.TestObjects.Activities.ExpressionTransform

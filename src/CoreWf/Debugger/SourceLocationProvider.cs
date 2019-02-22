@@ -1,25 +1,25 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Debugger
+namespace System.Activities.Debugger
 {
     using System;
-    using CoreWf.Hosting;
-    using CoreWf.XamlIntegration;
+    using System.Activities.Hosting;
+    using System.Activities.XamlIntegration;
     using System.Diagnostics;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using System.Reflection;
     using System.Security;
     using System.Security.Permissions;
     using Portable.Xaml;
     using System.Xml;
     using System.IO;
-    using CoreWf.Validation;
+    using System.Activities.Validation;
     using System.Collections.ObjectModel;
     using System.Runtime.Serialization;
-    using CoreWf.Debugger.Symbol;
+    using System.Activities.Debugger.Symbol;
     using System.Globalization;
 
     // Provide SourceLocation information for activities in given root activity.

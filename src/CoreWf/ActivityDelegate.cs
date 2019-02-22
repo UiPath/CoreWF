@@ -1,15 +1,15 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
-    using CoreWf.Validation;
+    using System.Activities.Validation;
     using System.Collections.Generic;
     using System.ComponentModel;
     using Portable.Xaml.Markup;
     using System.Collections.ObjectModel;
     using System;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,
     //    Justification = "Part of the sanctioned, public WF OM")]

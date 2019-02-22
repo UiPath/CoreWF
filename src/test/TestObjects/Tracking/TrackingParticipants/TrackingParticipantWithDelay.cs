@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading;
-using CoreWf.Tracking;
+using System.Activities.Tracking;
 
 namespace Test.Common.TestObjects.Tracking
 {

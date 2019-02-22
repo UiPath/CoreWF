@@ -3,7 +3,7 @@
 
 using System;
 
-namespace CoreWf.Transactions.Configuration
+namespace System.Activities.Transactions.Configuration
 {
     internal sealed class MachineSettingsSection // ConfigurationSection
     {

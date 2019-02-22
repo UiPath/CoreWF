@@ -2,14 +2,14 @@
 // See LICENSE file in the project root for full license information.
 
 #if NET45
-namespace CoreWf.Debugger
+namespace System.Activities.Debugger
 {
     using System;
-    using CoreWf.Expressions;
-    using CoreWf.Hosting;
-    using CoreWf.Runtime;
-    using CoreWf.Statements;
-    using CoreWf.XamlIntegration;
+    using System.Activities.Expressions;
+    using System.Activities.Hosting;
+    using System.Activities.Runtime;
+    using System.Activities.Statements;
+    using System.Activities.XamlIntegration;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;

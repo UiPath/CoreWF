@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     public interface IPromotableSinglePhaseNotification : ITransactionPromoter
     {

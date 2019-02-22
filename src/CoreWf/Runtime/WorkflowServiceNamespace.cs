@@ -3,7 +3,7 @@
 
 using System.Xml.Linq;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     [Fx.Tag.XamlVisible(false)]
     internal static class WorkflowServiceNamespace

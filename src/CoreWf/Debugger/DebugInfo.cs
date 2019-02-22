@@ -1,10 +1,10 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Debugger
+namespace System.Activities.Debugger
 {
     using System;
-    using CoreWf.XamlIntegration;
+    using System.Activities.XamlIntegration;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
@@ -15,8 +15,8 @@ namespace CoreWf.Debugger
     using System.Runtime;
     using Portable.Xaml.Markup;
     using Portable.Xaml;
-    using CoreWf.Internals;
-    using CoreWf.Runtime;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
 
     // Class to communicate with Workflow's Expression Evaluation.
     // The methods of this class get invoked thru reflection by Visual Studio, so this needs to be public
@@ -222,7 +222,7 @@ namespace CoreWf.Debugger
                                 new LocalInfo
                                 {
                                     Name = "this",
-                                    Type = "CoreWf.ActivityInstance",
+                                    Type = "System.Activities.ActivityInstance",
                                     Value = activityInstance
                                 }
                             }

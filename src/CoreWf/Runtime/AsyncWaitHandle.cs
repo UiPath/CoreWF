@@ -4,10 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Security;
-using CoreWf.Internals;
+using System.Activities.Internals;
 using System.Threading;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     [Fx.Tag.SynchronizationPrimitive(Fx.Tag.BlocksUsing.MonitorWait, SupportsAsync = true, ReleaseMethod = "Set")]
     internal class AsyncWaitHandle

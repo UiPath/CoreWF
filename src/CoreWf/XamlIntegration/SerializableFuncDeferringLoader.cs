@@ -1,13 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.XamlIntegration
+namespace System.Activities.XamlIntegration
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Portable.Xaml;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     public class SerializableFuncDeferringLoader : XamlDeferringLoader
     {

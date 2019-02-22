@@ -1,5 +1,5 @@
-﻿using CoreWf;
-using CoreWf.XamlIntegration;
+﻿using System.Activities;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
 using Xunit;
@@ -27,7 +27,7 @@ namespace XamlTestCases
                               xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
-                              xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
+                              xmlns:sa=""clr-namespace:System.Activities;assembly=CoreWf""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                     </Activity>" };
                 yield return new object[] { @"
@@ -108,7 +108,7 @@ namespace XamlTestCases
                               xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
-                              xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
+                              xmlns:sa=""clr-namespace:System.Activities;assembly=CoreWf""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                         <x:Members>
                             <x:Property Name=""myInput"" Type=""InArgument(x:String)"" />
@@ -120,7 +120,7 @@ namespace XamlTestCases
                               xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
-                              xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
+                              xmlns:sa=""clr-namespace:System.Activities;assembly=CoreWf""
                               xmlns:hw=""clr-namespace:XamlTestCases;assembly=XamlTestCases""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                         <x:Members>
@@ -150,7 +150,7 @@ namespace XamlTestCases
                       xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                       xmlns:s=""clr-namespace:System;assembly=mscorlib""
                       xmlns:s1=""clr-namespace:System;assembly=System""
-                      xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
+                      xmlns:sa=""clr-namespace:System.Activities;assembly=CoreWf""
                       xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                 <x:Members>
                     <x:Property Name=""myOutput"" Type=""OutArgument(x:Int32)"" />

@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 
-namespace CoreWf.Transactions.Configuration
+namespace System.Activities.Transactions.Configuration
 {
     internal static class AppSettings
     {

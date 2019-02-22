@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     // AsyncResult starts acquired; Complete releases.
     [Fx.Tag.SynchronizationPrimitive(Fx.Tag.BlocksUsing.ManualResetEvent, SupportsAsync = true, ReleaseMethod = "Complete")]

@@ -1,12 +1,12 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.DurableInstancing
+namespace System.Activities.DurableInstancing
 {
     using System;
-    using CoreWf.Runtime;
-    using CoreWf.Runtime.DurableInstancing;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Runtime.DurableInstancing;
+    using System.Activities.Internals;
 
     [Fx.Tag.XamlVisible(false)]   
     public sealed class QueryActivatableWorkflowsCommand : InstancePersistenceCommand

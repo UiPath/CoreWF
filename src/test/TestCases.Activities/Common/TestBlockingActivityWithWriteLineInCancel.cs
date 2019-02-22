@@ -1,7 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf;
+using System.Activities;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
@@ -46,7 +46,7 @@ namespace TestCases.Activities.Common
 
         public BlockingActivityWithWriteLineInCancel()
         {
-            _w1 = new CoreWf.Statements.WriteLine { DisplayName = "w1", Text = this.DisplayName };
+            _w1 = new System.Activities.Statements.WriteLine { DisplayName = "w1", Text = this.DisplayName };
         }
 
         protected override void Execute(NativeActivityContext context)

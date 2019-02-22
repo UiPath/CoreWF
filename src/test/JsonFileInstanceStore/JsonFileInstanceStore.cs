@@ -1,8 +1,8 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf.DurableInstancing;
-using CoreWf.Runtime.DurableInstancing;
+using System.Activities.DurableInstancing;
+using System.Activities.Runtime.DurableInstancing;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

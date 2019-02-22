@@ -1,15 +1,15 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.XamlIntegration
+namespace System.Activities.XamlIntegration
 {
     using System.Collections.Generic;
     using System.Globalization;
     using Portable.Xaml;
     using Portable.Xaml.Schema;
     using System;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     // This class rewrites an <ActivityBuilder to <Activity x:Class
     // ActivityBuilder.Properties is rewritten to x:Members

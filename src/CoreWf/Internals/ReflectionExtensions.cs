@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using System.Reflection;
 
-namespace CoreWf.Internals
+namespace System.Activities.Internals
 {
     internal static class ReflectionExtensions
     {

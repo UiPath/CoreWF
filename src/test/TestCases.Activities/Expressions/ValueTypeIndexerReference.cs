@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Statements;
+using System.Activities;
+using System.Activities.Statements;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Expressions;
@@ -329,7 +329,7 @@ namespace TestCases.Activities.Expressions
                 }
             };
 
-            CoreWf.Statements.Sequence outerSeq = new CoreWf.Statements.Sequence()
+            System.Activities.Statements.Sequence outerSeq = new System.Activities.Statements.Sequence()
             {
                 Variables =
                 {
@@ -349,7 +349,7 @@ namespace TestCases.Activities.Expressions
                 }
             };
 
-            TestCustomActivity testActivity = TestCustomActivity<CoreWf.Statements.Sequence>.CreateFromProduct(outerSeq);
+            TestCustomActivity testActivity = TestCustomActivity<System.Activities.Statements.Sequence>.CreateFromProduct(outerSeq);
             UnorderedTraces traces = new UnorderedTraces()
             {
                 Steps =

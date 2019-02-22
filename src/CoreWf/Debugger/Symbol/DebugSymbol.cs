@@ -1,11 +1,11 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-namespace CoreWf.Debugger.Symbol
+namespace System.Activities.Debugger.Symbol
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Portable.Xaml;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
 
     [Fx.Tag.XamlVisible(false)]
     public static class DebugSymbol

@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Expressions;
+using System.Activities;
+using System.Activities.Expressions;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Expressions;
@@ -24,16 +24,16 @@ namespace Test.TestCases.Activities.Expressions
         [Fact]
         public void SetPublicPropertyOnAnObject()
         {
-            Variable<CoreWf.Statements.Sequence> customType = new Variable<CoreWf.Statements.Sequence>() { Name = "Custom" };
+            Variable<System.Activities.Statements.Sequence> customType = new Variable<System.Activities.Statements.Sequence>() { Name = "Custom" };
 
-            TestPropertyReference<CoreWf.Statements.Sequence, string> propReference = new TestPropertyReference<CoreWf.Statements.Sequence, string> { OperandVariable = customType, PropertyName = "DisplayName" };
+            TestPropertyReference<System.Activities.Statements.Sequence, string> propReference = new TestPropertyReference<System.Activities.Statements.Sequence, string> { OperandVariable = customType, PropertyName = "DisplayName" };
 
             TestSequence seq = new TestSequence
             {
                 Variables = { customType },
                 Activities =
                 {
-                    new TestAssign<CoreWf.Statements.Sequence> { ToVariable = customType, ValueExpression = (context => new CoreWf.Statements.Sequence() { DisplayName = "MySequence" }) },
+                    new TestAssign<System.Activities.Statements.Sequence> { ToVariable = customType, ValueExpression = (context => new System.Activities.Statements.Sequence() { DisplayName = "MySequence" }) },
                     new TestAssign<string> { ToLocation = propReference, Value = "NotMySequence" },
                     new TestWriteLine { MessageExpression = e => customType.Get(e).DisplayName, HintMessage = "NotMySequence" }
                 }

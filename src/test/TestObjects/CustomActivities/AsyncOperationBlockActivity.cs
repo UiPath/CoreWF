@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading;
-using CoreWf;
+using System.Activities;
 using Test.Common.TestObjects.Utilities;
 using Test.Common.TestObjects.Utilities.Validation;
 

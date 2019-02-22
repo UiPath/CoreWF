@@ -2,16 +2,16 @@
 // See LICENSE file in the project root for full license information.
 
 #if NET45
-namespace CoreWf.Debugger
+namespace System.Activities.Debugger
 {
     using System;
-    using CoreWf.Hosting;
+    using System.Activities.Hosting;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq.Expressions;
     using System.Runtime;
-    using CoreWf.Validation;
+    using System.Activities.Validation;
 
     // DebugController, one is needed per ActivityExecutor.
     [DebuggerNonUserCode]

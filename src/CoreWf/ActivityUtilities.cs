@@ -1,12 +1,12 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
     using System;
-    using CoreWf.Expressions;
-    using CoreWf.Runtime;
-    using CoreWf.Validation;
+    using System.Activities.Expressions;
+    using System.Activities.Runtime;
+    using System.Activities.Validation;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -14,7 +14,7 @@ namespace CoreWf
     using System.Globalization;
     using System.Reflection;
     using System.Text;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     internal static class ActivityUtilities
     {

@@ -1,8 +1,8 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf.Runtime;
-using CoreWf.Runtime.Diagnostics;
+using System.Activities.Runtime;
+using System.Activities.Runtime.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-namespace CoreWf.Tracking
+namespace System.Activities.Tracking
 {
     [Fx.Tag.XamlVisible(false)]
     [DataContract]

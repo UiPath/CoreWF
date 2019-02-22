@@ -5,6 +5,7 @@
     <UpgradeBackupLocation>C:\dev\corewfxaml\src\Backup\CoreWf.Transactions\</UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
     <Version>1.2.0</Version>
+    <RootNamespace>System.Activities.Transactions</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>7.1</LangVersion>

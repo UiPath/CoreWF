@@ -1,16 +1,16 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     using System;
-    using CoreWf.Hosting;
+    using System.Activities.Hosting;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Globalization;
-    using CoreWf.Runtime.DurableInstancing;
+    using System.Activities.Runtime.DurableInstancing;
     using System.Runtime.Serialization;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     [DataContract]
     internal class BookmarkScopeManager

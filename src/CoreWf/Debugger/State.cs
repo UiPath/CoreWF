@@ -1,7 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Debugger
+namespace System.Activities.Debugger
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace CoreWf.Debugger
     using System.Text;
     using System.IO;
     using System.Globalization;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
 
     // Describes a "state" in the interpretter. A state is any source location that
     // a breakpoint could be set on or that could be stepped to.

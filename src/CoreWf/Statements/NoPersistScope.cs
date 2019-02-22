@@ -1,16 +1,16 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
-    using CoreWf;
-    using CoreWf.Validation;
+    using System.Activities;
+    using System.Activities.Validation;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
     using Portable.Xaml.Markup;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
 
     [ContentProperty("Body")]
     public sealed class NoPersistScope : NativeActivity

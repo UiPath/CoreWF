@@ -6,9 +6,9 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
-using CoreWf.Transactions.Distributed;
+using System.Activities.Transactions.Distributed;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     public class TransactionEventArgs : EventArgs
     {

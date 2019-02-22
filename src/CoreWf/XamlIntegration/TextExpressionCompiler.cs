@@ -1,13 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.XamlIntegration
+namespace System.Activities.XamlIntegration
 {
     using System;
     using System.Text;
-    using CoreWf;
-    using CoreWf.Statements;
-    using CoreWf.Validation;
+    using System.Activities;
+    using System.Activities.Statements;
+    using System.Activities.Validation;
     using System.Reflection;
     using System.CodeDom;
     using System.CodeDom.Compiler;
@@ -17,18 +17,18 @@ namespace CoreWf.XamlIntegration
     using Microsoft.VisualBasic;
     using Portable.Xaml.Markup;
     using Portable.Xaml;
-    using CoreWf.Debugger;
+    using System.Activities.Debugger;
     using System.IO;
-    using CoreWf.Expressions;
-    using CoreWf.Runtime;
+    using System.Activities.Expressions;
+    using System.Activities.Runtime;
     using System.Diagnostics.CodeAnalysis;
     using System.Security;
     using System.Security.Permissions;
     using System.Globalization;
-    using CoreWf.Debugger.Symbol;
+    using System.Activities.Debugger.Symbol;
     using System.Linq.Expressions;
     using System.Diagnostics;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     public class TextExpressionCompiler
     {
@@ -41,7 +41,7 @@ namespace CoreWf.XamlIntegration
         static string setValueTypeValuesString = "SetValueTypeValues";
         static string valueTypeAccessorString = "ValueType_";
         static string forReadOnly = "_ForReadOnly";
-        static string xamlIntegrationNamespace = "CoreWf.XamlIntegration";
+        static string xamlIntegrationNamespace = "System.Activities.XamlIntegration";
         static string rootActivityFieldName = "rootActivity";
         static string dataContextActivitiesFieldName = "dataContextActivities";
         static string forImplementationName = "forImplementation";
@@ -969,7 +969,7 @@ namespace CoreWf.XamlIntegration
                 //   {
                 //     throw new Exception();
                 //   }
-                //   CoreWf.XamlIntegration.CompiledDataContext[] cachedCompiledDataContext = Workflow1_TypedDataContext1_ForReadOnly.GetCompiledDataContextCacheHelper(this, activityContext, 1);
+                //   System.Activities.XamlIntegration.CompiledDataContext[] cachedCompiledDataContext = Workflow1_TypedDataContext1_ForReadOnly.GetCompiledDataContextCacheHelper(this, activityContext, 1);
                 //   if ((cachedCompiledDataContext[0] == null))
                 //   {
                 //     cachedCompiledDataContext[0] = new Workflow1_TypedDataContext1_ForReadOnly(locations, activityContext);
@@ -1062,7 +1062,7 @@ namespace CoreWf.XamlIntegration
             if (withLocationReferences)
             {
                 //
-                // CoreWf.XamlIntegration.CompiledDataContext[] cachedCompiledDataContext = CompiledExpressions_TypedDataContext2.GetCompiledDataContextCacheHelper(this, activityContext, 2);
+                // System.Activities.XamlIntegration.CompiledDataContext[] cachedCompiledDataContext = CompiledExpressions_TypedDataContext2.GetCompiledDataContextCacheHelper(this, activityContext, 2);
                 // if ((cachedCompiledDataContext[1] == null))
                 // {
                 //   if (!CompiledExpressions_TypedDataContext2.Validate(locations, activityContext))

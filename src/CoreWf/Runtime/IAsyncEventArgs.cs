@@ -3,7 +3,7 @@
 
 using System;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     internal interface IAsyncEventArgs
     {

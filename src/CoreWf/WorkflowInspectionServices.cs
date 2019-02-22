@@ -1,12 +1,12 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
     using System;
     using System.Collections.Generic;
-    using CoreWf.Validation;
-    using CoreWf.Internals;
+    using System.Activities.Validation;
+    using System.Activities.Internals;
 
     public static class WorkflowInspectionServices
     {

@@ -1,14 +1,14 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System;
-    using CoreWf;
+    using System.Activities;
     using System.ComponentModel;
     using System.Collections.ObjectModel;
     using Portable.Xaml.Markup;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     [ContentProperty("Exception")]
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [Throw])")]

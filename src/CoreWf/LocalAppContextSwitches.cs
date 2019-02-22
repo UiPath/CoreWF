@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 #pragma warning disable 0436 //Disable the type conflict warning for the types used by LocalAppContext framework due to InternalsVisibleTo for System.ServiceModel.Internals (Quirking)
-namespace CoreWf
+namespace System.Activities
 {
     using System;
     using System.Runtime.CompilerServices;

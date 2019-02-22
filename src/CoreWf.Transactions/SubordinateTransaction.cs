@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2229", Justification = "Serialization not yet supported and will be done using DistributedTransaction")]
     public sealed class SubordinateTransaction : Transaction

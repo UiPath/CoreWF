@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
+using System.Activities;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Runtime;
@@ -356,20 +356,20 @@ namespace TestCases.Activities
         //                {
         //                    Argument = delegateInArgument,
         //                    Result = delegateOutArgument,
-        //                    Handler = new CoreWf.Statements.Sequence
+        //                    Handler = new System.Activities.Statements.Sequence
         //                    {
         //                        DisplayName = "sequence1",
         //                        Activities =
         //                        {
-        //                            new CoreWf.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W1"},
-        //                            new CoreWf.Statements.Assign<string>
+        //                            new System.Activities.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W1"},
+        //                            new System.Activities.Statements.Assign<string>
         //                            {
         //                                DisplayName = "Assign1",
         //                                To = delegateInArgument,
         //                                Value = new VisualBasicValue<string>("Input & \"_VB\"")  ,
         //                            },
-        //                            new CoreWf.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W2"},
-        //                            new CoreWf.Statements.Assign<string>
+        //                            new System.Activities.Statements.WriteLine { Text = ExpressionServices.Convert<string>(ctx=>delegateInArgument.Get(ctx)) , DisplayName = "W2"},
+        //                            new System.Activities.Statements.Assign<string>
         //                            {
         //                                DisplayName = "Assign2",
         //                                To = delegateOutArgument,

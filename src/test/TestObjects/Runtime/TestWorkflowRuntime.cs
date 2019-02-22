@@ -1,8 +1,8 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using CoreWf;
-using CoreWf.Runtime.DurableInstancing;
+using System.Activities;
+using System.Activities.Runtime.DurableInstancing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -53,7 +53,7 @@ namespace Test.Common.TestObjects.Runtime
 
         #region Properties
 
-        public CoreWf.Hosting.WorkflowInstanceExtensionManager Extensions
+        public System.Activities.Hosting.WorkflowInstanceExtensionManager Extensions
         {
             get { return _remoteWorkflowRuntime.Extensions; }
         }
@@ -751,12 +751,12 @@ namespace Test.Common.TestObjects.Runtime
         }
 
         #region GetBookmarks
-        public ReadOnlyCollection<CoreWf.Hosting.BookmarkInfo> GetBookmarks()
+        public ReadOnlyCollection<System.Activities.Hosting.BookmarkInfo> GetBookmarks()
         {
             return _remoteWorkflowRuntime.GetBookmarks();
         }
 
-        public ReadOnlyCollection<CoreWf.Hosting.BookmarkInfo> GetBookmarks(TimeSpan timeout)
+        public ReadOnlyCollection<System.Activities.Hosting.BookmarkInfo> GetBookmarks(TimeSpan timeout)
         {
             return _remoteWorkflowRuntime.GetBookmarks(timeout);
         }

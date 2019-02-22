@@ -1,14 +1,14 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Expressions
+namespace System.Activities.Expressions
 {
-    using CoreWf;
-    using CoreWf.Statements;
+    using System.Activities;
+    using System.Activities.Statements;
     using System.ComponentModel;
 
 #if NET45
-    using CoreWf.DynamicUpdate; 
+    using System.Activities.DynamicUpdate; 
 #endif
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [OrElse])")]

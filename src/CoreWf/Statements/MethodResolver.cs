@@ -1,18 +1,18 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using CoreWf.Expressions;
+    using System.Activities.Expressions;
     using System.Threading;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using System;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     // Helper class for InvokeMethod.
     // Factory for MethodExecutor strategies. Conceptually, resolves to the correct MethodInfo based on target type,

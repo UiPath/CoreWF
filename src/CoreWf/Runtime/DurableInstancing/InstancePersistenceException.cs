@@ -4,7 +4,7 @@
 using System;
 using System.Xml.Linq;
 
-namespace CoreWf.Runtime.DurableInstancing
+namespace System.Activities.Runtime.DurableInstancing
 {
     //[Serializable]
     public class InstancePersistenceException : Exception

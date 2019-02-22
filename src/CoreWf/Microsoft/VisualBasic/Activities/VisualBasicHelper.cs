@@ -5,9 +5,9 @@
 namespace Microsoft.VisualBasic.Activities
 {
     using System;
-    using CoreWf;
-    using CoreWf.ExpressionParser;
-    using CoreWf.Expressions;
+    using System.Activities;
+    using System.Activities.ExpressionParser;
+    using System.Activities.Expressions;
     using System.CodeDom;
     using System.Collections;
     using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Microsoft.VisualBasic.Activities
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using System.Runtime.Collections;
     using System.Text;
     using System.Threading;
@@ -26,7 +26,7 @@ namespace Microsoft.VisualBasic.Activities
     //using Microsoft.VisualBasic.CompilerServices;
     using System.Security;
     using System.Security.Permissions;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
     using Microsoft.CodeAnalysis.Scripting;
 
     class VisualBasicHelper

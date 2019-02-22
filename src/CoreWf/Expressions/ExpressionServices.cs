@@ -1,15 +1,15 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Expressions
+namespace System.Activities.Expressions
 {
     using System;
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Collections.ObjectModel;
     using System.Collections;
-    using CoreWf.Internals;
-    using CoreWf.Runtime;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
 
     public static class ExpressionServices
     {
@@ -1340,7 +1340,7 @@ namespace CoreWf.Expressions
             return null;
         }
 
-        private static string TryConvertArgumentExpressionWorker<TArgument>(Expression expression, bool isByRef, bool throwOnError, out CoreWf.Argument result)
+        private static string TryConvertArgumentExpressionWorker<TArgument>(Expression expression, bool isByRef, bool throwOnError, out System.Activities.Argument result)
         {
             result = null;
 

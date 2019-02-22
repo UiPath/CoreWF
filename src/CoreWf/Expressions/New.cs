@@ -1,17 +1,17 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Expressions
+namespace System.Activities.Expressions
 {
-    using CoreWf;
+    using System.Activities;
     using System.Collections.ObjectModel;
     using System.Reflection;
-    using CoreWf.Runtime.Collections;
+    using System.Activities.Runtime.Collections;
     using Portable.Xaml.Markup;
     using System.Threading;
     using System;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords,
     //    Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [New])")]

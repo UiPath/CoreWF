@@ -5,9 +5,9 @@ namespace Test.Common.TestObjects.Activities
 {
     using System;
     using System.Linq.Expressions;
-    using CoreWf;
-    using CoreWf.Expressions;
-    using Argument = CoreWf.Argument;
+    using System.Activities;
+    using System.Activities.Expressions;
+    using Argument = System.Activities.Argument;
 
     public abstract class TestArgument
     {

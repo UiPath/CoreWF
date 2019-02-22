@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     // Base class for all enlistment states
     internal abstract class EnlistmentState

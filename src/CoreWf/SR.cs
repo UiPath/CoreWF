@@ -4,7 +4,7 @@
 using System.Reflection;
 using System.Resources;
 
-namespace CoreWf
+namespace System.Activities
 {
     internal class SR : StringResourceBase
     {
@@ -18,7 +18,7 @@ namespace CoreWf
             {
                 if (_resourceManager == null)
                 {
-                    _resourceManager = new ResourceManager("CoreWf.Resources", typeof(SR).GetTypeInfo().Assembly);
+                    _resourceManager = new ResourceManager("System.Activities.Resources", typeof(SR).GetTypeInfo().Assembly);
                 }
                 return _resourceManager;
             }

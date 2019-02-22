@@ -1,21 +1,21 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
-    using CoreWf;
+    using System.Activities;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
-    using CoreWf.Runtime.Collections;
+    using System.Activities.Runtime.Collections;
     using Portable.Xaml.Markup;
-    using CoreWf.Internals;
-    using CoreWf.Runtime;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
     using System;
 
 #if NET45
-    using CoreWf.DynamicUpdate; 
+    using System.Activities.DynamicUpdate; 
 #endif
 
     [ContentProperty("Nodes")]

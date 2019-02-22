@@ -1,18 +1,18 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Statements
+namespace System.Activities.Statements
 {
     using System;
-    using CoreWf;
-    using CoreWf.Validation;
+    using System.Activities;
+    using System.Activities.Validation;
     using System.ComponentModel;
-    using CoreWf.Transactions;
+    using System.Activities.Transactions;
     using Portable.Xaml.Markup;
-    using CoreWf.Expressions;
+    using System.Activities.Expressions;
     using System.Collections.ObjectModel;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     [ContentProperty("Body")]
     public sealed class TransactionScope : NativeActivity

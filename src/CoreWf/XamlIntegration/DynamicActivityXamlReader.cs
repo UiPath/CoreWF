@@ -1,12 +1,12 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.XamlIntegration
+namespace System.Activities.XamlIntegration
 {
     using System;
     using System.Collections.Generic;
-    using CoreWf.Internals;
-    using CoreWf.Runtime;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
     using Portable.Xaml;
     using Portable.Xaml.Schema;
 

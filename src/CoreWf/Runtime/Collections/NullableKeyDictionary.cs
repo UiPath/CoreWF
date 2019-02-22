@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CoreWf.Runtime.Collections
+namespace System.Activities.Runtime.Collections
 {
     internal class NullableKeyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {

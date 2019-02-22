@@ -6,14 +6,14 @@ namespace Microsoft.VisualBasic.Activities
 {
     using Microsoft.VisualBasic.Activities.XamlIntegration;
     using System;
-    using CoreWf;
+    using System.Activities;
     using System.Collections.Generic;
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using Portable.Xaml.Markup;
     using Portable.Xaml;
     using System.ComponentModel;
     using System.Reflection;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     [ValueSerializer(typeof(VisualBasicSettingsValueSerializer))]
     [TypeConverter(typeof(VisualBasicSettingsConverter))]
@@ -30,9 +30,9 @@ namespace Microsoft.VisualBasic.Activities
             new VisualBasicImportReference { Import = "System", Assembly = "system" },
             new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = "system" },
             //"System.Activities"
-            new VisualBasicImportReference { Import = "CoreWf", Assembly = "CoreWf" },
-            new VisualBasicImportReference { Import = "CoreWf.Statements", Assembly = "CoreWf" },
-            new VisualBasicImportReference { Import = "CoreWf.Expressions", Assembly = "CoreWf" },
+            new VisualBasicImportReference { Import = "System.Activities", Assembly = "CoreWf" },
+            new VisualBasicImportReference { Import = "System.Activities.Statements", Assembly = "CoreWf" },
+            new VisualBasicImportReference { Import = "System.Activities.Expressions", Assembly = "CoreWf" },
         };
 
         static VisualBasicSettings defaultSettings = new VisualBasicSettings(defaultImportReferences);

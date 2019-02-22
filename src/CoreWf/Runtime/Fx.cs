@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Threading;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     internal static class Fx
     {

@@ -1,17 +1,17 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Validation
+namespace System.Activities.Validation
 {
     using System;
     using System.Collections.Generic;
     using Portable.Xaml.Markup;
     using System.Collections.ObjectModel;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     public abstract class Constraint : NativeActivity
     {
-        public const string ValidationErrorListPropertyName = "CoreWf.Validation.Constraint.ValidationErrorList";
+        public const string ValidationErrorListPropertyName = "System.Activities.Validation.Constraint.ValidationErrorList";
 
         internal const string ToValidateArgumentName = "ToValidate";
         internal const string ValidationErrorListArgumentName = "ViolationList";

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CoreWf.Runtime.DurableInstancing
+namespace System.Activities.Runtime.DurableInstancing
 {
     // InstanceStore owns the synchronization of this class.
     internal class InstanceNormalEvent : InstancePersistenceEvent

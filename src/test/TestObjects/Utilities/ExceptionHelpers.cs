@@ -53,7 +53,7 @@ namespace Test.Common.TestObjects.Utilities
             MethodDelegate tryCode,
             bool checkValidationException)
         {
-            if (exceptionType == typeof(CoreWf.ValidationException)
+            if (exceptionType == typeof(System.Activities.ValidationException)
                 && checkValidationException == false)
             {
                 throw new Exception("Please do not use this method to check for ValidationExceptions and"

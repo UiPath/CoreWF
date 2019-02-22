@@ -2,8 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Hosting;
+using System.Activities;
+using System.Activities.Hosting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Test.Common.TestObjects.Activities;

@@ -1,18 +1,18 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Expressions
+namespace System.Activities.Expressions
 {
     using System;
-    using CoreWf.XamlIntegration;
+    using System.Activities.XamlIntegration;
     using System.Collections;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
     using System.Reflection;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     [TypeConverter(typeof(AssemblyReferenceConverter))]
     public class AssemblyReference

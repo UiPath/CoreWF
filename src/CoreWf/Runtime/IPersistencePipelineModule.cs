@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     internal interface IPersistencePipelineModule
     {

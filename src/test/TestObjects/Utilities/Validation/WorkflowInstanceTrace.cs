@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
+using System.Activities;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Xml;
@@ -163,7 +163,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
         {
             WorkflowInstanceTrace trace = new WorkflowInstanceTrace(workflowInstanceId, workflowDefinitionIdentity, state);
 
-            TraceSource ts = new TraceSource("CoreWf.Tracking", SourceLevels.Information);
+            TraceSource ts = new TraceSource("System.Activities.Tracking", SourceLevels.Information);
             ts.TraceData(TraceEventType.Information, 1, trace);
         }
 

@@ -7,7 +7,7 @@ namespace Microsoft.VisualBasic.Activities
     using System;
     using System.Globalization;
     using System.Reflection;
-    using CoreWf.Expressions;
+    using System.Activities.Expressions;
     using Portable.Xaml;
     using System.Xml.Linq;
 

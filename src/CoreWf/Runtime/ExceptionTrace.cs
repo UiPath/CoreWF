@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
 
-namespace CoreWf.Runtime
+namespace System.Activities.Runtime
 {
     internal class ExceptionTrace
     {

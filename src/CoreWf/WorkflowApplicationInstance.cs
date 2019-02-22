@@ -1,18 +1,18 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
     using System;
     using System.Collections.Generic;
-    using CoreWf.Runtime.DurableInstancing;
+    using System.Activities.Runtime.DurableInstancing;
     using System.Threading;
     using System.Xml.Linq;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
 #if NET45
-    using CoreWf.DynamicUpdate; 
+    using System.Activities.DynamicUpdate; 
 #endif
 
     // Wrapper over instance data retrieved from the Instance Store but not yet loaded into a WorkflowApplication.

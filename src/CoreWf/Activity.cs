@@ -2,11 +2,11 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf.Expressions;
-using CoreWf.Hosting;
-using CoreWf.Runtime;
-using CoreWf.Validation;
-using CoreWf.XamlIntegration;
+using System.Activities.Expressions;
+using System.Activities.Hosting;
+using System.Activities.Runtime;
+using System.Activities.Validation;
+using System.Activities.XamlIntegration;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,13 +14,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Threading;
 using Portable.Xaml.Markup;
-using CoreWf.Internals;
+using System.Activities.Internals;
 
 #if NET45
-using CoreWf.DynamicUpdate;
+using System.Activities.DynamicUpdate;
 #endif
 
-namespace CoreWf
+namespace System.Activities
 {
     [ContentProperty("Implementation")]
     public abstract class Activity

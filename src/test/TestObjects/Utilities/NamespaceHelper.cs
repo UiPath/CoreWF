@@ -7,7 +7,7 @@ namespace Test.Common.TestObjects.Utilities
 {
     public static class WorkflowNamespace
     {
-        private static XNamespace s_workflowNameSpace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.0/properties");
+        private static XNamespace s_workflowNameSpace = XNamespace.Get("urn:schemas-microsoft-com:System.Activities/4.0/properties");
 
         public static XName WorkflowHostTypeName
         {
@@ -20,7 +20,7 @@ namespace Test.Common.TestObjects.Utilities
 
     public static class Workflow45Namespace
     {
-        private static XNamespace s_workflow45NameSpace = XNamespace.Get("urn:schemas-microsoft-com:CoreWf/4.5/properties");
+        private static XNamespace s_workflow45NameSpace = XNamespace.Get("urn:schemas-microsoft-com:System.Activities/4.5/properties");
 
         public static XName DefinitionIdentity
         {

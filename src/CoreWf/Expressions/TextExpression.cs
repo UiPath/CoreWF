@@ -1,13 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.Expressions
+namespace System.Activities.Expressions
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Reflection;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
     using Portable.Xaml;
 
     public static class TextExpression
@@ -30,9 +30,9 @@ namespace CoreWf.Expressions
             "System",
             "System.Collections",
             "System.Collections.Generic",
-            "CoreWf",
-            "CoreWf.Expressions",
-            "CoreWf.Statements"
+            "System.Activities",
+            "System.Activities.Expressions",
+            "System.Activities.Statements"
         });
 
         private static readonly ReadOnlyCollection<AssemblyReference> defaultReferences = new ReadOnlyCollection<AssemblyReference>(new AssemblyReference[]

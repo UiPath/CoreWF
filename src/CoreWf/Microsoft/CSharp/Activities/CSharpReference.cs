@@ -5,15 +5,15 @@
 namespace Microsoft.CSharp.Activities
 {
     using System;
-    using CoreWf;
-    using CoreWf.Expressions;
-    using CoreWf.XamlIntegration;
+    using System.Activities;
+    using System.Activities.Expressions;
+    using System.Activities.XamlIntegration;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq.Expressions;
     using Portable.Xaml.Markup;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
     [DebuggerStepThrough]
     [ContentProperty("ExpressionText")]

@@ -1,9 +1,9 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
-    using CoreWf.Runtime;
+    using System.Activities.Runtime;
     using System;
 
     // A mostly output-restricted double-ended queue. You can add an item to both ends

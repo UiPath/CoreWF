@@ -5,9 +5,9 @@
 namespace Microsoft.VisualBasic.Activities
 {
     using System;
-    using CoreWf;
-    using CoreWf.Expressions;
-    using CoreWf.Validation;
+    using System.Activities;
+    using System.Activities.Expressions;
+    using System.Activities.Validation;
     using System.Globalization;
     using System.Reflection;     
 

@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     internal interface IPromotedEnlistment
     {

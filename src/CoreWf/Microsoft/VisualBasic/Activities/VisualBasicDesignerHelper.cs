@@ -5,17 +5,17 @@
 namespace Microsoft.VisualBasic.Activities
 {
     using System;
-    using CoreWf;
-    using CoreWf.ExpressionParser;
-    using CoreWf.Expressions;
-    using CoreWf.Validation;
+    using System.Activities;
+    using System.Activities.ExpressionParser;
+    using System.Activities.Expressions;
+    using System.Activities.Validation;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq.Expressions;
     using System.Reflection;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
 
     public static class VisualBasicDesignerHelper
     {

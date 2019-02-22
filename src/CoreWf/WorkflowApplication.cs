@@ -1,24 +1,24 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
     using System;
-    using CoreWf.Hosting;
-    using CoreWf.DurableInstancing;
-    using CoreWf.Runtime;
-    using CoreWf.Tracking;
+    using System.Activities.Hosting;
+    using System.Activities.DurableInstancing;
+    using System.Activities.Runtime;
+    using System.Activities.Tracking;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using CoreWf.Runtime.DurableInstancing;
+    using System.Activities.Runtime.DurableInstancing;
     using System.Threading;
-    using CoreWf.Transactions;
+    using System.Activities.Transactions;
     using System.Xml.Linq;
-    using CoreWf.Internals;
+    using System.Activities.Internals;
 
 #if NET45
-    using CoreWf.DynamicUpdate; 
+    using System.Activities.DynamicUpdate; 
 #endif
 
     // WorkflowApplication is free-threaded. It is responsible for the correct locking and usage of the ActivityExecutor.

@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using CoreWf.Statements;
+using System.Activities.Statements;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
 

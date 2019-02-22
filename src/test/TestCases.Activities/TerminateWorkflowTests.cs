@@ -2,9 +2,9 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
-using CoreWf;
-using CoreWf.Statements;
-using CoreWf.Tracking;
+using System.Activities;
+using System.Activities.Statements;
+using System.Activities.Tracking;
 using System.Collections.Generic;
 using System.Threading;
 using Test.Common.TestObjects.Activities;
@@ -161,16 +161,16 @@ namespace TestCases.Activities
         {
             AutoResetEvent waitForWorkflow = new AutoResetEvent(false);
 
-            CoreWf.Statements.Sequence seq = new CoreWf.Statements.Sequence()
+            System.Activities.Statements.Sequence seq = new System.Activities.Statements.Sequence()
             {
                 Activities =
                 {
-                    new CoreWf.Statements.TerminateWorkflow
+                    new System.Activities.Statements.TerminateWorkflow
                     {
                         Exception = new InArgument<Exception>(context => new TAC.ApplicationException()),
                         Reason = new InArgument<string>("just because"),
                     },
-                    new CoreWf.Statements.WriteLine()
+                    new System.Activities.Statements.WriteLine()
                     {
                         Text = "Hello"
                     },

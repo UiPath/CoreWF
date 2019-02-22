@@ -1,14 +1,14 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
 #if NET45
-    using CoreWf.Debugger;
+    using System.Activities.Debugger;
 #endif
-    using CoreWf.Runtime;
-    using CoreWf.Validation;
-    using CoreWf.XamlIntegration;
+    using System.Activities.Runtime;
+    using System.Activities.Validation;
+    using System.Activities.XamlIntegration;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;

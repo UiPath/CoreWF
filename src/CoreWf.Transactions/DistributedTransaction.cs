@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace CoreWf.Transactions.Distributed
+namespace System.Activities.Transactions.Distributed
 {
     internal sealed class DistributedTransactionManager
     {

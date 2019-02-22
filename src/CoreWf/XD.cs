@@ -1,7 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf
+namespace System.Activities
 {
     // NOTE: This may get generated from 'xd.xml' if we get extra performance from XML Dictionary strings,
     // which would entail elevating the most common strings into a "Main" dictionary
@@ -10,7 +10,7 @@ namespace CoreWf
         public static class Runtime
         {
             // commonly used pieces of data
-            public const string Namespace = "http://schemas.datacontract.org/2010/02/CoreWf";
+            public const string Namespace = "http://schemas.datacontract.org/2010/02/System.Activities";
             public const string BookmarkManager = "BookmarkManager";
             public const string ActivityInstanceMap = "InstanceMap";
             public const string Scheduler = "Scheduler";

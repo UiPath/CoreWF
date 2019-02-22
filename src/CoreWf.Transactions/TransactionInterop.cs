@@ -3,9 +3,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using CoreWf.Transactions.Distributed;
+using System.Activities.Transactions.Distributed;
 
-namespace CoreWf.Transactions
+namespace System.Activities.Transactions
 {
     [ComImport]
     [Guid("0fb15084-af41-11ce-bd2b-204c4f4f5020")]
