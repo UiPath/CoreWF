@@ -39,7 +39,7 @@ namespace System.Activities.Expressions
         {
             new AssemblyName("mscorlib"),
             new AssemblyName("System"),
-            new AssemblyName("CoreWf"),
+            new AssemblyName("System.Activities"),
             new AssemblyName("System.Core")
         });
 
