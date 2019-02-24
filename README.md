@@ -19,7 +19,7 @@ The problem with porting is that WF integrates heavily with other features of th
 Framework that are not being ported to .NET Core. The most sizable features are:
 
 * XAML - replaced with Portable.Xaml
-* VB/C# expression compilation
+* VB/C# expression compilation - replaced with Roslyn
 * WCF services
 * WPF - for the WF designer
 
@@ -42,6 +42,8 @@ dependencies. A much better way to handle expressions is to use Roslyn to interp
 into activities. This could be done either at runtime or build time (perhaps with a .NET SDK tool). The third task 
 for the community is to write a Roslyn module that can turn an expression tree into an activity tree
 ([issue link](https://github.com/dmetzgar/corewf/issues/7)). It would also need to be integrated with the XAML parser.
+
+This was provided by [integrating Roslyn](https://github.com/dmetzgar/corewf/pull/47). Please file an issue if you find a XAML workflow with code that doesn't work. 
 
 ### Workflow services
 WF services can host workflows via web services. The built-in host is a subclass of 
