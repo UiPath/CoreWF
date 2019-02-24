@@ -5,15 +5,14 @@ namespace CoreWf.Debugger.Symbol
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Portable.Xaml;
-    using System.Runtime;
-
+    using CoreWf.Runtime;
 
     [Fx.Tag.XamlVisible(false)]
     public static class DebugSymbol
     {
         static Type attachingTypeName = typeof(DebugSymbol);
 
-        [SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
+        //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
         public static readonly AttachableMemberIdentifier SymbolName = new AttachableMemberIdentifier(attachingTypeName, "Symbol");
 
 

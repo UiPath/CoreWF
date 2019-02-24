@@ -4,7 +4,7 @@ namespace CoreWf.Debugger.Symbol
 {
     using System.Globalization;
     using System.IO;
-    using System.Runtime;
+    using CoreWf.Runtime;
 
     // Represent the debug symbol for an Activity.
     // It defines the start/end of Activity in the Xaml file.

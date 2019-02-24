@@ -3,6 +3,7 @@
 
 namespace CoreWf.Debugger
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml;
@@ -104,7 +105,7 @@ namespace CoreWf.Debugger
         public override bool Read()
         {
             bool result = base.Read();
-            if (this.NodeType == Xml.XmlNodeType.Element)
+            if (this.NodeType == System.Xml.XmlNodeType.Element)
             {
                 DocumentLocation elementLocation = this.CurrentLocation;
                 if (this.IsEmptyElement)
@@ -140,7 +141,7 @@ namespace CoreWf.Debugger
                     this.MoveToElement();
                 }
             }
-            else if (this.NodeType == Xml.XmlNodeType.EndElement)
+            else if (this.NodeType == System.Xml.XmlNodeType.EndElement)
             {
                 DocumentLocation endElementLocation = this.CurrentLocation;
                 DocumentLocation endElementBracket = this.FindEndElementBracket(endElementLocation);
@@ -155,7 +156,7 @@ namespace CoreWf.Debugger
                     this.ContentValueRanges.Add(endElementLocation, new DocumentRange(contentStartLocation, contentEnd));
                 }
             }
-            else if (this.NodeType == Xml.XmlNodeType.Text)
+            else if (this.NodeType == System.Xml.XmlNodeType.Text)
             {
                 UnitTestUtility.Assert(this.contentStartLocationStack.Count > 0, "Adding Text with out StartElement?");
                 if (this.contentStartLocationStack.Peek() == null)

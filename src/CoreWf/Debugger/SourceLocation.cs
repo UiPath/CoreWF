@@ -7,7 +7,6 @@ namespace CoreWf.Debugger
     using CoreWf.Debugger.Symbol;
     using System.Diagnostics;
     using System.Linq;
-    using System.Runtime;
     using CoreWf.Runtime;
     using CoreWf.Internals;
 

@@ -10,11 +10,7 @@ namespace CoreWf.XamlIntegration
     using Portable.Xaml;
     using CoreWf.Runtime;
     using CoreWf.Internals;
-
-#if NET45
     using Microsoft.VisualBasic.Activities;
-    using Microsoft.VisualBasic.Activities.XamlIntegration; 
-#endif
 
     public sealed class ActivityWithResultConverter : TypeConverterBase
     {
@@ -110,7 +106,6 @@ namespace CoreWf.XamlIntegration
 
             public override Activity<T> ConvertFromString(string text, ITypeDescriptorContext context)
             {
-#if NET45
                 if (IsExpression(text))
                 {
                     // Expression.  Use the expression parser.
@@ -132,7 +127,6 @@ namespace CoreWf.XamlIntegration
                 }
                 else
                 { 
-#endif
                     if (this.locationHelper != null)
                     {
                         throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidLocationExpression));
@@ -161,9 +155,7 @@ namespace CoreWf.XamlIntegration
                     }
 
                     return new Literal<T> { Value = literalValue };
-#if NET45
             } 
-#endif
         }
 
             private static bool IsExpression(string text)
@@ -181,14 +173,10 @@ namespace CoreWf.XamlIntegration
             {
                 public override Activity CreateExpression(string expressionText)
                 {
-#if NET45
                     return new VisualBasicReference<TLocationValue>()
                     {
                         ExpressionText = expressionText
                     }; 
-#else
-                    return new Literal<TLocationValue>();
-#endif
                 }
             }
         } 

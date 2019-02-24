@@ -3,6 +3,7 @@
 
 namespace CoreWf.Debugger
 {
+    using CoreWf.Runtime;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
