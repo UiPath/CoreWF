@@ -1,0 +1,3252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AbortingDueToDynamicUpdateFailure" xml:space="preserve">
+    <value>インスタンスの更新の試行が失敗したため、WorkflowApplication は中止されました。</value>
+  </data>
+  <data name="AbortingDueToInstanceTimeout" xml:space="preserve">
+    <value>実行がタイムアウトになったため、ワークフロー インスタンスが中止されました。</value>
+  </data>
+  <data name="AbortingDueToLoadFailure" xml:space="preserve">
+    <value>Load または LoadRunnableInstance 操作が例外をスローしたため、WorkflowApplication は異常終了しました。新しい WorkflowApplication オブジェクトを作成して、別のワークフロー インスタンスを読み込むようにしてください。</value>
+  </data>
+  <data name="AbortingDueToVersionMismatch" xml:space="preserve">
+    <value>Load 操作または LoadRunnableInstance 操作が VersionMismatchException をスローしたため、WorkflowApplication は異常終了しました。</value>
+  </data>
+  <data name="AbortInstanceOnTransactionFailureDoesNotMatch" xml:space="preserve">
+    <value>TransactedReceiveScope アクティビティ '{1}' 内に入れ子にされた TransactionScope アクティビティ '{0}' の AbortInstanceOnTransactionFailure プロパティの値を false に設定しないでください。</value>
+  </data>
+  <data name="ActionItemCallbackInvoked" xml:space="preserve">
+    <value>IO スレッド スケジューラのコールバックが呼び出されました。</value>
+  </data>
+  <data name="ActionItemIsAlreadyScheduled" xml:space="preserve">
+    <value>スケジュールされていた ActionItem の実行が、まだ完了していません。</value>
+  </data>
+  <data name="ActionItemScheduled" xml:space="preserve">
+    <value>IO スレッド スケジューラのコールバックが呼び出されました。</value>
+  </data>
+  <data name="ActivityBlockingUpdate" xml:space="preserve">
+    <value>アクティビティ '{0}': {1}</value>
+  </data>
+  <data name="ActivityCannotBeReferenced" xml:space="preserve">
+    <value>アクティビティ '{0}' は既にワークフロー内の別の場所で参照されており、その参照はアクティビティ '{1}' に対して参照できないため、アクティビティ '{1}' はアクティビティ '{0}' を参照できません。アクティビティ '{0}' をアクティビティ '{1}' に対して参照できるようにするには、アクティビティ '{2}' の子またはインポートされた子 (実装の子ではない) である必要があります。アクティビティ '{0}' は最初にアクティビティ '{3}' によって参照され、アクティビティ '{1}' はアクティビティ '{2}' の実装に含まれています。</value>
+  </data>
+  <data name="ActivityCannotBeReferencedWithoutTarget" xml:space="preserve">
+    <value>アクティビティ '{1}' は別のアクティビティの実装に含まれていないため、アクティビティ '{0}' を参照できません。アクティビティを参照できるのは、そのアクティビティを子またはインポートとして指定するアクティビティの実装だけです。アクティビティ '{0}' はアクティビティ '{2}' によって宣言されています。</value>
+  </data>
+  <data name="ActivityCannotReferenceItself" xml:space="preserve">
+    <value>表示名 '{0}' のアクティビティが自身を参照しようとしています。アクティビティを自身の親にすることはできません。</value>
+  </data>
+  <data name="ActivityCompleted" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' は '{3}' 状態で完了しました。</value>
+  </data>
+  <data name="ActivityDefinitionCannotBeShared" xml:space="preserve">
+    <value>'{0}' のアクティビティ定義オブジェクトがワークフロー内の複数のノード間で共有されています。ワークフロー内でアクティビティ定義オブジェクトを再利用することはできません。</value>
+  </data>
+  <data name="ActivityDelegateAlreadyOpened" xml:space="preserve">
+    <value>ActivityDelegate '{0}' は既にアクティビティ '{1}' が親になっているため、アクティビティ '{2}' が親になることはできません。デリゲートは 1 回のみ子として返すことができます。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferenced" xml:space="preserve">
+    <value>アクティビティ '{1}' はアクティビティ '{2}' の実装に含まれていないため、Handler '{0}' を持つアクティビティ デリゲートを参照できません。アクティビティ デリゲートを参照できるのは、そのアクティビティ デリゲートを子またはインポートとして指定するアクティビティの実装だけです。Handler '{0}' を持つアクティビティ デリゲートはアクティビティ '{3}' によって宣言されています。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferencedNoHandler" xml:space="preserve">
+    <value>アクティビティ '{0}' はアクティビティ '{1}' の実装に含まれていないため、この Handler を持たないアクティビティ デリゲートを参照できません。アクティビティ デリゲートを参照できるのは、そのアクティビティ デリゲートを子またはインポートとして指定するアクティビティの実装だけです。この Handler を持たないアクティビティ デリゲートはアクティビティ '{2}' によって宣言されています。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferencedWithoutTarget" xml:space="preserve">
+    <value>アクティビティ '{1}' は別のアクティビティの実装に含まれていないため、Handler '{0}' を持つアクティビティ デリゲートを参照できません。アクティビティ デリゲートを参照できるのは、そのアクティビティ デリゲートを子またはインポートとして指定するアクティビティの実装だけです。Handler '{0}' を持つアクティビティ デリゲートはアクティビティ '{2}' によって宣言されています。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferencedWithoutTargetNoHandler" xml:space="preserve">
+    <value>アクティビティ '{0}' は別のアクティビティの実装に含まれていないため、この Handler を持たないアクティビティ デリゲートを参照できません。アクティビティ デリゲートを参照できるのは、そのアクティビティ デリゲートを子またはインポートとして指定するアクティビティの実装だけです。この Handler を持たないアクティビティ デリゲートはアクティビティ '{1}' によって宣言されています。</value>
+  </data>
+  <data name="ActivityDelegateHandlersMustBeDeclarations" xml:space="preserve">
+    <value>ActivityDelegate、ActivityAction、または ActivityFunc の Handler を、既にツリーに存在するアクティビティへの参照にすることはできません。'{1}' を親とするデリゲートの Handler アクティビティ '{0}' は、既に '{2}' によって参照されています。</value>
+  </data>
+  <data name="ActivityDelegateNotOpened" xml:space="preserve">
+    <value>ActivityDelegate '{0}' の状態が opened ではありません。</value>
+  </data>
+  <data name="ActivityDelegateOwnerEnvironmentMissing" xml:space="preserve">
+    <value>アクティビティ デリゲート '{1}' を宣言するアクティビティ '{0}' の配置環境が見つかりませんでした。</value>
+  </data>
+  <data name="ActivityDelegateOwnerMissing" xml:space="preserve">
+    <value>ActivityDelegate '{0}' には所有者のワークフロー要素を指定する必要があります。</value>
+  </data>
+  <data name="ActivityDelegateOwnerNotInParentScope" xml:space="preserve">
+    <value>ActivityDelegate '{0}' を宣言する Activity が、現在実行中のアクティビティ '{1}' の親階層で見つかりませんでした。</value>
+  </data>
+  <data name="ActivityFailedToOpenBefore" xml:space="preserve">
+    <value>このアクティビティは前に開くことができなかったため、開けません。</value>
+  </data>
+  <data name="ActivityHasNoImplementation" xml:space="preserve">
+    <value>アクティビティ '{0}' には Implementation Map がありますが、実装がありません。</value>
+  </data>
+  <data name="ActivityInstanceFixupFailed" xml:space="preserve">
+    <value>ワークフローの読み込みが失敗しました。指定されたアクティビティ ツリーはこのインスタンスとの互換性がありません。</value>
+  </data>
+  <data name="ActivityIsNotRoot" xml:space="preserve">
+    <value>この引数は、ワークフロー定義のルートにする必要があります。</value>
+  </data>
+  <data name="ActivityIsUncached" xml:space="preserve">
+    <value>このメソッドは、ワークフロー定義で CacheMetadata が呼び出されてからでないと呼び出すことができません。</value>
+  </data>
+  <data name="ActivityMapIsCorrupt" xml:space="preserve">
+    <value>永続化されたインスタンス内で、アクティビティ プログラムからインスタンスへのマッピングが壊れています。</value>
+  </data>
+  <data name="ActivityNotFound" xml:space="preserve">
+    <value>アクティビティ '{0}' が見つかりません。</value>
+  </data>
+  <data name="ActivityNotICompiledExpressionRoot" xml:space="preserve">
+    <value>式 ID を特定するにはアクティビティが ICompiledExpressionRoot である必要があります。現在の定義がコンパイルされていることを確認してください。</value>
+  </data>
+  <data name="ActivityNotPartOfThisTree" xml:space="preserve">
+    <value>指定されたアクティビティは、このワークフロー定義のメタデータが処理されたときにワークフロー定義に含まれていませんでした。問題のアクティビティは、'{1}' というアクティビティによって指定された '{0}' というアクティビティです。</value>
+  </data>
+  <data name="ActivityPropertyMustBeSet" xml:space="preserve">
+    <value>'{0}' は、アクティビティ '{1}' の必須プロパティです。</value>
+  </data>
+  <data name="ActivityPropertyNotSet" xml:space="preserve">
+    <value>アクティビティ '{1}' の '{0}' プロパティは null であり、何も実行されません。</value>
+  </data>
+  <data name="ActivityPropertyRequiresName" xml:space="preserve">
+    <value>DynamicActivity '{0}' 上の各 ActivityProperty について 'Name' プロパティは必須です。</value>
+  </data>
+  <data name="ActivityPropertyRequiresType" xml:space="preserve">
+    <value>DynamicActivity '{0}' 上の各 ActivityProperty について 'Type' プロパティは必須です。</value>
+  </data>
+  <data name="ActivityScheduled" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' で子 Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' がスケジュールされました。</value>
+  </data>
+  <data name="ActivityTypeMismatch" xml:space="preserve">
+    <value>'{0}' の型が '{1}' ではありません。このインスタンスを読み込むときは、名前が '{0}' のアクティビティで '{1}' を実装する必要があります。</value>
+  </data>
+  <data name="ActivityXamlServiceLineString" xml:space="preserve">
+    <value>行</value>
+  </data>
+  <data name="ActivityXamlServicesCompilationFailed" xml:space="preserve">
+    <value>コンパイル エラーが発生しました: {0}完全な結果はこの例外の Data プロパティに含まれています。ソースのエラーを修正して Load を再試行してください。</value>
+  </data>
+  <data name="ActivityXamlServicesRequiresActivity" xml:space="preserve">
+    <value>ActivityXamlServices.Load がサポートしているのは Activity ベースの型だけです。無効な型 ({0}) が指定されました。</value>
+  </data>
+  <data name="AddedIdleArgumentBlockDU" xml:space="preserve">
+    <value>新しく追加された引数 '{0}' の式に、実行時にアイドル状態になる可能性があるアクティビティ '{1}' が含まれています。このアクティビティ内の動的更新を有効にするには、アイドル状態にならないことが保証されている引数式を使用してください。</value>
+  </data>
+  <data name="AddedIdleExpressionBlockDU" xml:space="preserve">
+    <value>新しく追加された変数の既定値または引数式は、実行時にアイドル状態になる可能性があります。</value>
+  </data>
+  <data name="AddedIdleVariableDefaultBlockDU" xml:space="preserve">
+    <value>新しく追加された変数 '{0}' の既定の式に、実行時にアイドル状態になる可能性があるアクティビティ '{1}' が含まれています。このアクティビティ内の動的更新を有効にするには、アイドル状態にならないことが保証されている変数の既定の式を使用してください。</value>
+  </data>
+  <data name="AddMatchActivityNewAndOldParentMismatch" xml:space="preserve">
+    <value>新しいアクティビティ '{0}' が古いアクティビティ '{1}' と一致しません。宣言元が一致していません。新しいアクティビティは '{2}' によって宣言されており、古いアクティビティは '{3}' によって宣言されています。</value>
+  </data>
+  <data name="AddMatchActivityNewParentMismatch" xml:space="preserve">
+    <value>アクティビティ '{0}' はアクティビティ '{1}' の一致を追加できません。アクティビティ '{1}' はアクティビティ '{0}' によって宣言されていません。一致するアクティビティは '{2}' によって宣言されています。</value>
+  </data>
+  <data name="AddMatchActivityPrivateChild" xml:space="preserve">
+    <value>アクティビティ '{0}' の一致を追加できません。このアクティビティはプライベートな子です。一致を追加できるのはパブリックな子だけです。</value>
+  </data>
+  <data name="AddMatchVariableNewAndOldParentMismatch" xml:space="preserve">
+    <value>新しい変数 '{0}' が古い変数 '{1}' と一致しません。所有者が一致していません。新しい変数は '{2}' によって所有されており、古い変数は '{3}' によって所有されています。</value>
+  </data>
+  <data name="AddMatchVariableNewParentMismatch" xml:space="preserve">
+    <value>アクティビティ '{0}' は変数 '{1}' の一致を追加できません。変数 '{1}' はアクティビティ '{0}' によって所有されていません。一致する変数は '{2}' によって所有されています。</value>
+  </data>
+  <data name="AddMatchVariablePrivateChild" xml:space="preserve">
+    <value>変数 '{0}' の一致を追加できません。この変数はプライベートです。一致を追加できるのはパブリック変数だけです。</value>
+  </data>
+  <data name="AddMatchVariableSignatureMismatch" xml:space="preserve">
+    <value>アクティビティ '{0}' は変数の一致を追加できません。2 つの変数のシグネチャが一致していません。名前、型、および修飾子を含むシグネチャが一致する必要があります。新しい変数の名前、型、および修飾子は、{1}、{2}、および {3} です。古い変数の名前、型、および修飾子は、{4}、{5}、および {6} です。</value>
+  </data>
+  <data name="AddValidationErrorMustBeCalledFromConstraint" xml:space="preserve">
+    <value>AddValidationError は、{0} アクティビティのサブツリーからのみ呼び出すことができます。</value>
+  </data>
+  <data name="AECDisposed" xml:space="preserve">
+    <value>ActivityContext にアクセスできるのは、それが渡された関数のスコープ内だけです。</value>
+  </data>
+  <data name="AECForPropertiesHasBeenDisposed" xml:space="preserve">
+    <value>この ExecutionProperties オブジェクトを作成した ActivityContext は既に破棄されています。プロパティにアクセスできるのは、アクティビティの作業項目中だけです。</value>
+  </data>
+  <data name="AlreadyBoundToInstance" xml:space="preserve">
+    <value>インスタンス永続化システムは、無効な InstancePersistenceCommand を処理できません。このコマンドにはバインドされていないハンドルが必要ですが、InstanceHandle は既にインスタンスにバインドされています。</value>
+  </data>
+  <data name="AlreadyBoundToOwner" xml:space="preserve">
+    <value>インスタンス永続化システムは、無効な InstancePersistenceCommand を処理できません。このコマンドにはバインドされていないハンドルが必要ですが、InstanceHandle は既にインスタンスの所有者にバインドされています。</value>
+  </data>
+  <data name="AlreadySetupNoPersist" xml:space="preserve">
+    <value>このワークフロー要素は持続性のないブロックを既に設定しています。ワークフロー要素で設定できる持続性のないブロックは 1 つだけです。</value>
+  </data>
+  <data name="AmbiguousVBVariableReference" xml:space="preserve">
+    <value>'{0}' はあいまいな変数参照です。VisualBasic の識別子では大文字と小文字が区別されません。</value>
+  </data>
+  <data name="AppDomainUnload" xml:space="preserve">
+    <value>AppDomain をアンロードしています。AppDomain.FriendlyName {0}、ProcessName {1}、ProcessId {2}。</value>
+  </data>
+  <data name="ArgumentAlreadyInitialized" xml:space="preserve">
+    <value>アクティビティ '{1}' の引数 '{0}' は、動的更新によって追加されると期待されますが既に初期化されています。</value>
+  </data>
+  <data name="ArgumentAlreadyInUse" xml:space="preserve">
+    <value>引数 '{0}' はアクティビティ '{1}' で使用されているので、アクティビティ '{2}' では使用できません。</value>
+  </data>
+  <data name="ArgumentCannotHaveNullOrVoidType" xml:space="preserve">
+    <value>DisplayName='{0}' のアクティビティに、'{1}' という名前の null または void 型の引数があります。</value>
+  </data>
+  <data name="ArgumentDirectionMismatch" xml:space="preserve">
+    <value>方向が一致しないため、RuntimeArgument '{0}' に指定された引数をバインドできません。RuntimeArgument では {1} となる方向を宣言しており、この引数の方向は {2} です。</value>
+  </data>
+  <data name="ArgumentDoesNotExist" xml:space="preserve">
+    <value>このコレクションには名前 '{0}' の引数はありません。</value>
+  </data>
+  <data name="ArgumentDoesNotExistInEnvironment" xml:space="preserve">
+    <value>現在の環境スコープには引数 '{0}' はありません。</value>
+  </data>
+  <data name="ArgumentIsAddedMoreThanOnce" xml:space="preserve">
+    <value>引数 '{0}' はアクティビティ '{1}' で複数回追加されています。</value>
+  </data>
+  <data name="ArgumentLocationExpressionTypeMismatch" xml:space="preserve">
+    <value>Expression は型 '{0}' にする必要がありますが、型 '{1}' が指定されました。</value>
+  </data>
+  <data name="ArgumentMustbePropertyofWorkflowElement" xml:space="preserve">
+    <value>引数は、WorkflowElement のいずれかのプロパティである必要があります。</value>
+  </data>
+  <data name="ArgumentNameRequired" xml:space="preserve">
+    <value>ArgumentReference または ArgumentValue の引数名を設定する必要があります。</value>
+  </data>
+  <data name="ArgumentNotFound" xml:space="preserve">
+    <value>'{0}' という名前の引数は、これらのプライベートな子を持つアクティビティでは見つかりませんでした。ArgumentReference と ArgumentValue はアクティビティ定義の本文でのみ使用する必要があります。</value>
+  </data>
+  <data name="ArgumentNotInTree" xml:space="preserve">
+    <value>型 '{0}' の引数は使用できません。型がアクティビティで宣言されていることを確認してください。</value>
+  </data>
+  <data name="ArgumentNullOrEmpty" xml:space="preserve">
+    <value>引数 {0} が null または空です。</value>
+  </data>
+  <data name="ArgumentNumberRequiresTheSameAsParameterNumber" xml:space="preserve">
+    <value>型 '{0}' の引数の数とパラメーターの数は同じにする必要があります。</value>
+  </data>
+  <data name="ArgumentRequired" xml:space="preserve">
+    <value>'{1}' の '{0}' コレクションの引数の内容は必須です。</value>
+  </data>
+  <data name="ArgumentTypeCannotBeNull" xml:space="preserve">
+    <value>引数の型を NULL にすることはできません。</value>
+  </data>
+  <data name="ArgumentTypeMismatch" xml:space="preserve">
+    <value>型が一致しないため、RuntimeArgument '{0}' に指定された引数をバインドできません。RuntimeArgument では {1} となる型を宣言しており、この引数の型は {2} です。型が両方とも同じである必要があります。</value>
+  </data>
+  <data name="ArgumentTypeMustBeCompatible" xml:space="preserve">
+    <value>引数の型はこの ArgumentReference または ArgumentValue の型と互換性がある必要があります。引数 '{0}' の型は {1} ですが、予期された型は {2} です。</value>
+  </data>
+  <data name="ArgumentValueExpressionTypeMismatch" xml:space="preserve">
+    <value>この引数では ResultType を '{0}' にする必要がありますが、結果型 '{1}' の Activity が指定されています。</value>
+  </data>
+  <data name="ArgumentViolationsFound" xml:space="preserve">
+    <value>アクティビティ '{0}' で違反が見つかりました。次のように 1 つ以上の違反が見つかりました:    {1}</value>
+  </data>
+  <data name="AssemblyReferenceIsImmutable" xml:space="preserve">
+    <value>組み込みの既定の AssemblyReferences は変更できません。</value>
+  </data>
+  <data name="AsyncCallbackThrewException" xml:space="preserve">
+    <value>非同期コールバックにより、例外がスローされました。</value>
+  </data>
+  <data name="AsyncEventArgsCompletedTwice" xml:space="preserve">
+    <value>AsyncEventArgs の実装 '{0}' が 1 つの操作を複数回実行しようとしました。これは、アプリケーションの AsyncEventArgs の実装が正しくないか、AsyncCallback を複数回呼び出す他の機能拡張コードが原因の可能性があります。</value>
+  </data>
+  <data name="AsyncEventArgsCompletionPending" xml:space="preserve">
+    <value>AsyncEventArgs の実装 '{0}' が、保留中の操作が完了しないまま状態を複数回 Pending に設定しようとしました。これは、アプリケーションの AsyncEventArgs の実装が正しくないか、Set() を複数回呼び出す他の機能拡張コードが原因の可能性があります。</value>
+  </data>
+  <data name="AsyncMethodsMustAllBeStaticOrInstance" xml:space="preserve">
+    <value>非同期メソッドは、すべて静的メソッドか、すべてインスタンス メソッドである必要があります。</value>
+  </data>
+  <data name="AsyncMethodsMustFromSameType" xml:space="preserve">
+    <value>非同期メソッドは同じ型から派生する必要があります。</value>
+  </data>
+  <data name="AsyncResultAlreadyEnded" xml:space="preserve">
+    <value>AsyncResult で End を 2 回呼び出すことはできません。</value>
+  </data>
+  <data name="AsyncResultCompletedTwice" xml:space="preserve">
+    <value>IAsyncResult の実装 '{0}' が 1 つの操作を複数回実行しようとしました。これは、アプリケーションの IAsyncResult の実装が正しくないか、他の機能拡張コードが原因の可能性があります。たとえば、IAsyncResult が正しくない CompletedSynchronously 値を返す場合や、AsyncCallback を複数回呼び出す場合が考えられます。</value>
+  </data>
+  <data name="AsyncTransactionException" xml:space="preserve">
+    <value>非同期操作にトランザクションを渡すために使用する TransactionScope から例外がスローされました。</value>
+  </data>
+  <data name="BadCopyToArray" xml:space="preserve">
+    <value>指定された配列にディクショナリ アイテムをコピーできません。配列の次元が多すぎたこと、インデックスが配列の末尾を過ぎたこと、配列の領域が足りなかったことの 1 つ以上が、このエラーの原因です。</value>
+  </data>
+  <data name="BadWorkflowIdentityFormat" xml:space="preserve">
+    <value>WorkflowIdentity の形式が無効です。'name; Version=version; Package=package' という形式に従う必要があります。Version と Package の部分は省略可能です。</value>
+  </data>
+  <data name="BeforeInitializeComponentXBTExtensionResourceNotFound" xml:space="preserve">
+    <value>BeforeInitializeComponent XAML ビルド タスク拡張によって生成される必要のあるリソースが見つかりませんでした。プロジェクトを再度ビルドしてください。</value>
+  </data>
+  <data name="BeginExecuteMustNotReturnANullAsyncResult" xml:space="preserve">
+    <value>AsyncCodeActivity.BeginExecute を使用して、null の IAsyncResult を返さないでください。</value>
+  </data>
+  <data name="BeginExecuteMustUseProvidedStateAsAsyncResultState" xml:space="preserve">
+    <value>AsyncCodeActivity.BeginExecute は、ランタイムによって指定された状態オブジェクトである IAsyncResult.AsyncState を持つ IAsyncResult を返す必要があります。</value>
+  </data>
+  <data name="BinaryExpressionActivityRequiresArgument" xml:space="preserve">
+    <value>{1} アクティビティ '{2}' を使用するには、先に {0} を設定する必要があります。</value>
+  </data>
+  <data name="BindLockRequiresCommandFlag" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。無効なタイミングで BindAcquiredLock、BindReclaimedLock、BeginBindReclaimedLock、または CreateBindReclaimedLockException を呼び出しました。これらのメソッドは、インスタンスでロックを取得できるコマンドを処理しているときのみ呼び出すことができます。有効な永続化プロバイダーに切り替えるか、または AutomaticallyAcquiringLock から true を返すように InstancePersistenceCommand の実装をオーバーライドしてください。</value>
+  </data>
+  <data name="BindReclaimedLockException" xml:space="preserve">
+    <value>この例外はエラーではないのでキャッチする必要はありません。この例外は、InstanceStore.TryCommand、BeginTryCommand、または EndTryCommand の永続化プロバイダーの実装からスローされる可能性があり、InstancePersistenceContext.CreateBindReclaimedLockException への呼び出しで指定されたバージョンでロックを再要求しようとする必要があることを示します。</value>
+  </data>
+  <data name="BindReclaimSucceeded" xml:space="preserve">
+    <value>InstanceStore の永続化プロバイダー実装によりコマンドが正常にキャンセルされました。切り離されたロックが再要求され、コマンドは InstancePersistenceContext.CreateBindReclaimedLockException を使用してキャンセルされました。</value>
+  </data>
+  <data name="BlockedUpdateInsideActivityUpdateByUserError" xml:space="preserve">
+    <value>この実行中のアクティビティ内の更新は、更新の作成者によって許可されていません。</value>
+  </data>
+  <data name="BlockedUpdateInsideActivityUpdateError" xml:space="preserve">
+    <value>このアクティビティの動的更新はブロックされています。</value>
+  </data>
+  <data name="BodyCannotBeNull" xml:space="preserve">
+    <value>MessageDescription の Body を NULL にすることはできません。OperationDescription.MessageDescription.Body を正しい値に設定してください。</value>
+  </data>
+  <data name="BookmarkAlreadyExists" xml:space="preserve">
+    <value>名前が '{0}' のブックマークは既に存在します。</value>
+  </data>
+  <data name="BookmarkNotFoundGeneric" xml:space="preserve">
+    <value>要求されたブックマークが見つかりません。</value>
+  </data>
+  <data name="BookmarkNotRegistered" xml:space="preserve">
+    <value>現在、{0} ブックマークは補正拡張に登録されていません。</value>
+  </data>
+  <data name="BookmarkScopeAlreadyInitialized" xml:space="preserve">
+    <value>ブックマーク スコープを初期化できません。既に初期化されています。</value>
+  </data>
+  <data name="BookmarkScopeHasBookmarks" xml:space="preserve">
+    <value>指定されたブックマーク スコープの登録を解除できません。未解決のブックマークがあります。</value>
+  </data>
+  <data name="BookmarkScopeInitialized" xml:space="preserve">
+    <value>TemporaryId: '{0}' を指定されていた BookmarkScope が ID: '{1}' で初期化されました。</value>
+  </data>
+  <data name="BookmarkScopeNotFound" xml:space="preserve">
+    <value>ID '{0}' のブックマーク スコープは見つかりませんでした。</value>
+  </data>
+  <data name="BookmarkScopeNotRegisteredForInitialize" xml:space="preserve">
+    <value>指定されたブックマーク スコープは現在登録されていないため、初期化できません。</value>
+  </data>
+  <data name="BookmarkScopeNotRegisteredForUnregister" xml:space="preserve">
+    <value>指定されたブックマーク スコープは現在登録されていないため、登録解除できません。</value>
+  </data>
+  <data name="BookmarkScopesRequireKeys" xml:space="preserve">
+    <value>ブックマーク スコープには、キー管理をサポートするホストが必要です。現在使用中のホストはキー管理をサポートしていません。WorkflowApplication または WorkflowInvoker を使用している場合は、代わりに WorkflowServiceHost の使用を検討してください。</value>
+  </data>
+  <data name="BookmarkScopeWithIdAlreadyExists" xml:space="preserve">
+    <value>指定されたブックマーク スコープを ID '{0}' で初期化することはできません。この ID を持つブックマーク スコープは既に存在します。</value>
+  </data>
+  <data name="BookmarksOnlyResumableWhileIdle" xml:space="preserve">
+    <value>TryScheduleBookmarkResumption を呼び出すことができるのは、ランタイムがアイドル状態の間だけです。</value>
+  </data>
+  <data name="BufferAllocationFailed" xml:space="preserve">
+    <value>{0} バイトのマネージ メモリ バッファーを割り当てられませんでした。利用可能なメモリ量が不足している可能性があります。</value>
+  </data>
+  <data name="BufferedOutputStreamQuotaExceeded" xml:space="preserve">
+    <value>このストリーム ({0}) のサイズ クォータを超えました。</value>
+  </data>
+  <data name="BufferedReceiveBehaviorMultipleUse" xml:space="preserve">
+    <value>BufferedReceiveServiceBehavior インスタンスを WorkflowServiceHost に追加できませんでした。このインスタンスは既に別の WorkflowServiceHost に追加されています。WorkflowServiceHost を追加するたびに新しい BufferedReceiveServiceBehavior インスタンスを作成してください。</value>
+  </data>
+  <data name="BufferedReceiveBehaviorUsedWithoutProperty" xml:space="preserve">
+    <value>BufferedReceiveServiceBehavior は、BufferedReceive 処理をサポートするワークフロー定義で使用する必要があります。WorkflowService.AllowBufferedReceive を使用して BufferedReceive 処理を有効にしてください。</value>
+  </data>
+  <data name="BufferedReceiveRequiresReceiveContext" xml:space="preserve">
+    <value>BufferedReceiveServiceBehavior を使用する場合に ReceiveContext ManualAcknowledgement モードを使用するには、'{0}' という名前の操作を有効にする必要があります。</value>
+  </data>
+  <data name="BufferIsNotRightSizeForBufferManager" xml:space="preserve">
+    <value>このバッファーは、サイズが適切でないため、バッファー マネージャーに戻すことができません。</value>
+  </data>
+  <data name="BufferOutOfOrderMessageNoBookmark" xml:space="preserve">
+    <value>サービス インスタンス '{0}' での操作 '{1}' は現時点では実行できません。サービス インスタンスがこの特定の操作を処理できる状態になったとき、もう一度試行されます。</value>
+  </data>
+  <data name="BufferOutOfOrderMessageNoInstance" xml:space="preserve">
+    <value>操作 '{0}' は現時点では実行できません。サービス インスタンスがこの特定の操作を処理できる状態になったとき、もう一度試行されます。</value>
+  </data>
+  <data name="BufferPoolAllocation" xml:space="preserve">
+    <value>プールが {0} バイトを割り当てています。</value>
+  </data>
+  <data name="BufferPoolChangeQuota" xml:space="preserve">
+    <value>BufferPool のサイズ: {0}、クォータの変更: {1}。</value>
+  </data>
+  <data name="BusyCountTraceFormatString" xml:space="preserve">
+    <value>ワークフロー インスタンス ID {0}</value>
+  </data>
+  <data name="CacheRootMetadataStart" xml:space="preserve">
+    <value>アクティビティ '{0}' で CacheRootMetadata が開始されました</value>
+  </data>
+  <data name="CacheRootMetadataStop" xml:space="preserve">
+    <value>アクティビティ {0} で CacheRootMetadata が停止されました。</value>
+  </data>
+  <data name="CacheSettingsLocked" xml:space="preserve">
+    <value>キャッシュの設定はワークフロー インスタンスまたはホストの拡張コレクションに既に追加されているため変更できません。</value>
+  </data>
+  <data name="CallbackExceptionFromHostAbort" xml:space="preserve">
+    <value>WorkflowInstance '{0}' に対する OnRequestAbort への呼び出しで例外がスローされました。これは致命的な例外と見なされます。詳細については、内部例外を参照してください。</value>
+  </data>
+  <data name="CallbackExceptionFromHostGetExtension" xml:space="preserve">
+    <value>WorkflowInstance '{0}' に対する OnGetExtension への呼び出しで例外がスローされました。これは致命的な例外と見なされます。詳細については、内部例外を参照してください。</value>
+  </data>
+  <data name="CancellationHandlerFatalException" xml:space="preserve">
+    <value>{0}' の取り消しハンドラーからハンドルされない例外がスローされました。取り消しの状態に一貫性がなくなった可能性があります。ワークフローは中止されました。</value>
+  </data>
+  <data name="CanInduceIdleActivityInArgumentExpression" xml:space="preserve">
+    <value>アクティビティ '{1}' の引数 '{0}' が、アクティビティ '{2}' を含む式にバインドされています。この式は、評価中に '{2}' によってアイドル状態になる可能性があります。アクティビティ '{1}' の引数式が、式の評価中に共有状態を変更し、その後にアイドル状態になると、予期しない引数の値が生成される可能性があります。</value>
+  </data>
+  <data name="CanInduceIdleNotSpecified" xml:space="preserve">
+    <value>アクティビティ '{0}' は無効です。System.Activities.NativeActivityContext で定義されている CreateBookmark のオーバーロードの 1 つを呼び出して非同期操作を実行する NativeActivity 派生アクティビティは、CanInduceIdle プロパティをオーバーライドして true を返す必要があります。</value>
+  </data>
+  <data name="CannotAcquireLockDefault" xml:space="preserve">
+    <value>インスタンスが別のインスタンス所有者によってロックされているため、InstancePersistenceCommand の実行が中断されました。このエラーは通常、別のホストでそのインスタンスが読み込まれているために発生します。</value>
+  </data>
+  <data name="CannotAcquireLockSpecific" xml:space="preserve">
+    <value>インスタンス '{0}' が別のインスタンス所有者によってロックされているため、InstancePersistenceCommand の実行が中断されました。このエラーは通常、別のホストでそのインスタンスが読み込まれているために発生します。</value>
+  </data>
+  <data name="CannotAcquireLockSpecificWithOwner" xml:space="preserve">
+    <value>インスタンス '{0}' が別のインスタンス所有者によってロックされているため、InstancePersistenceCommand の実行が中断されました。このエラーは通常、別のホストでそのインスタンスが読み込まれているために発生します。そのインスタンスに対するロックを保持する所有者またはホストのインスタンス所有者 ID は '{1}' です。</value>
+  </data>
+  <data name="CannotAddHandlesUpdateError" xml:space="preserve">
+    <value>Handle から派生する型の新しい変数がアクティビティによって追加されました。</value>
+  </data>
+  <data name="CannotAddOrRemoveWithChildren" xml:space="preserve">
+    <value>アクティビティに実行中の子があるときはワークフロー実行プロパティを追加または削除できません。</value>
+  </data>
+  <data name="CannotCallAbortInstanceFromWorkflowThread" xml:space="preserve">
+    <value>状態に一貫性がなくなる可能性があるため、AbortInstance をワークフロー スレッドから呼び出すことはできません。</value>
+  </data>
+  <data name="CannotChangeAbortInstanceFlagAfterPropertyRegistration" xml:space="preserve">
+    <value>対応する RuntimeTransactionHandle の IPropertyRegistrationCallback.Register が実行された後に AbortInstanceOnTransactionFailure フラグの値を変更することはできません。</value>
+  </data>
+  <data name="CannotChangeMatchesInImplementation" xml:space="preserve">
+    <value>現在更新マップが構築されているワークフローのプライベートな実装内に新しい一致を追加することはできません。</value>
+  </data>
+  <data name="CannotCompleteRuntimeOwnedTransaction" xml:space="preserve">
+    <value>現在のトランザクションはランタイムによって構成されたもので、ランタイムによってのみ完了できます。通常、ランタイムで構成されたトランザクションは、アンビエント トランザクションが存在するときに WorkflowInvoker 上で呼び出し API を呼び出すことで発生します。</value>
+  </data>
+  <data name="CannotCompleteWithKeys" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。アクティブなキーが関連付けられたインスタンスの完了が報告されました。インスタンスが完了する前に、インスタンスへのすべてのキーの関連付けが完了している必要があります。</value>
+  </data>
+  <data name="CannotConvertObject" xml:space="preserve">
+    <value>オブジェクト '{0}' は型 '{1}' に変換できません。</value>
+  </data>
+  <data name="CannotCreateContextWithNullId" xml:space="preserve">
+    <value>InstanceStore.CreateInstanceHandle の instanceId 引数には、Guid.Empty などのすべて 0 の ID は指定できません。</value>
+  </data>
+  <data name="CannotCreateMessageFault" xml:space="preserve">
+    <value>MessageFault を作成できません。</value>
+  </data>
+  <data name="CannotCreateOwnerWithoutIdentity" xml:space="preserve">
+    <value>WorkflowIdentity がないと既定のインスタンス所有者を作成できません。所有者を作成するには、定義 ID を指定するか、WorkflowIdentityFilter.Any を選択してください。</value>
+  </data>
+  <data name="CanNotDefineNullForAPromotion" xml:space="preserve">
+    <value>昇格名 {1} の {0} 昇格コレクションに null 値が含まれています。</value>
+  </data>
+  <data name="CannotDereferenceNull" xml:space="preserve">
+    <value>プロパティ '{0}' を含む指定された式から左辺値を作成できません。対象のオブジェクトが null です。</value>
+  </data>
+  <data name="CannotEnlistMultipleTransactions" xml:space="preserve">
+    <value>ワークフローには登録されたトランザクションが既に存在します。一度に登録できるトランザクションは 1 つだけです。</value>
+  </data>
+  <data name="CanNotFindSymbolResolverInWorkflowInstanceExtensions" xml:space="preserve">
+    <value>ワークフロー インスタンス拡張コレクションにシンボル リゾルバーがありません。</value>
+  </data>
+  <data name="CannotGenerateSchemaForXmlSerializable" xml:space="preserve">
+    <value>'{0}' は内部ランタイム データです。スキーマの生成はサポートされていません。</value>
+  </data>
+  <data name="CannotGetValueOfOutArgument" xml:space="preserve">
+    <value>出力専用引数の値を取得できません。</value>
+  </data>
+  <data name="CannotInvokeBindingFromNonBinding" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。ロックを取得しないコマンドの処理中にロックを取得する可能性のあるコマンドを実行しようとしました。この例外は、false を返すコマンドの処理中に InstancePersistenceCommand.AutomaticallyAcquiringLock から true を返すコマンドを使用して、InstancePersistenceContext.Execute または InstancePersistenceContext.BeginExecute が呼び出された場合に発生する可能性があります。このような操作を実行しない永続化プロバイダーを使用するか、正しい値を返すようにいずれかのコマンドで AutomaticallyAcquiringLock をオーバーライドしてください。</value>
+  </data>
+  <data name="CannotInvokeOpenedActivity" xml:space="preserve">
+    <value>文字列とオブジェクトの IDictionary を受け取る Invoke のオーバーロードによって開かれていないため、このアクティビティを呼び出すことはできません。</value>
+  </data>
+  <data name="CannotInvokeTransactionalFromNonTransactional" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。トランザクション コマンドでないコマンドの処理中にトランザクション コマンドを実行しようとしました。この例外は、true を返すコマンドの処理中に InstancePersistenceCommand.IsTransactionEnlistmentOptional から false を返すコマンドを使用して、InstancePersistenceContext.Execute または InstancePersistenceContext.BeginExecute が呼び出された場合に発生する可能性があります。このような操作を実行しない永続化プロバイダーを使用するか、正しい値を返すようにいずれかのコマンドで IsTransactionEnlistmentOptional をオーバーライドしてください。</value>
+  </data>
+  <data name="CannotModifyCatchAfterOpen" xml:space="preserve">
+    <value>この Catch は既に開かれており、変更できません。Catch を変更できるのはデザイン時だけです。</value>
+  </data>
+  <data name="CannotMoveChildAcrossDifferentFlowNodeTypes" xml:space="preserve">
+    <value>フローチャートでは、子アクティビティが別の FlowNode 型に移動される場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="CannotNestTransactedReceiveScopeWhenAmbientHandleIsSuppressed" xml:space="preserve">
+    <value>ランタイム トランザクションは現在抑制されています。ランタイム トランザクションが抑制されているときに TransactedReceiveScope アクティビティ '{0}' を実行することはサポートされていません。</value>
+  </data>
+  <data name="CannotNestTransactionScopeWhenAmbientHandleIsSuppressed" xml:space="preserve">
+    <value>ランタイム トランザクションは現在抑制されています。ランタイム トランザクションが抑制されているときに TransactedScope アクティビティ '{0}' を実行することはサポートされていません。</value>
+  </data>
+  <data name="CannotPerformOperationFromHandlerThread" xml:space="preserve">
+    <value>イベント ハンドラーから WorkflowApplication 操作を実行できません。</value>
+  </data>
+  <data name="CannotPerformOperationOnHandle" xml:space="preserve">
+    <value>Handle サブタイプの変数に対して操作を実行できません。</value>
+  </data>
+  <data name="CannotPersistInsideIsolation" xml:space="preserve">
+    <value>分離ブロックに Persist アクティビティを含めることはできません。</value>
+  </data>
+  <data name="CannotPersistInsideNoPersist" xml:space="preserve">
+    <value>持続性のないブロックに Persist アクティビティを含めることはできません。</value>
+  </data>
+  <data name="CannotPersistWhileDetached" xml:space="preserve">
+    <value>インスタンスにロックがないため、インスタンスを永続化できません。前にロック解除の値を true に設定して Persist を呼び出したため、ロックが解除されています。</value>
+  </data>
+  <data name="CannotPromoteAsSqlVariant" xml:space="preserve">
+    <value>昇格されたプロパティ '{1}' のデータ型 '{0}' は SQL でサポートされていません。データ型をサポートされているデータ型に変更するか、プロパティをバイナリ値として昇格してください。</value>
+  </data>
+  <data name="CannotPromoteXNameTwiceInPromotion" xml:space="preserve">
+    <value>XName '{0}' が昇格 '{1}' で複数回昇格されました。同じ昇格内での XNames の重複は許可されていません。</value>
+  </data>
+  <data name="CannotPropagateExceptionWhileCanceling" xml:space="preserve">
+    <value>キャンセル中に ID {1} のアクティビティ '{0}' が例外をスロー、または伝達しました。</value>
+  </data>
+  <data name="CannotRemoveExecutingActivityUpdateError" xml:space="preserve">
+    <value>アクティビティ '{0}: {1}' を削除できません。このアクティビティは現在実行中です。</value>
+  </data>
+  <data name="CannotReplaceTransaction" xml:space="preserve">
+    <value>アンビエント トランザクション (System.Transactions.Transaction.Current) が、この実行エピソードで使用されているトランザクションと一致しません。実行エピソード全体で 1 つのトランザクションのみを使用できます。</value>
+  </data>
+  <data name="CannotResetPropertyInDataContext" xml:space="preserve">
+    <value>WorkflowDataContext のプロパティはリセットできません。</value>
+  </data>
+  <data name="CannotSaveOriginalValueForActivity" xml:space="preserve">
+    <value>アクティビティで元の値を保存できるのは、パブリックな子、インポートされた子、およびデリゲート ハンドラーだけです。</value>
+  </data>
+  <data name="CannotSaveOriginalValueForNewActivity" xml:space="preserve">
+    <value>アクティビティ '{0}' の元の値を保存できません。このアクティビティは元のワークフロー定義に存在しません。</value>
+  </data>
+  <data name="CannotSaveOriginalValuesForReferencedChildren" xml:space="preserve">
+    <value>このアクティビティは、アクティビティの実装内にある場合は更新を正しく処理できません。インポートされた子への参照の元の値を保存しようとしました。</value>
+  </data>
+  <data name="CannotScheduleChildrenWhileEnteringIsolation" xml:space="preserve">
+    <value>分離ブロックの設定中に子アクティビティをスケジュールすることはできません。OnEntered BookmarkCallback が呼び出されるまで待ってから子をスケジュールしてください。</value>
+  </data>
+  <data name="CannotSerializeExpression" xml:space="preserve">
+    <value>型 "{0}" の式はシリアル化できません。</value>
+  </data>
+  <data name="CannotSerializeVariableExpression" xml:space="preserve">
+    <value>変数アクセス サブ式の形式が正しくないか認識されなかったため、式をシリアル化できませんでした。</value>
+  </data>
+  <data name="CannotSetRuntimeTransactionInNoPersist" xml:space="preserve">
+    <value>持続性のないスコープに含まれているアクティビティによるトランザクションでランタイムを構成することはできません。先祖アクティビティで持続性が許可されていません。</value>
+  </data>
+  <data name="CannotSetupIsolationInsideIsolation" xml:space="preserve">
+    <value>分離ブロックが別の分離ブロックに含まれるようになるため、この分離ブロックを設定できません。分離ブロックを入れ子にすることはできません。</value>
+  </data>
+  <data name="CannotSetupIsolationInsideNoPersist" xml:space="preserve">
+    <value>分離ブロックが持続性のないブロックに含まれるようになるため、この分離ブロックを設定できません。</value>
+  </data>
+  <data name="CannotSetupIsolationWithChildren" xml:space="preserve">
+    <value>実行中の子があるときは分離ブロックを設定できません。</value>
+  </data>
+  <data name="CannotSetValueOfInArgument" xml:space="preserve">
+    <value>値を入力引数に割り当てることはできません。</value>
+  </data>
+  <data name="CannotSetValueToLocation" xml:space="preserve">
+    <value>名前が '{1}' の場所は型 '{2}' の場所であるため、型 '{0}' の値を設定できません。</value>
+  </data>
+  <data name="CannotSpecifyBothConnectionStringAndName" xml:space="preserve">
+    <value>connectionString プロパティと connectionStringName プロパティを両方とも指定することはできません。</value>
+  </data>
+  <data name="CannotSuppressAlreadyRegisteredHandle" xml:space="preserve">
+    <value>既に登録されている RuntimeTransactionHandle の SuppressTransaction プロパティの値を変更することはできません。</value>
+  </data>
+  <data name="CannotUnregisterDefaultBookmarkScope" xml:space="preserve">
+    <value>このブックマーク スコープはインスタンスの既定のブックマーク スコープであるため、削除できません。</value>
+  </data>
+  <data name="CannotUnregisterNullBookmarkScope" xml:space="preserve">
+    <value>null のブックマーク スコープを登録解除することはできません。</value>
+  </data>
+  <data name="CannotUpdateEnvironmentInTheMiddleOfResolvingArguments" xml:space="preserve">
+    <value>インスタンスが引数を解決しているときに引数または変数を追加、削除、または再配置することはできません。</value>
+  </data>
+  <data name="CannotUpdateEnvironmentInTheMiddleOfResolvingVariables" xml:space="preserve">
+    <value>インスタンスが変数を解決しているときに引数または変数を追加、削除、または再配置することはできません。</value>
+  </data>
+  <data name="CannotUpdateLoadedInstance" xml:space="preserve">
+    <value>WorkflowInstance '{0}' を更新できませんでした。このインスタンスは既に読み込まれています。一時停止させてから更新することを検討してください。</value>
+  </data>
+  <data name="CannotUseAddServiceEndpointOverloadForWorkflowServices" xml:space="preserve">
+    <value>WorkflowServiceHost では、AddServiceEndpoint(ServiceEndpoint エンドポイント) オーバーロードを使用したアプリケーション エンドポイントの追加はサポートされません。WorkflowServiceHost にアプリケーション エンドポイントを追加するには、'XName serviceContractName' オーバーロードまたは 'string implementedContract' オーバーロードを使用してください。</value>
+  </data>
+  <data name="CannotUseInputsWithLoad" xml:space="preserve">
+    <value>ワークフローの入力は新しいインスタンスにだけ渡されるため、Load または LoadRunnableInstance で使用することはできません。</value>
+  </data>
+  <data name="CannotValidateNullObject" xml:space="preserve">
+    <value>'{1}' という名前の {0} の ToValidate 引数が null に解決されました。検証する null 以外のオブジェクトを指定する必要があります。</value>
+  </data>
+  <data name="CannotWaitForIdleSynchronously" xml:space="preserve">
+    <value>ワークフローがアイドル状態ではないときにハンドラーから呼び出されたため、操作は失敗しました。この操作ではワークフローが完了のためにアイドル状態になっている必要があり、ワークフローはイベント ハンドラーに含まれているときには実行できません。</value>
+  </data>
+  <data name="CanOnlyAbortDirectChildren" xml:space="preserve">
+    <value>アクティビティで中止できるのはその直接の子だけです。</value>
+  </data>
+  <data name="CanOnlyCancelDirectChildren" xml:space="preserve">
+    <value>アクティビティで取り消すことができるのはその直接の子だけです。</value>
+  </data>
+  <data name="CanOnlyGetOwnedArguments" xml:space="preserve">
+    <value>アクティビティで取得できるのはアクティビティが所有する引数の場所のみです。アクティビティ '{0}' は、アクティビティ '{2}' が所有する引数 '{1}' の場所を取得しようとしています。</value>
+  </data>
+  <data name="CanOnlyScheduleDirectChildren" xml:space="preserve">
+    <value>アクティビティでスケジュールできるのは、その直接の子だけです。アクティビティ '{0}' は、アクティビティ '{2}' の子である '{1}' をスケジュールしようとしています。</value>
+  </data>
+  <data name="CantFindTimerExtension" xml:space="preserve">
+    <value>TimerExtension を拡張コレクションに追加する必要があります。</value>
+  </data>
+  <data name="CatchOrFinallyExpected" xml:space="preserve">
+    <value>TryCatch アクティビティ '{0}' には Catch または Finally が必要です。</value>
+  </data>
+  <data name="ChangeConditionalTransitionToUnconditionalBlockDU" xml:space="preserve">
+    <value>StateMachine では、更新後に条件付き遷移が無条件遷移になる場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="ChangeTransitionTypeDuringTransitioningBlockDU" xml:space="preserve">
+    <value>StateMachine では、現在状態遷移中で、現在の遷移が条件付き遷移になる場合は、動的更新はサポートされません。</value>
+  </data>
+  <data name="ChangingTriggerOrUseOriginalConditionActionBlockDU" xml:space="preserve">
+    <value>StateMachine では、既存の Transition の Trigger が変更されるか、Condition アクティビティまたは Action アクティビティが新しい Transition に再割り当てされる場合は、動的更新はサポートされません。</value>
+  </data>
+  <data name="CleanupInProgress" xml:space="preserve">
+    <value>ストアのクリーンアップが現在実行されているため、SqlWorkflowInstanceStore でコマンドを処理できません。クリーンアップが完了するまで待ってから、再度実行してください。</value>
+  </data>
+  <data name="CollectionActivityRequiresCollection" xml:space="preserve">
+    <value>'{0}' のプロパティ 'Collection' は初期化されていません。</value>
+  </data>
+  <data name="ColumnNumberTooLarge" xml:space="preserve">
+    <value>アクティビティ {0} に指定されている列番号は、部分的な信頼には大きすぎます。</value>
+  </data>
+  <data name="CommandExecutionCannotOverlap" xml:space="preserve">
+    <value>1 つの InstanceHandle に対して、一度に 1 つのコマンドのみを実行できます。この InstanceHandle に対して以前に実行したコマンドが完了するまで、InstanceStore で Execute メソッドまたは BeginExecute メソッドを呼び出さないでください。</value>
+  </data>
+  <data name="CompensableActivityAlreadyConfirmedOrCompensated" xml:space="preserve">
+    <value>'ターゲット' CompensationToken で指定された CompensableActivity は既に確認または補正されています。</value>
+  </data>
+  <data name="CompensableActivityInsideTransactedReceiveScope" xml:space="preserve">
+    <value>CompensableActivity を TransactedReceiveScope 内に入れ子にすることはできません。</value>
+  </data>
+  <data name="CompensableActivityInsideTransactionScopeActivity" xml:space="preserve">
+    <value>CompensableActivity を TransactionScope アクティビティ内に入れ子にすることはできません。</value>
+  </data>
+  <data name="CompensateWithNoTargetConstraint" xml:space="preserve">
+    <value>Target を指定せずに Compensate を使用できるのは、補正ハンドラー、確認ハンドラー、または取り消しハンドラー内で使用する場合のみです。</value>
+  </data>
+  <data name="CompensateWithoutCompensableActivity" xml:space="preserve">
+    <value>Compensate アクティビティ '{0}' を使用できるのは、ワークフロー内の CompensableActivity が既に実行されている場合のみです。</value>
+  </data>
+  <data name="CompensationHandlerFatalException" xml:space="preserve">
+    <value>'{0}' の補正ハンドラーからハンドルされない例外がスローされました。補正の状態に一貫性がなくなった可能性があります。ワークフローは中止されました。</value>
+  </data>
+  <data name="CompensationState" xml:space="preserve">
+    <value>CompensableActivity '{0}' は '{1}' 状態です。</value>
+  </data>
+  <data name="CompiledExpressionIdNotFound" xml:space="preserve">
+    <value>'{0}' の式 ID が見つかりません。現在の定義がコンパイルされていることを確認してください。</value>
+  </data>
+  <data name="CompiledExpressionsActivityException" xml:space="preserve">
+    <value>TextExpressionCompiler: アクティビティ '{1}' の処理中に型 '{0}' の例外が発生しました: '{2}'。</value>
+  </data>
+  <data name="CompiledExpressionsCacheMetadataException" xml:space="preserve">
+    <value>アクティビティ '{0}' の CacheMetadata が '{1}' をスローしました。</value>
+  </data>
+  <data name="CompiledExpressionsDuplicateName" xml:space="preserve">
+    <value>'{0}' はあいまいな変数参照です。識別子の名前を変更してください。</value>
+  </data>
+  <data name="CompiledExpressionsIgnoringInvalidIdentifierVariable" xml:space="preserve">
+    <value>TextExpressionCompiler: 変数 '{0}' を無視します。識別子が現在の言語に対して有効ではありません。</value>
+  </data>
+  <data name="CompiledExpressionsIgnoringUnnamedVariable" xml:space="preserve">
+    <value>TextExpressionCompiler: 名前のない変数を無視します。</value>
+  </data>
+  <data name="CompiledExpressionsNoCompiledRoot" xml:space="preserve">
+    <value>アクティビティ '{0}' に対応するアクティビティ インスタンスが見つかりません。ワークフローを再コンパイルしてください。</value>
+  </data>
+  <data name="CompiledLocationNoDefaultConstructor" xml:space="preserve">
+    <value>コンパイルされた式には、ローカル ルートに既定のコンストラクターが必要です。型 '{0}' に既定のコンストラクターを追加してください。</value>
+  </data>
+  <data name="CompiledLocationReferenceGetLocation" xml:space="preserve">
+    <value>場所にアクセスするのに CompiledLocationReference を使用しないでください。</value>
+  </data>
+  <data name="CompilerError" xml:space="preserve">
+    <value>コンパイル エラーが発生しました。</value>
+  </data>
+  <data name="CompilerErrorSpecificExpression" xml:space="preserve">
+    <value>式 "{0}" の処理中にコンパイル エラーが発生しました。{1}</value>
+  </data>
+  <data name="CompileVbExpressionStart" xml:space="preserve">
+    <value>VB の式 '{0}' をコンパイルしています</value>
+  </data>
+  <data name="CompileVbExpressionStop" xml:space="preserve">
+    <value>VB の式のコンパイルが完了しました。</value>
+  </data>
+  <data name="CompleteBookmarkWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の BookmarkWorkItem が完了しました。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="CompleteCancelActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CancelActivityWorkItem が完了しました。</value>
+  </data>
+  <data name="CompleteCompletionWorkItem" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CompletionWorkItem が完了しました。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' が完了しました。</value>
+  </data>
+  <data name="CompletedMustNotHaveAssociatedKeys" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。キーの関連付けが完了していない、InstanceState.Completed のインスタンスの読み込みが報告されました。</value>
+  </data>
+  <data name="CompleteExecuteActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の ExecuteActivityWorkItem が完了しました。</value>
+  </data>
+  <data name="CompleteFaultWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の FaultWorkItem が完了しました。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' から例外が伝達されました。</value>
+  </data>
+  <data name="CompleteRuntimeWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' のランタイム作業項目が完了しました。</value>
+  </data>
+  <data name="CompleteTransactionContextWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の TransactionContextWorkItem が完了しました。</value>
+  </data>
+  <data name="CompletionConditionSetButNoBody" xml:space="preserve">
+    <value>ParallelForEach で、CompletionCondition プロパティを null 以外にして Body プロパティを null にすることは無効です。ParallelForEach '{0}' の Body プロパティを空の Sequence アクティビティに設定してください。</value>
+  </data>
+  <data name="ConfirmationHandlerFatalException" xml:space="preserve">
+    <value>'{0}' の確認ハンドラーからハンドルされない例外がスローされました。確認の状態に一貫性がなくなった可能性があります。ワークフローは中止されました。</value>
+  </data>
+  <data name="ConfirmWithNoTargetConstraint" xml:space="preserve">
+    <value>Target を指定せずに Confirm を使用できるのは、補正ハンドラー、確認ハンドラー、または取り消しハンドラー内で使用する場合のみです。</value>
+  </data>
+  <data name="ConfirmWithoutCompensableActivity" xml:space="preserve">
+    <value>Confirm アクティビティ '{0}' を使用できるのは、ワークフロー内の CompensableActivity が既に実行されている場合のみです。</value>
+  </data>
+  <data name="ConflictingValueName" xml:space="preserve">
+    <value>DurableInstanceManager.AddInstanceOwnerValues に指定された値のプロパティ名 '{0}' (XName) が、既に追加されている値の名前と競合しています。AddInstanceOwnerValues に渡されたすべての値の名前が一意になるようにしてください。このエラーは、構成済みのサービスの動作が競合しているために発生した可能性があります。</value>
+  </data>
+  <data name="ConnectionStringNameWrong" xml:space="preserve">
+    <value>接続名 '{0}' の接続文字列が見つかりません。</value>
+  </data>
+  <data name="ConstructorInfoNotFound" xml:space="preserve">
+    <value>対応するコンストラクター情報が '{0}' の型に見つかりません。</value>
+  </data>
+  <data name="ConstVariableCannotBeSet" xml:space="preserve">
+    <value>この場所は const としてマークされているため、値を変更できません。</value>
+  </data>
+  <data name="ContextAlreadyBoundToInstance" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。InstanceHandle のインスタンス ID を設定する BindInstance を呼び出しましたが、InstanceHandle には既にインスタンスがバインドされています。InstanceHandle は、その有効期間全体で 1 つのインスタンスのみにバインドできます。</value>
+  </data>
+  <data name="ContextAlreadyBoundToLock" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。InstanceHandle のロックされたインスタンス バージョンを設定する BindAcquiredLock を呼び出しましたが、InstanceHandle には既にロックがバインドされています。InstanceHandle は、その有効期間全体で 1 つのロックのみにバインドできます。</value>
+  </data>
+  <data name="ContextAlreadyBoundToOwner" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。InstanceHandle の所有者を設定する BindOwner を呼び出しましたが、InstanceHandle には既に所有者がバインドされています。InstanceHandle は、その有効期間全体で 1 つの所有者のみにバインドできます。</value>
+  </data>
+  <data name="ContextMismatchInContextAndCallBackContext" xml:space="preserve">
+    <value>CorrelationCallbackContext と CorrelationContext の両方が設定されていますが、コンテキストが一致しません。</value>
+  </data>
+  <data name="ContextMustBeBoundToInstance" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。ロックされたインスタンス バージョンに InstanceHandle をバインドする BindAcquiredLock、BindReclaimedLock、BeginBindReclaimedLock、または CreateBindReclaimedLockException を呼び出しましたが、InstanceHandle にはインスタンスがバインドされていません。InstanceHandle をロックにバインドするには、最初にインスタンスにバインドする必要があります。</value>
+  </data>
+  <data name="ContextMustBeBoundToOwner" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。ロックされたインスタンス バージョンに InstanceHandle をバインドする BindAcquiredLock、BindReclaimedLock、BeginBindReclaimedLock、または CreateBindReclaimedLockException を呼び出しましたが、InstanceHandle には所有者がバインドされていません。InstanceHandle をロックにバインドするには、最初に所有者にバインドする必要があります。</value>
+  </data>
+  <data name="ContextNotFromThisStore" xml:space="preserve">
+    <value>InstanceStore.Execute または InstanceStore.BeginExecute へのハンドル引数は、同じ InstanceStore インスタンスの CreateInstanceHandle を呼び出して作成する必要があります。</value>
+  </data>
+  <data name="ContractInferenceValidationForTransactionFlowBehavior" xml:space="preserve">
+    <value>操作の TransactionFlow の動作は Allowed に設定する必要があります。</value>
+  </data>
+  <data name="ContractNotFoundInAddServiceEndpoint" xml:space="preserve">
+    <value>Name='{0}' と Namespace='{1}' を持つ ContractDescription が見つからないため、エンドポイントを追加できません。</value>
+  </data>
+  <data name="ControllerInvalidBeforeInitialize" xml:space="preserve">
+    <value>WorkflowInstance.Controller は、Initialize が呼び出された後にのみ有効です。</value>
+  </data>
+  <data name="ConvertVariableToValueExpressionFailed" xml:space="preserve">
+    <value>型 '{0}' の変数を型 '{1}' のアクティビティに変換することはできません。</value>
+  </data>
+  <data name="CopyToIndexOutOfRange" xml:space="preserve">
+    <value>配列インデックスには 0 より大きい値を指定する必要があります。</value>
+  </data>
+  <data name="CopyToNotEnoughSpaceInArray" xml:space="preserve">
+    <value>指定された配列は、値を保持するにはキャパシティが足りません。</value>
+  </data>
+  <data name="CopyToRankMustBeOne" xml:space="preserve">
+    <value>指定された配列は多次元配列です。CopyTo で使用する配列のランクは 1 である必要があります。</value>
+  </data>
+  <data name="CorrelatedContextRequiredForAnonymousSend" xml:space="preserve">
+    <value>Send アクティビティは 1 つのエンドポイントで構成するか、CorrelatesWith を使用して以前に設定されたコンテキストに関連付ける必要があります。</value>
+  </data>
+  <data name="CorrelationHandleInUse" xml:space="preserve">
+    <value>CorrelationHandle は BookmarkScope '{0}' で既に使用されているため、BookmarkScope '{1}' で使用することはできません。</value>
+  </data>
+  <data name="CorrelationResponseContextShouldNotBeNull" xml:space="preserve">
+    <value>CorrelationResponse コンテキストには NULL を指定できません。相関ハンドルが正しくセットアップされていないことが原因である可能性があります。</value>
+  </data>
+  <data name="CouldNotResolveNamespacePrefix" xml:space="preserve">
+    <value>名前空間プレフィックス '{0}' を解決できませんでした。</value>
+  </data>
+  <data name="CreateBookmark" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して Bookmark が作成されました。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="CreateBookmarkScope" xml:space="preserve">
+    <value>BookmarkScope が作成されました: {0}。</value>
+  </data>
+  <data name="CreateBookmarkScopeFailed" xml:space="preserve">
+    <value>この BookmarkScopeHandle は既に BookmarkScope に関連付けられています。</value>
+  </data>
+  <data name="CreateWorkflowServiceHostStart" xml:space="preserve">
+    <value>CreateWorkflowServiceHost の開始</value>
+  </data>
+  <data name="CreateWorkflowServiceHostStop" xml:space="preserve">
+    <value>CreateWorkflowServiceHost の停止</value>
+  </data>
+  <data name="CSharpExpressionsMustBeCompiled" xml:space="preserve">
+    <value>CSharp の式はコンパイルする必要があります。</value>
+  </data>
+  <data name="CurrentOperationCannotCreateInstance" xml:space="preserve">
+    <value>サービスの受信メッセージにはコンテキストがアタッチされておらず、現在の操作は "CanCreateInstance = true" でマークされていません。このサービスと通信するには、受信バインドがコンテキスト プロトコルをサポートし、受信バインドで有効なコンテキストが初期化されていることを確認してください。</value>
+  </data>
+  <data name="DanglingReceive" xml:space="preserve">
+    <value>SendReply に対応する Receive がワークフロー内にありません。各 SendReply アクティビティが、ワークフローに存在する Receive アクティビティに対応付けられていることを確認してください。</value>
+  </data>
+  <data name="DatabaseUpgradeRequiredForCommand" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore のデータベースのバージョンが '{0}' です。このバージョンのデータベースに対して InstancePersistenceCommand '{1}' を実行することはできません。データベースを '{2}' にアップグレードしてください。</value>
+  </data>
+  <data name="DebugInfoCannotEvaluateExpression" xml:space="preserve">
+    <value>'{0}' を現在のコンテキストで評価することはできません。</value>
+  </data>
+  <data name="DebugInfoExceptionCaught" xml:space="preserve">
+    <value>{0}: {1} を評価中に例外がキャッチされました。</value>
+  </data>
+  <data name="DebugInfoNotSkipArgumentResolution" xml:space="preserve">
+    <value>*** 値が SkipArgumentResolution ではありません ***</value>
+  </data>
+  <data name="DebugInfoTryGetValueFailed" xml:space="preserve">
+    <value>*** TryGetValue が失敗しました ***</value>
+  </data>
+  <data name="DebugInstrumentationFailed" xml:space="preserve">
+    <value>デバッガーのインストルメンテーションに失敗しました。理由: {0}。</value>
+  </data>
+  <data name="DebugSymbolChecksumValueInvalid" xml:space="preserve">
+    <value>デバッグ シンボルに指定されたチェックサムは、部分的な信頼では無効です。</value>
+  </data>
+  <data name="DefaultAbortReason" xml:space="preserve">
+    <value>ワークフローは中止されました。</value>
+  </data>
+  <data name="DefaultCancelationRequiresCancelHasBeenRequested" xml:space="preserve">
+    <value>既定のキャンセル ロジックでは HasCancelBeenRequested が true に設定されている必要があります。NativeActivity の Cancel メソッドはランタイムでしか呼び出されません。</value>
+  </data>
+  <data name="DefaultCreateOnlyReason" xml:space="preserve">
+    <value>WorkflowCreationContext.CreateOnly が true に設定されたワークフローが作成されました。</value>
+  </data>
+  <data name="DefaultInvalidWorkflowExceptionMessage" xml:space="preserve">
+    <value>ワークフロー定義の構造が無効です。すべての違反を表示するには ActivityValidationServices を使用します。</value>
+  </data>
+  <data name="DefaultSuspendReason" xml:space="preserve">
+    <value>ワークフローは、コントロール エンドポイントを介して中断されました。</value>
+  </data>
+  <data name="DefaultTerminationReason" xml:space="preserve">
+    <value>ワークフローの終了が要求されました。</value>
+  </data>
+  <data name="DefaultWorkflowApplicationExceptionMessage" xml:space="preserve">
+    <value>WorkflowApplication の現在の状態によって許可されていないため、操作を実行できませんでした。</value>
+  </data>
+  <data name="DelegateArgumentAlreadyInUseOnActivity" xml:space="preserve">
+    <value>DelegateArgument '{0}' は既に Activity '{2}' によって使用されているため、Activity '{1}' では使用できません。</value>
+  </data>
+  <data name="DelegateArgumentChangeBlockDU" xml:space="preserve">
+    <value>このアクティビティは、引数が変更された ActivityDelegate のハンドラーです。</value>
+  </data>
+  <data name="DelegateArgumentDoesNotExist" xml:space="preserve">
+    <value>DelegateArgument '{0}' はこの環境に存在しません。</value>
+  </data>
+  <data name="DelegateArgumentMustBeReferenced" xml:space="preserve">
+    <value>DelegateArgument '{0}' はアクティビティの ActivityDelegate に含めてから使用する必要があります。</value>
+  </data>
+  <data name="DelegateArgumentMustBeSet" xml:space="preserve">
+    <value>CacheMetadata を呼び出す前に DelegateArgument を設定する必要があります。</value>
+  </data>
+  <data name="DelegateArgumentNotVisible" xml:space="preserve">
+    <value>参照先の DelegateArgument オブジェクト ('{0}') は、このスコープでは参照できません。</value>
+  </data>
+  <data name="DelegateArgumentTypeInvalid" xml:space="preserve">
+    <value>DelegateArgument '{0}' は、型 '{1}' の式では使用できません。これは互換性がない型 '{2}' です。</value>
+  </data>
+  <data name="DelegateHandlersCannotBeScheduledDirectly" xml:space="preserve">
+    <value>アクティビティ '{0}' は ActivityDelegate ハンドラー アクティビティ '{1}' を直接スケジュールしようとしました。ActivityDelegate ハンドラーは直接スケジュールできません。代わりに ActivityDelegate 自体の実行をスケジュールする必要があります。</value>
+  </data>
+  <data name="DelegateInArgumentTypeMismatch" xml:space="preserve">
+    <value>'{0}' という名前のデリゲート型入力に指定された引数の型が無効です。デリゲート型入力の型は '{1}' で、引数の型は '{2}' です。引数の型はデリゲート型入力の型に対して強制的である必要があります。</value>
+  </data>
+  <data name="DelegateOutArgumentTypeMismatch" xml:space="preserve">
+    <value>'{0}' という名前のデリゲート型出力に指定された引数の型が無効です。デリゲート型出力の型は '{1}' で、引数の型は '{2}' です。引数の型はデリゲート型出力の型に対して強制的である必要があります。</value>
+  </data>
+  <data name="DelegateParameterCannotBeModifiedAfterOpen" xml:space="preserve">
+    <value>ActivityDelegateParameter '{0}' を変更できません。このパラメーターを使用する ActivityDelegate はロックされています。ActivityDelegate は、所有する WorkflowElement で Invoke が呼び出されるとき、またはそこから WorkflowInstance が作成されるときにロックされます。</value>
+  </data>
+  <data name="DelegateParameterDirectionalityMismatch" xml:space="preserve">
+    <value>DelegateParameters ディクショナリのアクティビティ デリゲート パラメーター '{0}' の方向は '{1}' ですが、予期された方向は '{2}' です。</value>
+  </data>
+  <data name="DictionaryIsReadOnly" xml:space="preserve">
+    <value>このディクショナリは読み取り専用なので変更できません。</value>
+  </data>
+  <data name="DifferentContractsSameConfigName" xml:space="preserve">
+    <value>2 つの異なるコントラクトの ConfigurationName が同じです。</value>
+  </data>
+  <data name="DifferentWorkflowServiceNameNotSupported" xml:space="preserve">
+    <value>追加のバージョンの WorkflowService の Name {0} が、既定の WorkflowService の Name {1} と一致しません。</value>
+  </data>
+  <data name="DirectLambdaParameterReference" xml:space="preserve">
+    <value>ラムダ パラメーターの直接参照を含む式はシリアル化できません。変数参照の形式が正しくない可能性があります。</value>
+  </data>
+  <data name="DirectoryAborted" xml:space="preserve">
+    <value>読み込まれたインスタンスのディレクトリが破棄されています。サービスの強制シャットダウンを実行中です。</value>
+  </data>
+  <data name="DispatchOperationInInvalidState" xml:space="preserve">
+    <value>WorkflowOperationBehavior はディスパッチの動作を適用できません。DispatchOperation インスタンスが無効な状態です。</value>
+  </data>
+  <data name="DoNotCompleteTryCommandWithPendingReclaim" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。ロックを再要求しようとする処理の進行中に TryCommand 要求の処理を完了しました。TryCommand からエラーを返さない、または例外をスローしない永続化プロバイダーを使用するか、BeginBindReclaimedLock から返された IAsyncResult が完了する前に BeginTryCommand から返された IAsyncResult を完了するか、または CreateBindReclaimedLockException から返された例外をスローする前に処理を完了してください。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerOnNonArrayType" xml:space="preserve">
+    <value>型 {0} の ArrayIndexer は配列型ではないのでサポートされません。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerReferenceWithDifferentArrayTypeAndResultType" xml:space="preserve">
+    <value>配列型が {0} で結果型が {1} の ArrayIndexer は LValue としてサポートされません。これらは同じではありません。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerValueWithIncompatibleArrayTypeAndResultType" xml:space="preserve">
+    <value>配列のアイテムの種類が {0} で結果型が {1} の ArrayIndexer は右辺値としてサポートされません。{0} と {1} は互換性がありません。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerWithDifferentArrayTypeAndResultType" xml:space="preserve">
+    <value>配列型 {0} と結果型 {1} を持つ ArrayIndexer は、これらの型が異なるのでサポートされません。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerWithNonIntIndex" xml:space="preserve">
+    <value>インデックス型 {0} の ArrayIndexer は int ではないのでサポートされません。</value>
+  </data>
+  <data name="DoWhileRequiresCondition" xml:space="preserve">
+    <value>DoWhile アクティビティ '{0}' を使用する前に、Condition を設定する必要があります。</value>
+  </data>
+  <data name="DUActivityTypeMismatch" xml:space="preserve">
+    <value>このアクティビティの型は、更新された定義では '{0}' ですが、元の定義では '{1}' です。</value>
+  </data>
+  <data name="DUActivityTypeMismatchRuntime" xml:space="preserve">
+    <value>このアクティビティの型は、更新の一部として変更されました。</value>
+  </data>
+  <data name="DUDisallowIfCannotFindingMatchingCondition" xml:space="preserve">
+    <value>StateMachine では、条件付き遷移の Trigger が削除されるか、更新された定義の Condition アクティビティが別のプロパティから再割り当てされる場合は、動的更新はサポートされません。</value>
+  </data>
+  <data name="DuplexContractsNotSupported" xml:space="preserve">
+    <value>ワークフローでは二重のコントラクトはサポートされていません。ServiceContractAttribute から CallbackContract プロパティを削除してください。</value>
+  </data>
+  <data name="DuplicateAnnotationName" xml:space="preserve">
+    <value>名前が '{0}' の注釈を追加できません。追跡プロファイル クエリで、注釈または環境変数内に重複する名前がないかどうかを確認してください。</value>
+  </data>
+  <data name="DuplicateCatchClause" xml:space="preserve">
+    <value>型 {0} の catch 句は既に存在します。追加できる catch 句は一意の種類の CLR 例外ごとに 1 つだけです。</value>
+  </data>
+  <data name="DuplicateCorrelationQuery" xml:space="preserve">
+    <value>Where='{0}' で重複する CorrelationQuery が見つかりました。相関の計算時には、この重複するクエリは使用されません。</value>
+  </data>
+  <data name="DuplicatedContract" xml:space="preserve">
+    <value>実装された複数のコントラクト型にコントラクト '{0}' と操作 '{1}' が含まれています。</value>
+  </data>
+  <data name="DuplicateDefinitionIdentity" xml:space="preserve">
+    <value>({0}) DefinitionIdentity の WorkflowService は既に存在します。</value>
+  </data>
+  <data name="DuplicateEvaluationOrderValues" xml:space="preserve">
+    <value>アクティビティ '{0}' に、評価順序が '{1}' に設定された実行時引数が複数あります。実行時引数の評価順序の値は一意である必要があります。</value>
+  </data>
+  <data name="DuplicateImportAttribute" xml:space="preserve">
+    <value>DynamicActivity '{1}' のプロパティ '{0}' に複数の ImportAttribute があります。ImportAttribute は、プロパティごとに 1 つしか許可されません。</value>
+  </data>
+  <data name="DuplicateInstanceKeyExists" xml:space="preserve">
+    <value>値 '{0}' のインスタンス キーが既に存在しています。これは、同じ CorrelationKey として評価される複数の MessageQuerySets が定義されていることが原因である可能性があります。</value>
+  </data>
+  <data name="DuplicateInstrumentation" xml:space="preserve">
+    <value>{0} のインストルメンテーションが重複しています。デバッガーが間違った位置で中断する場合があります。</value>
+  </data>
+  <data name="DuplicateMethodFound" xml:space="preserve">
+    <value>あいまいな一致です。'{0}' には、InvokeMethod '{3}' に指定されたパラメーター型、ジェネリック型引数、およびジェネリック型制約と一致する '{2}' という名前の複数のパブリック {1} メソッドがあります。</value>
+  </data>
+  <data name="DuplicateOriginActivityActivity" xml:space="preserve">
+    <value>アクティビティ '{1}' とアクティビティ '{2}' で同じ元のオブジェクト '{0}' が使用されています。</value>
+  </data>
+  <data name="DuplicateOriginActivityVariable" xml:space="preserve">
+    <value>アクティビティ '{1}' と変数 '{2}' で同じ元のオブジェクト '{0}' が使用されています。</value>
+  </data>
+  <data name="DuplicateOriginVariableVariable" xml:space="preserve">
+    <value>変数 '{1}' と変数 '{2}' で同じ元のオブジェクト '{0}' が使用されています。</value>
+  </data>
+  <data name="DurationIsNegative" xml:space="preserve">
+    <value>Delay アクティビティ '{0}' の Duration 引数の値が負です。</value>
+  </data>
+  <data name="DUTriggerOrConditionChangedDuringTransitioning" xml:space="preserve">
+    <value>StateMachine では、現在状態遷移中で、現在の遷移が変更されている場合は、動的更新はサポートされません。</value>
+  </data>
+  <data name="DynamicActivityDuplicatePropertyDetected" xml:space="preserve">
+    <value>'{0}' という名前のプロパティは DynamicActivity.Properties コレクションに既に存在します。</value>
+  </data>
+  <data name="DynamicActivityMultipleExpressionLanguages" xml:space="preserve">
+    <value>指定されたアクティビティ定義に、コンパイルが必要な複数の言語の式アクティビティが含まれています (検出された言語: '{0}')。コンパイルが必要な言語は、1 つの定義につき 1 つしか許可されません。コンパイルが必要なすべての式アクティビティを 1 つの言語に変換してください。</value>
+  </data>
+  <data name="EmptyCorrelationQueryResults" xml:space="preserve">
+    <value>関連付けクエリで空の結果セットが生成されました。エンドポイントの関連付けクエリが正しく構成されていることを確認してください。</value>
+  </data>
+  <data name="EmptyGuidOnDeserializedInstance" xml:space="preserve">
+    <value>逆シリアル化されたインスタンスのインスタンス ID はすべて 0 (Guid.Empty) です。シリアル化されたインスタンスは、ゼロ以外のインスタンス ID を持つ必要があります。</value>
+  </data>
+  <data name="EmptyIdReturnedFromHost" xml:space="preserve">
+    <value>ワークフロー ホスト タイプ '{0}' の 'Id' プロパティの実装により、すべて 0 のインスタンス ID が返されました。WorkflowInstance の実装では、Guid.Empty 以外のインスタンス ID が返される必要があります。</value>
+  </data>
+  <data name="EndpointAddressNotSetInEndpoint" xml:space="preserve">
+    <value>エンドポイント、構成ファイル、またはコールバック コンテキストから EndpointAddress を取得できませんでした。これは、OperationName='{0}' のアクティビティにエンドポイントとエンドポイント構成のいずれも設定されていないことが原因である可能性があります。</value>
+  </data>
+  <data name="EndpointIncorrectlySet" xml:space="preserve">
+    <value>OperationName='{1}' のアクティビティ '{0}' に Endpoint プロパティと EndpointConfigurationName プロパティが両方設定されています。同時に設定できるのはいずれか 1 つだけです。</value>
+  </data>
+  <data name="EndpointNotSet" xml:space="preserve">
+    <value>OperationName='{1}' のアクティビティ '{0}' に Endpoint プロパティまたは EndpointConfigurationName プロパティのいずれかを指定する必要があります。</value>
+  </data>
+  <data name="EndSqlCommandExecute" xml:space="preserve">
+    <value>SQL コマンドの実行を終了します: {0}</value>
+  </data>
+  <data name="EnlistedTransactionPropertiesRequireIsolationBlocks" xml:space="preserve">
+    <value>enlistWorkflowState が true に設定されている TransactionProperty は分離ブロック内に追加する必要があります。</value>
+  </data>
+  <data name="EnterNoPersistBlock" xml:space="preserve">
+    <value>no persist ブロックに入ります。</value>
+  </data>
+  <data name="EnumeratorNotStarted" xml:space="preserve">
+    <value>列挙は開始していません。MoveNext を呼び出してください。</value>
+  </data>
+  <data name="EnvironmentDisposed" xml:space="preserve">
+    <value>LocationEnvironment にアクセスできるのは、それが渡された条件のスコープ内だけです。</value>
+  </data>
+  <data name="ErrorExtractingValuesForLambdaRewrite" xml:space="preserve">
+    <value>メソッド呼び出し式 '{1}' から型 '{0}' の対象のオブジェクトを抽出しようとして、エラーが発生しました。型 '{0}' のオブジェクトを指定する式では、ランタイム コンテキストを要求できません。エラー: {2}</value>
+  </data>
+  <data name="ErrorsEncounteredWhileProcessingTree" xml:space="preserve">
+    <value>ワークフロー ツリーの処理中に次のエラーが発生しました:</value>
+  </data>
+  <data name="ErrorTimeToPersistLessThanZero" xml:space="preserve">
+    <value>TimeToPersist には TimeSpan.Zero 以上の値を指定する必要があります。無効にするには、TimeSpan.MaxValue と等しい値を指定してください。</value>
+  </data>
+  <data name="ErrorTimeToUnloadLessThanZero" xml:space="preserve">
+    <value>TimeToUnload には TimeSpan.Zero 以上の値を指定する必要があります。無効にするには、TimeSpan.MaxValue と等しい値を指定してください。</value>
+  </data>
+  <data name="EtwAPIMaxStringCountExceeded" xml:space="preserve">
+    <value>Etw WriteEvent に渡された文字列引数の数が、許容される上限 ({0}) を超えました。</value>
+  </data>
+  <data name="EtwMaxNumberArgumentsExceeded" xml:space="preserve">
+    <value>Etw WriteEvent に渡された引数の数が、許容される上限 ({0}) を超えました。</value>
+  </data>
+  <data name="EtwRegistrationFailed" xml:space="preserve">
+    <value>Etw 登録がエラー コード {0} で失敗しました。</value>
+  </data>
+  <data name="EtwUnhandledException" xml:space="preserve">
+    <value>ハンドルされていない例外です。例外の詳細: {0}</value>
+  </data>
+  <data name="ExclusiveHandleRegisterBookmarkScopeFailed" xml:space="preserve">
+    <value>RegisterBookmarkScope を呼び出すことができるのは、対応する ExclusiveHandle のスコープに既存のブックマークがない場合だけです。</value>
+  </data>
+  <data name="ExclusiveHandleReinitializeFailed" xml:space="preserve">
+    <value>Reinitialize を呼び出すことができるのは、この ExclusiveHandle に登録されている既存のブックマークがない場合だけです。</value>
+  </data>
+  <data name="ExecuteMustBeNested" xml:space="preserve">
+    <value>InstanceStore の永続化プロバイダー実装が無効です。複数の入れ子になったコマンドを同時に実行しようとしました。InstanceStore.TryCommand (または BeginTryCommand) のそれぞれの呼び出しで、同時に発行できる InstancePersistenceContext.Execute (または BeginExecute) の呼び出しは 1 つだけです。このエラーは、永続化プロバイダー実装が無効であることを示します。</value>
+  </data>
+  <data name="ExecuteWorkItemStart" xml:space="preserve">
+    <value>作業項目の実行を開始します</value>
+  </data>
+  <data name="ExecuteWorkItemStop" xml:space="preserve">
+    <value>作業項目の実行を停止します</value>
+  </data>
+  <data name="ExecutionPropertyAlreadyDefined" xml:space="preserve">
+    <value>名前が '{0}' のプロパティはこのスコープで既に定義されています。現在のプロパティを置き換えるには、まずそのプロパティを削除してから新しいプロパティを追加してください。</value>
+  </data>
+  <data name="ExitNoPersistBlock" xml:space="preserve">
+    <value>no persist ブロックを終了します。</value>
+  </data>
+  <data name="ExpressionRequiredForConversion" xml:space="preserve">
+    <value>変換には式が必要です。</value>
+  </data>
+  <data name="ExtensionsCannotBeModified" xml:space="preserve">
+    <value>WorkflowInstanceExtensionsManager は、WorkflowInstance に関連付けられた後に変更することはできません。</value>
+  </data>
+  <data name="ExtensionsCannotBeSetByIndex" xml:space="preserve">
+    <value>拡張コレクションは、インデックスによる拡張機能の設定をサポートしていません。Add メソッドまたは Remove メソッドを使用してください。</value>
+  </data>
+  <data name="ExtensionTypeNotSupported" xml:space="preserve">
+    <value>WorkflowServiceHost では、型 '{0}' の拡張機能の追加はサポートされていません。</value>
+  </data>
+  <data name="ExternalLocationsGetOnly" xml:space="preserve">
+    <value>設定しようとしている場所は SymbolResolver の場所です。SymbolResolver の場所は読み取り専用です。</value>
+  </data>
+  <data name="ExtraOverloadGroupPropertiesConfigured" xml:space="preserve">
+    <value>オーバーロード グループ '{0}' は既に構成されています。オーバーロード グループ '{2}' のプロパティ '{1}' も構成するとエラーになります。</value>
+  </data>
+  <data name="ExtraParameter" xml:space="preserve">
+    <value>コントラクト '{2}' の操作 '{1}' でパラメーター '{0}' が宣言されていません。</value>
+  </data>
+  <data name="ExtraReturnValue" xml:space="preserve">
+    <value>アクティビティに戻り値メッセージが含まれていますが、コントラクトに戻り値が含まれていません。</value>
+  </data>
+  <data name="FailedToCreateSecurityToken" xml:space="preserve">
+    <value>セキュリティ トークン '{0}' を作成できませんでした。</value>
+  </data>
+  <data name="FailedToGetInstanceIdForControlOperation" xml:space="preserve">
+    <value>この管理操作のメッセージからインスタンス ID を取得できませんでした。これは、コントラクトの不一致が原因である可能性があります。クライアント コントラクトがサービス エンドポイント コントラクトと一致することを確認してください。</value>
+  </data>
+  <data name="FailedToGetWorkflowIdentityForControlOperation" xml:space="preserve">
+    <value>この管理操作のメッセージから WorkflowIdentity を取得できませんでした。これは、コントラクトの不一致が原因である可能性があります。クライアント コントラクトがサービス エンドポイント コントラクトと一致することを確認してください。</value>
+  </data>
+  <data name="FailedToInitializeRequestReplyCorrelationHandle" xml:space="preserve">
+    <value>要求/応答操作 '{0}' で構成された Receive アクティビティで RequestReplyCorrelation ハンドルを初期化できませんでした。受信したメッセージの CorrelationMessageProperty に RequestReplyCorrelation を持つ InstanceKey が必要です。</value>
+  </data>
+  <data name="FailedToLoadBindingInControlEndpoint" xml:space="preserve">
+    <value>標準コントロール エンドポイント '{2}' にバインド構成 '{1}' を使用したバインド '{0}' を読み込むことができませんでした。</value>
+  </data>
+  <data name="FailFastMessage" xml:space="preserve">
+    <value>回復できないエラーが発生しました。診断上の目的から、次の英語のメッセージがこのエラーに関連付けられています: '{0}'。</value>
+  </data>
+  <data name="FaultContextNotFound" xml:space="preserve">
+    <value>TryCatch アクティビティによって設定された FaultContext を Rethrow アクティビティ '{0}' が見つけられません。この問題を解決するには、実行プロパティ コレクションの FaultContext を変更したり削除したりしないようにします。</value>
+  </data>
+  <data name="FaultTypeMismatch" xml:space="preserve">
+    <value>指定された障害の種類 '{0}' は、コントラクト '{2}' の操作 '{1}' に存在しません。</value>
+  </data>
+  <data name="FinalStateCannotHaveProperty" xml:space="preserve">
+    <value>最終的な状態 '{0}' は、{1} アクションを持つことはできません。</value>
+  </data>
+  <data name="FinalStateCannotHaveTransition" xml:space="preserve">
+    <value>最終的な状態 '{0}' は、出力遷移を持つことはできません。</value>
+  </data>
+  <data name="FirstParameterDoesnotMatchTheReturnValue" xml:space="preserve">
+    <value>Content で指定された型 '{0}' の最初のパラメーターが、コントラクト '{3}' の操作 '{2}' の戻り値として指定された型 '{1}' と一致しません。</value>
+  </data>
+  <data name="FlowchartContainsReferences" xml:space="preserve">
+    <value>フローチャートでは、インポートされた子への参照がある場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="FlowchartContainsUnconnectedNodes" xml:space="preserve">
+    <value>ValidateUnconnectedNodes が True に設定されている場合は、すべてのノードが接続されていないとフローチャート '{0}' を使用できません。</value>
+  </data>
+  <data name="FlowchartEmpty" xml:space="preserve">
+    <value>フローチャート '{0}' - ノードなしで実行されました。</value>
+  </data>
+  <data name="FlowchartMissingStartNode" xml:space="preserve">
+    <value>フローチャート '{0}' には StartNode がありません。</value>
+  </data>
+  <data name="FlowchartNextNull" xml:space="preserve">
+    <value>フローチャート '{0}'/FlowStep - 次のノードは null です。フローチャートの実行は終了します。</value>
+  </data>
+  <data name="FlowchartStart" xml:space="preserve">
+    <value>フローチャート '{0}' - Start がスケジュールされています。</value>
+  </data>
+  <data name="FlowchartSwitchCase" xml:space="preserve">
+    <value>フローチャート '{0}'/FlowSwitch - Case '{1}' が選択されました。</value>
+  </data>
+  <data name="FlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - 式の結果に一致する Case アクティビティも Default Case も見つかりませんでした。Flowchart の実行は終了します。</value>
+  </data>
+  <data name="FlowchartSwitchDefault" xml:space="preserve">
+    <value>フローチャート '{0}'/FlowSwitch - 既定の Case が選択されました。</value>
+  </data>
+  <data name="FlowDecisionRequiresCondition" xml:space="preserve">
+    <value>フローチャート '{0}' の FlowDecision を使用する前に、Condition を設定する必要があります。</value>
+  </data>
+  <data name="FlowedTransactionDifferentFromAmbient" xml:space="preserve">
+    <value>フローされたトランザクションがアンビエント トランザクションと異なっています。</value>
+  </data>
+  <data name="FlowNodeCannotBeShared" xml:space="preserve">
+    <value>異なる Flowchart 間で FlowNode を共有することはできません。FlowNode は既に Flowchart '{0}' に存在するため、Flowchart '{1}' で使用することはできません。</value>
+  </data>
+  <data name="FlowNodeLockedForRuntime" xml:space="preserve">
+    <value>Flowchart '{0}' 内の FlowNode は既に開いているため変更できません。FlowNode はデザイン時にのみ変更できます。</value>
+  </data>
+  <data name="FlowSwitchRequiresExpression" xml:space="preserve">
+    <value>Flowchart '{0}' の FlowSwitch を使用するには、式を設定する必要があります。</value>
+  </data>
+  <data name="ForEachRequiresNonNullValues" xml:space="preserve">
+    <value>ForEach アクティビティ '{0}' を使用する前に、値を NULL 以外の式にバインドする必要があります。</value>
+  </data>
+  <data name="FoundProcessingError" xml:space="preserve">
+    <value>コマンドが失敗しました: {0}</value>
+  </data>
+  <data name="GeneratedAndProvidedMapConflict" xml:space="preserve">
+    <value>このアクティビティに対する変更が、指定された Implementation Map と現在の更新で競合しています。アクティビティは両方のマップの元の値を保存しようとしました。</value>
+  </data>
+  <data name="GeneratedAndProvidedMapConflictRuntime" xml:space="preserve">
+    <value>このアクティビティに対する変更が、実装の更新とより大きなワークフローの更新とで競合しています。アクティビティは両方の更新の元の値を保存しようとしました。</value>
+  </data>
+  <data name="GenericInstanceCommand" xml:space="preserve">
+    <value>{0} という名前の InstancePersistenceCommand の実行は、エラーによって中断されました。</value>
+  </data>
+  <data name="GenericInstanceCommandNull" xml:space="preserve">
+    <value>エラーによって InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="GetLocationOnPublicAccessReference" xml:space="preserve">
+    <value>アクティビティ '{0}' は、このパブリックな場所参照で GetLocation を呼び出すことができません。このアクティビティは、CodeActivityPublicEnvironmentAccessor.TryGetAccessToPublicLocation で作成されています。値の読み取りまたは書き込みを行うには、ActivityContext.GetValue または SetValue を使用してください。この場所に直接アクセスできるようにするには、CodeActivityPublicEnvironmentAccessor.TryGetReferenceToPublicLocation を使用して宣言してください。</value>
+  </data>
+  <data name="GetParameterTypeMismatch" xml:space="preserve">
+    <value>{1} という名前の InstancePersistenceAction から要求されたインデックス {0} のパラメーターは、正しくないジェネリック型引数を使用して要求されました。GetParameter&lt;T&gt; を呼び出すときは、T に指定された型とパラメーターに設定されたドキュメント型が一致する必要があります。</value>
+  </data>
+  <data name="GetRunnableRequiresOwner" xml:space="preserve">
+    <value>このメソッドを呼び出す前に WorkflowApplication.CreateDefaultInstanceOwner を呼び出して、このワークフロー ホストでサポートされている定義 ID を指定してください。</value>
+  </data>
+  <data name="GuidCannotBeEmpty" xml:space="preserve">
+    <value>引数はゼロ以外の GUID である必要があります。</value>
+  </data>
+  <data name="HandledException" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="HandledExceptionError" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="HandledExceptionVerbose" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="HandledExceptionWarning" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="HandleFreed" xml:space="preserve">
+    <value>InstancePersistenceCommands の実行は、InstanceHandle が解放されたため、キャンセルされました。</value>
+  </data>
+  <data name="HandleFreedBeforeInitialized" xml:space="preserve">
+    <value>InstanceHandle に対して OnNewInstanceHandle を実行しているときに、InstanceHandle の Free メソッドを呼び出すことはできません。</value>
+  </data>
+  <data name="HandleFreedInDirectory" xml:space="preserve">
+    <value>InstancePersistenceCommands の実行は、InstanceHandle が解放されたため、キャンセルされました。</value>
+  </data>
+  <data name="HandleInitializationContextDisposed" xml:space="preserve">
+    <value>HandleInitializationContext にアクセスできるのは、それが渡された関数のスコープ内だけです。</value>
+  </data>
+  <data name="HandleNotInitialized" xml:space="preserve">
+    <value>ハンドルが初期化されていません。ハンドルはランタイムで作成および初期化する必要があり、そのハンドルを宣言したスコープ内でのみ有効になります。</value>
+  </data>
+  <data name="HasExecutingChildrenNoPersist" xml:space="preserve">
+    <value>持続性のないブロックを設定できるのは、実行中の子がないときだけです。</value>
+  </data>
+  <data name="HostIdDoesNotMatchInstance" xml:space="preserve">
+    <value>ワークフロー ホスト {0} によって指定されたインスタンス ID が、シリアル化されたインスタンス {1} に保存されている ID と一致しません。ホストは、インスタンスがシリアル化されたときとは異なる ID を使用してインスタンスを逆シリアル化することはできません。</value>
+  </data>
+  <data name="HostLockExpired" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore のロックの有効期限が切れました。この原因としては、SQL Server がビジー状態であるか、接続が一時的に失われたことが考えられます。</value>
+  </data>
+  <data name="HostLockNotFound" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore のロックがデータベースに存在しません。この原因としては、SQL Server がビジー状態であるか、接続が一時的に失われたことが考えられます。</value>
+  </data>
+  <data name="IdentityControlCharacter" xml:space="preserve">
+    <value>WorkflowIdentity.Name および Package では、制御文字 (Unicode 文字カテゴリ Cc) は使用できません。</value>
+  </data>
+  <data name="IdentityNameSemicolon" xml:space="preserve">
+    <value>WorkflowIdentity.Name では、セミコロン ';' は使用できません。</value>
+  </data>
+  <data name="IdentityNotSupportedWithActivation" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore では、DefinitionIdentity を指定する InstanceOwner でのアクティブ化はサポートされていません。</value>
+  </data>
+  <data name="IdentityWhitespace" xml:space="preserve">
+    <value>WorkflowIdentity.Name および Package では、先頭および末尾のスペース (Unicode 文字カテゴリ Zl、Zp、および Zs) は使用できません。</value>
+  </data>
+  <data name="IdNotFoundInWorkflow" xml:space="preserve">
+    <value>指定された ID '{0}' がワークフローで見つかりませんでした。ワークフローに検証エラーがないかどうかを確認してください。検証エラーがあると、スキャンできないサブツリーが生成される可能性があります。</value>
+  </data>
+  <data name="ImplementationVersionMismatch" xml:space="preserve">
+    <value>読み込まれたアクティビティ インスタンスの ImplementationVersion ('{0}') が、指定されたアクティビティ ('{2}') の ImplementationVersion ('{1}') と一致しません。インスタンスを更新するには Implementation Map を適用してください。</value>
+  </data>
+  <data name="InArgumentBound" xml:space="preserve">
+    <value>Activity '{1}' の引数 '{0}' で、DisplayName: '{2}'、InstanceId: '{3}' が値 value: {4} にバインドされています。</value>
+  </data>
+  <data name="IncompatibleArgumentType" xml:space="preserve">
+    <value>間違った型の引数がこのメソッドに渡されました。このメソッドには型 {0} の引数を渡す必要がありますが、型 {1} の引数が渡されました。</value>
+  </data>
+  <data name="IncompatibleTypeForMultidimensionalArrayItemReference" xml:space="preserve">
+    <value>ジェネリック型 '{0}' は、MultidimensionalArrayItemReference の Array オペランドの実アイテム型 '{1}' と互換性がありません。</value>
+  </data>
+  <data name="IncorrectIndexForArgument" xml:space="preserve">
+    <value>引数の戻り値のインデックスが '{0}' コレクション内で不適切です。指定された位置は '{1}' ですが、予期された位置は '{2}' です。</value>
+  </data>
+  <data name="IncorrectValueType" xml:space="preserve">
+    <value>正しくない型の値がインスタンス ストアから取得されました。型 {0} の値が必要でしたが、型 {1} の値が見つかりました。</value>
+  </data>
+  <data name="IndexOutOfBounds" xml:space="preserve">
+    <value>インデックス値 {0} が配列の長さ {1} 以上です。</value>
+  </data>
+  <data name="IndicesAreNeeded" xml:space="preserve">
+    <value>{0} アクティビティ '{1}' に少なくとも 1 つのインデックス値を指定する必要があります。</value>
+  </data>
+  <data name="InferredContractDescription" xml:space="preserve">
+    <value>Name='{0}' で Namespace='{1}' の ContractDescription が WorkflowService から推論されました。</value>
+  </data>
+  <data name="InferredOperationDescription" xml:space="preserve">
+    <value>コントラクト '{1}' 内の Name='{0}' の OperationDescription が WorkflowService から推論されました。IsOneWay={2}。</value>
+  </data>
+  <data name="InitializationIncomplete" xml:space="preserve">
+    <value>アクティビティ インスタンスの初期化が不完全でした。このエラーは、変数の既定値または引数式にエラーがあり、例外ハンドラーが実行の続行を許可する場合に発生します。</value>
+  </data>
+  <data name="InitializeCorrelationRequiresWorkflowServiceHost" xml:space="preserve">
+    <value>アクティビティ '{0}' は WorkflowServiceHost で使用する必要があります。</value>
+  </data>
+  <data name="InitialMetadataCannotBeDeleted" xml:space="preserve">
+    <value>{0} という名前の永続値は、最初のメタデータ値として提供されるため、InstanceValue.DeletedValue 以外の有効な InstanceValue である必要があります。</value>
+  </data>
+  <data name="InitialStateCannotBeFinalState" xml:space="preserve">
+    <value>初期状態 '{0}' を同時に最終的な状態にすることはできません。</value>
+  </data>
+  <data name="InitialStateNotInStatesCollection" xml:space="preserve">
+    <value>初期状態 '{0}' をステート マシンの 'States' コレクションに追加する必要があります。</value>
+  </data>
+  <data name="InlinedLocationReferenceOnlyAccessibleByOwner" xml:space="preserve">
+    <value>このパブリックな場所参照は、アクティビティ '{1}' にのみ有効であるため、アクティビティ '{0}' からはアクセスできません。パブリックな場所参照を取得したアクティビティのみがそれを使用できます。</value>
+  </data>
+  <data name="InputParametersCountMismatch" xml:space="preserve">
+    <value>指定された入力パラメーター数 {0} は予期された数 {1} と一致しません。</value>
+  </data>
+  <data name="InputParametersMissing" xml:space="preserve">
+    <value>'{0}' という名前の予期された入力パラメーターが見つかりませんでした。</value>
+  </data>
+  <data name="InputParametersTypeMismatch" xml:space="preserve">
+    <value>'{1}' という名前のパラメーターには、型 '{0}' の入力パラメーター値が必要です。</value>
+  </data>
+  <data name="InstanceCollisionDefault" xml:space="preserve">
+    <value>インスタンスがインスタンス ストアに既に保持されているため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="InstanceCollisionSpecific" xml:space="preserve">
+    <value>インスタンス '{0}' がインスタンス ストアに既に保持されているため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="InstanceCompleteDefault" xml:space="preserve">
+    <value>インスタンスが既に完了しているため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="InstanceCompleteSpecific" xml:space="preserve">
+    <value>インスタンス '{0}' が既に完了しているため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="InstanceHandleConflictDefault" xml:space="preserve">
+    <value>別の有効な InstanceHandle がインスタンスに対するロックを保持しているため、InstancePersistenceCommand の実行が中断されました。これは、古くなっていないインスタンスのコピーが既に読み込まれていることを示します。読み込まれているインスタンスのコピーとその関連付けられた InstanceHandle を使用するか、アンロードする必要があります。</value>
+  </data>
+  <data name="InstanceHandleConflictSpecific" xml:space="preserve">
+    <value>別の有効な InstanceHandle がインスタンス '{0}' に対するロックを保持しているため、InstancePersistenceCommand の実行が中断されました。これは、古くなっていないインスタンスのコピーが既に読み込まれていることを示します。読み込まれているインスタンスのコピーとその関連付けられた InstanceHandle を使用するか、アンロードする必要があります。</value>
+  </data>
+  <data name="InstanceKeyMetadataChangesNotSupported" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore は、既存のキーのキー メタデータの変更をサポートしていません。</value>
+  </data>
+  <data name="InstanceKeyRequiresValidGuid" xml:space="preserve">
+    <value>すべての値がゼロである InstanceKey (Guid.Empty など) は作成できません。すべての値がゼロである InstanceKey を取得するには、InstanceKey.InvalidKey を使用してください。</value>
+  </data>
+  <data name="InstanceLockedUnderTransaction" xml:space="preserve">
+    <value>ID '{1}' のサービス インスタンスでの管理操作 '{0}' の実行に失敗しました。アクティブなトランザクション管理操作が進行中です。</value>
+  </data>
+  <data name="InstanceLockLostDefault" xml:space="preserve">
+    <value>インスタンスのロックが解除されたため、InstancePersistenceCommand の実行が中断されました。このエラーは、InstanceHandle と共に、インスタンスのメモリ内のコピーが古くなったために破棄する必要があることを示します。</value>
+  </data>
+  <data name="InstanceLockLostSpecific" xml:space="preserve">
+    <value>インスタンス '{0}' のロックが解除されたため、InstancePersistenceCommand の実行が中断されました。このエラーは、InstanceHandle と共に、インスタンスのメモリ内のコピーが古くなったために破棄する必要があることを示します。</value>
+  </data>
+  <data name="InstanceLocksRecoveryError" xml:space="preserve">
+    <value>インスタンスのロックの回復は次の例外のために失敗しました</value>
+  </data>
+  <data name="InstanceMethodCallRequiresTargetObject" xml:space="preserve">
+    <value>インスタンス メソッド呼び出しにはターゲット オブジェクトが必要です。</value>
+  </data>
+  <data name="InstanceMustBePaused" xml:space="preserve">
+    <value>この操作を実行するには、インスタンスを一時停止する必要があります。</value>
+  </data>
+  <data name="InstanceMustNotBePaused" xml:space="preserve">
+    <value>この操作を実行するには、インスタンスを一時停止しないでください。</value>
+  </data>
+  <data name="InstanceMustNotBeSuspended" xml:space="preserve">
+    <value>インスタンスが一時停止状態であるため、操作を実行できませんでした。</value>
+  </data>
+  <data name="InstanceNotReadyDefault" xml:space="preserve">
+    <value>インスタンスがインスタンス ストアに保持されていないため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="InstanceNotReadySpecific" xml:space="preserve">
+    <value>インスタンス '{0}' がインスタンス ストアに保持されていないため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="InstanceOperationRequiresInstance" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。インスタンスを必要とする操作の実行が報告されましたが、この操作にはインスタンスがバインドされていません。</value>
+  </data>
+  <data name="InstanceOperationRequiresLock" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。インスタンスに対するロックの保持が必要な操作の実行が報告されましたが、ロックは保持されていません。</value>
+  </data>
+  <data name="InstanceOperationRequiresNotCompleted" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。インスタンスが InstanceState.Completed 以外の状態になっている必要がある操作の実行が報告されましたが、インスタンスはその状態になっています。</value>
+  </data>
+  <data name="InstanceOperationRequiresNotUninitialized" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。インスタンスが InstanceState.Uninitialized 以外の状態になっている必要がある操作の実行が報告されましたが、インスタンスはその状態になっています。</value>
+  </data>
+  <data name="InstanceOperationRequiresOwner" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。インスタンス所有者を必要とする操作の実行が報告されましたが、この操作には所有者がバインドされていません。</value>
+  </data>
+  <data name="InstanceOwnerDefault" xml:space="preserve">
+    <value>インスタンス所有者の登録が無効になったため、InstancePersistenceCommand の実行が中断されました。このエラーは、InstanceHandle と共に、この所有者によってロックされていたすべてのインスタンスのメモリ内のコピーが古くなったために破棄する必要があることを示します。通常、ホストを再起動することで、このエラーに適切に対処できます。</value>
+  </data>
+  <data name="InstanceOwnerSpecific" xml:space="preserve">
+    <value>所有者 ID '{0}' のインスタンス所有者の登録が無効になったため、InstancePersistenceCommand の実行が中断されました。このエラーは、InstanceHandle と共に、この所有者によってロックされていたすべてのインスタンスのメモリ内のコピーが古くなったために破棄する必要があることを示します。通常、ホストを再起動することで、このエラーに適切に対処できます。</value>
+  </data>
+  <data name="InstanceRequired" xml:space="preserve">
+    <value>インスタンス永続化システムは、無効な InstancePersistenceCommand を処理できません。このコマンドにはインスタンスが必要ですが、InstanceHandle にはインスタンスがバインドされていません。</value>
+  </data>
+  <data name="InstanceStoreBoundSameVersionTwice" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。同じインスタンスに対して同じバージョンのロックを 2 回取得してコミットする操作が報告されました。インスタンスでロックが取得されるたびに、ロックのバージョンがインクリメントされる必要があります。そうでない場合は、ロックのバージョンとして常にゼロが報告される必要があります。プロバイダーは、インスタンス所有者が既にそれ自体でロックされているインスタンスをロックしようとしていることを検出した場合、BindAcquiredLock の代わりに BindReclaimedLock、BeginBindReclaimedLock、または CreateBeginBindReclaimedLockException を呼び出す必要があります。</value>
+  </data>
+  <data name="InstanceStoreDoesntMatchWorkflowApplication" xml:space="preserve">
+    <value>このインスタンスは、この WorkflowApplication とは別の InstanceStore を使用して構成されています。</value>
+  </data>
+  <data name="InstanceStoreFailed" xml:space="preserve">
+    <value>InstanceStore の実装によって InstancePersistenceException がスローされました。InstancePersistenceException は内部例外です。</value>
+  </data>
+  <data name="InstanceStoreHasDefaultOwner" xml:space="preserve">
+    <value>この InstanceStore には既に DefaultInstanceOwner があります。</value>
+  </data>
+  <data name="InstanceStoreReadOnly" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore は読み取り専用であるため、これ以上構成することはできません。SqlWorkflowInstanceStore を完全に構成するには、InstanceHandle を作成する前に構成を行う必要があります。</value>
+  </data>
+  <data name="InstanceStoreRequiredToPersist" xml:space="preserve">
+    <value>永続化またはアンロードできるのは、InstanceStore で構成された WorkflowApplications だけです。</value>
+  </data>
+  <data name="InstanceSuspended" xml:space="preserve">
+    <value>ID '{1}' のサービス インスタンスの現在の状態は 'Suspended' です。管理操作 '{0}' の実行に失敗しました。</value>
+  </data>
+  <data name="InsufficientArraySize" xml:space="preserve">
+    <value>配列サイズが {0} で、操作の結果を保持するには不十分です。</value>
+  </data>
+  <data name="InternalCacheMetadataStart" xml:space="preserve">
+    <value>アクティビティ '{0}' で InternalCacheMetadata が開始されました。</value>
+  </data>
+  <data name="InternalCacheMetadataStop" xml:space="preserve">
+    <value>アクティビティ '{0}' で InternalCacheMetadata が停止されました。</value>
+  </data>
+  <data name="InternalConstraintException" xml:space="preserve">
+    <value>名前が '{0}' の制約を名前が '{2}' の型 {1} のアクティビティに対して実行しているときに内部制約例外が発生しました。例外: {3}</value>
+  </data>
+  <data name="InternalServerError" xml:space="preserve">
+    <value>内部エラーのため、クライアントは要求を処理できませんでした。このエラーの詳細については、例外情報をクライアントに返信するためにサーバーで IncludeExceptionDetailInFaults を有効にするか (ServiceBehaviorAttribute または &lt;serviceDebug&gt; 構成動作を通じて)、Microsoft .NET Framework 3.0 SDK ドキュメントに従ってトレースを有効にして、サーバーのトレース ログを調べてください。</value>
+  </data>
+  <data name="InvalidActivityIdFormat" xml:space="preserve">
+    <value>指定されたアクティビティ ID の形式が無効です。'1.12.3' のように、ドットで区切った整数値のリストにする必要があります (先頭と末尾はドットなし)。</value>
+  </data>
+  <data name="InvalidActivityToBlockUpdate" xml:space="preserve">
+    <value>DynamicUpdateMapBuilder.DisallowUpdateInside のアクティビティ '{0}' は、DynamicUpdateMapBuilder.UpdatedWorkflowDefinition のパブリック メンバーではありません。更新されたワークフロー定義にこのアクティビティが含まれていることを確認してください。このアクティビティが更新の一部として削除された場合は、更新を明示的にブロックする必要はありません。削除されたアクティビティが実行されている場合は更新が自動的にブロックされます。</value>
+  </data>
+  <data name="InvalidActivityToBlockUpdateServices" xml:space="preserve">
+    <value>アクティビティ '{0}' は、updatedWorkflowDefinition のパブリック メンバーではありません。更新されたワークフロー定義にこのアクティビティが含まれていることを確認してください。このアクティビティが更新の一部として削除された場合は、更新を明示的にブロックする必要はありません。削除されたアクティビティが実行されている場合は更新が自動的にブロックされます。</value>
+  </data>
+  <data name="InvalidArgumentExpression" xml:space="preserve">
+    <value>型 '{1}' の番号 {0} の引数式は無効です。</value>
+  </data>
+  <data name="InvalidAsyncBeginMethodSignature" xml:space="preserve">
+    <value>型 {1} のメソッド {0} の非同期 Begin メソッド シグネチャが無効です。begin メソッドには最後の 2 つの引数として AsyncCallback とオブジェクトが必要で、IAsyncResult を返す必要があります。</value>
+  </data>
+  <data name="InvalidAsyncCancelMethodSignature" xml:space="preserve">
+    <value>型 {1} のメソッド {0} の非同期 Cancel メソッド シグネチャが無効です。cancel メソッドは引数を受け取らず、void を返す必要があります。</value>
+  </data>
+  <data name="InvalidAsyncEndMethodSignature" xml:space="preserve">
+    <value>型 {1} のメソッド {0} の非同期 End メソッド シグネチャが無効です。end メソッドには最後の引数として IAsyncResult が必要です。</value>
+  </data>
+  <data name="InvalidAsyncResult" xml:space="preserve">
+    <value>'End' メソッドに対して正しくない IAsyncResult が指定されました。'End' に渡された IAsyncResult オブジェクトは、一致する 'Begin' から返されるオブジェクトまたは 'Begin' に提供されるコールバックに渡されるオブジェクトである必要があります。</value>
+  </data>
+  <data name="InvalidAsyncResultImplementation" xml:space="preserve">
+    <value>IAsyncResult インターフェイスの実装が正しくないため、CompletedSynchronously プロパティから正しくない値を返すか、AsyncCallback を 2 回以上呼び出す可能性があります。型 {0} の実装が正しくない可能性があります。</value>
+  </data>
+  <data name="InvalidAsyncResultImplementationGeneric" xml:space="preserve">
+    <value>IAsyncResult インターフェイスの実装が正しくないため、CompletedSynchronously プロパティから正しくない値を返すか、AsyncCallback を 2 回以上呼び出す可能性があります。</value>
+  </data>
+  <data name="InvalidCallbackState" xml:space="preserve">
+    <value>コールバック状態オブジェクトとして有効な {0} データを渡す必要があります。</value>
+  </data>
+  <data name="InvalidCompensateActivityUsage" xml:space="preserve">
+    <value>'Target' InArgument が設定されていない Compensate アクティビティ '{0}' は、補正/確認/キャンセル ハンドラーのコンテキストでのみ使用できます。</value>
+  </data>
+  <data name="InvalidCompensationToken" xml:space="preserve">
+    <value>'Target' InArgument にバインドされている Variable の値が NULL です。'Target' InArgument は、CompensableActivity から取得した有効な CompensationToken を使用して設定する必要があります。これを使用せずに既定の補正または確認を使用する場合は、'Target' InArgument を設定せずに、補正/確認/キャンセル ハンドラーのコンテキストで '{0}' アクティビティを使用してください。</value>
+  </data>
+  <data name="InvalidConfirmActivityUsage" xml:space="preserve">
+    <value>'Target' InArgument が設定されていない Confirm アクティビティ '{0}' は、補正/確認/キャンセル ハンドラーのコンテキストでのみ使用できます。</value>
+  </data>
+  <data name="InvalidDataFromReceiveBookmarkState" xml:space="preserve">
+    <value>受信操作 '{0}' のブックマークが再開された時点で、有効な MessageContext を取得できませんでした。</value>
+  </data>
+  <data name="InvalidDataFromSendBookmarkState" xml:space="preserve">
+    <value>送信操作 '{0}' のブックマークが再開された時点で、有効な CorrelationMessageProperty または Fault を取得できませんでした。</value>
+  </data>
+  <data name="InvalidDirectionForArgument" xml:space="preserve">
+    <value>コレクション '{0}' 内の位置 {1} の引数の引数方向が不適切です。指定された方向は '{2}' ですが、予期された方向は '{3}' です。</value>
+  </data>
+  <data name="InvalidDynamicActivityProperty" xml:space="preserve">
+    <value>このプロパティ記述子は無効です。指定されたコンポーネントには、この記述子に対応するプロパティ ({0}) が含まれていません。</value>
+  </data>
+  <data name="InvalidEvaluationOrderValue" xml:space="preserve">
+    <value>EvaluationOrder の値が無効です。評価順序の値は、0 から始まって順番に増えていく一意の値である必要があります。評価順序を設定しない場合は -1 を使用します。</value>
+  </data>
+  <data name="InvalidExecutionCallback" xml:space="preserve">
+    <value>'{0}' は有効なアクティビティ実行コールバックではありません。'{1}' で使用される実行コールバックは '{1}' のインスタンス メソッドでなければなりません。</value>
+  </data>
+  <data name="InvalidExpressionForLocation" xml:space="preserve">
+    <value>Location は型 '{0}' の Expression から生成できません。</value>
+  </data>
+  <data name="InvalidExpressionProperty" xml:space="preserve">
+    <value>型 '{0}' の 'Expression' プロパティは無効です。</value>
+  </data>
+  <data name="InvalidFileName" xml:space="preserve">
+    <value>アクティビティ {0} に無効な fileName が指定されました</value>
+  </data>
+  <data name="InvalidGenericTypeInfo" xml:space="preserve">
+    <value>型 '{0}' に無効なジェネリック型情報が含まれています。</value>
+  </data>
+  <data name="InvalidIdleAction" xml:space="preserve">
+    <value>返された PersistableIdleAction が範囲外です。None、Unload、Persist のいずれかである必要があります。</value>
+  </data>
+  <data name="InvalidImplementationAsWorkflowRoot" xml:space="preserve">
+    <value>Implementation Map を直接ワークフロー インスタンスに適用するには、定義のルートにパブリックな子、インポートされた子、パブリックなデリゲート、またはインポートされたデリゲートが含まれていない必要があります。</value>
+  </data>
+  <data name="InvalidImplementationAsWorkflowRootForRuntimeState" xml:space="preserve">
+    <value>Implementation Map を直接ワークフロー インスタンスに適用するには、定義のルートにパブリックな子が含まれていない必要があります。このインスタンスでは現在 1 つ以上のパブリックな子が実行されています。</value>
+  </data>
+  <data name="InvalidImplementationAsWorkflowRootForRuntimeStateBecauseArgumentsChanged" xml:space="preserve">
+    <value>Implementation Map を直接ワークフロー インスタンスに適用するには、その Implementation Map に引数の変更がないことが示されている必要があります。この Implementation Map には、アクティビティ定義の引数が変更されたことが示されています。</value>
+  </data>
+  <data name="InvalidImplementationMap" xml:space="preserve">
+    <value>指定された Implementation Map がアクティビティの定義と一致しません。更新されたワークフローで参照されているアクティビティのバージョンが、指定された Implementation Map で対象となっているバージョンと同じであることを確認してください。]D;]A;    ]D;]A;トラブルシューティングの詳細: マップのメンバー数: '{0}'。定義のメンバー数: '{1}'。</value>
+  </data>
+  <data name="InvalidImplementationMapAssociation" xml:space="preserve">
+    <value>DynamicUpdateMapBuilder.LookupImplementationMap でアクティビティ '{0}' に対して指定された Implementation Map は使用できません。このアクティビティには実装の子がありません。SetImplementationMap が正しいアクティビティで呼び出されたことを確認してください。</value>
+  </data>
+  <data name="InvalidImplementationMapAssociationServices" xml:space="preserve">
+    <value>DynamicUpdateServices.SetImplementationMap でアクティビティ '{0}' に対して指定された Implementation Map は使用できません。このアクティビティには実装の子がありません。SetImplementationMap が正しいアクティビティで呼び出されたことを確認してください。</value>
+  </data>
+  <data name="InvalidImplementationMapRuntime" xml:space="preserve">
+    <value>更新マップを構築するときにこのアクティビティに対して指定された Implementation Map が間違っています。</value>
+  </data>
+  <data name="InvalidInstanceId" xml:space="preserve">
+    <value>すべて 0 (Guid.Empty) の無効なインスタンス ID がインスタンスの読み込みに使用されました。</value>
+  </data>
+  <data name="InvalidInstanceState" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。無効な InstanceState 値を持つインスタンスの読み込みが報告されました。</value>
+  </data>
+  <data name="InvalidKey" xml:space="preserve">
+    <value>無効なキーがインスタンスの読み込みまたは作成に使用されました。</value>
+  </data>
+  <data name="InvalidKeyArgument" xml:space="preserve">
+    <value>Guid.Empty などのすべて 0 の無効なキーが引数として渡されました。</value>
+  </data>
+  <data name="InvalidLocationExpression" xml:space="preserve">
+    <value>無効な配置式: "[...]5D;" が必要です。</value>
+  </data>
+  <data name="InvalidLockRenewalPeriod" xml:space="preserve">
+    <value>指定されたロック更新期間 {0} が最小ロック更新期間 {1} 未満です。</value>
+  </data>
+  <data name="InvalidLockToken" xml:space="preserve">
+    <value>永続化プロバイダーがロックのバージョン管理を実装していない場合、InstancePersistenceContext.BindAcquiredLock に渡す instanceVersion は 0 である必要があります。実装している場合は、0 より大きい値である必要があります。</value>
+  </data>
+  <data name="InvalidLValueExpression" xml:space="preserve">
+    <value>左辺値式が無効です。</value>
+  </data>
+  <data name="InvalidMergeMap" xml:space="preserve">
+    <value>(0 から始まる) 位置 '{0}' にあるアクティビティ ID '{1}' のマップが前のマップと一致しません。すべてのマップが同じワークフロー定義に対する一連の更新を表していることを確認してください。]D;]A;    ]D;]A;トラブルシューティングの詳細: {2}</value>
+  </data>
+  <data name="InvalidMergeMapArgumentCount" xml:space="preserve">
+    <value>必要な元の引数の数 = '{0}'、実際 = '{1}'。</value>
+  </data>
+  <data name="InvalidMergeMapArgumentsChanged" xml:space="preserve">
+    <value>引数の予期しない変更 (名前、方向、型、または順序)。</value>
+  </data>
+  <data name="InvalidMergeMapEnvironmentCount" xml:space="preserve">
+    <value>必要な元の引数の数 = '{0}'、パブリック変数の数 = '{1}'、プライベート変数の数 = '{2}'。実際の元の引数の数 = '{3}'、パブリック変数の数 = '{4}'、プライベート変数の数 = '{5}'。</value>
+  </data>
+  <data name="InvalidMergeMapForImplementation" xml:space="preserve">
+    <value>必要な ForImplementation = '{0}'、実際 = '{1}'。</value>
+  </data>
+  <data name="InvalidMergeMapMemberCount" xml:space="preserve">
+    <value>必要な元のメンバーの数 = '{0}'、実際 = '{1}'。</value>
+  </data>
+  <data name="InvalidMetadataValue" xml:space="preserve">
+    <value>メタデータ プロパティ '{0}' に対して指定される値は、型 {1} である必要があります。</value>
+  </data>
+  <data name="InvalidNullAsyncResult" xml:space="preserve">
+    <value>非同期 'Begin' メソッドから NULL 値が返されました。または、AsyncCallback に NULL 値が渡されました。非同期 'Begin' 実装は、NULL 以外の IAsyncResult を返し、同じ IAsyncResult オブジェクトをパラメーターとして AsyncCallback に渡す必要があります。</value>
+  </data>
+  <data name="InvalidOriginalWorkflowDefinitionForImplementationMapCreation" xml:space="preserve">
+    <value>マップ ビルダーに渡された OriginalWorkflowDefinition は、Implementation Map の作成に対しては無効です。この OriginalWorkflowDefinition には実装の子がありません。</value>
+  </data>
+  <data name="InvalidParameterInfo" xml:space="preserve">
+    <value>数値 {0} パラメーター情報は '{1}' の型では無効です。</value>
+  </data>
+  <data name="InvalidPrepareForRuntimeValidationSettings" xml:space="preserve">
+    <value>ValidationSettings で、SingleLevel、SkipValidatingRootConfiguration、または OnlyUseAdditionalConstraints が設定されている場合は、ワークフローをランタイム用に準備することはできません。</value>
+  </data>
+  <data name="InvalidProperty" xml:space="preserve">
+    <value>プロパティ ({0}) は無効であるか、定義されていません。</value>
+  </data>
+  <data name="InvalidPropertyType" xml:space="preserve">
+    <value>プロパティ '{1}' の型 '{0}' を解決できませんでした。</value>
+  </data>
+  <data name="InvalidReceiveStateForDU" xml:space="preserve">
+    <value>Receive は、インスタンスの更新がサポートされない状態です。更新がサポートされるのは、サーバー側で Receive が要求メッセージを待機しているときだけです。</value>
+  </data>
+  <data name="InvalidRootMergeMap" xml:space="preserve">
+    <value>(0 から始まる) 位置 '{0}' にあるルート マップが前のマップと一致しません。すべてのマップが同じワークフロー定義に対する一連の更新を表していることを確認してください。]D;]A;    ]D;]A;トラブルシューティングの詳細: {1}</value>
+  </data>
+  <data name="InvalidRunnableInstancesDetectionPeriod" xml:space="preserve">
+    <value>渡された実行可能インスタンス検出期間 {0} がその最短期間 {1} 未満です。</value>
+  </data>
+  <data name="InvalidRuntimeState" xml:space="preserve">
+    <value>指定された値は有効なランタイム状態ではありません。</value>
+  </data>
+  <data name="InvalidSemaphoreExit" xml:space="preserve">
+    <value>オブジェクトの同期メソッドが、コードの非同期ブロックから呼び出されました。</value>
+  </data>
+  <data name="InvalidServiceImplementation" xml:space="preserve">
+    <value>WorkflowServiceHost では、指定された serviceImplementation が Activity または WorkflowService であることが求められます。</value>
+  </data>
+  <data name="InvalidSourceLocationColumn" xml:space="preserve">
+    <value>列番号は 0 より大きい (1 から始まる) 値にする必要があります。{0} = {1} は無効です。</value>
+  </data>
+  <data name="InvalidSourceLocationLineNumber" xml:space="preserve">
+    <value>行番号は 0 より大きい (1 から始まる) 値にする必要があります。{0} = {1} は無効です。</value>
+  </data>
+  <data name="InvalidStateForAsyncCallback" xml:space="preserve">
+    <value>非同期コールバックに渡された IAsyncResult の AsyncState が無効です。</value>
+  </data>
+  <data name="InvalidStateInAsyncResult" xml:space="preserve">
+    <value>指定された非同期結果の状態コンテキストが無効です。</value>
+  </data>
+  <data name="InvalidTypeConverterUsage" xml:space="preserve">
+    <value>TypeConverter の使用方法が無効です。</value>
+  </data>
+  <data name="InvalidTypeForArgument" xml:space="preserve">
+    <value>コレクション '{0}' 内の位置 {1} の引数に指定された型が予期された型と一致しません。指定された型は '{2}' ですが、予期された型は '{3}' です。</value>
+  </data>
+  <data name="InvalidUnhandledExceptionAction" xml:space="preserve">
+    <value>返された UnhandledExceptionAction が範囲外です。Abort、Cancel、Terminate のいずれかである必要があります。</value>
+  </data>
+  <data name="InvalidUpdatedWorkflowDefinitionForImplementationMapCreation" xml:space="preserve">
+    <value>マップ ビルダーに渡された UpdatedWorkflowDefinition は、Implementation Map の作成に対しては無効です。この UpdatedWorkflowDefinition には実装の子がありません。</value>
+  </data>
+  <data name="InvalidUpdateMap" xml:space="preserve">
+    <value>更新マップがワークフロー定義と一致しません。これがこの定義の正しいマップであること、およびシリアル化されたマップが手動で変更されていないことを確認してください。]D;]A;    ]D;]A;トラブルシューティングの詳細: {0}</value>
+  </data>
+  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+    <value>Settings プロパティの値が無効です。Settings プロパティは、空の文字列または "アセンブリ参照と、XML 名前空間としてシリアル化されるインポートされた名前空間" の文字列のいずれかに設定してください。</value>
+  </data>
+  <data name="InvalidXamlMember" xml:space="preserve">
+    <value>'{0}' は XAML の有効な識別子ではありません。</value>
+  </data>
+  <data name="InvokedMethodThrewException" xml:space="preserve">
+    <value>アクティビティ '{0}' によって呼び出されたメソッドで例外がスローされました。{1}</value>
+  </data>
+  <data name="InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドでは非同期パターンを使用しません。</value>
+  </data>
+  <data name="InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドは Static ではありません。</value>
+  </data>
+  <data name="InvokeMethodIsStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドは Static です。</value>
+  </data>
+  <data name="InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドでは '{1}' および '{2}' の非同期パターンを使用します。</value>
+  </data>
+  <data name="IsolationLevelValidation" xml:space="preserve">
+    <value>入れ子になった TransactionScope アクティビティの IsolationLevel はその親の値と同じである必要があります。</value>
+  </data>
+  <data name="ITextExpressionParameterMustBeActivity" xml:space="preserve">
+    <value>'expression' パラメーターの型は Activity である必要があります。</value>
+  </data>
+  <data name="KeyAlreadyAssociated" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。既にキーが関連付けられているインスタンスへのキーの関連付けが報告されました。</value>
+  </data>
+  <data name="KeyAlreadyCompleted" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。作成済みのキーの作成が報告されました。</value>
+  </data>
+  <data name="KeyAlreadyUnassociated" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。現在のインスタンスに関連付けられたキーの関連付けの解除が報告されましたが、解除は完了しませんでした。</value>
+  </data>
+  <data name="KeyCollectionUpdatesNotAllowed" xml:space="preserve">
+    <value>ディクショナリから派生したキー コレクションの変化は許可されていません。</value>
+  </data>
+  <data name="KeyCollisionDefault" xml:space="preserve">
+    <value>キーの競合により、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="KeyCollisionSpecific" xml:space="preserve">
+    <value>キーの競合により、InstancePersistenceCommand の実行が中断されました。値が '{1}' のインスタンス キーをインスタンス '{0}' に関連付けることができませんでした。既に、別のインスタンス '{2}' に関連付けられています。</value>
+  </data>
+  <data name="KeyCollisionSpecificKeyOnly" xml:space="preserve">
+    <value>キーの競合により、InstancePersistenceCommand の実行が中断されました。値が '{0}' のインスタンス キーをインスタンスに関連付けることができませんでした。既に、別のインスタンスに関連付けられています。</value>
+  </data>
+  <data name="KeyCompleteDefault" xml:space="preserve">
+    <value>インスタンス キーが既に完了しているため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="KeyCompleteSpecific" xml:space="preserve">
+    <value>インスタンス キー '{0}' が既に完了しているため、InstancePersistenceCommand の実行が中断されました。</value>
+  </data>
+  <data name="KeyNotAssociated" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。現在のインスタンスに関連付けられていないキーの作成または変更が報告されました。</value>
+  </data>
+  <data name="KeyNotCompleted" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。キーの関連付けの解除が報告されましたが、解除は完了しませんでした。</value>
+  </data>
+  <data name="KeyNotFoundInDictionary" xml:space="preserve">
+    <value>指定されたキーがディクショナリにありませんでした。</value>
+  </data>
+  <data name="KeyNotReadyDefault" xml:space="preserve">
+    <value>インスタンス キーがインスタンスに関連付けられていないため、InstancePersistenceCommand の実行が中断されました。このエラーは、インスタンスまたはキーがクリーンアップされたか、キーが無効であるため発生した可能性があります。このエラーによって生成されたメッセージの送信時刻が間違っている場合や、正しくない関連付けデータが含まれている場合、このキーは無効である可能性があります。</value>
+  </data>
+  <data name="KeyNotReadySpecific" xml:space="preserve">
+    <value>インスタンス キー '{0}' がインスタンスに関連付けられていないため、InstancePersistenceCommand の実行が中断されました。このエラーは、インスタンスまたはキーがクリーンアップされたか、キーが無効であるため発生した可能性があります。このエラーによって生成されたメッセージの送信時刻が間違っている場合や、正しくない関連付けデータが含まれている場合、このキーは無効である可能性があります。</value>
+  </data>
+  <data name="LambdaExpressionReturnTypeInvalid" xml:space="preserve">
+    <value>指定されたラムダ式の戻り値の型は、null または void にはできません。</value>
+  </data>
+  <data name="LambdaExpressionTypeRequired" xml:space="preserve">
+    <value>指定された式は、LambdaExpression である必要があります。</value>
+  </data>
+  <data name="LambdaNotXamlSerializable" xml:space="preserve">
+    <value>このワークフローには、コードで指定されたラムダ式が含まれています。これらの式は XAML にシリアル化できません。このワークフローを XAML にシリアル化できるようにするには、VisualBasicValue/VisualBasicReference を使用するか、ExpressionServices.Convert(lambda) を使用します。これにより、ラムダ式が式アクティビティに変換されます。</value>
+  </data>
+  <data name="LegalCopyright" xml:space="preserve">
+    <value>(C) Microsoft Corporation.  All rights reserved.</value>
+  </data>
+  <data name="LineNumberTooLarge" xml:space="preserve">
+    <value>アクティビティ {0} に指定されている行番号は、部分的な信頼には大きすぎます。</value>
+  </data>
+  <data name="LiteralsMustBeValueTypesOrImmutableTypes" xml:space="preserve">
+    <value>リテラルは、値の型と変更不可の型 {0} のみをサポートします。型 {1} はリテラルとして使用できません。</value>
+  </data>
+  <data name="LoadedWriteOnlyValue" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。InstanceValueOptions.WriteOnly に設定された InstanceValue の読み込みが報告されました。書き込み専用の値を読み込むことはできません。</value>
+  </data>
+  <data name="LoadingAborted" xml:space="preserve">
+    <value>インスタンスの読み込みは中止されました。</value>
+  </data>
+  <data name="LoadingWorkflowApplicationRequiresInstanceStore" xml:space="preserve">
+    <value>Load または LoadRunnableInstance を呼び出す前に、WorkflowApplication で有効な InstanceStore を設定する必要があります。</value>
+  </data>
+  <data name="LoadOpAssociateKeysCannotContainLookupKey" xml:space="preserve">
+    <value>LoadWorkflowByInstanceKeyCommand.AssociateLookupKeyToInstanceId が指定されていない場合、LookupInstanceKey をインスタンスに関連付けておく必要があります。関連付けられていないと、LoadWorkflowByInstanceKeyCommand の実行は失敗します。このため、AssociateLookupKeyToInstanceId が設定されていない場合、InstanceKeysToAssociate コレクションで LookupInstanceKey をさらに指定することは無効です。</value>
+  </data>
+  <data name="LoadOpFreeKeyRequiresAcceptUninitialized" xml:space="preserve">
+    <value>LoadByKeyOperation.InstanceIdForFreeKey が指定されている場合、AcceptUninitializedInstance を true に設定する必要があります。キーが解放されている場合、指定されたインスタンス ID の、初期化されていないインスタンスに関連付けられます。</value>
+  </data>
+  <data name="LoadOpKeyMustBeValid" xml:space="preserve">
+    <value>インスタンスの検索に使用するキー LoadByKeyOperation.LookupKey に、Guid.Empty などのすべて 0 の値を指定することはできません。</value>
+  </data>
+  <data name="LocationExpressionCouldNotBeResolved" xml:space="preserve">
+    <value>配置式 '{0}' を変数またはプロパティに解決できませんでした。スコープの階層で定義した変数またはプロパティに配置式が解決されることを確認してください。</value>
+  </data>
+  <data name="LocationTypeMismatch" xml:space="preserve">
+    <value>名前が '{0}' の場所は、型 '{2}' の場所であるため、型 '{1}' の場所として取得できません。場所には読み取りおよび書き込みアクセスができるため、型が完全に一致する必要があります。</value>
+  </data>
+  <data name="LockRetryTimeout" xml:space="preserve">
+    <value>インスタンス ロックを取得しようとしてタイムアウトしました。割り当てられたタイムアウト時間 {0} 内に操作が完了しませんでした。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="LockTimeoutExceptionMessage" xml:space="preserve">
+    <value>割り当てられたタイムアウト時間 {0} 内にロックを要求できません。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="MapEntryNotFound" xml:space="preserve">
+    <value>アクティビティ '{0}' の更新マップ エントリが見つかりません。</value>
+  </data>
+  <data name="MarkCanceledOnlyCallableIfCancelRequested" xml:space="preserve">
+    <value>MarkCanceled を呼び出すことができるのは、取り消すように要求されたアクティビティだけです。このメソッドを呼び出す前に、ActivityInstance.HasCancelBeenRequested を確認してください。</value>
+  </data>
+  <data name="MaximumRetriesExceededForSqlCommand" xml:space="preserve">
+    <value>SQL コマンドが最大実行回数実行されたので、この SQL コマンドの再試行を停止します。</value>
+  </data>
+  <data name="MaxInstancesExceeded" xml:space="preserve">
+    <value>システムはスロットル 'MaxConcurrentInstances' に設定された制限に達しました。このスロットルの制限は {0} に設定されていました。スロットル値を変更するには、serviceThrottle 要素の属性 'maxConcurrentInstances' を変更するか、動作 ServiceThrottlingBehavior の 'MaxConcurrentInstances' プロパティを変更する必要があります。</value>
+  </data>
+  <data name="MaxPendingMessagesPerChannelExceeded" xml:space="preserve">
+    <value>'{0}' のスロットル 'MaxPendingMessagesPerChannel' 制限に達しました。この制限を引き上げるには、BufferedReceiveServiceBehavior の MaxPendingMessagesPerChannel プロパティを調整してください。</value>
+  </data>
+  <data name="MaxPendingMessagesPerChannelMustBeGreaterThanZero" xml:space="preserve">
+    <value>スロットル制限は、0 より大きい必要があります。無効にするには、Int32.MaxValue に設定してください。</value>
+  </data>
+  <data name="MayBindLockCommandShouldValidateOwner" xml:space="preserve">
+    <value>AutomaticallyAcquiringLock から true を返す InstancePersistenceCommand は、InstanceOwner にバインドされていない InstanceHandle を使用してコマンドが実行された場合、InvalidOperationException をスローするように Validate をオーバーライドする必要があります。</value>
+  </data>
+  <data name="MemberCannotBeNull" xml:space="preserve">
+    <value>{1} アクティビティ '{2}' の '{0}' を null にすることはできません。</value>
+  </data>
+  <data name="MemberIsReadOnly" xml:space="preserve">
+    <value>型 '{1}' のメンバー '{0}' は読み取り専用です。LValue にはできません。</value>
+  </data>
+  <data name="MemberNotFound" xml:space="preserve">
+    <value>'{0}' という名前のメンバーは型 '{1}' にはありません。</value>
+  </data>
+  <data name="MemberNotSupportedByActivityXamlServices" xml:space="preserve">
+    <value>ActivityXamlServices で、DynamicActivity によってサポートされていないメンバー ({0}) が見つかりました。</value>
+  </data>
+  <data name="MessageCannotBeEmpty" xml:space="preserve">
+    <value>Message の内容が null です。これは、コントラクト '{1}' の操作 '{0}' と一致しません。</value>
+  </data>
+  <data name="MessageContentCannotHaveMoreThanOneParameter" xml:space="preserve">
+    <value>実装されたコントラクト '{1}' の操作 '{0}' にメッセージ コントラクトのパラメーターを複数含めることはできません。</value>
+  </data>
+  <data name="MessageHeaderNotSupported" xml:space="preserve">
+    <value>MessageDescription ではカスタム メッセージ ヘッダーはサポートされていません。コントラクト '{1}' の操作 '{0}' で、MessageContract で修飾された型を使用してください。</value>
+  </data>
+  <data name="MessagePropertyIsNotSupported" xml:space="preserve">
+    <value>MessageDescription ではカスタム メッセージ プロパティはサポートされていません。コントラクト '{1}' の操作 '{0}' で、MessageContract で修飾された型を使用してください。</value>
+  </data>
+  <data name="MessageTypeMismatch" xml:space="preserve">
+    <value>Receive が ReceiveMessageContent で指定した System.ServiceModel.Channels.Message 型は、実装されたコントラクト '{2}' の操作 '{1}' で指定されているメッセージ型 '{0}' と異なります。</value>
+  </data>
+  <data name="MessageVersionInformationNotFound" xml:space="preserve">
+    <value>応答メッセージのバージョン情報が見つかりませんでした。</value>
+  </data>
+  <data name="MetadataCannotContainNullKey" xml:space="preserve">
+    <value>InstanceValue の名前付きコレクション (辞書) に NULL の名前が指定されました。InstanceValue に対して NULL の名前は無効です。</value>
+  </data>
+  <data name="MetadataCannotContainNullValue" xml:space="preserve">
+    <value>InstanceValue の名前付きコレクション (辞書) に NULL 値が指定されました。NULL 値が指定された名前は {0} でした。NULL は有効な InstanceValue ではありません。NULL 値を指定するには、InstanceValue コンストラクターに NULL を渡して、NULL データを持つ InstanceValue のインスタンスを使用します。名前付きの値を削除する必要があることを示すには、InstanceValue.DeletedValue を使用します。</value>
+  </data>
+  <data name="MethodInfoRequired" xml:space="preserve">
+    <value>型 '{0}' の Method プロパティは必須です。</value>
+  </data>
+  <data name="MethodNameRequired" xml:space="preserve">
+    <value>型 '{0}' の Name プロパティは必須です。</value>
+  </data>
+  <data name="MissingArgument" xml:space="preserve">
+    <value>名前 '{0}' に関連付けられている引数は '{1}' コレクション内で null です。</value>
+  </data>
+  <data name="MissingBindingInEndpoint" xml:space="preserve">
+    <value>Name='{0}' および ServiceContract '{1}' のエンドポイントに Binding がありません。このエンドポイントに Binding を指定してください。</value>
+  </data>
+  <data name="MissingBodyInWorkflowService" xml:space="preserve">
+    <value>現在の WorkflowService の Body プロパティが null です。この WorkflowService に Body を指定してください。</value>
+  </data>
+  <data name="MissingDisplayNameInRootActivity" xml:space="preserve">
+    <value>ルート アクティビティの DisplayName が空です。ルート アクティビティの DisplayName に NULL や空の文字列を設定したり、WorkflowService の Name を指定しないでください。</value>
+  </data>
+  <data name="MissingKnownTypes" xml:space="preserve">
+    <value>コントラクト '{2}' の操作 '{1}' の既知の型 '{0}' がありません。</value>
+  </data>
+  <data name="MissingNameProperty" xml:space="preserve">
+    <value>型 '{0}' の引数に名前がありません。このコレクションの項目には Name プロパティを指定する必要があります。</value>
+  </data>
+  <data name="MissingOperationName" xml:space="preserve">
+    <value>アクティビティ '{0}' に OperationName プロパティを設定する必要があります。</value>
+  </data>
+  <data name="MissingParameter" xml:space="preserve">
+    <value>コントラクト '{2}' の操作 '{1}' で指定されているパラメーター '{0}' がパラメーター コレクションに含まれていません。</value>
+  </data>
+  <data name="MissingServiceContractName" xml:space="preserve">
+    <value>OperationName='{1}' のアクティビティ '{0}' に ServiceContractName プロパティを設定する必要があります。</value>
+  </data>
+  <data name="MissingSetAccessorForIndexer" xml:space="preserve">
+    <value>型 {1} のインデクサー プロパティ {0} で setter アクセサーが公開されていません。</value>
+  </data>
+  <data name="MissingUriInEndpoint" xml:space="preserve">
+    <value>Name='{0}' および ServiceContract '{1}' のエンドポイントに null または空の Uri プロパティが含まれています。このエンドポイントの URI を指定する必要があります。</value>
+  </data>
+  <data name="MisuseOfMessageContent" xml:space="preserve">
+    <value>コントラクト '{1}' の操作 '{0}' にデータ コントラクトが指定されています。このコントラクト定義に合わせて、Receive アクティビティには ReceiveParameterContent を、SendReply アクティビティには SendParameterContent を使用してください。</value>
+  </data>
+  <data name="MisuseOfParameterContent" xml:space="preserve">
+    <value>コントラクト '{1}' の操作 '{0}' にメッセージ コントラクト型が指定されています。このコントラクト定義に合わせて、Receive アクティビティには ReceiveMessageContent を、SendReply アクティビティには SendMessageContent を使用してください。</value>
+  </data>
+  <data name="MovingActivitiesInStateBlockDU" xml:space="preserve">
+    <value>StateMachine では、元の定義のアクティビティ プロパティが State またはその Transition の別のプロパティに再割り当てされる場合は、動的更新はサポートされません。</value>
+  </data>
+  <data name="MultiDimensionalArraysNotSupported" xml:space="preserve">
+    <value>多次元配列はサポートされていません。</value>
+  </data>
+  <data name="MultipleFlowNodesSharingSameChildBlockDU" xml:space="preserve">
+    <value>フローチャートでは、複数の FlowNode が同じ子アクティビティを共有している場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="MultipleLockOwnersNotSupported" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore は複数のロック所有者の同時作成をサポートしていません。多数のアプリケーションでストアを共有するように InstanceStore.DefaultInstanceOwner を設定してください。</value>
+  </data>
+  <data name="MultipleOverloadGroupsConfigured" xml:space="preserve">
+    <value>次のオーバーロード グループが構成されています: '{0}'。引数を構成できるオーバーロード グループは 1 つのみです。</value>
+  </data>
+  <data name="MustCallPrepareBeforeFinalize" xml:space="preserve">
+    <value>ワークフロー定義に元の定義のコピーが添付されていません。ワークフローを更新する前に、DynamicUpdateServices.PrepareForUpdate を呼び出して元の定義のコピーを保存してください。</value>
+  </data>
+  <data name="MustCancelOldTimer" xml:space="preserve">
+    <value>新しいタイマーを設定するには、前のタイマーをキャンセルする必要があります。</value>
+  </data>
+  <data name="MustMatchReferenceExpressionReturnType" xml:space="preserve">
+    <value>参照式は Conversion で終了できません。渡される式の型は、VisualBasicReference&lt;T&gt; または LambdaReference&lt;T&gt; の型 T に正確に一致する必要があります。</value>
+  </data>
+  <data name="MustSetTransactionOnFirstCall" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。InstancePersistenceContext.Execute または InstancePersistenceContext.BeginExecute のスレッド呼び出しにアンビエント トランザクション (System.Transactions.Transaction.Current) が設定されていますが、トランザクションが設定されていないこの実行エピソードの間に、既にコマンドが実行されています。アンビエント トランザクションは、Execute または BeginExecute の最初の呼び出しに対してのみ (および、エピソードに対して他のトランザクションが設定されていない場合にのみ) 設定できます。</value>
+  </data>
+  <data name="MustSpecifyConnectionStringOrName" xml:space="preserve">
+    <value>connectionString プロパティまたは connectionStringName プロパティのいずれかを指定する必要があります。</value>
+  </data>
+  <data name="NameCollisionOnCollect" xml:space="preserve">
+    <value>型 '{1}' の永続参加要素によって指定された名前 '{0}' について、名前の競合が検出されました。参加要素の CollectValues 実装によって指定された値は、この参加要素または別の永続参加要素によって指定された別の値と同じ名前を使用しています。別の名前を使用するように参加要素を修正して競合を避けるか、ワークフローの拡張コレクションから参加要素を削除してください。</value>
+  </data>
+  <data name="NameCollisionOnMap" xml:space="preserve">
+    <value>型 '{1}' の永続参加要素によって指定された名前 '{0}' について、名前の競合が検出されました。参加要素の MapValues 実装によって指定された値は、この参加要素または別の永続参加要素によって指定された別の値と同じ名前を使用しています。別の名前を使用するように参加要素を修正して競合を避けるか、ワークフローの拡張コレクションから参加要素を削除してください。</value>
+  </data>
+  <data name="NativeActivityUpdateInstanceThrewException" xml:space="preserve">
+    <value>アクティビティの UpdateInstance メソッドから例外がスローされました: {0}</value>
+  </data>
+  <data name="NAUCDisposed" xml:space="preserve">
+    <value>NativeActivityUpdateContext にアクセスできるのは、それが渡された関数のスコープ内だけです。</value>
+  </data>
+  <data name="NewArrayBoundsRequiresIntegralArguments" xml:space="preserve">
+    <value>'NewArrayBounds' には整数の引数が必要です。</value>
+  </data>
+  <data name="NewArrayRequiresArrayTypeAsResultType" xml:space="preserve">
+    <value>'NewArray' アクティビティの結果型は具象配列型である必要があります。</value>
+  </data>
+  <data name="NoAdditionalKeysOnInstanceIdLoad" xml:space="preserve">
+    <value>InstanceStore を永続化プロバイダーとして使用する場合、インスタンス ID を指定してインスタンスを読み込むときに追加のキーを指定することはできません。</value>
+  </data>
+  <data name="NoCAInSecondaryRoot" xml:space="preserve">
+    <value>CompensableActivity は、親 CompensableActivity の補正ハンドラー、確認ハンドラー、または取り消しハンドラー内で入れ子にすることはできません。</value>
+  </data>
+  <data name="NoChangesMapQueryNotSupported" xml:space="preserve">
+    <value>NoChanges マップ上のクエリはサポートされていません。</value>
+  </data>
+  <data name="NoDynamicArgumentsInActivityDefinitionChange" xml:space="preserve">
+    <value>このアクティビティに対する変更が、指定された Implementation Map と現在の更新で競合しています。アクティビティの引数が両方の更新で変更されています。</value>
+  </data>
+  <data name="NoDynamicArgumentsInActivityDefinitionChangeRuntime" xml:space="preserve">
+    <value>このアクティビティに対する変更が、実装の更新とより大きなワークフローの更新とで競合しています。アクティビティの引数が両方の更新で変更されています。</value>
+  </data>
+  <data name="NoNamespace" xml:space="preserve">
+    <value>名前空間 '{0}:' を解決できません。</value>
+  </data>
+  <data name="NonWASActivationNotSupported" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore のみが WAS のアクティブ化をサポートしています。</value>
+  </data>
+  <data name="NoOutputLocationWasFound" xml:space="preserve">
+    <value>引数 {0} が有効な出力先と一致しませんでした。</value>
+  </data>
+  <data name="NoOverloadGroupsAreConfigured" xml:space="preserve">
+    <value>どのオーバーロード グループでもすべての必須/オプションのアクティビティ引数が構成されていません。</value>
+  </data>
+  <data name="NoPersistScopeCannotContainPersist" xml:space="preserve">
+    <value>NoPersistScope アクティビティ '{0}' に Persist アクティビティ '{1}' を含めることはできません。 </value>
+  </data>
+  <data name="NoPromotionsDefined" xml:space="preserve">
+    <value>名前付き昇格 {0} に昇格が定義されていません。</value>
+  </data>
+  <data name="NoRunnableInstances" xml:space="preserve">
+    <value>実行可能ワークフロー インスタンスが、読み込む InstanceStore に見つかりませんでした。</value>
+  </data>
+  <data name="NoRuntimeTransactionExists" xml:space="preserve">
+    <value>ランタイムにアクティブなトランザクションがない場合、CompleteTransaction の呼び出しは無効です。</value>
+  </data>
+  <data name="NotSpecified" xml:space="preserve">
+    <value>&lt; 未指定 &gt;</value>
+  </data>
+  <data name="NotSupportMoreThanOneParametersInMessageContract" xml:space="preserve">
+    <value>コントラクト '{1}' の操作 '{0}' に MessageContract を使用している場合、操作に複数のパラメーターを含めることはできません。有効なコントラクト定義を指定してください。 </value>
+  </data>
+  <data name="NullAssignedToValueType" xml:space="preserve">
+    <value>正しくない型の値がインスタンス ストアから取得されました。型 {0} の値が必要でしたが、null 値が見つかりました。</value>
+  </data>
+  <data name="NullCorrelationHandleInInitializeCorrelation" xml:space="preserve">
+    <value>CorrelationHandle を '{0}' で null にすることはできません。</value>
+  </data>
+  <data name="NullCorrelationHandleInMultipleQueryCorrelation" xml:space="preserve">
+    <value>少なくとも 1 つの QueryCorrelationInitializer に相関ハンドルが設定されていません。CorrelationInitializers コレクションに複数の QueryCorrelationInitializer が存在する場合は、CorrelationHandle を指定する必要があります。</value>
+  </data>
+  <data name="NullKeyAlreadyPresent" xml:space="preserve">
+    <value>null キーを持つ項目は既に追加されています。</value>
+  </data>
+  <data name="NullReferencedMemberAccess" xml:space="preserve">
+    <value>メンバー {1} では型 {0} の null オブジェクトを逆参照できません。</value>
+  </data>
+  <data name="NullReplyMessageContractMismatch" xml:space="preserve">
+    <value>サーバーから NULL の応答メッセージを受信しました。クライアント側とサーバー側でコントラクトが一致していない可能性があります。サーバー側のワークフローが双方向の操作用に構成されていることを確認してください。</value>
+  </data>
+  <data name="OnCancelRequestedThrew" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。キャンセル用のハンドラーで例外がスローされました。このハンドラーは、InstancePersistenceContext.SetCancellationHandler メソッドを使用して指定されました。</value>
+  </data>
+  <data name="OneOfTwoPropertiesMustBeSet" xml:space="preserve">
+    <value>アクティビティ '{3}' の '{2}' には '{0}' プロパティか '{1}' プロパティが必要です。</value>
+  </data>
+  <data name="OnewayContractIsImplementedAsTwoWay" xml:space="preserve">
+    <value>コントラクト '{1}' の一方向の操作 '{0}' に SendReply アクティビティを使用することはできません。 </value>
+  </data>
+  <data name="OnFreeInstanceHandleThrew" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。OnFreeInstanceHandle の実装で例外がスローされました。</value>
+  </data>
+  <data name="OnlyBookmarkOwnerCanRemove" xml:space="preserve">
+    <value>ブックマークを削除できるのは作成元のアクティビティ インスタンスだけです。</value>
+  </data>
+  <data name="OnlyOneOperationPerActivity" xml:space="preserve">
+    <value>アクティビティに対して一度にアクティブにすることができる操作は 1 つだけです。別の操作が既に進行中です。</value>
+  </data>
+  <data name="OnlyOneRequireTransactionContextAllowed" xml:space="preserve">
+    <value>ランタイムが RequireTransactionContext の呼び出しを既に処理しようとしています。</value>
+  </data>
+  <data name="OnlySingleCastDelegatesAllowed" xml:space="preserve">
+    <value>WorkflowApplication イベントではマルチキャスト以外のデリゲートのみを使用できます。指定されたデリゲートは、呼び出しリストの長さが 2 以上あります。</value>
+  </data>
+  <data name="OperationAlreadyCompleted" xml:space="preserve">
+    <value>操作は既に完了しています。</value>
+  </data>
+  <data name="OperationDoesNotExistInContract" xml:space="preserve">
+    <value>Name='{1}' および Namespace='{2}' のコントラクトに操作 '{0}' が存在しません。</value>
+  </data>
+  <data name="OperationFormatterAndFaultFormatterIncorrectlySet" xml:space="preserve">
+    <value>OperationFormatter と FaultFormatter の両方を設定することはできません。</value>
+  </data>
+  <data name="OperationFormatterAndFaultFormatterNotSet" xml:space="preserve">
+    <value>OperationFormatter と FaultFormatter の両方に NULL を指定することはできません。</value>
+  </data>
+  <data name="OperationHasSerializerBehavior" xml:space="preserve">
+    <value>コントラクト '{1}' の操作 '{0}' には既に '{2}' の動作が含まれているため、新しい動作を追加することはできません。これは通常、この操作に対して IOperationSerializer.ApplyToOperation メソッドが既に呼び出されていることを示します。</value>
+  </data>
+  <data name="OperationIsNotImplemented" xml:space="preserve">
+    <value>コントラクト '{1}' の操作 '{0}' は、ワークフロー内に実装されていません。</value>
+  </data>
+  <data name="OperationNotAvailable" xml:space="preserve">
+    <value>ID '{1}' のサービス インスタンスでの操作 '{0}' は現時点では実行できません。操作が正しい順番に実行され、使用中のバインドで必ず順番どおりに配信が行われるようにしてください。</value>
+  </data>
+  <data name="OperationNotFound" xml:space="preserve">
+    <value>コントラクト {0} および操作 {1} の Receive が既定の WorkflowService に見つかりません。他のバージョンの WorkflowService のすべての操作が最初に既定の WorkflowService に追加されていることを確認してください。</value>
+  </data>
+  <data name="OptionalExtensionTypeMatchedMultiple" xml:space="preserve">
+    <value>型 '{0}' の拡張が複数見つかりました。このワークフローを実行しているときは、最大で 1 つの型を使用できます。</value>
+  </data>
+  <data name="OriginalActivityReusedInModifiedDefinition" xml:space="preserve">
+    <value>元の定義のアクティビティ '{0}' は、更新された定義で再利用できません。</value>
+  </data>
+  <data name="OriginalVariableReusedInModifiedDefinition" xml:space="preserve">
+    <value>元の定義の変数 '{0}' は、更新された定義で再利用できません。</value>
+  </data>
+  <data name="OriginCannotBeRuntimeIntrinsic" xml:space="preserve">
+    <value>オブジェクト '{0}' を元のオブジェクトとして使用することはできません。このオブジェクトは既にワークフロー定義要素 (Activity、ActivityDelegate、Argument、または LocationReference) になっています。</value>
+  </data>
+  <data name="OutArgumentCannotHaveInputValue" xml:space="preserve">
+    <value>OutArgument '{0}' を入力値で構成することはできません。キー '{0}' を入力ディクショナリから削除する必要があります。</value>
+  </data>
+  <data name="OutOfIdSpaceIds" xml:space="preserve">
+    <value>この ID 領域内のアクティビティ数が Int32.MaxValue を超えました。ワークフローの一部を新しい Activity サブクラスにリファクターしてください。</value>
+  </data>
+  <data name="OutOfInstanceIds" xml:space="preserve">
+    <value>実行できるのはワークフローの long.MaxValue Activity インスタンスだけです。</value>
+  </data>
+  <data name="OutOfInternalBookmarks" xml:space="preserve">
+    <value>生成できるのはワークフローの long.MaxValue 内部ブックマークだけです。</value>
+  </data>
+  <data name="OutOfRangeSourceLocationEndColumn" xml:space="preserve">
+    <value>単一行 SourceLocation の場合、endColumn は startColumn (= {0}) 以上にする必要があります。</value>
+  </data>
+  <data name="OutOfRangeSourceLocationEndLine" xml:space="preserve">
+    <value>SourceLocation の endLine は startLine (= {0}) 以上にする必要があります。</value>
+  </data>
+  <data name="OutsideInstanceExecutionScope" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。メソッド {0} は、コマンドの処理中にのみ呼び出すことができます。後で使用する目的で InstancePersistenceContext のインスタンスを保持しないでください。TryCommand および BeginTryCommand に指定された InstancePersistenceContext は、そのコマンドの処理中にのみ使用できます。</value>
+  </data>
+  <data name="OutsideTransactionalCommand" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。一貫性のあるトランザクションを要求してはならないコマンド実行の一部として、InstancePersistenceContext で、一貫性のあるトランザクションを要求するメソッド {0} を呼び出しました。このため、データが破損する可能性があります。このエラーは、永続化プロバイダー実装が無効であることを示します。</value>
+  </data>
+  <data name="OverloadGroupHasSubsets" xml:space="preserve">
+    <value>次のオーバーロード グループはグループ '{0}' のサブセットです: {1}。オーバーロード グループを別のグループのサブセットとして使用することはできません。</value>
+  </data>
+  <data name="OverloadGroupsAreEquivalent" xml:space="preserve">
+    <value>次のオーバーロード グループは同等です: {0}。ここでは 1 つのオーバーロード グループを定義するのみで十分です。</value>
+  </data>
+  <data name="OverloadingMethodMustBeStatic" xml:space="preserve">
+    <value>演算子をオーバーロードするメソッドは静的である必要があります。</value>
+  </data>
+  <data name="OverloadOnlyCallableFromWorkflowThread" xml:space="preserve">
+    <value>このメソッド オーバーロードはワークフロー スレッドからのみ呼び出すことができます。</value>
+  </data>
+  <data name="OwnerBelongsToWrongStore" xml:space="preserve">
+    <value>渡された InstanceOwner が正しくありません。InstanceStore メソッドに渡される InstanceOwner は、InstanceStore に属す必要があります。作成元の InstanceStore の InstanceOwner オブジェクトだけを使用してください。</value>
+  </data>
+  <data name="OwnerRequired" xml:space="preserve">
+    <value>インスタンス永続化システムは、無効な InstancePersistenceCommand を処理できません。このコマンドにはインスタンス所有者が必要ですが、InstanceHandle には所有者がバインドされていません。</value>
+  </data>
+  <data name="ParallelForEachRequiresNonNullValues" xml:space="preserve">
+    <value>ParallelForEach アクティビティ '{0}' を使用するには、値を NULL 以外の式にバインドする必要があります。</value>
+  </data>
+  <data name="ParameterNumberMismatch" xml:space="preserve">
+    <value>コントラクト '{2}' の操作 '{1}' にパラメーター '{0}' が存在しません。</value>
+  </data>
+  <data name="ParameterPositionMismatch" xml:space="preserve">
+    <value>コントラクト '{2}' の操作 '{1}' のパラメーター '{0}' の順序が正しくありません。パラメーター コレクションの位置 '{3}' に移動してください。 </value>
+  </data>
+  <data name="ParameterTypeMismatch" xml:space="preserve">
+    <value>パラメーター '{0}' の型が、実装されたコントラクト '{3}' の操作 '{2}' で指定されている型 '{1}' と一致しません。</value>
+  </data>
+  <data name="PartialTrustPerformanceCounterNotEnabled" xml:space="preserve">
+    <value>パフォーマンス カウンターへのアクセスが拒否されました。アプリケーションが、部分的な信頼で実行されている可能性があります。パフォーマンス カウンターを無効にするか、または完全な信頼で実行するようにアプリケーションを構成してください。</value>
+  </data>
+  <data name="PauseWhenPersistableInvalidIfPersistable" xml:space="preserve">
+    <value>PauseWhenPersistable を呼び出すことができるのは、IsPersistable が false の場合だけです。</value>
+  </data>
+  <data name="PendingMessagesPerChannelRatio" xml:space="preserve">
+    <value>チャネルごとの保留メッセージの比率: {0}/{1}</value>
+  </data>
+  <data name="PermissionArgumentWrongType" xml:space="preserve">
+    <value>引数の型が正しくありません。'{0}' である必要があります。</value>
+  </data>
+  <data name="PersistenceInitializerThrew" xml:space="preserve">
+    <value>IPersistenceContextInitializer の実装により、例外がスローされました。永続的なサービス インスタンス (WorkflowServiceInstance など) を読み込みまたは作成できません。InnerException プロパティに元の例外が含まれています。</value>
+  </data>
+  <data name="PersistencePipelineAbortThrew" xml:space="preserve">
+    <value>型 '{0}' の永続参加要素の Abort 実装により例外がスローされました。Abort 実装からは例外をスローしないでください。</value>
+  </data>
+  <data name="PersistenceProviderRequiredToPersist" xml:space="preserve">
+    <value>永続化またはアンロードできるのは、PersistenceProvider 拡張で構成されたワークフロー インスタンスだけです。</value>
+  </data>
+  <data name="PersistenceTooLateToEnlist" xml:space="preserve">
+    <value>トランザクションに参加するには遅すぎます。既にコミットまたは中止が開始されています。</value>
+  </data>
+  <data name="PersistenceViolationNoCreate" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。InstanceNotReadyException がスローされたときに、新しいインスタンスが作成されました。</value>
+  </data>
+  <data name="PickBranchRequiresTrigger" xml:space="preserve">
+    <value>PickBranch '{0}' を使用する前に、Trigger を設定する必要があります。</value>
+  </data>
+  <data name="PickBranchTriggerActionSwapped" xml:space="preserve">
+    <value>Pick では、PickBranch の Trigger と Action が入れ替えられている場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="PrepareForSerializationRequiresPersistability" xml:space="preserve">
+    <value>PrepareForSerialization を呼び出すことができるのは、IsPersistable が true の場合だけです。</value>
+  </data>
+  <data name="PrivateMembersHaveChanged" xml:space="preserve">
+    <value>このアクティビティのプライベートな実装は変更されています (実装の子、デリゲート、変数、または引数が追加、削除、または再配置されています)。動的更新でサポートされるのは、アクティビティのパブリックな構成とは別に Implementation Map で指定されている実装の変更だけです。</value>
+  </data>
+  <data name="PromotionAlreadyDefined" xml:space="preserve">
+    <value>昇格セット {0} は既に定義されています。</value>
+  </data>
+  <data name="PromotionTooManyDefined" xml:space="preserve">
+    <value>昇格セット {0} に {1} 個の {2} 昇格が定義されており、これは {3} で許可されている昇格の最大数を超えています。</value>
+  </data>
+  <data name="PropertyCannotBeModified" xml:space="preserve">
+    <value>SqlTrackingParticipant でレコードの処理が開始された後に {0} プロパティを変更することはできません。</value>
+  </data>
+  <data name="PropertyMemberNotSupportedByActivityXamlServices" xml:space="preserve">
+    <value>ActivityXamlServices で、DynamicActivityProperty によってサポートされていない x:Property メンバー ({0}) が見つかりました。</value>
+  </data>
+  <data name="PropertyMismatch" xml:space="preserve">
+    <value>'{0}' は、コントラクト '{4}' の操作 '{3}' で指定されている '{1}' 値 '{2}' と一致しません。</value>
+  </data>
+  <data name="PropertyReadOnlyInWorkflowDataContext" xml:space="preserve">
+    <value>プロパティ '{0}' は WorkflowDataContext では読み取り専用です。</value>
+  </data>
+  <data name="PropertyReferenceNotFound" xml:space="preserve">
+    <value>PropertyReference でプロパティ '{0}' を解決できません。</value>
+  </data>
+  <data name="ProtectionLevelIsNotSupported" xml:space="preserve">
+    <value>カスタム ProtectionLevel の設定は、MessageContract でのみサポートされています。実装されたコントラクト '{1}' の操作 '{0}' に MessageContract 型を指定してください。</value>
+  </data>
+  <data name="ProtectionLevelNotSupported" xml:space="preserve">
+    <value>ワークフローでは、エラーに対するカスタム ProtectionLevel の設定はサポートされていません。実装されたコントラクト '{1}' の操作 '{0}' の FaultContract に ProtectionLevel を指定しないでください。</value>
+  </data>
+  <data name="ProvidedStateInitializedForExecution" xml:space="preserve">
+    <value>ランタイムの状態は実行のために既に初期化されているため更新できません。永続から状態を再度読み込んでください。</value>
+  </data>
+  <data name="ProviderDoesNotSupportCommand" xml:space="preserve">
+    <value>InstanceStore の永続化プロバイダー実装は、{0} という名前のコマンドをサポートしていません。別のプロバイダーを選択するか、この永続コマンドが実行されないようにしてください。</value>
+  </data>
+  <data name="PublicChildrenChangeBlockDU" xml:space="preserve">
+    <value>このアクティビティでは、パブリックな子の変更 (Activity または ActivityDelegate の追加、削除、または再配置) はサポートされていません。</value>
+  </data>
+  <data name="PublicEnvironmentAccessToNonGenericActivity" xml:space="preserve">
+    <value>パブリックな環境へのアクセスを使用できるのは、CodeActivity ではなく CodeActivity&lt;TResult&gt; から派生するアクティビティだけです。</value>
+  </data>
+  <data name="PublicMethodWithMatchingParameterDoesNotExist" xml:space="preserve">
+    <value>'{0}' には、InvokeMethod '{3}' に指定されたパラメーター型、ジェネリック型引数、およびジェネリック型制約と一致する '{2}' という名前のパブリック {1} メソッドがあります。</value>
+  </data>
+  <data name="PublicReferencesOnActivityRequiringArgumentResolution" xml:space="preserve">
+    <value>アクティビティ '{0}' で、組み込みの Result 引数以外の引数の定義と、CodeActivityPublicEnvironmentAccessor によるパブリックな場所へのアクセスの宣言の両方を行うことはできません。引数か、CodeActivityPublicEnvironmentAccessor.TryGetAccessToPublicLocation および TryGetReferenceToPublicLocation のいずれかを使用して、すべてのデータをアクティビティに渡してください。</value>
+  </data>
+  <data name="QueryActivityIsInImplementation" xml:space="preserve">
+    <value>このアクティビティは、複合アクティビティ '{0}' の実装内にあります。このアクティビティが更新可能かどうかを調べるには、この複合アクティビティの Implementation Map を使用してください。</value>
+  </data>
+  <data name="QueryActivityIsNotInDefinition" xml:space="preserve">
+    <value>このアクティビティは、元のワークフロー定義にも、更新されたワークフロー定義にも属していません。</value>
+  </data>
+  <data name="QueryActivityIsPublic" xml:space="preserve">
+    <value>このアクティビティは、ルート ワークフロー定義に含まれています。このアクティビティが更新可能かどうかを調べるには、複合アクティビティ '{0}' の Implementation Map ではなくワークフローの更新マップを使用してください。</value>
+  </data>
+  <data name="QueryCorrelationInitializerCannotBeInitialized" xml:space="preserve">
+    <value>QueryCorrelationInitializer の初期化に使用できる相関ハンドルがありません。これは、クエリ初期化子に明示的にハンドルが設定されておらず、相関スコープにも使用できるハンドルがないためです。"</value>
+  </data>
+  <data name="QueryCorrelationInitializerWithEmptyMessageQuerySet" xml:space="preserve">
+    <value>DisplayName='{0}' および OperationName='{1}' のアクティビティに、MessageQuerySet が空の QueryCorrelationInitializer があります。</value>
+  </data>
+  <data name="QueryVariableIsInImplementation" xml:space="preserve">
+    <value>この変数は、複合アクティビティ '{0}' の実装内にあります。この変数が更新可能かどうかを調べるには、この複合アクティビティの Implementation Map を使用してください。</value>
+  </data>
+  <data name="QueryVariableIsNotInDefinition" xml:space="preserve">
+    <value>この変数は、元のワークフロー定義にも、更新されたワークフロー定義にも属していません。</value>
+  </data>
+  <data name="QueryVariableIsNotPublic" xml:space="preserve">
+    <value>この変数はパブリックではありません。動的更新で変更できるのはパブリック変数だけです。</value>
+  </data>
+  <data name="QueryVariableIsPublic" xml:space="preserve">
+    <value>この変数は、ルート ワークフロー定義に含まれています。この変数が更新可能かどうかを調べるには、複合アクティビティ '{0}' の Implementation Map ではなくワークフローの更新マップを使用してください。</value>
+  </data>
+  <data name="QueuingSqlRetry" xml:space="preserve">
+    <value>{0} ミリ秒の遅延で SQL の再試行をキューに登録しています。</value>
+  </data>
+  <data name="ReadAccessToWriteOnlyPublicReference" xml:space="preserve">
+    <value>アクティビティ '{0}' でこのパブリックな場所参照からの読み取りを実行できません。この参照は、ArgumentDirection.Out を使用して宣言されています。読み取りと書き込みの両方を許可するには、ArgumentDirection.InOut を使用して宣言してください。</value>
+  </data>
+  <data name="ReadNotSupported" xml:space="preserve">
+    <value>このストリームでの読み取りはサポートされていません。</value>
+  </data>
+  <data name="ReadonlyNameScopeCannotBeUpdated" xml:space="preserve">
+    <value>名前スコープの実装が読み取り専用であるため、操作を使用できません。</value>
+  </data>
+  <data name="ReadonlyPropertyCannotBeSet" xml:space="preserve">
+    <value>set アクセサーにアクセスできないため、このコンテキストではプロパティまたはインデクサー '{0}.{1}' は使用できません。</value>
+  </data>
+  <data name="ReceiveAndReceiveParametersHaveSameName" xml:space="preserve">
+    <value>ReceiveContent の種類が異なる 2 つの Receive の ServiceContractName と OperationName '{0}' が同じです。</value>
+  </data>
+  <data name="ReceiveContentChanged" xml:space="preserve">
+    <value>この Receive アクティビティの Content は、型指定なしと型指定ありの間で変更されています。</value>
+  </data>
+  <data name="ReceiveCorrelationInitializiersChanged" xml:space="preserve">
+    <value>この Receive アクティビティの CorrelationInitializers は変更されています。</value>
+  </data>
+  <data name="ReceiveIsInTRSWhenTransactionFlowNotAllowed" xml:space="preserve">
+    <value>Receive は TransactedReceiveScope に含まれていますが、実装されたコントラクト '{1}' の操作 '{0}' では TransactionFlowOption が NotAllowed に設定されています。</value>
+  </data>
+  <data name="ReceiveIsNotInTRS" xml:space="preserve">
+    <value>実装されたコントラクト '{1}' の操作 '{0}' ではトランザクションをフローさせる必要がありますが、Receive アクティビティは TransactedReceiveScope に含まれていません。</value>
+  </data>
+  <data name="ReceiveMessageNeedsToPairWithSendMessageForTwoWayContract" xml:space="preserve">
+    <value>Receive アクティビティが要求/応答の Operation '{0}' で構成されていますが、対応する SendReply が存在しません。Receive を SendReply と組み合わせ、これらを CorrelationHandle を使用して関連付けてください。</value>
+  </data>
+  <data name="ReceiveNotWithinATransactedReceiveScope" xml:space="preserve">
+    <value>トランザクションにフローされた Receive アクティビティが TransactedReceiveScope に含まれていませんでした。</value>
+  </data>
+  <data name="ReceivePairedWithSendReplyAndSendReplyParameters" xml:space="preserve">
+    <value>SendMessageContent が設定された SendReply と SendParametersContent が設定された SendReply がどちらも、OperationName='{0}' が設定された同じ Receive に対応付けられています。これは許可されていません。</value>
+  </data>
+  <data name="ReceiveParametersContentDoesNotSupportMessage" xml:space="preserve">
+    <value>DisplayName='{0}' のアクティビティに、'{1}' という名前の引数 Message または MessageContract があります。ReceiveParametersContent では Message または MessageContract はサポートされません。Message ベースまたは MessageContract ベースのコンテンツには、コンテンツ プロパティを ReceiveMessageContent として指定してください。</value>
+  </data>
+  <data name="ReceiveReplyRequestCannotBeNull" xml:space="preserve">
+    <value>アクティビティ '{0}' の Request プロパティを null にすることはできません。この要求と応答のペアに属する Send アクティビティを設定する必要があります。</value>
+  </data>
+  <data name="ReferencedChildInIsNewlyAdded" xml:space="preserve">
+    <value>このメソッドは、インポートされた子への参照であるアクティビティに対して呼び出すことはできません。このメソッドを呼び出す前に NativeActivityUpdateContext.IsReferenceToImportedChild をチェックしてください。</value>
+  </data>
+  <data name="RegisteredBookmarkScopeRequired" xml:space="preserve">
+    <value>スコープ設定されたブックマークの作成に使用できるのは、登録済みのブックマーク スコープだけです。</value>
+  </data>
+  <data name="RelativeUriRequiresBinding" xml:space="preserve">
+    <value>Name='{0}' および ServiceContract '{1}' のエンドポイントの相対 URI '{2}' を絶対 URI に変換できません。エンドポイントの Binding プロパティが null です。Binding プロパティを設定するか、相対 URI を絶対 URI に変更してください。</value>
+  </data>
+  <data name="RelativeUriRequiresHost" xml:space="preserve">
+    <value>Name='{0}' および ServiceContract '{1}' のエンドポイントの相対 URI '{2}' を絶対 URI に変換できません。GetAddress メソッドの host 引数が null です。このエンドポイントをホストするサービス ホスト インスタンスを指定するか、相対 URI を絶対 URI に変更してください。</value>
+  </data>
+  <data name="RemovingTransitionsBlockDU" xml:space="preserve">
+    <value>StateMachine では、実行中の State から遷移が削除される場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="RenewLockSystemError" xml:space="preserve">
+    <value>ロックの有効期限を延長できませんでした。ロックの有効期限が既に過ぎているか、ロック所有者が削除されました。SqlWorkflowInstanceStore を中止します。</value>
+  </data>
+  <data name="ReplyShouldNotIncludeRequestReplyHandle" xml:space="preserve">
+    <value>OperationName='{1}' のアクティビティ '{0}' に、追加の関連付けで要求/応答ハンドルを含めないでください。</value>
+  </data>
+  <data name="RequestMustBeSpecified" xml:space="preserve">
+    <value>アクティビティ '{0}' の Request 引数を指定する必要があります。</value>
+  </data>
+  <data name="RequestReplyHandleShouldNotBePresentForOneWay" xml:space="preserve">
+    <value>一方向の Send または Receive アクティビティで RequestReplyCorrelationInitializer を指定しないでください。RequestReply 関連付けを初期化するときに、Send は ReceiveReply アクティビティと関連付けられ、Receive は SendReply アクティビティと関連付けられる必要があります。</value>
+  </data>
+  <data name="RequiredArgumentValueNotSupplied" xml:space="preserve">
+    <value>必須のアクティビティ引数 '{0}' の値が指定されませんでした。</value>
+  </data>
+  <data name="RequiredExtensionTypeNotFound" xml:space="preserve">
+    <value>型が '{0}' の拡張は、このワークフローを実行するように構成する必要があります。</value>
+  </data>
+  <data name="RequiredVariableCoundNotBeExtracted" xml:space="preserve">
+    <value>アクティビティでの抽出に必須の変数 {0} は使用できません: {1}。</value>
+  </data>
+  <data name="RequireExtensionOnlyAcceptsReferenceTypes" xml:space="preserve">
+    <value>'{0}' は値の型です。RequireExtension は、参照型のみを受け入れます。</value>
+  </data>
+  <data name="ResponseContextIsNotNull" xml:space="preserve">
+    <value>ResponseContext が NULL ではありません。</value>
+  </data>
+  <data name="ResultArgumentHasRequiredTypeAndDirection" xml:space="preserve">
+    <value>アクティビティの作成者によって指定される 'Result' という RuntimeArgument は、ArgumentDirection が Out で型が {0} である必要がありますが、ArgumentDirection が {1} で型が {2} になっています。</value>
+  </data>
+  <data name="ResultArgumentMustBeBoundToResultProperty" xml:space="preserve">
+    <value>アクティビティの作成者によって指定される 'Result' という RuntimeArgument は、アクティビティの Result プロパティによって返される引数にバインドされている必要があります。</value>
+  </data>
+  <data name="ResultArgumentMustBeSpecificType" xml:space="preserve">
+    <value>このアクティビティの Result OutArgument は、{0} の OutArgument である必要があります。</value>
+  </data>
+  <data name="ResultCannotBeSetOnArgumentExpressions" xml:space="preserve">
+    <value>Activity&lt;T&gt; が引数の式として使用されている場合、Activity&lt;T&gt; の Result OutArgument は設定できません。</value>
+  </data>
+  <data name="ResultMustBeSpecified" xml:space="preserve">
+    <value>アクティビティ '{0}' の Result 引数を指定する必要があります。</value>
+  </data>
+  <data name="RethrowMustBeAPublicChild" xml:space="preserve">
+    <value>Rethrow アクティビティ '{0}' は TryCatch アクティビティのプライベートな子で使用することはできません。Rethrow は TryCatch アクティビティのパブリックな子でのみ使用できます。</value>
+  </data>
+  <data name="RethrowNotInATryCatch" xml:space="preserve">
+    <value>Rethrow アクティビティ '{0}' は、TryCatch アクティビティの Catch ハンドラーの子である必要があります。</value>
+  </data>
+  <data name="RetryingSqlCommandDueToSqlError" xml:space="preserve">
+    <value>SQL エラー番号 {0} のため、SQL コマンドを再試行します。</value>
+  </data>
+  <data name="ReturnTypeIncompatible" xml:space="preserve">
+    <value>型の不一致です。型 '{2}' の best-match メソッド '{1}' の戻り値の型 '{0}' は、InvokeMethod '{3}' に指定された 'Result' 引数との互換性がありません。戻り値の型は '{4}' である必要があります。</value>
+  </data>
+  <data name="ReturnValueMissing" xml:space="preserve">
+    <value>コントラクト '{2}' の操作 '{1}' に型 '{0}' の戻り値のパラメーターがありません。</value>
+  </data>
+  <data name="RootActivityAlreadyAssociatedWithInstance" xml:space="preserve">
+    <value>表示名 '{0}' のアクティビティは既にインスタンスに関連付けられています。インスタンスに関連付けられたアクティビティのメタデータを操作することはできません。このエラーは、ルート アクティビティが実際には別のワークフローに含まれているワークフローを実行しようとしていることを示す場合もあります。</value>
+  </data>
+  <data name="RootActivityCannotBeReferenced" xml:space="preserve">
+    <value>アクティビティ '{0}' はルート アクティビティです。アクティビティ '{1}' で参照することはできません。</value>
+  </data>
+  <data name="RootArgumentViolationsFound" xml:space="preserve">
+    <value>ルート アクティビティの引数に指定された値がルート アクティビティの要件を満たしていません:</value>
+  </data>
+  <data name="RootArgumentViolationsFoundNoInputs" xml:space="preserve">
+    <value>ルート アクティビティの引数の設定が正しくありません。ワークフロー定義を修正するか、これらのエラーを修正する入力値を指定してください:</value>
+  </data>
+  <data name="RunnableInstancesDetectionError" xml:space="preserve">
+    <value>実行可能インスタンスの検出は次の例外のために失敗しました</value>
+  </data>
+  <data name="RuntimeArgumentBindingInvalid" xml:space="preserve">
+    <value>RuntimeArgument '{0}' は、'{1}' という名前の RuntimeArgument にバインドされる引数を示しています。この Argument オブジェクトが複数の RuntimeArgument オブジェクトにバインドされていないこと、または複数のパブリック Argument プロパティによって共有されていないことを確認してください。</value>
+  </data>
+  <data name="RuntimeArgumentChangeBlockDU" xml:space="preserve">
+    <value>アクティビティ '{0}' 内の動的更新は許可されません。このアクティビティは、RuntimeArgument が変更されています。このアクティビティ内の動的更新を有効にするには、RuntimeArgument の追加、削除、および再配置を行わないようにしてください。RuntimeArgument の名前、型、および方向を変更することもできません。</value>
+  </data>
+  <data name="RuntimeArgumentNotCreated" xml:space="preserve">
+    <value>RuntimeArgument インスタンスはまだ作成されていません。.</value>
+  </data>
+  <data name="RuntimeArgumentNotOpen" xml:space="preserve">
+    <value>引数 '{0}' は使用できません。この引数がアクティビティで宣言されていることを確認してください。</value>
+  </data>
+  <data name="RuntimeDelegateArgumentDirectionIncorrect" xml:space="preserve">
+    <value>RuntimeDelegateArgument の方向は、バインドされた DelegateArgument の方向と一致する必要があります。</value>
+  </data>
+  <data name="RuntimeDelegateArgumentTypeIncorrect" xml:space="preserve">
+    <value>RuntimeDelegateArgument の型は、バインドされた DelegateArgument の型と一致する必要があります。</value>
+  </data>
+  <data name="RuntimeOperationInProgress" xml:space="preserve">
+    <value>ランタイム操作が既に進行中です。呼び出し元が WorkflowInstance へのアクセスを同期する必要があります。</value>
+  </data>
+  <data name="RuntimeRunning" xml:space="preserve">
+    <value>ワークフロー ランタイムがワークフローを現在実行しているため、操作を実行できるのは、ワークフローが一時停止している間だけです。呼び出し元が WorkflowInstance へのアクセスを同期する必要があります。</value>
+  </data>
+  <data name="RuntimeTransactionAlreadyExists" xml:space="preserve">
+    <value>ランタイムは既にトランザクションで構成されています。一度に許可されるトランザクションは 1 つだけです。</value>
+  </data>
+  <data name="RuntimeTransactionComplete" xml:space="preserve">
+    <value>ランタイム トランザクションは '{0}' の状態で完了しました。</value>
+  </data>
+  <data name="RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' はランタイム トランザクションの完了をスケジュールしました。</value>
+  </data>
+  <data name="RuntimeTransactionHandleNotRegisteredAsExecutionProperty" xml:space="preserve">
+    <value>メソッド '{0}' を呼び出すことができるのは、対応する RuntimeTransactionHandle オブジェクトが実行プロパティとして登録されている場合のみです。</value>
+  </data>
+  <data name="RuntimeTransactionIsSuppressed" xml:space="preserve">
+    <value>ランタイム トランザクションが抑制されている場合はこの操作は無効です。現在の環境では SuppressTransaction プロパティが設定されているため、ランタイム トランザクションが抑制されています。</value>
+  </data>
+  <data name="RuntimeTransactionSet" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' によってランタイム トランザクションが設定されました。実行は Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' に分離されました。</value>
+  </data>
+  <data name="SameUserStateUsedForMultipleInvokes" xml:space="preserve">
+    <value>同時実行のアクティビティ呼び出しに同じユーザー状態インスタンスを使用することはできません。</value>
+  </data>
+  <data name="SavingActivityToXamlNotSupported" xml:space="preserve">
+    <value>DynamicActivity または Activity.Implementation の XAML への保存はサポートされていません。パラメーター化されたワークフローを構築して XAML に保存する場合は、ActivityBuilder クラスの使用を検討してください。</value>
+  </data>
+  <data name="SavingFuncToXamlNotSupported" xml:space="preserve">
+    <value>汎用の Func&lt;T&gt; を XAML に保存することはできません。オブジェクトをシリアル化可能な Func に変換するには、XAML にシリアル化してから ActivityXamlServices.CreateFactory を呼び出します。</value>
+  </data>
+  <data name="ScheduleBookmarkWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して BookmarkWorkItem がスケジュールされました。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="ScheduleCancelActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して CancelActivityWorkItem がスケジュールされました。</value>
+  </data>
+  <data name="ScheduleCompletionWorkItem" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して CompletionWorkItem がスケジュールされました。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' が完了しました。</value>
+  </data>
+  <data name="ScheduleExecuteActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して ExecuteActivityWorkItem がスケジュールされました。</value>
+  </data>
+  <data name="ScheduleFaultWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して FaultWorkItem がスケジュールされました。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' から例外が伝達されました。</value>
+  </data>
+  <data name="ScheduleRuntimeWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対してランタイム作業項目がスケジュールされました。</value>
+  </data>
+  <data name="ScheduleTransactionContextWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して TransactionContextWorkItem がスケジュールされました。</value>
+  </data>
+  <data name="SchemaContextFromBeforeInitializeComponentXBTExtensionCannotBeGeneric" xml:space="preserve">
+    <value>BeforeInitializeComponent XAML ビルド タスク拡張によって生成された XAML ヘルパー クラス名 ({0}) がジェネリックになることはありません。このリソースは、BeforeInitializeComponent XAML ビルド タスク拡張によって生成されたものではありません。プロジェクトを再度ビルドしてください。</value>
+  </data>
+  <data name="SchemaContextFromBeforeInitializeComponentXBTExtensionNotFound" xml:space="preserve">
+    <value>BeforeInitializeComponent XAML ビルド タスク拡張によって生成された XAML ヘルパー クラス名 ({0}) が見つかりませんでした。プロジェクトを再度ビルドしてください。</value>
+  </data>
+  <data name="SeekNotSupported" xml:space="preserve">
+    <value>このストリームでのシークはサポートされていません。</value>
+  </data>
+  <data name="SendActivityCorrelationHandleNotFound" xml:space="preserve">
+    <value>'{0}' という名前の Send アクティビティに関連付けられた、有効な相関ハンドルが見つかりません。</value>
+  </data>
+  <data name="SendMessageChannelCacheMiss" xml:space="preserve">
+    <value>SendMessageChannelCache ミス</value>
+  </data>
+  <data name="SendMessageNeedsToPairWithReceiveMessageForTwoWayContract" xml:space="preserve">
+    <value>Send アクティビティが要求/応答の Operation '{0}' で構成されていますが、対応する ReceiveReply が存在しません。Send を ReceiveReply と組み合わせ、これらを CorrelationHandle を使用して関連付けてください。</value>
+  </data>
+  <data name="SendNotSupported" xml:space="preserve">
+    <value>Send はサポートされていません。</value>
+  </data>
+  <data name="SendParametersContentDoesNotSupportMessage" xml:space="preserve">
+    <value>DisplayName='{0}' のアクティビティに、'{1}' という名前の引数 Message または MessageContract があります。SendParametersContent では Message または MessageContract はサポートされません。Message ベースまたは MessageContract ベースのコンテンツには、コンテンツ プロパティを SendMessageContent として指定してください。</value>
+  </data>
+  <data name="SendReceiveExtensionNotFound" xml:space="preserve">
+    <value>SendReceiveExtension が見つかりません。ワークフローをホストしているアプリケーションが拡張の実装を提供していることを確認してください。</value>
+  </data>
+  <data name="SendRepliesHaveSameFaultTypeDifferentAction" xml:space="preserve">
+    <value>2 つの SendReply アクティビティの障害の種類が同じですが、Action が異なります。</value>
+  </data>
+  <data name="SendReplyRequestCannotBeNull" xml:space="preserve">
+    <value>アクティビティ '{0}' の Request プロパティを null にすることはできません。この要求と応答のペアに属する Receive アクティビティを設定する必要があります。</value>
+  </data>
+  <data name="SendWithUninitializedCorrelatesWith" xml:space="preserve">
+    <value>操作名 '{0}' を持つアクティビティに、初期化されていない CorrelatesWith ハンドルがあります。</value>
+  </data>
+  <data name="SequenceDuplicateReferences" xml:space="preserve">
+    <value>シーケンスでは、同じインポートされた子への複数の参照が含まれている場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="ServiceEndpointAdded" xml:space="preserve">
+    <value>アドレス '{0}'、バインド '{1}'、コントラクト '{2}' のサービス エンドポイントが追加されました。</value>
+  </data>
+  <data name="ServiceHostExtensionAborted" xml:space="preserve">
+    <value>サービス ホストまたはそのいずれかの拡張機能が中止されていたため、操作を完了できませんでした。</value>
+  </data>
+  <data name="ServiceHostExtensionImmutable" xml:space="preserve">
+    <value>サービス ホストを開く前にしか使用できないサービス ホストの拡張機能を使用して操作を実行しようとしました。</value>
+  </data>
+  <data name="ServiceInstanceTerminated" xml:space="preserve">
+    <value>ID '{0}' のサービス インスタンスは終了されました。</value>
+  </data>
+  <data name="ServiceInstanceUnloaded" xml:space="preserve">
+    <value>ID '{0}' のサービス インスタンスはアンロードされました。</value>
+  </data>
+  <data name="ServiceMetadataBehaviorNotFoundForServiceMetadataEndpoint" xml:space="preserve">
+    <value>コントラクト名 'IMetadataExchange' は、サービス {0} によって実装されたコントラクトの一覧に見つかりませんでした。ServiceMetadataBehavior を構成ファイルまたは WorkflowServiceHost に直接追加してこのコントラクトのサポートを有効にしてください。</value>
+  </data>
+  <data name="SetupOrCleanupWorkflowThreadThrew" xml:space="preserve">
+    <value>ワークフロー スレッドの設定中またはクリーンアップ中に IExecutionProperty によって例外がスローされました。詳細については内部例外を参照してください。</value>
+  </data>
+  <data name="SFxTaskNotStarted" xml:space="preserve">
+    <value>指定された Task インスタンスはまだ開始されていません。Task インスタンスは、操作から返される前に開始されている必要があります。</value>
+  </data>
+  <data name="ShipAssertExceptionMessage" xml:space="preserve">
+    <value>予期しないエラーが発生しました。アプリケーションではこのエラーを処理することはできません。診断上の目的から、次の英語のメッセージがこのエラーに関連付けられています: {0}。</value>
+  </data>
+  <data name="SimpleStateMustHaveOneTransition" xml:space="preserve">
+    <value>状態 '{0}' には、少なくとも 1 つの遷移が必要です。</value>
+  </data>
+  <data name="SpecialMethodNotFound" xml:space="preserve">
+    <value>型 '{1}' の特殊なメソッド '{0}' が見つかりません。</value>
+  </data>
+  <data name="SqlExceptionCaught" xml:space="preserve">
+    <value>SQL 例外番号 {0} メッセージ {1} がキャッチされました。</value>
+  </data>
+  <data name="StartBookmarkWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の BookmarkWorkItem の実行を開始しています。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="StartCancelActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CancelActivityWorkItem の実行を開始しています。</value>
+  </data>
+  <data name="StartCompletionWorkItem" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CompletionWorkItem の実行を開始しています。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' が完了しました。</value>
+  </data>
+  <data name="StartExecuteActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の ExecuteActivityWorkItem の実行を開始しています。</value>
+  </data>
+  <data name="StartFaultWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の FaultWorkItem の実行を開始しています。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' から例外が伝達されました。</value>
+  </data>
+  <data name="StartRuntimeWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' のランタイム作業項目の実行を開始しています。</value>
+  </data>
+  <data name="StartSignpostEvent" xml:space="preserve">
+    <value>アクティビティの境界</value>
+  </data>
+  <data name="StartSqlCommandExecute" xml:space="preserve">
+    <value>SQL コマンドの実行を開始します: {0}</value>
+  </data>
+  <data name="StartTransactionContextWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の TransactionContextWorkItem の実行を開始しています。</value>
+  </data>
+  <data name="StateCannotBeAddedTwice" xml:space="preserve">
+    <value>状態 '{0}' をステート マシンに 2 回追加することはできません。ステート マシンの状態はすべて一意である必要があります。</value>
+  </data>
+  <data name="StateCannotBeSerialized" xml:space="preserve">
+    <value>インスタンス '{0}' を実行または永続化できません。このインスタンスには、失敗した動的更新があります。このインスタンスを実行するには、永続化ストアから新しいコピーを再度読み込んでください。</value>
+  </data>
+  <data name="StateMachineMustHaveInitialState" xml:space="preserve">
+    <value>StateMachine '{0}' には初期状態が必要です。</value>
+  </data>
+  <data name="StateNotBelongToAnyParent" xml:space="preserve">
+    <value>遷移 '{0}' の対象の状態 '{1}' は、ステート マシンに属している必要があります。</value>
+  </data>
+  <data name="StopSignpostEvent" xml:space="preserve">
+    <value>アクティビティの境界</value>
+  </data>
+  <data name="StoreReportedConflictingLockTokens" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。instanceOwnerId 値は同じだが lockToken 値が異なる BindInstanceOwner を 2 回呼び出しました。1 人のインスタンス所有者には常に同じ lockToken を使用する永続化プロバイダーを使用してください。</value>
+  </data>
+  <data name="StoreViolationNoInstanceBound" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダーの実装が無効です。LoadWorkflowByInstanceKeyCommand、LoadWorkflowCommand、または TryLoadRunnableWorkflowCommand の処理中に、インスタンスへの InstanceHandle のバインドと InstanceState の設定に失敗しました。</value>
+  </data>
+  <data name="SubexpressionResultWasNotVisible" xml:space="preserve">
+    <value>型 '{0}' のオブジェクトのサブ式の結果、このスコープで参照できない場所参照が生成されました。</value>
+  </data>
+  <data name="SubexpressionResultWasNull" xml:space="preserve">
+    <value>型 '{0}' のオブジェクトのサブ式の結果、NULL 値が生成されました。</value>
+  </data>
+  <data name="SwitchCaseKeyTypesMustMatchExpressionType" xml:space="preserve">
+    <value>Switch '{0}' の Case には、'{2}' の式の型とは互換性のない {1} 個のキーが含まれています。</value>
+  </data>
+  <data name="SwitchCaseNotFound" xml:space="preserve">
+    <value>Switch アクティビティ '{0}' は Expression の結果に一致する Case アクティビティを見つけることができませんでした。</value>
+  </data>
+  <data name="SwitchCaseNullWithValueType" xml:space="preserve">
+    <value>null ケース キーが存在しますが、Switch 式は値型 '{0}' です。値型を null にすることはできません。</value>
+  </data>
+  <data name="SwitchCaseTypeMismatch" xml:space="preserve">
+    <value>ケース キー '{0}' は型が '{1}' ではないため、型 'InArgument&lt;{1}&gt;' の Switch 式で生成された値とはまったく一致しない可能性があります。</value>
+  </data>
+  <data name="SymbolNamesMustBeUnique" xml:space="preserve">
+    <value>名前が '{0}' の変数 RuntimeArgument または DelegateArgument は既に存在します。名前は環境スコープ内で一意である必要があります。</value>
+  </data>
+  <data name="SymbolResolverAlreadyExists" xml:space="preserve">
+    <value>ワークフロー インスタンスは単一の SymbolResolver でのみ構成できます。WorkflowInstanceExtensionManager には SymbolResolver が既に存在します。</value>
+  </data>
+  <data name="SymbolResolverDoesNotHaveSymbol" xml:space="preserve">
+    <value>このインスタンスの SymbolResolver 拡張機能で型 '{1}' のシンボル '{0}' が見つかりませんでした。</value>
+  </data>
+  <data name="SymbolResolverMustBeSingleton" xml:space="preserve">
+    <value>SymbolResolver は、インスタンスごとの拡張として使用できません。singletonObject オーバーロードを使用して、使用中の WorkflowInstanceExtensionManager に SymbolResolver を追加してください。</value>
+  </data>
+  <data name="TargetContractCannotBeOneWayWithTransactionFlow" xml:space="preserve">
+    <value>無効なコントラクト定義: コントラクト '{1}' の操作 '{0}' で、一方向の操作の TransactionFlowOption が Mandatory に設定されています。</value>
+  </data>
+  <data name="TargetTypeAndTargetObjectAreMutuallyExclusive" xml:space="preserve">
+    <value>TargetType と TargetObject を {0} '{1}' に対して同時に使用することはできません。</value>
+  </data>
+  <data name="TargetTypeCannotBeEnum" xml:space="preserve">
+    <value>{0} '{1}' のオペランドの型は列挙型にできません。</value>
+  </data>
+  <data name="TargetTypeIsValueType" xml:space="preserve">
+    <value>オペランドの型は値型です。'{0}' '{1}' のフィールドに対する変更は反映されません。</value>
+  </data>
+  <data name="TaskTimedOutError" xml:space="preserve">
+    <value>タスクが {0} 後にタイムアウトしました。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="TextExpressionCompilerActivityNameRequired" xml:space="preserve">
+    <value>TextExpressionCompilerSettings.ActivityName を指定する必要があります。</value>
+  </data>
+  <data name="TextExpressionCompilerActivityNamespaceRequired" xml:space="preserve">
+    <value>TextExpressionCompilerSettings.ActivityNamespace を指定する必要があります。</value>
+  </data>
+  <data name="TextExpressionCompilerActivityRequired" xml:space="preserve">
+    <value>TextExpressionCompilerSettings.Activity を指定する必要があります。</value>
+  </data>
+  <data name="TextExpressionCompilerAddGeneratedFileRequired" xml:space="preserve">
+    <value>TextExpressionCompilerSettings.AddGeneratedFile を指定する必要があります。</value>
+  </data>
+  <data name="TextExpressionCompilerLanguageRequired" xml:space="preserve">
+    <value>TextExpressionCompilerSettings.Language を指定する必要があります。</value>
+  </data>
+  <data name="TextExpressionCompilerNoCodebase" xml:space="preserve">
+    <value>名前 '{0}' に対して読み込まれたアセンブリに CodeBase 値が含まれていません。コンパイルには CodeBase が必要です。</value>
+  </data>
+  <data name="TextExpressionCompilerOutputPathRequired" xml:space="preserve">
+    <value>TextExpressionCompilerSettings.OutputPath を指定する必要があります。</value>
+  </data>
+  <data name="TextExpressionCompilerUnableToLoadAssembly" xml:space="preserve">
+    <value>アセンブリ '{0}' を読み込むことができません。</value>
+  </data>
+  <data name="TextExpressionMetadataRequiresCompilation" xml:space="preserve">
+    <value>Expression Activity 型 '{0}' は、実行するにはコンパイルする必要があります。ワークフローがコンパイルされていることを確認してください。</value>
+  </data>
+  <data name="ThreadNeutralSemaphoreAborted" xml:space="preserve">
+    <value>ThreadNeutralSemaphore は中止されました。</value>
+  </data>
+  <data name="ThrowingEtwException" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="ThrowingEtwExceptionVerbose" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="ThrowingException" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="ThrowingExceptionVerbose" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="TimedOutWaitingForLockResolution" xml:space="preserve">
+    <value>永続化プロバイダーは、指定されたタイムアウト内にロックを再要求できませんでした。同じ InstanceOwner によって所有されている別の InstanceHandle で同時に実行されるコマンドのパターンにおいて、デッドロックが発生している可能性があります。この問題を解決するには、複数の InstanceOwner を使用するか、インスタンスにロックを取得する可能性がないコマンドに対して InstancePersistenceCommand.AutomaticallyAcquiringLock が確実に false を返すように設定してください。</value>
+  </data>
+  <data name="TimeoutInputQueueDequeue" xml:space="preserve">
+    <value>{0} 後にデキュー操作がタイムアウトしました。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="TimeoutMustBeNonNegative" xml:space="preserve">
+    <value>引数 {0} は正のタイムアウト値である必要がありますが、{1} が指定されました。</value>
+  </data>
+  <data name="TimeoutMustBePositive" xml:space="preserve">
+    <value>引数 {0} は正のタイムアウト値である必要がありますが、{1} が指定されました。</value>
+  </data>
+  <data name="TimeoutOnOperation" xml:space="preserve">
+    <value>割り当てられたタイムアウト時間 {0} 内に、この操作は完了しませんでした。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="TimeoutOnSqlOperation" xml:space="preserve">
+    <value>割り当てられたタイムアウト時間 {0} 内に操作が完了しませんでした。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="TimeoutOpeningSqlConnection" xml:space="preserve">
+    <value>SQL 接続を開こうとしてタイムアウトしました。割り当てられたタイムアウト時間 {0} 内に操作が完了しませんでした。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="TimerExtensionAlreadyAttached" xml:space="preserve">
+    <value>この TimerExtension は既にワークフロー インスタンスにアタッチされています。</value>
+  </data>
+  <data name="TimerExtensionRequiresWorkflowInstance" xml:space="preserve">
+    <value>TimerExtension は、ワークフロー インスタンスにアタッチされている間だけ使用できます。</value>
+  </data>
+  <data name="TooManyViolationsForExceptionMessage" xml:space="preserve">
+    <value>&lt;切り詰めました&gt; 例外メッセージはサイズの制限で切り詰められています。すべての違反を確認するには、ActivityValidationServices を使用してください。</value>
+  </data>
+  <data name="TraceCodeEventLogCritical" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="TraceCodeEventLogError" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="TraceCodeEventLogInfo" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="TraceCodeEventLogVerbose" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="TraceCodeEventLogWarning" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="TraceCorrelationKeys" xml:space="preserve">
+    <value>親スコープ '{2}' の値 '{1}' を使用して相関関係キー '{0}' が計算されました。</value>
+  </data>
+  <data name="TrackingDataExtracted" xml:space="preserve">
+    <value>追跡データ {0} がアクティビティ {1} で抽出されました。</value>
+  </data>
+  <data name="TrackingProfileNotFound" xml:space="preserve">
+    <value>ActivityDefinitionId '{1}' の TrackingProfile '{0}' が見つかりません。config ファイルに TrackingProfile がないか、ActivityDefinitionId が一致しません。</value>
+  </data>
+  <data name="TrackingRecordDropped" xml:space="preserve">
+    <value>追跡レコード {0} のサイズが、プロバイダー {1} の ETW セッションで許可される最大サイズを超えています</value>
+  </data>
+  <data name="TrackingRecordRaised" xml:space="preserve">
+    <value>追跡レコード {0} が {1} になりました。</value>
+  </data>
+  <data name="TrackingRecordTruncated" xml:space="preserve">
+    <value>プロバイダー {1} の ETW セッションに書き込まれた追跡レコード {0} が切り捨てられました。変数/注釈/ユーザー データは削除されました</value>
+  </data>
+  <data name="TrackingRelatedWorkflowAbort" xml:space="preserve">
+    <value>インスタンスを中止する追跡参加コンポーネントの呼び出し中にエラーが発生しました。詳細については内部例外を参照してください。</value>
+  </data>
+  <data name="TrackingValueNotSerializable" xml:space="preserve">
+    <value>抽出された引数/変数 '{0}' はシリアル化できません。</value>
+  </data>
+  <data name="TransactedReceiveScopeEndCommitFailed" xml:space="preserve">
+    <value>id = '{0}' の CommittableTransaction に対する EndCommit への呼び出しにより、次のメッセージと共に TransactionException がスローされました: '{1}'。</value>
+  </data>
+  <data name="TransactedReceiveScopeMustHaveValidReceive" xml:space="preserve">
+    <value>TransactedReceiveScope '{0}' の Request プロパティは、有効な Receive アクティビティに設定する必要があります。</value>
+  </data>
+  <data name="TransactedReceiveScopeRequiresReceive" xml:space="preserve">
+    <value>TransactedReceiveScope '{0}' を使用するには、ReceiveActivity プロパティを設定する必要があります。</value>
+  </data>
+  <data name="TransactionHandleAlreadyHasTransaction" xml:space="preserve">
+    <value>TransactionHandle には既にトランザクションがあります。新しいトランザクションは構成できません。</value>
+  </data>
+  <data name="TransactionInDoubtNonHost" xml:space="preserve">
+    <value>InstanceStore.Execute または BeginExecute を呼び出したときにアンビエント トランザクションは存在しませんでしたが、コマンドの処理に内部トランザクションが使用されました。内部トランザクションは InDoubt 状態になりました。</value>
+  </data>
+  <data name="TransactionPersistenceTimeout" xml:space="preserve">
+    <value>インスタンスが他のトランザクションによってロックされていたため、要求がタイムアウトしました。</value>
+  </data>
+  <data name="TransactionRolledBackNonHost" xml:space="preserve">
+    <value>InstanceStore.Execute または BeginExecute を呼び出したときにアンビエント トランザクションは存在しませんでしたが、コマンドの処理に内部トランザクションが使用されました。内部トランザクションは中止されました。</value>
+  </data>
+  <data name="TransitionCannotBeAddedTwice" xml:space="preserve">
+    <value>遷移 '{0}' を状態 '{1}' に追加できません。この遷移は既に状態 '{2}' に追加されています。</value>
+  </data>
+  <data name="TransitionTargetCannotBeNull" xml:space="preserve">
+    <value>状態 '{1}' の遷移 '{0}' の 'To' プロパティを null にすることはできません。</value>
+  </data>
+  <data name="TriggerOrConditionChangedDuringTransitioning" xml:space="preserve">
+    <value>StateMachine では、実行中の遷移の Trigger アクティビティまたは Condition アクティビティが変更されている場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="TriggerOrConditionIsReferenced" xml:space="preserve">
+    <value>StateMachine では、インポートされた子への参照である Trigger または Condition がある場合は動的更新はサポートされません。</value>
+  </data>
+  <data name="TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>TryCatch アクティビティ '{0}' の子アクティビティは取り消し中に例外をスローしました。</value>
+  </data>
+  <data name="TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>TryCatch アクティビティ '{0}' に関連付けられている Catch または Finally アクティビティは例外をスローしました。</value>
+  </data>
+  <data name="TryCatchExceptionFromTry" xml:space="preserve">
+    <value>TryCatch アクティビティ '{0}' は、型 '{1}' の例外をキャッチしました。</value>
+  </data>
+  <data name="TryCatchInvalidStateForUpdate" xml:space="preserve">
+    <value>TryCatch 内を更新できません。型 '{0}' の例外がキャッチされましたが、一致する catch ブロックが削除されています。</value>
+  </data>
+  <data name="TryCommandCannotExecuteSubCommandsAndReduce" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。InstancePersistenceContext.Execute (または BeginExecute) を使用して入れ子になったコマンドを実行した後で、TryCommand (または EndTryCommand) から false を返しました。永続化プロバイダーがコマンドを理解し、そのコマンドに従って動作しているときは、プロバイダーから true が返される必要があります。</value>
+  </data>
+  <data name="TryLoadRequiresOwner" xml:space="preserve">
+    <value>WorkflowApplication.LoadRunnableInstance 操作には、明示的に作成された InstanceOwner が必要です。このメソッドを使用するには、ワークフロー ホスト型のインスタンス所有者を作成し、それを InstanceStore の DefaultInstanceOwner として設定します。</value>
+  </data>
+  <data name="TryLoadRequiresWorkflowType" xml:space="preserve">
+    <value>ストア内で型の一致する実行可能インスタンスを読み込むためには、要求元の InstanceOwner が作成時にワークフロー ホスト型を指定している必要があります。そのためには、コマンドの発行時に CreateWorkflowOwnerCommand.InstanceOwnerMetadata プロパティ バッグにキー値ペアを追加します。キーはドキュメントで提供される WorkflowHostType キーです。値は XName 型で、読み込むインスタンスの型に一致する必要があります。</value>
+  </data>
+  <data name="TryRegisterRequestContextFailed" xml:space="preserve">
+    <value>関連付けハンドラーの一部のコンテキストが適切に処理されませんでした。ハンドラーがランタイムによって初期化されていること、およびワークフローに Send アクティビティがあり、その後に Receive アクティビティまたは ReceiveReply アクティビティがあることを確認してください。</value>
+  </data>
+  <data name="TwoReceiveParametersWithSameNameButDifferentParameterCount" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの ReceiveParametersContent オブジェクトのパラメーター数が異なります。</value>
+  </data>
+  <data name="TwoReceiveParametersWithSameNameButDifferentParameterName" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの ReceiveParametersContent オブジェクトのパラメーター名が異なります。</value>
+  </data>
+  <data name="TwoReceiveParametersWithSameNameButDifferentParameterType" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの ReceiveParametersContent オブジェクトのパラメーター型が異なります。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentAction" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの Receive オブジェクトの Action が異なります。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentIsOneWay" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの Receive オブジェクトの IsOneWay 値が異なります。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentTxProperties" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの Receive オブジェクトのトランザクション プロパティが異なります。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentValueType" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの Receive オブジェクトの ValueType が異なります。</value>
+  </data>
+  <data name="TwoSendRepliesWithSameNameButDifferentAction" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの SendReply オブジェクトの Action が異なります。</value>
+  </data>
+  <data name="TwoSendRepliesWithSameNameButDifferentValueType" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの SendReply オブジェクトの ValueType が異なります。</value>
+  </data>
+  <data name="TwoSendReplyParametersWithSameNameButDifferentParameterCount" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの SendParametersContent オブジェクトのパラメーター数が異なります。</value>
+  </data>
+  <data name="TwoSendReplyParametersWithSameNameButDifferentParameterName" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの SendParameters オブジェクトのパラメーター名が異なります。</value>
+  </data>
+  <data name="TwoSendReplyParametersWithSameNameButDifferentParameterType" xml:space="preserve">
+    <value>同じ ServiceContractName と OperationName '{0}' を持つ 2 つの SendParameters オブジェクトのパラメーター型が異なります。</value>
+  </data>
+  <data name="TwoWayIsImplementedAsOneWay" xml:space="preserve">
+    <value>コントラクト '{1}' の操作 '{0}' は双方向として指定されていますが、SendReply がありません。この操作の SendReply アクティビティを追加してください。</value>
+  </data>
+  <data name="TypeConverterHelperCacheAddFailed" xml:space="preserve">
+    <value>型 '{0}' の TypeConverterHelper をヘルパーの内部キャッシュに追加できませんでした。</value>
+  </data>
+  <data name="TypeMismatchForAssign" xml:space="preserve">
+    <value>Assign アクティビティ '{2}' で型 '{0}' から型 '{1}' に割り当てることはできません。</value>
+  </data>
+  <data name="TypeMustbeValueType" xml:space="preserve">
+    <value>型 '{0}' は値型である必要があります。</value>
+  </data>
+  <data name="TypeNotAssignableTo" xml:space="preserve">
+    <value>{0} を {1} に割り当てることはできません。</value>
+  </data>
+  <data name="UnableToDeserializeHttpResponseContent" xml:space="preserve">
+    <value>型 '{0}' の ResponseContent のシリアル化を解除できません。</value>
+  </data>
+  <data name="UnableToLocateCompiledLocationContext" xml:space="preserve">
+    <value>コンパイルされた場所 '{0}' の ICompiledExpressionRoot が見つかりません。この式を含むアクティビティの定義がコンパイルされていることを確認してください。</value>
+  </data>
+  <data name="UnableToOpenAndRegisterStore" xml:space="preserve">
+    <value>InstanceStore を初期化できませんでした。</value>
+  </data>
+  <data name="UnconditionalTransitionShouldNotShareNullTriggersWithOthers" xml:space="preserve">
+    <value>状態 '{1}' のトリガーのない遷移 '{0}' には、条件が含まれている必要があります。1 つの状態で使用できるトリガーのない無条件遷移は 1 つだけです。</value>
+  </data>
+  <data name="UnconditionalTransitionShouldNotShareTriggersWithOthers" xml:space="preserve">
+    <value>状態 '{1}' の遷移 '{0}' は無条件遷移です。他の遷移と同じトリガー '{2}' を共有することはできません。</value>
+  </data>
+  <data name="UnexpectedArgumentCount" xml:space="preserve">
+    <value>コレクション '{0}' で指定された引数の数は '{1}' ですが、予期された数は '{2}' です。</value>
+  </data>
+  <data name="UnexpectedExpressionNodeType" xml:space="preserve">
+    <value>型 '{0}' の式ノードが必要ですが、型 '{1}' の式ノードが指定されました。</value>
+  </data>
+  <data name="UnhandledException" xml:space="preserve">
+    <value>ハンドルされていない例外です。例外の詳細: {0}</value>
+  </data>
+  <data name="UninitializedCannotHaveData" xml:space="preserve">
+    <value>使用されている InstanceStore の永続化プロバイダー実装が無効です。インスタンス データが含まれている InstanceState.Uninitialized のインスタンスの読み込みが報告されました。初期化されていないインスタンスにインスタンス データを含めることはできません。</value>
+  </data>
+  <data name="UnInitializedRuntimeTransactionHandle" xml:space="preserve">
+    <value>指定した RuntimeTransactionHandle が正しく初期化されませんでした。</value>
+  </data>
+  <data name="UnknownCompressionOption" xml:space="preserve">
+    <value>要求された圧縮オプション {0} は有効なオプションではありません。</value>
+  </data>
+  <data name="UnknownDatabaseVersion" xml:space="preserve">
+    <value>System.Activities.DurableInstancing.SqlWorkflowInstanceStoreVersionTable の行がなかったため、データベースのバージョンを特定できません。このテーブルには、このデータベースが作成またはアップグレードされたフレームワークのバージョンに対応する行が 1 行含まれている必要があります。</value>
+  </data>
+  <data name="UnknownExpressionCompilationError" xml:space="preserve">
+    <value>式 "{0}" の処理中に不明なエラーが発生しました。式テキストの処理により例外は発生しませんでしたが、実行可能な式も作成されませんでした。</value>
+  </data>
+  <data name="UnknownLanguage" xml:space="preserve">
+    <value>式の言語として '{0}' を使用できません。</value>
+  </data>
+  <data name="UnknownSprocResult" xml:space="preserve">
+    <value>ストアド プロシージャから不明な実行結果 {0} が返されました。</value>
+  </data>
+  <data name="UnlockInstanceException" xml:space="preserve">
+    <value>インスタンスのロックを解除しようとして、例外 {0} が発生しました。</value>
+  </data>
+  <data name="UnmatchedNoPersistExit" xml:space="preserve">
+    <value>NoPersistHandle に一致しない exit がありました。exit は enter ごとに一度だけ呼び出すことができます。</value>
+  </data>
+  <data name="UnopenedActivitiesCannotBeExecuted" xml:space="preserve">
+    <value>開かれたアクティビティのみ実行できます。アクティビティ '{0}' は開かれていません。</value>
+  </data>
+  <data name="UnsupportedExpressionType" xml:space="preserve">
+    <value>型 '{0}' の Expression はサポートされません。</value>
+  </data>
+  <data name="UnsupportedLocationReferenceValue" xml:space="preserve">
+    <value>LocationReference の値は、Variable、RuntimeArgument、または DelegateArgument である必要があります。</value>
+  </data>
+  <data name="UnsupportedMemberExpressionWithType" xml:space="preserve">
+    <value>型 '{0}' のメンバーを取得する MemberExpression はサポートされません。</value>
+  </data>
+  <data name="UnsupportedReferenceExpressionType" xml:space="preserve">
+    <value>LValue では型 '{0}' の Expression はサポートされません。</value>
+  </data>
+  <data name="UnusedInputArguments" xml:space="preserve">
+    <value>入力ディクショナリの次のキーは引数に割り当てられていないため削除する必要があります: {0}。引数名は大文字と小文字が区別されることに注意してください。</value>
+  </data>
+  <data name="UnwrappedMessageNotSupported" xml:space="preserve">
+    <value>ラップ解除されたメッセージがサポートされるのは、MessageContract を使用する場合だけです。実装されたコントラクト '{1}' の操作 '{0}' に MessageContract 型を使用してください。</value>
+  </data>
+  <data name="UpdateDefinitionNotFound" xml:space="preserve">
+    <value>WorkflowIdentity '{0}' に一致するホストされた WorkflowService がありません。</value>
+  </data>
+  <data name="UpdateMapBuilderRequiredProperty" xml:space="preserve">
+    <value>DynamicUpdateMapBuilder のプロパティ '{0}' を設定する必要があります。</value>
+  </data>
+  <data name="UpdateMapNotFound" xml:space="preserve">
+    <value>WorkflowIdentity '{0}' から '{1}' への更新に使用できる DynamicUpdateMap がありません。</value>
+  </data>
+  <data name="UpdateSymbolsMustMatch" xml:space="preserve">
+    <value>元のワークフローと更新されたワークフローの外部シンボルの数、名前、型、および順序が同じである必要があります。</value>
+  </data>
+  <data name="UriBaseMustBeSpecified" xml:space="preserve">
+    <value>アクティビティ '{0}' の UriBase 引数を指定する必要があります。</value>
+  </data>
+  <data name="UseInstanceStoreInsteadOfPersistenceProvider" xml:space="preserve">
+    <value>System.ServiceModel.Activities.WorkflowServiceHost は System.ServiceModel.Persistence.PersistenceProviderBehavior と互換性がありません。PersistenceProviderBehavior または派生クラス (SqlPersistenceProviderBehavior など) を削除する必要があります。WorkflowServiceHost で永続化を有効にするには、System.Runtime.DurableInstancing.InstanceStore をインストールする動作 (SqlInstanceStoreBehavior など) を使用してください。</value>
+  </data>
+  <data name="ValidateUnlockInstance" xml:space="preserve">
+    <value>インスタンス永続化システムは、無効な InstancePersistenceCommand を処理できません。CompleteInstance プロパティが true に設定されている場合、コマンドで UnlockInstance プロパティを true に設定する必要があります。</value>
+  </data>
+  <data name="ValidationContextCannotBeNull" xml:space="preserve">
+    <value>'{1}' という名前の {0} の ToValidateContext 引数が NULL に解決されました。NULL 以外の検証コンテキスト オブジェクトを指定する必要があります。</value>
+  </data>
+  <data name="ValidationErrorPrefixForHiddenActivity" xml:space="preserve">
+    <value>アクティビティ '{0}' のプライベートな実装で次の検証エラーが発生しました:    </value>
+  </data>
+  <data name="ValidationErrorPrefixForPublicActivityWithHiddenParent" xml:space="preserve">
+    <value>アクティビティ '{0}' のプライベートな実装でアクティビティ '{1}' に次の検証エラーが発生しました:    </value>
+  </data>
+  <data name="ValueArgumentTypeNotDerivedFromValueType" xml:space="preserve">
+    <value>Message の ArgumentType が、OperationName='{1}' のアクティビティ '{0}' の DeclaredMessageType からの派生型ではありません。</value>
+  </data>
+  <data name="ValueCannotBeNegative" xml:space="preserve">
+    <value>'{0}' には 0 以上の値を指定する必要があります。</value>
+  </data>
+  <data name="ValueCannotBeNull" xml:space="preserve">
+    <value>OperationName='{1}' のアクティビティ '{0}' に Content プロパティを設定する必要があります。</value>
+  </data>
+  <data name="ValueCollectionUpdatesNotAllowed" xml:space="preserve">
+    <value>ディクショナリから派生した値コレクションの変化は許可されていません。</value>
+  </data>
+  <data name="ValueMustBeAssignableToType" xml:space="preserve">
+    <value>指定された値は、指定された型に割り当て可能である必要があります。</value>
+  </data>
+  <data name="ValueMustBeNonNegative" xml:space="preserve">
+    <value>値は正である必要があります。</value>
+  </data>
+  <data name="ValueTooLarge" xml:space="preserve">
+    <value>Int32.MaxValue より大きい '{0}' は受け入れられません。タイムアウトを無効にするには、TimeSpan.MaxValue を指定してください。</value>
+  </data>
+  <data name="VariableAlreadyInUseOnActivity" xml:space="preserve">
+    <value>変数 '{0}' はアクティビティ '{2}' で既に使用されているため、アクティビティ '{1}' では使用できません。</value>
+  </data>
+  <data name="VariableCannotBePopulatedInLocationEnvironment" xml:space="preserve">
+    <value>変数 {0} は LocationEnvironment で作成できません。</value>
+  </data>
+  <data name="VariableDoesNotExist" xml:space="preserve">
+    <value>変数 '{0}' はこの環境に存在しません。</value>
+  </data>
+  <data name="VariableExpressionTypeMismatch" xml:space="preserve">
+    <value>変数 '{0}' の既定値には型 '{1}' が必要ですが、指定されているアクティビティの結果型は '{2}' です。</value>
+  </data>
+  <data name="VariableIsReadOnly" xml:space="preserve">
+    <value>変数 '{0}' は読み取り専用のため変更できません。</value>
+  </data>
+  <data name="VariableMustBeSet" xml:space="preserve">
+    <value>変数は CacheMetadata を呼び出す前に設定する必要があります。</value>
+  </data>
+  <data name="VariableNameNotAnIdentifier" xml:space="preserve">
+    <value>変数名 '{0}' は、有効な ID を表さないためシリアル化できません。</value>
+  </data>
+  <data name="VariableNotOpen" xml:space="preserve">
+    <value>型が '{1}' の変数 '{0}' は使用できません。この変数が Activity または SymbolResolver で宣言されていることを確認してください。</value>
+  </data>
+  <data name="VariableNotVisible" xml:space="preserve">
+    <value>参照されている Variable オブジェクト (Name = '{0}') はこのスコープでは参照できません。このスコープで参照できる同じ名前の別の場所参照がある可能性がありますが、同じ場所を参照していません。</value>
+  </data>
+  <data name="VariableOnlyAccessibleAtScopeOfDeclaration" xml:space="preserve">
+    <value>この変数はアクティビティ '{1}' のスコープで宣言されているため、アクティビティ '{0}' はこの変数にアクセスできません。アクティビティはその固有の実装変数にのみアクセスできます。</value>
+  </data>
+  <data name="VariableOrArgumentAdditionToReferencedEnvironmentNoDUSupported" xml:space="preserve">
+    <value>補正ハンドラーまたは確認ハンドラーによって参照できる、既に完了済みのアクティビティには、変数または引数を追加できません。</value>
+  </data>
+  <data name="VariableOrArgumentDoesNotExist" xml:space="preserve">
+    <value>変数または引数 '{0}' はこの環境に存在しません。</value>
+  </data>
+  <data name="VariableShouldBeOpen" xml:space="preserve">
+    <value>変数 '{0}' はアクティビティに含めてから使用する必要があります。</value>
+  </data>
+  <data name="VariableTypeInvalid" xml:space="preserve">
+    <value>変数 '{0}' は、型 '{1}' の式では使用できません。これは互換しない型 '{2}' です。</value>
+  </data>
+  <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
+    <value>変数の型 '{0}' は Location 型 '{1}' に一致しません。</value>
+  </data>
+  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>VisualBasic 式テキストまたはその LocationReferenceEnvironment 変数がキャッシュ後に変更されたため、GetExpressionTree は式ツリーを取得できませんでした。コンパイラ エラー メッセージ: {0}。</value>
+  </data>
+  <data name="WaitAlreadyInProgress" xml:space="preserve">
+    <value>InstanceHandle が処理できる WaitForEvents または BeginWaitForEvents 操作は 1 度に 1 つまでです。別の操作が試行されました。前の操作が完了してからのみ、WaitForEvents/BeginWaitForEvents を呼び出してください。</value>
+  </data>
+  <data name="WaitForEventsTimedOut" xml:space="preserve">
+    <value>WaitForEvents または BeginWaitForEvents の操作は {0} 後にタイムアウトしました。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="WDCDisposed" xml:space="preserve">
+    <value>WorkflowDataContext にアクセスできるのは、それが取得されたアクティビティのスコープ内だけです。</value>
+  </data>
+  <data name="WfMessageReceived" xml:space="preserve">
+    <value>ワークフローによって受信されたメッセージ</value>
+  </data>
+  <data name="WfMessageSent" xml:space="preserve">
+    <value>ワークフローから送信されたメッセージ</value>
+  </data>
+  <data name="WhileRequiresCondition" xml:space="preserve">
+    <value>While アクティビティ '{0}' を使用する前に、Condition を設定する必要があります。</value>
+  </data>
+  <data name="WindowsGroupNotFound" xml:space="preserve">
+    <value>Windows グループ '{0}' が見つかりませんでした。</value>
+  </data>
+  <data name="WorkflowAbortedReason" xml:space="preserve">
+    <value>{0} InnerException メッセージ: {1}</value>
+  </data>
+  <data name="WorkflowActivityResume" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="WorkflowActivityStart" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="WorkflowActivityStop" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="WorkflowActivitySuspend" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="WorkflowApplicationAborted" xml:space="preserve">
+    <value>WorkflowApplication {0} が中止されたため、操作を実行できませんでした。</value>
+  </data>
+  <data name="WorkflowApplicationAlreadyHasId" xml:space="preserve">
+    <value>'Id' プロパティが読み込まれたため、WorkflowApplication のインスタンス ID が生成されました。ID が生成された後は、WorkflowApplication を使用してインスタンスを読み込むことはできません。</value>
+  </data>
+  <data name="WorkflowApplicationCompleted" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' が Closed 状態で完了しました。</value>
+  </data>
+  <data name="WorkflowApplicationIdled" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' がアイドル状態になりました。</value>
+  </data>
+  <data name="WorkflowApplicationInstanceAbandoned" xml:space="preserve">
+    <value>この WorkflowApplicationInstance は既に破棄されたか、破棄されている途中です。もう操作を実行することはできません。</value>
+  </data>
+  <data name="WorkflowApplicationInstanceLoaded" xml:space="preserve">
+    <value>この WorkflowApplicationInstance は既に WorkflowApplication に関連付けられています。このインスタンスを制御するにはその WorkflowApplication を使用してください。</value>
+  </data>
+  <data name="WorkflowApplicationPersistableIdle" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' がアイドル状態のままです。次の操作が実行されます: {1}。</value>
+  </data>
+  <data name="WorkflowApplicationPersisted" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' が永続化されました。</value>
+  </data>
+  <data name="WorkflowApplicationTerminated" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' が終了しました。例外により Faulted 状態で完了しました。</value>
+  </data>
+  <data name="WorkflowApplicationUnhandledException" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' でハンドルされない例外が発生しました。例外は Activity '{1}'、DisplayName: '{2}' から発生しました。次の操作が実行されます: {3}。</value>
+  </data>
+  <data name="WorkflowApplicationUnloaded" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' がアンロードされました。</value>
+  </data>
+  <data name="WorkflowBehaviorWithNonWorkflowHost" xml:space="preserve">
+    <value>'{0}' の動作を WorkflowServiceHost に適用する必要があります。</value>
+  </data>
+  <data name="WorkflowCompletionAsyncResultCannotBeNull" xml:space="preserve">
+    <value>OnBeginWorkflowCompleted から返される AsyncResult は null にできません。</value>
+  </data>
+  <data name="WorkflowControlEndpointDefaultBaseUriNotSupportedInPartialTrust" xml:space="preserve">
+    <value>WorkflowControlEndpoint.DefaultBaseUri の既定値は、部分的な信頼ではサポートされません。構成または既定以外のコンストラクターを使用して、WorkflowControlEndpoint のバインディングおよびアドレスを指定してください。</value>
+  </data>
+  <data name="WorkflowIdentityNullHostId" xml:space="preserve">
+    <value>WorkflowIdentity ('{0}') を使用して永続化されたインスタンスを、WorkflowIdentity が指定されていないホストに読み込むことはできません。</value>
+  </data>
+  <data name="WorkflowIdentityNullStateId" xml:space="preserve">
+    <value>WorkflowIdentity を使用せずに永続化されたインスタンスを、WorkflowIdentity ('{0}') が指定されているホストに読み込むことはできません。別の定義を使用してインスタンスを読み込むか、動的更新を使用してインスタンスを更新してください。</value>
+  </data>
+  <data name="WorkflowIdentityStateIdHostIdMismatch" xml:space="preserve">
+    <value>読み込まれたインスタンスの WorkflowIdentity ('{0}') が、指定されたワークフロー定義の WorkflowIdentity ('{1}') と一致しません。別の定義を使用してインスタンスを読み込むか、動的更新を使用してインスタンスを更新してください。</value>
+  </data>
+  <data name="WorkflowInstanceAborted" xml:space="preserve">
+    <value>WorkflowInstance '{0}' が中止されたため、操作を実行できませんでした。</value>
+  </data>
+  <data name="WorkflowInstanceAbortedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceAbortedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceCanceled" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' が Canceled 状態で完了しました。</value>
+  </data>
+  <data name="WorkflowInstanceCompleted" xml:space="preserve">
+    <value>WorkflowInstance '{0}' が完了したため、操作を実行できませんでした。</value>
+  </data>
+  <data name="WorkflowInstanceIsReadOnly" xml:space="preserve">
+    <value>WorkflowInstance '{0}' は、実行を開始した後に変更することはできません。</value>
+  </data>
+  <data name="WorkflowInstanceNotFoundInStore" xml:space="preserve">
+    <value>インスタンス '{0}' がインスタンス ストアに見つかりましたが、インスタンスにワークフローが含まれていません。</value>
+  </data>
+  <data name="WorkflowInstanceRecordWithId" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、State = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceSuspendedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}</value>
+  </data>
+  <data name="WorkflowInstanceSuspendedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceTerminated" xml:space="preserve">
+    <value>WorkflowInstance '{0}' が終了したため、操作を実行できませんでした。</value>
+  </data>
+  <data name="WorkflowInstanceTerminatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}</value>
+  </data>
+  <data name="WorkflowInstanceTerminatedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceUnhandledExceptionRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUnhandledExceptionRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、SourceName = {4}、SourceId = {5}、SourceInstanceId = {6}、SourceTypeName={7}、Exception={8}、Annotations= {9}、ProfileName = {10}、WorkflowDefinitionIdentity = {11}</value>
+  </data>
+  <data name="WorkflowInstanceUnloaded" xml:space="preserve">
+    <value>WorkflowInstance '{0}' がアンロードされたため、操作を実行できませんでした。</value>
+  </data>
+  <data name="WorkflowInstanceUnlocked" xml:space="preserve">
+    <value>WorkflowInstance {0} がロック解除されたため、操作を実行できませんでした。</value>
+  </data>
+  <data name="WorkflowInstanceUpdatedRecord" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceUpdatedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、State = {4}、OriginalDefinitionIdentity = {5}、UpdatedDefinitionIdentity = {6}、Annotations = {7}、ProfileName = {8}</value>
+  </data>
+  <data name="WorkflowInstanceUpdateFailed" xml:space="preserve">
+    <value>WorkflowInstance '{0}' を ID '{1}' に更新できませんでした。更新できなかった実行中のアクティビティの一覧については、追跡出力を確認してください。</value>
+  </data>
+  <data name="WorkflowMustBeHosted" xml:space="preserve">
+    <value>WorkflowServiceHost 内で Receive アクティビティがホストされていることを確認してください。</value>
+  </data>
+  <data name="WorkflowServiceDefinitionIdentityNotMatched" xml:space="preserve">
+    <value>読み込まれたインスタンスの WorkflowIdentity ('{0}') に一致するホストされた WorkflowService がありません。</value>
+  </data>
+  <data name="WorkflowServiceHostCannotAddOrRemoveServiceDefinitionAfterOpen" xml:space="preserve">
+    <value>WorkflowServiceHost が開かれた後、失敗した後、中止された後、または閉じられた後に、WorkflowService 定義を追加したり削除したりすることはできません。</value>
+  </data>
+  <data name="WorkflowTerminatedExceptionDefaultMessage" xml:space="preserve">
+    <value>ワークフローは Terminate アクティビティによって終了されました。</value>
+  </data>
+  <data name="WorkItemAbortedInstance" xml:space="preserve">
+    <value>現在の作業項目の処理中にエラーが発生し、ワークフローが中止されました。詳細については、内部例外を参照してください。</value>
+  </data>
+  <data name="WrapperNotSupportedInMessageContract" xml:space="preserve">
+    <value>カスタムのラッパー名および名前空間がサポートされるのは、MessageContract を使用する場合だけです。実装されたコントラクト '{1}' の操作 '{0}' に MessageContract 型を使用してください。</value>
+  </data>
+  <data name="WriteAccessToReadOnlyPublicReference" xml:space="preserve">
+    <value>アクティビティ '{0}' でこのパブリックな場所参照への書き込みを実行できません。この参照は、ArgumentDirection.In を使用して宣言されています。読み取りと書き込みの両方を許可するには、ArgumentDirection.InOut を使用して宣言してください。</value>
+  </data>
+  <data name="WriteonlyPropertyCannotBeRead" xml:space="preserve">
+    <value>get アクセサーにアクセスできないため、このコンテキストではプロパティまたはインデクサー '{0}.{1}' は使用できません。</value>
+  </data>
+  <data name="WrongArgumentType" xml:space="preserve">
+    <value>引数の型が正しくありません。型は '{0}' ですが、'{1}' に割り当て可能である必要があります。</value>
+  </data>
+  <data name="WrongCacheMetadataForCodeActivity" xml:space="preserve">
+    <value>ActivityMetadata パラメーターを取る CacheMetadata メソッドを CodeActivity または AsyncCodeActivity で呼び出さないでください。これらのクラスの正しい CacheMetadata は CodeActivityMetadata パラメーターを取ります。</value>
+  </data>
+  <data name="WrongCacheMetadataForNativeActivity" xml:space="preserve">
+    <value>ActivityMetadata パラメーターを取る CacheMetadata メソッドを NativeActivity で呼び出さないでください。NativeActivity の正しい CacheMetadata は NativeActivityMetadata パラメーターを取ります。</value>
+  </data>
+  <data name="WrongEnvironmentCount" xml:space="preserve">
+    <value>アクティビティ '{0}' は、引数の数が '{1}'、パブリック変数の数が '{2}'、プライベート変数の数が '{3}'、実行時デリゲート引数の数が '{4}' である必要がありますが、引数の数が '{5}'、パブリック変数の数が '{6}'、プライベート変数の数が '{7}'、実行時デリゲート引数の数が '{8}' になっています。</value>
+  </data>
+  <data name="WrongMemberCount" xml:space="preserve">
+    <value>所有者が '{0}' の IdSpace のメンバーの数が '{1}' になっています。'{2}' である必要があります。</value>
+  </data>
+  <data name="WrongNumberOfArgumentsForActivityDelegate" xml:space="preserve">
+    <value>ActivityDelegate 引数が一致しません。アクティビティ構成をチェックして、この構成が宣言された ActivityDelegate と同期していることを確認してください。</value>
+  </data>
+  <data name="WrongOnCreateDynamicUpdateMapForNativeActivity" xml:space="preserve">
+    <value>UpdateMapMetadata パラメーターを取る OnCreateDynamicUpdateMap メソッドを NativeActivity で呼び出さないでください。NativeActivity の正しい OnCreateDynamicUpdateMap は NativeActivityUpdateMapMetadata パラメーターを取ります。</value>
+  </data>
+  <data name="WrongOriginalEnvironmentCount" xml:space="preserve">
+    <value>アクティビティ '{0}' の元の環境は、引数の数が '{1}'、パブリック変数の数が '{2}'、プライベート変数の数が '{3}'、実行時デリゲート引数の数が '{4}'、合計が '{5}' である必要がありますが、実際の場所の合計は '{6}' です。</value>
+  </data>
+  <data name="XamlBuildTaskResourceNotFound" xml:space="preserve">
+    <value>XAML ビルド タスクによって生成されると期待される XAML リソース ({0}) が見つかりませんでした。プロジェクトを再度ビルドしてください。</value>
+  </data>
+  <data name="XamlElementExpected" xml:space="preserve">
+    <value>要素表現が必要です。</value>
+  </data>
+  <data name="XamlElementExpectedAt" xml:space="preserve">
+    <value>行 ({0}, {1}) には要素表現が必要です。</value>
+  </data>
+</root>

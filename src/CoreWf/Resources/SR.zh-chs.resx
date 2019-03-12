@@ -1,0 +1,3252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AbortingDueToDynamicUpdateFailure" xml:space="preserve">
+    <value>WorkflowApplication 已中止，因为实例更新尝试失败。</value>
+  </data>
+  <data name="AbortingDueToInstanceTimeout" xml:space="preserve">
+    <value>由于工作流实例执行超时，因此将其中止。</value>
+  </data>
+  <data name="AbortingDueToLoadFailure" xml:space="preserve">
+    <value>由于 Load 或 LoadRunnableInstance 操作引发异常，WorkflowApplication 已中止。创建新的 WorkflowApplication 对象以尝试加载另一个工作流实例。</value>
+  </data>
+  <data name="AbortingDueToVersionMismatch" xml:space="preserve">
+    <value>WorkflowApplication 已中止，因为 Load 或 LoadRunnableInstance 操作引发了 VersionMismatchException。</value>
+  </data>
+  <data name="AbortInstanceOnTransactionFailureDoesNotMatch" xml:space="preserve">
+    <value>嵌套于 TransactedReceiveScope 活动“{1}”中的 TransactionScope 活动“{0}”的 AbortInstanceOnTransactionFailure 属性的值不应设置为 false。</value>
+  </data>
+  <data name="ActionItemCallbackInvoked" xml:space="preserve">
+    <value>已调用 IO 线程调度程序回调。</value>
+  </data>
+  <data name="ActionItemIsAlreadyScheduled" xml:space="preserve">
+    <value>ActionItem 已计划执行，还未完成。</value>
+  </data>
+  <data name="ActionItemScheduled" xml:space="preserve">
+    <value>已调用 IO 线程调度程序回调。</value>
+  </data>
+  <data name="ActivityBlockingUpdate" xml:space="preserve">
+    <value>活动“{0}”: {1}</value>
+  </data>
+  <data name="ActivityCannotBeReferenced" xml:space="preserve">
+    <value>活动“{1}”不能引用活动“{0}”，因为工作流中的其他位置已引用活动“{0}”，且活动“{1}”看不到该引用。若要使活动“{0}”可供活动“{1}”看到，前者必须为活动“{2}”的子级或导入的子级(但不是实现子级)。活动“{0}”最初由活动“{3}”引用，而活动“{1}”位于活动“{2}”的实现中。</value>
+  </data>
+  <data name="ActivityCannotBeReferencedWithoutTarget" xml:space="preserve">
+    <value>活动“{1}”无法引用活动“{0}”，因为前者不在另一个活动的实现中。仅当活动 1 将活动 2 指定为子级或导入时，活动 1 的实现才能引用活动 2。活动“{0}”是由活动“{2}”声明的。</value>
+  </data>
+  <data name="ActivityCannotReferenceItself" xml:space="preserve">
+    <value>显示名称为“{0}”的活动尝试引用自身。活动不能是其自身的父级。</value>
+  </data>
+  <data name="ActivityCompleted" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”在“{3}”状态下完成。</value>
+  </data>
+  <data name="ActivityDefinitionCannotBeShared" xml:space="preserve">
+    <value>工作流中多个节点之间似乎共享了“{0}”的活动定义对象。在工作流中重用活动定义对象是不正确的做法。</value>
+  </data>
+  <data name="ActivityDelegateAlreadyOpened" xml:space="preserve">
+    <value>ActivityDelegate“{0}”的父级已经为活动“{1}”，因此其父级不能为活动“{2}”。委托只能作为子级返回一次。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferenced" xml:space="preserve">
+    <value>活动“{1}”无法引用带有处理程序“{0}”的活动委托，因为前者不在活动“{2}”的实现中。仅当活动将活动委托指定为子级或导入时，该活动的实现才能引用该活动委托。具有处理程序“{0}”的活动委托是由活动“{3}”声明的。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferencedNoHandler" xml:space="preserve">
+    <value>活动“{0}”无法引用无处理程序的活动委托，因为前者不在活动“{1}”的实现中。仅当活动将活动委托指定为子级或导入时，该活动的实现才能引用该活动委托。无处理程序的活动委托是由活动“{2}”声明的。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferencedWithoutTarget" xml:space="preserve">
+    <value>活动“{1}”无法引用具有处理程序“{0}”的活动委托，因为前者不在另一个活动的实现中。仅当活动将活动委托指定为子级或导入时，该活动的实现才能引用该活动委托。具有处理程序“{0}”的活动委托是由活动“{2}”声明的。</value>
+  </data>
+  <data name="ActivityDelegateCannotBeReferencedWithoutTargetNoHandler" xml:space="preserve">
+    <value>活动“{0}”无法引用无处理程序的活动委托，因为前者不在另一个活动的实现中。仅当活动将活动委托指定为子级或导入时，该活动的实现才能引用该活动委托。无处理程序的活动委托是由活动“{1}”声明的。</value>
+  </data>
+  <data name="ActivityDelegateHandlersMustBeDeclarations" xml:space="preserve">
+    <value>ActivityDelegate、ActivityAction 或 ActivityFunc 的处理程序不可以是对树中现有活动的引用。“{2}”已经引用了父级为“{1}”的委托的处理程序活动“{0}”。</value>
+  </data>
+  <data name="ActivityDelegateNotOpened" xml:space="preserve">
+    <value>ActivityDelegate“{0}”未处于打开状态。</value>
+  </data>
+  <data name="ActivityDelegateOwnerEnvironmentMissing" xml:space="preserve">
+    <value>未找到活动“{0}”中声明活动委托“{1}”的位置环境。</value>
+  </data>
+  <data name="ActivityDelegateOwnerMissing" xml:space="preserve">
+    <value>应为 ActivityDelegate“{0}”指定一个所有者工作流元素。</value>
+  </data>
+  <data name="ActivityDelegateOwnerNotInParentScope" xml:space="preserve">
+    <value>当前正在执行的活动“{1}”的父层次结构中，没有找到声明 ActivityDelegate“{0}”的 Activity。</value>
+  </data>
+  <data name="ActivityFailedToOpenBefore" xml:space="preserve">
+    <value>由于此活动以前未能打开，因此现在无法打开它。</value>
+  </data>
+  <data name="ActivityHasNoImplementation" xml:space="preserve">
+    <value>活动“{0}”包含一个实现映射，但没有实现。</value>
+  </data>
+  <data name="ActivityInstanceFixupFailed" xml:space="preserve">
+    <value>工作流加载失败。给定的 Activity 树与此实例不兼容。</value>
+  </data>
+  <data name="ActivityIsNotRoot" xml:space="preserve">
+    <value>此参数需要是工作流定义的根。</value>
+  </data>
+  <data name="ActivityIsUncached" xml:space="preserve">
+    <value>仅在对工作流定义调用 CacheMetadata 后才能调用此方法。</value>
+  </data>
+  <data name="ActivityMapIsCorrupt" xml:space="preserve">
+    <value>在持久化实例中，从活动程序到实例的映射已损坏。</value>
+  </data>
+  <data name="ActivityNotFound" xml:space="preserve">
+    <value>找不到活动“{0}”。</value>
+  </data>
+  <data name="ActivityNotICompiledExpressionRoot" xml:space="preserve">
+    <value>活动必须为 ICompiledExpressionRoot 才能确定表达式 ID。请确保已编译当前定义。</value>
+  </data>
+  <data name="ActivityNotPartOfThisTree" xml:space="preserve">
+    <value>处理所提供活动的元数据时，此活动不是工作流定义的一部分。名为“{0}”的有问题的活动是由名为“{1}”的活动提供的。</value>
+  </data>
+  <data name="ActivityPropertyMustBeSet" xml:space="preserve">
+    <value>“{0}”是活动“{1}”的必备属性。</value>
+  </data>
+  <data name="ActivityPropertyNotSet" xml:space="preserve">
+    <value>活动“{1}”的“{0}”属性为 null，它将不执行任何操作。</value>
+  </data>
+  <data name="ActivityPropertyRequiresName" xml:space="preserve">
+    <value>对于 DynamicActivity“{0}”上的每个 ActivityProperty，“Name”都是必要属性。</value>
+  </data>
+  <data name="ActivityPropertyRequiresType" xml:space="preserve">
+    <value>对于 DynamicActivity“{0}”上的每个 ActivityProperty，“Type”都是必要属性。</value>
+  </data>
+  <data name="ActivityScheduled" xml:space="preserve">
+    <value>父 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了子 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”。</value>
+  </data>
+  <data name="ActivityTypeMismatch" xml:space="preserve">
+    <value>“{0}”的类型不是“{1}”。加载此实例时，必须确保名为“{0}”的活动实现“{1}”。</value>
+  </data>
+  <data name="ActivityXamlServiceLineString" xml:space="preserve">
+    <value>行</value>
+  </data>
+  <data name="ActivityXamlServicesCompilationFailed" xml:space="preserve">
+    <value>发生了编译失败: {0}完整的结果包含在此异常的 Data 属性中。请更正源中的错误，然后重试加载。</value>
+  </data>
+  <data name="ActivityXamlServicesRequiresActivity" xml:space="preserve">
+    <value>ActivityXamlServices.Load 仅支持基于 Activity 的类型。提供的类型({0})无效。</value>
+  </data>
+  <data name="AddedIdleArgumentBlockDU" xml:space="preserve">
+    <value>新添加的参数“{0}”对应的表达式包含活动“{1}”，此活动会在执行过程中空闲。若要在此活动内部启用动态更新，请使用保证不会空闲的参数表达式。</value>
+  </data>
+  <data name="AddedIdleExpressionBlockDU" xml:space="preserve">
+    <value>已添加的新变量默认表达式或参数表达式在执行过程中会空闲。</value>
+  </data>
+  <data name="AddedIdleVariableDefaultBlockDU" xml:space="preserve">
+    <value>新添加的变量“{0}”对应的默认表达式包含活动“{1}”，此活动在执行过程中会空闲。若要在此活动内部启用动态更新，请使用保证不会空闲的变量默认表达式。</value>
+  </data>
+  <data name="AddMatchActivityNewAndOldParentMismatch" xml:space="preserve">
+    <value>无法将新活动“{0}”与旧活动“{1}”匹配，因为它们的声明不匹配。新活动由“{2}”声明，而旧活动由“{3}”声明。</value>
+  </data>
+  <data name="AddMatchActivityNewParentMismatch" xml:space="preserve">
+    <value>活动“{0}”不能为活动“{1}”添加匹配项，因为前者不是后者的声明者。匹配的活动由“{2}”声明。</value>
+  </data>
+  <data name="AddMatchActivityPrivateChild" xml:space="preserve">
+    <value>无法为活动“{0}”添加匹配项，因为它是私有子级。只能为公共子级添加匹配项。</value>
+  </data>
+  <data name="AddMatchVariableNewAndOldParentMismatch" xml:space="preserve">
+    <value>无法将新变量“{0}”与旧变量“{1}”匹配，因为它们的所有者不匹配。新变量由“{2}”所有，而旧变量由“{3}”所有。</value>
+  </data>
+  <data name="AddMatchVariableNewParentMismatch" xml:space="preserve">
+    <value>活动“{0}”不能为变量“{1}”添加匹配项，因为前者不是后者的所有者。匹配的变量由“{2}”所有。</value>
+  </data>
+  <data name="AddMatchVariablePrivateChild" xml:space="preserve">
+    <value>无法为变量“{0}”添加匹配项，因为它是私有的。只能为公共变量添加匹配项。</value>
+  </data>
+  <data name="AddMatchVariableSignatureMismatch" xml:space="preserve">
+    <value>活动“{0}”无法添加变量匹配项，因为两个变量的签名不匹配。包括名称、类型和修改者的签名必须匹配。新变量的名称、类型和修改者分别为 {1}、{2} 和 {3}。旧变量的名称、类型和修改者分别为 {4}、{5} 和 {6}。</value>
+  </data>
+  <data name="AddValidationErrorMustBeCalledFromConstraint" xml:space="preserve">
+    <value>只能从 {0} 活动的子树中调用 AddValidationError。</value>
+  </data>
+  <data name="AECDisposed" xml:space="preserve">
+    <value>访问 ActivityContext 的操作只能从其所传入的函数的作用域内进行。</value>
+  </data>
+  <data name="AECForPropertiesHasBeenDisposed" xml:space="preserve">
+    <value>创建了此 ExecutionProperties 对象的 ActivityContext 已得到处置。只有在活动的工作项过程中才能访问属性。</value>
+  </data>
+  <data name="AlreadyBoundToInstance" xml:space="preserve">
+    <value>实例永久性系统无法处理无效的 InstancePersistenceCommand。该命令需要未绑定的句柄，但 InstanceHandle 已绑定到某个实例。</value>
+  </data>
+  <data name="AlreadyBoundToOwner" xml:space="preserve">
+    <value>实例永久性系统无法处理无效的 InstancePersistenceCommand。该命令需要未绑定的句柄，但 InstanceHandle 已绑定到某个实例所有者。</value>
+  </data>
+  <data name="AlreadySetupNoPersist" xml:space="preserve">
+    <value>此工作流元素已经设置了一个非永久性块。工作流元素只能设置一个非永久性块。</value>
+  </data>
+  <data name="AmbiguousVBVariableReference" xml:space="preserve">
+    <value>“{0}”是不明确的变量引用。VisualBasic 标识符不区分大小写。</value>
+  </data>
+  <data name="AppDomainUnload" xml:space="preserve">
+    <value>AppDomain 正在卸载。AppDomain.FriendlyName {0}，ProcessName {1}，ProcessId {2}。</value>
+  </data>
+  <data name="ArgumentAlreadyInitialized" xml:space="preserve">
+    <value>活动“{1}”的参数“{0}”应由动态更新添加，但已初始化。</value>
+  </data>
+  <data name="ArgumentAlreadyInUse" xml:space="preserve">
+    <value>参数“{0}”正由 Activity“{1}”使用，因此不能再由 Activity“{2}”使用。</value>
+  </data>
+  <data name="ArgumentCannotHaveNullOrVoidType" xml:space="preserve">
+    <value>DisplayName 为“{0}”的 Activity 有一个名为“{1}”的参数，该参数为 null 或 void 类型。</value>
+  </data>
+  <data name="ArgumentDirectionMismatch" xml:space="preserve">
+    <value>由于方向不匹配，因此无法绑定为 RuntimeArgument“{0}”提供的 Argument。RuntimeArgument 声明方向为 {1}，而 Argument 的方向为 {2}。</value>
+  </data>
+  <data name="ArgumentDoesNotExist" xml:space="preserve">
+    <value>此集合中不存在名为“{0}”的参数。</value>
+  </data>
+  <data name="ArgumentDoesNotExistInEnvironment" xml:space="preserve">
+    <value>当前的环境范围中不存在参数“{0}”。</value>
+  </data>
+  <data name="ArgumentIsAddedMoreThanOnce" xml:space="preserve">
+    <value>在 Activity“{1}”中不止一次添加了参数“{0}”。</value>
+  </data>
+  <data name="ArgumentLocationExpressionTypeMismatch" xml:space="preserve">
+    <value>Expression 的类型必须为“{0}”，但提供的类型为“{1}”。</value>
+  </data>
+  <data name="ArgumentMustbePropertyofWorkflowElement" xml:space="preserve">
+    <value>参数必须是 WorkflowElement 的某个属性。</value>
+  </data>
+  <data name="ArgumentNameRequired" xml:space="preserve">
+    <value>必须设置 ArgumentReference 或 ArgumentValue 的参数名称。</value>
+  </data>
+  <data name="ArgumentNotFound" xml:space="preserve">
+    <value>在拥有这些私有子级的活动上找不到名为“{0}”的参数。只应在 Activity 定义的正文中使用 ArgumentReference 和 ArgumentValue。</value>
+  </data>
+  <data name="ArgumentNotInTree" xml:space="preserve">
+    <value>无法使用类型为“{0}”的参数。请确保在活动中声明了该参数。</value>
+  </data>
+  <data name="ArgumentNullOrEmpty" xml:space="preserve">
+    <value>参数 {0} 为 null 或为空。</value>
+  </data>
+  <data name="ArgumentNumberRequiresTheSameAsParameterNumber" xml:space="preserve">
+    <value>类型为“{0}”的实参数量和形参数量必须相同。</value>
+  </data>
+  <data name="ArgumentRequired" xml:space="preserve">
+    <value>“{1}”的“{0}”集合中的参数必须有内容。</value>
+  </data>
+  <data name="ArgumentTypeCannotBeNull" xml:space="preserve">
+    <value>参数类型不能为 null。</value>
+  </data>
+  <data name="ArgumentTypeMismatch" xml:space="preserve">
+    <value>无法绑定为 RuntimeArgument“{0}”提供的 Argument，因为类型不匹配。RuntimeArgument 声明的类型为 {1}，而 Argument 的类型为 {2}。两种类型必须相同。</value>
+  </data>
+  <data name="ArgumentTypeMustBeCompatible" xml:space="preserve">
+    <value>参数类型必须与此 ArgumentReference 或 ArgumentValue 的类型兼容。参数“{0}”的类型为 {1}，但类型应为 {2}。</value>
+  </data>
+  <data name="ArgumentValueExpressionTypeMismatch" xml:space="preserve">
+    <value>参数要求 ResultType 为“{0}”，但所提供 Activity 的结果类型为“{1}”。</value>
+  </data>
+  <data name="ArgumentViolationsFound" xml:space="preserve">
+    <value>“{0}”活动中发现了冲突。发现了一个或多个冲突，如下所示:    {1}</value>
+  </data>
+  <data name="AssemblyReferenceIsImmutable" xml:space="preserve">
+    <value>不能更改内置的默认 AssemblyReferences。</value>
+  </data>
+  <data name="AsyncCallbackThrewException" xml:space="preserve">
+    <value>异步回调引发了异常。</value>
+  </data>
+  <data name="AsyncEventArgsCompletedTwice" xml:space="preserve">
+    <value>AsyncEventArgs 实现“{0}”多次尝试完成同一个操作。这可能是由不正确的应用程序 AsyncEventArgs 实现或其他多次调用 AsyncCallback 的扩展性代码所致。</value>
+  </data>
+  <data name="AsyncEventArgsCompletionPending" xml:space="preserve">
+    <value>AsyncEventArgs 实现“{0}”在没有完成挂起操作的情况下多次尝试将状态设置为“挂起”。这可能是由不正确的应用程序 AsyncEventArgs 实现或其他多次调用 Set() 的扩展性代码所致。</value>
+  </data>
+  <data name="AsyncMethodsMustAllBeStaticOrInstance" xml:space="preserve">
+    <value>异步方法必须全部为静态方法或全部为实例方法。</value>
+  </data>
+  <data name="AsyncMethodsMustFromSameType" xml:space="preserve">
+    <value>异步方法必须来自同一个类型。</value>
+  </data>
+  <data name="AsyncResultAlreadyEnded" xml:space="preserve">
+    <value>不能对 AsyncResult 调用两次 End。</value>
+  </data>
+  <data name="AsyncResultCompletedTwice" xml:space="preserve">
+    <value>IAsyncResult 实现“{0}”多次尝试完成同一个操作。这可能是由不正确的应用程序 IAsyncResult 实现或其他扩展性代码所致，例如，返回不正确 CompletedSynchronously 值或多次调用 AsyncCallback 的 IAsyncResult。</value>
+  </data>
+  <data name="AsyncTransactionException" xml:space="preserve">
+    <value>用于将事务输入异步操作的 TransactionScope 引发了异常。</value>
+  </data>
+  <data name="BadCopyToArray" xml:space="preserve">
+    <value>无法将目录项复制到指定的数组中。发生此情况是因为一个或多个以下错误: 数组的维度过多，索引超过了数组的结尾，数组没有足够的空间。</value>
+  </data>
+  <data name="BadWorkflowIdentityFormat" xml:space="preserve">
+    <value>无效的 WorkflowIdentity 格式。WorkflowIdentity 必须遵循“name; Version=version; Package=package”格式。Version 和 Package 部分是可选的。</value>
+  </data>
+  <data name="BeforeInitializeComponentXBTExtensionResourceNotFound" xml:space="preserve">
+    <value>未找到应由 BeforeInitializeComponent XAML 生成任务扩展生成的资源。请尝试重新生成项目。</value>
+  </data>
+  <data name="BeginExecuteMustNotReturnANullAsyncResult" xml:space="preserve">
+    <value>AsyncCodeActivity.BeginExecute 返回的 IAsyncResult 不得为 Null。</value>
+  </data>
+  <data name="BeginExecuteMustUseProvidedStateAsAsyncResultState" xml:space="preserve">
+    <value>AsyncCodeActivity.BeginExecute 必须返回 IAsyncResult，且其 IAsyncResult.AsyncState 必须为运行时提供的状态对象。</value>
+  </data>
+  <data name="BinaryExpressionActivityRequiresArgument" xml:space="preserve">
+    <value>必须设置 {0}，然后才能使用 {1} 活动“{2}”。</value>
+  </data>
+  <data name="BindLockRequiresCommandFlag" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现在无效的时间调用了 BindAcquiredLock、BindReclaimedLock、BeginBindReclaimedLock 或 CreateBindReclaimedLockException。这些方法只能在处理可能获取实例锁的命令期间调用。请切换到有效的永久性提供程序，或是重写 InstancePersistenceCommand 实现以从 AutomaticallyAcquiringLock 返回 true。</value>
+  </data>
+  <data name="BindReclaimedLockException" xml:space="preserve">
+    <value>此异常不表示错误，不应捕获。此异常可从 InstanceStore.TryCommand、BeginTryCommand 或 EndTryCommand 的永久性提供程序实现引发，指示应尝试回收在 InstancePersistenceContext.CreateBindReclaimedLockException 调用中指定的版本上的锁。</value>
+  </data>
+  <data name="BindReclaimSucceeded" xml:space="preserve">
+    <value>InstanceStore 的永久性提供程序实现已成功取消了该命令。已通过 InstancePersistenceContext.CreateBindReclaimedLockException 回收了一个孤立锁并取消了该命令。</value>
+  </data>
+  <data name="BlockedUpdateInsideActivityUpdateByUserError" xml:space="preserve">
+    <value>更新作者不允许在此正在运行的活动内部更新。</value>
+  </data>
+  <data name="BlockedUpdateInsideActivityUpdateError" xml:space="preserve">
+    <value>已阻止对此活动进行动态更新。</value>
+  </data>
+  <data name="BodyCannotBeNull" xml:space="preserve">
+    <value>消息描述的正文不能为 null，请将 OperationDescription.MessageDescription.Body 设置为正确值。</value>
+  </data>
+  <data name="BookmarkAlreadyExists" xml:space="preserve">
+    <value>已存在名为“{0}”的书签。</value>
+  </data>
+  <data name="BookmarkNotFoundGeneric" xml:space="preserve">
+    <value>无法找到所请求的书签。</value>
+  </data>
+  <data name="BookmarkNotRegistered" xml:space="preserve">
+    <value>{0} 书签当前未在补偿扩展中注册。</value>
+  </data>
+  <data name="BookmarkScopeAlreadyInitialized" xml:space="preserve">
+    <value>无法初始化书签范围，因为它已经过初始化。</value>
+  </data>
+  <data name="BookmarkScopeHasBookmarks" xml:space="preserve">
+    <value>无法注销指定的书签范围，因为它具有未处理的书签。</value>
+  </data>
+  <data name="BookmarkScopeInitialized" xml:space="preserve">
+    <value>TemporaryId 为“{0}”的 BookmarkScope 已初始化，ID 为:“{1}”。</value>
+  </data>
+  <data name="BookmarkScopeNotFound" xml:space="preserve">
+    <value>找不到 ID 为“{0}”的书签范围。</value>
+  </data>
+  <data name="BookmarkScopeNotRegisteredForInitialize" xml:space="preserve">
+    <value>无法初始化指定的书签范围，因为它当前未注册。</value>
+  </data>
+  <data name="BookmarkScopeNotRegisteredForUnregister" xml:space="preserve">
+    <value>无法注销指定的书签范围，因为它当前未注册。</value>
+  </data>
+  <data name="BookmarkScopesRequireKeys" xml:space="preserve">
+    <value>书签范围需要支持密钥管理的主机。现正使用的主机不支持密钥管理。如果正在使用 WorkflowApplication 或 WorkflowInvoker，请考虑改用 WorkflowServiceHost。</value>
+  </data>
+  <data name="BookmarkScopeWithIdAlreadyExists" xml:space="preserve">
+    <value>无法用标识符“{0}”初始化指定的书签范围，因为已存在具有相同标识符的书签范围。</value>
+  </data>
+  <data name="BookmarksOnlyResumableWhileIdle" xml:space="preserve">
+    <value>只有运行时空闲时才能调用 TryScheduleBookmarkResumption。</value>
+  </data>
+  <data name="BufferAllocationFailed" xml:space="preserve">
+    <value>无法分配 {0} 字节的托管内存缓冲区。可用内存量可能不足。</value>
+  </data>
+  <data name="BufferedOutputStreamQuotaExceeded" xml:space="preserve">
+    <value>已超出此流的大小配额({0})。</value>
+  </data>
+  <data name="BufferedReceiveBehaviorMultipleUse" xml:space="preserve">
+    <value>无法将 BufferedReceiveServiceBehavior 实例添加到 WorkflowServiceHost，因为已将其添加到了另一个 WorkflowServiceHost 实例。为每个其他 WorkflowServiceHost 创建一个新的 BufferedReceiveServiceBehavior 实例。</value>
+  </data>
+  <data name="BufferedReceiveBehaviorUsedWithoutProperty" xml:space="preserve">
+    <value>BufferedReceiveServiceBehavior 必须与支持 BufferedReceive 处理的工作流定义配合使用。使用 WorkflowService.AllowBufferedReceive 可以启用 BufferedReceive 处理。</value>
+  </data>
+  <data name="BufferedReceiveRequiresReceiveContext" xml:space="preserve">
+    <value>必须启用名为“{0}”的操作，才能在使用 BufferedReceiveServiceBehavior 时使用 ReceiveContext ManualAcknowledgement 模式。</value>
+  </data>
+  <data name="BufferIsNotRightSizeForBufferManager" xml:space="preserve">
+    <value>由于大小错误，无法将此缓冲区返回到缓冲区管理器。</value>
+  </data>
+  <data name="BufferOutOfOrderMessageNoBookmark" xml:space="preserve">
+    <value>此时不能执行服务实例“{0}”上的操作“{1}”。服务实例准备好处理此特定操作时，将进行另一个尝试。</value>
+  </data>
+  <data name="BufferOutOfOrderMessageNoInstance" xml:space="preserve">
+    <value>此时不能执行操作“{0}”。服务实例准备好处理此特定操作时，将进行另一个尝试。</value>
+  </data>
+  <data name="BufferPoolAllocation" xml:space="preserve">
+    <value>池正在分配 {0} 个字节。</value>
+  </data>
+  <data name="BufferPoolChangeQuota" xml:space="preserve">
+    <value>BufferPool 的大小为 {0}，按 {1} 更改配额。</value>
+  </data>
+  <data name="BusyCountTraceFormatString" xml:space="preserve">
+    <value>工作流实例 Id {0}</value>
+  </data>
+  <data name="CacheRootMetadataStart" xml:space="preserve">
+    <value>已在活动“{0}”上启动 CacheRootMetadata</value>
+  </data>
+  <data name="CacheRootMetadataStop" xml:space="preserve">
+    <value>已在活动 {0} 上停止 CacheRootMetadata。</value>
+  </data>
+  <data name="CacheSettingsLocked" xml:space="preserve">
+    <value>缓存设置是不可变的，因为已将扩展添加到工作流实例或主机扩展集合。</value>
+  </data>
+  <data name="CallbackExceptionFromHostAbort" xml:space="preserve">
+    <value>对 WorkflowInstance“{0}”调用 OnRequestAbort 引发异常。此异常被视为致命异常。有关详细信息，请参见内部异常。</value>
+  </data>
+  <data name="CallbackExceptionFromHostGetExtension" xml:space="preserve">
+    <value>对 WorkflowInstance“{0}”调用 OnGetExtension 引发异常。此异常被视为致命异常。有关详细信息，请参见内部异常。</value>
+  </data>
+  <data name="CancellationHandlerFatalException" xml:space="preserve">
+    <value>“{0}”的取消处理程序引发了未经处理的异常。取消可能处于不一致状态，工作流已中止。</value>
+  </data>
+  <data name="CanInduceIdleActivityInArgumentExpression" xml:space="preserve">
+    <value>活动“{1}”的参数“{0}”已绑定到包含活动“{2}”的表达式。“{2}”可能导致表达式在求值期间处于空闲状态。如果活动“{1}”的参数表达式修改共享状态，则在表达式求值期间变为空闲状态可能会生成意外的参数值。</value>
+  </data>
+  <data name="CanInduceIdleNotSpecified" xml:space="preserve">
+    <value>活动“{0}”无效。对于 NativeActivity 派生的活动，若其调用 System.Activities.NativeActivityContext 中定义的某个 CreateBookmark 重载，以便执行异步操作，则必须覆盖 CanInduceIdle 属性且返回 true。</value>
+  </data>
+  <data name="CannotAcquireLockDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行已中断，因为有其他实例所有者锁定了该实例。发生此错误的原因通常是其他主机加载了该实例。</value>
+  </data>
+  <data name="CannotAcquireLockSpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行已中断，因为有其他实例所有者锁定了实例“{0}”。发生此错误的原因通常是其他主机加载了该实例。</value>
+  </data>
+  <data name="CannotAcquireLockSpecificWithOwner" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行已中断，因为有其他实例所有者锁定了实例“{0}”。发生此错误的原因通常是其他主机加载了该实例。在该实例上持有锁的所有者或主机的实例所有者 ID 为“{1}”。</value>
+  </data>
+  <data name="CannotAddHandlesUpdateError" xml:space="preserve">
+    <value>该活动已添加一个派生自 Handle 的类型的新变量。</value>
+  </data>
+  <data name="CannotAddOrRemoveWithChildren" xml:space="preserve">
+    <value>具有执行子级的活动无法添加或移除工作流执行属性。</value>
+  </data>
+  <data name="CannotCallAbortInstanceFromWorkflowThread" xml:space="preserve">
+    <value>从工作流线程中无法调用 AbortInstance，因为它可能会导致不一致的状态。</value>
+  </data>
+  <data name="CannotChangeAbortInstanceFlagAfterPropertyRegistration" xml:space="preserve">
+    <value>执行相应 RuntimeTransactionHandle 的 IPropertyRegistrationCallback.Register 后，无法修改 AbortInstanceOnTransactionFailure 标志的值。</value>
+  </data>
+  <data name="CannotChangeMatchesInImplementation" xml:space="preserve">
+    <value>无法在要对其生成更新映射的工作流的私有实现内部添加新匹配项。</value>
+  </data>
+  <data name="CannotCompleteRuntimeOwnedTransaction" xml:space="preserve">
+    <value>当前事务由运行时配置，并且只能由运行时完成。存在环境事务的同时对 WorkflowInvoker 调用 invoke API，通常会得到由运行时配置的事务。</value>
+  </data>
+  <data name="CannotCompleteWithKeys" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告，要完成的实例与活动键关联。仅当与实例关联的所有键都完成以后，才能完成该实例。</value>
+  </data>
+  <data name="CannotConvertObject" xml:space="preserve">
+    <value>不能将对象“{0}”转换为类型“{1}”。</value>
+  </data>
+  <data name="CannotCreateContextWithNullId" xml:space="preserve">
+    <value>InstanceStore.CreateInstanceHandle 的参数 InstanceID 无法指定全零的 ID，如 Guid.Empty。</value>
+  </data>
+  <data name="CannotCreateMessageFault" xml:space="preserve">
+    <value>无法创建 MessageFault。</value>
+  </data>
+  <data name="CannotCreateOwnerWithoutIdentity" xml:space="preserve">
+    <value>无法创建没有 WorkflowIdentity 的默认实例所有者。若要创建所有者，请指定定义标识或选择 WorkflowIdentityFilter.Any。</value>
+  </data>
+  <data name="CanNotDefineNullForAPromotion" xml:space="preserve">
+    <value>提升名称 {1} 的 {0} 提升集合包含 null 值。</value>
+  </data>
+  <data name="CannotDereferenceNull" xml:space="preserve">
+    <value>无法从具有属性“{0}”的给定表达式中创建左值，因为目标对象为 null。</value>
+  </data>
+  <data name="CannotEnlistMultipleTransactions" xml:space="preserve">
+    <value>在工作流中已登记了事务。一次只能登记一个事务。</value>
+  </data>
+  <data name="CanNotFindSymbolResolverInWorkflowInstanceExtensions" xml:space="preserve">
+    <value>工作流实例扩展集合中找不到符号解析器。</value>
+  </data>
+  <data name="CannotGenerateSchemaForXmlSerializable" xml:space="preserve">
+    <value>“{0}”是内部运行时数据，不支持生成架构。</value>
+  </data>
+  <data name="CannotGetValueOfOutArgument" xml:space="preserve">
+    <value>对于仅提供 out 方向的参数，无法获取其值。</value>
+  </data>
+  <data name="CannotInvokeBindingFromNonBinding" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现试图在处理不获取锁的命令时执行可能获取锁的命令。如果在处理从 InstancePersistenceCommand.AutomaticallyAcquiringLock 返回 false 的命令时，使用从其返回 true 的命令调用 InstancePersistenceContext.Execute 或 InstancePersistenceContext.BeginExecute，则可能发生此异常。请使用不会产生这种行为的永久性提供程序，或重写其中一个命令的 AutomaticallyAcquiringLock，以返回正确的值。</value>
+  </data>
+  <data name="CannotInvokeOpenedActivity" xml:space="preserve">
+    <value>无法调用此活动，因为打开它的不是接受字符串和对象的 IDictionary 的 Invoke 重载。</value>
+  </data>
+  <data name="CannotInvokeTransactionalFromNonTransactional" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现试图在处理非事务性命令时执行事务性命令。如果在处理从 InstancePersistenceCommand.IsTransactionEnlistmentOptional 返回 true 的命令时，使用从其返回 false 的命令调用 InstancePersistenceContext.Execute 或 InstancePersistenceContext.BeginExecute，则可能发生此异常。请使用不会产生这种行为的永久性提供程序，或重写其中一个命令的 IsTransactionEnlistmentOptional，以返回正确的值。</value>
+  </data>
+  <data name="CannotModifyCatchAfterOpen" xml:space="preserve">
+    <value>此 Catch 已打开，无法修改。只能在设计时修改 Catch。</value>
+  </data>
+  <data name="CannotMoveChildAcrossDifferentFlowNodeTypes" xml:space="preserve">
+    <value>子活动从一个 FlowNode 类型移动到不同的 FlowNode 类型时，流程图不支持动态更新。</value>
+  </data>
+  <data name="CannotNestTransactedReceiveScopeWhenAmbientHandleIsSuppressed" xml:space="preserve">
+    <value>当前已禁止运行时事务。不支持在禁止运行时事务时执行 TransactedReceiveScope 活动“{0}”。</value>
+  </data>
+  <data name="CannotNestTransactionScopeWhenAmbientHandleIsSuppressed" xml:space="preserve">
+    <value>当前已禁止运行时事务。不支持在禁止运行时事务期间执行 TransactedScope 活动“{0}”。</value>
+  </data>
+  <data name="CannotPerformOperationFromHandlerThread" xml:space="preserve">
+    <value>无法从事件处理程序内执行 WorkflowApplication 操作。</value>
+  </data>
+  <data name="CannotPerformOperationOnHandle" xml:space="preserve">
+    <value>无法对 Handle 子类型的变量执行操作。</value>
+  </data>
+  <data name="CannotPersistInsideIsolation" xml:space="preserve">
+    <value>隔离块内不能包含 Persist 活动。</value>
+  </data>
+  <data name="CannotPersistInsideNoPersist" xml:space="preserve">
+    <value>非永久性块内不能包含 Persist 活动。</value>
+  </data>
+  <data name="CannotPersistWhileDetached" xml:space="preserve">
+    <value>实例无法持久化，因为它不拥有锁。前一次以 true 的 unlock 值调用 Persist 负责释放锁。</value>
+  </data>
+  <data name="CannotPromoteAsSqlVariant" xml:space="preserve">
+    <value>SQL 不支持已提升属性“{1}”的数据类型“{0}”。请将该数据类型更改为支持的数据类型，或将该属性提升为二进制值。</value>
+  </data>
+  <data name="CannotPromoteXNameTwiceInPromotion" xml:space="preserve">
+    <value>在提升“{1}”中，XName“{0}”已提升多次。同一提升中不允许有重复的 XName。</value>
+  </data>
+  <data name="CannotPropagateExceptionWhileCanceling" xml:space="preserve">
+    <value>ID 为 {1} 的活动“{0}”在取消时引发或传播了异常。</value>
+  </data>
+  <data name="CannotRemoveExecutingActivityUpdateError" xml:space="preserve">
+    <value>无法移除活动“{0}: {1}”，因为它当前正在执行。</value>
+  </data>
+  <data name="CannotReplaceTransaction" xml:space="preserve">
+    <value>环境事务(System.Transactions.Transaction.Current)与正用于此执行阶段的事务不匹配。在整个执行阶段中只能使用一个事务。</value>
+  </data>
+  <data name="CannotResetPropertyInDataContext" xml:space="preserve">
+    <value>无法重置 WorkflowDataContext 中的属性。</value>
+  </data>
+  <data name="CannotSaveOriginalValueForActivity" xml:space="preserve">
+    <value>活动只能保存其公共或导入的子级或委托处理程序的原始值。</value>
+  </data>
+  <data name="CannotSaveOriginalValueForNewActivity" xml:space="preserve">
+    <value>无法保存活动“{0}”的原始值，因为它不存在于原始工作流定义中。</value>
+  </data>
+  <data name="CannotSaveOriginalValuesForReferencedChildren" xml:space="preserve">
+    <value>此活动位于活动实现内部时无法正确处理更新。它尝试保存原始值以引用导入的子级。</value>
+  </data>
+  <data name="CannotScheduleChildrenWhileEnteringIsolation" xml:space="preserve">
+    <value>设置隔离块时不能安排子活动。等到调用了 OnEntered BookmarkCallback 后再安排子级。</value>
+  </data>
+  <data name="CannotSerializeExpression" xml:space="preserve">
+    <value>无法序列化“{0}”类型的表达式。</value>
+  </data>
+  <data name="CannotSerializeVariableExpression" xml:space="preserve">
+    <value>无法序列化表达式，因为变量访问子表达式格式错误或无法识别。</value>
+  </data>
+  <data name="CannotSetRuntimeTransactionInNoPersist" xml:space="preserve">
+    <value>包含在非永久性作用域内的活动无法使用事务来配置运行时。上级活动已经禁止永久性。</value>
+  </data>
+  <data name="CannotSetupIsolationInsideIsolation" xml:space="preserve">
+    <value>该隔离块可能会包含在另一个隔离块内，因此无法设置。隔离块不能嵌套。</value>
+  </data>
+  <data name="CannotSetupIsolationInsideNoPersist" xml:space="preserve">
+    <value>该隔离块可能会包含在非永久性块内，因此无法设置。</value>
+  </data>
+  <data name="CannotSetupIsolationWithChildren" xml:space="preserve">
+    <value>有执行子级就不能设置隔离块。</value>
+  </data>
+  <data name="CannotSetValueOfInArgument" xml:space="preserve">
+    <value>无法为 In 参数赋值。</value>
+  </data>
+  <data name="CannotSetValueToLocation" xml:space="preserve">
+    <value>类型为“{0}”的值不能设置为名称为“{1}”的位置，因为后者是类型为“{2}”的位置。</value>
+  </data>
+  <data name="CannotSpecifyBothConnectionStringAndName" xml:space="preserve">
+    <value>不能同时指定 connectionString 和 connectionStringName 属性。</value>
+  </data>
+  <data name="CannotSuppressAlreadyRegisteredHandle" xml:space="preserve">
+    <value>对于已注册的 RuntimeTransactionHandle，无法更改 SuppressTransaction 属性的值。</value>
+  </data>
+  <data name="CannotUnregisterDefaultBookmarkScope" xml:space="preserve">
+    <value>无法删除书签范围，因为它是实例的默认书签范围。</value>
+  </data>
+  <data name="CannotUnregisterNullBookmarkScope" xml:space="preserve">
+    <value>无法注销 null 书签范围。</value>
+  </data>
+  <data name="CannotUpdateEnvironmentInTheMiddleOfResolvingArguments" xml:space="preserve">
+    <value>当实例位于解析参数的中间时，无法添加、移除或重新排列参数或变量。</value>
+  </data>
+  <data name="CannotUpdateEnvironmentInTheMiddleOfResolvingVariables" xml:space="preserve">
+    <value>当实例位于解析变量的中间时，无法添加、移除或重新排列参数或变量。</value>
+  </data>
+  <data name="CannotUpdateLoadedInstance" xml:space="preserve">
+    <value>WorkflowInstance“{0}”未能得到更新，因为它已加载。请考虑在更新此实例前挂起它。</value>
+  </data>
+  <data name="CannotUseAddServiceEndpointOverloadForWorkflowServices" xml:space="preserve">
+    <value>WorkflowServiceHost 不支持使用 AddServiceEndpoint (ServiceEndpoint endpoint)重载添加应用程序终结点。请使用“XName serviceContractName”或“string implementedContract”重载中的一个将应用程序终结点添加到 WorkflowServiceHost。</value>
+  </data>
+  <data name="CannotUseInputsWithLoad" xml:space="preserve">
+    <value>工作流输入不能与 Load 或 LoadRunnableInstance 一起使用，因为它们仅提供给新实例。</value>
+  </data>
+  <data name="CannotValidateNullObject" xml:space="preserve">
+    <value>名为“{1}”的 {0} 的 ToValidate 参数解析为 null。必须提供非 null 对象进行验证。</value>
+  </data>
+  <data name="CannotWaitForIdleSynchronously" xml:space="preserve">
+    <value>操作已失败，因为该操作是在工作流非空闲时从处理程序调用的。操作要求工作流空闲才能完成，并且工作流在事件处理程序中时不能执行。</value>
+  </data>
+  <data name="CanOnlyAbortDirectChildren" xml:space="preserve">
+    <value>活动只能中止其直接子级。</value>
+  </data>
+  <data name="CanOnlyCancelDirectChildren" xml:space="preserve">
+    <value>活动只能取消其直接子级。</value>
+  </data>
+  <data name="CanOnlyGetOwnedArguments" xml:space="preserve">
+    <value>活动只能获取其所拥有的参数的位置。活动“{0}”正试图获取参数“{1}”的位置，但该参数归活动“{2}”所有。</value>
+  </data>
+  <data name="CanOnlyScheduleDirectChildren" xml:space="preserve">
+    <value>活动只能安排其直接子级。活动“{0}”正试图安排“{1}”，但后者为“{2}”的子级。</value>
+  </data>
+  <data name="CantFindTimerExtension" xml:space="preserve">
+    <value>必须向扩展集合添加 TimerExtension。</value>
+  </data>
+  <data name="CatchOrFinallyExpected" xml:space="preserve">
+    <value>TryCatch 活动“{0}”需要 Catch 或 Finally。</value>
+  </data>
+  <data name="ChangeConditionalTransitionToUnconditionalBlockDU" xml:space="preserve">
+    <value>如果条件转换在更新后变为无条件转换，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="ChangeTransitionTypeDuringTransitioningBlockDU" xml:space="preserve">
+    <value>如果状态正在转换并且当前转换成为条件转换，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="ChangingTriggerOrUseOriginalConditionActionBlockDU" xml:space="preserve">
+    <value>如果现有转换的触发器已修改或者 Condition 或 Action 活动已重新分配给新的转换，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="CleanupInProgress" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 无法处理命令，因为正在进行存储清理。请等待清理完成，然后重试。</value>
+  </data>
+  <data name="CollectionActivityRequiresCollection" xml:space="preserve">
+    <value>未初始化“{0}”的属性“Collection”。</value>
+  </data>
+  <data name="ColumnNumberTooLarge" xml:space="preserve">
+    <value>为活动 {0} 指定的列数过大，在部分信任环境中不受支持</value>
+  </data>
+  <data name="CommandExecutionCannotOverlap" xml:space="preserve">
+    <value>对于一个 InstanceHandle，一次只能执行一个命令。在前一个为此 InstanceHandle 执行的命令完成前，请勿对 InstanceStore 调用 Execute 或 BeginExecute 方法。</value>
+  </data>
+  <data name="CompensableActivityAlreadyConfirmedOrCompensated" xml:space="preserve">
+    <value>“Target”CompensationToken 指定的 CompensableActivity 已确认或得到补偿。</value>
+  </data>
+  <data name="CompensableActivityInsideTransactedReceiveScope" xml:space="preserve">
+    <value>CompensableActivity 无法嵌套在 TransactedReceiveScope 内。</value>
+  </data>
+  <data name="CompensableActivityInsideTransactionScopeActivity" xml:space="preserve">
+    <value>CompensableActivity 不能嵌套在 TransactionScope 活动内。</value>
+  </data>
+  <data name="CompensateWithNoTargetConstraint" xml:space="preserve">
+    <value>仅当在补偿、确认或取消处理程序内使用时，才能在不指定 Target 的情况下使用 Compensate。</value>
+  </data>
+  <data name="CompensateWithoutCompensableActivity" xml:space="preserve">
+    <value>只有在已执行工作流内的 CompensableActivity 后，才能使用 Compensate 活动“{0}”。</value>
+  </data>
+  <data name="CompensationHandlerFatalException" xml:space="preserve">
+    <value>“{0}”的补偿处理程序引发了未经处理的异常。补偿可能处于不一致状态，工作流已中止。</value>
+  </data>
+  <data name="CompensationState" xml:space="preserve">
+    <value>CompensableActivity“{0}”的状态为“{1}”。</value>
+  </data>
+  <data name="CompiledExpressionIdNotFound" xml:space="preserve">
+    <value>无法定位“{0}”的表达式 ID。请确保已编译当前定义。</value>
+  </data>
+  <data name="CompiledExpressionsActivityException" xml:space="preserve">
+    <value>TextExpressionCompiler: 处理活动“{1}”时遇到了“{0}”类型的异常:“{2}”。</value>
+  </data>
+  <data name="CompiledExpressionsCacheMetadataException" xml:space="preserve">
+    <value>活动“{0}”的 CacheMetadata 引发了“{1}”。</value>
+  </data>
+  <data name="CompiledExpressionsDuplicateName" xml:space="preserve">
+    <value>“{0}”是不明确的变量引用。请重命名标识符。</value>
+  </data>
+  <data name="CompiledExpressionsIgnoringInvalidIdentifierVariable" xml:space="preserve">
+    <value>TextExpressionCompiler: 将忽略变量“{0}”。标识符对于当前语言无效。</value>
+  </data>
+  <data name="CompiledExpressionsIgnoringUnnamedVariable" xml:space="preserve">
+    <value>TextExpressionCompiler: 将忽略未命名的变量。</value>
+  </data>
+  <data name="CompiledExpressionsNoCompiledRoot" xml:space="preserve">
+    <value>无法定位与活动“{0}”对应的活动实例。请重新编译工作流。</value>
+  </data>
+  <data name="CompiledLocationNoDefaultConstructor" xml:space="preserve">
+    <value>编译的表达式在其本地根上需要一个默认构造函数。请将默认构造函数添加到类型“{0}”。</value>
+  </data>
+  <data name="CompiledLocationReferenceGetLocation" xml:space="preserve">
+    <value>CompiledLocationReference 应从不用于访问位置。</value>
+  </data>
+  <data name="CompilerError" xml:space="preserve">
+    <value>遇到了编译器错误。</value>
+  </data>
+  <data name="CompilerErrorSpecificExpression" xml:space="preserve">
+    <value>处理表达式“{0}”时遇到了编译器错误。{1}</value>
+  </data>
+  <data name="CompileVbExpressionStart" xml:space="preserve">
+    <value>正在编译 VB 表达式“{0}”</value>
+  </data>
+  <data name="CompileVbExpressionStop" xml:space="preserve">
+    <value>已完成编译 VB 表达式。</value>
+  </data>
+  <data name="CompleteBookmarkWorkItem" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”的 BookmarkWorkItem 已经完成。BookmarkName: {3}，BookmarkScope: {4}。</value>
+  </data>
+  <data name="CompleteCancelActivityWorkItem" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”的 CancelActivityWorkItem 已经完成。</value>
+  </data>
+  <data name="CompleteCompletionWorkItem" xml:space="preserve">
+    <value>父 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”已完成了 CompletionWorkItem。完成了 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”。</value>
+  </data>
+  <data name="CompletedMustNotHaveAssociatedKeys" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告，要加载的状态为 InstanceState.Completed 的实例与未完成的键关联。</value>
+  </data>
+  <data name="CompleteExecuteActivityWorkItem" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”的 ExecuteActivityWorkItem 已经完成。</value>
+  </data>
+  <data name="CompleteFaultWorkItem" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”的 FaultWorkItem 已经完成。异常是从 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”传播的。</value>
+  </data>
+  <data name="CompleteRuntimeWorkItem" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”的运行时工作项已经完成。</value>
+  </data>
+  <data name="CompleteTransactionContextWorkItem" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”的 TransactionContextWorkItem 已经完成。</value>
+  </data>
+  <data name="CompletionConditionSetButNoBody" xml:space="preserve">
+    <value>在 ParallelForEach 中，使 CompletionCondition 属性不等于 null，但 Body 属性等于 null 是无效的。请考虑将 ParallelForEach“{0}”的 Body 属性设置为空的 Sequence 活动。</value>
+  </data>
+  <data name="ConfirmationHandlerFatalException" xml:space="preserve">
+    <value>“{0}”的确认处理程序引发了未经处理的异常。确认可能处于不一致状态，工作流已中止。</value>
+  </data>
+  <data name="ConfirmWithNoTargetConstraint" xml:space="preserve">
+    <value>仅当在补偿、确认或取消处理程序内使用时，才能在不指定 Target 的情况下使用 Confirm。</value>
+  </data>
+  <data name="ConfirmWithoutCompensableActivity" xml:space="preserve">
+    <value>只有在已执行工作流内的 CompensableActivity 后，才能使用 Confirm 活动“{0}”。</value>
+  </data>
+  <data name="ConflictingValueName" xml:space="preserve">
+    <value>提供给 DurableInstanceManager.AddInstanceOwnerValues 的某个值的属性名“{0}”(XName)与已添加的某个值的名称冲突。确保传递给 AddInstanceOwnerValues 的所有值的名称都是唯一的。此错误可能是由所配置的服务行为发生冲突造成的。</value>
+  </data>
+  <data name="ConnectionStringNameWrong" xml:space="preserve">
+    <value>找不到连接名称“{0}”的连接字符串。</value>
+  </data>
+  <data name="ConstructorInfoNotFound" xml:space="preserve">
+    <value>在“{0}”类型中未找到相应的构造函数信息。</value>
+  </data>
+  <data name="ConstVariableCannotBeSet" xml:space="preserve">
+    <value>此位置标记为 const，因此不能修改其值。</value>
+  </data>
+  <data name="ContextAlreadyBoundToInstance" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现调用 BindInstance 为已绑定到某个实例的 InstanceHandle 设置实例 ID。InstanceHandle 在其整个生存期内只能绑定到一个实例。</value>
+  </data>
+  <data name="ContextAlreadyBoundToLock" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现调用 BindAcquiredLock 为已绑定到某个锁的 InstanceHandle 设置被锁定实例版本。InstanceHandle 在其整个生存期内只能绑定到一个锁。</value>
+  </data>
+  <data name="ContextAlreadyBoundToOwner" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现调用 BindOwner 为已绑定到某个所有者的 InstanceHandle 设置所有者。InstanceHandle 在其整个生存期内只能绑定到一个所有者。</value>
+  </data>
+  <data name="ContextMismatchInContextAndCallBackContext" xml:space="preserve">
+    <value>同时设置了 CorrelationCallbackContext 和 CorrelationContext，但上下文不匹配。</value>
+  </data>
+  <data name="ContextMustBeBoundToInstance" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现调用了 BindAcquiredLock、BindReclaimedLock、BeginBindReclaimedLock 或 CreateBindReclaimedLockException 来将 InstanceHandle 绑定到实例锁版本，但 InstanceHandle 却未绑定到实例。InstanceHandle 必须先绑定到一个实例，然后才能绑定到锁。</value>
+  </data>
+  <data name="ContextMustBeBoundToOwner" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现调用了 BindAcquiredLock、BindReclaimedLock、BeginBindReclaimedLock 或 CreateBindReclaimedLockException 来将 InstanceHandle 绑定到实例锁版本，但 InstanceHandle 却未绑定到所有者。InstanceHandle 必须先绑定到一个所有者，然后才能绑定到锁。</value>
+  </data>
+  <data name="ContextNotFromThisStore" xml:space="preserve">
+    <value>InstanceStore.Execute 或 InstanceStore.BeginExecute 的 handle 参数必须是通过对同一个 InstanceStore 实例调用 CreateInstanceHandle 创建的。</value>
+  </data>
+  <data name="ContractInferenceValidationForTransactionFlowBehavior" xml:space="preserve">
+    <value>必须将操作上的 TransactionFlow 行为设置为 Allowed。</value>
+  </data>
+  <data name="ContractNotFoundInAddServiceEndpoint" xml:space="preserve">
+    <value>无法添加终结点，因为找不到含有 Name='{0}' 和 Namespace='{1}' 的 ContractDescription。</value>
+  </data>
+  <data name="ControllerInvalidBeforeInitialize" xml:space="preserve">
+    <value>WorkflowInstance.Controller 仅在调用 Initialize 后才有效。</value>
+  </data>
+  <data name="ConvertVariableToValueExpressionFailed" xml:space="preserve">
+    <value>不能将“{0}”类型的变量转换为“{1}”类型的活动。</value>
+  </data>
+  <data name="CopyToIndexOutOfRange" xml:space="preserve">
+    <value>数组索引必须大于 0。</value>
+  </data>
+  <data name="CopyToNotEnoughSpaceInArray" xml:space="preserve">
+    <value>所提供的数组不足以容纳这些值。</value>
+  </data>
+  <data name="CopyToRankMustBeOne" xml:space="preserve">
+    <value>所提供的数组有多个维度。数组的秩必须为一，才能与 CopyTo 配合使用。</value>
+  </data>
+  <data name="CorrelatedContextRequiredForAnonymousSend" xml:space="preserve">
+    <value>Send 活动必须配置有终结点，或与使用 CorrelatesWith 较早建立的上下文相关。</value>
+  </data>
+  <data name="CorrelationHandleInUse" xml:space="preserve">
+    <value>CorrelationHandle 已经与 BookmarkScope“{0}”一起使用，因此不能与 BookmarkScope“{1}”一起使用。</value>
+  </data>
+  <data name="CorrelationResponseContextShouldNotBeNull" xml:space="preserve">
+    <value>CorrelationResponse 上下文不应为 null。这可能是因为未正确设置相关句柄。</value>
+  </data>
+  <data name="CouldNotResolveNamespacePrefix" xml:space="preserve">
+    <value>无法解析命名空间前缀“{0}”。</value>
+  </data>
+  <data name="CreateBookmark" xml:space="preserve">
+    <value>已为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”创建了 Bookmark。BookmarkName: {3}，BookmarkScope: {4}。</value>
+  </data>
+  <data name="CreateBookmarkScope" xml:space="preserve">
+    <value>已创建 BookmarkScope: {0}。</value>
+  </data>
+  <data name="CreateBookmarkScopeFailed" xml:space="preserve">
+    <value>此 BookmarkScopeHandle 已与 BookmarkScope 关联。</value>
+  </data>
+  <data name="CreateWorkflowServiceHostStart" xml:space="preserve">
+    <value>CreateWorkflowServiceHost 开始</value>
+  </data>
+  <data name="CreateWorkflowServiceHostStop" xml:space="preserve">
+    <value>CreateWorkflowServiceHost 停止</value>
+  </data>
+  <data name="CSharpExpressionsMustBeCompiled" xml:space="preserve">
+    <value>必须编译 CSharp 表达式。</value>
+  </data>
+  <data name="CurrentOperationCannotCreateInstance" xml:space="preserve">
+    <value>没有上下文附加到服务的传入消息，并且当前操作未标有“CanCreateInstance = true”。若要与此服务通信，请检查传入绑定是否支持上下文协议并已初始化了有效的上下文。</value>
+  </data>
+  <data name="DanglingReceive" xml:space="preserve">
+    <value>工作流缺少用来与 SendReply 配对的 Receive。请确保每个 SendReply 活动都与工作流中的一个 Receive 活动配对。</value>
+  </data>
+  <data name="DatabaseUpgradeRequiredForCommand" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 的数据库版本为“{0}”。InstancePersistenceCommand“{1}”无法针对此数据库版本运行。请将此数据库升级为“{2}”。</value>
+  </data>
+  <data name="DebugInfoCannotEvaluateExpression" xml:space="preserve">
+    <value>在当前上下文中无法计算“{0}”。</value>
+  </data>
+  <data name="DebugInfoExceptionCaught" xml:space="preserve">
+    <value>计算 {0} 时捕获到异常: {1}。</value>
+  </data>
+  <data name="DebugInfoNotSkipArgumentResolution" xml:space="preserve">
+    <value>*** 值不是 SkipArgumentResolution ***</value>
+  </data>
+  <data name="DebugInfoTryGetValueFailed" xml:space="preserve">
+    <value>*** TryGetValue 失败 ***</value>
+  </data>
+  <data name="DebugInstrumentationFailed" xml:space="preserve">
+    <value>调试程序检测失败。原因: {0}。</value>
+  </data>
+  <data name="DebugSymbolChecksumValueInvalid" xml:space="preserve">
+    <value>为调试符号指定的校验和在部分信任环境中无效</value>
+  </data>
+  <data name="DefaultAbortReason" xml:space="preserve">
+    <value>工作流已中止。</value>
+  </data>
+  <data name="DefaultCancelationRequiresCancelHasBeenRequested" xml:space="preserve">
+    <value>默认取消逻辑要求 HasCancelBeenRequested 为 true。只应由运行时调用 NativeActivity 的 Cancel 方法。</value>
+  </data>
+  <data name="DefaultCreateOnlyReason" xml:space="preserve">
+    <value>创建工作流时 WorkflowCreationContext.CreateOnly 设置为 true。</value>
+  </data>
+  <data name="DefaultInvalidWorkflowExceptionMessage" xml:space="preserve">
+    <value>工作流定义的结构无效。使用 ActivityValidationServices 查看所有冲突。</value>
+  </data>
+  <data name="DefaultSuspendReason" xml:space="preserve">
+    <value>通过控制终结点挂起了工作流。</value>
+  </data>
+  <data name="DefaultTerminationReason" xml:space="preserve">
+    <value>已请求工作流终止。</value>
+  </data>
+  <data name="DefaultWorkflowApplicationExceptionMessage" xml:space="preserve">
+    <value>无法执行操作，因为 WorkflowApplication 的当前状态不允许该操作。</value>
+  </data>
+  <data name="DelegateArgumentAlreadyInUseOnActivity" xml:space="preserve">
+    <value>无法对 Activity“{1}”使用 DelegateArgument“{0}”，因为 Activity“{2}”已使用了它。</value>
+  </data>
+  <data name="DelegateArgumentChangeBlockDU" xml:space="preserve">
+    <value>此活动是其参数已更改的 ActivityDelegate 的处理程序。</value>
+  </data>
+  <data name="DelegateArgumentDoesNotExist" xml:space="preserve">
+    <value>此环境中不存在 DelegateArgument“{0}”。</value>
+  </data>
+  <data name="DelegateArgumentMustBeReferenced" xml:space="preserve">
+    <value>在使用 DelegateArgument“{0}”之前，必须将其包括在活动的 ActivityDelegate 中。</value>
+  </data>
+  <data name="DelegateArgumentMustBeSet" xml:space="preserve">
+    <value>调用 CacheMetadata 之前，必须设置 DelegateArgument。</value>
+  </data>
+  <data name="DelegateArgumentNotVisible" xml:space="preserve">
+    <value>所引用的 DelegateArgument 对象(“{0}”)在此范围内不可见。</value>
+  </data>
+  <data name="DelegateArgumentTypeInvalid" xml:space="preserve">
+    <value>DelegateArgument“{0}”不能用在“{1}”类型的表达式中，因为其类型为“{2}”，与表达式类型不兼容。</value>
+  </data>
+  <data name="DelegateHandlersCannotBeScheduledDirectly" xml:space="preserve">
+    <value>活动“{0}”尝试直接安排 ActivityDelegate 处理程序活动“{1}”。不能直接安排 ActivityDelegate 处理程序。而是必须安排 ActivityDelegate 自身进行执行。</value>
+  </data>
+  <data name="DelegateInArgumentTypeMismatch" xml:space="preserve">
+    <value>为名为“{0}”的委托输入提供的参数具有无效类型。委托输入的类型为“{1}”，而参数的类型为“{2}”。参数的类型必须强制为委托输入的类型。</value>
+  </data>
+  <data name="DelegateOutArgumentTypeMismatch" xml:space="preserve">
+    <value>为名为“{0}”的委托输出提供的参数具有无效类型。委托输出的类型为“{1}”，而参数的类型为“{2}”。委托输出的类型必须强制为参数的类型。</value>
+  </data>
+  <data name="DelegateParameterCannotBeModifiedAfterOpen" xml:space="preserve">
+    <value>无法修改 ActivityDelegateParameter“{0}”。使用它的 ActivityDelegate 已锁定。对所属 WorkflowElement 调用 Invoke 时，或根据其创建 WorkflowInstance 时，将锁定 ActivityDelegate。</value>
+  </data>
+  <data name="DelegateParameterDirectionalityMismatch" xml:space="preserve">
+    <value>DelegateParameters 字典中的活动委托参数“{0}”的方向性为“{1}”。而方向性应为“{2}”。</value>
+  </data>
+  <data name="DictionaryIsReadOnly" xml:space="preserve">
+    <value>此字典是只读的，无法修改。</value>
+  </data>
+  <data name="DifferentContractsSameConfigName" xml:space="preserve">
+    <value>两个不同协定的 ConfigurationName 相同。</value>
+  </data>
+  <data name="DifferentWorkflowServiceNameNotSupported" xml:space="preserve">
+    <value>其他版本中的 WorkflowService 名称 {0} 与默认 WorkflowService 的名称 {1} 不匹配。</value>
+  </data>
+  <data name="DirectLambdaParameterReference" xml:space="preserve">
+    <value>无法序列化含有直接 lambda 参数引用的表达式。变量引用的格式可能有误。</value>
+  </data>
+  <data name="DirectoryAborted" xml:space="preserve">
+    <value>所加载实例的目录已中止。服务正在意外关闭。</value>
+  </data>
+  <data name="DispatchOperationInInvalidState" xml:space="preserve">
+    <value>WorkflowOperationBehavior 无法应用调度行为，因为 DispatchOperation 实例处于无效状态。</value>
+  </data>
+  <data name="DoNotCompleteTryCommandWithPendingReclaim" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现在正尝试回收某个锁时完成了对 TryCommand 请求的处理。请使用不从 TryCommand 返回或引发的永久性提供程序，在完成从 BeginBindReclaimedLock 返回的 IAsyncResult 之前完成从 BeginTryCommand 返回的 IAsyncResult，或是在引发从 CreateBindReclaimedLockException 返回的异常之前完成。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerOnNonArrayType" xml:space="preserve">
+    <value>不支持类型 {0} 上的 ArrayIndexer，因为该类型不是数组类型。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerReferenceWithDifferentArrayTypeAndResultType" xml:space="preserve">
+    <value>不支持数组类型为 {0}，结果类型为 {1} 的左值形式的 ArrayIndexer，因为这两种类型不同。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerValueWithIncompatibleArrayTypeAndResultType" xml:space="preserve">
+    <value>不支持数组项类型为 {0}，结果类型为 {1} 的右值形式的 ArrayIndexer，因为 {0} 与 {1} 不兼容。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerWithDifferentArrayTypeAndResultType" xml:space="preserve">
+    <value>不支持数组类型为 {0} 和结果类型为 {1} 的 ArrayIndexer，因为这两种类型不同。</value>
+  </data>
+  <data name="DoNotSupportArrayIndexerWithNonIntIndex" xml:space="preserve">
+    <value>不支持索引类型为 {0} 的 ArrayIndexer，因为该类型不是 int。</value>
+  </data>
+  <data name="DoWhileRequiresCondition" xml:space="preserve">
+    <value>必须设置 Condition，然后才能使用 DoWhile 活动“{0}”。</value>
+  </data>
+  <data name="DUActivityTypeMismatch" xml:space="preserve">
+    <value>此活动在已更新定义中具有类型“{0}”，但类型“{1}”位于原始定义中。</value>
+  </data>
+  <data name="DUActivityTypeMismatchRuntime" xml:space="preserve">
+    <value>此活动的类型已作为更新的一部分发生更改。</value>
+  </data>
+  <data name="DUDisallowIfCannotFindingMatchingCondition" xml:space="preserve">
+    <value>如果条件转换的触发器已被移除或者更新的定义中的 Condition 活动已在另一属性中重新分配，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="DuplexContractsNotSupported" xml:space="preserve">
+    <value>工作流不支持双工协定，请从 ServiceContractAttribute 中移除 CallbackContract 属性。</value>
+  </data>
+  <data name="DuplicateAnnotationName" xml:space="preserve">
+    <value>无法添加名为“{0}”的批注。检查跟踪配置文件查询的批注或环境变量中是否有重名。</value>
+  </data>
+  <data name="DuplicateCatchClause" xml:space="preserve">
+    <value>已存在 {0} 类型的 catch 子句。对于每个唯一的 CLR 异常类型只能添加一个 catch 子句。</value>
+  </data>
+  <data name="DuplicateCorrelationQuery" xml:space="preserve">
+    <value>找到了含有 Where='{0}' 的重复 CorrelationQuery。计算相关性时将不使用此重复查询。</value>
+  </data>
+  <data name="DuplicatedContract" xml:space="preserve">
+    <value>多个实现的协定类型包含协定“{0}”和操作“{1}”。</value>
+  </data>
+  <data name="DuplicateDefinitionIdentity" xml:space="preserve">
+    <value>具有({0}) DefinitionIdentity 的 WorkflowService 已存在。</value>
+  </data>
+  <data name="DuplicateEvaluationOrderValues" xml:space="preserve">
+    <value>活动“{0}”有多个求值顺序设置为“{1}”的运行时参数。运行时参数求值顺序值必须唯一。</value>
+  </data>
+  <data name="DuplicateImportAttribute" xml:space="preserve">
+    <value>DynamicActivity“{1}”的属性“{0}”具有多个 ImportAttribute。每个属性只允许有一个 ImportAttribute。</value>
+  </data>
+  <data name="DuplicateInstanceKeyExists" xml:space="preserve">
+    <value>值“{0}”的实例键已存在。原因可能是定义的多个 MessageQuerySet 计算为同一个 CorrelationKey。</value>
+  </data>
+  <data name="DuplicateInstrumentation" xml:space="preserve">
+    <value>{0} 检测重复。可能会在错误的位置中断。</value>
+  </data>
+  <data name="DuplicateMethodFound" xml:space="preserve">
+    <value>匹配不明确。“{0}”有多个名为“{2}”的公共 {1} 方法与提供给 InvokeMethod“{3}”的参数类型、泛型类型参数、泛型类型约束相匹配。</value>
+  </data>
+  <data name="DuplicateOriginActivityActivity" xml:space="preserve">
+    <value>活动“{1}”和活动“{2}”使用同一个原始对象“{0}”。</value>
+  </data>
+  <data name="DuplicateOriginActivityVariable" xml:space="preserve">
+    <value>活动“{1}”和变量“{2}”使用同一个原始对象“{0}”。</value>
+  </data>
+  <data name="DuplicateOriginVariableVariable" xml:space="preserve">
+    <value>变量“{1}”和变量“{2}”使用同一个原始对象“{0}”。</value>
+  </data>
+  <data name="DurationIsNegative" xml:space="preserve">
+    <value>Delay 活动“{0}”中 Duration 参数的值为负。</value>
+  </data>
+  <data name="DUTriggerOrConditionChangedDuringTransitioning" xml:space="preserve">
+    <value>如果状态正在转换并且当前转换已修改，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="DynamicActivityDuplicatePropertyDetected" xml:space="preserve">
+    <value>DynamicActivity.Properties 集合中已存在名为“{0}”的属性。</value>
+  </data>
+  <data name="DynamicActivityMultipleExpressionLanguages" xml:space="preserve">
+    <value>指定的活动定义包含多种语言的要求编译的表达式活动(发现的语言:“{0}”)。每个定义只允许有一种要求编译的语言。请将要求编译的所有表达式活动转换为单一语言。</value>
+  </data>
+  <data name="EmptyCorrelationQueryResults" xml:space="preserve">
+    <value>相关查询生成了空结果集。请确保正确配置了终结点的相关查询。</value>
+  </data>
+  <data name="EmptyGuidOnDeserializedInstance" xml:space="preserve">
+    <value>反序列化实例的实例 ID 为全零(Guid.Empty)。序列化实例必须具有非零的实例 ID。</value>
+  </data>
+  <data name="EmptyIdReturnedFromHost" xml:space="preserve">
+    <value>工作流主机类型“{0}”上的“Id”属性实现返回了全零的实例 ID。WorkflowInstance 实现必须返回除 Guid.Empty 之外的其他实例 ID。</value>
+  </data>
+  <data name="EndpointAddressNotSetInEndpoint" xml:space="preserve">
+    <value>未能从终结点、配置文件或回调上下文中检索到 EndpointAddress。原因可能是没有使用 OperationName='{0}' 在活动上设置终结点和终结点配置。</value>
+  </data>
+  <data name="EndpointIncorrectlySet" xml:space="preserve">
+    <value>在 OperationName 为“{1}”的活动“{0}”中设置了 Endpoint 和 EndpointConfigurationName 属性。但是，一次只能设置一个属性。</value>
+  </data>
+  <data name="EndpointNotSet" xml:space="preserve">
+    <value>OperationName 为“{1}”的活动“{0}”必须指定 Endpoint 或 EndpointConfigurationName 属性。</value>
+  </data>
+  <data name="EndSqlCommandExecute" xml:space="preserve">
+    <value>结束 SQL 命令执行: {0}</value>
+  </data>
+  <data name="EnlistedTransactionPropertiesRequireIsolationBlocks" xml:space="preserve">
+    <value>在隔离块中必须添加 enlistWorkflowState 设置为 true 的 TransactionProperty。</value>
+  </data>
+  <data name="EnterNoPersistBlock" xml:space="preserve">
+    <value>正在进入非持久块。</value>
+  </data>
+  <data name="EnumeratorNotStarted" xml:space="preserve">
+    <value>枚举尚未开始。请调用 MoveNext。</value>
+  </data>
+  <data name="EnvironmentDisposed" xml:space="preserve">
+    <value>LocationEnvironment 只能在其被传入的条件的范围内被访问。</value>
+  </data>
+  <data name="ErrorExtractingValuesForLambdaRewrite" xml:space="preserve">
+    <value>尝试从方法调用表达式“{1}”提取“{0}”类型的目标对象期间发生错误。请注意，用于确定“{0}”类型的对象的表达式不能要求运行时上下文。错误: {2}</value>
+  </data>
+  <data name="ErrorsEncounteredWhileProcessingTree" xml:space="preserve">
+    <value>处理工作流树时遇到以下错误:</value>
+  </data>
+  <data name="ErrorTimeToPersistLessThanZero" xml:space="preserve">
+    <value>TimeToPersist 值必须大于或等于 TimeSpan.Zero。若要禁用此值，请将值指定为等于 TimeSpan.MaxValue。</value>
+  </data>
+  <data name="ErrorTimeToUnloadLessThanZero" xml:space="preserve">
+    <value>TimeToUnload 值必须大于或等于 TimeSpan.Zero。若要禁用此值，请将值指定为等于 TimeSpan.MaxValue。</value>
+  </data>
+  <data name="EtwAPIMaxStringCountExceeded" xml:space="preserve">
+    <value>传递给 Etw WriteEvent 的字符串参数的数量超出了允许的最大限制 {0}。</value>
+  </data>
+  <data name="EtwMaxNumberArgumentsExceeded" xml:space="preserve">
+    <value>传递给 Etw WriteEvent 的参数的数量超出了允许的最大限制 {0}。</value>
+  </data>
+  <data name="EtwRegistrationFailed" xml:space="preserve">
+    <value>Etw 注册失败，错误代码为 {0}。</value>
+  </data>
+  <data name="EtwUnhandledException" xml:space="preserve">
+    <value>未经处理的异常。异常的详细信息: {0}</value>
+  </data>
+  <data name="ExclusiveHandleRegisterBookmarkScopeFailed" xml:space="preserve">
+    <value>仅当相应 ExclusiveHandle 的范围内当前没有书签时，才能调用 RegisterBookmarkScope。</value>
+  </data>
+  <data name="ExclusiveHandleReinitializeFailed" xml:space="preserve">
+    <value>仅当当前没有使用此 ExclusiveHandle 注册的书签时，才能调用 Reinitialize。</value>
+  </data>
+  <data name="ExecuteMustBeNested" xml:space="preserve">
+    <value>InstanceStore 的永久性提供程序实现无效。该实现试图同时执行多个嵌套命令。对于每个 InstanceStore.TryCommand (或 BeginTryCommand)调用，一次只能发出一个 InstancePersistenceContext.Execute (或 BeginExecute)调用。此错误表示永久性提供程序实现无效。</value>
+  </data>
+  <data name="ExecuteWorkItemStart" xml:space="preserve">
+    <value>开始执行工作项</value>
+  </data>
+  <data name="ExecuteWorkItemStop" xml:space="preserve">
+    <value>停止执行工作项</value>
+  </data>
+  <data name="ExecutionPropertyAlreadyDefined" xml:space="preserve">
+    <value>在此范围内已定义了名为“{0}”的属性。若要替换当前的属性，请先将其移除，然后添加新属性。</value>
+  </data>
+  <data name="ExitNoPersistBlock" xml:space="preserve">
+    <value>正在退出非持久块。</value>
+  </data>
+  <data name="ExpressionRequiredForConversion" xml:space="preserve">
+    <value>转换需要表达式。</value>
+  </data>
+  <data name="ExtensionsCannotBeModified" xml:space="preserve">
+    <value>WorkflowInstanceExtensionsManager 一旦与 WorkflowInstance 关联就不得再修改。</value>
+  </data>
+  <data name="ExtensionsCannotBeSetByIndex" xml:space="preserve">
+    <value>扩展集合不支持按索引设置扩展。请使用 Add 或 Remove 方法。</value>
+  </data>
+  <data name="ExtensionTypeNotSupported" xml:space="preserve">
+    <value>WorkflowServiceHost 不支持添加“{0}”类型的扩展。</value>
+  </data>
+  <data name="ExternalLocationsGetOnly" xml:space="preserve">
+    <value>尝试设置的位置来自 SymbolResolver。SymbolResolver 位置为只读。</value>
+  </data>
+  <data name="ExtraOverloadGroupPropertiesConfigured" xml:space="preserve">
+    <value>已配置了重载组“{0}”。同时配置重载组“{2}”中的属性“{1}”是错误的。</value>
+  </data>
+  <data name="ExtraParameter" xml:space="preserve">
+    <value>未在协定“{2}”的操作“{1}”中声明参数“{0}”。</value>
+  </data>
+  <data name="ExtraReturnValue" xml:space="preserve">
+    <value>活动包含返回消息，而协定没有包含返回值。</value>
+  </data>
+  <data name="FailedToCreateSecurityToken" xml:space="preserve">
+    <value>未能创建安全令牌“{0}”。</value>
+  </data>
+  <data name="FailedToGetInstanceIdForControlOperation" xml:space="preserve">
+    <value>未能从此管理操作的消息中获取实例 ID。这可能是由协定不匹配导致的。请确保客户端协定与服务终结点协定相匹配。</value>
+  </data>
+  <data name="FailedToGetWorkflowIdentityForControlOperation" xml:space="preserve">
+    <value>未能从此控制操作的消息中获得 WorkflowIdentity。这可能是由协定不匹配所导致的。请确保客户端协定与服务终结点协定匹配。</value>
+  </data>
+  <data name="FailedToInitializeRequestReplyCorrelationHandle" xml:space="preserve">
+    <value>配置有请求/回复操作“{0}”的 Receive 活动未能初始化 RequestReplyCorrelation 句柄。在所接收消息的 CorrelationMessageProperty 中必须存在包含 RequestReplyCorrelation 的 InstanceKey。</value>
+  </data>
+  <data name="FailedToLoadBindingInControlEndpoint" xml:space="preserve">
+    <value>未能为标准控制终结点“{2}”加载具有绑定配置“{1}”的绑定“{0}”。</value>
+  </data>
+  <data name="FailFastMessage" xml:space="preserve">
+    <value>发生了无法恢复的错误。出于诊断目的，此英语消息与下列失败关联:“{0}”。</value>
+  </data>
+  <data name="FaultContextNotFound" xml:space="preserve">
+    <value>Rethrow 活动“{0}”无法找到 TryCatch 活动设置的 FaultContext。若要解决此问题，请勿从执行属性集合中修改或移除 FaultContext。</value>
+  </data>
+  <data name="FaultTypeMismatch" xml:space="preserve">
+    <value>协定“{2}”中的操作“{1}”不存在指定的错误类型“{0}”。</value>
+  </data>
+  <data name="FinalStateCannotHaveProperty" xml:space="preserve">
+    <value>最终状态“{0}”不能具有 {1} 操作。</value>
+  </data>
+  <data name="FinalStateCannotHaveTransition" xml:space="preserve">
+    <value>最终状态“{0}”不能具有任何传出转换。</value>
+  </data>
+  <data name="FirstParameterDoesnotMatchTheReturnValue" xml:space="preserve">
+    <value>内容中指定的“{0}”类型的第一个参数与指定为协定“{3}”中操作“{2}”的返回值的类型“{1}”不匹配。</value>
+  </data>
+  <data name="FlowchartContainsReferences" xml:space="preserve">
+    <value>流程图在具有对已导入子级的引用时不支持动态更新。</value>
+  </data>
+  <data name="FlowchartContainsUnconnectedNodes" xml:space="preserve">
+    <value>当 ValidateUnconnectedNodes 设置为 True 时，必须连接所有节点，然后才能使用流程图“{0}”。</value>
+  </data>
+  <data name="FlowchartEmpty" xml:space="preserve">
+    <value>Flowchart“{0}”- 在无节点的情况下执行。</value>
+  </data>
+  <data name="FlowchartMissingStartNode" xml:space="preserve">
+    <value>Flowchart“{0}”没有 StartNode。</value>
+  </data>
+  <data name="FlowchartNextNull" xml:space="preserve">
+    <value>Flowchart“{0}”/FlowStep - 下一个节点为 null。Flowchart 执行将结束。</value>
+  </data>
+  <data name="FlowchartStart" xml:space="preserve">
+    <value>Flowchart“{0}”- 已安排启动。</value>
+  </data>
+  <data name="FlowchartSwitchCase" xml:space="preserve">
+    <value>Flowchart“{0}”/FlowSwitch - 选择了 Case“{1}”。</value>
+  </data>
+  <data name="FlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>Flowchart“{0}”/FlowSwitch - 找不到 Case 活动，也找不到与 Expression 结果匹配的 Default Case。Flowchart 执行将结束。</value>
+  </data>
+  <data name="FlowchartSwitchDefault" xml:space="preserve">
+    <value>Flowchart“{0}”/FlowSwitch - 选择了 Default Case。</value>
+  </data>
+  <data name="FlowDecisionRequiresCondition" xml:space="preserve">
+    <value>必须设置 Condition，然后才能使用 Flowchart“{0}”中的 FlowDecision。</value>
+  </data>
+  <data name="FlowedTransactionDifferentFromAmbient" xml:space="preserve">
+    <value>流入的事务与环境事务不同。</value>
+  </data>
+  <data name="FlowNodeCannotBeShared" xml:space="preserve">
+    <value>不能在不同的 Flowchart 之间共享 FlowNode。它已经在 Flowchart“{0}”中，因而不能用于 Flowchart“{1}”中。</value>
+  </data>
+  <data name="FlowNodeLockedForRuntime" xml:space="preserve">
+    <value>Flowchart“{0}”中的 FlowNode 已打开，无法修改。只能在设计时修改 FlowNode。</value>
+  </data>
+  <data name="FlowSwitchRequiresExpression" xml:space="preserve">
+    <value>必须设置表达式，然后才能使用 Flowchart“{0}”中的 FlowSwitch。</value>
+  </data>
+  <data name="ForEachRequiresNonNullValues" xml:space="preserve">
+    <value>值必须绑定到非 null 表达式，然后才能使用 ForEach 活动“{0}”。</value>
+  </data>
+  <data name="FoundProcessingError" xml:space="preserve">
+    <value>命令失败: {0}</value>
+  </data>
+  <data name="GeneratedAndProvidedMapConflict" xml:space="preserve">
+    <value>此活动提供的实现映射与当前更新之间存在冲突的更改。此活动尝试在这两个映射中保存原始值。</value>
+  </data>
+  <data name="GeneratedAndProvidedMapConflictRuntime" xml:space="preserve">
+    <value>此活动的实现更新与更大的工作流更新之间存在冲突的更改。此活动尝试在这两个更新中保存原始值。</value>
+  </data>
+  <data name="GenericInstanceCommand" xml:space="preserve">
+    <value>发生错误，名为 {0} 的 InstancePersistenceCommand 已中断执行。</value>
+  </data>
+  <data name="GenericInstanceCommandNull" xml:space="preserve">
+    <value>发生错误，InstancePersistenceCommand 已中断执行。</value>
+  </data>
+  <data name="GetLocationOnPublicAccessReference" xml:space="preserve">
+    <value>活动“{0}”无法对此公共位置引用调用 GetLocation，因为它是由 CodeActivityPublicEnvironmentAccessor.TryGetAccessToPublicLocation 创建的。若要读取或写入值，请使用 ActivityContext.GetValue 或 SetValue。若要获取对此位置的直接访问权限，请使用 CodeActivityPublicEnvironmentAccessor.TryGetReferenceToPublicLocation 声明它。</value>
+  </data>
+  <data name="GetParameterTypeMismatch" xml:space="preserve">
+    <value>从名为 {1} 的 InstancePersistenceAction 请求索引 {0} 处的形参时，使用的泛型类型实参有误。调用 GetParameter&lt;T&gt; 时，为 T 指定的类型必须与形参的记载类型匹配。</value>
+  </data>
+  <data name="GetRunnableRequiresOwner" xml:space="preserve">
+    <value>调用此方法前，请通过调用 WorkflowApplication.CreateDefaultInstanceOwner，为此工作流宿主指定支持的定义标识。</value>
+  </data>
+  <data name="GuidCannotBeEmpty" xml:space="preserve">
+    <value>该参数必须为非零 Guid。</value>
+  </data>
+  <data name="HandledException" xml:space="preserve">
+    <value>正在处理异常。异常的详细信息: {0}</value>
+  </data>
+  <data name="HandledExceptionError" xml:space="preserve">
+    <value>正在处理异常。异常的详细信息: {0}</value>
+  </data>
+  <data name="HandledExceptionVerbose" xml:space="preserve">
+    <value>正在处理异常。异常的详细信息: {0}</value>
+  </data>
+  <data name="HandledExceptionWarning" xml:space="preserve">
+    <value>正在处理异常。异常的详细信息: {0}</value>
+  </data>
+  <data name="HandleFreed" xml:space="preserve">
+    <value>已取消执行 InstancePersistenceCommand，因为释放了 InstanceHandle。</value>
+  </data>
+  <data name="HandleFreedBeforeInitialized" xml:space="preserve">
+    <value>对 InstanceHandle 执行 OnNewInstanceHandle 时不能调用该句柄上的 Free 方法。</value>
+  </data>
+  <data name="HandleFreedInDirectory" xml:space="preserve">
+    <value>已取消执行 InstancePersistenceCommand，因为释放了 InstanceHandle。</value>
+  </data>
+  <data name="HandleInitializationContextDisposed" xml:space="preserve">
+    <value>访问 HandleInitializationContext 的操作只能从其所传入的函数的作用域内进行。</value>
+  </data>
+  <data name="HandleNotInitialized" xml:space="preserve">
+    <value>句柄尚未初始化。句柄必须由运行时创建和初始化，并且仅在声明这些句柄的作用域内有效。</value>
+  </data>
+  <data name="HasExecutingChildrenNoPersist" xml:space="preserve">
+    <value>只有在没有执行子级时才能设置非永久性块。</value>
+  </data>
+  <data name="HostIdDoesNotMatchInstance" xml:space="preserve">
+    <value>工作流主机提供的实例 ID {0} 与序列化实例中存储的 ID {1} 不匹配。在反序列化实例时，主机必须使用在序列化实例时使用的同一 ID。</value>
+  </data>
+  <data name="HostLockExpired" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 锁定已过期。这可能是因为 SQL Server 繁忙，或者因为连接暂时丢失。</value>
+  </data>
+  <data name="HostLockNotFound" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 锁定未存在于数据库中。这可能是因为 SQL Server 繁忙，或者因为连接暂时丢失。</value>
+  </data>
+  <data name="IdentityControlCharacter" xml:space="preserve">
+    <value>WorkflowIdentity.Name 和 Package 不能包含控制字符(Unicode 字符类别 Cc)。</value>
+  </data>
+  <data name="IdentityNameSemicolon" xml:space="preserve">
+    <value>WorkflowIdentity.Name 不能包含分号“;”字符。</value>
+  </data>
+  <data name="IdentityNotSupportedWithActivation" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 不支持在指定 DefinitionIdentities 的 InstanceOwners 上进行激活。</value>
+  </data>
+  <data name="IdentityWhitespace" xml:space="preserve">
+    <value>WorkflowIdentity.Name 和 Package 不能包含前导或尾随空白(Unicode 字符类别 Zl、Zp 或 Zs)。</value>
+  </data>
+  <data name="IdNotFoundInWorkflow" xml:space="preserve">
+    <value>在工作流中找不到所提供的 ID“{0}”。检查工作流中是否有验证错误，如有，则生成的子树可能无法遍历。</value>
+  </data>
+  <data name="ImplementationVersionMismatch" xml:space="preserve">
+    <value>加载的活动实例的 ImplementationVersion (“{0}”)与提供的活动(“{2}”)的 ImplementationVersion (“{1}”)不匹配。可通过应用实现映射来更新此实例。</value>
+  </data>
+  <data name="InArgumentBound" xml:space="preserve">
+    <value>Activity“{1}”、DisplayName“{2}”、InstanceId“{3}”中的 In 参数“{0}”已经与值 {4} 绑定。</value>
+  </data>
+  <data name="IncompatibleArgumentType" xml:space="preserve">
+    <value>传递给此方法错误类型的参数。此方法需要类型为 {0} 的参数，但传递给它的是类型为 {1} 的参数。</value>
+  </data>
+  <data name="IncompatibleTypeForMultidimensionalArrayItemReference" xml:space="preserve">
+    <value>泛型类型“{0}”与 MultidimensionalArrayItemReference 中 Array 操作数的真正项类型“{1}”不兼容。</value>
+  </data>
+  <data name="IncorrectIndexForArgument" xml:space="preserve">
+    <value>返回参数的索引在“{0}”集合中有误。指定的位置为“{1}”，而位置应为“{2}”。</value>
+  </data>
+  <data name="IncorrectValueType" xml:space="preserve">
+    <value>从实例存储中检索到的错误类型的值。值应为 {0} 类型，但实际检索到的值为 {1} 类型。</value>
+  </data>
+  <data name="IndexOutOfBounds" xml:space="preserve">
+    <value>索引值 {0} 大于或等于数组的长度 {1}。</value>
+  </data>
+  <data name="IndicesAreNeeded" xml:space="preserve">
+    <value>必须至少为 {0} 活动“{1}”提供一个索引值。</value>
+  </data>
+  <data name="InferredContractDescription" xml:space="preserve">
+    <value>已从 WorkflowService 中推断出含有 Name='{0}' 和 Namespace='{1}' 的 ContractDescription。</value>
+  </data>
+  <data name="InferredOperationDescription" xml:space="preserve">
+    <value>已从 WorkflowService 中推断出协定“{1}”中含有 Name='{0}' 的 OperationDescription 。IsOneWay={2}。</value>
+  </data>
+  <data name="InitializationIncomplete" xml:space="preserve">
+    <value>活动实例的初始化未完成。当变量默认值或参数表达式错误，且异常处理程序允许继续执行时，就会发生此错误。</value>
+  </data>
+  <data name="InitializeCorrelationRequiresWorkflowServiceHost" xml:space="preserve">
+    <value>必须在 WorkflowServiceHost 中使用活动“{0}”。</value>
+  </data>
+  <data name="InitialMetadataCannotBeDeleted" xml:space="preserve">
+    <value>名称为 {0} 的永久性值是作为初始元数据值提供的，因此其 InstanceValue 不得为 InstanceValue.DeletedValue。</value>
+  </data>
+  <data name="InitialStateCannotBeFinalState" xml:space="preserve">
+    <value>初始状态“{0}”不能同时也是最终状态。</value>
+  </data>
+  <data name="InitialStateNotInStatesCollection" xml:space="preserve">
+    <value>必须向状态机的“States”集合添加初始状态“{0}”。</value>
+  </data>
+  <data name="InlinedLocationReferenceOnlyAccessibleByOwner" xml:space="preserve">
+    <value>活动“{0}”无法访问此公共位置引用，因为此引用仅对活动“{1}”有效。只有获取了此公共位置引用的活动才可使用此引用。</value>
+  </data>
+  <data name="InputParametersCountMismatch" xml:space="preserve">
+    <value>提供的输入参数个数 {0} 与预期个数 {1} 不符。</value>
+  </data>
+  <data name="InputParametersMissing" xml:space="preserve">
+    <value>未找到预期的名为“{0}”的输入参数。</value>
+  </data>
+  <data name="InputParametersTypeMismatch" xml:space="preserve">
+    <value>名为“{1}”的参数应有“{0}”类型的输入参数值。</value>
+  </data>
+  <data name="InstanceCollisionDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例已保留到实例存储区。</value>
+  </data>
+  <data name="InstanceCollisionSpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例“{0}”已保留到实例存储区。</value>
+  </data>
+  <data name="InstanceCompleteDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例已完成。</value>
+  </data>
+  <data name="InstanceCompleteSpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例“{0}”已完成。</value>
+  </data>
+  <data name="InstanceHandleConflictDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为另一个有效的 InstanceHandle 在该实例上持有锁，这表示已加载该实例的未过时副本。应使用或卸载所加载的实例副本及其关联 InstanceHandle。</value>
+  </data>
+  <data name="InstanceHandleConflictSpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为另一个有效的 InstanceHandle 在实例“{0}”上持有锁，这表示已加载该实例的未过时副本。应使用或卸载所加载的实例副本及其关联 InstanceHandle。</value>
+  </data>
+  <data name="InstanceKeyMetadataChangesNotSupported" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 不支持更改现有键的键元数据。</value>
+  </data>
+  <data name="InstanceKeyRequiresValidGuid" xml:space="preserve">
+    <value>不能创建全零值的 InstanceKey，如 Guid.Empty。而要使用 InstanceKey.InvalidKey 获得全零值的 InstanceKey。</value>
+  </data>
+  <data name="InstanceLockedUnderTransaction" xml:space="preserve">
+    <value>尝试对具有标识符“{1}”的服务实例执行管理操作“{0}”失败。有另一个活动的事务处理管理操作正在进行中。</value>
+  </data>
+  <data name="InstanceLockLostDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例已解锁。此错误表示实例的内存中副本以及 InstanceHandle 已过时，应该弃用。</value>
+  </data>
+  <data name="InstanceLockLostSpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例“{0}”已解锁。此错误表示该实例的内存中副本以及 InstanceHandle 已过时，应该弃用。</value>
+  </data>
+  <data name="InstanceLocksRecoveryError" xml:space="preserve">
+    <value>由于下列异常，导致实例锁恢复失败</value>
+  </data>
+  <data name="InstanceMethodCallRequiresTargetObject" xml:space="preserve">
+    <value>实例方法调用需要目标对象。</value>
+  </data>
+  <data name="InstanceMustBePaused" xml:space="preserve">
+    <value>必须暂停实例以执行此操作。</value>
+  </data>
+  <data name="InstanceMustNotBePaused" xml:space="preserve">
+    <value>不得暂停实例以执行此操作。</value>
+  </data>
+  <data name="InstanceMustNotBeSuspended" xml:space="preserve">
+    <value>由于实例处于挂起状态，因此操作无法执行。</value>
+  </data>
+  <data name="InstanceNotReadyDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例尚未保留到实例存储区。</value>
+  </data>
+  <data name="InstanceNotReadySpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例“{0}”尚未保留到实例存储区。</value>
+  </data>
+  <data name="InstanceOperationRequiresInstance" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告正在执行的操作需要实例，但无实例绑定到该操作。</value>
+  </data>
+  <data name="InstanceOperationRequiresLock" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告正在执行的操作要求持有某实例上的锁，但未持有该锁。</value>
+  </data>
+  <data name="InstanceOperationRequiresNotCompleted" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告正在执行的操作要求实例不处于 InstanceState.Completed 状态，但实例处于该状态。</value>
+  </data>
+  <data name="InstanceOperationRequiresNotUninitialized" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告正在执行的操作要求实例不处于 InstanceState.Uninitialized 状态，但实例处于该状态。</value>
+  </data>
+  <data name="InstanceOperationRequiresOwner" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告正在执行的操作需要实例所有者，但无所有者绑定到该操作。</value>
+  </data>
+  <data name="InstanceOwnerDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例所有者注册已无效。此错误表示此所有者锁定的所有实例的内存中副本以及 InstanceHandle 已过时，应该弃用。通常，处理此错误的最佳方法就是重新启动主机。</value>
+  </data>
+  <data name="InstanceOwnerSpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为所有者 ID“{0}”的实例所有者注册已无效。此错误表示此所有者锁定的所有实例的内存中副本以及 InstanceHandle 已过时，应该弃用。通常，处理此错误的最佳方法就是重新启动主机。</value>
+  </data>
+  <data name="InstanceRequired" xml:space="preserve">
+    <value>实例永久性系统无法处理无效的 InstancePersistenceCommand。该命令需要实例，但无实例绑定到 InstanceHandle。</value>
+  </data>
+  <data name="InstanceStoreBoundSameVersionTwice" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告对同一实例上某个锁的同一版本进行了两次获取和提交。每次在实例上获取某个锁时，锁版本必须递增；否则应始终报告零作为锁版本。当某个提供程序检测到实例所有者试图锁定自己已锁定的实例时，该提供程序应调用 BindReclaimedLock、BeginBindReclaimedLock 或 CreateBeginBindReclaimedLockException 而不是 BindAcquiredLock。</value>
+  </data>
+  <data name="InstanceStoreDoesntMatchWorkflowApplication" xml:space="preserve">
+    <value>用不同于此 WorkflowApplication 的 InstanceStore 配置该实例。</value>
+  </data>
+  <data name="InstanceStoreFailed" xml:space="preserve">
+    <value>InstanceStore 的实现引发了 InstancePersistenceException。InstancePersistenceException 是内部异常。</value>
+  </data>
+  <data name="InstanceStoreHasDefaultOwner" xml:space="preserve">
+    <value>此 InstanceStore 已经有一个 DefaultInstanceOwner。</value>
+  </data>
+  <data name="InstanceStoreReadOnly" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 是只读的，不能进行进一步配置。SqlWorkflowInstanceStore 的所有配置必须在创建第一个 InstanceHandle 之前完成。</value>
+  </data>
+  <data name="InstanceStoreRequiredToPersist" xml:space="preserve">
+    <value>只有配置有 InstanceStore 的 WorkflowApplications 才能够实现持久化或被卸载。</value>
+  </data>
+  <data name="InstanceSuspended" xml:space="preserve">
+    <value>具有标识符“{1}”的服务实例当前处于“Suspended”状态。尝试执行管理操作“{0}”失败。</value>
+  </data>
+  <data name="InsufficientArraySize" xml:space="preserve">
+    <value>数组大小为 {0}，不足以容纳操作的结果。</value>
+  </data>
+  <data name="InternalCacheMetadataStart" xml:space="preserve">
+    <value>已在活动“{0}”上启动 InternalCacheMetadata。</value>
+  </data>
+  <data name="InternalCacheMetadataStop" xml:space="preserve">
+    <value>已在活动“{0}”上停止 InternalCacheMetadata。</value>
+  </data>
+  <data name="InternalConstraintException" xml:space="preserve">
+    <value>针对名为“{2}”的 {1} 类型活动运行名为“{0}”的约束时，出现内部约束异常。异常为: {3}</value>
+  </data>
+  <data name="InternalServerError" xml:space="preserve">
+    <value>由于内部错误，服务器无法处理请求。有关该错误的详细信息，请在服务器上打开 IncludeExceptionDetailInFaults (从 ServiceBehaviorAttribute 或从 &lt;serviceDebug&gt; 配置行为)，从而将异常信息发回客户端，或按 Microsoft .NET Framework 4.0 SDK 文档打开跟踪，并检查服务器跟踪日志。</value>
+  </data>
+  <data name="InvalidActivityIdFormat" xml:space="preserve">
+    <value>提供的活动 ID 格式无效。它必须是整数值的点分列表，如“1.12.3”，且不含前导或尾随的点。</value>
+  </data>
+  <data name="InvalidActivityToBlockUpdate" xml:space="preserve">
+    <value>DynamicUpdateMapBuilder.DisallowUpdateInside 中的活动“{0}”不是 DynamicUpdateMapBuilder.UpdatedWorkflowDefinition 的公共成员。请确保此活动是已更新工作流定义的一部分。如果已作为更新的一部分移除此活动，则您不需要显式阻止更新；如果已移除活动正在运行，则会自动阻止更新。</value>
+  </data>
+  <data name="InvalidActivityToBlockUpdateServices" xml:space="preserve">
+    <value>活动“{0}”不是 updatedWorkflowDefinition 的公共成员。请确保此活动是已更新工作流定义的一部分。如果已作为更新的一部分移除此活动，则您不需要显式阻止更新；如果已移除活动正在运行，则会自动阻止更新。</value>
+  </data>
+  <data name="InvalidArgumentExpression" xml:space="preserve">
+    <value>类型为“{1}”的第 {0} 个参数表达式无效。</value>
+  </data>
+  <data name="InvalidAsyncBeginMethodSignature" xml:space="preserve">
+    <value>异步 Begin 方法签名对于类型 {1} 中的方法 {0} 无效。Begin 方法必须采用 AsyncCallback 和对象作为最后两个参数，并返回 IAsyncResult。</value>
+  </data>
+  <data name="InvalidAsyncCancelMethodSignature" xml:space="preserve">
+    <value>异步 Cancel 方法签名对于类型 {1} 中的方法 {0} 无效。Cancel 方法不得采用参数，并且必须返回 void。</value>
+  </data>
+  <data name="InvalidAsyncEndMethodSignature" xml:space="preserve">
+    <value>异步 End 方法签名对于类型 {1} 中的方法 {0} 无效。End 方法必须采用 IAsyncResult 作为最后一个参数。</value>
+  </data>
+  <data name="InvalidAsyncResult" xml:space="preserve">
+    <value>向“End”方法提供的 IAsyncResult 不正确。传递给“End”的 IAsyncResult 对象必须是与之配对的“Begin”返回的对象，或是传递给为“Begin”提供的回调的对象。</value>
+  </data>
+  <data name="InvalidAsyncResultImplementation" xml:space="preserve">
+    <value>IAsyncResult 接口的实现有误，该实现可能会从 CompletedSynchronously 属性返回错误的值，或多次调用 AsyncCallback。类型 {0} 可能是错误的实现。</value>
+  </data>
+  <data name="InvalidAsyncResultImplementationGeneric" xml:space="preserve">
+    <value>IAsyncResult 接口的实现有误，该实现可能会从 CompletedSynchronously 属性返回错误的值，或多次调用 AsyncCallback。</value>
+  </data>
+  <data name="InvalidCallbackState" xml:space="preserve">
+    <value>必须为回调状态的对象传递有效的 {0} 数据。</value>
+  </data>
+  <data name="InvalidCompensateActivityUsage" xml:space="preserve">
+    <value>只能在补偿/确认/取消处理程序的上下文内使用未设置“Target”InArgument 的 Compensate 活动“{0}”。</value>
+  </data>
+  <data name="InvalidCompensationToken" xml:space="preserve">
+    <value>绑定到“Target”InArgument 的 Variable 的值为 null。应使用从 CompensableActivity 获得的有效 CompensationToken 设置“Target”InArgument。否则，如果需要默认的补偿/确认用法，则不要在补偿/确认/取消处理程序的上下文内设置“Target”InArgument 和使用“{0}”活动。</value>
+  </data>
+  <data name="InvalidConfirmActivityUsage" xml:space="preserve">
+    <value>只能在补偿/确认/取消处理程序的上下文内使用未设置“Target”InArgument 的 Confirm 活动“{0}”。</value>
+  </data>
+  <data name="InvalidDataFromReceiveBookmarkState" xml:space="preserve">
+    <value>在已恢复用于接收操作“{0}”的书签的情况下，无法获取有效的 MessageContext。</value>
+  </data>
+  <data name="InvalidDataFromSendBookmarkState" xml:space="preserve">
+    <value>在已恢复用于发送操作“{0}”的书签的情况下，无法获取有效的 CorrelationMessageProperty 或 Fault。</value>
+  </data>
+  <data name="InvalidDirectionForArgument" xml:space="preserve">
+    <value>“{0}”集合中“{1}”位置的参数的参数方向有误。指定的方向为“{2}”，而方向应为“{3}”。</value>
+  </data>
+  <data name="InvalidDynamicActivityProperty" xml:space="preserve">
+    <value>此属性描述符无效。提供的组件中不含与此描述符({0})对应的属性。</value>
+  </data>
+  <data name="InvalidEvaluationOrderValue" xml:space="preserve">
+    <value>EvaluationOrder 值无效。求值顺序值必须从零开始，依次递增，且必须唯一。使用 -1 指示不设置求值顺序。</value>
+  </data>
+  <data name="InvalidExecutionCallback" xml:space="preserve">
+    <value>“{0}”不是有效的活动执行回调。“{1}”使用的执行回调必须是“{1}”上的实例方法。</value>
+  </data>
+  <data name="InvalidExpressionForLocation" xml:space="preserve">
+    <value>不能从“{0}”类型的 Expression 生成 Location。</value>
+  </data>
+  <data name="InvalidExpressionProperty" xml:space="preserve">
+    <value>类型“{0}”的“Expression”属性无效。</value>
+  </data>
+  <data name="InvalidFileName" xml:space="preserve">
+    <value>为活动 {0} 指定的 fileName 无效</value>
+  </data>
+  <data name="InvalidGenericTypeInfo" xml:space="preserve">
+    <value>类型“{0}”中包含的某些泛型类型信息无效。</value>
+  </data>
+  <data name="InvalidIdleAction" xml:space="preserve">
+    <value>返回的 PersistableIdleAction 超出了范围。它必须为 None、Unload 或 Persist。</value>
+  </data>
+  <data name="InvalidImplementationAsWorkflowRoot" xml:space="preserve">
+    <value>若要使实现映射直接应用于工作流实例，定义的根目录不得具有任何公共/导入的子级或公共/导入的委托。</value>
+  </data>
+  <data name="InvalidImplementationAsWorkflowRootForRuntimeState" xml:space="preserve">
+    <value>若要使实现映射直接应用于工作流实例，定义的根目录不得具有任何公共子级。此实例当前有一个或多个公共子级正在运行。</value>
+  </data>
+  <data name="InvalidImplementationAsWorkflowRootForRuntimeStateBecauseArgumentsChanged" xml:space="preserve">
+    <value>若要使实现映射直接应用于工作流实例，实现映射必须指示参数没有更改。实现映射指示活动定义的参数已更改。</value>
+  </data>
+  <data name="InvalidImplementationMap" xml:space="preserve">
+    <value>提供的实现映射与活动的定义不匹配。请确保已更新工作流引用的活动版本与所提供映射的目标版本相同。]D;]A;    ]D;]A;疑难解答详细信息: 映射中的成员计数:“{0}”；定义中的成员计数:“{1}”。</value>
+  </data>
+  <data name="InvalidImplementationMapAssociation" xml:space="preserve">
+    <value>无法使用通过 DynamicUpdateMapBuilder.LookupImplementationMap 为活动“{0}”提供的实现映射，因为此活动没有任何实现子级。请验证是否已对适当的活动调用 SetImplementationMap。</value>
+  </data>
+  <data name="InvalidImplementationMapAssociationServices" xml:space="preserve">
+    <value>无法使用通过 DynamicUpdateServices.SetImplementationMap 为活动“{0}”提供的实现映射，因为此活动没有任何实现子级。请验证是否已对适当的活动调用 SetImplementationMap。</value>
+  </data>
+  <data name="InvalidImplementationMapRuntime" xml:space="preserve">
+    <value>生成更新映射时，为此活动提供了错误的实现映射。</value>
+  </data>
+  <data name="InvalidInstanceId" xml:space="preserve">
+    <value>加载实例时使用了全零的无效实例 ID (Guid.Empty)。</value>
+  </data>
+  <data name="InvalidInstanceState" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要加载的实例的 InstanceState 值无效。</value>
+  </data>
+  <data name="InvalidKey" xml:space="preserve">
+    <value>加载或创建实例时使用了无效的键。</value>
+  </data>
+  <data name="InvalidKeyArgument" xml:space="preserve">
+    <value>作为参数传递的全零键(如 Guid.Empty)无效。</value>
+  </data>
+  <data name="InvalidLocationExpression" xml:space="preserve">
+    <value>位置表达式无效: 应为“[...]5D;”。</value>
+  </data>
+  <data name="InvalidLockRenewalPeriod" xml:space="preserve">
+    <value>所提供的锁定续订期 {0} 短于最短锁定续订期 {1}。</value>
+  </data>
+  <data name="InvalidLockToken" xml:space="preserve">
+    <value>如果永久性提供程序没有实现锁的版本控制，则传递给 InstancePersistenceContext.BindAcquiredLock 的 instanceVersion 必须为零；否则必须大于零。</value>
+  </data>
+  <data name="InvalidLValueExpression" xml:space="preserve">
+    <value>左值表达式无效。</value>
+  </data>
+  <data name="InvalidMergeMap" xml:space="preserve">
+    <value>活动 ID 为“{1}”的“{0}”位置(从零开始)的映射与它前面的映射不匹配。请确保所有映射均表示相同工作流定义的连续更新。]D;]A;    ]D;]A;疑难解答详细信息: {2}</value>
+  </data>
+  <data name="InvalidMergeMapArgumentCount" xml:space="preserve">
+    <value>原始参数计数应为“{0}”，实际为“{1}”。</value>
+  </data>
+  <data name="InvalidMergeMapArgumentsChanged" xml:space="preserve">
+    <value>参数(name、direction、type 或 order)中出现意外更改。</value>
+  </data>
+  <data name="InvalidMergeMapEnvironmentCount" xml:space="preserve">
+    <value>预期原始参数计数为“{0}”，公共变量计数为“{1}”，私有变量计数为“{2}”。实际原始参数计数为“{3}”，公共变量计数为“{4}”，私有变量计数为“{5}”。</value>
+  </data>
+  <data name="InvalidMergeMapForImplementation" xml:space="preserve">
+    <value>ForImplementation 应为“{0}”，实际为“{1}”。</value>
+  </data>
+  <data name="InvalidMergeMapMemberCount" xml:space="preserve">
+    <value>原始成员计数应为“{0}”，实际为“{1}”。</value>
+  </data>
+  <data name="InvalidMetadataValue" xml:space="preserve">
+    <value>元数据属性“{0}”的指定值必须为 {1} 类型。</value>
+  </data>
+  <data name="InvalidNullAsyncResult" xml:space="preserve">
+    <value>从异步“Begin”方法返回的值或传递给 AsyncCallback 的值为 null。异步“Begin”实现必须返回非 null 的 IAsyncResult，并将同一 IAsyncResult 对象作为参数传递给 AsyncCallback。</value>
+  </data>
+  <data name="InvalidOriginalWorkflowDefinitionForImplementationMapCreation" xml:space="preserve">
+    <value>提供给映射生成器的 OriginalWorkflowDefinition 对于实现映射创建无效，因为它没有任何实现子级。</value>
+  </data>
+  <data name="InvalidParameterInfo" xml:space="preserve">
+    <value>第 {0} 个参数信息在“{1}”类型中无效。</value>
+  </data>
+  <data name="InvalidPrepareForRuntimeValidationSettings" xml:space="preserve">
+    <value>如果为 ValidationSettings 设置了 SingleLevel、SkipValidatingRootConfiguration 或 OnlyUseAdditionalConstraints 中的任何一个，则无法为运行时准备工作流。</value>
+  </data>
+  <data name="InvalidProperty" xml:space="preserve">
+    <value>属性({0})或者无效，或者未定义。</value>
+  </data>
+  <data name="InvalidPropertyType" xml:space="preserve">
+    <value>无法解析属性“{1}”的类型“{0}”。</value>
+  </data>
+  <data name="InvalidReceiveStateForDU" xml:space="preserve">
+    <value>Receive 处于不支持实例更新的状态。仅当 Receive 等待服务器端的请求消息时才能进行更新。</value>
+  </data>
+  <data name="InvalidRootMergeMap" xml:space="preserve">
+    <value>“{0}”位置(从零开始)的根映射与它前面的映射不匹配。请确保所有映射均表示相同工作流定义的连续更新。]D;]A;    ]D;]A;疑难解答详细信息: {1}</value>
+  </data>
+  <data name="InvalidRunnableInstancesDetectionPeriod" xml:space="preserve">
+    <value>提供的可运行实例检测期限 {0} 比允许的最低期限 {1} 短。</value>
+  </data>
+  <data name="InvalidRuntimeState" xml:space="preserve">
+    <value>提供的值不是有效的运行时状态。</value>
+  </data>
+  <data name="InvalidSemaphoreExit" xml:space="preserve">
+    <value>从不同步的代码块中调用了对象同步方法。</value>
+  </data>
+  <data name="InvalidServiceImplementation" xml:space="preserve">
+    <value>WorkflowServiceHost 要求提供的 serviceImplementation 为 Activity 或 WorkflowService。</value>
+  </data>
+  <data name="InvalidSourceLocationColumn" xml:space="preserve">
+    <value>列号应该大于 0 (从 1 开始)。{0} = {1} 无效。</value>
+  </data>
+  <data name="InvalidSourceLocationLineNumber" xml:space="preserve">
+    <value>行号应该大于 0 (从 1 开始)。{0} = {1} 无效。</value>
+  </data>
+  <data name="InvalidStateForAsyncCallback" xml:space="preserve">
+    <value>传入异步回调的 IAsyncResult 没有有效的 AsyncState。</value>
+  </data>
+  <data name="InvalidStateInAsyncResult" xml:space="preserve">
+    <value>所提供的异步结果状态环境无效。</value>
+  </data>
+  <data name="InvalidTypeConverterUsage" xml:space="preserve">
+    <value>TypeConverter 用法无效。</value>
+  </data>
+  <data name="InvalidTypeForArgument" xml:space="preserve">
+    <value>为“{0}”集合中“{1}”位置的参数指定的类型与预期类型不匹配。指定的类型为“{2}”，而类型应为“{3}”。</value>
+  </data>
+  <data name="InvalidUnhandledExceptionAction" xml:space="preserve">
+    <value>返回的 UnhandledExceptionAction 超出范围。它必须为 Abort、Cancel 或 Terminate。</value>
+  </data>
+  <data name="InvalidUpdatedWorkflowDefinitionForImplementationMapCreation" xml:space="preserve">
+    <value>提供给映射生成器的 UpdatedWorkflowDefinition 对于实现映射创建无效，因为它没有任何实现子级。</value>
+  </data>
+  <data name="InvalidUpdateMap" xml:space="preserve">
+    <value>更新映射与工作流定义不匹配。请确保这是此定义的正确映射并且序列化的映射尚未经手动修改。]D;]A;    ]D;]A;疑难解答详细信息: {0}</value>
+  </data>
+  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+    <value>Settings 属性的值无效。请将 Settings 属性设置为空字符串或“Assembly references and imported namespaces serialized as XML namespaces”字符串。</value>
+  </data>
+  <data name="InvalidXamlMember" xml:space="preserve">
+    <value>“{0}”不是 XAML 中的有效标识符。</value>
+  </data>
+  <data name="InvokedMethodThrewException" xml:space="preserve">
+    <value>在活动“{0}”调用的方法中，引发了异常。{1}</value>
+  </data>
+  <data name="InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod“{0}”- 方法不使用异步模式。</value>
+  </data>
+  <data name="InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>InvokeMethod“{0}”- 方法非静态。</value>
+  </data>
+  <data name="InvokeMethodIsStatic" xml:space="preserve">
+    <value>InvokeMethod“{0}”- 方法为静态。</value>
+  </data>
+  <data name="InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod“{0}”- 方法使用“{1}”和“{2}”的异步模式。</value>
+  </data>
+  <data name="IsolationLevelValidation" xml:space="preserve">
+    <value>嵌套 TransactionScope 活动的 IsolationLevel 必须与其父级的该值相等。</value>
+  </data>
+  <data name="ITextExpressionParameterMustBeActivity" xml:space="preserve">
+    <value>“expression”参数的类型必须为活动。</value>
+  </data>
+  <data name="KeyAlreadyAssociated" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要与某实例关联的键已经与该实例关联。</value>
+  </data>
+  <data name="KeyAlreadyCompleted" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要完成的键已经完成。</value>
+  </data>
+  <data name="KeyAlreadyUnassociated" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要断开关联的键所关联的现有实例没有完成。</value>
+  </data>
+  <data name="KeyCollectionUpdatesNotAllowed" xml:space="preserve">
+    <value>不允许对从字典派生的键集合进行转变。</value>
+  </data>
+  <data name="KeyCollisionDefault" xml:space="preserve">
+    <value>键冲突中断了 InstancePersistenceCommand 的执行。</value>
+  </data>
+  <data name="KeyCollisionSpecific" xml:space="preserve">
+    <value>键冲突中断了 InstancePersistenceCommand 的执行。值为“{1}”的实例键无法与实例“{0}”关联，因为它已与不同的实例“{2}”关联。</value>
+  </data>
+  <data name="KeyCollisionSpecificKeyOnly" xml:space="preserve">
+    <value>键冲突中断了 InstancePersistenceCommand 的执行。值为“{0}”的实例键无法与实例关联，因为它已与不同的实例关联。</value>
+  </data>
+  <data name="KeyCompleteDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例键已完成。</value>
+  </data>
+  <data name="KeyCompleteSpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例键“{0}”已完成。</value>
+  </data>
+  <data name="KeyNotAssociated" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要完成或修改的键与现有实例没有关联。</value>
+  </data>
+  <data name="KeyNotCompleted" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要断开关联的键尚未完成。</value>
+  </data>
+  <data name="KeyNotFoundInDictionary" xml:space="preserve">
+    <value>字典中不存在给定的键。</value>
+  </data>
+  <data name="KeyNotReadyDefault" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例键未与实例关联。发生这种情况可能是因为实例或键已清除，或是因为键无效。如果生成键的消息在错误的时间发送或包含错误的相关数据，则键可能无效。</value>
+  </data>
+  <data name="KeyNotReadySpecific" xml:space="preserve">
+    <value>InstancePersistenceCommand 的执行被中断，因为实例键“{0}”未与实例关联。发生这种情况可能是因为实例或键已清除，或是因为键无效。如果生成键的消息在错误的时间发送或包含错误的相关数据，则键可能无效。</value>
+  </data>
+  <data name="LambdaExpressionReturnTypeInvalid" xml:space="preserve">
+    <value>提供的 Lambda 表达式的返回类型不应该为 null 或 void。</value>
+  </data>
+  <data name="LambdaExpressionTypeRequired" xml:space="preserve">
+    <value>提供的表达式必须为 LambdaExpression。</value>
+  </data>
+  <data name="LambdaNotXamlSerializable" xml:space="preserve">
+    <value>此工作流包含以代码形式指定的 lambda 表达式。这些表达式不可序列化为 XAML。若要使工作流可序列化为 XAML，请使用 VisualBasicValue/VisualBasicReference 或 ExpressionServices.Convert(lambda)。这会将 lambda 表达式转换为表达式活动。</value>
+  </data>
+  <data name="LegalCopyright" xml:space="preserve">
+    <value>© Microsoft Corporation。保留所有权利。</value>
+  </data>
+  <data name="LineNumberTooLarge" xml:space="preserve">
+    <value>为活动 {0} 指定的行数过大，在部分信任环境中不受支持</value>
+  </data>
+  <data name="LiteralsMustBeValueTypesOrImmutableTypes" xml:space="preserve">
+    <value>文本仅支持值类型和不可变类型 {0}。类型 {1} 不能用作文本。</value>
+  </data>
+  <data name="LoadedWriteOnlyValue" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要加载的 InstanceValue 带有 InstanceValueOptions.WriteOnly 设置。不应加载 Write-only 值。</value>
+  </data>
+  <data name="LoadingAborted" xml:space="preserve">
+    <value>加载实例的尝试被中止。</value>
+  </data>
+  <data name="LoadingWorkflowApplicationRequiresInstanceStore" xml:space="preserve">
+    <value>WorkflowApplication 需要先设置有效的 InstanceStore 才能调用 Load 或 LoadRunnableInstance。</value>
+  </data>
+  <data name="LoadOpAssociateKeysCannotContainLookupKey" xml:space="preserve">
+    <value>如果未指定 LoadWorkflowByInstanceKeyCommand.AssociateLookupKeyToInstanceId，则 LookupInstanceKey 必须已经与某个实例相关联，否则 LoadWorkflowByInstanceKeyCommand 将失败。因此，如果未设置 AssociateLookupKeyToInstanceId，则在 InstanceKeysToAssociate 集合中同时指定 LookupInstanceKey 是无效行为。</value>
+  </data>
+  <data name="LoadOpFreeKeyRequiresAcceptUninitialized" xml:space="preserve">
+    <value>如果指定了 LoadByKeyOperation.InstanceIdForFreeKey，则必须将 AcceptUninitializedInstance 设置为 true。如果键是自由的，则它将通过所提供的实例 ID 与某个未初始化的实例相关联。</value>
+  </data>
+  <data name="LoadOpKeyMustBeValid" xml:space="preserve">
+    <value>用于查找实例的键 LoadByKeyOperation.LookupKey 不得为全零，如 Guid.Empty。</value>
+  </data>
+  <data name="LocationExpressionCouldNotBeResolved" xml:space="preserve">
+    <value>位置表达式“{0}”无法解析为变量或属性。确保位置表达式解析为在作用域层次结构中定义的变量或属性。</value>
+  </data>
+  <data name="LocationTypeMismatch" xml:space="preserve">
+    <value>名称为“{0}”的位置不能作为“{1}”类型的位置进行检索，因为它是“{2}”类型的位置。类型必须完全匹配，因为位置同时提供读写访问。</value>
+  </data>
+  <data name="LockRetryTimeout" xml:space="preserve">
+    <value>尝试获取实例锁时超时。此操作没有在分配的超时限制 {0} 内完成。分配给此操作的时间可能是更长超时限制的一部分。</value>
+  </data>
+  <data name="LockTimeoutExceptionMessage" xml:space="preserve">
+    <value>无法在分配的超时 {0} 内获得锁定。分配给该操作的时间可能已经是更长超时的一部分。</value>
+  </data>
+  <data name="MapEntryNotFound" xml:space="preserve">
+    <value>未找到活动“{0}”的更新映射项。</value>
+  </data>
+  <data name="MarkCanceledOnlyCallableIfCancelRequested" xml:space="preserve">
+    <value>只有已请求取消的活动才能调用 MarkCanceled。调用此方法之前请检查 ActivityInstance.HasCancelBeenRequested。</value>
+  </data>
+  <data name="MaximumRetriesExceededForSqlCommand" xml:space="preserve">
+    <value>正在放弃重试 SQL 命令，因为执行次数已达到了允许的最多重试次数。</value>
+  </data>
+  <data name="MaxInstancesExceeded" xml:space="preserve">
+    <value>系统达到为限制“MaxConcurrentInstances”设置的限制值。此限制的限制值设置为 {0}。可通过修改 serviceThrottle 元素中的特性“maxConcurrentInstances”或修改行为 ServiceThrottlingBehavior 的“MaxConcurrentInstances”属性来更改限制值。</value>
+  </data>
+  <data name="MaxPendingMessagesPerChannelExceeded" xml:space="preserve">
+    <value>达到了“{0}”的中止值“MaxPendingMessagesPerChannel”。若要增加此限制，请调整 BufferedReceiveServiceBehavior 中的 MaxPendingMessagesPerChannel 属性。</value>
+  </data>
+  <data name="MaxPendingMessagesPerChannelMustBeGreaterThanZero" xml:space="preserve">
+    <value>中止值必须大于零。若要禁用，请设置为 Int32.MaxValue。</value>
+  </data>
+  <data name="MayBindLockCommandShouldValidateOwner" xml:space="preserve">
+    <value>从 AutomaticallyAcquiringLock 返回 true 的 InstancePersistenceCommand 还必须重写 Validate，以便在使用未绑定到 InstanceOwner 的 InstanceHandle 执行命令时引发 InvalidOperationException。</value>
+  </data>
+  <data name="MemberCannotBeNull" xml:space="preserve">
+    <value>{1} 活动“{2}”中的“{0}”不可以为 null。</value>
+  </data>
+  <data name="MemberIsReadOnly" xml:space="preserve">
+    <value>“{1}”类型的成员“{0}”为只读。它不能是 LValue。</value>
+  </data>
+  <data name="MemberNotFound" xml:space="preserve">
+    <value>在类型“{1}”上未找到名为“{0}”的成员。</value>
+  </data>
+  <data name="MemberNotSupportedByActivityXamlServices" xml:space="preserve">
+    <value>ActivityXamlServices 遇到 DynamicActivity 不支持的成员({0})。</value>
+  </data>
+  <data name="MessageCannotBeEmpty" xml:space="preserve">
+    <value>消息内容为 null，这与协定“{1}”中的操作“{0}”不匹配</value>
+  </data>
+  <data name="MessageContentCannotHaveMoreThanOneParameter" xml:space="preserve">
+    <value>已实现协定“{1}”上的操作“{0}”对于消息协定不能包含多个参数。</value>
+  </data>
+  <data name="MessageHeaderNotSupported" xml:space="preserve">
+    <value>不支持 MessageDescription 中的自定义消息标头。请在协定“{1}”的操作“{0}”中使用 MessageContract 修饰的类型。</value>
+  </data>
+  <data name="MessagePropertyIsNotSupported" xml:space="preserve">
+    <value>不支持 MessageDescription 中的自定义消息属性。请在协定“{1}”的操作“{0}”中使用 MessageContract 修饰的类型。</value>
+  </data>
+  <data name="MessageTypeMismatch" xml:space="preserve">
+    <value>Receive 在 ReceiveMessageContent 中指定了一个 System.ServiceModel.Channels.Message 类型，该类型不同于已实现协定“{2}”的操作“{1}”中指定的消息类型“{0}”。</value>
+  </data>
+  <data name="MessageVersionInformationNotFound" xml:space="preserve">
+    <value>找不到响应消息版本信息。</value>
+  </data>
+  <data name="MetadataCannotContainNullKey" xml:space="preserve">
+    <value>InstanceValue 的命名集合(字典)中提供了一个 null 名称。对于 InstanceValue 来说，null 不是有效的名称。</value>
+  </data>
+  <data name="MetadataCannotContainNullValue" xml:space="preserve">
+    <value>InstanceValue 的命名集合(字典)中提供了一个 null 值。为 null 值提供的名称为 {0}。null 不是有效的 InstanceValue。若要指定 null 值，请将 null 传递给 InstanceValue 构造函数，从而使用具有 null 数据的 InstanceValue 实例。若要指示应该删除命名值，请使用 InstanceValue.DeletedValue。</value>
+  </data>
+  <data name="MethodInfoRequired" xml:space="preserve">
+    <value>需要“{0}”类型的 Method 属性。</value>
+  </data>
+  <data name="MethodNameRequired" xml:space="preserve">
+    <value>需要“{0}”类型的 Name 属性。</value>
+  </data>
+  <data name="MissingArgument" xml:space="preserve">
+    <value>与名称“{0}”关联的 Argument 在“{1}”集合中为 null。</value>
+  </data>
+  <data name="MissingBindingInEndpoint" xml:space="preserve">
+    <value>Name 为“{0}”且含有 ServiceContract“{1}”的终结点没有绑定。请向此终结点提供绑定。</value>
+  </data>
+  <data name="MissingBodyInWorkflowService" xml:space="preserve">
+    <value>当前 WorkflowService 的 Body 属性为 null。请为此 WorkflowService 提供 Body 属性。</value>
+  </data>
+  <data name="MissingDisplayNameInRootActivity" xml:space="preserve">
+    <value>根活动的 DisplayName 为空。请不要将根活动的 DisplayName 设置为 null 或空字符串，也不要为 WorkflowService 提供 Name 属性。</value>
+  </data>
+  <data name="MissingKnownTypes" xml:space="preserve">
+    <value>协定“{2}”中的操作“{1}”缺少已知类型“{0}”。</value>
+  </data>
+  <data name="MissingNameProperty" xml:space="preserve">
+    <value>“{0}”类型的参数没有名称。应为此集合中的项指定 Name 属性。</value>
+  </data>
+  <data name="MissingOperationName" xml:space="preserve">
+    <value>必须在活动“{0}”中设置 OperationName 属性。</value>
+  </data>
+  <data name="MissingParameter" xml:space="preserve">
+    <value>参数集合不包含在协定“{2}”中的操作“{1}”上指定的参数“{0}”。</value>
+  </data>
+  <data name="MissingServiceContractName" xml:space="preserve">
+    <value>必须在 OperationName 为“{1}”的活动“{0}”中设置 ServiceContractName 属性。</value>
+  </data>
+  <data name="MissingSetAccessorForIndexer" xml:space="preserve">
+    <value>类型 {1} 的 Indexer 属性 {0} 未公开 setter 访问器。</value>
+  </data>
+  <data name="MissingUriInEndpoint" xml:space="preserve">
+    <value>Name 为“{0}”并具有 ServiceContract“{1}”的终结点的 URI 属性为 null 或空。必须提供此终结点的 URI。</value>
+  </data>
+  <data name="MisuseOfMessageContent" xml:space="preserve">
+    <value>为协定“{1}”中的操作“{0}”指定了数据协定，请将 ReceiveParameterContent 用于 Receive 活动并将 SendParameterContent 用于 SendReply 活动以匹配协定定义。</value>
+  </data>
+  <data name="MisuseOfParameterContent" xml:space="preserve">
+    <value>为协定“{1}”中的操作“{0}”指定了消息协定类型，请将 ReceiveMessageContent 用于 Receive 活动并将 SendMessageContent 用于 SendReply 活动以匹配协定定义。</value>
+  </data>
+  <data name="MovingActivitiesInStateBlockDU" xml:space="preserve">
+    <value>如果原始定义中的活动属性已重新分配给 State 或其 Transition 中的另一个属性，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="MultiDimensionalArraysNotSupported" xml:space="preserve">
+    <value>不支持多维数组。</value>
+  </data>
+  <data name="MultipleFlowNodesSharingSameChildBlockDU" xml:space="preserve">
+    <value>当多个 FlowNode 共享同一个子活动时，流程图不支持动态更新。</value>
+  </data>
+  <data name="MultipleLockOwnersNotSupported" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 不支持同时创建多个锁定所有者。请考虑将 InstanceStore.DefaultInstanceOwner 设置为在多个应用程序间共享该存储区。</value>
+  </data>
+  <data name="MultipleOverloadGroupsConfigured" xml:space="preserve">
+    <value>配置了以下重载组: {0}。只有一个重载组应配置其参数。</value>
+  </data>
+  <data name="MustCallPrepareBeforeFinalize" xml:space="preserve">
+    <value>工作流定义没有其原始定义的附加副本。对工作流进行更新之前，请调用 DynamicUpdateServices.PrepareForUpdate 以保存原始定义的副本。</value>
+  </data>
+  <data name="MustCancelOldTimer" xml:space="preserve">
+    <value>在设置新的计时器之前，必须取消以前的计时器。</value>
+  </data>
+  <data name="MustMatchReferenceExpressionReturnType" xml:space="preserve">
+    <value>引用表达式不能以 Conversion 结尾。所提供的表达式类型必须与 VisualBasicReference&lt;T&gt; 或 LambdaReference&lt;T&gt; 的类型 T 完全匹配。</value>
+  </data>
+  <data name="MustSetTransactionOnFirstCall" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。对调用 InstancePersistenceContext.Execute 或 InstancePersistenceContext.BeginExecute 的线程设置了环境事务(System.Transactions.Transaction.Current)，但在此执行阶段中未设置事务就已执行了命令。只能对第一次 Execute 或 BeginExecute 调用(且只有尚未给该阶段设置其他事务时)设置环境事务。</value>
+  </data>
+  <data name="MustSpecifyConnectionStringOrName" xml:space="preserve">
+    <value>需要指定 connectionString 或 connectionStringName 属性。</value>
+  </data>
+  <data name="NameCollisionOnCollect" xml:space="preserve">
+    <value>检测到类型“{1}”的持久性参与者提供的名称“{0}”有名称冲突。参与者的 CollectValues 实现所提供的值使用的名称与此参与者或其他持久性参与者所提供的另一个值相同。请将此参与者改为使用其他名称，以避免冲突，或从工作流的扩展集合中移除该参与者。</value>
+  </data>
+  <data name="NameCollisionOnMap" xml:space="preserve">
+    <value>检测到类型“{1}”的持久性参与者提供的名称“{0}”有名称冲突。参与者的 MapValues 实现所提供的值使用的名称与此参与者或其他持久性参与者所提供的另一个值相同。请将此参与者改为使用其他名称，以避免冲突，或从工作流的扩展集合中移除该参与者。</value>
+  </data>
+  <data name="NativeActivityUpdateInstanceThrewException" xml:space="preserve">
+    <value>该活动从其 UpdateInstance 方法引发了异常: {0}</value>
+  </data>
+  <data name="NAUCDisposed" xml:space="preserve">
+    <value>只能在 NativeActivityUpdateContext 传入到的函数范围内访问它。</value>
+  </data>
+  <data name="NewArrayBoundsRequiresIntegralArguments" xml:space="preserve">
+    <value>“NewArrayBounds”需要整型参数。</value>
+  </data>
+  <data name="NewArrayRequiresArrayTypeAsResultType" xml:space="preserve">
+    <value>“NewArray”活动的结果类型必须为具体数组类型。</value>
+  </data>
+  <data name="NoAdditionalKeysOnInstanceIdLoad" xml:space="preserve">
+    <value>如果使用 InstanceStore 作为永久性提供程序，则按某实例的 ID 加载该实例时不能指定其他键。</value>
+  </data>
+  <data name="NoCAInSecondaryRoot" xml:space="preserve">
+    <value>CompensableActivity 不能嵌套在父 CompensableActivity 的补偿、确认或取消处理程序内。</value>
+  </data>
+  <data name="NoChangesMapQueryNotSupported" xml:space="preserve">
+    <value>不支持 NoChanges 映射上的查询。</value>
+  </data>
+  <data name="NoDynamicArgumentsInActivityDefinitionChange" xml:space="preserve">
+    <value>此活动提供的实现映射与当前更新之间存在冲突的更改。此活动的参数在这两个更新中已更改。</value>
+  </data>
+  <data name="NoDynamicArgumentsInActivityDefinitionChangeRuntime" xml:space="preserve">
+    <value>此活动的实现更新与更大的工作流更新之间存在冲突的更改。此活动的参数在这两个更新中已更改。</value>
+  </data>
+  <data name="NoNamespace" xml:space="preserve">
+    <value>无法解析命名空间“{0}:”。</value>
+  </data>
+  <data name="NonWASActivationNotSupported" xml:space="preserve">
+    <value>SqlWorkflowInstanceStore 仅支持 WAS 激活。</value>
+  </data>
+  <data name="NoOutputLocationWasFound" xml:space="preserve">
+    <value>参数 {0} 无法与有效的输出位置匹配。</value>
+  </data>
+  <data name="NoOverloadGroupsAreConfigured" xml:space="preserve">
+    <value>没有一个重载组配置了其所需/可选的所有活动参数。</value>
+  </data>
+  <data name="NoPersistScopeCannotContainPersist" xml:space="preserve">
+    <value>NoPersistScope 活动“{0}”不能包含 Persist 活动“{1}”。</value>
+  </data>
+  <data name="NoPromotionsDefined" xml:space="preserve">
+    <value>命名提升 {0} 未定义任何提升。</value>
+  </data>
+  <data name="NoRunnableInstances" xml:space="preserve">
+    <value>在要加载的 InstanceStore 中找不到可运行的工作流实例。</value>
+  </data>
+  <data name="NoRuntimeTransactionExists" xml:space="preserve">
+    <value>在运行时没有活动事务时调用 CompleteTransaction 是无效的。</value>
+  </data>
+  <data name="NotSpecified" xml:space="preserve">
+    <value>&lt;未指定&gt;</value>
+  </data>
+  <data name="NotSupportMoreThanOneParametersInMessageContract" xml:space="preserve">
+    <value>将 MessageContracts 用于协定“{1}”中的操作“{0}”时，操作不能包含多个参数。请提供有效的协定定义。</value>
+  </data>
+  <data name="NullAssignedToValueType" xml:space="preserve">
+    <value>从实例存储中检索到的错误类型的值。值应为 {0} 类型，但实际检索到的值为 null 值。</value>
+  </data>
+  <data name="NullCorrelationHandleInInitializeCorrelation" xml:space="preserve">
+    <value>“{0}”中的 CorrelationHandle 不能为 null。</value>
+  </data>
+  <data name="NullCorrelationHandleInMultipleQueryCorrelation" xml:space="preserve">
+    <value>至少有一个 QueryCorrelationInitializer 未设置相关句柄。当 CorrelationInitializers 集合中存在多个 QueryCorrelationInitializer 时，需要指定 CorrelationHandle。</value>
+  </data>
+  <data name="NullKeyAlreadyPresent" xml:space="preserve">
+    <value>已添加了具有 null 键的项。</value>
+  </data>
+  <data name="NullReferencedMemberAccess" xml:space="preserve">
+    <value>无法按成员 {1} 取消 {0} 类型的 null 对象的引用。</value>
+  </data>
+  <data name="NullReplyMessageContractMismatch" xml:space="preserve">
+    <value>从服务器收到了 null 答复消息。这可能是因为客户端和服务器端之间的协定不匹配。请确认针对双向操作配置了服务器端工作流。</value>
+  </data>
+  <data name="OnCancelRequestedThrew" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现的取消处理程序引发了异常。该处理程序是通过 InstancePersistenceContext.SetCancellationHandler 方法指定的。</value>
+  </data>
+  <data name="OneOfTwoPropertiesMustBeSet" xml:space="preserve">
+    <value>活动“{3}”中的“{2}”要求有“{0}”属性或“{1}”属性。</value>
+  </data>
+  <data name="OnewayContractIsImplementedAsTwoWay" xml:space="preserve">
+    <value>协定“{1}”中的单向操作“{0}”不应具有 SendReply 活动。</value>
+  </data>
+  <data name="OnFreeInstanceHandleThrew" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。其 OnFreeInstanceHandle 实现引发了异常。</value>
+  </data>
+  <data name="OnlyBookmarkOwnerCanRemove" xml:space="preserve">
+    <value>书签只能由创建了这些书签的活动实例移除。</value>
+  </data>
+  <data name="OnlyOneOperationPerActivity" xml:space="preserve">
+    <value>在给定时间，对活动只能有一个操作处于活动状态。已有另一个操作正在进行中。</value>
+  </data>
+  <data name="OnlyOneRequireTransactionContextAllowed" xml:space="preserve">
+    <value>运行时已在尝试向 RequireTransactionContext 的调用提供服务。</value>
+  </data>
+  <data name="OnlySingleCastDelegatesAllowed" xml:space="preserve">
+    <value>WorkflowApplication 事件只允许使用非多播委托。所提供的委托具有长度大于一的调用列表。</value>
+  </data>
+  <data name="OperationAlreadyCompleted" xml:space="preserve">
+    <value>操作已完成。</value>
+  </data>
+  <data name="OperationDoesNotExistInContract" xml:space="preserve">
+    <value>名称为“{1}”且命名空间为“{2}”的协定中不存在操作“{0}”。</value>
+  </data>
+  <data name="OperationFormatterAndFaultFormatterIncorrectlySet" xml:space="preserve">
+    <value>不能同时设置 OperationFormatter 和 FaultFormatter。</value>
+  </data>
+  <data name="OperationFormatterAndFaultFormatterNotSet" xml:space="preserve">
+    <value>OperationFormatter 和 FaultFormatter 不能同时为 null。</value>
+  </data>
+  <data name="OperationHasSerializerBehavior" xml:space="preserve">
+    <value>协定“{1}”中的操作“{0}”已有“{2}”行为，因此不能添加新行为。这通常表示已为此操作调用了 IOperationSerializer.ApplyToOperation 方法。</value>
+  </data>
+  <data name="OperationIsNotImplemented" xml:space="preserve">
+    <value>工作流中未实现协定“{1}”中的操作“{0}”。</value>
+  </data>
+  <data name="OperationNotAvailable" xml:space="preserve">
+    <value>此时不能执行具有标识符“{1}”的服务实例上的操作“{0}”。请确保按正确顺序执行操作，并且正在使用的绑定能够保证有序传递。</value>
+  </data>
+  <data name="OperationNotFound" xml:space="preserve">
+    <value>在默认 WorkflowService 中找不到协定为 {0}、操作为 {1} 的 Receive。请确保先在默认 WorkflowService 中添加其他 WorkflowService 版本中的所有操作。</value>
+  </data>
+  <data name="OptionalExtensionTypeMatchedMultiple" xml:space="preserve">
+    <value>已找到类型“{0}”的多个扩展。运行此工作流时，最多允许此类型的一个扩展。</value>
+  </data>
+  <data name="OriginalActivityReusedInModifiedDefinition" xml:space="preserve">
+    <value>原始定义中的活动“{0}”无法在已更新的定义中重用。</value>
+  </data>
+  <data name="OriginalVariableReusedInModifiedDefinition" xml:space="preserve">
+    <value>原始定义中的变量“{0}”无法在已更新的定义中重用。</value>
+  </data>
+  <data name="OriginCannotBeRuntimeIntrinsic" xml:space="preserve">
+    <value>对象“{0}”不能用作原始对象，因为它已经是工作流定义元素(Activity、ActivityDelegate、Argument 或 LocationReference)。</value>
+  </data>
+  <data name="OutArgumentCannotHaveInputValue" xml:space="preserve">
+    <value>不能用输入值配置 OutArgument“{0}”。应该从输入字典中移除键“{0}”。</value>
+  </data>
+  <data name="OutOfIdSpaceIds" xml:space="preserve">
+    <value>此 ID 空间中活动的数量已超过 Int32.MaxValue。将工作流的某些部分重构为新的 Activity 子类。</value>
+  </data>
+  <data name="OutOfInstanceIds" xml:space="preserve">
+    <value>工作流中只能执行 long.MaxValue 个 Activity 实例。</value>
+  </data>
+  <data name="OutOfInternalBookmarks" xml:space="preserve">
+    <value>只能为工作流生成 long.MaxValue 个内部书签。</value>
+  </data>
+  <data name="OutOfRangeSourceLocationEndColumn" xml:space="preserve">
+    <value>对于单行 SourceLocation，endColumn 应该 &gt;= startColumn (= {0})。</value>
+  </data>
+  <data name="OutOfRangeSourceLocationEndLine" xml:space="preserve">
+    <value>SourceLocation 的 endLine 应该 &gt;= startLine (= {0})。</value>
+  </data>
+  <data name="OutsideInstanceExecutionScope" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。只能在处理命令的过程中调用 {0} 方法。请勿尝试保留 InstancePersistenceContext 的实例供以后使用。只能在处理 TryCommand 和 BeginTryCommand 命令的过程中使用提供给这些命令的 InstancePersistenceContext。</value>
+  </data>
+  <data name="OutsideTransactionalCommand" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。在执行不应要求事务一致性的命令期间，该实现对 InstancePersistenceContext 调用了方法 {0}，该方法要求事务一致性。此操作可能导致数据损坏。此错误表示永久性提供程序实现无效。</value>
+  </data>
+  <data name="OverloadGroupHasSubsets" xml:space="preserve">
+    <value>以下重载组是组“{0}”的子集: {1}。使一个重载组作为另一个重载组的子集是错误的。</value>
+  </data>
+  <data name="OverloadGroupsAreEquivalent" xml:space="preserve">
+    <value>以下重载组互相等效: {0}。此处只定义一个重载组就足够了。</value>
+  </data>
+  <data name="OverloadingMethodMustBeStatic" xml:space="preserve">
+    <value>重载运算符的方法必须是静态的。</value>
+  </data>
+  <data name="OverloadOnlyCallableFromWorkflowThread" xml:space="preserve">
+    <value>此方法重载只能从工作流线程中调用。</value>
+  </data>
+  <data name="OwnerBelongsToWrongStore" xml:space="preserve">
+    <value>提供的 InstanceOwner 不正确。向 InstanceStore 方法提供的 InstanceOwner 必须属于 InstanceStore。只能将 InstanceOwner 对象与创建它的 InstanceStore 一起使用。</value>
+  </data>
+  <data name="OwnerRequired" xml:space="preserve">
+    <value>实例永久性系统无法处理无效的 InstancePersistenceCommand。该命令需要实例所有者，但无所有者绑定到 InstanceHandle。</value>
+  </data>
+  <data name="ParallelForEachRequiresNonNullValues" xml:space="preserve">
+    <value>值必须绑定到非 null 表达式，然后才能使用 ParallelForEach 活动“{0}”。</value>
+  </data>
+  <data name="ParameterNumberMismatch" xml:space="preserve">
+    <value>协定“{2}”中的操作“{1}”上不存在参数“{0}”。</value>
+  </data>
+  <data name="ParameterPositionMismatch" xml:space="preserve">
+    <value>协定“{2}”中的操作“{1}”的参数“{0}”顺序不正确。请将该参数移到参数集合中的位置“{3}”。</value>
+  </data>
+  <data name="ParameterTypeMismatch" xml:space="preserve">
+    <value>参数“{0}”的类型与已实现协定“{3}”的操作“{2}”中指定的类型“{1}”不匹配。</value>
+  </data>
+  <data name="PartialTrustPerformanceCounterNotEnabled" xml:space="preserve">
+    <value>拒绝访问性能计数器。应用程序可能在部分受信任的情况下运行。请禁用性能计数器，或将该应用程序配置为在完全受信任的情况下运行。</value>
+  </data>
+  <data name="PauseWhenPersistableInvalidIfPersistable" xml:space="preserve">
+    <value>仅当 IsPersistable 为 false 时，才能调用 PauseWhenPersistable。</value>
+  </data>
+  <data name="PendingMessagesPerChannelRatio" xml:space="preserve">
+    <value>每个通道的挂起消息比率: {0}/{1}</value>
+  </data>
+  <data name="PermissionArgumentWrongType" xml:space="preserve">
+    <value>参数的类型错误。应为“{0}”。</value>
+  </data>
+  <data name="PersistenceInitializerThrew" xml:space="preserve">
+    <value>IPersistenceContextInitializer 实现引发了异常。无法加载或创建持久性服务实例，如 WorkflowServiceInstance。InnerException 属性包含原始异常。</value>
+  </data>
+  <data name="PersistencePipelineAbortThrew" xml:space="preserve">
+    <value>类型为“{0}”的持久性参与者的 Abort 实现引发了异常。异常不应从 Abort 实现引发。</value>
+  </data>
+  <data name="PersistenceProviderRequiredToPersist" xml:space="preserve">
+    <value>只有已用 PersistenceProvider 扩展配置的工作流实例可以持久化或卸载。</value>
+  </data>
+  <data name="PersistenceTooLateToEnlist" xml:space="preserve">
+    <value>在事务中登记已太晚。事务已经开始提交或中止。</value>
+  </data>
+  <data name="PersistenceViolationNoCreate" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。创建新实例时应该已经引发 InstanceNotReadyException。</value>
+  </data>
+  <data name="PickBranchRequiresTrigger" xml:space="preserve">
+    <value>必须设置触发器，然后才能使用 PickBranch“{0}”。</value>
+  </data>
+  <data name="PickBranchTriggerActionSwapped" xml:space="preserve">
+    <value>交换 PickBranch 的 Trigger 和 Action 时，Pick 不支持动态更新。</value>
+  </data>
+  <data name="PrepareForSerializationRequiresPersistability" xml:space="preserve">
+    <value>仅当 IsPersistable 为 true 时，才能调用 PrepareForSerialization。</value>
+  </data>
+  <data name="PrivateMembersHaveChanged" xml:space="preserve">
+    <value>此活动的私有实现已更改(添加、移除或重新排列实现子级、委托、变量或参数)。动态更新只支持实现映射中指定的实现更改，与此活动的公共配置无关。</value>
+  </data>
+  <data name="PromotionAlreadyDefined" xml:space="preserve">
+    <value>已定义提升集 {0}。</value>
+  </data>
+  <data name="PromotionTooManyDefined" xml:space="preserve">
+    <value>提升集 {0} 定义了 {1} 个 {2} 提升，超出允许的最大提升数 {3}。</value>
+  </data>
+  <data name="PropertyCannotBeModified" xml:space="preserve">
+    <value>SqlTrackingParticipant 开始处理记录之后，就不能修改 {0} 属性。</value>
+  </data>
+  <data name="PropertyMemberNotSupportedByActivityXamlServices" xml:space="preserve">
+    <value>ActivityXamlServices 遇到 DynamicActivityProperty 不支持的 x:Property 成员({0})。</value>
+  </data>
+  <data name="PropertyMismatch" xml:space="preserve">
+    <value>“{0}”与协定“{4}”的操作“{3}”上提供的“{1}”值“{2}”不匹配。</value>
+  </data>
+  <data name="PropertyReadOnlyInWorkflowDataContext" xml:space="preserve">
+    <value>属性“{0}”在 WorkflowDataContext 中为只读。</value>
+  </data>
+  <data name="PropertyReferenceNotFound" xml:space="preserve">
+    <value>PropertyReference 无法解析属性“{0}”。</value>
+  </data>
+  <data name="ProtectionLevelIsNotSupported" xml:space="preserve">
+    <value>仅通过 MessageContract 支持自定义 ProtectionLevel 设置。请为已实现协定“{1}”的操作“{0}”指定 MessageContract 类型。</value>
+  </data>
+  <data name="ProtectionLevelNotSupported" xml:space="preserve">
+    <value>工作流不支持 Faults 上的自定义 ProtectionLevel 设置。请不要在 FaultContract 上为已实现协定“{1}”的操作“{0}”指定 ProtectionLevel。</value>
+  </data>
+  <data name="ProvidedStateInitializedForExecution" xml:space="preserve">
+    <value>已经对运行时状态进行了初始化以便执行，无法更新该状态。需要从永久性存储中重新加载该状态。</value>
+  </data>
+  <data name="ProviderDoesNotSupportCommand" xml:space="preserve">
+    <value>InstanceStore 的永久性提供程序实现不支持名称为 {0} 的命令。请另选一个提供程序，或者确保不再使用这个永久性命令。</value>
+  </data>
+  <data name="PublicChildrenChangeBlockDU" xml:space="preserve">
+    <value>此活动不支持更改其公共子级(添加、移除或重新排列 Activities 或 ActivityDelegates)。</value>
+  </data>
+  <data name="PublicEnvironmentAccessToNonGenericActivity" xml:space="preserve">
+    <value>公共环境访问只对派生自 CodeActivity&lt;TResult&gt; 而非 CodeActivity 的活动才可用。</value>
+  </data>
+  <data name="PublicMethodWithMatchingParameterDoesNotExist" xml:space="preserve">
+    <value>“{0}”没有名为“{2}”的公共 {1} 方法与提供给 InvokeMethod“{3}”的参数类型、泛型类型参数、泛型类型约束相匹配。</value>
+  </data>
+  <data name="PublicReferencesOnActivityRequiringArgumentResolution" xml:space="preserve">
+    <value>活动“{0}”无法定义内置 Result 参数之外的参数，也无法通过 CodeActivityPublicEnvironmentAccessor 声明对公共位置的访问。请通过参数或通过 CodeActivityPublicEnvironmentAccessor.TryGetAccessToPublicLocation 和 TryGetReferenceToPublicLocation 将所有数据传入活动中。</value>
+  </data>
+  <data name="QueryActivityIsInImplementation" xml:space="preserve">
+    <value>此活动位于复合活动“{0}”的实现内部。若要查询其可更新性，请使用此复合活动的实现映射。</value>
+  </data>
+  <data name="QueryActivityIsNotInDefinition" xml:space="preserve">
+    <value>此活动不属于原始的或已更新的工作流定义。</value>
+  </data>
+  <data name="QueryActivityIsPublic" xml:space="preserve">
+    <value>此活动是根工作流定义的一部分。若要查询其可更新性，请使用工作流的更新映射，而不是复合活动“{0}”的实现映射。</value>
+  </data>
+  <data name="QueryCorrelationInitializerCannotBeInitialized" xml:space="preserve">
+    <value>没有可用于初始化 QueryCorrelationInitializer 的相关句柄。这是因为，没有针对查询初始值设定项上显式设置句柄，且没有可供从相关范围中使用的句柄。</value>
+  </data>
+  <data name="QueryCorrelationInitializerWithEmptyMessageQuerySet" xml:space="preserve">
+    <value>DisplayName 为“{0}”且 OperationName 为“{1}”的活动的 QueryCorrelationInitializer 具有空 MessageQuerySet。</value>
+  </data>
+  <data name="QueryVariableIsInImplementation" xml:space="preserve">
+    <value>此变量位于复合活动“{0}”的实现内部。若要查询其可更新性，请使用此复合活动的实现映射。</value>
+  </data>
+  <data name="QueryVariableIsNotInDefinition" xml:space="preserve">
+    <value>此变量不属于原始的或已更新的工作流定义。</value>
+  </data>
+  <data name="QueryVariableIsNotPublic" xml:space="preserve">
+    <value>此变量不是公共的。只有公共变量才能通过动态更新进行更改。</value>
+  </data>
+  <data name="QueryVariableIsPublic" xml:space="preserve">
+    <value>此变量是根工作流定义的一部分。若要查询其可更新性，请使用工作流的更新映射，而不是复合活动“{0}”的实现映射。</value>
+  </data>
+  <data name="QueuingSqlRetry" xml:space="preserve">
+    <value>正在将 SQL 重试排队，延迟 {0} 毫秒。</value>
+  </data>
+  <data name="ReadAccessToWriteOnlyPublicReference" xml:space="preserve">
+    <value>活动“{0}”无法从此公共位置引用读取，因为它是使用 ArgumentDirection.Out 声明的。若要允许读写，请使用 ArgumentDirection.InOut 声明此引用。</value>
+  </data>
+  <data name="ReadNotSupported" xml:space="preserve">
+    <value>在此流上不支持 Read。</value>
+  </data>
+  <data name="ReadonlyNameScopeCannotBeUpdated" xml:space="preserve">
+    <value>无法使用操作，因为名称作用域实现为只读。</value>
+  </data>
+  <data name="ReadonlyPropertyCannotBeSet" xml:space="preserve">
+    <value>在此上下文中无法使用属性或索引器“{0}.{1}”，因为无法访问 set 访问器。</value>
+  </data>
+  <data name="ReceiveAndReceiveParametersHaveSameName" xml:space="preserve">
+    <value>ReceiveContent 类型不同的两个 Receive 有着相同的 ServiceContractName 和 OperationName“{0}”。</value>
+  </data>
+  <data name="ReceiveContentChanged" xml:space="preserve">
+    <value>此接收活动的内容已在无类型内容和类型内容之间做出更改。</value>
+  </data>
+  <data name="ReceiveCorrelationInitializiersChanged" xml:space="preserve">
+    <value>此接收活动的 CorrelationInitializers 已更改。</value>
+  </data>
+  <data name="ReceiveIsInTRSWhenTransactionFlowNotAllowed" xml:space="preserve">
+    <value>当已实现协定“{1}”中的操作“{0}”的 TransactionFlowOption 设置为 NotAllowed 时，Receive 处于 TransactedReceiveScope 中。</value>
+  </data>
+  <data name="ReceiveIsNotInTRS" xml:space="preserve">
+    <value>已实现协定“{1}”中的操作“{0}”要求流传递事务，但 Receive 活动不在 TransactedReceiveScope 中。</value>
+  </data>
+  <data name="ReceiveMessageNeedsToPairWithSendMessageForTwoWayContract" xml:space="preserve">
+    <value>Receive 活动配置有请求/回复操作“{0}”，但是没有 SendReply 与之配对。请用 SendReply 与 Receive 配对，并使用 CorrelationHandle 将两者关联。</value>
+  </data>
+  <data name="ReceiveNotWithinATransactedReceiveScope" xml:space="preserve">
+    <value>流入事务的 Receive 活动未包含在 TransactedReceiveScope 内。</value>
+  </data>
+  <data name="ReceivePairedWithSendReplyAndSendReplyParameters" xml:space="preserve">
+    <value>具有 SendMessageContent 的 SendReply 和具有 SendParametersContent 的 SendReply 都与 OperationName 为“{0}”的同一 Receive 配对。不允许这种情况。</value>
+  </data>
+  <data name="ReceiveParametersContentDoesNotSupportMessage" xml:space="preserve">
+    <value>DisplayName 为“{0}”的活动有一个名为“{1}”的参数，该参数为 Message 或 MessageContract。ReceiveParametersContent 不支持 Message 或 MessageContract。对于基于 Message 或 MessageContract 的内容，Content 属性应指定为 ReceiveMessageContent。</value>
+  </data>
+  <data name="ReceiveReplyRequestCannotBeNull" xml:space="preserve">
+    <value>活动“{0}”中的 Request 属性不能为 null。必须将该属性设置为属于此请求/回复对的 Send 活动。</value>
+  </data>
+  <data name="ReferencedChildInIsNewlyAdded" xml:space="preserve">
+    <value>不能对作为已导入子级的引用的活动调用此方法。请在调用此方法前检查 NativeActivityUpdateContext.IsReferenceToImportedChild。</value>
+  </data>
+  <data name="RegisteredBookmarkScopeRequired" xml:space="preserve">
+    <value>只有已注册的书签范围可以用于创建确定范围的书签。</value>
+  </data>
+  <data name="RelativeUriRequiresBinding" xml:space="preserve">
+    <value>Name 为“{0}”并具有 ServiceContract“{1}”的终结点所具有的相对 URI“{2}”无法转换为绝对 URI，因为终结点的 Binding 属性为 null。请设置 Binding 属性，或将相对 URI 改为绝对 URI。</value>
+  </data>
+  <data name="RelativeUriRequiresHost" xml:space="preserve">
+    <value>Name 为“{0}”并具有 ServiceContract“{1}”的终结点所具有的相对 URI“{2}”无法转换为绝对 URI，因为 GetAddress 方法的 host 参数为 null。请提供将承载该终结点的服务主机实例，或将相对 URI 改为绝对 URI。</value>
+  </data>
+  <data name="RemovingTransitionsBlockDU" xml:space="preserve">
+    <value>如果从正在执行的 State 中移除转换，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="RenewLockSystemError" xml:space="preserve">
+    <value>未能延长锁定到期日，锁定到期日已过，或者已删除锁定所有者。正在中止 SqlWorkflowInstanceStore。</value>
+  </data>
+  <data name="ReplyShouldNotIncludeRequestReplyHandle" xml:space="preserve">
+    <value>OperationName 为“{1}”的活动“{0}”不应包括其他相关中的请求/回复句柄。</value>
+  </data>
+  <data name="RequestMustBeSpecified" xml:space="preserve">
+    <value>必须在活动“{0}”中指定 Request 参数。</value>
+  </data>
+  <data name="RequestReplyHandleShouldNotBePresentForOneWay" xml:space="preserve">
+    <value>不应在单向 Send 或 Receive 活动上指定 RequestReplyCorrelationInitializer。初始化 RequestReply 相关性时，Send 应与 ReceiveReply 活动成对出现，Receive 应与 SendReply 活动成对出现。</value>
+  </data>
+  <data name="RequiredArgumentValueNotSupplied" xml:space="preserve">
+    <value>未提供必要活动参数“{0}”的值。</value>
+  </data>
+  <data name="RequiredExtensionTypeNotFound" xml:space="preserve">
+    <value>为运行此工作流必须配置一个“{0}”类型的扩展。</value>
+  </data>
+  <data name="RequiredVariableCoundNotBeExtracted" xml:space="preserve">
+    <value>在下列活动中没有必要变量 {0} 可供提取: {1}。</value>
+  </data>
+  <data name="RequireExtensionOnlyAcceptsReferenceTypes" xml:space="preserve">
+    <value>“{0}”为值类型。RequireExtension 仅接受引用类型。</value>
+  </data>
+  <data name="ResponseContextIsNotNull" xml:space="preserve">
+    <value>ResponseContext 不为 null。</value>
+  </data>
+  <data name="ResultArgumentHasRequiredTypeAndDirection" xml:space="preserve">
+    <value>活动作者提供的名为“Result”的 RuntimeArgument 必须有 ArgumentDirection Out 和类型 {0}。但它具有的是 ArgumentDirection {1} 和类型 {2}。</value>
+  </data>
+  <data name="ResultArgumentMustBeBoundToResultProperty" xml:space="preserve">
+    <value>活动作者提供的名为“Result”的 RuntimeArgument 必须绑定到活动的 Result 属性所返回的参数。</value>
+  </data>
+  <data name="ResultArgumentMustBeSpecificType" xml:space="preserve">
+    <value>此活动的 Result OutArgument 必须为 {0} 的 OutArgument。</value>
+  </data>
+  <data name="ResultCannotBeSetOnArgumentExpressions" xml:space="preserve">
+    <value>Activity&lt;T&gt; 用作参数的表达式时，无法对 Activity&lt;T&gt; 设置 Result OutArgument。</value>
+  </data>
+  <data name="ResultMustBeSpecified" xml:space="preserve">
+    <value>必须在活动“{0}”中指定 Result 参数。</value>
+  </data>
+  <data name="RethrowMustBeAPublicChild" xml:space="preserve">
+    <value>Rethrow 活动“{0}”不能在 TryCatch 活动的私有子级中使用。Rethrow 只能用在 TryCatch 活动的公共子级下。</value>
+  </data>
+  <data name="RethrowNotInATryCatch" xml:space="preserve">
+    <value>Rethrow 活动“{0}”必须是 TryCatch 活动的 Catch 处理程序的子级。</value>
+  </data>
+  <data name="RetryingSqlCommandDueToSqlError" xml:space="preserve">
+    <value>因 SQL 错误号 {0}，正在重试 SQL 命令。</value>
+  </data>
+  <data name="ReturnTypeIncompatible" xml:space="preserve">
+    <value>类型不匹配。类型“{2}”最佳匹配方法“{1}”的返回类型“{0}”与提供给 InvokeMethod“{3}”的“Result”参数不兼容，返回值的类型应为“{4}”。</value>
+  </data>
+  <data name="ReturnValueMissing" xml:space="preserve">
+    <value>协定“{2}”中的操作“{1}”缺少“{0}”类型的返回值参数。</value>
+  </data>
+  <data name="RootActivityAlreadyAssociatedWithInstance" xml:space="preserve">
+    <value>显示名称为“{0}”的活动已与实例关联。与实例关联后，活动的元数据就无法操作。此错误也可能指示您正尝试执行的工作流的根活动实际上是另一个工作流的一部分。</value>
+  </data>
+  <data name="RootActivityCannotBeReferenced" xml:space="preserve">
+    <value>活动“{0}”是根活动，不能由活动“{1}”引用。</value>
+  </data>
+  <data name="RootArgumentViolationsFound" xml:space="preserve">
+    <value>为根活动的参数提供的值不满足根活动的要求:</value>
+  </data>
+  <data name="RootArgumentViolationsFoundNoInputs" xml:space="preserve">
+    <value>根活动的参数设置不正确。请修改工作流定义或提供输入值，以便纠正这些错误:</value>
+  </data>
+  <data name="RunnableInstancesDetectionError" xml:space="preserve">
+    <value>由于下列异常，导致可运行实例检测失败</value>
+  </data>
+  <data name="RuntimeArgumentBindingInvalid" xml:space="preserve">
+    <value>RuntimeArgument“{0}”指向一个 Argument，后者依次绑定到名为“{1}”的 RuntimeArgument。请确保 Argument 对象未绑定到多个 RuntimeArgument 对象，或由多个公共 Argument 属性共享。</value>
+  </data>
+  <data name="RuntimeArgumentChangeBlockDU" xml:space="preserve">
+    <value>活动“{0}”内部将不允许动态更新，因为它的 RuntimeArguments 已更改。若要在此活动内部启用动态更新，则不能添加、移除和重新排列任何 RuntimeArguments。另外也不能更改其名称、类型和方向。</value>
+  </data>
+  <data name="RuntimeArgumentNotCreated" xml:space="preserve">
+    <value>目前尚未创建 RuntimeArgument 实例。</value>
+  </data>
+  <data name="RuntimeArgumentNotOpen" xml:space="preserve">
+    <value>无法使用参数“{0}”。请确保在活动中声明了该参数。</value>
+  </data>
+  <data name="RuntimeDelegateArgumentDirectionIncorrect" xml:space="preserve">
+    <value>RuntimeDelegateArgument 的方向必须与其绑定到的 DelegateArgument 的方向匹配。</value>
+  </data>
+  <data name="RuntimeDelegateArgumentTypeIncorrect" xml:space="preserve">
+    <value>RuntimeDelegateArgument 的类型必须与其绑定到的 DelegateArgument 的类型匹配。</value>
+  </data>
+  <data name="RuntimeOperationInProgress" xml:space="preserve">
+    <value>已有另一个运行时操作正在进行中。对 WorkflowInstance 的访问必须由调用方进行同步。</value>
+  </data>
+  <data name="RuntimeRunning" xml:space="preserve">
+    <value>工作流运行时当前正在执行工作流，而操作仅在工作流暂停时才能执行。对 WorkflowInstance 的访问必须由调用方进行同步。</value>
+  </data>
+  <data name="RuntimeTransactionAlreadyExists" xml:space="preserve">
+    <value>已经用事务配置了运行时。一次只允许一个事务。</value>
+  </data>
+  <data name="RuntimeTransactionComplete" xml:space="preserve">
+    <value>运行时事务已完成，状态为“{0}”。</value>
+  </data>
+  <data name="RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”已安排了运行时事务的完成。</value>
+  </data>
+  <data name="RuntimeTransactionHandleNotRegisteredAsExecutionProperty" xml:space="preserve">
+    <value>仅当相应的 RuntimeTransactionHandle 对象注册为执行属性时，才能调用方法“{0}”。</value>
+  </data>
+  <data name="RuntimeTransactionIsSuppressed" xml:space="preserve">
+    <value>禁止运行时事务后，此操作无效。由于对当前环境中的 RuntimeTransactionHandle 设置了 SuppressTransaction 属性，因此禁止了运行时事务。</value>
+  </data>
+  <data name="RuntimeTransactionSet" xml:space="preserve">
+    <value>运行时事务已经由 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”设置。执行独立于 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”。</value>
+  </data>
+  <data name="SameUserStateUsedForMultipleInvokes" xml:space="preserve">
+    <value>对于并发的活动调用，不能使用相同的用户状态实例。</value>
+  </data>
+  <data name="SavingActivityToXamlNotSupported" xml:space="preserve">
+    <value>不支持将 DynamicActivity 或 Activity.Implementation 保存为 XAML 格式。如果您尝试构造参数化工作流并将其保存为 XAML 格式，可以考虑使用 ActivityBuilder 类。</value>
+  </data>
+  <data name="SavingFuncToXamlNotSupported" xml:space="preserve">
+    <value>不支持将常规的 Func&lt;T&gt; 保存到 XAML。若要将某个对象转换为可序列化的 Func，请将该对象序列化为 XAML，然后调用 ActivityXamlServices.CreateFactory。</value>
+  </data>
+  <data name="ScheduleBookmarkWorkItem" xml:space="preserve">
+    <value>已为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了 BookmarkWorkItem。BookmarkName: {3}，BookmarkScope: {4}。</value>
+  </data>
+  <data name="ScheduleCancelActivityWorkItem" xml:space="preserve">
+    <value>已为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了 CancelActivityWorkItem。</value>
+  </data>
+  <data name="ScheduleCompletionWorkItem" xml:space="preserve">
+    <value>已为父级 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了 CompletionWorkItem。完成了 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”。</value>
+  </data>
+  <data name="ScheduleExecuteActivityWorkItem" xml:space="preserve">
+    <value>已为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了 ExecuteActivityWorkItem。</value>
+  </data>
+  <data name="ScheduleFaultWorkItem" xml:space="preserve">
+    <value>已为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了 FaultWorkItem。异常是从 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”传播的。</value>
+  </data>
+  <data name="ScheduleRuntimeWorkItem" xml:space="preserve">
+    <value>已为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了运行时工作项。</value>
+  </data>
+  <data name="ScheduleTransactionContextWorkItem" xml:space="preserve">
+    <value>已为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”安排了 TransactionContextWorkItem。</value>
+  </data>
+  <data name="SchemaContextFromBeforeInitializeComponentXBTExtensionCannotBeGeneric" xml:space="preserve">
+    <value>由 BeforeInitializeComponent XAML 生成任务扩展({0})生成的 XAML 帮助程序类名称不能是泛型的。该资源可能尚未由 BeforeInitializeComponent XAML 生成任务扩展生成。请尝试重新生成项目。</value>
+  </data>
+  <data name="SchemaContextFromBeforeInitializeComponentXBTExtensionNotFound" xml:space="preserve">
+    <value>未找到 BeforeInitializeComponent XAML 生成任务扩展({0})生成的 XAML 帮助程序类名称。请尝试重新生成项目。</value>
+  </data>
+  <data name="SeekNotSupported" xml:space="preserve">
+    <value>在此流上不支持 Seek。</value>
+  </data>
+  <data name="SendActivityCorrelationHandleNotFound" xml:space="preserve">
+    <value>无法找到与名为“{0}”的 Send 活动关联的有效相关句柄。</value>
+  </data>
+  <data name="SendMessageChannelCacheMiss" xml:space="preserve">
+    <value>SendMessageChannelCache 未命中</value>
+  </data>
+  <data name="SendMessageNeedsToPairWithReceiveMessageForTwoWayContract" xml:space="preserve">
+    <value>Send 活动配置有请求/回复操作“{0}”，但是没有 ReceiveReply 活动与之配对。请用 ReceiveReply 与 Send 配对，并使用 CorrelationHandle 将两者关联。</value>
+  </data>
+  <data name="SendNotSupported" xml:space="preserve">
+    <value>不支持 Send。</value>
+  </data>
+  <data name="SendParametersContentDoesNotSupportMessage" xml:space="preserve">
+    <value>DisplayName 为“{0}”的活动有一个名为“{1}”的参数，该参数为 Message 或 MessageContract。SendParametersContent 不支持 Message 或 MessageContract。对于基于 Message 或 MessageContract 的内容，Content 属性应指定为 SendMessageContent。</value>
+  </data>
+  <data name="SendReceiveExtensionNotFound" xml:space="preserve">
+    <value>无法找到 SendReceiveExtension，请确保承载工作流的应用程序提供该扩展的一个实现。</value>
+  </data>
+  <data name="SendRepliesHaveSameFaultTypeDifferentAction" xml:space="preserve">
+    <value>两个 SendReply 活动的错误类型相同，但 Action 不同。</value>
+  </data>
+  <data name="SendReplyRequestCannotBeNull" xml:space="preserve">
+    <value>活动“{0}”中的 Request 属性不能为 null。必须将该属性设置为属于此请求/回复对的 Receive 活动</value>
+  </data>
+  <data name="SendWithUninitializedCorrelatesWith" xml:space="preserve">
+    <value>操作名称为“{0}”的活动具有未初始化的 CorrelatesWith 句柄。</value>
+  </data>
+  <data name="SequenceDuplicateReferences" xml:space="preserve">
+    <value>序列中包含多个对同一个导入子级的引用时，不支持动态更新。</value>
+  </data>
+  <data name="ServiceEndpointAdded" xml:space="preserve">
+    <value>已为地址“{0}”、绑定“{1}”和协定“{2}”添加了服务终结点。</value>
+  </data>
+  <data name="ServiceHostExtensionAborted" xml:space="preserve">
+    <value>无法完成操作，因为服务主机或其某个扩展已中止。</value>
+  </data>
+  <data name="ServiceHostExtensionImmutable" xml:space="preserve">
+    <value>使用仅在打开服务主机之前允许的服务主机扩展尝试某项操作。</value>
+  </data>
+  <data name="ServiceInstanceTerminated" xml:space="preserve">
+    <value>具有标识符“{0}”的服务实例已终止。</value>
+  </data>
+  <data name="ServiceInstanceUnloaded" xml:space="preserve">
+    <value>具有标识符“{0}”的服务实例已被卸载。</value>
+  </data>
+  <data name="ServiceMetadataBehaviorNotFoundForServiceMetadataEndpoint" xml:space="preserve">
+    <value>在服务 {0} 实现的协定列表中找不到协定名称“IMetadataExchange”。请将 ServiceMetadataBehavior 添加到配置文件或直接添加到 WorkflowServiceHost，以启用对该协定的支持。</value>
+  </data>
+  <data name="SetupOrCleanupWorkflowThreadThrew" xml:space="preserve">
+    <value>在设置或清理工作流线程时，IExecutionProperty 引发了异常。有关详细信息，请参见内部异常。</value>
+  </data>
+  <data name="SFxTaskNotStarted" xml:space="preserve">
+    <value>给定任务实例尚未启动。必须启动任务实例才能将其从操作返回。</value>
+  </data>
+  <data name="ShipAssertExceptionMessage" xml:space="preserve">
+    <value>发生了意外失败。应用程序不应尝试处理此错误。出于诊断目的，此英语消息与下列失败关联:“{0}”。</value>
+  </data>
+  <data name="SimpleStateMustHaveOneTransition" xml:space="preserve">
+    <value>状态“{0}”必须至少具有一个转换。</value>
+  </data>
+  <data name="SpecialMethodNotFound" xml:space="preserve">
+    <value>未找到类型“{1}”的特殊方法“{0}”。</value>
+  </data>
+  <data name="SqlExceptionCaught" xml:space="preserve">
+    <value>已捕获 SQL 异常编号为 {0} 的消息 {1}。</value>
+  </data>
+  <data name="StartBookmarkWorkItem" xml:space="preserve">
+    <value>开始为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”执行 BookmarkWorkItem。BookmarkName: {3}，BookmarkScope: {4}。</value>
+  </data>
+  <data name="StartCancelActivityWorkItem" xml:space="preserve">
+    <value>开始为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”执行 CancelActivityWorkItem。</value>
+  </data>
+  <data name="StartCompletionWorkItem" xml:space="preserve">
+    <value>开始为父 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”执行 CompletionWorkItem。完成了 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”。</value>
+  </data>
+  <data name="StartExecuteActivityWorkItem" xml:space="preserve">
+    <value>开始为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”执行 ExecuteActivityWorkItem。</value>
+  </data>
+  <data name="StartFaultWorkItem" xml:space="preserve">
+    <value>开始为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”执行 FaultWorkItem。异常是从 Activity“{3}”、DisplayName“{4}”、InstanceId“{5}”传播的。</value>
+  </data>
+  <data name="StartRuntimeWorkItem" xml:space="preserve">
+    <value>开始为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”执行运行时工作项。</value>
+  </data>
+  <data name="StartSignpostEvent" xml:space="preserve">
+    <value>活动边界。</value>
+  </data>
+  <data name="StartSqlCommandExecute" xml:space="preserve">
+    <value>正在开始 SQL 命令执行: {0}</value>
+  </data>
+  <data name="StartTransactionContextWorkItem" xml:space="preserve">
+    <value>开始为 Activity“{0}”、DisplayName“{1}”、InstanceId“{2}”执行 TransactionContextWorkItem。</value>
+  </data>
+  <data name="StateCannotBeAddedTwice" xml:space="preserve">
+    <value>不能向状态机添加状态“{0}”两次。一个状态机中的所有状态应是唯一的。</value>
+  </data>
+  <data name="StateCannotBeSerialized" xml:space="preserve">
+    <value>实例“{0}”无法运行或持久化，因为它有一个失败的动态更新。若要运行此实例，请从持久性存储中重新加载新副本。</value>
+  </data>
+  <data name="StateMachineMustHaveInitialState" xml:space="preserve">
+    <value>StateMachine“{0}”必须具有初始状态。</value>
+  </data>
+  <data name="StateNotBelongToAnyParent" xml:space="preserve">
+    <value>转换“{0}”的目标状态“{1}”必须属于状态机。</value>
+  </data>
+  <data name="StopSignpostEvent" xml:space="preserve">
+    <value>活动边界。</value>
+  </data>
+  <data name="StoreReportedConflictingLockTokens" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现使用相同的 instanceOwnerId 值但不同的 lockToken 值调用了 BindInstanceOwner 两次。所用永久性提供程序应始终对一个实例所有者使用同一个 lockToken。</value>
+  </data>
+  <data name="StoreViolationNoInstanceBound" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现在处理 LoadWorkflowByInstanceKeyCommand、LoadWorkflowCommand 或 TryLoadRunnableWorkflowCommand 时，未能将 InstanceHandle 绑定到某个实例并设置 InstanceState。</value>
+  </data>
+  <data name="SubexpressionResultWasNotVisible" xml:space="preserve">
+    <value>“{0}”类型的对象的子表达式生成的位置引用在此范围内不可见。</value>
+  </data>
+  <data name="SubexpressionResultWasNull" xml:space="preserve">
+    <value>“{0}”类型的对象的子表达式生成了 null 值。</value>
+  </data>
+  <data name="SwitchCaseKeyTypesMustMatchExpressionType" xml:space="preserve">
+    <value>Switch“{0}”事例包含 {1} 个与“{2}”表达式类型不兼容的键。</value>
+  </data>
+  <data name="SwitchCaseNotFound" xml:space="preserve">
+    <value>Switch 活动“{0}”找不到与 Expression 结果匹配的 Case 活动。</value>
+  </data>
+  <data name="SwitchCaseNullWithValueType" xml:space="preserve">
+    <value>存在 null 事例键，但 Switch 表达式的值类型为“{0}”。值类型不能为 null。</value>
+  </data>
+  <data name="SwitchCaseTypeMismatch" xml:space="preserve">
+    <value>事例键“{0}”不是“{1}”类型，并且不能与“InArgument&lt;{1}&gt;”类型的 Switch 表达式所生成的任何值匹配。</value>
+  </data>
+  <data name="SymbolNamesMustBeUnique" xml:space="preserve">
+    <value>已存在名为“{0}”的变量、RuntimeArgument 或 DelegateArgument。在环境作用域中，名称必须唯一。</value>
+  </data>
+  <data name="SymbolResolverAlreadyExists" xml:space="preserve">
+    <value>只能用一个 SymbolResolver 配置工作流实例。WorkflowInstanceExtensionManager 中已包含一个 SymbolResolver。</value>
+  </data>
+  <data name="SymbolResolverDoesNotHaveSymbol" xml:space="preserve">
+    <value>在此实例的 SymbolResolver 扩展中找不到类型为“{1}”的符号“{0}”。</value>
+  </data>
+  <data name="SymbolResolverMustBeSingleton" xml:space="preserve">
+    <value>SymbolResolver 不能用作基于实例的扩展。请使用 singletonObject 重载将 SymbolResolver 添加到 WorkflowInstanceExtensionManager 中。</value>
+  </data>
+  <data name="TargetContractCannotBeOneWayWithTransactionFlow" xml:space="preserve">
+    <value>协定定义无效: 在协定“{1}”的操作“{0}”中，单向操作的 TransactionFlowOption 设置为“强制”。</value>
+  </data>
+  <data name="TargetTypeAndTargetObjectAreMutuallyExclusive" xml:space="preserve">
+    <value>对于 {0}“{1}”，TargetType 与 TargetObject 互斥。</value>
+  </data>
+  <data name="TargetTypeCannotBeEnum" xml:space="preserve">
+    <value>{0}“{1}”中操作数的类型不能为 enum 类型。</value>
+  </data>
+  <data name="TargetTypeIsValueType" xml:space="preserve">
+    <value>操作数的类型为值类型。对“{0}”“{1}”中字段的修改将不会生效。</value>
+  </data>
+  <data name="TaskTimedOutError" xml:space="preserve">
+    <value>该任务在 {0} 之后超时。分配给此操作的时间可能是较长超时的一部分。</value>
+  </data>
+  <data name="TextExpressionCompilerActivityNameRequired" xml:space="preserve">
+    <value>必须提供 TextExpressionCompilerSettings.ActivityName。</value>
+  </data>
+  <data name="TextExpressionCompilerActivityNamespaceRequired" xml:space="preserve">
+    <value>必须提供 TextExpressionCompilerSettings.ActivityNamespace。</value>
+  </data>
+  <data name="TextExpressionCompilerActivityRequired" xml:space="preserve">
+    <value>必须提供 TextExpressionCompilerSettings.Activity。</value>
+  </data>
+  <data name="TextExpressionCompilerAddGeneratedFileRequired" xml:space="preserve">
+    <value>必须提供 TextExpressionCompilerSettings.AddGeneratedFile。</value>
+  </data>
+  <data name="TextExpressionCompilerLanguageRequired" xml:space="preserve">
+    <value>必须提供 TextExpressionCompilerSettings.Language。</value>
+  </data>
+  <data name="TextExpressionCompilerNoCodebase" xml:space="preserve">
+    <value>为名称“{0}”加载的程序集不包含 CodeBase 值。CodeBase 对于编译是必需的。</value>
+  </data>
+  <data name="TextExpressionCompilerOutputPathRequired" xml:space="preserve">
+    <value>必须提供 TextExpressionCompilerSettings.OutputPath。</value>
+  </data>
+  <data name="TextExpressionCompilerUnableToLoadAssembly" xml:space="preserve">
+    <value>无法加载程序集“{0}”。</value>
+  </data>
+  <data name="TextExpressionMetadataRequiresCompilation" xml:space="preserve">
+    <value>表达式活动类型“{0}”需要编译才能运行。请确保已编译此工作流。</value>
+  </data>
+  <data name="ThreadNeutralSemaphoreAborted" xml:space="preserve">
+    <value>ThreadNeutralSemaphore 已中止。</value>
+  </data>
+  <data name="ThrowingEtwException" xml:space="preserve">
+    <value>正在引发异常。源: {0}。异常的详细信息: {1}</value>
+  </data>
+  <data name="ThrowingEtwExceptionVerbose" xml:space="preserve">
+    <value>正在引发异常。源: {0}。异常的详细信息: {1}</value>
+  </data>
+  <data name="ThrowingException" xml:space="preserve">
+    <value>正在引发异常。源: {0}。异常的详细信息: {1}</value>
+  </data>
+  <data name="ThrowingExceptionVerbose" xml:space="preserve">
+    <value>正在引发异常。源: {0}。异常的详细信息: {1}</value>
+  </data>
+  <data name="TimedOutWaitingForLockResolution" xml:space="preserve">
+    <value>永久性提供程序无法在提供的超时限制内回收锁。这可能表示因对由同一个 InstanceOwner 拥有的不同 InstanceHandle 同时执行命令而形成了死锁。为缓解这种情况，可以使用多个 InstanceOwner 或确保 InstancePersistenceCommand.AutomaticallyAcquiringLock 为不太可能获取实例锁的命令返回 false。</value>
+  </data>
+  <data name="TimeoutInputQueueDequeue" xml:space="preserve">
+    <value>Dequeue 操作在 {0} 之后超时。分配给该操作的时间可能已经是更长超时的一部分。</value>
+  </data>
+  <data name="TimeoutMustBeNonNegative" xml:space="preserve">
+    <value>参数 {0} 必须为非负超时值。而所提供的值为 {1}。</value>
+  </data>
+  <data name="TimeoutMustBePositive" xml:space="preserve">
+    <value>参数 {0} 必须为正超时值。而所提供的值为 {1}。</value>
+  </data>
+  <data name="TimeoutOnOperation" xml:space="preserve">
+    <value>操作在分配的超时 {0} 内没有完成。分配给该操作的时间可能已经是更长超时的一部分。</value>
+  </data>
+  <data name="TimeoutOnSqlOperation" xml:space="preserve">
+    <value>在分配的超时 {0} 内，操作没有完成。分配给该操作的时间可能已经是更长超时的一部分。</value>
+  </data>
+  <data name="TimeoutOpeningSqlConnection" xml:space="preserve">
+    <value>尝试打开 SQL 连接时超时。此操作没有在分配的超时限制 {0} 内完成。分配给此操作的时间可能是更长超时限制的一部分。</value>
+  </data>
+  <data name="TimerExtensionAlreadyAttached" xml:space="preserve">
+    <value>此 TimerExtension 已附加到工作流实例。</value>
+  </data>
+  <data name="TimerExtensionRequiresWorkflowInstance" xml:space="preserve">
+    <value>只有附加到工作流实例后才能使用 TimerExtension。</value>
+  </data>
+  <data name="TooManyViolationsForExceptionMessage" xml:space="preserve">
+    <value>&lt;已截断&gt; 异常消息已因大小问题而被截断。使用 ActivityValidationServices 查看所有冲突。</value>
+  </data>
+  <data name="TraceCodeEventLogCritical" xml:space="preserve">
+    <value>已写入到 EventLog。</value>
+  </data>
+  <data name="TraceCodeEventLogError" xml:space="preserve">
+    <value>已写入到 EventLog。</value>
+  </data>
+  <data name="TraceCodeEventLogInfo" xml:space="preserve">
+    <value>已写入到 EventLog。</value>
+  </data>
+  <data name="TraceCodeEventLogVerbose" xml:space="preserve">
+    <value>已写入到 EventLog。</value>
+  </data>
+  <data name="TraceCodeEventLogWarning" xml:space="preserve">
+    <value>已写入到 EventLog。</value>
+  </data>
+  <data name="TraceCorrelationKeys" xml:space="preserve">
+    <value>使用父作用域“{2}”中的值“{1}”计算出的相关键“{0}”。</value>
+  </data>
+  <data name="TrackingDataExtracted" xml:space="preserve">
+    <value>正在跟踪在活动 {1} 中提取的数据 {0}。</value>
+  </data>
+  <data name="TrackingProfileNotFound" xml:space="preserve">
+    <value>未找到 ActivityDefinitionId“{1}”的 TrackingProfile“{0}”。在配置文件中找不到 TrackingProfile，或 ActivityDefinitionId 不匹配。</value>
+  </data>
+  <data name="TrackingRecordDropped" xml:space="preserve">
+    <value>跟踪记录 {0} 的大小超出了 ETW 会话对提供程序 {1} 允许的最大值</value>
+  </data>
+  <data name="TrackingRecordRaised" xml:space="preserve">
+    <value>跟踪记录 {0} 提升为 {1}。</value>
+  </data>
+  <data name="TrackingRecordTruncated" xml:space="preserve">
+    <value>用提供程序 {1} 向 ETW 会话写入了截断的跟踪记录 {0}。已移除了变量/批注/用户数据</value>
+  </data>
+  <data name="TrackingRelatedWorkflowAbort" xml:space="preserve">
+    <value>调用跟踪参与者时发生了错误，导致实例中止。有关详细信息，请参见内部异常。</value>
+  </data>
+  <data name="TrackingValueNotSerializable" xml:space="preserve">
+    <value>所提取的参数/变量“{0}”不可序列化。</value>
+  </data>
+  <data name="TransactedReceiveScopeEndCommitFailed" xml:space="preserve">
+    <value>ID 为“{0}”的 CommittableTransaction 上的 EndCommit 调用引发了具有以下消息的 TransactionException:“{1}”。</value>
+  </data>
+  <data name="TransactedReceiveScopeMustHaveValidReceive" xml:space="preserve">
+    <value>TransactedReceiveScope“{0}”的 Request 属性必须设置为有效的 Receive 活动。</value>
+  </data>
+  <data name="TransactedReceiveScopeRequiresReceive" xml:space="preserve">
+    <value>必须设置 ReceiveActivity 属性，然后才能使用 TransactedReceiveScope“{0}”。</value>
+  </data>
+  <data name="TransactionHandleAlreadyHasTransaction" xml:space="preserve">
+    <value>TransactionHandle 已有事务。无法配置新事务。</value>
+  </data>
+  <data name="TransactionInDoubtNonHost" xml:space="preserve">
+    <value>虽然在调用 InstanceStore.Execute 或 BeginExecute 时不存在环境事务，但在处理命令过程中使用了内部事务。内部事务进入了 InDoubt 状态。</value>
+  </data>
+  <data name="TransactionPersistenceTimeout" xml:space="preserve">
+    <value>由于其他事务锁定了实例，因此请求已超时。</value>
+  </data>
+  <data name="TransactionRolledBackNonHost" xml:space="preserve">
+    <value>虽然在调用 InstanceStore.Execute 或 BeginExecute 时不存在环境事务，但在处理命令过程中使用了内部事务。内部事务已中止。</value>
+  </data>
+  <data name="TransitionCannotBeAddedTwice" xml:space="preserve">
+    <value>无法将转换“{0}”添加到状态“{1}”，因为它已添加到状态“{2}”。</value>
+  </data>
+  <data name="TransitionTargetCannotBeNull" xml:space="preserve">
+    <value>状态“{1}”的转换“{0}”的“To”属性不能为 null。</value>
+  </data>
+  <data name="TriggerOrConditionChangedDuringTransitioning" xml:space="preserve">
+    <value>如果正在执行的转换的 Trigger 或 Condition 活动已更改，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="TriggerOrConditionIsReferenced" xml:space="preserve">
+    <value>如果其任何 Trigger 或 Condition 是对导入的子项的引用，则 StateMachine 不支持动态更新。</value>
+  </data>
+  <data name="TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>TryCatch 活动“{0}”的子活动在取消过程中引发了异常。</value>
+  </data>
+  <data name="TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>与 TryCatch 活动“{0}”关联的 Catch 或 Finally 活动引发了异常。</value>
+  </data>
+  <data name="TryCatchExceptionFromTry" xml:space="preserve">
+    <value>TryCatch 活动“{0}”捕获了“{1}”类型的异常。</value>
+  </data>
+  <data name="TryCatchInvalidStateForUpdate" xml:space="preserve">
+    <value>无法在 TryCatch 内部更新，因为已捕获到“{0}”类型的异常，但匹配的 catch 块已移除。</value>
+  </data>
+  <data name="TryCommandCannotExecuteSubCommandsAndReduce" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现在使用 InstancePersistenceContext.Execute (或 BeginExecute)执行嵌套命令之后，从 TryCommand (或 EndTryCommand)返回的是 false。如果永久性提供程序理解命令并按命令操作，则返回的一定是 true。</value>
+  </data>
+  <data name="TryLoadRequiresOwner" xml:space="preserve">
+    <value>WorkflowApplication.LoadRunnableInstance 操作需要显式创建的 InstanceOwner。若要使用此方法，请创建一个具有工作流主机类型的实例所有者，并将其设置为 InstanceStore 的 DefaultInstanceOwner。</value>
+  </data>
+  <data name="TryLoadRequiresWorkflowType" xml:space="preserve">
+    <value>为了匹配和加载存储中的可运行实例，请求 InstanceOwner 在创建时必须具有指定的工作流主机类型。为此，在发出命令时，请向 CreateWorkflowOwnerCommand.InstanceOwnerMetadata 属性包中添加一个键值对。该键为文档中提供的 WorkflowHostType 键。值必须为 XName，并与所加载的实例的类型匹配。</value>
+  </data>
+  <data name="TryRegisterRequestContextFailed" xml:space="preserve">
+    <value>未正确使用相关处理程序上的某些上下文。确保由运行时正确初始化处理程序，并且工作流有后跟 Receive 或 ReceiveReply 活动的 Send。</value>
+  </data>
+  <data name="TwoReceiveParametersWithSameNameButDifferentParameterCount" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 ReceiveParametersContent 对象有着不同的参数个数。</value>
+  </data>
+  <data name="TwoReceiveParametersWithSameNameButDifferentParameterName" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 ReceiveParametersContent 对象有着不同的参数名称。</value>
+  </data>
+  <data name="TwoReceiveParametersWithSameNameButDifferentParameterType" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 ReceiveParametersContent 对象有着不同的参数类型。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentAction" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 Receive 对象有着不同的 Action。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentIsOneWay" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 Receive 对象有着不同的 IsOneWay 值。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentTxProperties" xml:space="preserve">
+    <value>具有相同 ServiceContractName 和 OperationName“{0}”的两个 Receive 对象有着不同的事务属性。</value>
+  </data>
+  <data name="TwoReceivesWithSameNameButDifferentValueType" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 Receive 对象有着不同的 ValueType。</value>
+  </data>
+  <data name="TwoSendRepliesWithSameNameButDifferentAction" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 SendReply 对象有着不同的 Action。</value>
+  </data>
+  <data name="TwoSendRepliesWithSameNameButDifferentValueType" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 SendReply 对象有着不同的 ValueType。</value>
+  </data>
+  <data name="TwoSendReplyParametersWithSameNameButDifferentParameterCount" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 SendParametersContent 对象有着不同的参数个数。</value>
+  </data>
+  <data name="TwoSendReplyParametersWithSameNameButDifferentParameterName" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 SendParameters 对象有着不同的参数名称。</value>
+  </data>
+  <data name="TwoSendReplyParametersWithSameNameButDifferentParameterType" xml:space="preserve">
+    <value>ServiceContractName 和 OperationName 都为“{0}”的两个 SendParameters 对象有着不同的参数类型。</value>
+  </data>
+  <data name="TwoWayIsImplementedAsOneWay" xml:space="preserve">
+    <value>协定“{1}”中的操作“{0}”指定为双向，但缺少 SendReply。请为该操作添加一个 SendReply 活动。</value>
+  </data>
+  <data name="TypeConverterHelperCacheAddFailed" xml:space="preserve">
+    <value>未能向帮助器的内部缓存添加“{0}”类型的 TypeConverterHelper。</value>
+  </data>
+  <data name="TypeMismatchForAssign" xml:space="preserve">
+    <value>在 Assign 活动“{2}”中，无法从“{0}”类型向“{1}”类型赋值。</value>
+  </data>
+  <data name="TypeMustbeValueType" xml:space="preserve">
+    <value>类型“{0}”必须为值类型。</value>
+  </data>
+  <data name="TypeNotAssignableTo" xml:space="preserve">
+    <value>{0} 不能赋值给 {1}。</value>
+  </data>
+  <data name="UnableToDeserializeHttpResponseContent" xml:space="preserve">
+    <value>无法反序列化“{0}”类型的 ResponseContent。</value>
+  </data>
+  <data name="UnableToLocateCompiledLocationContext" xml:space="preserve">
+    <value>无法定位已编译位置“{0}”的 ICompiledExpressionRoot。请确保已编译包含此表达式的活动的定义。</value>
+  </data>
+  <data name="UnableToOpenAndRegisterStore" xml:space="preserve">
+    <value>无法初始化 InstanceStore。</value>
+  </data>
+  <data name="UnconditionalTransitionShouldNotShareNullTriggersWithOthers" xml:space="preserve">
+    <value>状态“{1}”的无触发器转换“{0}”必须包含条件。一个状态只能具有一个无触发器的无条件转换。</value>
+  </data>
+  <data name="UnconditionalTransitionShouldNotShareTriggersWithOthers" xml:space="preserve">
+    <value>状态“{1}”的转换“{0}”是无条件转换。它不能与其他转换共享同一触发器“{2}”。</value>
+  </data>
+  <data name="UnexpectedArgumentCount" xml:space="preserve">
+    <value>集合“{0}”中指定的参数个数为“{1}”，而预期个数为“{2}”。</value>
+  </data>
+  <data name="UnexpectedExpressionNodeType" xml:space="preserve">
+    <value>应该为“{0}”类型的表达式节点，但提供的是“{1}”类型的表达式节点。</value>
+  </data>
+  <data name="UnhandledException" xml:space="preserve">
+    <value>未经处理的异常。异常的详细信息: {0}</value>
+  </data>
+  <data name="UninitializedCannotHaveData" xml:space="preserve">
+    <value>所用 InstanceStore 的永久性提供程序实现无效。该实现报告要加载的状态为 InstanceState.Uninitialized 的实例含有实例数据。未初始化的实例不应含有实例数据。</value>
+  </data>
+  <data name="UnInitializedRuntimeTransactionHandle" xml:space="preserve">
+    <value>指定的 RuntimeTransactionHandle 未正确初始化。</value>
+  </data>
+  <data name="UnknownCompressionOption" xml:space="preserve">
+    <value>请求的压缩选项 {0} 不是有效选项。</value>
+  </data>
+  <data name="UnknownDatabaseVersion" xml:space="preserve">
+    <value>无法确定数据库版本，因为在 System.Activities.DurableInstancing.SqlWorkflowInstanceStoreVersionTable 中未找到任何行。此表应包含单一行，对应于创建数据库所用的或数据库升级到的框架版本。</value>
+  </data>
+  <data name="UnknownExpressionCompilationError" xml:space="preserve">
+    <value>处理表达式“{0}”时发生未知错误。处理表达式文本没有导致异常，但也没有创建可执行的表达式。</value>
+  </data>
+  <data name="UnknownLanguage" xml:space="preserve">
+    <value>无法使用“{0}”作为表达式的语言。</value>
+  </data>
+  <data name="UnknownSprocResult" xml:space="preserve">
+    <value>存储过程返回了未知的执行结果 {0}。</value>
+  </data>
+  <data name="UnlockInstanceException" xml:space="preserve">
+    <value>尝试解除实例锁定时遇到异常 {0}。</value>
+  </data>
+  <data name="UnmatchedNoPersistExit" xml:space="preserve">
+    <value>在 NoPersistHandle 上有一个不匹配的退出。每次进入后只能调用一个退出。</value>
+  </data>
+  <data name="UnopenedActivitiesCannotBeExecuted" xml:space="preserve">
+    <value>只能执行打开的活动。活动“{0}”尚未打开。</value>
+  </data>
+  <data name="UnsupportedExpressionType" xml:space="preserve">
+    <value>不支持“{0}”类型的表达式。</value>
+  </data>
+  <data name="UnsupportedLocationReferenceValue" xml:space="preserve">
+    <value>LocationReference 值必须为 Variable、RuntimeArgument 或 DelegateArgument。</value>
+  </data>
+  <data name="UnsupportedMemberExpressionWithType" xml:space="preserve">
+    <value>不支持检索“{0}”类型成员的 MemberExpression。</value>
+  </data>
+  <data name="UnsupportedReferenceExpressionType" xml:space="preserve">
+    <value>LValue 不支持“{0}”类型的表达式。</value>
+  </data>
+  <data name="UnusedInputArguments" xml:space="preserve">
+    <value>输入字典中的以下键未映射到参数，必须移除这些键: {0}。请注意，参数名称区分大小写。</value>
+  </data>
+  <data name="UnwrappedMessageNotSupported" xml:space="preserve">
+    <value>使用 MessageContracts 仅支持未封装的消息。请将 MessageContract 类型用于已实现协定“{1}”的操作“{0}”。</value>
+  </data>
+  <data name="UpdateDefinitionNotFound" xml:space="preserve">
+    <value>WorkflowIdentity“{0}”与任何承载的 WorkflowServices 都不匹配。</value>
+  </data>
+  <data name="UpdateMapBuilderRequiredProperty" xml:space="preserve">
+    <value>必须设置 DynamicUpdateMapBuilder 的属性“{0}”。</value>
+  </data>
+  <data name="UpdateMapNotFound" xml:space="preserve">
+    <value>没有适用于从 WorkflowIdentity“{0}”更新为“{1}”的 DynamicUpdateMap。</value>
+  </data>
+  <data name="UpdateSymbolsMustMatch" xml:space="preserve">
+    <value>原始工作流和已更新工作流必须具有相同的外部符号的计数、名称、类型和顺序。</value>
+  </data>
+  <data name="UriBaseMustBeSpecified" xml:space="preserve">
+    <value>必须在活动“{0}”中指定 UriBase 参数。</value>
+  </data>
+  <data name="UseInstanceStoreInsteadOfPersistenceProvider" xml:space="preserve">
+    <value>System.ServiceModel.Activities.WorkflowServiceHost 与 System.ServiceModel.Persistence.PersistenceProviderBehavior 不兼容。应移除 PersistenceProviderBehavior 或派生类，如 SqlPersistenceProviderBehavior。若要对 WorkflowServiceHost 启用持久性，应改用安装 System.Runtime.DurableInstancing.InstanceStore 的行为，如 SqlInstanceStoreBehavior。</value>
+  </data>
+  <data name="ValidateUnlockInstance" xml:space="preserve">
+    <value>实例永久性系统无法处理无效的 InstancePersistenceCommand。当 CompleteInstance 属性设置为 true 时，该命令要求 UnlockInstance 属性也设置为 true。</value>
+  </data>
+  <data name="ValidationContextCannotBeNull" xml:space="preserve">
+    <value>名为“{1}”的 {0} 的 ToValidateContext 参数解析为 null。必须提供非 null 验证上下文对象。</value>
+  </data>
+  <data name="ValidationErrorPrefixForHiddenActivity" xml:space="preserve">
+    <value>活动“{0}”的私有实现具有以下验证错误:   </value>
+  </data>
+  <data name="ValidationErrorPrefixForPublicActivityWithHiddenParent" xml:space="preserve">
+    <value>活动“{0}”的私有实现在活动“{1}”中具有以下验证错误:   </value>
+  </data>
+  <data name="ValueArgumentTypeNotDerivedFromValueType" xml:space="preserve">
+    <value>Message 的 ArgumentType 不是从 OperationName 为“{1}”的活动“{0}”中的 DeclaredMessageType 派生的。</value>
+  </data>
+  <data name="ValueCannotBeNegative" xml:space="preserve">
+    <value>“{0}”应大于或等于零。</value>
+  </data>
+  <data name="ValueCannotBeNull" xml:space="preserve">
+    <value>必须在 OperationName 为“{1}”的活动“{0}”中设置 Content 属性。</value>
+  </data>
+  <data name="ValueCollectionUpdatesNotAllowed" xml:space="preserve">
+    <value>不允许对从字典派生的值集合进行转变。</value>
+  </data>
+  <data name="ValueMustBeAssignableToType" xml:space="preserve">
+    <value>所提供的值必须赋给所提供的类型。</value>
+  </data>
+  <data name="ValueMustBeNonNegative" xml:space="preserve">
+    <value>值必须为非负值。</value>
+  </data>
+  <data name="ValueTooLarge" xml:space="preserve">
+    <value>不处理大于 Int32.MaxValue 的“{0}”。若要禁用超时，请指定 TimeSpan.MaxValue。</value>
+  </data>
+  <data name="VariableAlreadyInUseOnActivity" xml:space="preserve">
+    <value>无法对活动“{1}”使用变量“{0}”，因为活动“{2}”已使用了该变量。</value>
+  </data>
+  <data name="VariableCannotBePopulatedInLocationEnvironment" xml:space="preserve">
+    <value>不能在 LocationEnvironment 中填充变量 {0}。</value>
+  </data>
+  <data name="VariableDoesNotExist" xml:space="preserve">
+    <value>此环境中不存在变量“{0}”。</value>
+  </data>
+  <data name="VariableExpressionTypeMismatch" xml:space="preserve">
+    <value>变量“{0}”的 Default 需要类型“{1}”，但提供了结果类型为“{2}”的 Activity。</value>
+  </data>
+  <data name="VariableIsReadOnly" xml:space="preserve">
+    <value>变量“{0}”为只读，无法修改。</value>
+  </data>
+  <data name="VariableMustBeSet" xml:space="preserve">
+    <value>调用 CacheMetadata 之前必须设置变量。</value>
+  </data>
+  <data name="VariableNameNotAnIdentifier" xml:space="preserve">
+    <value>无法序列化变量名称“{0}”，因为它不代表有效的标识符。</value>
+  </data>
+  <data name="VariableNotOpen" xml:space="preserve">
+    <value>无法使用“{1}”类型的变量“{0}”。请确保在 Activity 或 SymbolResolver 中声明了该变量。</value>
+  </data>
+  <data name="VariableNotVisible" xml:space="preserve">
+    <value>已引用的 Variable 对象(Name 为“{0}”)在此范围内不可见。可能在此范围内可见的另一个同名位置引用，但它并不引用同一个位置。</value>
+  </data>
+  <data name="VariableOnlyAccessibleAtScopeOfDeclaration" xml:space="preserve">
+    <value>活动“{0}”无法访问此变量，因为此变量是在活动“{1}”的范围中声明的。活动只能访问其自己的实现变量。</value>
+  </data>
+  <data name="VariableOrArgumentAdditionToReferencedEnvironmentNoDUSupported" xml:space="preserve">
+    <value>不支持向已完成的活动添加补偿处理程序或确认处理程序可以引用的变量或参数。</value>
+  </data>
+  <data name="VariableOrArgumentDoesNotExist" xml:space="preserve">
+    <value>此环境中不存在变量或参数“{0}”。</value>
+  </data>
+  <data name="VariableShouldBeOpen" xml:space="preserve">
+    <value>在使用变量“{0}”之前，它必须包含在活动中。</value>
+  </data>
+  <data name="VariableTypeInvalid" xml:space="preserve">
+    <value>变量“{0}”无法用于“{1}”类型的表达式中，因为它的类型为不兼容的“{2}”。</value>
+  </data>
+  <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
+    <value>变量类型“{0}”与 Location 类型“{1}”不匹配。</value>
+  </data>
+  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree 未能获取表达式树，原因是 VisualBasic 表达式文本或对其可见的 LocationReferenceEnvironment 自缓存后已发生更改。编译错误消息为: {0}。</value>
+  </data>
+  <data name="WaitAlreadyInProgress" xml:space="preserve">
+    <value>InstanceHandle 一次最多只能有一个正在进行的未处理 WaitForEvents 或 BeginWaitForEvents 操作。尝试了第二个操作。只能在上一个操作完成后调用 WaitForEvents / BeginWaitForEvents。</value>
+  </data>
+  <data name="WaitForEventsTimedOut" xml:space="preserve">
+    <value>{0} 后 WaitForEvents 或 BeginWaitForEvents 操作超时。分配给该操作的时间可能已经是更长超时的一部分。</value>
+  </data>
+  <data name="WDCDisposed" xml:space="preserve">
+    <value>只能在获得 WorkflowDataContext 的活动范围内访问它。</value>
+  </data>
+  <data name="WfMessageReceived" xml:space="preserve">
+    <value>工作流已接收消息</value>
+  </data>
+  <data name="WfMessageSent" xml:space="preserve">
+    <value>已从工作流发送消息</value>
+  </data>
+  <data name="WhileRequiresCondition" xml:space="preserve">
+    <value>必须设置 Condition，然后才能使用 While 活动“{0}”。</value>
+  </data>
+  <data name="WindowsGroupNotFound" xml:space="preserve">
+    <value>找不到 Windows 组“{0}”。</value>
+  </data>
+  <data name="WorkflowAbortedReason" xml:space="preserve">
+    <value>{0} InnerException 消息: {1}</value>
+  </data>
+  <data name="WorkflowActivityResume" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”E2E 活动</value>
+  </data>
+  <data name="WorkflowActivityStart" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”E2E 活动</value>
+  </data>
+  <data name="WorkflowActivityStop" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”E2E 活动</value>
+  </data>
+  <data name="WorkflowActivitySuspend" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”E2E 活动</value>
+  </data>
+  <data name="WorkflowApplicationAborted" xml:space="preserve">
+    <value>无法执行操作，因为 WorkflowApplication {0} 已中止。</value>
+  </data>
+  <data name="WorkflowApplicationAlreadyHasId" xml:space="preserve">
+    <value>由于读取了“Id”属性，因此已为 WorkflowApplication 生成一个实例 ID。生成 ID 之后，不能使用 WorkflowApplication 加载实例。</value>
+  </data>
+  <data name="WorkflowApplicationCompleted" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”在“已关闭”状态下完成。</value>
+  </data>
+  <data name="WorkflowApplicationIdled" xml:space="preserve">
+    <value>WorkflowApplication ID“{0}”变为空闲状态。</value>
+  </data>
+  <data name="WorkflowApplicationInstanceAbandoned" xml:space="preserve">
+    <value>此 WorkflowApplicationInstance 已放弃或处于放弃过程中。无法对它执行任何进一步的操作。</value>
+  </data>
+  <data name="WorkflowApplicationInstanceLoaded" xml:space="preserve">
+    <value>此 WorkflowApplicationInstance 已与一个 WorkflowApplication 相关联。若要控制此实例，请使用该 WorkflowApplication。</value>
+  </data>
+  <data name="WorkflowApplicationPersistableIdle" xml:space="preserve">
+    <value>ID 为“{0}”的 WorkflowApplication 空闲且可持久化。将采取以下操作: {1}。</value>
+  </data>
+  <data name="WorkflowApplicationPersisted" xml:space="preserve">
+    <value>WorkflowApplication ID“{0}”已持久化。</value>
+  </data>
+  <data name="WorkflowApplicationTerminated" xml:space="preserve">
+    <value>WorkflowApplication ID“{0}”已终止。该应用程序因出现异常而在“出错”下状态完成。</value>
+  </data>
+  <data name="WorkflowApplicationUnhandledException" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”遇到了未经处理的异常。该异常来自 Activity“{1}”、DisplayName“{2}”。将进行以下操作: {3}。</value>
+  </data>
+  <data name="WorkflowApplicationUnloaded" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”已卸载。</value>
+  </data>
+  <data name="WorkflowBehaviorWithNonWorkflowHost" xml:space="preserve">
+    <value>“{0}”行为必须应用于 WorkflowServiceHost。</value>
+  </data>
+  <data name="WorkflowCompletionAsyncResultCannotBeNull" xml:space="preserve">
+    <value>从 OnBeginWorkflowCompleted 返回的 AsyncResult 不能为 null。</value>
+  </data>
+  <data name="WorkflowControlEndpointDefaultBaseUriNotSupportedInPartialTrust" xml:space="preserve">
+    <value>WorkflowControlEndpoint.DefaultBaseUri 的默认值在部分信任中不受支持。请使用配置或非默认构造函数指定 WorkflowControlEndpoint 的绑定和地址。</value>
+  </data>
+  <data name="WorkflowIdentityNullHostId" xml:space="preserve">
+    <value>无法在没有指定 WorkflowIdentity 的主机中加载用 WorkflowIdentity (“{0}”)保留的实例。</value>
+  </data>
+  <data name="WorkflowIdentityNullStateId" xml:space="preserve">
+    <value>无法在指定了 WorkflowIdentity (“{0}”)的主机中加载未用 WorkflowIdentity 保留的实例。可以使用不同的定义加载此实例，或使用动态更新更新此实例。</value>
+  </data>
+  <data name="WorkflowIdentityStateIdHostIdMismatch" xml:space="preserve">
+    <value>加载的实例的 WorkflowIdentity (“{0}”)与提供的工作流定义的 WorkflowIdentity (“{1}”)不匹配。可以使用不同的定义加载此实例，或使用动态更新更新此实例。</value>
+  </data>
+  <data name="WorkflowInstanceAborted" xml:space="preserve">
+    <value>无法执行操作，因为 WorkflowInstance“{0}”已中止。</value>
+  </data>
+  <data name="WorkflowInstanceAbortedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceAbortedRecord，InstanceID = {0}，RecordNumber = {1}，EventTime = {2}，ActivityDefinitionId = {3}，Reason = {4}，Annotations = {5}，ProfileName = {6}，WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceCanceled" xml:space="preserve">
+    <value>WorkflowInstance Id“{0}”在“已取消”状态下完成。</value>
+  </data>
+  <data name="WorkflowInstanceCompleted" xml:space="preserve">
+    <value>无法执行操作，因为 WorkflowInstance“{0}”已完成。</value>
+  </data>
+  <data name="WorkflowInstanceIsReadOnly" xml:space="preserve">
+    <value>WorkflowInstance“{0}”已开始运行后，就不能修改它。</value>
+  </data>
+  <data name="WorkflowInstanceNotFoundInStore" xml:space="preserve">
+    <value>在实例存储区中找到了实例“{0}”，但该实例不包含工作流。</value>
+  </data>
+  <data name="WorkflowInstanceRecordWithId" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceRecord，InstanceID = {0}，RecordNumber = {1}，EventTime = {2}，ActivityDefinitionId = {3}，State = {4}，Annotations = {5}，ProfileName = {6}，WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceSuspendedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord，InstanceID = {0}，RecordNumber = {1}，EventTime = {2}，ActivityDefinitionId = {3}，Reason = {4}，Annotations = {5}，ProfileName = {6}</value>
+  </data>
+  <data name="WorkflowInstanceSuspendedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord，InstanceID = {0}，RecordNumber = {1}，EventTime = {2}，ActivityDefinitionId = {3}，Reason = {4}，Annotations = {5}，ProfileName = {6}，WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceTerminated" xml:space="preserve">
+    <value>无法执行操作，因为 WorkflowInstance“{0}”已终止。</value>
+  </data>
+  <data name="WorkflowInstanceTerminatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="WorkflowInstanceTerminatedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord，InstanceID = {0}，RecordNumber = {1}，EventTime = {2}，ActivityDefinitionId = {3}，Reason = {4}，Annotations = {5}，ProfileName = {6}，WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="WorkflowInstanceUnhandledExceptionRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUnhandledExceptionRecord，InstanceID = {0}，RecordNumber = {1}，EventTime = {2}，ActivityDefinitionId = {3}，SourceName = {4}，SourceId = {5}，SourceInstanceId = {6}，SourceTypeName={7}，Exception={8}，Annotations= {9}，ProfileName = {10}，WorkflowDefinitionIdentity = {11}</value>
+  </data>
+  <data name="WorkflowInstanceUnloaded" xml:space="preserve">
+    <value>无法执行操作，因为 WorkflowInstance“{0}”已被卸载。</value>
+  </data>
+  <data name="WorkflowInstanceUnlocked" xml:space="preserve">
+    <value>无法执行操作，因为 WorkflowInstance {0} 已解锁。</value>
+  </data>
+  <data name="WorkflowInstanceUpdatedRecord" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceUpdatedRecord，InstanceID = {0}，RecordNumber = {1}，EventTime = {2}，ActivityDefinitionId = {3}，State = {4}，OriginalDefinitionIdentity = {5}，UpdatedDefinitionIdentity = {6}，Annotations = {7}，ProfileName = {8}</value>
+  </data>
+  <data name="WorkflowInstanceUpdateFailed" xml:space="preserve">
+    <value>WorkflowInstance“{0}”未能更新为标识“{1}”。请检查跟踪输出以获取无法更新的执行活动的列表。</value>
+  </data>
+  <data name="WorkflowMustBeHosted" xml:space="preserve">
+    <value>请确保在 WorkflowServiceHost 中承载 Receive 活动。</value>
+  </data>
+  <data name="WorkflowServiceDefinitionIdentityNotMatched" xml:space="preserve">
+    <value>已加载实例的 WorkflowIdentity (“{0}”)与任何承载的 WorkflowServices 都不匹配。</value>
+  </data>
+  <data name="WorkflowServiceHostCannotAddOrRemoveServiceDefinitionAfterOpen" xml:space="preserve">
+    <value>在 WorkflowServiceHost 打开、出错、中止或关闭后，无法添加或移除 WorkflowService 定义。</value>
+  </data>
+  <data name="WorkflowTerminatedExceptionDefaultMessage" xml:space="preserve">
+    <value>Terminate 活动终止了工作流。</value>
+  </data>
+  <data name="WorkItemAbortedInstance" xml:space="preserve">
+    <value>处理当前工作项时出错，导致工作流中止。有关详细信息，请参见内部异常。</value>
+  </data>
+  <data name="WrapperNotSupportedInMessageContract" xml:space="preserve">
+    <value>使用 MessageContracts 仅支持自定义包装名称和命名空间。请将 MessageContract 类型用于已实现协定“{1}”中的操作“{0}”。</value>
+  </data>
+  <data name="WriteAccessToReadOnlyPublicReference" xml:space="preserve">
+    <value>活动“{0}”无法写入此公共位置引用，因为它是使用 ArgumentDirection.In 声明的。若要允许读写，请使用 ArgumentDirection.InOut 声明此引用。</value>
+  </data>
+  <data name="WriteonlyPropertyCannotBeRead" xml:space="preserve">
+    <value>在此上下文中无法使用属性或索引器“{0}.{1}”，因为无法访问 get 访问器。</value>
+  </data>
+  <data name="WrongArgumentType" xml:space="preserve">
+    <value>参数的类型错误。其类型为“{0}”，但必须可以为“{1}”赋值。</value>
+  </data>
+  <data name="WrongCacheMetadataForCodeActivity" xml:space="preserve">
+    <value>不得对 CodeActivity 或 AsyncCodeActivity 调用采用 ActivityMetadata 参数的 CacheMetadata 方法。这些类的正确 CacheMetadata 采用 CodeActivityMetadata 参数。</value>
+  </data>
+  <data name="WrongCacheMetadataForNativeActivity" xml:space="preserve">
+    <value>不得对 NativeActivity 调用采用 ActivityMetadata 参数的 CacheMetadata 方法。NativeActivity 的正确 CacheMetadata 采用 NativeActivityMetadata 参数。</value>
+  </data>
+  <data name="WrongEnvironmentCount" xml:space="preserve">
+    <value>活动“{0}”应具有“{1}”个参数、“{2}”个公共变量、“{3}”个私有变量以及“{4}”个运行时委托参数。实际值:“{5}”个参数、“{6}”个公共变量、“{7}”个私有变量以及“{8}”个运行时委托参数。</value>
+  </data>
+  <data name="WrongMemberCount" xml:space="preserve">
+    <value>所有者为“{0}”的 IdSpace 有“{1}”个成员；应为“{2}”。</value>
+  </data>
+  <data name="WrongNumberOfArgumentsForActivityDelegate" xml:space="preserve">
+    <value>ActivityDelegate 参数不匹配。检查活动配置，确保与所声明的 ActivityDelegate 同步。</value>
+  </data>
+  <data name="WrongOnCreateDynamicUpdateMapForNativeActivity" xml:space="preserve">
+    <value>不得对 NativeActivity 调用采用 UpdateMapMetadata 参数的 OnCreateDynamicUpdateMap 方法。NativeActivity 的正确 OnCreateDynamicUpdateMap 采用 NativeActivityUpdateMapMetadata 参数。</value>
+  </data>
+  <data name="WrongOriginalEnvironmentCount" xml:space="preserve">
+    <value>活动“{0}”的原始环境应具有“{1}”个参数、“{2}”个公共变量、“{3}”个私有变量以及“{4}”个运行时委托参数，总计为“{5}”。实际位置总数为“{6}”。</value>
+  </data>
+  <data name="XamlBuildTaskResourceNotFound" xml:space="preserve">
+    <value>未找到应由 XAML 生成任务({0})生成的 XAML 资源。请尝试重新生成项目。</value>
+  </data>
+  <data name="XamlElementExpected" xml:space="preserve">
+    <value>应为元素表示形式。</value>
+  </data>
+  <data name="XamlElementExpectedAt" xml:space="preserve">
+    <value>在行({0}, {1})处应为元素表示形式。</value>
+  </data>
+</root>

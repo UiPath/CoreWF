@@ -1,0 +1,2382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="event_ActionItemCallbackInvoked" xml:space="preserve">
+    <value>Tilbagekald af IO-trådplan blev startet.</value>
+  </data>
+  <data name="event_ActionItemScheduled" xml:space="preserve">
+    <value>Tilbagekald af IO-trådplan blev startet.</value>
+  </data>
+  <data name="event_ActivityCompleted" xml:space="preserve">
+    <value>Activity '{0}', DisplayName: '{1}', InstanceId: '{2}' blev fuldført i tilstanden '{3}'.</value>
+  </data>
+  <data name="event_ActivityScheduled" xml:space="preserve">
+    <value>Den overordnede Activity '{0}', DisplayName: '{1}', InstanceId: '{2}' planlagde den underordnede Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_AppDomainUnload" xml:space="preserve">
+    <value>AppDomain fjernes. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
+  </data>
+  <data name="event_AspNetRoute" xml:space="preserve">
+    <value>Der er tilføjet en ny Asp.Net-rute '{0}' med serviceType '{1}' og serviceHostFactoryType '{2}'.</value>
+  </data>
+  <data name="event_AspNetRoutingService" xml:space="preserve">
+    <value>Indgående anmodning svarer til en WCF-tjeneste, som er defineret i Asp.Net-ruten med adressen {0}.  </value>
+  </data>
+  <data name="event_BinaryMessageDecodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder startede dekodningen af meddelelsen.</value>
+  </data>
+  <data name="event_BinaryMessageEncodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder startede kodningen af meddelelsen.</value>
+  </data>
+  <data name="event_BookmarkScopeInitialized" xml:space="preserve">
+    <value>Det BookmarkScope, der havde TemporaryId: '{0}', er blevet initialiseret med Id'et: '{1}'.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStart" xml:space="preserve">
+    <value>BufferId:{0} fuldførte skrivningen af '{1}' byte til den underliggende stream.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStop" xml:space="preserve">
+    <value>En meddelelse blev skrevet asynkront af koderen.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoBookmark" xml:space="preserve">
+    <value>Handlingen '{1}' på tjenesteforekomsten '{0}' kan ikke udføres på nuværende tidspunkt. Der vil blive gjort endnu et forsøg, når tjenesteforekomsten er klar til at behandle denne handling.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoInstance" xml:space="preserve">
+    <value>Handlingen '{0}' kan ikke udføres på nuværende tidspunkt. Der vil blive gjort endnu et forsøg, når tjenesteforekomsten er klar til at behandle denne handling.</value>
+  </data>
+  <data name="event_BufferPoolAllocation" xml:space="preserve">
+    <value>Gruppen allokerer {0} byte.</value>
+  </data>
+  <data name="event_BufferPoolChangeQuota" xml:space="preserve">
+    <value>Størrelsen på BufferPool er {0}. Ændrer kvota med {1}.</value>
+  </data>
+  <data name="event_CacheRootMetadataStart" xml:space="preserve">
+    <value>CacheRootMetadata blev startet for aktiviteten '{0}'</value>
+  </data>
+  <data name="event_CacheRootMetadataStop" xml:space="preserve">
+    <value>CacheRootMetadata blev stoppet for aktiviteten {0}.</value>
+  </data>
+  <data name="event_CBAEntryRead" xml:space="preserve">
+    <value>Behandlede ServiceActivation-elementets Relative Address:'{0}', Normalized Relative Address '{1}' .</value>
+  </data>
+  <data name="event_CBAMatchFound" xml:space="preserve">
+    <value>Indgående anmodning svarer til et element af typen ServiceActivation med adressen '{0}'. </value>
+  </data>
+  <data name="event_ChannelFactoryCreated" xml:space="preserve">
+    <value>ChannelFactory er oprettet.</value>
+  </data>
+  <data name="event_ChannelInitializationTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ChannelReceiveStart" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - modtagelsesløkken for meddelelsen blev startet.</value>
+  </data>
+  <data name="event_ChannelReceiveStop" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - modtagelsesløkken for meddelelsen blev stoppet.</value>
+  </data>
+  <data name="event_ClientBaseCachedChannelFactoryCount" xml:space="preserve">
+    <value>Antal kanalfabrikker i cachen: '{0}'. Der kan højst gemmes '{1}' kanalfabrikker i cachen.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryAgedOutofCache" xml:space="preserve">
+    <value>Den ældste kanalfabrik er blevet fjernet fra cachen, fordi cachen har nået grænsen på '{0}'.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryCacheHit" xml:space="preserve">
+    <value>Den overensstemmende kanalfabrik, der blev fundet i cachen, blev brugt.</value>
+  </data>
+  <data name="event_ClientBaseUsingLocalChannelFactory" xml:space="preserve">
+    <value>Kanalfabrikken i cachen bruges ikke, dvs. cachen er deaktiveret for denne forekomst.</value>
+  </data>
+  <data name="event_ClientChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannel Open blev startet.</value>
+  </data>
+  <data name="event_ClientChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannel Open blev stoppet.</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStart" xml:space="preserve">
+    <value>Klienten startede deserialiseringen af svarmeddelelsen.</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStop" xml:space="preserve">
+    <value>Klienten fuldførte deserialiseringen af svarmeddelelsen.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStart" xml:space="preserve">
+    <value>Serialiseringen af klientanmodningen blev startet.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStop" xml:space="preserve">
+    <value>Klienten fuldførte serialiseringen af anmodningsmeddelelsen.</value>
+  </data>
+  <data name="event_ClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'AfterReceiveReply' for en ClientMessageInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_ClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'BeforeSendRequest' for en ClientMessageInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_ClientOperationPrepared" xml:space="preserve">
+    <value>Klienten udfører handlingen '{0}', som er knyttet til kontrakten '{1}'. Meddelelsen bliver sendt til '{2}'.</value>
+  </data>
+  <data name="event_ClientParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'AfterCall' for en ClientParameterInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_ClientParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'BeforeCall' for en ClientParameterInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_ClientReliableSessionReconnect" xml:space="preserve">
+    <value>SessionId:{0} genopretter forbindelse.</value>
+  </data>
+  <data name="event_ClientSendPreambleStart" xml:space="preserve">
+    <value>Klient startede afsendelsen af indledningen.</value>
+  </data>
+  <data name="event_ClientSendPreambleStop" xml:space="preserve">
+    <value>Klient stoppede afsendelsen af indledningen.</value>
+  </data>
+  <data name="event_CloseTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_CompensationState" xml:space="preserve">
+    <value>CompensableActivity '{0}' er i tilstanden '{1}'.</value>
+  </data>
+  <data name="event_CompilationStart" xml:space="preserve">
+    <value>Start kompilering</value>
+  </data>
+  <data name="event_CompilationStop" xml:space="preserve">
+    <value>Afslut kompilering</value>
+  </data>
+  <data name="event_CompileVbExpressionStart" xml:space="preserve">
+    <value>Kompilerer VB-udtrykket '{0}'</value>
+  </data>
+  <data name="event_CompileVbExpressionStop" xml:space="preserve">
+    <value>VB-udtrykket er færdigkompileret.</value>
+  </data>
+  <data name="event_CompleteBookmarkWorkItem" xml:space="preserve">
+    <value>Der blev fuldført et BookmarkWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CompleteCancelActivityWorkItem" xml:space="preserve">
+    <value>Der blev fuldført et CancelActivityWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_CompleteCompletionWorkItem" xml:space="preserve">
+    <value>Der blev fuldført et CompletionWorkItem for den overordnede Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'. Fuldførte Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_CompleteExecuteActivityWorkItem" xml:space="preserve">
+    <value>Der blev fuldført en ExecuteActivityWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_CompleteFaultWorkItem" xml:space="preserve">
+    <value>Der blev fuldført en FaultWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'. Undtagelsen blev overført fra Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_CompleteRuntimeWorkItem" xml:space="preserve">
+    <value>Der blev fuldført et kørselsarbejdselement for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_CompleteTransactionContextWorkItem" xml:space="preserve">
+    <value>Der blev fuldført et TransactionContextWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_ConcurrentCallsRatio" xml:space="preserve">
+    <value>Forhold for samtidige kald: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentInstancesRatio" xml:space="preserve">
+    <value>Forhold for samtidige forekomster: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentSessionsRatio" xml:space="preserve">
+    <value>Forhold for samtidige sessioner: {0}/{1}</value>
+  </data>
+  <data name="event_ConnectionPoolMiss" xml:space="preserve">
+    <value>Gruppen for {0} har ingen ledig forbindelse og {1} optagede forbindelser.</value>
+  </data>
+  <data name="event_ConnectionPoolPreambleFailed" xml:space="preserve">
+    <value>ConnectionPoolPreambleFailed.</value>
+  </data>
+  <data name="event_ConnectionReaderSendFault" xml:space="preserve">
+    <value>Forbindelseslæseren sendte fejlen '{0}'. </value>
+  </data>
+  <data name="event_CreateBookmark" xml:space="preserve">
+    <value>Der blev oprettet et Bookmark for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.  BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CreateBookmarkScope" xml:space="preserve">
+    <value>Der blev oprettet et BookmarkScope: {0}.</value>
+  </data>
+  <data name="event_CreateServiceHostStart" xml:space="preserve">
+    <value>Begynd CreateServiceHost</value>
+  </data>
+  <data name="event_CreateServiceHostStop" xml:space="preserve">
+    <value>Afslut CreateServiceHost</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStart" xml:space="preserve">
+    <value>Start af CreateWorkflowServiceHost</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStop" xml:space="preserve">
+    <value>Stop af CreateWorkflowServiceHost</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract-deserialisering af {0} med erstatninger blev startet.</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract-deserialisering med erstatninger blev stoppet.</value>
+  </data>
+  <data name="event_DCGenReaderStart" xml:space="preserve">
+    <value>DataContract-oprettelse af {0}-læsefunktionen for {1} blev startet.</value>
+  </data>
+  <data name="event_DCGenReaderStop" xml:space="preserve">
+    <value>DataContract-oprettelse blev stoppet.</value>
+  </data>
+  <data name="event_DCGenWriterStart" xml:space="preserve">
+    <value>DataContract-oprettelse af {0}-skrivefunktionen for {1} blev startet.</value>
+  </data>
+  <data name="event_DCGenWriterStop" xml:space="preserve">
+    <value>DataContract-oprettelse af skrivefunktionen blev stoppet.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStart" xml:space="preserve">
+    <value>Json-oprettelse af {0}-læsefunktionen for {1} blev startet.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStop" xml:space="preserve">
+    <value>Json-oprettelse af læsefunktionen blev stoppet.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStart" xml:space="preserve">
+    <value>Json-oprettelse af {0}-skrivefunktionen for {1} blev startet.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStop" xml:space="preserve">
+    <value>Json-oprettelse af skrivefunktionen blev stoppet.</value>
+  </data>
+  <data name="event_DCResolverResolve" xml:space="preserve">
+    <value>DataContract-løsning af {0} blev startet.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract-serialisering af {0} med erstatninger blev startet.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract-serialisering med erstatninger blev stoppet.</value>
+  </data>
+  <data name="event_DecrementBusyCount" xml:space="preserve">
+    <value>DecrementBusyCount kaldt. Kilde: {0}</value>
+  </data>
+  <data name="event_DiscoveryClientInClientChannelFailedToClose" xml:space="preserve">
+    <value>Den DiscoveryClient, der er oprettet inden i DiscoveryClientChannel, kunne ikke lukkes og er derfor blevet afbrudt.</value>
+  </data>
+  <data name="event_DiscoveryClientProtocolExceptionSuppressed" xml:space="preserve">
+    <value>En ProtocolException blev undertrykt, mens DiscoveryClient blev lukket. Dette kan skyldes, at en DiscoveryService stadig forsøger at sende et svar til DiscoveryClient.</value>
+  </data>
+  <data name="event_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>DiscoveryClient modtog en multicast-undertrykkelsesmeddelelse fra en DiscoveryProxy.</value>
+  </data>
+  <data name="event_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>En meddelelse af typen {0} med messageId='{1}' blev ignoreret af DiscoveryClient, fordi den tilsvarende {2}-handling blev fuldført.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidContent" xml:space="preserve">
+    <value>En meddelelse af typen {0} med messageId='{1}' blev ignoreret, fordi den havde ugyldigt indhold.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>En meddelelse af typen {0} med messageId='{1}' og relatesTo='{2}' blev ignoreret af DiscoveryClient, fordi den tilsvarende {3}-handling blev fuldført, eller fordi værdien relatesTo value ikke er gyldig.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidReplyTo" xml:space="preserve">
+    <value>En meddelelse med en registreringsanmodning og messageId='{0}' blev ignoreret, fordi den havde en ugyldig ReplyTo-adresse.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNoContent" xml:space="preserve">
+    <value>En meddelelse af typen {0} blev ignoreret, fordi den ikke havde noget indhold.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageId" xml:space="preserve">
+    <value>En meddelelse af typen {0} blev ignoreret, fordi meddelelsesheaderen ikke indeholdt den krævede egenskab MessageId.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageSequence" xml:space="preserve">
+    <value>En meddelelse af typen {0} med messageId='{1}' blev ignoreret af DiscoveryClient, fordi den ikke havde egenskaben DiscoveryMessageSequence.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullRelatesTo" xml:space="preserve">
+    <value>En meddelelse af typen {0} med messageId='{1}' blev ignoreret af DiscoveryClient, fordi meddelelsesheaderen ikke indeholdt den krævede egenskab RelatesTo.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullReplyTo" xml:space="preserve">
+    <value>En meddelelse med en registreringsanmodning og messageId='{0}' blev ignoreret, fordi den ikke havde en ReplyTo-adresse.</value>
+  </data>
+  <data name="event_DispatchFailed" xml:space="preserve">
+    <value>Handlingen '{0}' blev sendt med fejl.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStart" xml:space="preserve">
+    <value>Afsenderen startede deserialiseringen af anmodningsmeddelelsen.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStop" xml:space="preserve">
+    <value>Afsenderen fuldførte deserialiseringen af anmodningsmeddelelsen.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStart" xml:space="preserve">
+    <value>Afsenderen startede serialiseringen af svarmeddelelsen.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStop" xml:space="preserve">
+    <value>Afsenderen fuldførte serialiseringen af svarmeddelelsen.</value>
+  </data>
+  <data name="event_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>Start autorisation for afsendelse af meddelelse</value>
+  </data>
+  <data name="event_DispatchMessageStart" xml:space="preserve">
+    <value>Afsendelsen af meddelelsen blev startet.</value>
+  </data>
+  <data name="event_DispatchMessageStop" xml:space="preserve">
+    <value>Meddelelsen er blevet sendt</value>
+  </data>
+  <data name="event_DispatchSessionFailed" xml:space="preserve">
+    <value>Sessionen blev ikke sendt.</value>
+  </data>
+  <data name="event_DispatchSessionStart" xml:space="preserve">
+    <value>Sessionsafsendelsen blev startet.</value>
+  </data>
+  <data name="event_DispatchSessionSuccess" xml:space="preserve">
+    <value>Sessionen er blevet sendt.</value>
+  </data>
+  <data name="event_DispatchSuccessful" xml:space="preserve">
+    <value>Handlingen '{0}' er blevet sendt.</value>
+  </data>
+  <data name="event_DuplicateCorrelationQuery" xml:space="preserve">
+    <value>Der blev fundet en identisk CorrelationQuery med Where='{0}'. Denne identiske forespørgsel bliver ikke brugt, når korrelationen beregnes.</value>
+  </data>
+  <data name="event_DuplicateDiscoveryMessage" xml:space="preserve">
+    <value>En meddelelse af typen A {0} med messageId='{1}' blev ignoreret, fordi den var en dublet.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingStart" xml:space="preserve">
+    <value>Behandlingen af krypterede data blev startet.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingSuccess" xml:space="preserve">
+    <value>Behandlingen af krypterede data blev fuldført.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>Muligheden for at registrere et slutpunkt med EndpointAddress='{0}' og ListenUri='{1}' er blevet deaktiveret.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>Muligheden for at registrere et slutpunkt med EndpointAddress='{0}' og ListenUri='{1}' er blevet aktiveret.</value>
+  </data>
+  <data name="event_EndSqlCommandExecute" xml:space="preserve">
+    <value>Afslut udførelsen af SQL-kommandoen: {0}</value>
+  </data>
+  <data name="event_EnterNoPersistBlock" xml:space="preserve">
+    <value>Åbner en blok, som ikke er gjort permanent.</value>
+  </data>
+  <data name="event_ErrorHandlerInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede en ErrorHandler af typen '{0}' med en undtagelse af typen '{2}'. ErrorHandled == '{1}'.</value>
+  </data>
+  <data name="event_EstablishConnectionStart" xml:space="preserve">
+    <value>Oprettelsen af forbindelsen for {0} blev startet.</value>
+  </data>
+  <data name="event_EstablishConnectionStop" xml:space="preserve">
+    <value>Forbindelsen er oprettet.</value>
+  </data>
+  <data name="event_EtwUnhandledException" xml:space="preserve">
+    <value>Der blev udløst en undtagelse, der ikke blev behandlet. Oplysninger om undtagelse: {0}</value>
+  </data>
+  <data name="event_ExecuteWorkItemStart" xml:space="preserve">
+    <value>Udførelsen af arbejdselementet blev startet</value>
+  </data>
+  <data name="event_ExecuteWorkItemStop" xml:space="preserve">
+    <value>Udførelsen af arbejdselementet blev stoppet</value>
+  </data>
+  <data name="event_ExitNoPersistBlock" xml:space="preserve">
+    <value>Afslutter en blok, som ikke er gjort permanent.</value>
+  </data>
+  <data name="event_FailFastException" xml:space="preserve">
+    <value>FailFastException.</value>
+  </data>
+  <data name="event_FaultProviderInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede en FaultProvider af typen '{0}' med en undtagelse af typen '{1}'.</value>
+  </data>
+  <data name="event_FederationMessageCreationStarted" xml:space="preserve">
+    <value>Oprettelsen af en fælles meddelelse fra formularafsendelse blev startet.</value>
+  </data>
+  <data name="event_FederationMessageCreationSuccess" xml:space="preserve">
+    <value>Oprettelsen af en fælles meddelelse fra formularafsendelse blev fuldført.</value>
+  </data>
+  <data name="event_FederationMessageProcessingStarted" xml:space="preserve">
+    <value>Behandlingen af en fælles meddelelse blev startet.</value>
+  </data>
+  <data name="event_FederationMessageProcessingSuccess" xml:space="preserve">
+    <value>Behandlingen af en fælles meddelelse blev fuldført.</value>
+  </data>
+  <data name="event_FindInitiatedInDiscoveryClientChannel" xml:space="preserve">
+    <value>Der blev startet en Find-handling i DiscoveryClientChannel for at registrere et eller flere slutpunkter.</value>
+  </data>
+  <data name="event_FlowchartEmpty" xml:space="preserve">
+    <value>Flowchart '{0}' - blev udført uden Nodes.</value>
+  </data>
+  <data name="event_FlowchartNextNull" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowStep - Næste node er null. Udførelsen af rutediagrammet afsluttes.</value>
+  </data>
+  <data name="event_FlowchartStart" xml:space="preserve">
+    <value>Flowchart '{0}' - Start er blevet planlagt.</value>
+  </data>
+  <data name="event_FlowchartSwitchCase" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - Case '{1}' blev ikke valgt.</value>
+  </data>
+  <data name="event_FlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - kunne hverken finde en Case-aktivitet eller en Default Case, som stemte overens med Expression-resultatet. Udførelsen af rutediagrammet afsluttes.</value>
+  </data>
+  <data name="event_FlowchartSwitchDefault" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - Default Case blev valgt.</value>
+  </data>
+  <data name="event_FoundProcessingError" xml:space="preserve">
+    <value>Kommandoen kunne ikke udføres: {0}</value>
+  </data>
+  <data name="event_GenXmlSerializableStart" xml:space="preserve">
+    <value>Oprettelse af Xml-serialisering for '{0}' blev startet.</value>
+  </data>
+  <data name="event_GenXmlSerializableStop" xml:space="preserve">
+    <value>Oprettelse af Xml-serialisering blev stoppet.</value>
+  </data>
+  <data name="event_GetIssuerNameFailure" xml:space="preserve">
+    <value>Hentning af udstedernavnet fra tokenId:{0} mislykkedes.</value>
+  </data>
+  <data name="event_GetIssuerNameSuccess" xml:space="preserve">
+    <value>Hentning af udstedernavnet:{0} fra tokenId:{1} blev fuldført.</value>
+  </data>
+  <data name="event_GetServiceInstanceStart" xml:space="preserve">
+    <value>Hentningen af tjenesteforekomsten blev startet.</value>
+  </data>
+  <data name="event_GetServiceInstanceStop" xml:space="preserve">
+    <value>Tjenesteforekomsten er hentet.</value>
+  </data>
+  <data name="event_HandledException" xml:space="preserve">
+    <value>En undtagelse behandles. Oplysninger om undtagelse: {0}</value>
+  </data>
+  <data name="event_HandledExceptionError" xml:space="preserve">
+    <value>En undtagelse behandles. Oplysninger om undtagelse: {0}</value>
+  </data>
+  <data name="event_HandledExceptionVerbose" xml:space="preserve">
+    <value>En undtagelse behandles  Oplysninger om undtagelse: {0}</value>
+  </data>
+  <data name="event_HandledExceptionWarning" xml:space="preserve">
+    <value>En undtagelse behandles. Oplysninger om undtagelse: {0}</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStart" xml:space="preserve">
+    <value>Konfigurationsinitialisering af HostedTransportConfigurationManager-begyndelse</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStop" xml:space="preserve">
+    <value>Konfigurationsinitialisering af HostedTransportConfigurationManager-afslutning</value>
+  </data>
+  <data name="event_HttpAuthFailed" xml:space="preserve">
+    <value>Der opstod fejl i HTTP-godkendelsen.</value>
+  </data>
+  <data name="event_HttpChannelRequestAborted" xml:space="preserve">
+    <value>HTTP-kanalanmodningen blev afbrudt.</value>
+  </data>
+  <data name="event_HttpChannelResponseAborted" xml:space="preserve">
+    <value>HTTP-kanalsvaret blev afbrudt.</value>
+  </data>
+  <data name="event_HttpContextBeforeProcessAuthentication" xml:space="preserve">
+    <value>Start godkendelse for afsendelse af meddelelse</value>
+  </data>
+  <data name="event_HttpGetContextStart" xml:space="preserve">
+    <value>HttpGetContext startet.</value>
+  </data>
+  <data name="event_HttpHandlerPickedForUrl" xml:space="preserve">
+    <value>Webadressen '{0}' er vært for et XAML-dokument med rodelementtypen '{1}'. HTTP-handlertypen '{2}' er valgt med henblik på at behandle alle anmodninger, der fremsættes til denne webadresse.</value>
+  </data>
+  <data name="event_HttpMessageReceiveFailed" xml:space="preserve">
+    <value>Der opstod fejl under modtagelse af en HTTP-meddelelse.</value>
+  </data>
+  <data name="event_HttpMessageReceiveStart" xml:space="preserve">
+    <value>Der blev modtaget en meddelelse fra HTTP Transport.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessInboundRequestStart" xml:space="preserve">
+    <value>Http-meddelelseshandleren begyndte at behandle den indgående anmodning asynkront.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessResponseStart" xml:space="preserve">
+    <value>http-meddelelseshandleren begyndte at behandle svaret asynkront.</value>
+  </data>
+  <data name="event_HttpPipelineFaulted" xml:space="preserve">
+    <value>http-meddelelseshandleren er fejlbehæftet.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStart" xml:space="preserve">
+    <value>Http-meddelelseshandleren begyndte at behandle den indgående anmodning.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStop" xml:space="preserve">
+    <value>Http-meddelelseshandleren fuldførte behandlingen af en indgående anmodning.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStart" xml:space="preserve">
+    <value>Http-meddelelseshandleren begyndte at behandle svaret.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStop" xml:space="preserve">
+    <value>Http-meddelelseshandleren fuldførte behandlingen af svaret.</value>
+  </data>
+  <data name="event_HttpPipelineTimeoutException" xml:space="preserve">
+    <value>WebSocket-forbindelsen blev afbrudt pga. timeout.</value>
+  </data>
+  <data name="event_HttpResponseReceiveStart" xml:space="preserve">
+    <value>Modtagelsen af en meddelelse på HTTP Transport blev startet.</value>
+  </data>
+  <data name="event_HttpSendMessageStart" xml:space="preserve">
+    <value>Start på HTTP Send-anmodning.</value>
+  </data>
+  <data name="event_HttpSendStop" xml:space="preserve">
+    <value>Slut på HTTP Send-anmodning.</value>
+  </data>
+  <data name="event_HttpSendStreamedMessageStart" xml:space="preserve">
+    <value>Streamet HTTP Send-meddelelse blev startet.</value>
+  </data>
+  <data name="event_IdleServicesClosed" xml:space="preserve">
+    <value>{0} inaktive tjenester ud af {1} aktiverede tjenester blev lukket.</value>
+  </data>
+  <data name="event_IdleTimeout" xml:space="preserve">
+    <value>{0}-forbindelsesgruppenøgle: {1}</value>
+  </data>
+  <data name="event_ImportKnownTypesStart" xml:space="preserve">
+    <value>ImportKnownTypes blev startet.</value>
+  </data>
+  <data name="event_ImportKnownTypesStop" xml:space="preserve">
+    <value>ImportKnownTypes blev stoppet.</value>
+  </data>
+  <data name="event_InactivityTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_InArgumentBound" xml:space="preserve">
+    <value>I argumentet '{0}' på Activity '{1}' er DisplayName: '{2}', InstanceId: '{3}' blevet bundet med værdien: {4}.</value>
+  </data>
+  <data name="event_IncomingMessageVerified" xml:space="preserve">
+    <value>Den indgående meddelelse er bekræftet.</value>
+  </data>
+  <data name="event_IncrementBusyCount" xml:space="preserve">
+    <value>IncrementBusyCount kaldt. Kilde: {0}</value>
+  </data>
+  <data name="event_InferredContractDescription" xml:space="preserve">
+    <value>ContractDescription med Name='{0}' og Namespace='{1}' er blevet afledt af WorkflowService.</value>
+  </data>
+  <data name="event_InferredOperationDescription" xml:space="preserve">
+    <value>OperationDescription med Name='{0}' i kontrakten '{1}' er blevet afledt af WorkflowService. IsOneWay={2}.</value>
+  </data>
+  <data name="event_InnerChannelCreationFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel kunne ikke oprette kanalen med et registreret slutpunkt med EndpointAddress='{0}' og Via='{1}'. DiscoveryClientChannel vil nu forsøge at bruge det næste tilgængelige registrerede slutpunkt.</value>
+  </data>
+  <data name="event_InnerChannelOpenFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel kunne ikke åbne kanalen med et registreret slutpunkt med EndpointAddress='{0}' og Via='{1}'. DiscoveryClientChannel vil nu forsøge at bruge det næste tilgængelige registrerede slutpunkt.</value>
+  </data>
+  <data name="event_InnerChannelOpenSucceeded" xml:space="preserve">
+    <value>DiscoveryClientChannel registrerede et slutpunkt og åbnede den kanal, der bruger det. Klienten er tilsluttet en tjeneste, der bruger EndpointAddress='{0}' og Via='{1}'.</value>
+  </data>
+  <data name="event_InstanceLocksRecoveryError" xml:space="preserve">
+    <value>Gendannelsen af forekomstlåse kunne ikke fuldføres pga. følgende undtagelse</value>
+  </data>
+  <data name="event_InternalCacheMetadataStart" xml:space="preserve">
+    <value>InternalCacheMetadata blev startet for aktiviteten '{0}'.</value>
+  </data>
+  <data name="event_InternalCacheMetadataStop" xml:space="preserve">
+    <value>InternalCacheMetadata blev stoppet for aktiviteten '{0}'.</value>
+  </data>
+  <data name="event_InvokedMethodThrewException" xml:space="preserve">
+    <value>Der blev udløst en undtagelse i den metode, der blev kaldt af aktiviteten '{0}'. {1}</value>
+  </data>
+  <data name="event_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metoden bruger ikke et asynkront mønster.</value>
+  </data>
+  <data name="event_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metoden er ikke Static.</value>
+  </data>
+  <data name="event_InvokeMethodIsStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metoden er Static.</value>
+  </data>
+  <data name="event_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metoden bruger et asynkront mønster for '{1}' og '{2}'.</value>
+  </data>
+  <data name="event_JsonMessageDecodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder startede dekodningen af meddelelsen.</value>
+  </data>
+  <data name="event_JsonMessageEncodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder startede kodningen af meddelelsen.</value>
+  </data>
+  <data name="event_LeaseTimeout" xml:space="preserve">
+    <value>{0}-forbindelsesgruppenøgle: {1}</value>
+  </data>
+  <data name="event_ListenerOpenStart" xml:space="preserve">
+    <value>Lyttefunktionen for '{0}' åbnes.</value>
+  </data>
+  <data name="event_ListenerOpenStop" xml:space="preserve">
+    <value>Lyttefunktionen blev åbnet.</value>
+  </data>
+  <data name="event_LockRetryTimeout" xml:space="preserve">
+    <value>Der opstod en timeout under forsøget på at hente forekomstlåsen. Handlingen blev ikke fuldført inden for den tildelte timeout på {0}. Den tid, der er afsat til handlingen, kan være del af en længere timeout.</value>
+  </data>
+  <data name="event_MaximumRetriesExceededForSqlCommand" xml:space="preserve">
+    <value>Opgiver nye forsøg på at udføre en SQL-kommando, fordi det maksimale antal nye forsøg er foretaget.</value>
+  </data>
+  <data name="event_MaxInstancesExceeded" xml:space="preserve">
+    <value>Systemet nåede grænsen for throttlen 'MaxConcurrentInstances'. Grænsen for denne throttle var angivet til {0}. Throttleværdier kan ændres ved at ændre attributten 'maxConcurrentInstances' i elementet serviceThrottle eller ved at ændre egenskaben 'MaxConcurrentInstances' for funktionsmåden ServiceThrottlingBehavior.</value>
+  </data>
+  <data name="event_MaxOutboundConnectionsPerEndpointExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingConnectionsExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingMessagesPerChannelExceeded" xml:space="preserve">
+    <value>Grænsen for throttlen 'MaxPendingMessagesPerChannel' på '{0}' blev nået. Denne grænse kan øges ved at justere egenskaben MaxPendingMessagesPerChannel på BufferedReceiveServiceBehavior.</value>
+  </data>
+  <data name="event_MaxReceivedMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxRetryCyclesExceededMsmq" xml:space="preserve">
+    <value>Det maksimale antal modtageforsøg er overskredet for MSMQ-meddelelsen med id'et '{0}'</value>
+  </data>
+  <data name="event_MaxSentMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxSessionSizeReached" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'AfterReceiveReply' for en MessageInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_MessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'BeforeSendRequest' for en MessageInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_MessageLogEventSizeExceeded" xml:space="preserve">
+    <value>Meddelelsen kunne ikke logføres, da den overskrider størrelsen for ETW-hændelsen</value>
+  </data>
+  <data name="event_MessageLogInfo" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageLogWarning" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketComplete" xml:space="preserve">
+    <value>MessageQueueDuplicatedSocketComplete</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketError" xml:space="preserve">
+    <value>Der opstod fejl under duplikering af en socket for meddelelseskøen.</value>
+  </data>
+  <data name="event_MessageQueueRegisterAbort" xml:space="preserve">
+    <value>Registreringen af meddelelseskøen er blevet afbrudt med statussen:'{0}' for URI'en:'{1}'.</value>
+  </data>
+  <data name="event_MessageQueueRegisterCompleted" xml:space="preserve">
+    <value>Registreringen af meddelelseskøen blev fuldført for URI'en:'{0}'.</value>
+  </data>
+  <data name="event_MessageQueueRegisterFailed" xml:space="preserve">
+    <value>Der opstod fejl i registreringen af meddelelseskøen for URI'en:'{0}' med statussen:'{1}'.</value>
+  </data>
+  <data name="event_MessageQueueRegisterStart" xml:space="preserve">
+    <value>Registreringen af meddelelseskøen blev startet.</value>
+  </data>
+  <data name="event_MessageQueueUnregisterSucceeded" xml:space="preserve">
+    <value>Fjernelsen af registreringen af meddelelseskøen blev fuldført for URI'en:'{0}'.</value>
+  </data>
+  <data name="event_MessageReadByEncoder" xml:space="preserve">
+    <value>Koderen læste en meddelelse med størrelsen '{0}'.</value>
+  </data>
+  <data name="event_MessageReceivedByTransport" xml:space="preserve">
+    <value>Transporten modtog en meddelelse fra '{0}'.</value>
+  </data>
+  <data name="event_MessageReceivedFromTransport" xml:space="preserve">
+    <value>Afsenderen modtog en meddelelse fra transporten. Correlation ID == '{0}'.</value>
+  </data>
+  <data name="event_MessageSentByTransport" xml:space="preserve">
+    <value>Transporten sendte en meddelelse til '{0}'.</value>
+  </data>
+  <data name="event_MessageSentToTransport" xml:space="preserve">
+    <value>Afsenderen sendte en meddelelse til transporten. Correlation ID == '{0}'.</value>
+  </data>
+  <data name="event_MessageThrottleAtSeventyPercent" xml:space="preserve">
+    <value>70 %% af throttlegrænsen på '{1}' for '{0}' er nået.</value>
+  </data>
+  <data name="event_MessageThrottleExceeded" xml:space="preserve">
+    <value>Throttlegrænsen på '{1}' for '{0}' er nået.</value>
+  </data>
+  <data name="event_MessageWrittenAsynchronouslyByEncoder" xml:space="preserve">
+    <value>En meddelelse blev skrevet asynkront af koderen.</value>
+  </data>
+  <data name="event_MessageWrittenByEncoder" xml:space="preserve">
+    <value>Koderen skrev en meddelelse med størrelsen '{0}'.</value>
+  </data>
+  <data name="event_MtomMessageDecodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder startede dekodningen af meddelelsen.</value>
+  </data>
+  <data name="event_MtomMessageEncodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder startede kodningen af meddelelsen.</value>
+  </data>
+  <data name="event_NamedPipeCreated" xml:space="preserve">
+    <value>NamedPipe '{0}' blev oprettet.</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheRatio" xml:space="preserve">
+    <value>Cacheforhold for forhandling af tokengodkenderens tilstand: {0}/{1}</value>
+  </data>
+  <data name="event_OpenListenerChannelInstanceFailed" xml:space="preserve">
+    <value>Fejlkode:{0}</value>
+  </data>
+  <data name="event_OpenTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_OperationCompleted" xml:space="preserve">
+    <value>En OperationInvoker fuldførte kaldet til metoden '{0}'. Metodekaldet varede '{1}' ms.</value>
+  </data>
+  <data name="event_OperationFailed" xml:space="preserve">
+    <value>Metoden '{0}' udløste en ubehandlet undtagelse, da den blev aktiveret af OperationInvoker. Metodekaldet varede '{1}' ms.</value>
+  </data>
+  <data name="event_OperationFaulted" xml:space="preserve">
+    <value>Metoden '{0}' udløste en FaultException, da den blev aktiveret af OperationInvoker. Metodekaldet varede '{1}' ms.</value>
+  </data>
+  <data name="event_OperationInvoked" xml:space="preserve">
+    <value>En OperationInvoker aktiverede metoden '{0}'. Oplysninger om den kaldende funktionen: '{1}'.</value>
+  </data>
+  <data name="event_OutboundConnectionsPerEndpointRatio" xml:space="preserve">
+    <value>Forhold for udgående forbindelser pr. slutpunkt: {0}/{1}</value>
+  </data>
+  <data name="event_OutgoingMessageSecured" xml:space="preserve">
+    <value>Den udgående meddelelse er sikret.</value>
+  </data>
+  <data name="event_ParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'AfterCall' for en ParameterInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_ParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>Afsenderen aktiverede 'BeforeCall' for en ParameterInspector af typen '{0}'.</value>
+  </data>
+  <data name="event_PendingAcceptsAtZero" xml:space="preserve">
+    <value>Der er ikke flere accepter tilbage</value>
+  </data>
+  <data name="event_PendingConnectionsRatio" xml:space="preserve">
+    <value>Forhold for ventende forbindelser: {0}/{1}</value>
+  </data>
+  <data name="event_PendingMessagesPerChannelRatio" xml:space="preserve">
+    <value>Forhold for ventende meddelelser pr. kanal: {0}/{1}</value>
+  </data>
+  <data name="event_PendingSessionQueueFull" xml:space="preserve">
+    <value>Der opstod fejl i sessionsafsendelsen for '{0}', fordi ventekøen for sessioner er blevet fyldt med '{1}' ventende elementer.</value>
+  </data>
+  <data name="event_PendingSessionQueueRatio" xml:space="preserve">
+    <value>Forhold for ventende sessioner i kø: {0}/{1}</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStart" xml:space="preserve">
+    <value>Accept af pipeforbindelsen startede {0}.</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStop" xml:space="preserve">
+    <value>Pipeforbindelsen er accepteret.</value>
+  </data>
+  <data name="event_PipeSharedMemoryCreated" xml:space="preserve">
+    <value>Delt pipehukommelse blev oprettet '{0}'.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStart" xml:space="preserve">
+    <value>Lyttefunktionen for pipetransporten begyndte med at lytte på URI'en:{0}.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStop" xml:space="preserve">
+    <value>Lyttefunktionen for pipetransporten stoppede med at lytte.</value>
+  </data>
+  <data name="event_PortSharingDuplicatedSocket" xml:space="preserve">
+    <value>En socket er duplikeret for {0}.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenStarted" xml:space="preserve">
+    <value>Hovedindstillingen fra sessionstokenet blev startet.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenSuccess" xml:space="preserve">
+    <value>Hovedindstillingen fra sessionstokenet blev fuldført.</value>
+  </data>
+  <data name="event_QueryCompositionExecuted" xml:space="preserve">
+    <value>Der blev udført en forespørgselskomposition med '{0}' for anmodnings-URI'en: '{1}'.</value>
+  </data>
+  <data name="event_QueuingSqlRetry" xml:space="preserve">
+    <value>Nyt SQL-forsøg sættes i kø med en forsinkelse på {0} millisekunder.</value>
+  </data>
+  <data name="event_ReadPoolMiss" xml:space="preserve">
+    <value>Der blev oprettet en ny '{0}'</value>
+  </data>
+  <data name="event_ReceiveContextAbandonFailed" xml:space="preserve">
+    <value>{0} kunne ikke afbrydes.</value>
+  </data>
+  <data name="event_ReceiveContextAbandonWithException" xml:space="preserve">
+    <value>{0} blev afbrudt med undtagelse af {1}.</value>
+  </data>
+  <data name="event_ReceiveContextCompleteFailed" xml:space="preserve">
+    <value>{0} kunne ikke fuldføres.</value>
+  </data>
+  <data name="event_ReceiveContextFaulted" xml:space="preserve">
+    <value>Der er fejl i den modtagne kontekst.</value>
+  </data>
+  <data name="event_ReceiveRetryCountReached" xml:space="preserve">
+    <value>Antal modtageforsøg er nået for MSMQ-meddelelsen med id'et '{0}'</value>
+  </data>
+  <data name="event_ReceiveTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ReliableSessionChannelFaulted" xml:space="preserve">
+    <value>SessionId:{0} medførte fejl.</value>
+  </data>
+  <data name="event_RenewLockSystemError" xml:space="preserve">
+    <value>Låsens udløbstid kunne ikke forlænges. Udløbstiden er overskredet, eller også er låseejeren blevet slettet. SqlWorkflowInstanceStore afbrydes.</value>
+  </data>
+  <data name="event_ResumeSignpostEvent" xml:space="preserve">
+    <value>Aktivitetsgrænse.</value>
+  </data>
+  <data name="event_RetryingSqlCommandDueToSqlError" xml:space="preserve">
+    <value>En SQL-kommando bliver forsøgt igen på grund af SQL-fejl nummer {0}.</value>
+  </data>
+  <data name="event_RoutingServiceAbandoningReceiveContext" xml:space="preserve">
+    <value>Routing Service kalder ReceiveContext.Abandon for Message med id'et: '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>Routing Service kalder afbrydelse på kanalen: '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceChannelFaulted" xml:space="preserve">
+    <value>Der opstod en fejl på Routing Service-klienten '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>Der opstod en fejl, da Routing Service lukkede den udgående klient '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceClosingClient" xml:space="preserve">
+    <value>Routing Service lukker klienten '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceCommittingTransaction" xml:space="preserve">
+    <value>Routing Service udfører en transaktion med id'et: '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingOneWay" xml:space="preserve">
+    <value>En envejsmeddelelse på Routing Service fuldføres.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingReceiveContext" xml:space="preserve">
+    <value>Routing Service kalder ReceiveContext.Complete for Message med id'et: '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingTwoWay" xml:space="preserve">
+    <value>En meddelelse med svar på en anmodning fra Routing Service fuldføres.</value>
+  </data>
+  <data name="event_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>Der blev anvendt en ny RoutingConfiguration på Routing Service.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingClientForEndpoint" xml:space="preserve">
+    <value>Routing Service opretter en klient for slutpunktet: '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingTransaction" xml:space="preserve">
+    <value>Routing Service oprettede en ny Transaction med id'et '{0}' til behandling af meddelelse(r).</value>
+  </data>
+  <data name="event_RoutingServiceDisplayConfig" xml:space="preserve">
+    <value>Routing Service er konfigureret med RouteOnHeadersOnly: {0}, SoapProcessingEnabled: {1}, EnsureOrderedDispatch: {2}.</value>
+  </data>
+  <data name="event_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>Der opstod en duplex-tilbagekaldsundtagelse for Routing Service-komponenten {0}.</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStart" xml:space="preserve">
+    <value>Routing Service starter overensstemmelse af MessageFilterTable.</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStop" xml:space="preserve">
+    <value>Routing Service stopper overensstemmelse af MessageFilterTable.</value>
+  </data>
+  <data name="event_RoutingServiceHandledException" xml:space="preserve">
+    <value>Routing Service har behandlet en undtagelse.</value>
+  </data>
+  <data name="event_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>Routing Service sendte meddelelsen med id'et: '{0}' til slutpunktslisterne for {1}.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingFailure" xml:space="preserve">
+    <value>Der opstod en fejl på Routing Service under behandlingen af en meddelelse på slutpunktet med adressen '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingMessage" xml:space="preserve">
+    <value>Routing Service behandler en meddelelse med id'et: '{0}', Action: '{1}', Inbound URL: '{2}' Received in Transaction: {3}.</value>
+  </data>
+  <data name="event_RoutingServiceSendingFaultResponse" xml:space="preserve">
+    <value>Routing Service sender en svarmeddelelse af typen Fault tilbage med Action '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceSendingResponse" xml:space="preserve">
+    <value>Routing Service sender en svarmeddelelse tilbage med Action '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>Der opstod en fejl på Routing Service under afsendelse til '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceUsingExistingTransaction" xml:space="preserve">
+    <value>Routing Service sender meddelelser med den eksisterende transaktion '{0}'.</value>
+  </data>
+  <data name="event_RoutingTableLookupStart" xml:space="preserve">
+    <value>Opslag i routingtabellen startede.</value>
+  </data>
+  <data name="event_RoutingTableLookupStop" xml:space="preserve">
+    <value>Opslag i routingtabellen blev fuldført.</value>
+  </data>
+  <data name="event_RunnableInstancesDetectionError" xml:space="preserve">
+    <value>Registreringen af forekomster til udførelse kunne ikke fuldføres pga. følgende undtagelse</value>
+  </data>
+  <data name="event_RuntimeTransactionComplete" xml:space="preserve">
+    <value>Kørselstransaktionen blev fuldført i tilstanden '{0}'.</value>
+  </data>
+  <data name="event_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>Activity '{0}', DisplayName: '{1}', InstanceId: '{2}' har planlagt fuldførelse af kørselstransaktionen.</value>
+  </data>
+  <data name="event_RuntimeTransactionSet" xml:space="preserve">
+    <value>Kørselstransaktionen blev indstillet af Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'. Udførelsen blev isoleret til Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_ScheduleBookmarkWorkItem" xml:space="preserve">
+    <value>Der blev planlagt et BookmarkWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.  BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_ScheduleCancelActivityWorkItem" xml:space="preserve">
+    <value>Der blev planlagt et CancelActivityWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_ScheduleCompletionWorkItem" xml:space="preserve">
+    <value>Der blev planlagt et CompletionWorkItem for den overordnede Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.  Fuldførte Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_ScheduleExecuteActivityWorkItem" xml:space="preserve">
+    <value>Der blev planlagt et ExecuteActivityWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_ScheduleFaultWorkItem" xml:space="preserve">
+    <value>Der blev planlagt et FaultWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'. Undtagelsen blev overført fra Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_ScheduleRuntimeWorkItem" xml:space="preserve">
+    <value>Der blev planlagt et kørselsarbejdselement for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_ScheduleTransactionContextWorkItem" xml:space="preserve">
+    <value>Der blev planlagt et TransactionContextWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationFailure" xml:space="preserve">
+    <value>Der opstod fejl i sikkerhedsbekræftelsen.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationSuccess" xml:space="preserve">
+    <value>Sikkerhedsbekræftelsen blev fuldført.</value>
+  </data>
+  <data name="event_SecurityImpersonationFailure" xml:space="preserve">
+    <value>Der opstod fejl i sikkerhedsrepræsentationen.</value>
+  </data>
+  <data name="event_SecurityImpersonationSuccess" xml:space="preserve">
+    <value>Sikkerhedsrepræsentationen blev fuldført.</value>
+  </data>
+  <data name="event_SecurityNegotiationProcessingFailure" xml:space="preserve">
+    <value>Der opstod fejl i sikkerhedsforhandlingen.</value>
+  </data>
+  <data name="event_SecurityNegotiationStart" xml:space="preserve">
+    <value>Sikkerhedsforhandlingen blev startet.</value>
+  </data>
+  <data name="event_SecurityNegotiationStop" xml:space="preserve">
+    <value>Sikkerhedsforhandlingen blev fuldført.</value>
+  </data>
+  <data name="event_SecuritySessionRatio" xml:space="preserve">
+    <value>Forhold for sikkerhedssession: {0}/{1}</value>
+  </data>
+  <data name="event_SecurityTokenProviderOpened" xml:space="preserve">
+    <value>Åbning af SecurityTokenProvider blev fuldført.</value>
+  </data>
+  <data name="event_SendMessageChannelCacheMiss" xml:space="preserve">
+    <value>Der blev ikke fundet nogen resultater i SendMessageChannelCache</value>
+  </data>
+  <data name="event_SendTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_SequenceAcknowledgementSent" xml:space="preserve">
+    <value>SessionId:{0}-bekræftelsen blev sendt.</value>
+  </data>
+  <data name="event_ServerMaxPooledConnectionsQuotaReached" xml:space="preserve">
+    <value>Kvotaen for det maksimale antal grupperede meddelelser på serveren er nået.</value>
+  </data>
+  <data name="event_ServiceActivationAvailableMemory" xml:space="preserve">
+    <value>Ledig hukommelse (byte): {0}</value>
+  </data>
+  <data name="event_ServiceActivationException" xml:space="preserve">
+    <value>Tjenesten kunne ikke aktiveres. Oplysninger om undtagelse: {0}</value>
+  </data>
+  <data name="event_ServiceActivationStart" xml:space="preserve">
+    <value>Tjenesteaktiveringen blev startet</value>
+  </data>
+  <data name="event_ServiceActivationStop" xml:space="preserve">
+    <value>Tjenesteaktiveringen blev stoppet</value>
+  </data>
+  <data name="event_ServiceChannelBeginCallStart" xml:space="preserve">
+    <value>Asynkrone ServiceChannel-kald blev startet.</value>
+  </data>
+  <data name="event_ServiceChannelCallStart" xml:space="preserve">
+    <value>ServiceChannelCall blev startet.</value>
+  </data>
+  <data name="event_ServiceChannelCallStop" xml:space="preserve">
+    <value>Klienten fuldførte handlingen '{0}', som er knyttet til kontrakten '{1}'. Meddelelsen blev sendt til '{2}'.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannelOpen blev startet.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannelOpen blev fuldført.</value>
+  </data>
+  <data name="event_ServiceEndpointAdded" xml:space="preserve">
+    <value>Der blev tilføjet et tjenesteslutpunkt for adressen '{0}', bindingen '{1}' og kontrakten '{2}'.</value>
+  </data>
+  <data name="event_ServiceException" xml:space="preserve">
+    <value>Der blev udløst en ubehandlet undtagelse af typen '{1}' under meddelelsesbehandlingen. Oplysninger om undtagelse: {0}.</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStart" xml:space="preserve">
+    <value>Oprettelse af begyndelse for ServiceHostFactory</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStop" xml:space="preserve">
+    <value>Oprettelse af afslutning for ServiceHostFactory</value>
+  </data>
+  <data name="event_ServiceHostFaulted" xml:space="preserve">
+    <value>Der opstod fejl i tjenesteværten.</value>
+  </data>
+  <data name="event_ServiceHostOpenStart" xml:space="preserve">
+    <value>ServiceHost Open er startet.</value>
+  </data>
+  <data name="event_ServiceHostOpenStop" xml:space="preserve">
+    <value>ServiceHost Open er fuldført.</value>
+  </data>
+  <data name="event_ServiceHostStarted" xml:space="preserve">
+    <value>En ServiceHost startede: '{0}'.</value>
+  </data>
+  <data name="event_ServiceSecurityNegotiationCompleted" xml:space="preserve">
+    <value>Sikkerhedsforhandlingen for tjenesten blev fuldført.</value>
+  </data>
+  <data name="event_ServiceStartPipeError" xml:space="preserve">
+    <value>Der opstod en pipefejl ved start af tjenesten.</value>
+  </data>
+  <data name="event_SessionCookieReadingStarted" xml:space="preserve">
+    <value>Læsning af sessionstoken fra sessionscookien blev startet.</value>
+  </data>
+  <data name="event_SessionCookieReadingSuccess" xml:space="preserve">
+    <value>Læsning af sessionstoken fra sessionscookien blev fuldført.</value>
+  </data>
+  <data name="event_SessionIdleTimeout" xml:space="preserve">
+    <value>Sessionen afbrydes for den inaktive kanal til URI'en: '{0}'.</value>
+  </data>
+  <data name="event_SessionPreambleUnderstood" xml:space="preserve">
+    <value>Sessionsindledningen for '{0}' er forstået.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterFailed" xml:space="preserve">
+    <value>Der opstod fejl i SharedListenerProxy-registreringen med statussen '{0}'.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStart" xml:space="preserve">
+    <value>SharedListenerProxy-registreringen startede for URI'en '{0}'.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStop" xml:space="preserve">
+    <value>SharedListenerProxy-registreringen stoppede.</value>
+  </data>
+  <data name="event_ShipAssertExceptionMessage" xml:space="preserve">
+    <value>Der opstod en uventet fejl. Programmer bør ikke forsøge at behandle denne fejl. Følgende meddelelse, som er på engelsk, kan bruges til diagnosticering af fejlen: {0}.</value>
+  </data>
+  <data name="event_SignatureVerificationStart" xml:space="preserve">
+    <value>Signaturbekræftelsen blev startet.</value>
+  </data>
+  <data name="event_SignatureVerificationSuccess" xml:space="preserve">
+    <value>Signaturbekræftelsen blev fuldført</value>
+  </data>
+  <data name="event_SocketAcceptClosed" xml:space="preserve">
+    <value>Socketaccepten er lukket.</value>
+  </data>
+  <data name="event_SocketAccepted" xml:space="preserve">
+    <value>ListenerId:{0} accepterede SocketId:{1}.</value>
+  </data>
+  <data name="event_SocketAcceptEnqueued" xml:space="preserve">
+    <value>Forbindelsesaccepter blev startet.</value>
+  </data>
+  <data name="event_SocketAsyncReadStop" xml:space="preserve">
+    <value>SocketId:{0} læste '{1}' byte fra '{2}'.</value>
+  </data>
+  <data name="event_SocketAsyncWriteStart" xml:space="preserve">
+    <value>SocketId:{0} skrev '{1}' byte til '{2}'.</value>
+  </data>
+  <data name="event_SocketConnectionAbort" xml:space="preserve">
+    <value>SocketId:{0} afbrydes.</value>
+  </data>
+  <data name="event_SocketReadStop" xml:space="preserve">
+    <value>SocketId:{0} læste '{1}' byte fra '{2}'.</value>
+  </data>
+  <data name="event_SocketWriteStart" xml:space="preserve">
+    <value>SocketId:{0} skrev '{1}' byte til '{2}'.</value>
+  </data>
+  <data name="event_SqlExceptionCaught" xml:space="preserve">
+    <value>SQL-undtagelse nummer {0} blev fundet, meddelelse {1}.</value>
+  </data>
+  <data name="event_SslOnAcceptUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStop</value>
+  </data>
+  <data name="event_SslOnInitiateUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStart</value>
+  </data>
+  <data name="event_StartBookmarkWorkItem" xml:space="preserve">
+    <value>Starter udførelsen af et BookmarkWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.  BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_StartCancelActivityWorkItem" xml:space="preserve">
+    <value>Starter udførelsen af et CancelActivityWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_StartCompletionWorkItem" xml:space="preserve">
+    <value>Starter udførelsen af et CompletionWorkItem for den overordnede Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'. Fuldførte Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_StartExecuteActivityWorkItem" xml:space="preserve">
+    <value>Starter udførelsen af et ExecuteActivityWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_StartFaultWorkItem" xml:space="preserve">
+    <value>Starter udførelsen af et FaultWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'. Undtagelsen blev overført fra Activity '{3}', DisplayName: '{4}', InstanceId: '{5}'.</value>
+  </data>
+  <data name="event_StartRuntimeWorkItem" xml:space="preserve">
+    <value>Starter udførelsen af et kørselsarbejdselement for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_StartSignpostEvent" xml:space="preserve">
+    <value>Aktivitetsgrænse.</value>
+  </data>
+  <data name="event_StartSignpostEvent1" xml:space="preserve">
+    <value>Aktivitetsgrænse.</value>
+  </data>
+  <data name="event_StartSqlCommandExecute" xml:space="preserve">
+    <value>Starter udførelsen af SQL-kommandoen: {0}</value>
+  </data>
+  <data name="event_StartTransactionContextWorkItem" xml:space="preserve">
+    <value>Starter udførelsen af et TransactionContextWorkItem for Activity '{0}', DisplayName: '{1}', InstanceId: '{2}'.</value>
+  </data>
+  <data name="event_StopSignpostEvent" xml:space="preserve">
+    <value>Aktivitetsgrænse.</value>
+  </data>
+  <data name="event_StopSignpostEvent1" xml:space="preserve">
+    <value>Aktivitetsgrænse.</value>
+  </data>
+  <data name="event_StreamedMessageReadByEncoder" xml:space="preserve">
+    <value>En streamet meddelelse blev læst af koderen.</value>
+  </data>
+  <data name="event_StreamedMessageWrittenByEncoder" xml:space="preserve">
+    <value>En streamet meddelelse blev skrevet af koderen.</value>
+  </data>
+  <data name="event_SuspendSignpostEvent" xml:space="preserve">
+    <value>Aktivitetsgrænse.</value>
+  </data>
+  <data name="event_SwitchCaseNotFound" xml:space="preserve">
+    <value>Switch-aktiviteten '{0}' kunne ikke finde en Case-aktivitet, som stemte overens med Expression-resultatet.</value>
+  </data>
+  <data name="event_SynchronizationContextReset" xml:space="preserve">
+    <value>SynchronizationContext er blevet nulstillet til den oprindelige værdi på {0} af DiscoveryClientChannel.</value>
+  </data>
+  <data name="event_SynchronizationContextSetToNull" xml:space="preserve">
+    <value>SynchronizationContext er blevet angivet til null af DiscoveryClientChannel, inden Find-handlingen blev startet.</value>
+  </data>
+  <data name="event_TcpConnectionResetError" xml:space="preserve">
+    <value>SocketId:{0} til fjernadressen {1} medførte en fejl ved nulstilling af forbindelsen.</value>
+  </data>
+  <data name="event_TcpConnectionTimedOut" xml:space="preserve">
+    <value>SocketId:{0} til fjernadressen {1} blev afbrudt pga. timeout.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStart" xml:space="preserve">
+    <value>TCP Transport-lyttefunktionen startede med at lytte på URI'en:'{0}'.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStop" xml:space="preserve">
+    <value>TCP Transport-lyttefunktionen lytter.</value>
+  </data>
+  <data name="event_TextMessageDecodingStart" xml:space="preserve">
+    <value>TextMessageEncoder startede dekodningen af meddelelsen.</value>
+  </data>
+  <data name="event_TextMessageEncodingStart" xml:space="preserve">
+    <value>TextMessageEncoder startede kodningen af meddelelsen.</value>
+  </data>
+  <data name="event_ThrowingEtwException" xml:space="preserve">
+    <value>Der blev udløst en undtagelse. Kilde: {0}. Oplysninger om undtagelse: {1}</value>
+  </data>
+  <data name="event_ThrowingEtwExceptionVerbose" xml:space="preserve">
+    <value>Der blev udløst en undtagelse. Kilde: {0}. Oplysninger om undtagelse: {1}</value>
+  </data>
+  <data name="event_ThrowingException" xml:space="preserve">
+    <value>Der blev udløst en undtagelse. Kilde {0}. Oplysninger om undtagelse: {1}</value>
+  </data>
+  <data name="event_ThrowingExceptionVerbose" xml:space="preserve">
+    <value>Der blev udløst en undtagelse. Kilde: {0}. Oplysninger om undtagelse: {1}</value>
+  </data>
+  <data name="event_TimeoutOpeningSqlConnection" xml:space="preserve">
+    <value>Der opstod en timeout under forsøget på at åbne en SQL-forbindelse. Handlingen blev ikke fuldført inden for den tildelte timeout på {0}. Den tid, der er afsat til handlingen, kan være del af en længere timeout.</value>
+  </data>
+  <data name="event_TokenValidationFailure" xml:space="preserve">
+    <value>Validering af SecurityToken (type '{0}' og id'et '{1}') mislykkedes. {2}</value>
+  </data>
+  <data name="event_TokenValidationStarted" xml:space="preserve">
+    <value>Validering af SecurityToken (type '{0}' og id'et '{1}') blev startet.</value>
+  </data>
+  <data name="event_TokenValidationSuccess" xml:space="preserve">
+    <value>Validering af SecurityToken (type '{0}' og id'et '{1}') blev fuldført.</value>
+  </data>
+  <data name="event_TraceCodeEventLogCritical" xml:space="preserve">
+    <value>Der blev skrevet til EventLog.</value>
+  </data>
+  <data name="event_TraceCodeEventLogError" xml:space="preserve">
+    <value>Der blev skrevet til EventLog.</value>
+  </data>
+  <data name="event_TraceCodeEventLogInfo" xml:space="preserve">
+    <value>Der blev skrevet til EventLog.</value>
+  </data>
+  <data name="event_TraceCodeEventLogVerbose" xml:space="preserve">
+    <value>Der blev skrevet til EventLog.</value>
+  </data>
+  <data name="event_TraceCodeEventLogWarning" xml:space="preserve">
+    <value>Der blev skrevet til EventLog.</value>
+  </data>
+  <data name="event_TraceCorrelationKeys" xml:space="preserve">
+    <value>Korrelationsnøglen '{0}' blev beregnet ved hjælp af værdierne '{1}' i det overordnede område '{2}'.</value>
+  </data>
+  <data name="event_TrackingDataExtracted" xml:space="preserve">
+    <value>Sporingsdata {0} er pakket ud i aktiviteten {1}.</value>
+  </data>
+  <data name="event_TrackingProfileNotFound" xml:space="preserve">
+    <value>TrackingProfile '{0}' for ActivityDefinitionId '{1}' blev ikke fundet. Enten findes TrackingProfile ikke i konfigurationsfilen, eller ActivityDefinitionId stemmer ikke overens.</value>
+  </data>
+  <data name="event_TrackingRecordDropped" xml:space="preserve">
+    <value>Størrelsen på sporingsposten {0} overstiger det maksimalt tilladte af ETW-sessionen for provideren {1}</value>
+  </data>
+  <data name="event_TrackingRecordRaised" xml:space="preserve">
+    <value>Tracking Record {0} opløftet til {1}.</value>
+  </data>
+  <data name="event_TrackingRecordTruncated" xml:space="preserve">
+    <value>Den afkortede sporingspost {0} blev skrevet til ETW-sessionen med provideren {1}. Variabler/anmærkninger/brugerdata er blevet fjernet</value>
+  </data>
+  <data name="event_TrackingValueNotSerializable" xml:space="preserve">
+    <value>Det udtrukne argument/den udtrukne variabel '{0}' kan ikke serialiseres.</value>
+  </data>
+  <data name="event_TransactedReceiveScopeEndCommitFailed" xml:space="preserve">
+    <value>Kaldet til EndCommit på CommittableTransaction med id = '{0}' udløste en TransactionException med følgende meddelelse: '{1}'.</value>
+  </data>
+  <data name="event_TransactionScopeCreate" xml:space="preserve">
+    <value>TransactionScope oprettes med LocalIdentifier:'{0}' og DistributedIdentifier:'{1}'.</value>
+  </data>
+  <data name="event_TransferEmitted" xml:space="preserve">
+    <value>Overførselshændelsen blev udsendt.</value>
+  </data>
+  <data name="event_TransportListenerSessionsReceived" xml:space="preserve">
+    <value>Sessionen for transportlyttefunktionen blev modtaget via '{0}'</value>
+  </data>
+  <data name="event_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>En aktivitet, der er underordnet TryCatch-aktiviteten '{0}', udløste en undtagelse under annulleringen.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>En Catch- eller Finally-aktivitet, som er knyttet til TryCatch-aktiviteten '{0}', har udløst en undtagelse.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>TryCatch-aktiviteten '{0}' har fundet en undtagelse af typen '{1}'.</value>
+  </data>
+  <data name="event_UnhandledException" xml:space="preserve">
+    <value>Ubehandlet undtagelse. Oplysninger om undtagelse: {0}</value>
+  </data>
+  <data name="event_UnlockInstanceException" xml:space="preserve">
+    <value>Undtagelsen {0} blev fundet under forsøg på at låse forekomsten op.</value>
+  </data>
+  <data name="event_UserEvents" xml:space="preserve">
+    <value>Navn:'{0}', Reference:'{1}', Data:{2}</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesCompleted" xml:space="preserve">
+    <value>Lukning af alle lyttekanalforekomster blev fuldført.</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesFailed" xml:space="preserve">
+    <value>Fejlkode:{0}</value>
+  </data>
+  <data name="event_WasConnected" xml:space="preserve">
+    <value>WAS-forbindelsen er oprettet.</value>
+  </data>
+  <data name="event_WasConnectionTimedout" xml:space="preserve">
+    <value>Der opstod en timeout for WAS-forbindelsen.</value>
+  </data>
+  <data name="event_WasDisconnected" xml:space="preserve">
+    <value>WAS er afbrudt.</value>
+  </data>
+  <data name="event_WebHostRequestStart" xml:space="preserve">
+    <value>Der blev modtaget en anmodning med den virtuelle sti '{1}' fra AppDomain '{0}'.</value>
+  </data>
+  <data name="event_WebHostRequestStop" xml:space="preserve">
+    <value>WebHostRequest blev stoppet.</value>
+  </data>
+  <data name="event_WebhostUnregisterProtocolFailed" xml:space="preserve">
+    <value>Fejlkode:{0}</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStart" xml:space="preserve">
+    <value>WebSocketId:{0} læste start.</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStop" xml:space="preserve">
+    <value>WebSocketId:{0} læste '{1}' byte fra '{2}'.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStart" xml:space="preserve">
+    <value>WebSocketId:{0} læste '{1}' byte til '{2}'.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStop" xml:space="preserve">
+    <value>WebSocketId:{0} asynkron skrivning stoppet.</value>
+  </data>
+  <data name="event_WebSocketCloseOutputSent" xml:space="preserve">
+    <value>WebSocketId:{0} sender luk output-meddelelse til '{1}' med luk-status '{2}'.</value>
+  </data>
+  <data name="event_WebSocketCloseSent" xml:space="preserve">
+    <value>WebSocketId:{0} sender luk-meddelelse til '{1}' med luk-status '{2}'.</value>
+  </data>
+  <data name="event_WebSocketCloseStatusReceived" xml:space="preserve">
+    <value>WebSocketId:{0} forbindelse luk-meddelelse modtaget med status '{1}'.</value>
+  </data>
+  <data name="event_WebSocketConnectionAborted" xml:space="preserve">
+    <value>WebSocketId:{0}forbindelse er afbrudt.</value>
+  </data>
+  <data name="event_WebSocketConnectionAccepted" xml:space="preserve">
+    <value>WebSocketId:{0} forbindelse accepteret.</value>
+  </data>
+  <data name="event_WebSocketConnectionAcceptStart" xml:space="preserve">
+    <value>WebSocket-forbindelse accepterer start.</value>
+  </data>
+  <data name="event_WebSocketConnectionClosed" xml:space="preserve">
+    <value>WebSocketId:{0} forbindelse lukket.</value>
+  </data>
+  <data name="event_WebSocketConnectionDeclined" xml:space="preserve">
+    <value>WebSocket-forbindelse blev nægtet med statuskode '{0}'</value>
+  </data>
+  <data name="event_WebSocketConnectionFailed" xml:space="preserve">
+    <value>Anmodning om WebSocket-forbindelse mislykkedes: '{0}'</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStart" xml:space="preserve">
+    <value>Afsendelse af anmodning om WebSocket-forbindelse til '{0}' er startet.</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStop" xml:space="preserve">
+    <value>WebSocketId:{0} anmodning om forbindelse sendt.</value>
+  </data>
+  <data name="event_WebSocketCreateClientWebSocketWithFactory" xml:space="preserve">
+    <value>Opretter WebSocket-klienten med en factory af typen '{0}'.</value>
+  </data>
+  <data name="event_WebSocketUseVersionFromClientWebSocketFactory" xml:space="preserve">
+    <value>Bruger WebSocketVersion fra en klient-WebSocket-factory af typen '{0}'.</value>
+  </data>
+  <data name="event_WfMessageReceived" xml:space="preserve">
+    <value>Meddelelse modtaget af arbejdsproces</value>
+  </data>
+  <data name="event_WfMessageSent" xml:space="preserve">
+    <value>Meddelelse sendt fra arbejdsproces</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnAcceptUpgrade" xml:space="preserve">
+    <value>Windows streamer sikkerhed ved accept af opgradering.</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnInitiateUpgrade" xml:space="preserve">
+    <value>WindowsStreamSecurity påbegynder sikkerhedsopgradering.</value>
+  </data>
+  <data name="event_WorkflowActivityResume" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' E2E-aktivitet</value>
+  </data>
+  <data name="event_WorkflowActivityStart" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' E2E-aktivitet</value>
+  </data>
+  <data name="event_WorkflowActivityStop" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' E2E-aktivitet</value>
+  </data>
+  <data name="event_WorkflowActivitySuspend" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' E2E-aktivitet</value>
+  </data>
+  <data name="event_WorkflowApplicationCompleted" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' blev fuldført i tilstanden Closed.</value>
+  </data>
+  <data name="event_WorkflowApplicationIdled" xml:space="preserve">
+    <value>WorkflowApplication-id'et: '{0}' blev inaktiv.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersistableIdle" xml:space="preserve">
+    <value>WorkflowApplication-id'et: '{0}' er inaktiv og permanent. Der udføres følgende handling: {1}.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersisted" xml:space="preserve">
+    <value>WorkflowApplication-id'et: '{0}' blev Persisted.</value>
+  </data>
+  <data name="event_WorkflowApplicationTerminated" xml:space="preserve">
+    <value>WorkflowApplication-id'et: '{0}' blev afsluttet. Det blev fuldført i tilstanden Faulted med en undtagelse.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnhandledException" xml:space="preserve">
+    <value>Der opstod en ubehandlet undtagelse for WorkflowInstance-id'et: '{0}'. Undtagelsen stammer fra Activity '{1}', DisplayName: '{2}'. Der udføres følgende handling: {3}.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnloaded" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' blev Unloaded.</value>
+  </data>
+  <data name="event_WorkflowInstanceAborted" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' blev afbrudt med en undtagelse.</value>
+  </data>
+  <data name="event_WorkflowInstanceAbortedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceAbortedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceCanceled" xml:space="preserve">
+    <value>WorkflowInstance-id'et: '{0}' blev fuldført i tilstanden Canceled.</value>
+  </data>
+  <data name="event_WorkflowInstanceRecordWithId" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, State = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceUnhandledExceptionRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUnhandledExceptionRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, SourceName = {4}, SourceId = {5}, SourceInstanceId = {6}, SourceTypeName={7}, Exception={8}, Annotations= {9}, ProfileName = {10}, WorkflowDefinitionIdentity = {11}</value>
+  </data>
+  <data name="event_WorkflowInstanceUpdatedRecord" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceUpdatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, State = {4}, OriginalDefinitionIdentity = {5}, UpdatedDefinitionIdentity = {6}, Annotations = {7}, ProfileName = {8}</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionStart" xml:space="preserve">
+    <value>Beskyttet nøgledekryptering blev startet.</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionSuccess" xml:space="preserve">
+    <value>Beskyttet nøgledekryptering blev fuldført.</value>
+  </data>
+  <data name="event_WritePoolMiss" xml:space="preserve">
+    <value>Der blev oprettet en ny '{0}'</value>
+  </data>
+  <data name="event_XamlServicesLoadStart" xml:space="preserve">
+    <value>Start af XamlServicesLoad</value>
+  </data>
+  <data name="event_XamlServicesLoadStop" xml:space="preserve">
+    <value>Stop af XamlServicesLoad</value>
+  </data>
+  <data name="keyword_ActivationServices" xml:space="preserve">
+    <value>Aktiveringstjenester</value>
+  </data>
+  <data name="keyword_Channel" xml:space="preserve">
+    <value>Kanal</value>
+  </data>
+  <data name="keyword_Discovery" xml:space="preserve">
+    <value>Registrering</value>
+  </data>
+  <data name="keyword_EndToEndMonitoring" xml:space="preserve">
+    <value>Slutpunkt-til-slutpunkt-overvågning</value>
+  </data>
+  <data name="keyword_HealthMonitoring" xml:space="preserve">
+    <value>Tilstandsovervågning</value>
+  </data>
+  <data name="keyword_HTTP" xml:space="preserve">
+    <value>HTTP-transport</value>
+  </data>
+  <data name="keyword_Infrastructure" xml:space="preserve">
+    <value>Infrastruktur</value>
+  </data>
+  <data name="keyword_Quota" xml:space="preserve">
+    <value>Kvota</value>
+  </data>
+  <data name="keyword_RoutingServices" xml:space="preserve">
+    <value>Routingtjenester</value>
+  </data>
+  <data name="keyword_Security" xml:space="preserve">
+    <value>Sikkerhed</value>
+  </data>
+  <data name="keyword_Serialization" xml:space="preserve">
+    <value>Serialisering</value>
+  </data>
+  <data name="keyword_ServiceHost" xml:space="preserve">
+    <value>Tjenestevært</value>
+  </data>
+  <data name="keyword_ServiceModel" xml:space="preserve">
+    <value>ServiceModel</value>
+  </data>
+  <data name="keyword_TCP" xml:space="preserve">
+    <value>TCP Transport</value>
+  </data>
+  <data name="keyword_Threading" xml:space="preserve">
+    <value>Trådning</value>
+  </data>
+  <data name="keyword_Transaction" xml:space="preserve">
+    <value>Transaktion</value>
+  </data>
+  <data name="keyword_TransportGeneral" xml:space="preserve">
+    <value>Transport generelt</value>
+  </data>
+  <data name="keyword_Troubleshooting" xml:space="preserve">
+    <value>Fejlfinding</value>
+  </data>
+  <data name="keyword_UserEvents" xml:space="preserve">
+    <value>Brugerhændelser</value>
+  </data>
+  <data name="keyword_WCFMessageLogging" xml:space="preserve">
+    <value>Logføring af WCF-meddelelse</value>
+  </data>
+  <data name="keyword_WebHost" xml:space="preserve">
+    <value>Webvært</value>
+  </data>
+  <data name="keyword_WebHTTP" xml:space="preserve">
+    <value>Web HTTP</value>
+  </data>
+  <data name="keyword_WFActivities" xml:space="preserve">
+    <value>Arbejdsprocesaktiviteter</value>
+  </data>
+  <data name="keyword_WFInstanceStore" xml:space="preserve">
+    <value>InstanceStore i arbejdsproces</value>
+  </data>
+  <data name="keyword_WFRuntime" xml:space="preserve">
+    <value>Arbejdsprocessens kørselstidspunkt</value>
+  </data>
+  <data name="keyword_WFServices" xml:space="preserve">
+    <value>ServiceHost i arbejdsproces</value>
+  </data>
+  <data name="keyword_WFTracking" xml:space="preserve">
+    <value>WF-sporing</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoBookmark" xml:space="preserve">
+    <value>NoBookmark</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoInstance" xml:space="preserve">
+    <value>NoInstance</value>
+  </data>
+  <data name="opcode_BufferPoolingAllocate" xml:space="preserve">
+    <value>Alloker</value>
+  </data>
+  <data name="opcode_BufferPoolingTune" xml:space="preserve">
+    <value>Juster</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStart" xml:space="preserve">
+    <value>ClientChannelOpenStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStop" xml:space="preserve">
+    <value>ClientChannelOpenStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStart" xml:space="preserve">
+    <value>ClientParameterInspectorStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStop" xml:space="preserve">
+    <value>ClientParameterInspectorStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeOperationPrepared" xml:space="preserve">
+    <value>OperationPrepared</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteBookmark" xml:space="preserve">
+    <value>CompleteBookmark</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCancelActivity" xml:space="preserve">
+    <value>CompleteCancelActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCompletion" xml:space="preserve">
+    <value>CompleteCompletion</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteExecuteActivity" xml:space="preserve">
+    <value>CompleteExecuteActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteFault" xml:space="preserve">
+    <value>CompleteFault</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteRuntime" xml:space="preserve">
+    <value>CompleteRuntime</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteTransactionContext" xml:space="preserve">
+    <value>CompleteTransactionContext</value>
+  </data>
+  <data name="opcode_CorrelationDuplicateQuery" xml:space="preserve">
+    <value>DuplicateQuery</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelCreationFailed" xml:space="preserve">
+    <value>CreationFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelFindInitiated" xml:space="preserve">
+    <value>FindInitiated</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenFailed" xml:space="preserve">
+    <value>OpenFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenSucceeded" xml:space="preserve">
+    <value>OpenSucceeded</value>
+  </data>
+  <data name="opcode_DiscoveryClientExceptionSuppressed" xml:space="preserve">
+    <value>ExceptionSuppressed</value>
+  </data>
+  <data name="opcode_DiscoveryClientFailedToClose" xml:space="preserve">
+    <value>FailedToClose</value>
+  </data>
+  <data name="opcode_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>ReceivedMulticastSuppression</value>
+  </data>
+  <data name="opcode_DiscoveryMessageDuplicate" xml:space="preserve">
+    <value>Dupliker</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidContent" xml:space="preserve">
+    <value>InvalidContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>InvalidRelatesToOrOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidReplyTo" xml:space="preserve">
+    <value>InvalidReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNoContent" xml:space="preserve">
+    <value>NoContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageId" xml:space="preserve">
+    <value>NullMessageId</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageSequence" xml:space="preserve">
+    <value>NullMessageSequence</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullRelatesTo" xml:space="preserve">
+    <value>NullRelatesTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullReplyTo" xml:space="preserve">
+    <value>NullReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>ReceivedAfterOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextReset" xml:space="preserve">
+    <value>Nulstil</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextSetToNull" xml:space="preserve">
+    <value>SetToNull</value>
+  </data>
+  <data name="opcode_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>BeforeAuthorization</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStart" xml:space="preserve">
+    <value>DispatchStart</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStop" xml:space="preserve">
+    <value>DispatchStop</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStart" xml:space="preserve">
+    <value>OperationInvokerStart</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStop" xml:space="preserve">
+    <value>OperationInvokerStop</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStart" xml:space="preserve">
+    <value>ParameterInspectorStart</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStop" xml:space="preserve">
+    <value>ParameterInspectorStop</value>
+  </data>
+  <data name="opcode_DispatchMessageTransactionScopeCreate" xml:space="preserve">
+    <value>TransactionScopeCreate</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>Deaktiveret</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>Aktiveret</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartBegin" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartEmpty" xml:space="preserve">
+    <value>Tom</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartNextNull" xml:space="preserve">
+    <value>NextNull</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCase" xml:space="preserve">
+    <value>SwitchCase</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>SwitchCaseNotFound</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchDefault" xml:space="preserve">
+    <value>SwitchDefault</value>
+  </data>
+  <data name="opcode_ExpressionResultArrayItemValue" xml:space="preserve">
+    <value>ArrayItemValue</value>
+  </data>
+  <data name="opcode_ExpressionResultBinary" xml:space="preserve">
+    <value>Binær</value>
+  </data>
+  <data name="opcode_ExpressionResultMemberAccess" xml:space="preserve">
+    <value>MemberAccess</value>
+  </data>
+  <data name="opcode_ExpressionResultUnary" xml:space="preserve">
+    <value>Monadisk</value>
+  </data>
+  <data name="opcode_InferDescriptionContract" xml:space="preserve">
+    <value>Kontrakt</value>
+  </data>
+  <data name="opcode_InferDescriptionOperation" xml:space="preserve">
+    <value>Handling</value>
+  </data>
+  <data name="opcode_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>DoesNotUseAsyncPattern</value>
+  </data>
+  <data name="opcode_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>IsNotStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodIsStatic" xml:space="preserve">
+    <value>IsStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodThrewException" xml:space="preserve">
+    <value>ThrewException</value>
+  </data>
+  <data name="opcode_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>UseAsyncPattern</value>
+  </data>
+  <data name="opcode_MessageChannelCacheMissed" xml:space="preserve">
+    <value>Ikke fundet</value>
+  </data>
+  <data name="opcode_ReliableSessionFaulted" xml:space="preserve">
+    <value>Fejl</value>
+  </data>
+  <data name="opcode_ReliableSessionReconnect" xml:space="preserve">
+    <value>Genopret forbindelsen</value>
+  </data>
+  <data name="opcode_ReliableSessionSequenceAck" xml:space="preserve">
+    <value>SequenceAck</value>
+  </data>
+  <data name="opcode_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>AbortingChannel</value>
+  </data>
+  <data name="opcode_RoutingServiceClientChannelFaulted" xml:space="preserve">
+    <value>ChannelFaulted</value>
+  </data>
+  <data name="opcode_RoutingServiceClientClosing" xml:space="preserve">
+    <value>Lukker</value>
+  </data>
+  <data name="opcode_RoutingServiceClientCreatingForEndpoint" xml:space="preserve">
+    <value>CreatingForEndpoint</value>
+  </data>
+  <data name="opcode_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>CloseFailed</value>
+  </data>
+  <data name="opcode_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>ConfigurationApplied</value>
+  </data>
+  <data name="opcode_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>DuplexCallbackException</value>
+  </data>
+  <data name="opcode_RoutingServiceHandledException" xml:space="preserve">
+    <value>HandledException</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingOneWay" xml:space="preserve">
+    <value>CompletingOneWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingTwoWay" xml:space="preserve">
+    <value>CompletingTwoWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageMovedToBackup" xml:space="preserve">
+    <value>MovedToBackup</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingFailure" xml:space="preserve">
+    <value>ProcessingFailure</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingMessage" xml:space="preserve">
+    <value>ProcessingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>RoutedToEndpoints</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingFaultResponse" xml:space="preserve">
+    <value>SendingFaultResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingResponse" xml:space="preserve">
+    <value>SendingResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmitSucceeded" xml:space="preserve">
+    <value>TransmitSucceeded</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmittingMessage" xml:space="preserve">
+    <value>TransmittingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextAbandoning" xml:space="preserve">
+    <value>Afbryder</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextCompleting" xml:space="preserve">
+    <value>Fuldfører</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCommittingTransaction" xml:space="preserve">
+    <value>CommittingTransaction</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCreating" xml:space="preserve">
+    <value>Opretter</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionUsingExisting" xml:space="preserve">
+    <value>UsingExisting</value>
+  </data>
+  <data name="opcode_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>TransmitFailed</value>
+  </data>
+  <data name="opcode_RuntimeTransactionComplete" xml:space="preserve">
+    <value>Fuldført</value>
+  </data>
+  <data name="opcode_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>CompletionRequested</value>
+  </data>
+  <data name="opcode_RuntimeTransactionSet" xml:space="preserve">
+    <value>Indstil</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleBookmark" xml:space="preserve">
+    <value>ScheduleBookmark</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCancelActivity" xml:space="preserve">
+    <value>ScheduleCancelActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCompletion" xml:space="preserve">
+    <value>ScheduleCompletion</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleExecuteActivity" xml:space="preserve">
+    <value>ScheduleExecuteActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleFault" xml:space="preserve">
+    <value>ScheduleFault</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleRuntime" xml:space="preserve">
+    <value>ScheduleRuntime</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleTransactionContext" xml:space="preserve">
+    <value>ScheduleTransactionContext</value>
+  </data>
+  <data name="opcode_SessionUpgradeAccept" xml:space="preserve">
+    <value>Acceptér</value>
+  </data>
+  <data name="opcode_SessionUpgradeInitiate" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="opcode_Signpostsuspend" xml:space="preserve">
+    <value>deaktiver</value>
+  </data>
+  <data name="opcode_StartWorkItemStartBookmark" xml:space="preserve">
+    <value>StartBookmark</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCancelActivity" xml:space="preserve">
+    <value>StartCancelActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCompletion" xml:space="preserve">
+    <value>StartCompletion</value>
+  </data>
+  <data name="opcode_StartWorkItemStartExecuteActivity" xml:space="preserve">
+    <value>StartExecuteActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartFault" xml:space="preserve">
+    <value>StartFault</value>
+  </data>
+  <data name="opcode_StartWorkItemStartRuntime" xml:space="preserve">
+    <value>StartRuntime</value>
+  </data>
+  <data name="opcode_StartWorkItemStartTransactionContext" xml:space="preserve">
+    <value>StartTransactionContext</value>
+  </data>
+  <data name="opcode_TrackingProfileNotFound" xml:space="preserve">
+    <value>NotFound</value>
+  </data>
+  <data name="opcode_TrackingRecordDropped" xml:space="preserve">
+    <value>Fjernet</value>
+  </data>
+  <data name="opcode_TrackingRecordRaised" xml:space="preserve">
+    <value>Udløst</value>
+  </data>
+  <data name="opcode_TrackingRecordTruncated" xml:space="preserve">
+    <value>Afkortet</value>
+  </data>
+  <data name="opcode_TransportReceiveBeforeAuthentication" xml:space="preserve">
+    <value>BeforeAuthentication</value>
+  </data>
+  <data name="opcode_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>DuringCancelation</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>FromCatchOrFinally</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>FromTry</value>
+  </data>
+  <data name="opcode_WASActivationConnected" xml:space="preserve">
+    <value>Tilsluttet</value>
+  </data>
+  <data name="opcode_WASActivationDisconnect" xml:space="preserve">
+    <value>Afbrudt</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeCompleted" xml:space="preserve">
+    <value>Fuldført</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeIdled" xml:space="preserve">
+    <value>Deaktiveret</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceAborted" xml:space="preserve">
+    <value>InstanceAborted</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceCanceled" xml:space="preserve">
+    <value>InstanceCanceled</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersistableIdle" xml:space="preserve">
+    <value>PersistableIdle</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersisted" xml:space="preserve">
+    <value>Fastholdt</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeTerminated" xml:space="preserve">
+    <value>Afsluttet</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnhandledException" xml:space="preserve">
+    <value>UnhandledException</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnloaded" xml:space="preserve">
+    <value>Fjernet</value>
+  </data>
+  <data name="opcode_WorkflowActivitysuspend" xml:space="preserve">
+    <value>deaktiver</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedRecord" xml:space="preserve">
+    <value>AbortedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedWithId" xml:space="preserve">
+    <value>AbortedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedRecord" xml:space="preserve">
+    <value>SuspendedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedWithId" xml:space="preserve">
+    <value>SuspendedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedRecord" xml:space="preserve">
+    <value>TerminatedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedWithId" xml:space="preserve">
+    <value>TerminatedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionRecord" xml:space="preserve">
+    <value>UnhandledExceptionRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionWithId" xml:space="preserve">
+    <value>UnhandledExceptionWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUpdatedRecord" xml:space="preserve">
+    <value>UpdatedRecord</value>
+  </data>
+  <data name="task_ActivationDispatchSession" xml:space="preserve">
+    <value>ActivationDispatchSession</value>
+  </data>
+  <data name="task_ActivationDuplicateSocket" xml:space="preserve">
+    <value>ActivationDuplicateSocket</value>
+  </data>
+  <data name="task_ActivationListenerOpen" xml:space="preserve">
+    <value>ActivationListenerOpen</value>
+  </data>
+  <data name="task_ActivationPipeListenerListening" xml:space="preserve">
+    <value>ActivationPipeListenerListening</value>
+  </data>
+  <data name="task_ActivationRoutingTableLookup" xml:space="preserve">
+    <value>ActivationRoutingTableLookup</value>
+  </data>
+  <data name="task_ActivationServiceStart" xml:space="preserve">
+    <value>ActivationServiceStart</value>
+  </data>
+  <data name="task_ActivationTcpListenerListening" xml:space="preserve">
+    <value>ActivationTcpListenerListening</value>
+  </data>
+  <data name="task_AddServiceEndpoint" xml:space="preserve">
+    <value>AddServiceEndpoint</value>
+  </data>
+  <data name="task_BufferOutOfOrder" xml:space="preserve">
+    <value>BufferOutOfOrder</value>
+  </data>
+  <data name="task_BufferPooling" xml:space="preserve">
+    <value>BufferPooling</value>
+  </data>
+  <data name="task_CacheRootMetadata" xml:space="preserve">
+    <value>CacheRootMetadata</value>
+  </data>
+  <data name="task_ChannelFactoryCaching" xml:space="preserve">
+    <value>ChannelFactoryCaching</value>
+  </data>
+  <data name="task_ChannelFactoryCreate" xml:space="preserve">
+    <value>ChannelFactoryCreate</value>
+  </data>
+  <data name="task_ChannelReceive" xml:space="preserve">
+    <value>ChannelReceive</value>
+  </data>
+  <data name="task_ClientRuntime" xml:space="preserve">
+    <value>ClientRuntime</value>
+  </data>
+  <data name="task_ClientSendPreamble" xml:space="preserve">
+    <value>ClientSendPreamble</value>
+  </data>
+  <data name="task_CompensationState" xml:space="preserve">
+    <value>CompensationState</value>
+  </data>
+  <data name="task_CompleteActivity" xml:space="preserve">
+    <value>CompleteActivity</value>
+  </data>
+  <data name="task_CompleteWorkItem" xml:space="preserve">
+    <value>CompleteWorkItem</value>
+  </data>
+  <data name="task_Connect" xml:space="preserve">
+    <value>Opret forbindelse</value>
+  </data>
+  <data name="task_ConnectionAbort" xml:space="preserve">
+    <value>ConnectionAbort</value>
+  </data>
+  <data name="task_ConnectionAccept" xml:space="preserve">
+    <value>ConnectionAccept</value>
+  </data>
+  <data name="task_ConnectionPooling" xml:space="preserve">
+    <value>ConnectionPooling</value>
+  </data>
+  <data name="task_Correlation" xml:space="preserve">
+    <value>Korrelation</value>
+  </data>
+  <data name="task_CreateBookmark" xml:space="preserve">
+    <value>CreateBookmark</value>
+  </data>
+  <data name="task_CreateHttpMessageHandler" xml:space="preserve">
+    <value>CreateHttpMessageHandler</value>
+  </data>
+  <data name="task_CreateWorkflowServiceHost" xml:space="preserve">
+    <value>CreateWorkflowServiceHost</value>
+  </data>
+  <data name="task_CustomTrackingRecord" xml:space="preserve">
+    <value>CustomTrackingRecord</value>
+  </data>
+  <data name="task_DataContractResolver" xml:space="preserve">
+    <value>DataContractResolver</value>
+  </data>
+  <data name="task_DiscoveryClient" xml:space="preserve">
+    <value>DiscoveryClient</value>
+  </data>
+  <data name="task_DiscoveryClientChannel" xml:space="preserve">
+    <value>DiscoveryClientChannel</value>
+  </data>
+  <data name="task_DiscoveryMessage" xml:space="preserve">
+    <value>DiscoveryMessage</value>
+  </data>
+  <data name="task_DiscoverySynchronizationContext" xml:space="preserve">
+    <value>DiscoverySynchronizationContext</value>
+  </data>
+  <data name="task_DispatchMessage" xml:space="preserve">
+    <value>DispatchMessage</value>
+  </data>
+  <data name="task_EncryptedDataProcessing" xml:space="preserve">
+    <value>EncryptedDataProcessing</value>
+  </data>
+  <data name="task_EndpointDiscoverability" xml:space="preserve">
+    <value>EndpointDiscoverability</value>
+  </data>
+  <data name="task_ExecuteActivity" xml:space="preserve">
+    <value>ExecuteActivity</value>
+  </data>
+  <data name="task_ExecuteFlowchart" xml:space="preserve">
+    <value>ExecuteFlowchart</value>
+  </data>
+  <data name="task_ExecuteWorkItem" xml:space="preserve">
+    <value>ExecuteWorkItem</value>
+  </data>
+  <data name="task_ExpressionResult" xml:space="preserve">
+    <value>ExpressionResult</value>
+  </data>
+  <data name="task_FederationMessageCreation" xml:space="preserve">
+    <value>FederationMessageCreation</value>
+  </data>
+  <data name="task_FederationMessageProcessing" xml:space="preserve">
+    <value>FederationMessageProcessing</value>
+  </data>
+  <data name="task_FormatterDeserializeReply" xml:space="preserve">
+    <value>FormatterDeserializeReply</value>
+  </data>
+  <data name="task_FormatterDeserializeRequest" xml:space="preserve">
+    <value>FormatterDeserializeRequest</value>
+  </data>
+  <data name="task_FormatterSerializeReply" xml:space="preserve">
+    <value>FormatterSerializeReply</value>
+  </data>
+  <data name="task_FormatterSerializeRequest" xml:space="preserve">
+    <value>FormatterSerializeRequest</value>
+  </data>
+  <data name="task_GenerateDeserializer" xml:space="preserve">
+    <value>GenerateDeserializer</value>
+  </data>
+  <data name="task_GenerateSerializer" xml:space="preserve">
+    <value>GenerateSerializer</value>
+  </data>
+  <data name="task_GenerateXmlSerializable" xml:space="preserve">
+    <value>GenerateXmlSerializable</value>
+  </data>
+  <data name="task_GetIssuerName" xml:space="preserve">
+    <value>GetIssuerName</value>
+  </data>
+  <data name="task_HostedTransportConfigurationManagerConfigInit" xml:space="preserve">
+    <value>HostedTransportConfigurationManagerConfigInit</value>
+  </data>
+  <data name="task_ImportKnownType" xml:space="preserve">
+    <value>ImportKnownType</value>
+  </data>
+  <data name="task_InferDescription" xml:space="preserve">
+    <value>InferDescription</value>
+  </data>
+  <data name="task_InitializeBookmarkScope" xml:space="preserve">
+    <value>InitializeBookmarkScope</value>
+  </data>
+  <data name="task_InternalCacheMetadata" xml:space="preserve">
+    <value>InternalCacheMetadata</value>
+  </data>
+  <data name="task_InvokeMethod" xml:space="preserve">
+    <value>InvokeMethod</value>
+  </data>
+  <data name="task_ListenerOpen" xml:space="preserve">
+    <value>ListenerOpen</value>
+  </data>
+  <data name="task_LockWorkflowInstance" xml:space="preserve">
+    <value>LockWorkflowInstance</value>
+  </data>
+  <data name="task_MessageChannelCache" xml:space="preserve">
+    <value>MessageChannelCache</value>
+  </data>
+  <data name="task_MessageDecoding" xml:space="preserve">
+    <value>MessageDecoding</value>
+  </data>
+  <data name="task_MessageEncoding" xml:space="preserve">
+    <value>MessageEncoding</value>
+  </data>
+  <data name="task_MessageQueueRegister" xml:space="preserve">
+    <value>MessageQueueRegister</value>
+  </data>
+  <data name="task_MsmqQuotas" xml:space="preserve">
+    <value>MsmqQuotas</value>
+  </data>
+  <data name="task_NoPersistBlock" xml:space="preserve">
+    <value>NoPersistBlock</value>
+  </data>
+  <data name="task_PrincipalSetting" xml:space="preserve">
+    <value>PrincipalSetting</value>
+  </data>
+  <data name="task_Quotas" xml:space="preserve">
+    <value>Kvotaer</value>
+  </data>
+  <data name="task_ReliableSession" xml:space="preserve">
+    <value>ReliableSession</value>
+  </data>
+  <data name="task_RoutingService" xml:space="preserve">
+    <value>RoutingService</value>
+  </data>
+  <data name="task_RoutingServiceClient" xml:space="preserve">
+    <value>RoutingServiceClient</value>
+  </data>
+  <data name="task_RoutingServiceFilterTableMatch" xml:space="preserve">
+    <value>RoutingServiceFilterTableMatch</value>
+  </data>
+  <data name="task_RoutingServiceMessage" xml:space="preserve">
+    <value>RoutingServiceMessage</value>
+  </data>
+  <data name="task_RoutingServiceReceiveContext" xml:space="preserve">
+    <value>RoutingServiceReceiveContext</value>
+  </data>
+  <data name="task_RoutingServiceTransaction" xml:space="preserve">
+    <value>RoutingServiceTransaction</value>
+  </data>
+  <data name="task_RuntimeTransaction" xml:space="preserve">
+    <value>RuntimeTransaction</value>
+  </data>
+  <data name="task_ScheduleActivity" xml:space="preserve">
+    <value>ScheduleActivity</value>
+  </data>
+  <data name="task_ScheduleWorkItem" xml:space="preserve">
+    <value>ScheduleWorkItem</value>
+  </data>
+  <data name="task_SecureMessage" xml:space="preserve">
+    <value>SecureMessage</value>
+  </data>
+  <data name="task_SecurityImpersonation" xml:space="preserve">
+    <value>SecurityImpersonation</value>
+  </data>
+  <data name="task_SecurityNegotiation" xml:space="preserve">
+    <value>SecurityNegotiation</value>
+  </data>
+  <data name="task_SecurityVerification" xml:space="preserve">
+    <value>SecurityVerification</value>
+  </data>
+  <data name="task_ServiceActivation" xml:space="preserve">
+    <value>ServiceActivation</value>
+  </data>
+  <data name="task_ServiceChannelCall" xml:space="preserve">
+    <value>ServiceChannelCall</value>
+  </data>
+  <data name="task_ServiceChannelOpen" xml:space="preserve">
+    <value>ServiceChannelOpen</value>
+  </data>
+  <data name="task_ServiceHostActivation" xml:space="preserve">
+    <value>ServiceHostActivation</value>
+  </data>
+  <data name="task_ServiceHostCompilation" xml:space="preserve">
+    <value>ServiceHostCompilation</value>
+  </data>
+  <data name="task_ServiceHostCreate" xml:space="preserve">
+    <value>ServiceHostCreate</value>
+  </data>
+  <data name="task_ServiceHostFactoryCreation" xml:space="preserve">
+    <value>ServiceHostFactoryCreation</value>
+  </data>
+  <data name="task_ServiceHostFault" xml:space="preserve">
+    <value>ServiceHostFault</value>
+  </data>
+  <data name="task_ServiceHostOpen" xml:space="preserve">
+    <value>ServiceHostOpen</value>
+  </data>
+  <data name="task_ServiceInstance" xml:space="preserve">
+    <value>ServiceInstance</value>
+  </data>
+  <data name="task_ServiceShutdown" xml:space="preserve">
+    <value>ServiceShutdown</value>
+  </data>
+  <data name="task_SessionCookieReading" xml:space="preserve">
+    <value>SessionCookieReading</value>
+  </data>
+  <data name="task_SessionStart" xml:space="preserve">
+    <value>SessionStart</value>
+  </data>
+  <data name="task_SessionUpgrade" xml:space="preserve">
+    <value>SessionUpgrade</value>
+  </data>
+  <data name="task_SignatureVerification" xml:space="preserve">
+    <value>SignatureVerification</value>
+  </data>
+  <data name="task_Signpost" xml:space="preserve">
+    <value>Signpost</value>
+  </data>
+  <data name="task_SqlCommandExecute" xml:space="preserve">
+    <value>SqlCommandExecute</value>
+  </data>
+  <data name="task_StartWorkItem" xml:space="preserve">
+    <value>StartWorkItem</value>
+  </data>
+  <data name="task_SurrogateDeserialize" xml:space="preserve">
+    <value>SurrogateDeserialize</value>
+  </data>
+  <data name="task_SurrogateSerialize" xml:space="preserve">
+    <value>SurrogateSerialize</value>
+  </data>
+  <data name="task_ThreadScheduling" xml:space="preserve">
+    <value>ThreadScheduling</value>
+  </data>
+  <data name="task_Throttles" xml:space="preserve">
+    <value>Tærskler</value>
+  </data>
+  <data name="task_Timeout" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="task_TimeoutException" xml:space="preserve">
+    <value>TimeoutException</value>
+  </data>
+  <data name="task_TokenValidation" xml:space="preserve">
+    <value>TokenValidation</value>
+  </data>
+  <data name="task_TrackingProfile" xml:space="preserve">
+    <value>TrackingProfile</value>
+  </data>
+  <data name="task_TrackingRecord" xml:space="preserve">
+    <value>TrackingRecord</value>
+  </data>
+  <data name="task_TransportReceive" xml:space="preserve">
+    <value>TransportReceive</value>
+  </data>
+  <data name="task_TransportSend" xml:space="preserve">
+    <value>TransportSend</value>
+  </data>
+  <data name="task_TryCatchException" xml:space="preserve">
+    <value>TryCatchException</value>
+  </data>
+  <data name="task_VBExpressionCompile" xml:space="preserve">
+    <value>VBExpressionCompile</value>
+  </data>
+  <data name="task_WASActivation" xml:space="preserve">
+    <value>WASActivation</value>
+  </data>
+  <data name="task_WebHostRequest" xml:space="preserve">
+    <value>WebHostRequest</value>
+  </data>
+  <data name="task_WFApplicationStateChange" xml:space="preserve">
+    <value>WFApplicationStateChange</value>
+  </data>
+  <data name="task_WFMessage" xml:space="preserve">
+    <value>WFMessage</value>
+  </data>
+  <data name="task_WorkflowActivity" xml:space="preserve">
+    <value>WorkflowActivity</value>
+  </data>
+  <data name="task_WorkflowInstanceRecord" xml:space="preserve">
+    <value>WorkflowInstanceRecord</value>
+  </data>
+  <data name="task_WorkflowTracking" xml:space="preserve">
+    <value>WorkflowTracking</value>
+  </data>
+  <data name="task_WrappedKeyDecryption" xml:space="preserve">
+    <value>WrappedKeyDecryption</value>
+  </data>
+  <data name="task_XamlServicesLoad" xml:space="preserve">
+    <value>XamlServicesLoad</value>
+  </data>
+</root>

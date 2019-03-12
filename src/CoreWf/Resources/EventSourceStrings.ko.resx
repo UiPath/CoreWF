@@ -1,0 +1,2382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="event_ActionItemCallbackInvoked" xml:space="preserve">
+    <value>IO 스레드 스케줄러 콜백이 호출되었습니다.</value>
+  </data>
+  <data name="event_ActionItemScheduled" xml:space="preserve">
+    <value>IO 스레드 스케줄러 콜백이 호출되었습니다.</value>
+  </data>
+  <data name="event_ActivityCompleted" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'이(가) '{3}' 상태로 완료되었습니다.</value>
+  </data>
+  <data name="event_ActivityScheduled" xml:space="preserve">
+    <value>부모 작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에서 자식 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'을(를) 예약했습니다.</value>
+  </data>
+  <data name="event_AppDomainUnload" xml:space="preserve">
+    <value>AppDomain을 언로드하고 있습니다. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
+  </data>
+  <data name="event_AspNetRoute" xml:space="preserve">
+    <value>serviceType이 '{1}'이고 serviceHostFactoryType이 '{2}'인 새 Asp.Net 경로 '{0}'이(가) 추가되었습니다.</value>
+  </data>
+  <data name="event_AspNetRoutingService" xml:space="preserve">
+    <value>들어오는 요청이 주소가 {0}인 Asp.Net 경로에 정의된 WCF 서비스와 일치합니다.  </value>
+  </data>
+  <data name="event_BinaryMessageDecodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder에서 메시지 디코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_BinaryMessageEncodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder에서 메시지 인코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_BookmarkScopeInitialized" xml:space="preserve">
+    <value>TemporaryId: '{0}'인 BookmarkScope가 ID: '{1}'(으)로 초기화되었습니다.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStart" xml:space="preserve">
+    <value>BufferId:{0}에서 기본 스트림에 대한 '{1}'바이트 쓰기를 완료했습니다.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStop" xml:space="preserve">
+    <value>인코더가 메시지를 비동기적으로 썼습니다.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoBookmark" xml:space="preserve">
+    <value>현재는 서비스 인스턴스 '{0}'에서 '{1}' 작업을 수행할 수 없습니다. 서비스 인스턴스에서 이 특정 작업을 처리할 준비가 되면 다시 작업이 시도됩니다.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoInstance" xml:space="preserve">
+    <value>현재는 '{0}' 작업을 수행할 수 없습니다. 서비스 인스턴스에서 이 특정 작업을 처리할 준비가 되면 다시 작업이 시도됩니다.</value>
+  </data>
+  <data name="event_BufferPoolAllocation" xml:space="preserve">
+    <value>풀에서 {0}바이트를 할당하는 중입니다.</value>
+  </data>
+  <data name="event_BufferPoolChangeQuota" xml:space="preserve">
+    <value>크기가 {0}인 BufferPool의 할당량을 {1}(으)로 변경하는 중입니다.</value>
+  </data>
+  <data name="event_CacheRootMetadataStart" xml:space="preserve">
+    <value>CacheRootMetadata가 작업 '{0}'에서 시작되었습니다.</value>
+  </data>
+  <data name="event_CacheRootMetadataStop" xml:space="preserve">
+    <value>CacheRootMetadata가 작업 '{0}'에서 중지되었습니다.</value>
+  </data>
+  <data name="event_CBAEntryRead" xml:space="preserve">
+    <value>처리한 ServiceActivation 요소 상대 주소:'{0}', 정규화된 상대 주소 '{1}' .</value>
+  </data>
+  <data name="event_CBAMatchFound" xml:space="preserve">
+    <value>들어오는 요청이 주소가 '{0}'인 ServiceActivation 요소와 일치합니다. </value>
+  </data>
+  <data name="event_ChannelFactoryCreated" xml:space="preserve">
+    <value>ChannelFactory가 만들어졌습니다.</value>
+  </data>
+  <data name="event_ChannelInitializationTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ChannelReceiveStart" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - 메시지 수신 루프가 시작되었습니다.</value>
+  </data>
+  <data name="event_ChannelReceiveStop" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - 메시지 수신 루프가 중지되었습니다.</value>
+  </data>
+  <data name="event_ClientBaseCachedChannelFactoryCount" xml:space="preserve">
+    <value>캐시된 채널 팩터리 수: '{0}'. 최대 ''{1}'개의 채널 팩터리를 캐시할 수 있습니다.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryAgedOutofCache" xml:space="preserve">
+    <value>캐시가 해당 한도 '{0}'에 도달했기 때문에 채널 팩터리가 캐시에서 만료되었습니다.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryCacheHit" xml:space="preserve">
+    <value>캐시에서 사용된 일치하는 채널 팩터리가 발견되었습니다.</value>
+  </data>
+  <data name="event_ClientBaseUsingLocalChannelFactory" xml:space="preserve">
+    <value>캐시에서 채널 팩터리를 사용하는 중이 아닙니다. 즉 인스턴스에 대해 캐싱이 해제되었습니다.</value>
+  </data>
+  <data name="event_ClientChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannel 열기가 시작됩니다.</value>
+  </data>
+  <data name="event_ClientChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannel 열기가 중지됩니다.</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStart" xml:space="preserve">
+    <value>클라이언트에서 회신 메시지 역직렬화가 시작되었습니다.</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStop" xml:space="preserve">
+    <value>클라이언트에서 회신 메시지 역직렬화가 완료되었습니다.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStart" xml:space="preserve">
+    <value>클라이언트 요청 serialization이 시작되었습니다.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStop" xml:space="preserve">
+    <value>클라이언트에서 요청 메시지의 serialization이 완료되었습니다.</value>
+  </data>
+  <data name="event_ClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 ClientMessageInspector에서 'AfterReceiveReply'를 호출했습니다.</value>
+  </data>
+  <data name="event_ClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 ClientMessageInspector에서 'BeforeSendRequest'를 호출했습니다.</value>
+  </data>
+  <data name="event_ClientOperationPrepared" xml:space="preserve">
+    <value>클라이언트가 '{1}' 계약에 연결된 '{0}' 동작을 실행하고 있습니다. 메시지는 '{2}'(으)로 전송됩니다.</value>
+  </data>
+  <data name="event_ClientParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 ClientParameterInspector에서 'AfterCall'을 호출했습니다.</value>
+  </data>
+  <data name="event_ClientParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 ClientParameterInspector에서 'BeforeCall'을 호출했습니다.</value>
+  </data>
+  <data name="event_ClientReliableSessionReconnect" xml:space="preserve">
+    <value>SessionId:{0} 다시 연결하는 중입니다.</value>
+  </data>
+  <data name="event_ClientSendPreambleStart" xml:space="preserve">
+    <value>클라이언트 전송 프리앰블이 시작됩니다.</value>
+  </data>
+  <data name="event_ClientSendPreambleStop" xml:space="preserve">
+    <value>클라이언트 전송 프리앰블이 중지됩니다.</value>
+  </data>
+  <data name="event_CloseTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_CompensationState" xml:space="preserve">
+    <value>CompensableActivity '{0}'이(가) '{1}' 상태입니다.</value>
+  </data>
+  <data name="event_CompilationStart" xml:space="preserve">
+    <value>컴파일 시작</value>
+  </data>
+  <data name="event_CompilationStop" xml:space="preserve">
+    <value>컴파일 종료</value>
+  </data>
+  <data name="event_CompileVbExpressionStart" xml:space="preserve">
+    <value>VB 식 '{0}' 컴파일 중</value>
+  </data>
+  <data name="event_CompileVbExpressionStop" xml:space="preserve">
+    <value>VB 식 컴파일이 완료되었습니다.</value>
+  </data>
+  <data name="event_CompleteBookmarkWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 BookmarkWorkItem이 완료되었습니다. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CompleteCancelActivityWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 CancelActivityWorkItem이 완료되었습니다.</value>
+  </data>
+  <data name="event_CompleteCompletionWorkItem" xml:space="preserve">
+    <value>부모 작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 CompletionWorkItem이 완료되었습니다. 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'이(가) 완료되었습니다.</value>
+  </data>
+  <data name="event_CompleteExecuteActivityWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 ExecuteActivityWorkItem이 완료되었습니다.</value>
+  </data>
+  <data name="event_CompleteFaultWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 FaultWorkItem이 완료되었습니다. 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'에서 예외가 전파되었습니다.</value>
+  </data>
+  <data name="event_CompleteRuntimeWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 런타임 작업 항목이 완료되었습니다.</value>
+  </data>
+  <data name="event_CompleteTransactionContextWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 TransactionContextWorkItem이 완료되었습니다.</value>
+  </data>
+  <data name="event_ConcurrentCallsRatio" xml:space="preserve">
+    <value>동시 호출 비율: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentInstancesRatio" xml:space="preserve">
+    <value>동시 인스턴스 비율: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentSessionsRatio" xml:space="preserve">
+    <value>동시 세션 비율: {0}/{1}</value>
+  </data>
+  <data name="event_ConnectionPoolMiss" xml:space="preserve">
+    <value>{0}에 대한 풀에 사용 가능한 연결이 없고 {1}개의 연결을 사용 중입니다.</value>
+  </data>
+  <data name="event_ConnectionPoolPreambleFailed" xml:space="preserve">
+    <value>ConnectionPoolPreambleFailed가 발생했습니다.</value>
+  </data>
+  <data name="event_ConnectionReaderSendFault" xml:space="preserve">
+    <value>연결 판독기가 오류 '{0}'을(를) 전송하고 있습니다. </value>
+  </data>
+  <data name="event_CreateBookmark" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 책갈피를 만들었습니다. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CreateBookmarkScope" xml:space="preserve">
+    <value>{0} BookmarkScope를 만들었습니다.</value>
+  </data>
+  <data name="event_CreateServiceHostStart" xml:space="preserve">
+    <value>CreateServiceHost 시작</value>
+  </data>
+  <data name="event_CreateServiceHostStop" xml:space="preserve">
+    <value>CreateServiceHost 종료</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStart" xml:space="preserve">
+    <value>CreateWorkflowServiceHost 시작</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStop" xml:space="preserve">
+    <value>CreateWorkflowServiceHost 중지</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract의 {0} 역직렬화와 함께 서로게이트가 시작됩니다.</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract 역직렬화와 함께 서로게이트가 중지됩니다.</value>
+  </data>
+  <data name="event_DCGenReaderStart" xml:space="preserve">
+    <value>{1}에 대한 DataContract {0} 판독기 생성이 시작됩니다.</value>
+  </data>
+  <data name="event_DCGenReaderStop" xml:space="preserve">
+    <value>DataContract 생성이 중지됩니다.</value>
+  </data>
+  <data name="event_DCGenWriterStart" xml:space="preserve">
+    <value>{1}에 대한 DataContract {0} 작성기 생성이 시작됩니다.</value>
+  </data>
+  <data name="event_DCGenWriterStop" xml:space="preserve">
+    <value>DataContract 작성기 생성이 중지됩니다.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStart" xml:space="preserve">
+    <value>{1}에 대한 Json {0} 판독기 생성이 시작됩니다.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStop" xml:space="preserve">
+    <value>Json 판독기 생성이 중지됩니다.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStart" xml:space="preserve">
+    <value>{1}에 대한 Json {0} 작성기 생성이 시작됩니다.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStop" xml:space="preserve">
+    <value>Json 작성기 생성이 중지됩니다.</value>
+  </data>
+  <data name="event_DCResolverResolve" xml:space="preserve">
+    <value>DataContract 확인자 확인 {0}이(가) 시작됩니다.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract의 {0} 직렬화와 함께 서로게이트가 시작됩니다.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract 직렬화와 함께 서로게이트가 중지됩니다.</value>
+  </data>
+  <data name="event_DecrementBusyCount" xml:space="preserve">
+    <value>DecrementBusyCount를 호출했습니다. 소스: {0}</value>
+  </data>
+  <data name="event_DiscoveryClientInClientChannelFailedToClose" xml:space="preserve">
+    <value>DiscoveryClientChannel 내에 만들어진 DiscoveryClient를 닫지 못해 중단했습니다.</value>
+  </data>
+  <data name="event_DiscoveryClientProtocolExceptionSuppressed" xml:space="preserve">
+    <value>DiscoveryClient를 닫는 동안에는 ProtocolException이 표시되지 않습니다. DiscoveryService가 DiscoveryClient에 응답을 보내려고 하는 중일 수 있습니다.</value>
+  </data>
+  <data name="event_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>DiscoveryClient가 DiscoveryProxy로부터 멀티캐스트 비표시 오류(Suppression) 메시지를 받았습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>해당 {2} 작업이 완료되어 messageId='{1}' 인 {0} 메시지가 DiscoveryClient에서 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidContent" xml:space="preserve">
+    <value>잘못된 내용이 있어 messageId='{1}'인 {0} 메시지가 DiscoveryClient에서 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>해당 {3} 작업이 완료되었거나 relatesTo 값이 잘못되어 messageId='{1}'이고 relatesTo='{2}'인 {0} 메시지가 DiscoveryClient에서 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidReplyTo" xml:space="preserve">
+    <value>잘못된 ReplyTo 주소가 있어 messageId='{0}'인 검색 요청 메시지가 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNoContent" xml:space="preserve">
+    <value>내용이 없어 {0} 메시지가 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageId" xml:space="preserve">
+    <value>메시지 머리글에 필요한 MessageId 속성이 없어 {0} 메시지가 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageSequence" xml:space="preserve">
+    <value>DiscoveryMessageSequence 속성이 없어 messageId='{1}'인 {0} 메시지가 DiscoveryClient에서 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullRelatesTo" xml:space="preserve">
+    <value>메시지 머리글에 RelatesTo 속성이 없어 messageId='{1}'인 {0} 메시지가 DiscoveryClient에서 삭제되었습니다.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullReplyTo" xml:space="preserve">
+    <value>ReplyTo 주소가 없어 messageId='{0}'인 검색 요청 메시지가 삭제되었습니다.</value>
+  </data>
+  <data name="event_DispatchFailed" xml:space="preserve">
+    <value>'{0}' 작업이 디스패치되었지만 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStart" xml:space="preserve">
+    <value>디스패처가 요청 메시지의 deserialization을 시작했습니다.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStop" xml:space="preserve">
+    <value>디스패처가 요청 메시지의 deserialization을 완료했습니다.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStart" xml:space="preserve">
+    <value>디스패처가 회신 메시지의 serialization을 시작했습니다.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStop" xml:space="preserve">
+    <value>디스패처가 회신 메시지의 serialization을 완료했습니다.</value>
+  </data>
+  <data name="event_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>메시지 디스패치를 위한 권한 부여 시작</value>
+  </data>
+  <data name="event_DispatchMessageStart" xml:space="preserve">
+    <value>메시지 디스패치가 시작되었습니다.</value>
+  </data>
+  <data name="event_DispatchMessageStop" xml:space="preserve">
+    <value>메시지 디스패치가 완료되었습니다.</value>
+  </data>
+  <data name="event_DispatchSessionFailed" xml:space="preserve">
+    <value>세션을 디스패치하지 못했습니다.</value>
+  </data>
+  <data name="event_DispatchSessionStart" xml:space="preserve">
+    <value>세션 디스패치가 시작되었습니다.</value>
+  </data>
+  <data name="event_DispatchSessionSuccess" xml:space="preserve">
+    <value>세션을 디스패치했습니다.</value>
+  </data>
+  <data name="event_DispatchSuccessful" xml:space="preserve">
+    <value>'{0}' 작업이 성공적으로 디스패치되었습니다.</value>
+  </data>
+  <data name="event_DuplicateCorrelationQuery" xml:space="preserve">
+    <value>Where='{0}'인 중복 CorrelationQuery가 있습니다. 이 중복 쿼리는 상관 관계를 계산할 때 사용되지 않습니다.</value>
+  </data>
+  <data name="event_DuplicateDiscoveryMessage" xml:space="preserve">
+    <value>중복되어 messageId='{1}'인 {0} 메시지가 삭제되었습니다.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingStart" xml:space="preserve">
+    <value>암호화된 데이터 처리가 시작되었습니다.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingSuccess" xml:space="preserve">
+    <value>암호화된 데이터 처리에 성공했습니다.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>EndpointAddress='{0}' 및 ListenUri='{1}'을(를) 사용하는 끝점의 검색 기능이 사용하지 않도록 설정되어 있습니다.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>EndpointAddress='{0}' 및 ListenUri='{1}'을(를) 사용하는 끝점의 검색 기능이 사용하도록 설정되어 있습니다.</value>
+  </data>
+  <data name="event_EndSqlCommandExecute" xml:space="preserve">
+    <value>SQL 명령 실행 종료: {0}</value>
+  </data>
+  <data name="event_EnterNoPersistBlock" xml:space="preserve">
+    <value>비지속성 블록으로 들어갑니다.</value>
+  </data>
+  <data name="event_ErrorHandlerInvoked" xml:space="preserve">
+    <value>디스패처가 '{2}' 형식의 예외와 함께 '{0}' 형식의 ErrorHandler를 호출했습니다. ErrorHandled == '{1}'.</value>
+  </data>
+  <data name="event_EstablishConnectionStart" xml:space="preserve">
+    <value>{0}에 대해 연결 설정이 시작되었습니다.</value>
+  </data>
+  <data name="event_EstablishConnectionStop" xml:space="preserve">
+    <value>연결이 설정되었습니다.</value>
+  </data>
+  <data name="event_EtwUnhandledException" xml:space="preserve">
+    <value>처리되지 않은 예외가 발생했습니다. 예외 정보: {0}</value>
+  </data>
+  <data name="event_ExecuteWorkItemStart" xml:space="preserve">
+    <value>작업 항목 실행 시작</value>
+  </data>
+  <data name="event_ExecuteWorkItemStop" xml:space="preserve">
+    <value>작업 항목 실행 중지</value>
+  </data>
+  <data name="event_ExitNoPersistBlock" xml:space="preserve">
+    <value>비지속성 블록에서 나옵니다.</value>
+  </data>
+  <data name="event_FailFastException" xml:space="preserve">
+    <value>FailFastException이 발생했습니다.</value>
+  </data>
+  <data name="event_FaultProviderInvoked" xml:space="preserve">
+    <value>디스패처가 '{1}' 형식의 예외와 함께 '{0}' 형식의 FaultProvider를 호출했습니다.</value>
+  </data>
+  <data name="event_FederationMessageCreationStarted" xml:space="preserve">
+    <value>폼 게시에서 페더레이션 메시지를 만들기 시작했습니다.</value>
+  </data>
+  <data name="event_FederationMessageCreationSuccess" xml:space="preserve">
+    <value>폼 게시에서 페더레이션 메시지 만들기에 성공했습니다.</value>
+  </data>
+  <data name="event_FederationMessageProcessingStarted" xml:space="preserve">
+    <value>페더레이션 메시지 처리가 시작되었습니다.</value>
+  </data>
+  <data name="event_FederationMessageProcessingSuccess" xml:space="preserve">
+    <value>페더레이션 메시지 처리에 성공했습니다.</value>
+  </data>
+  <data name="event_FindInitiatedInDiscoveryClientChannel" xml:space="preserve">
+    <value>끝점을 찾기 위해 찾기 작업이 DiscoveryClientChannel에서 시작되었습니다.</value>
+  </data>
+  <data name="event_FlowchartEmpty" xml:space="preserve">
+    <value>Flowchart '{0}' - 노드 없이 실행되었습니다.</value>
+  </data>
+  <data name="event_FlowchartNextNull" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowStep - 다음 노드가 null입니다. Flowchart 실행이 종료됩니다.</value>
+  </data>
+  <data name="event_FlowchartStart" xml:space="preserve">
+    <value>Flowchart '{0}' - 시작이 예약되었습니다.</value>
+  </data>
+  <data name="event_FlowchartSwitchCase" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - Case '{1}'을(를) 선택했습니다.</value>
+  </data>
+  <data name="event_FlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - Expression 결과와 일치하는 Case 작업 및 Default Case를 찾을 수 없습니다. Flowchart 실행이 종료됩니다.</value>
+  </data>
+  <data name="event_FlowchartSwitchDefault" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - Default Case를 선택했습니다.</value>
+  </data>
+  <data name="event_FoundProcessingError" xml:space="preserve">
+    <value>명령 실패: {0}</value>
+  </data>
+  <data name="event_GenXmlSerializableStart" xml:space="preserve">
+    <value>'{0}'에 대해 직렬화 가능한 Xml 생성이 시작됩니다.</value>
+  </data>
+  <data name="event_GenXmlSerializableStop" xml:space="preserve">
+    <value>직렬화 가능한 Xml 생성이 중지됩니다.</value>
+  </data>
+  <data name="event_GetIssuerNameFailure" xml:space="preserve">
+    <value>tokenid {0}에서 발급자 이름 검색에 실패했습니다.</value>
+  </data>
+  <data name="event_GetIssuerNameSuccess" xml:space="preserve">
+    <value>tokenid {1}에서 발급자 이름 {0} 검색에 성공했습니다.</value>
+  </data>
+  <data name="event_GetServiceInstanceStart" xml:space="preserve">
+    <value>서비스 인스턴스 검색이 시작되었습니다.</value>
+  </data>
+  <data name="event_GetServiceInstanceStop" xml:space="preserve">
+    <value>서비스 인스턴스가 검색되었습니다.</value>
+  </data>
+  <data name="event_HandledException" xml:space="preserve">
+    <value>예외를 처리하는 중입니다. 예외 정보: {0}</value>
+  </data>
+  <data name="event_HandledExceptionError" xml:space="preserve">
+    <value>예외를 처리하는 중입니다. 예외 정보: {0}</value>
+  </data>
+  <data name="event_HandledExceptionVerbose" xml:space="preserve">
+    <value>예외를 처리하는 중입니다. 예외 정보: {0}</value>
+  </data>
+  <data name="event_HandledExceptionWarning" xml:space="preserve">
+    <value>예외를 처리하는 중입니다. 예외 정보: {0}</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStart" xml:space="preserve">
+    <value>HostedTransportConfigurationManager에서 구성 초기화 시작</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStop" xml:space="preserve">
+    <value>HostedTransportConfigurationManager에서 구성 초기화 종료</value>
+  </data>
+  <data name="event_HttpAuthFailed" xml:space="preserve">
+    <value>Http 인증이 실패했습니다.</value>
+  </data>
+  <data name="event_HttpChannelRequestAborted" xml:space="preserve">
+    <value>Http 채널 요청이 중단되었습니다.</value>
+  </data>
+  <data name="event_HttpChannelResponseAborted" xml:space="preserve">
+    <value>Http 채널 응답이 중단되었습니다.</value>
+  </data>
+  <data name="event_HttpContextBeforeProcessAuthentication" xml:space="preserve">
+    <value>메시지 디스패치를 위한 인증 시작</value>
+  </data>
+  <data name="event_HttpGetContextStart" xml:space="preserve">
+    <value>HttpGetContext가 시작됩니다.</value>
+  </data>
+  <data name="event_HttpHandlerPickedForUrl" xml:space="preserve">
+    <value>URL '{0}'에서 루트 요소 형식이 '{1}'인 XAML 문서를 호스팅합니다. 이 URL에 대한 모든 요청을 처리하도록 HTTP 처리기 형식 '{2}'이(가) 선택되었습니다.</value>
+  </data>
+  <data name="event_HttpMessageReceiveFailed" xml:space="preserve">
+    <value>Http 메시지 수신이 실패했습니다.</value>
+  </data>
+  <data name="event_HttpMessageReceiveStart" xml:space="preserve">
+    <value>http 전송으로부터 메시지가 수신되었습니다.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessInboundRequestStart" xml:space="preserve">
+    <value>Http 메시지 처리기가 비동기 인바운드 요청 처리를 시작했습니다.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessResponseStart" xml:space="preserve">
+    <value>Http 메시지 처리기가 비동기 응답 처리를 시작했습니다.</value>
+  </data>
+  <data name="event_HttpPipelineFaulted" xml:space="preserve">
+    <value>Http 메시지 처리기에서 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStart" xml:space="preserve">
+    <value>Http 메시지 처리기가 인바운드 요청 처리를 시작했습니다.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStop" xml:space="preserve">
+    <value>Http 메시지 처리기가 인바운드 요청 처리를 완료했습니다.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStart" xml:space="preserve">
+    <value>Http 메시지 처리기가 응답 처리를 시작했습니다.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStop" xml:space="preserve">
+    <value>Http 메시지 처리기가 응답 처리를 완료했습니다.</value>
+  </data>
+  <data name="event_HttpPipelineTimeoutException" xml:space="preserve">
+    <value>WebSocket 연결 시간이 초과되었습니다.</value>
+  </data>
+  <data name="event_HttpResponseReceiveStart" xml:space="preserve">
+    <value>Http 전송에서 메시지 수신이 시작되었습니다.</value>
+  </data>
+  <data name="event_HttpSendMessageStart" xml:space="preserve">
+    <value>Http 전송 요청이 시작됩니다.</value>
+  </data>
+  <data name="event_HttpSendStop" xml:space="preserve">
+    <value>Http 전송 요청이 중지됩니다.</value>
+  </data>
+  <data name="event_HttpSendStreamedMessageStart" xml:space="preserve">
+    <value>Http 전송 스트리밍 메시지가 시작되었습니다.</value>
+  </data>
+  <data name="event_IdleServicesClosed" xml:space="preserve">
+    <value>활성화된 총 {1}개 서비스 중에서 {0}개의 유휴 서비스가 종료되었습니다.</value>
+  </data>
+  <data name="event_IdleTimeout" xml:space="preserve">
+    <value>{0} 연결 풀 키: {1}</value>
+  </data>
+  <data name="event_ImportKnownTypesStart" xml:space="preserve">
+    <value>ImportKnownTypes가 시작됩니다.</value>
+  </data>
+  <data name="event_ImportKnownTypesStop" xml:space="preserve">
+    <value>ImportKnownTypes가 중지됩니다.</value>
+  </data>
+  <data name="event_InactivityTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_InArgumentBound" xml:space="preserve">
+    <value>작업 '{1}', DisplayName: '{2}', InstanceId: '{3}'에 대한 In Argument '{0}'이(가) 값: {4}에 바인딩되었습니다.</value>
+  </data>
+  <data name="event_IncomingMessageVerified" xml:space="preserve">
+    <value>들어오는 메시지가 확인되었습니다.</value>
+  </data>
+  <data name="event_IncrementBusyCount" xml:space="preserve">
+    <value>IncrementBusyCount를 호출했습니다. 소스: {0}</value>
+  </data>
+  <data name="event_InferredContractDescription" xml:space="preserve">
+    <value>Name='{0}'이고 Namespace='{1}'인 ContractDescription이 WorkflowService에서 유추되었습니다.</value>
+  </data>
+  <data name="event_InferredOperationDescription" xml:space="preserve">
+    <value>계약 '{1}'에서 Name='{0}'인 OperationDescription이 WorkflowService에서 유추되었습니다. IsOneWay={2}</value>
+  </data>
+  <data name="event_InnerChannelCreationFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel에서 EndpointAddress='{0}' 및 Via='{1}'을(를) 사용하는 검색된 끝점으로 채널을 만들지 못했습니다. DiscoveryClientChannel은 이제 사용 가능한 다음 끝점으로 검색된 끝점을 사용하게 됩니다.</value>
+  </data>
+  <data name="event_InnerChannelOpenFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel에서 EndpointAddress='{0}' 및 Via='{1}'을(를) 사용하는 검색된 끝점으로 채널을 열지 못했습니다. DiscoveryClientChannel은 이제 사용 가능한 다음 끝점으로 검색된 끝점을 사용하게 됩니다.</value>
+  </data>
+  <data name="event_InnerChannelOpenSucceeded" xml:space="preserve">
+    <value>DiscoveryClientChannel에서 끝점을 검색하고 해당 끝점을 사용하여 채널을 열었습니다. 클라이언트는 EndpointAddress='{0}' 및 Via='{1}'을(를) 사용하여 서비스에 연결합니다.</value>
+  </data>
+  <data name="event_InstanceLocksRecoveryError" xml:space="preserve">
+    <value>다음 예외로 인해 인스턴스 잠금을 복구하지 못했습니다.</value>
+  </data>
+  <data name="event_InternalCacheMetadataStart" xml:space="preserve">
+    <value>InternalCacheMetadata가 작업 '{0}'에서 시작되었습니다.</value>
+  </data>
+  <data name="event_InternalCacheMetadataStop" xml:space="preserve">
+    <value>InternalCacheMetadata가 작업 '{0}'에서 중지되었습니다.</value>
+  </data>
+  <data name="event_InvokedMethodThrewException" xml:space="preserve">
+    <value>작업 '{0}'에서 호출된 메서드에서 예외가 발생했습니다. {1}</value>
+  </data>
+  <data name="event_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - 메서드에서 비동기 패턴을 사용하지 않습니다.</value>
+  </data>
+  <data name="event_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - 메서드가 Static이 아닙니다.</value>
+  </data>
+  <data name="event_InvokeMethodIsStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - 메서드가 Static입니다.</value>
+  </data>
+  <data name="event_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - 메서드에서 '{1}' 및 '{2}'의 비동기 패턴을 사용합니다.</value>
+  </data>
+  <data name="event_JsonMessageDecodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder에서 메시지 디코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_JsonMessageEncodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder에서 메시지 인코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_LeaseTimeout" xml:space="preserve">
+    <value>{0} 연결 풀 키: {1}</value>
+  </data>
+  <data name="event_ListenerOpenStart" xml:space="preserve">
+    <value>'{0}'에 대한 리스너가 열려 있습니다.</value>
+  </data>
+  <data name="event_ListenerOpenStop" xml:space="preserve">
+    <value>리스너 열기가 완료되었습니다.</value>
+  </data>
+  <data name="event_LockRetryTimeout" xml:space="preserve">
+    <value>인스턴스 잠금을 얻으려는 중 시간이 초과했습니다. 할당된 시간 제한인 {0} 내에 작업을 완료하지 못했습니다. 이 작업에 할당된 시간이 보다 긴 시간 제한의 일부일 수 있습니다.</value>
+  </data>
+  <data name="event_MaximumRetriesExceededForSqlCommand" xml:space="preserve">
+    <value>최대 재시도 횟수를 초과하여 SQL 명령 재시도를 중단합니다.</value>
+  </data>
+  <data name="event_MaxInstancesExceeded" xml:space="preserve">
+    <value>시스템이 스로틀 'MaxConcurrentInstances'에 설정한 제한에 도달했습니다. 이 스로틀에 대한 제한은 {0}(으)로 설정되었습니다. serviceThrottle 요소에서 'maxConcurrentInstances' 특성을 수정하거나 ServiceThrottlingBehavior 동작에서 'MaxConcurrentInstances' 속성을 수정하여 스로틀 값을 변경할 수 있습니다.</value>
+  </data>
+  <data name="event_MaxOutboundConnectionsPerEndpointExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingConnectionsExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingMessagesPerChannelExceeded" xml:space="preserve">
+    <value>'{0}'의 스로틀 'MaxPendingMessagesPerChannel' 한도에 도달했습니다. 이 한도를 늘리려면 BufferedReceiveServiceBehavior에서 MaxPendingMessagesPerChannel 속성을 조정하십시오.</value>
+  </data>
+  <data name="event_MaxReceivedMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxRetryCyclesExceededMsmq" xml:space="preserve">
+    <value>ID가' {0}'인 MSMQ 메시지에서 최대 재시도 주기가 초과되었습니다.</value>
+  </data>
+  <data name="event_MaxSentMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxSessionSizeReached" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 MessageInspector에서 'AfterReceiveReply'를 호출했습니다.</value>
+  </data>
+  <data name="event_MessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 MessageInspector에서 'BeforeSendRequest'를 호출했습니다.</value>
+  </data>
+  <data name="event_MessageLogEventSizeExceeded" xml:space="preserve">
+    <value>ETW 이벤트 크기를 초과하므로 메시지를 기록할 수 없습니다.</value>
+  </data>
+  <data name="event_MessageLogInfo" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageLogWarning" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketComplete" xml:space="preserve">
+    <value>MessageQueueDuplicatedSocketComplete</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketError" xml:space="preserve">
+    <value>메시지 큐로 소켓을 복제하지 못했습니다.</value>
+  </data>
+  <data name="event_MessageQueueRegisterAbort" xml:space="preserve">
+    <value>URI '{1}'에 대한 메시지 큐 등록이 중단되었습니다. 상태: '{0}'.</value>
+  </data>
+  <data name="event_MessageQueueRegisterCompleted" xml:space="preserve">
+    <value>URI '{0}'에 대한 메시지 큐 등록이 완료되었습니다.</value>
+  </data>
+  <data name="event_MessageQueueRegisterFailed" xml:space="preserve">
+    <value>URI '{0}'에 대한 메시지 큐를 등록하지 못했습니다. 상태: '{1}'.</value>
+  </data>
+  <data name="event_MessageQueueRegisterStart" xml:space="preserve">
+    <value>메시지 큐 등록이 시작됩니다.</value>
+  </data>
+  <data name="event_MessageQueueUnregisterSucceeded" xml:space="preserve">
+    <value>URI '{0}'에 대한 메시지 큐 등록을 취소했습니다.</value>
+  </data>
+  <data name="event_MessageReadByEncoder" xml:space="preserve">
+    <value>인코더가 크기가 '{0}'바이트인 메시지를 읽었습니다.</value>
+  </data>
+  <data name="event_MessageReceivedByTransport" xml:space="preserve">
+    <value>전송이 '{0}'에서 메시지를 받았습니다.</value>
+  </data>
+  <data name="event_MessageReceivedFromTransport" xml:space="preserve">
+    <value>디스패처가 전송에서 메시지를 받았습니다. Correlation ID == '{0}'.</value>
+  </data>
+  <data name="event_MessageSentByTransport" xml:space="preserve">
+    <value>전송이 '{0}'에 메시지를 보냈습니다.</value>
+  </data>
+  <data name="event_MessageSentToTransport" xml:space="preserve">
+    <value>디스패처가 전송에 메시지를 보냈습니다. Correlation ID == '{0}'.</value>
+  </data>
+  <data name="event_MessageThrottleAtSeventyPercent" xml:space="preserve">
+    <value>'{0}'의 '{1}' 스로틀 제한이 70%%입니다.</value>
+  </data>
+  <data name="event_MessageThrottleExceeded" xml:space="preserve">
+    <value>'{0}'의 스로틀 한계 '{1}'에 도달했습니다.</value>
+  </data>
+  <data name="event_MessageWrittenAsynchronouslyByEncoder" xml:space="preserve">
+    <value>인코더가 메시지를 비동기적으로 썼습니다.</value>
+  </data>
+  <data name="event_MessageWrittenByEncoder" xml:space="preserve">
+    <value>인코더가 크기가 '{0}'바이트인 메시지를 썼습니다.</value>
+  </data>
+  <data name="event_MtomMessageDecodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder에서 메시지 디코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_MtomMessageEncodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder에서 메시지 인코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_NamedPipeCreated" xml:space="preserve">
+    <value>NamedPipe '{0}'이(가) 만들어졌습니다.</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheRatio" xml:space="preserve">
+    <value>협상 토큰 인증자 상태 캐시 비율: {0}/{1}</value>
+  </data>
+  <data name="event_OpenListenerChannelInstanceFailed" xml:space="preserve">
+    <value>오류 코드:{0}</value>
+  </data>
+  <data name="event_OpenTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_OperationCompleted" xml:space="preserve">
+    <value>OperationInvoker가 '{0}' 메서드에 대한 호출을 완료했습니다. 메서드 호출 기간은 '{1}'ms입니다.</value>
+  </data>
+  <data name="event_OperationFailed" xml:space="preserve">
+    <value>OperationInvoker의 호출을 받은 '{0}' 메서드에서 처리되지 않은 예외가 발생했습니다. 메서드 호출 기간은 '{1}'ms입니다.</value>
+  </data>
+  <data name="event_OperationFaulted" xml:space="preserve">
+    <value>OperationInvoker의 호출을 받은 '{0}' 메서드에서 FaultException이 발생했습니다. 메서드 호출 기간은 '{1}'ms입니다.</value>
+  </data>
+  <data name="event_OperationInvoked" xml:space="preserve">
+    <value>OperationInvoker가 '{0}' 메서드를 호출했습니다. 호출자 정보: '{1}''.</value>
+  </data>
+  <data name="event_OutboundConnectionsPerEndpointRatio" xml:space="preserve">
+    <value>끝점당 아웃바운드 연결 비율: {0}/{1}</value>
+  </data>
+  <data name="event_OutgoingMessageSecured" xml:space="preserve">
+    <value>보내는 메시지의 보안이 설정되었습니다.</value>
+  </data>
+  <data name="event_ParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 ParameterInspector에서 'AfterCall'을 호출했습니다.</value>
+  </data>
+  <data name="event_ParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>디스패처가 '{0}' 형식의 ParameterInspector에서 'BeforeCall'을 호출했습니다.</value>
+  </data>
+  <data name="event_PendingAcceptsAtZero" xml:space="preserve">
+    <value>보류 중인 수락 항목 없음</value>
+  </data>
+  <data name="event_PendingConnectionsRatio" xml:space="preserve">
+    <value>보류 중인 연결 비율: {0}/{1}</value>
+  </data>
+  <data name="event_PendingMessagesPerChannelRatio" xml:space="preserve">
+    <value>채널당 보류 중인 메시지 비율: {0}/{1}</value>
+  </data>
+  <data name="event_PendingSessionQueueFull" xml:space="preserve">
+    <value>보류 중인 항목이 '{1}'개로 보류 중인 세션 큐가 꽉 차서 '{0}'에 대한 세션을 디스패치하지 못했습니다.</value>
+  </data>
+  <data name="event_PendingSessionQueueRatio" xml:space="preserve">
+    <value>보류 중인 세션 큐 비율: {0}/{1}</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStart" xml:space="preserve">
+    <value>파이프 연결 수락이 {0}에서 시작되었습니다.</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStop" xml:space="preserve">
+    <value>파이프 연결이 수락되었습니다.</value>
+  </data>
+  <data name="event_PipeSharedMemoryCreated" xml:space="preserve">
+    <value>파이프 공유 메모리가 '{0}'에 만들어졌습니다.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStart" xml:space="preserve">
+    <value>파이프 전송 리스너 수신이 URI {0}에서 시작됩니다.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStop" xml:space="preserve">
+    <value>파이프 전송 리스너 수신이 중지됩니다.</value>
+  </data>
+  <data name="event_PortSharingDuplicatedSocket" xml:space="preserve">
+    <value>{0}에 대해 소켓이 중복되었습니다.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenStarted" xml:space="preserve">
+    <value>세션 토큰에서 보안 주체 설정이 시작되었습니다.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenSuccess" xml:space="preserve">
+    <value>세션 토큰에서 보안 주체 설정에 성공했습니다.</value>
+  </data>
+  <data name="event_QueryCompositionExecuted" xml:space="preserve">
+    <value>'{0}'을(를) 사용한 쿼리 작성이 요청 Uri: '{1}'에서 실행되었습니다.</value>
+  </data>
+  <data name="event_QueuingSqlRetry" xml:space="preserve">
+    <value>{0}밀리초의 지연으로 SQL 재시도를 큐에 넣고 있습니다.</value>
+  </data>
+  <data name="event_ReadPoolMiss" xml:space="preserve">
+    <value>새 '{0}'이(가) 만들어졌습니다.</value>
+  </data>
+  <data name="event_ReceiveContextAbandonFailed" xml:space="preserve">
+    <value>{0}을(를) 중단하지 못했습니다.</value>
+  </data>
+  <data name="event_ReceiveContextAbandonWithException" xml:space="preserve">
+    <value>{0}이(가) {1} 예외와 함께 중단되었습니다.</value>
+  </data>
+  <data name="event_ReceiveContextCompleteFailed" xml:space="preserve">
+    <value>{0}을(를) 완료하지 못했습니다.</value>
+  </data>
+  <data name="event_ReceiveContextFaulted" xml:space="preserve">
+    <value>받기 컨텍스트 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_ReceiveRetryCountReached" xml:space="preserve">
+    <value>ID가 '{0}'인 MSMQ 메시지에서 수신 재시도 횟수에 도달했습니다.</value>
+  </data>
+  <data name="event_ReceiveTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ReliableSessionChannelFaulted" xml:space="preserve">
+    <value>SessionId:{0} 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_RenewLockSystemError" xml:space="preserve">
+    <value>잠금 만료를 연장하지 못했습니다. 잠금 만료가 이미 지났거나 잠금 소유자가 삭제되었습니다. SqlWorkflowInstanceStore를 중단하는 중입니다.</value>
+  </data>
+  <data name="event_ResumeSignpostEvent" xml:space="preserve">
+    <value>작업 경계입니다.</value>
+  </data>
+  <data name="event_RetryingSqlCommandDueToSqlError" xml:space="preserve">
+    <value>SQL 오류 {0}번으로 인해 SQL 명령을 재시도합니다.</value>
+  </data>
+  <data name="event_RoutingServiceAbandoningReceiveContext" xml:space="preserve">
+    <value>라우팅 서비스에서 ID가 '{0}'인 메시지에 대해 ReceiveContext.Abandon을 호출하는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>라우팅 서비스가 '{0}' 채널에서 중단을 요청하고 있습니다.</value>
+  </data>
+  <data name="event_RoutingServiceChannelFaulted" xml:space="preserve">
+    <value>라우팅 서비스 클라이언트 '{0}'에 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>라우팅 서비스에서 아웃바운드 클라이언트 '{0}'을(를) 닫는 동안 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_RoutingServiceClosingClient" xml:space="preserve">
+    <value>라우팅 서비스에서 클라이언트 '{0}'을(를) 닫는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceCommittingTransaction" xml:space="preserve">
+    <value>라우팅 서비스에서 ID가 '{0}'인 트랜잭션을 커밋하는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingOneWay" xml:space="preserve">
+    <value>라우팅 서비스 단방향 메시지를 완료하는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingReceiveContext" xml:space="preserve">
+    <value>라우팅 서비스에서 ID가 '{0}'인 메시지에 대해 ReceiveContext.Complete를 호출하는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingTwoWay" xml:space="preserve">
+    <value>라우팅 서비스 요청 회신 메시지를 완료하는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>새 RoutingConfiguration이 라우팅 서비스에 적용되었습니다.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingClientForEndpoint" xml:space="preserve">
+    <value>라우팅 서비스에서 끝점 '{0}'에 대한 클라이언트를 만드는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingTransaction" xml:space="preserve">
+    <value>라우팅 서비스에서 메시지를 처리하기 위해 ID가 '{0}'인 새 트랜잭션을 만들었습니다.</value>
+  </data>
+  <data name="event_RoutingServiceDisplayConfig" xml:space="preserve">
+    <value>라우팅 서비스가 RouteOnHeadersOnly: {0}, SoapProcessingEnabled: {1}, EnsureOrderedDispatch: {2}(으)로 구성되어 있습니다.</value>
+  </data>
+  <data name="event_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>라우팅 서비스 구성 요소 {0}에 중복 콜백 예외가 발생했습니다.</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStart" xml:space="preserve">
+    <value>라우팅 서비스 MessageFilterTable 일치 시작.</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStop" xml:space="preserve">
+    <value>라우팅 서비스 MessageFilterTable 일치 중지.</value>
+  </data>
+  <data name="event_RoutingServiceHandledException" xml:space="preserve">
+    <value>라우팅 서비스가 예외를 처리했습니다.</value>
+  </data>
+  <data name="event_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>라우팅 서비스에서 ID가 '{0}'인 메시지를 {1} 끝점 목록으로 라우팅했습니다.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingFailure" xml:space="preserve">
+    <value>주소가 '{0}'인 끝점에서 메시지를 처리하는 동안 라우팅 서비스에 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingMessage" xml:space="preserve">
+    <value>라우팅 서비스에서 트랜잭션 {3}에서 받은 ID: '{0}', 동작: '{1}', 인바운드 URL: '{2}'을(를) 처리하는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceSendingFaultResponse" xml:space="preserve">
+    <value>라우팅 서비스에서 동작 '{0}'이(가) 있는 오류 응답 메시지를 다시 보내는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceSendingResponse" xml:space="preserve">
+    <value>라우팅 서비스에서 동작 '{0}'이(가) 있는 응답 메시지를 다시 보내는 중입니다.</value>
+  </data>
+  <data name="event_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>라우팅 서비스에서 '{0}'(으)로 보내는 동안 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_RoutingServiceUsingExistingTransaction" xml:space="preserve">
+    <value>라우팅 서비스에서 기존 트랜잭션 '{0}'을(를) 사용하여 메시지를 보냅니다.</value>
+  </data>
+  <data name="event_RoutingTableLookupStart" xml:space="preserve">
+    <value>라우팅 테이블 조회가 시작되었습니다.</value>
+  </data>
+  <data name="event_RoutingTableLookupStop" xml:space="preserve">
+    <value>라우팅 테이블 조회가 완료되었습니다.</value>
+  </data>
+  <data name="event_RunnableInstancesDetectionError" xml:space="preserve">
+    <value>다음 예외로 인해 실행 가능한 인스턴스를 검색하지 못했습니다.</value>
+  </data>
+  <data name="event_RuntimeTransactionComplete" xml:space="preserve">
+    <value>런타임 트랜잭션이 '{0}' 상태로 완료되었습니다.</value>
+  </data>
+  <data name="event_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'이(가) 런타임 트랜잭션 완료를 예약했습니다.</value>
+  </data>
+  <data name="event_RuntimeTransactionSet" xml:space="preserve">
+    <value>런타임 트랜잭션이 작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'(으)로 설정되었습니다. 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'(으)로 실행이 격리되었습니다.</value>
+  </data>
+  <data name="event_ScheduleBookmarkWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 BookmarkWorkItem이 예약되었습니다.  BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_ScheduleCancelActivityWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 CancelActivityWorkItem이 예약되었습니다.</value>
+  </data>
+  <data name="event_ScheduleCompletionWorkItem" xml:space="preserve">
+    <value>부모 작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 CompletionWorkItem이 예약되었습니다. 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'이(가) 완료되었습니다.</value>
+  </data>
+  <data name="event_ScheduleExecuteActivityWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 ExecuteActivityWorkItem이 예약되었습니다.</value>
+  </data>
+  <data name="event_ScheduleFaultWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 FaultWorkItem이 예약되었습니다. 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'에서 예외가 전파되었습니다.</value>
+  </data>
+  <data name="event_ScheduleRuntimeWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 런타임 작업 항목이 예약되었습니다.</value>
+  </data>
+  <data name="event_ScheduleTransactionContextWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 TransactionContextWorkItem이 예약되었습니다.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationFailure" xml:space="preserve">
+    <value>보안 확인에 실패했습니다.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationSuccess" xml:space="preserve">
+    <value>보안 확인에 성공했습니다.</value>
+  </data>
+  <data name="event_SecurityImpersonationFailure" xml:space="preserve">
+    <value>보안 가장에 실패했습니다.</value>
+  </data>
+  <data name="event_SecurityImpersonationSuccess" xml:space="preserve">
+    <value>보안 가장에 성공했습니다.</value>
+  </data>
+  <data name="event_SecurityNegotiationProcessingFailure" xml:space="preserve">
+    <value>보안 협상을 처리하지 못했습니다.</value>
+  </data>
+  <data name="event_SecurityNegotiationStart" xml:space="preserve">
+    <value>보안 협상이 시작되었습니다.</value>
+  </data>
+  <data name="event_SecurityNegotiationStop" xml:space="preserve">
+    <value>보안 협상이 완료되었습니다.</value>
+  </data>
+  <data name="event_SecuritySessionRatio" xml:space="preserve">
+    <value>보안 세션 비율: {0}/{1}</value>
+  </data>
+  <data name="event_SecurityTokenProviderOpened" xml:space="preserve">
+    <value>SecurityTokenProvider 열기가 완료되었습니다.</value>
+  </data>
+  <data name="event_SendMessageChannelCacheMiss" xml:space="preserve">
+    <value>SendMessageChannelCache 누락</value>
+  </data>
+  <data name="event_SendTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_SequenceAcknowledgementSent" xml:space="preserve">
+    <value>SessionId:{0} 승인이 전송되었습니다.</value>
+  </data>
+  <data name="event_ServerMaxPooledConnectionsQuotaReached" xml:space="preserve">
+    <value>서버 최대 풀 연결 할당량에 도달했습니다.</value>
+  </data>
+  <data name="event_ServiceActivationAvailableMemory" xml:space="preserve">
+    <value>사용 가능한 메모리(바이트): {0}</value>
+  </data>
+  <data name="event_ServiceActivationException" xml:space="preserve">
+    <value>서비스를 활성화할 수 없습니다. 예외 정보: {0}</value>
+  </data>
+  <data name="event_ServiceActivationStart" xml:space="preserve">
+    <value>서비스 활성화 시작</value>
+  </data>
+  <data name="event_ServiceActivationStop" xml:space="preserve">
+    <value>서비스 활성화 중지</value>
+  </data>
+  <data name="event_ServiceChannelBeginCallStart" xml:space="preserve">
+    <value>ServiceChannel 비동기 호출이 시작되었습니다.</value>
+  </data>
+  <data name="event_ServiceChannelCallStart" xml:space="preserve">
+    <value>ServiceChannelCall이 시작되었습니다.</value>
+  </data>
+  <data name="event_ServiceChannelCallStop" xml:space="preserve">
+    <value>클라이언트가 '{1}' 계약에 연결된 '{0}' 동작 실행을 완료했습니다. 메시지는 '{2}'(으)로 전송되었습니다.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannelOpen이 시작되었습니다.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannelOpen이 완료되었습니다.</value>
+  </data>
+  <data name="event_ServiceEndpointAdded" xml:space="preserve">
+    <value>주소 '{0}', 바인딩 '{1}' 및 계약 '{2}'에 대해 서비스 끝점이 추가되었습니다.</value>
+  </data>
+  <data name="event_ServiceException" xml:space="preserve">
+    <value>메시지를 처리하는 동안 '{1}' 형식의 예외를 처리하지 못했습니다. 전체 예외 세부 정보: {0}.</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStart" xml:space="preserve">
+    <value>ServiceHostFactory 만들기 시작</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStop" xml:space="preserve">
+    <value>ServiceHostFactory 만들기 종료</value>
+  </data>
+  <data name="event_ServiceHostFaulted" xml:space="preserve">
+    <value>서비스 호스트에 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_ServiceHostOpenStart" xml:space="preserve">
+    <value>ServiceHost 열기가 시작되었습니다.</value>
+  </data>
+  <data name="event_ServiceHostOpenStop" xml:space="preserve">
+    <value>ServiceHost 열기가 완료되었습니다.</value>
+  </data>
+  <data name="event_ServiceHostStarted" xml:space="preserve">
+    <value>ServiceHost가 시작되었습니다. '{0}'.</value>
+  </data>
+  <data name="event_ServiceSecurityNegotiationCompleted" xml:space="preserve">
+    <value>서비스 보안 협상이 완료되었습니다.</value>
+  </data>
+  <data name="event_ServiceStartPipeError" xml:space="preserve">
+    <value>서비스 시작 파이프 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_SessionCookieReadingStarted" xml:space="preserve">
+    <value>세션 쿠키에서 세션 토큰을 읽기 시작했습니다.</value>
+  </data>
+  <data name="event_SessionCookieReadingSuccess" xml:space="preserve">
+    <value>세션 쿠키에서 세션 토큰 읽기에 성공했습니다.</value>
+  </data>
+  <data name="event_SessionIdleTimeout" xml:space="preserve">
+    <value>URI: '{0}'에 대한 유휴 채널에 대해 세션을 중단하는 중입니다.</value>
+  </data>
+  <data name="event_SessionPreambleUnderstood" xml:space="preserve">
+    <value>'{0}'에 대한 세션 프리앰블이 확인되었습니다.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterFailed" xml:space="preserve">
+    <value>SharedListenerProxy 등록이 '{0}' 상태로 실패했습니다.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStart" xml:space="preserve">
+    <value>SharedListenerProxy 등록이 URI '{0}'에 대해 시작되었습니다.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStop" xml:space="preserve">
+    <value>SharedListenerProxy 등록이 중지됩니다.</value>
+  </data>
+  <data name="event_ShipAssertExceptionMessage" xml:space="preserve">
+    <value>예기치 않은 오류가 발생했습니다. 응용 프로그램은 이 오류를 처리하지 않습니다. 오류와 관련된 다음 메시지가 진단용으로 제공됩니다. {0}.</value>
+  </data>
+  <data name="event_SignatureVerificationStart" xml:space="preserve">
+    <value>서명 확인이 시작되었습니다.</value>
+  </data>
+  <data name="event_SignatureVerificationSuccess" xml:space="preserve">
+    <value>서명 확인 성공</value>
+  </data>
+  <data name="event_SocketAcceptClosed" xml:space="preserve">
+    <value>소켓 수락이 종료되었습니다.</value>
+  </data>
+  <data name="event_SocketAccepted" xml:space="preserve">
+    <value>ListenerId:{0}에서 SocketId:{1}이(가) 수락되었습니다.</value>
+  </data>
+  <data name="event_SocketAcceptEnqueued" xml:space="preserve">
+    <value>연결 수락이 시작되었습니다.</value>
+  </data>
+  <data name="event_SocketAsyncReadStop" xml:space="preserve">
+    <value>SocketId:{0}이(가) '{2}'에서 '{1}'바이트를 읽었습니다.</value>
+  </data>
+  <data name="event_SocketAsyncWriteStart" xml:space="preserve">
+    <value>SocketId:{0}에서 '{2}'에 '{1}'바이트를 쓰는 중입니다.</value>
+  </data>
+  <data name="event_SocketConnectionAbort" xml:space="preserve">
+    <value>SocketId:{0}을(를) 중단하는 중입니다.</value>
+  </data>
+  <data name="event_SocketReadStop" xml:space="preserve">
+    <value>SocketId:{0}이(가) '{2}'에서 '{1}'바이트를 읽었습니다.</value>
+  </data>
+  <data name="event_SocketWriteStart" xml:space="preserve">
+    <value>SocketId:{0}에서 '{2}'에 '{1}'바이트를 쓰는 중입니다.</value>
+  </data>
+  <data name="event_SqlExceptionCaught" xml:space="preserve">
+    <value>SQL 예외 {0}번 메시지 {1}을(를) catch했습니다.</value>
+  </data>
+  <data name="event_SslOnAcceptUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStop</value>
+  </data>
+  <data name="event_SslOnInitiateUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStart</value>
+  </data>
+  <data name="event_StartBookmarkWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 BookmarkWorkItem의 실행을 시작합니다.  BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_StartCancelActivityWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 CancelActivityWorkItem의 실행을 시작합니다.</value>
+  </data>
+  <data name="event_StartCompletionWorkItem" xml:space="preserve">
+    <value>부모 작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 CompletionWorkItem의 실행을 시작합니다. 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'이(가) 완료되었습니다.</value>
+  </data>
+  <data name="event_StartExecuteActivityWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 ExecuteActivityWorkItem 실행을 시작합니다.</value>
+  </data>
+  <data name="event_StartFaultWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 FaultWorkItem의 실행을 시작합니다. 작업 '{3}', DisplayName: '{4}', InstanceId: '{5}'에서 예외가 전파되었습니다.</value>
+  </data>
+  <data name="event_StartRuntimeWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 런타임 작업 항목의 실행을 시작합니다.</value>
+  </data>
+  <data name="event_StartSignpostEvent" xml:space="preserve">
+    <value>작업 경계입니다.</value>
+  </data>
+  <data name="event_StartSignpostEvent1" xml:space="preserve">
+    <value>작업 경계입니다.</value>
+  </data>
+  <data name="event_StartSqlCommandExecute" xml:space="preserve">
+    <value>SQL 명령 실행 시작: {0}</value>
+  </data>
+  <data name="event_StartTransactionContextWorkItem" xml:space="preserve">
+    <value>작업 '{0}', DisplayName: '{1}', InstanceId: '{2}'에 대해 TransactionContextWorkItem의 실행을 시작합니다.</value>
+  </data>
+  <data name="event_StopSignpostEvent" xml:space="preserve">
+    <value>작업 경계입니다.</value>
+  </data>
+  <data name="event_StopSignpostEvent1" xml:space="preserve">
+    <value>작업 경계입니다.</value>
+  </data>
+  <data name="event_StreamedMessageReadByEncoder" xml:space="preserve">
+    <value>인코더가 스트리밍된 메시지를 읽었습니다.</value>
+  </data>
+  <data name="event_StreamedMessageWrittenByEncoder" xml:space="preserve">
+    <value>인코더가 스트리밍된 메시지를 썼습니다.</value>
+  </data>
+  <data name="event_SuspendSignpostEvent" xml:space="preserve">
+    <value>작업 경계입니다.</value>
+  </data>
+  <data name="event_SwitchCaseNotFound" xml:space="preserve">
+    <value>Switch 작업 '{0}'에서 Expression 결과와 일치하는 Case 작업을 찾을 수 없습니다.</value>
+  </data>
+  <data name="event_SynchronizationContextReset" xml:space="preserve">
+    <value>DiscoveryClientChannel에서 SynchronizationContext가 원래 값 {0}(으)로 다시 설정되었습니다.</value>
+  </data>
+  <data name="event_SynchronizationContextSetToNull" xml:space="preserve">
+    <value>찾기 작업을 시작하기 전에 DiscoveryClientChannel에서 SynchronizationContext가 Null로 설정되었습니다.</value>
+  </data>
+  <data name="event_TcpConnectionResetError" xml:space="preserve">
+    <value>원격 주소 {1}에 대한 SocketId:{0}에 연결 재설정 오류가 발생했습니다.</value>
+  </data>
+  <data name="event_TcpConnectionTimedOut" xml:space="preserve">
+    <value>원격 주소 {1}에 대한 SocketId:{0}이(가) 시간 초과되었습니다.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStart" xml:space="preserve">
+    <value>TCP 전송 리스너가 URI '{0}'에서 수신을 시작하는 중입니다.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStop" xml:space="preserve">
+    <value>TCP 전송 리스너가 수신 중입니다.</value>
+  </data>
+  <data name="event_TextMessageDecodingStart" xml:space="preserve">
+    <value>TextMessageEncoder에서 메시지 디코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_TextMessageEncodingStart" xml:space="preserve">
+    <value>TextMessageEncoder에서 메시지 인코딩이 시작되었습니다.</value>
+  </data>
+  <data name="event_ThrowingEtwException" xml:space="preserve">
+    <value>예외가 발생하는 중입니다. 원본: {0}. 예외 정보: {1}</value>
+  </data>
+  <data name="event_ThrowingEtwExceptionVerbose" xml:space="preserve">
+    <value>예외가 발생하는 중입니다. 원본: {0}. 예외 정보: {1}</value>
+  </data>
+  <data name="event_ThrowingException" xml:space="preserve">
+    <value>예외가 발생하는 중입니다. 원본 {0}. 예외 정보: {1}</value>
+  </data>
+  <data name="event_ThrowingExceptionVerbose" xml:space="preserve">
+    <value>예외가 발생하는 중입니다. 원본: {0}. 예외 정보: {1}</value>
+  </data>
+  <data name="event_TimeoutOpeningSqlConnection" xml:space="preserve">
+    <value>SQL 연결을 열려는 중 시간이 초과했습니다. 할당된 시간 제한인 {0} 내에 작업을 완료하지 못했습니다. 이 작업에 할당된 시간이 보다 긴 시간 제한의 일부일 수 있습니다.</value>
+  </data>
+  <data name="event_TokenValidationFailure" xml:space="preserve">
+    <value>SecurityToken('{0}' 형식, ID '{1}') 유효성 검사에 실패했습니다. {2}</value>
+  </data>
+  <data name="event_TokenValidationStarted" xml:space="preserve">
+    <value>SecurityToken('{0}' 형식, ID '{1}') 유효성 검사가 시작되었습니다.</value>
+  </data>
+  <data name="event_TokenValidationSuccess" xml:space="preserve">
+    <value>SecurityToken('{0}' 형식, ID '{1}') 유효성 검사에 성공했습니다.</value>
+  </data>
+  <data name="event_TraceCodeEventLogCritical" xml:space="preserve">
+    <value>EventLog에 기록합니다.</value>
+  </data>
+  <data name="event_TraceCodeEventLogError" xml:space="preserve">
+    <value>EventLog에 기록합니다.</value>
+  </data>
+  <data name="event_TraceCodeEventLogInfo" xml:space="preserve">
+    <value>EventLog에 기록합니다.</value>
+  </data>
+  <data name="event_TraceCodeEventLogVerbose" xml:space="preserve">
+    <value>EventLog에 기록합니다.</value>
+  </data>
+  <data name="event_TraceCodeEventLogWarning" xml:space="preserve">
+    <value>EventLog에 기록합니다.</value>
+  </data>
+  <data name="event_TraceCorrelationKeys" xml:space="preserve">
+    <value>부모 범위 '{2}'에서 '{1}' 값을 사용하여 상관 관계 키 '{0}'을(를) 계산했습니다.</value>
+  </data>
+  <data name="event_TrackingDataExtracted" xml:space="preserve">
+    <value>작업 {1}에서 추적 데이터 {0}을(를) 추출했습니다.</value>
+  </data>
+  <data name="event_TrackingProfileNotFound" xml:space="preserve">
+    <value>ActivityDefinitionId '{1}'에 대한 TrackingProfile '{0}'을(를) 찾지 못했습니다. 구성 파일에 TrackingProfile이 없거나 ActivityDefinitionId가 일치하지 않습니다.</value>
+  </data>
+  <data name="event_TrackingRecordDropped" xml:space="preserve">
+    <value>추적 레코드 {0}의 크기가 {1} 공급자의 ETW 세션에서 허용된 최대값을 초과합니다.</value>
+  </data>
+  <data name="event_TrackingRecordRaised" xml:space="preserve">
+    <value>추적 레코드 {0}이(가) {1}(으)로 증가했습니다.</value>
+  </data>
+  <data name="event_TrackingRecordTruncated" xml:space="preserve">
+    <value>잘린 추적 레코드 {0}이(가) 공급자가 {1}인 ETW 세션에 기록되었습니다. 변수/주석/사용자 데이터가 제거되었습니다.</value>
+  </data>
+  <data name="event_TrackingValueNotSerializable" xml:space="preserve">
+    <value>추출된 인수/변수 '{0}'은(는) 직렬화할 수 없습니다.</value>
+  </data>
+  <data name="event_TransactedReceiveScopeEndCommitFailed" xml:space="preserve">
+    <value>ID = '{0}'인 CommittableTransaction에 대한 EndCommit 호출에서 다음 메시지와 함께 TransactionException이 발생했습니다. '{1}'.</value>
+  </data>
+  <data name="event_TransactionScopeCreate" xml:space="preserve">
+    <value>LocalIdentifier:'{0}' 및 DistributedIdentifier:'{1}'을(를) 사용하여 TransactionScope를 만드는 중입니다.</value>
+  </data>
+  <data name="event_TransferEmitted" xml:space="preserve">
+    <value>전송 이벤트를 내보냈습니다.</value>
+  </data>
+  <data name="event_TransportListenerSessionsReceived" xml:space="preserve">
+    <value>'{0}'을(를) 통해 전송 리스너 세션이 수신되었습니다.</value>
+  </data>
+  <data name="event_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>취소하는 동안 TryCatch 작업 '{0}'의 자식 작업에서 예외가 발생했습니다.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>TryCatch 작업 '{0}'에 연결된 Catch 또는 Finally 작업에서 예외가 발생했습니다.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>TryCatch 작업 '{0}'에서 '{1}' 형식의 예외를 catch했습니다.</value>
+  </data>
+  <data name="event_UnhandledException" xml:space="preserve">
+    <value>처리되지 않은 예외가 발생했습니다. 예외 정보: {0}</value>
+  </data>
+  <data name="event_UnlockInstanceException" xml:space="preserve">
+    <value>인스턴스 잠금을 해제하는 동안 {0} 예외가 발생했습니다.</value>
+  </data>
+  <data name="event_UserEvents" xml:space="preserve">
+    <value>이름:'{0}', 참조:'{1}', 페이로드:{2}</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesCompleted" xml:space="preserve">
+    <value>WAS에서 모든 리스너 채널 인스턴스를 종료했습니다.</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesFailed" xml:space="preserve">
+    <value>오류 코드:{0}</value>
+  </data>
+  <data name="event_WasConnected" xml:space="preserve">
+    <value>WAS가 연결되었습니다.</value>
+  </data>
+  <data name="event_WasConnectionTimedout" xml:space="preserve">
+    <value>WAS 연결 시간이 초과되었습니다.</value>
+  </data>
+  <data name="event_WasDisconnected" xml:space="preserve">
+    <value>WAS 연결이 해제되었습니다.</value>
+  </data>
+  <data name="event_WebHostRequestStart" xml:space="preserve">
+    <value>AppDomain '{0}'에서 가상 경로가 '{1}'인 요청을 수신했습니다.</value>
+  </data>
+  <data name="event_WebHostRequestStop" xml:space="preserve">
+    <value>WebHostRequest가 중지됩니다.</value>
+  </data>
+  <data name="event_WebhostUnregisterProtocolFailed" xml:space="preserve">
+    <value>오류 코드:{0}</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStart" xml:space="preserve">
+    <value>WebSocketId:{0}에서 읽기를 시작합니다.</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStop" xml:space="preserve">
+    <value>WebSocketId:{0}이(가) '{2}'에서 '{1}'바이트를 읽었습니다.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStart" xml:space="preserve">
+    <value>WebSocketId:{0}에서 '{2}'에 '{1}'바이트를 쓰는 중입니다.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStop" xml:space="preserve">
+    <value>WebSocketId:{0}에서 비동기 쓰기를 중지합니다.</value>
+  </data>
+  <data name="event_WebSocketCloseOutputSent" xml:space="preserve">
+    <value>WebSocketId:{0}에서 닫기 상태 '{2}'(으)로 '{1}'에 출력 닫기 메시지를 보내는 중입니다.</value>
+  </data>
+  <data name="event_WebSocketCloseSent" xml:space="preserve">
+    <value>WebSocketId:{0}에서 닫기 상태 '{2}'(으)로 '{1}'에 닫기 메시지를 보내는 중입니다.</value>
+  </data>
+  <data name="event_WebSocketCloseStatusReceived" xml:space="preserve">
+    <value>WebSocketId:{0} 연결 닫기 메시지가 상태 '{1}'(으)로 수신되었습니다.</value>
+  </data>
+  <data name="event_WebSocketConnectionAborted" xml:space="preserve">
+    <value>WebSocketId:{0} 연결이 중단되었습니다.</value>
+  </data>
+  <data name="event_WebSocketConnectionAccepted" xml:space="preserve">
+    <value>WebSocketId:{0} 연결이 수락되었습니다.</value>
+  </data>
+  <data name="event_WebSocketConnectionAcceptStart" xml:space="preserve">
+    <value>WebSocket 연결 수락을 시작합니다.</value>
+  </data>
+  <data name="event_WebSocketConnectionClosed" xml:space="preserve">
+    <value>WebSocketId:{0} 연결이 닫혔습니다.</value>
+  </data>
+  <data name="event_WebSocketConnectionDeclined" xml:space="preserve">
+    <value>WebSocket 연결이 상태 코드 '{0}'(으)로 거부되었습니다.</value>
+  </data>
+  <data name="event_WebSocketConnectionFailed" xml:space="preserve">
+    <value>WebSocket 연결 요청이 실패했습니다. '{0}'</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStart" xml:space="preserve">
+    <value>'{0}'에 대한 WebSocket 연결 요청을 보내기 시작합니다.</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStop" xml:space="preserve">
+    <value>WebSocketId:{0} 연결 요청을 보냈습니다.</value>
+  </data>
+  <data name="event_WebSocketCreateClientWebSocketWithFactory" xml:space="preserve">
+    <value>팩터리 형식이 '{0}'인 클라이언트 WebSocket을 만드는 중입니다.</value>
+  </data>
+  <data name="event_WebSocketUseVersionFromClientWebSocketFactory" xml:space="preserve">
+    <value>클라이언트 WebSocket 팩터리 형식 '{0}'에서 Websocketversion을 사용하는 중입니다.</value>
+  </data>
+  <data name="event_WfMessageReceived" xml:space="preserve">
+    <value>워크플로가 메시지를 수신함</value>
+  </data>
+  <data name="event_WfMessageSent" xml:space="preserve">
+    <value>워크플로에서 메시지가 전송됨</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnAcceptUpgrade" xml:space="preserve">
+    <value>Windows 스트리밍 보안 업그레이드를 수락합니다.</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnInitiateUpgrade" xml:space="preserve">
+    <value>WindowsStreamSecurity에서 보안 업그레이드를 시작하는 중입니다.</value>
+  </data>
+  <data name="event_WorkflowActivityResume" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}' E2E 작업</value>
+  </data>
+  <data name="event_WorkflowActivityStart" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}' E2E 작업</value>
+  </data>
+  <data name="event_WorkflowActivityStop" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}' E2E 작업</value>
+  </data>
+  <data name="event_WorkflowActivitySuspend" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}' E2E 작업</value>
+  </data>
+  <data name="event_WorkflowApplicationCompleted" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}'이(가) Closed 상태에서 완료되었습니다.</value>
+  </data>
+  <data name="event_WorkflowApplicationIdled" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}'이(가) 유휴 상태가 되었습니다.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersistableIdle" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}'이(가) 유휴 상태로 지속됩니다. 다음 작업이 수행됩니다. {1}.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersisted" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}'이(가) 지속되었습니다.</value>
+  </data>
+  <data name="event_WorkflowApplicationTerminated" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}'이(가) 종료되었습니다. 예외와 함께 오류 상태로 완료되었습니다.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnhandledException" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}'에 처리되지 않은 예외가 발생했습니다. 이 예외는 작업 '{1}', DisplayName: '{2}'에서 발생되었습니다. 다음 동작이 수행됩니다. {3}.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnloaded" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}'이(가) 언로드되었습니다.</value>
+  </data>
+  <data name="event_WorkflowInstanceAborted" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}'이(가) 예외와 함께 중단되었습니다.</value>
+  </data>
+  <data name="event_WorkflowInstanceAbortedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceAbortedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceCanceled" xml:space="preserve">
+    <value>WorkflowInstance Id: '{0}'이(가) Canceled 상태로 완료되었습니다.</value>
+  </data>
+  <data name="event_WorkflowInstanceRecordWithId" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, State = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceUnhandledExceptionRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUnhandledExceptionRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, SourceName = {4}, SourceId = {5}, SourceInstanceId = {6}, SourceTypeName={7}, Exception={8}, Annotations= {9}, ProfileName = {10}, WorkflowDefinitionIdentity = {11}</value>
+  </data>
+  <data name="event_WorkflowInstanceUpdatedRecord" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceUpdatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, State = {4}, OriginalDefinitionIdentity = {5}, UpdatedDefinitionIdentity = {6}, Annotations = {7}, ProfileName = {8}</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionStart" xml:space="preserve">
+    <value>래핑된 키의 암호 해독이 시작되었습니다.</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionSuccess" xml:space="preserve">
+    <value>래핑된 키의 암호 해독에 성공했습니다.</value>
+  </data>
+  <data name="event_WritePoolMiss" xml:space="preserve">
+    <value>새 '{0}'이(가) 만들어졌습니다.</value>
+  </data>
+  <data name="event_XamlServicesLoadStart" xml:space="preserve">
+    <value>XamlServicesLoad 시작</value>
+  </data>
+  <data name="event_XamlServicesLoadStop" xml:space="preserve">
+    <value>XamlServicesLoad 중지</value>
+  </data>
+  <data name="keyword_ActivationServices" xml:space="preserve">
+    <value>활성화 서비스</value>
+  </data>
+  <data name="keyword_Channel" xml:space="preserve">
+    <value>채널</value>
+  </data>
+  <data name="keyword_Discovery" xml:space="preserve">
+    <value>검색</value>
+  </data>
+  <data name="keyword_EndToEndMonitoring" xml:space="preserve">
+    <value>종단 간 모니터링</value>
+  </data>
+  <data name="keyword_HealthMonitoring" xml:space="preserve">
+    <value>상태 모니터링</value>
+  </data>
+  <data name="keyword_HTTP" xml:space="preserve">
+    <value>HTTP 전송</value>
+  </data>
+  <data name="keyword_Infrastructure" xml:space="preserve">
+    <value>인프라</value>
+  </data>
+  <data name="keyword_Quota" xml:space="preserve">
+    <value>할당량</value>
+  </data>
+  <data name="keyword_RoutingServices" xml:space="preserve">
+    <value>라우팅 서비스</value>
+  </data>
+  <data name="keyword_Security" xml:space="preserve">
+    <value>보안</value>
+  </data>
+  <data name="keyword_Serialization" xml:space="preserve">
+    <value>serialization</value>
+  </data>
+  <data name="keyword_ServiceHost" xml:space="preserve">
+    <value>서비스 호스트</value>
+  </data>
+  <data name="keyword_ServiceModel" xml:space="preserve">
+    <value>ServiceModel</value>
+  </data>
+  <data name="keyword_TCP" xml:space="preserve">
+    <value>TCP 전송</value>
+  </data>
+  <data name="keyword_Threading" xml:space="preserve">
+    <value>스레딩</value>
+  </data>
+  <data name="keyword_Transaction" xml:space="preserve">
+    <value>트랜잭션</value>
+  </data>
+  <data name="keyword_TransportGeneral" xml:space="preserve">
+    <value>전송 일반</value>
+  </data>
+  <data name="keyword_Troubleshooting" xml:space="preserve">
+    <value>문제 해결</value>
+  </data>
+  <data name="keyword_UserEvents" xml:space="preserve">
+    <value>사용자 이벤트</value>
+  </data>
+  <data name="keyword_WCFMessageLogging" xml:space="preserve">
+    <value>WCF 메시지 기록</value>
+  </data>
+  <data name="keyword_WebHost" xml:space="preserve">
+    <value>웹 호스트</value>
+  </data>
+  <data name="keyword_WebHTTP" xml:space="preserve">
+    <value>웹 HTTP</value>
+  </data>
+  <data name="keyword_WFActivities" xml:space="preserve">
+    <value>워크플로 활동</value>
+  </data>
+  <data name="keyword_WFInstanceStore" xml:space="preserve">
+    <value>워크플로 InstanceStore</value>
+  </data>
+  <data name="keyword_WFRuntime" xml:space="preserve">
+    <value>워크플로 런타임</value>
+  </data>
+  <data name="keyword_WFServices" xml:space="preserve">
+    <value>워크플로 ServiceHost</value>
+  </data>
+  <data name="keyword_WFTracking" xml:space="preserve">
+    <value>WF 추적</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoBookmark" xml:space="preserve">
+    <value>NoBookmark</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoInstance" xml:space="preserve">
+    <value>NoInstance</value>
+  </data>
+  <data name="opcode_BufferPoolingAllocate" xml:space="preserve">
+    <value>할당</value>
+  </data>
+  <data name="opcode_BufferPoolingTune" xml:space="preserve">
+    <value>조정</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStart" xml:space="preserve">
+    <value>ClientChannelOpenStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStop" xml:space="preserve">
+    <value>ClientChannelOpenStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStart" xml:space="preserve">
+    <value>ClientParameterInspectorStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStop" xml:space="preserve">
+    <value>ClientParameterInspectorStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeOperationPrepared" xml:space="preserve">
+    <value>OperationPrepared</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteBookmark" xml:space="preserve">
+    <value>CompleteBookmark</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCancelActivity" xml:space="preserve">
+    <value>CompleteCancelActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCompletion" xml:space="preserve">
+    <value>CompleteCompletion</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteExecuteActivity" xml:space="preserve">
+    <value>CompleteExecuteActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteFault" xml:space="preserve">
+    <value>CompleteFault</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteRuntime" xml:space="preserve">
+    <value>CompleteRuntime</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteTransactionContext" xml:space="preserve">
+    <value>CompleteTransactionContext</value>
+  </data>
+  <data name="opcode_CorrelationDuplicateQuery" xml:space="preserve">
+    <value>DuplicateQuery</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelCreationFailed" xml:space="preserve">
+    <value>CreationFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelFindInitiated" xml:space="preserve">
+    <value>FindInitiated</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenFailed" xml:space="preserve">
+    <value>OpenFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenSucceeded" xml:space="preserve">
+    <value>OpenSucceeded</value>
+  </data>
+  <data name="opcode_DiscoveryClientExceptionSuppressed" xml:space="preserve">
+    <value>ExceptionSuppressed</value>
+  </data>
+  <data name="opcode_DiscoveryClientFailedToClose" xml:space="preserve">
+    <value>FailedToClose</value>
+  </data>
+  <data name="opcode_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>ReceivedMulticastSuppression</value>
+  </data>
+  <data name="opcode_DiscoveryMessageDuplicate" xml:space="preserve">
+    <value>중복됨</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidContent" xml:space="preserve">
+    <value>InvalidContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>InvalidRelatesToOrOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidReplyTo" xml:space="preserve">
+    <value>InvalidReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNoContent" xml:space="preserve">
+    <value>NoContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageId" xml:space="preserve">
+    <value>NullMessageId</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageSequence" xml:space="preserve">
+    <value>NullMessageSequence</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullRelatesTo" xml:space="preserve">
+    <value>NullRelatesTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullReplyTo" xml:space="preserve">
+    <value>NullReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>ReceivedAfterOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextReset" xml:space="preserve">
+    <value>재설정</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextSetToNull" xml:space="preserve">
+    <value>SetToNull</value>
+  </data>
+  <data name="opcode_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>BeforeAuthorization</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStart" xml:space="preserve">
+    <value>DispatchStart</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStop" xml:space="preserve">
+    <value>DispatchStop</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStart" xml:space="preserve">
+    <value>OperationInvokerStart</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStop" xml:space="preserve">
+    <value>OperationInvokerStop</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStart" xml:space="preserve">
+    <value>ParameterInspectorStart</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStop" xml:space="preserve">
+    <value>ParameterInspectorStop</value>
+  </data>
+  <data name="opcode_DispatchMessageTransactionScopeCreate" xml:space="preserve">
+    <value>TransactionScopeCreate</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>사용 안 함</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>사용</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartBegin" xml:space="preserve">
+    <value>시작</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartEmpty" xml:space="preserve">
+    <value>비어 있음</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartNextNull" xml:space="preserve">
+    <value>NextNull</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCase" xml:space="preserve">
+    <value>SwitchCase</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>SwitchCaseNotFound</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchDefault" xml:space="preserve">
+    <value>SwitchDefault</value>
+  </data>
+  <data name="opcode_ExpressionResultArrayItemValue" xml:space="preserve">
+    <value>ArrayItemValue</value>
+  </data>
+  <data name="opcode_ExpressionResultBinary" xml:space="preserve">
+    <value>이진</value>
+  </data>
+  <data name="opcode_ExpressionResultMemberAccess" xml:space="preserve">
+    <value>MemberAccess</value>
+  </data>
+  <data name="opcode_ExpressionResultUnary" xml:space="preserve">
+    <value>단항</value>
+  </data>
+  <data name="opcode_InferDescriptionContract" xml:space="preserve">
+    <value>계약</value>
+  </data>
+  <data name="opcode_InferDescriptionOperation" xml:space="preserve">
+    <value>작업</value>
+  </data>
+  <data name="opcode_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>DoesNotUseAsyncPattern</value>
+  </data>
+  <data name="opcode_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>IsNotStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodIsStatic" xml:space="preserve">
+    <value>IsStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodThrewException" xml:space="preserve">
+    <value>ThrewException</value>
+  </data>
+  <data name="opcode_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>UseAsyncPattern</value>
+  </data>
+  <data name="opcode_MessageChannelCacheMissed" xml:space="preserve">
+    <value>누락됨</value>
+  </data>
+  <data name="opcode_ReliableSessionFaulted" xml:space="preserve">
+    <value>오류 발생</value>
+  </data>
+  <data name="opcode_ReliableSessionReconnect" xml:space="preserve">
+    <value>다시 연결</value>
+  </data>
+  <data name="opcode_ReliableSessionSequenceAck" xml:space="preserve">
+    <value>SequenceAck</value>
+  </data>
+  <data name="opcode_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>AbortingChannel</value>
+  </data>
+  <data name="opcode_RoutingServiceClientChannelFaulted" xml:space="preserve">
+    <value>ChannelFaulted</value>
+  </data>
+  <data name="opcode_RoutingServiceClientClosing" xml:space="preserve">
+    <value>닫는 중</value>
+  </data>
+  <data name="opcode_RoutingServiceClientCreatingForEndpoint" xml:space="preserve">
+    <value>CreatingForEndpoint</value>
+  </data>
+  <data name="opcode_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>CloseFailed</value>
+  </data>
+  <data name="opcode_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>ConfigurationApplied</value>
+  </data>
+  <data name="opcode_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>DuplexCallbackException</value>
+  </data>
+  <data name="opcode_RoutingServiceHandledException" xml:space="preserve">
+    <value>HandledException</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingOneWay" xml:space="preserve">
+    <value>CompletingOneWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingTwoWay" xml:space="preserve">
+    <value>CompletingTwoWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageMovedToBackup" xml:space="preserve">
+    <value>MovedToBackup</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingFailure" xml:space="preserve">
+    <value>ProcessingFailure</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingMessage" xml:space="preserve">
+    <value>ProcessingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>RoutedToEndpoints</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingFaultResponse" xml:space="preserve">
+    <value>SendingFaultResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingResponse" xml:space="preserve">
+    <value>SendingResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmitSucceeded" xml:space="preserve">
+    <value>TransmitSucceeded</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmittingMessage" xml:space="preserve">
+    <value>TransmittingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextAbandoning" xml:space="preserve">
+    <value>중단 중</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextCompleting" xml:space="preserve">
+    <value>완료 중</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCommittingTransaction" xml:space="preserve">
+    <value>CommittingTransaction</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCreating" xml:space="preserve">
+    <value>만드는 중</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionUsingExisting" xml:space="preserve">
+    <value>UsingExisting</value>
+  </data>
+  <data name="opcode_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>TransmitFailed</value>
+  </data>
+  <data name="opcode_RuntimeTransactionComplete" xml:space="preserve">
+    <value>완료</value>
+  </data>
+  <data name="opcode_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>CompletionRequested</value>
+  </data>
+  <data name="opcode_RuntimeTransactionSet" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleBookmark" xml:space="preserve">
+    <value>ScheduleBookmark</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCancelActivity" xml:space="preserve">
+    <value>ScheduleCancelActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCompletion" xml:space="preserve">
+    <value>ScheduleCompletion</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleExecuteActivity" xml:space="preserve">
+    <value>ScheduleExecuteActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleFault" xml:space="preserve">
+    <value>ScheduleFault</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleRuntime" xml:space="preserve">
+    <value>ScheduleRuntime</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleTransactionContext" xml:space="preserve">
+    <value>ScheduleTransactionContext</value>
+  </data>
+  <data name="opcode_SessionUpgradeAccept" xml:space="preserve">
+    <value>수락</value>
+  </data>
+  <data name="opcode_SessionUpgradeInitiate" xml:space="preserve">
+    <value>시작</value>
+  </data>
+  <data name="opcode_Signpostsuspend" xml:space="preserve">
+    <value>일시 중단</value>
+  </data>
+  <data name="opcode_StartWorkItemStartBookmark" xml:space="preserve">
+    <value>StartBookmark</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCancelActivity" xml:space="preserve">
+    <value>StartCancelActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCompletion" xml:space="preserve">
+    <value>StartCompletion</value>
+  </data>
+  <data name="opcode_StartWorkItemStartExecuteActivity" xml:space="preserve">
+    <value>StartExecuteActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartFault" xml:space="preserve">
+    <value>StartFault</value>
+  </data>
+  <data name="opcode_StartWorkItemStartRuntime" xml:space="preserve">
+    <value>StartRuntime</value>
+  </data>
+  <data name="opcode_StartWorkItemStartTransactionContext" xml:space="preserve">
+    <value>StartTransactionContext</value>
+  </data>
+  <data name="opcode_TrackingProfileNotFound" xml:space="preserve">
+    <value>NotFound</value>
+  </data>
+  <data name="opcode_TrackingRecordDropped" xml:space="preserve">
+    <value>삭제됨</value>
+  </data>
+  <data name="opcode_TrackingRecordRaised" xml:space="preserve">
+    <value>증가</value>
+  </data>
+  <data name="opcode_TrackingRecordTruncated" xml:space="preserve">
+    <value>잘림</value>
+  </data>
+  <data name="opcode_TransportReceiveBeforeAuthentication" xml:space="preserve">
+    <value>BeforeAuthentication</value>
+  </data>
+  <data name="opcode_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>DuringCancelation</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>FromCatchOrFinally</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>FromTry</value>
+  </data>
+  <data name="opcode_WASActivationConnected" xml:space="preserve">
+    <value>연결됨</value>
+  </data>
+  <data name="opcode_WASActivationDisconnect" xml:space="preserve">
+    <value>연결 끊기</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeCompleted" xml:space="preserve">
+    <value>완료됨</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeIdled" xml:space="preserve">
+    <value>유휴 상태</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceAborted" xml:space="preserve">
+    <value>InstanceAborted</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceCanceled" xml:space="preserve">
+    <value>InstanceCanceled</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersistableIdle" xml:space="preserve">
+    <value>PersistableIdle</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersisted" xml:space="preserve">
+    <value>지속됨</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeTerminated" xml:space="preserve">
+    <value>종료됨</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnhandledException" xml:space="preserve">
+    <value>UnhandledException</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnloaded" xml:space="preserve">
+    <value>언로드됨</value>
+  </data>
+  <data name="opcode_WorkflowActivitysuspend" xml:space="preserve">
+    <value>일시 중단</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedRecord" xml:space="preserve">
+    <value>AbortedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedWithId" xml:space="preserve">
+    <value>AbortedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedRecord" xml:space="preserve">
+    <value>SuspendedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedWithId" xml:space="preserve">
+    <value>SuspendedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedRecord" xml:space="preserve">
+    <value>TerminatedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedWithId" xml:space="preserve">
+    <value>TerminatedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionRecord" xml:space="preserve">
+    <value>UnhandledExceptionRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionWithId" xml:space="preserve">
+    <value>UnhandledExceptionWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUpdatedRecord" xml:space="preserve">
+    <value>UpdatedRecord</value>
+  </data>
+  <data name="task_ActivationDispatchSession" xml:space="preserve">
+    <value>ActivationDispatchSession</value>
+  </data>
+  <data name="task_ActivationDuplicateSocket" xml:space="preserve">
+    <value>ActivationDuplicateSocket</value>
+  </data>
+  <data name="task_ActivationListenerOpen" xml:space="preserve">
+    <value>ActivationListenerOpen</value>
+  </data>
+  <data name="task_ActivationPipeListenerListening" xml:space="preserve">
+    <value>ActivationPipeListenerListening</value>
+  </data>
+  <data name="task_ActivationRoutingTableLookup" xml:space="preserve">
+    <value>ActivationRoutingTableLookup</value>
+  </data>
+  <data name="task_ActivationServiceStart" xml:space="preserve">
+    <value>ActivationServiceStart</value>
+  </data>
+  <data name="task_ActivationTcpListenerListening" xml:space="preserve">
+    <value>ActivationTcpListenerListening</value>
+  </data>
+  <data name="task_AddServiceEndpoint" xml:space="preserve">
+    <value>AddServiceEndpoint</value>
+  </data>
+  <data name="task_BufferOutOfOrder" xml:space="preserve">
+    <value>BufferOutOfOrder</value>
+  </data>
+  <data name="task_BufferPooling" xml:space="preserve">
+    <value>BufferPooling</value>
+  </data>
+  <data name="task_CacheRootMetadata" xml:space="preserve">
+    <value>CacheRootMetadata</value>
+  </data>
+  <data name="task_ChannelFactoryCaching" xml:space="preserve">
+    <value>ChannelFactoryCaching</value>
+  </data>
+  <data name="task_ChannelFactoryCreate" xml:space="preserve">
+    <value>ChannelFactoryCreate</value>
+  </data>
+  <data name="task_ChannelReceive" xml:space="preserve">
+    <value>ChannelReceive</value>
+  </data>
+  <data name="task_ClientRuntime" xml:space="preserve">
+    <value>ClientRuntime</value>
+  </data>
+  <data name="task_ClientSendPreamble" xml:space="preserve">
+    <value>ClientSendPreamble</value>
+  </data>
+  <data name="task_CompensationState" xml:space="preserve">
+    <value>CompensationState</value>
+  </data>
+  <data name="task_CompleteActivity" xml:space="preserve">
+    <value>CompleteActivity</value>
+  </data>
+  <data name="task_CompleteWorkItem" xml:space="preserve">
+    <value>CompleteWorkItem</value>
+  </data>
+  <data name="task_Connect" xml:space="preserve">
+    <value>연결</value>
+  </data>
+  <data name="task_ConnectionAbort" xml:space="preserve">
+    <value>ConnectionAbort</value>
+  </data>
+  <data name="task_ConnectionAccept" xml:space="preserve">
+    <value>ConnectionAccept</value>
+  </data>
+  <data name="task_ConnectionPooling" xml:space="preserve">
+    <value>ConnectionPooling</value>
+  </data>
+  <data name="task_Correlation" xml:space="preserve">
+    <value>상관 관계</value>
+  </data>
+  <data name="task_CreateBookmark" xml:space="preserve">
+    <value>CreateBookmark</value>
+  </data>
+  <data name="task_CreateHttpMessageHandler" xml:space="preserve">
+    <value>CreateHttpMessageHandler</value>
+  </data>
+  <data name="task_CreateWorkflowServiceHost" xml:space="preserve">
+    <value>CreateWorkflowServiceHost</value>
+  </data>
+  <data name="task_CustomTrackingRecord" xml:space="preserve">
+    <value>CustomTrackingRecord</value>
+  </data>
+  <data name="task_DataContractResolver" xml:space="preserve">
+    <value>DataContractResolver</value>
+  </data>
+  <data name="task_DiscoveryClient" xml:space="preserve">
+    <value>DiscoveryClient</value>
+  </data>
+  <data name="task_DiscoveryClientChannel" xml:space="preserve">
+    <value>DiscoveryClientChannel</value>
+  </data>
+  <data name="task_DiscoveryMessage" xml:space="preserve">
+    <value>DiscoveryMessage</value>
+  </data>
+  <data name="task_DiscoverySynchronizationContext" xml:space="preserve">
+    <value>DiscoverySynchronizationContext</value>
+  </data>
+  <data name="task_DispatchMessage" xml:space="preserve">
+    <value>DispatchMessage</value>
+  </data>
+  <data name="task_EncryptedDataProcessing" xml:space="preserve">
+    <value>EncryptedDataProcessing</value>
+  </data>
+  <data name="task_EndpointDiscoverability" xml:space="preserve">
+    <value>EndpointDiscoverability</value>
+  </data>
+  <data name="task_ExecuteActivity" xml:space="preserve">
+    <value>ExecuteActivity</value>
+  </data>
+  <data name="task_ExecuteFlowchart" xml:space="preserve">
+    <value>ExecuteFlowchart</value>
+  </data>
+  <data name="task_ExecuteWorkItem" xml:space="preserve">
+    <value>ExecuteWorkItem</value>
+  </data>
+  <data name="task_ExpressionResult" xml:space="preserve">
+    <value>ExpressionResult</value>
+  </data>
+  <data name="task_FederationMessageCreation" xml:space="preserve">
+    <value>FederationMessageCreation</value>
+  </data>
+  <data name="task_FederationMessageProcessing" xml:space="preserve">
+    <value>FederationMessageProcessing</value>
+  </data>
+  <data name="task_FormatterDeserializeReply" xml:space="preserve">
+    <value>FormatterDeserializeReply</value>
+  </data>
+  <data name="task_FormatterDeserializeRequest" xml:space="preserve">
+    <value>FormatterDeserializeRequest</value>
+  </data>
+  <data name="task_FormatterSerializeReply" xml:space="preserve">
+    <value>FormatterSerializeReply</value>
+  </data>
+  <data name="task_FormatterSerializeRequest" xml:space="preserve">
+    <value>FormatterSerializeRequest</value>
+  </data>
+  <data name="task_GenerateDeserializer" xml:space="preserve">
+    <value>GenerateDeserializer</value>
+  </data>
+  <data name="task_GenerateSerializer" xml:space="preserve">
+    <value>GenerateSerializer</value>
+  </data>
+  <data name="task_GenerateXmlSerializable" xml:space="preserve">
+    <value>GenerateXmlSerializable</value>
+  </data>
+  <data name="task_GetIssuerName" xml:space="preserve">
+    <value>GetIssuerName</value>
+  </data>
+  <data name="task_HostedTransportConfigurationManagerConfigInit" xml:space="preserve">
+    <value>HostedTransportConfigurationManagerConfigInit</value>
+  </data>
+  <data name="task_ImportKnownType" xml:space="preserve">
+    <value>ImportKnownType</value>
+  </data>
+  <data name="task_InferDescription" xml:space="preserve">
+    <value>InferDescription</value>
+  </data>
+  <data name="task_InitializeBookmarkScope" xml:space="preserve">
+    <value>InitializeBookmarkScope</value>
+  </data>
+  <data name="task_InternalCacheMetadata" xml:space="preserve">
+    <value>InternalCacheMetadata</value>
+  </data>
+  <data name="task_InvokeMethod" xml:space="preserve">
+    <value>InvokeMethod</value>
+  </data>
+  <data name="task_ListenerOpen" xml:space="preserve">
+    <value>ListenerOpen</value>
+  </data>
+  <data name="task_LockWorkflowInstance" xml:space="preserve">
+    <value>LockWorkflowInstance</value>
+  </data>
+  <data name="task_MessageChannelCache" xml:space="preserve">
+    <value>MessageChannelCache</value>
+  </data>
+  <data name="task_MessageDecoding" xml:space="preserve">
+    <value>MessageDecoding</value>
+  </data>
+  <data name="task_MessageEncoding" xml:space="preserve">
+    <value>MessageEncoding</value>
+  </data>
+  <data name="task_MessageQueueRegister" xml:space="preserve">
+    <value>MessageQueueRegister</value>
+  </data>
+  <data name="task_MsmqQuotas" xml:space="preserve">
+    <value>MsmqQuotas</value>
+  </data>
+  <data name="task_NoPersistBlock" xml:space="preserve">
+    <value>NoPersistBlock</value>
+  </data>
+  <data name="task_PrincipalSetting" xml:space="preserve">
+    <value>PrincipalSetting</value>
+  </data>
+  <data name="task_Quotas" xml:space="preserve">
+    <value>할당량</value>
+  </data>
+  <data name="task_ReliableSession" xml:space="preserve">
+    <value>ReliableSession</value>
+  </data>
+  <data name="task_RoutingService" xml:space="preserve">
+    <value>RoutingService</value>
+  </data>
+  <data name="task_RoutingServiceClient" xml:space="preserve">
+    <value>RoutingServiceClient</value>
+  </data>
+  <data name="task_RoutingServiceFilterTableMatch" xml:space="preserve">
+    <value>RoutingServiceFilterTableMatch</value>
+  </data>
+  <data name="task_RoutingServiceMessage" xml:space="preserve">
+    <value>RoutingServiceMessage</value>
+  </data>
+  <data name="task_RoutingServiceReceiveContext" xml:space="preserve">
+    <value>RoutingServiceReceiveContext</value>
+  </data>
+  <data name="task_RoutingServiceTransaction" xml:space="preserve">
+    <value>RoutingServiceTransaction</value>
+  </data>
+  <data name="task_RuntimeTransaction" xml:space="preserve">
+    <value>RuntimeTransaction</value>
+  </data>
+  <data name="task_ScheduleActivity" xml:space="preserve">
+    <value>ScheduleActivity</value>
+  </data>
+  <data name="task_ScheduleWorkItem" xml:space="preserve">
+    <value>ScheduleWorkItem</value>
+  </data>
+  <data name="task_SecureMessage" xml:space="preserve">
+    <value>SecureMessage</value>
+  </data>
+  <data name="task_SecurityImpersonation" xml:space="preserve">
+    <value>SecurityImpersonation</value>
+  </data>
+  <data name="task_SecurityNegotiation" xml:space="preserve">
+    <value>SecurityNegotiation</value>
+  </data>
+  <data name="task_SecurityVerification" xml:space="preserve">
+    <value>SecurityVerification</value>
+  </data>
+  <data name="task_ServiceActivation" xml:space="preserve">
+    <value>ServiceActivation</value>
+  </data>
+  <data name="task_ServiceChannelCall" xml:space="preserve">
+    <value>ServiceChannelCall</value>
+  </data>
+  <data name="task_ServiceChannelOpen" xml:space="preserve">
+    <value>ServiceChannelOpen</value>
+  </data>
+  <data name="task_ServiceHostActivation" xml:space="preserve">
+    <value>ServiceHostActivation</value>
+  </data>
+  <data name="task_ServiceHostCompilation" xml:space="preserve">
+    <value>ServiceHostCompilation</value>
+  </data>
+  <data name="task_ServiceHostCreate" xml:space="preserve">
+    <value>ServiceHostCreate</value>
+  </data>
+  <data name="task_ServiceHostFactoryCreation" xml:space="preserve">
+    <value>ServiceHostFactoryCreation</value>
+  </data>
+  <data name="task_ServiceHostFault" xml:space="preserve">
+    <value>ServiceHostFault</value>
+  </data>
+  <data name="task_ServiceHostOpen" xml:space="preserve">
+    <value>ServiceHostOpen</value>
+  </data>
+  <data name="task_ServiceInstance" xml:space="preserve">
+    <value>ServiceInstance</value>
+  </data>
+  <data name="task_ServiceShutdown" xml:space="preserve">
+    <value>ServiceShutdown</value>
+  </data>
+  <data name="task_SessionCookieReading" xml:space="preserve">
+    <value>SessionCookieReading</value>
+  </data>
+  <data name="task_SessionStart" xml:space="preserve">
+    <value>SessionStart</value>
+  </data>
+  <data name="task_SessionUpgrade" xml:space="preserve">
+    <value>SessionUpgrade</value>
+  </data>
+  <data name="task_SignatureVerification" xml:space="preserve">
+    <value>SignatureVerification</value>
+  </data>
+  <data name="task_Signpost" xml:space="preserve">
+    <value>Signpost</value>
+  </data>
+  <data name="task_SqlCommandExecute" xml:space="preserve">
+    <value>SqlCommandExecute</value>
+  </data>
+  <data name="task_StartWorkItem" xml:space="preserve">
+    <value>StartWorkItem</value>
+  </data>
+  <data name="task_SurrogateDeserialize" xml:space="preserve">
+    <value>SurrogateDeserialize</value>
+  </data>
+  <data name="task_SurrogateSerialize" xml:space="preserve">
+    <value>SurrogateSerialize</value>
+  </data>
+  <data name="task_ThreadScheduling" xml:space="preserve">
+    <value>ThreadScheduling</value>
+  </data>
+  <data name="task_Throttles" xml:space="preserve">
+    <value>스로틀</value>
+  </data>
+  <data name="task_Timeout" xml:space="preserve">
+    <value>시간 제한</value>
+  </data>
+  <data name="task_TimeoutException" xml:space="preserve">
+    <value>TimeoutException</value>
+  </data>
+  <data name="task_TokenValidation" xml:space="preserve">
+    <value>TokenValidation</value>
+  </data>
+  <data name="task_TrackingProfile" xml:space="preserve">
+    <value>TrackingProfile</value>
+  </data>
+  <data name="task_TrackingRecord" xml:space="preserve">
+    <value>TrackingRecord</value>
+  </data>
+  <data name="task_TransportReceive" xml:space="preserve">
+    <value>TransportReceive</value>
+  </data>
+  <data name="task_TransportSend" xml:space="preserve">
+    <value>TransportSend</value>
+  </data>
+  <data name="task_TryCatchException" xml:space="preserve">
+    <value>TryCatchException</value>
+  </data>
+  <data name="task_VBExpressionCompile" xml:space="preserve">
+    <value>VBExpressionCompile</value>
+  </data>
+  <data name="task_WASActivation" xml:space="preserve">
+    <value>WASActivation</value>
+  </data>
+  <data name="task_WebHostRequest" xml:space="preserve">
+    <value>WebHostRequest</value>
+  </data>
+  <data name="task_WFApplicationStateChange" xml:space="preserve">
+    <value>WFApplicationStateChange</value>
+  </data>
+  <data name="task_WFMessage" xml:space="preserve">
+    <value>WFMessage</value>
+  </data>
+  <data name="task_WorkflowActivity" xml:space="preserve">
+    <value>WorkflowActivity</value>
+  </data>
+  <data name="task_WorkflowInstanceRecord" xml:space="preserve">
+    <value>WorkflowInstanceRecord</value>
+  </data>
+  <data name="task_WorkflowTracking" xml:space="preserve">
+    <value>WorkflowTracking</value>
+  </data>
+  <data name="task_WrappedKeyDecryption" xml:space="preserve">
+    <value>WrappedKeyDecryption</value>
+  </data>
+  <data name="task_XamlServicesLoad" xml:space="preserve">
+    <value>XamlServicesLoad</value>
+  </data>
+</root>

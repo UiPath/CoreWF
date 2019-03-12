@@ -1,0 +1,2382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="event_ActionItemCallbackInvoked" xml:space="preserve">
+    <value>GÇ İş Parçacığı zamanlayıcısı geri çağrısı başlatıldı.</value>
+  </data>
+  <data name="event_ActionItemScheduled" xml:space="preserve">
+    <value>GÇ İş Parçacığı zamanlayıcısı geri çağrısı başlatıldı.</value>
+  </data>
+  <data name="event_ActivityCompleted" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si '{3}' durumunda tamamlandı.</value>
+  </data>
+  <data name="event_ActivityScheduled" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' üst Activity'si DisplayName: '{4}', InstanceId: '{5}' olan '{3}' alt Activity'sini zamanladı.</value>
+  </data>
+  <data name="event_AppDomainUnload" xml:space="preserve">
+    <value>AppDomain boşaltma. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
+  </data>
+  <data name="event_AspNetRoute" xml:space="preserve">
+    <value>serviceType değeri '{1}}' ve serviceHostFactoryType değeri '{2}' olan yeni bir '{0}' Asp.Net yolu eklendi.</value>
+  </data>
+  <data name="event_AspNetRoutingService" xml:space="preserve">
+    <value>Gelen istek adresi {0} olan Asp.Net yolunda tanımlı bir WCF Hizmeti ile eşleşiyor.  </value>
+  </data>
+  <data name="event_BinaryMessageDecodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder iletinin kodunu çözmeye başladı.</value>
+  </data>
+  <data name="event_BinaryMessageEncodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder iletiyi kodlamaya başladı.</value>
+  </data>
+  <data name="event_BookmarkScopeInitialized" xml:space="preserve">
+    <value>TemporaryId: '{0}' olan BookmarkScope, Id: '{1}' ile başlatıldı.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStart" xml:space="preserve">
+    <value>BufferId:{0}, temel alınan akışa '{1}' bayt yazmayı tamamladı.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStop" xml:space="preserve">
+    <value>Kodlayıcı tarafından zaman uyumsuz olarak bir ileti yazıldı.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoBookmark" xml:space="preserve">
+    <value>'{0}' hizmet örneğindeki '{1}' işlemi şu anda gerçekleştirilemiyor. Hizmet örneği bu işlemi işlemeye hazır olduğundan bir deneme daha yapılacak.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoInstance" xml:space="preserve">
+    <value>'{0}' işlemi şu anda gerçekleştirilemiyor. Hizmet örneği bu işlemi işlemeye hazır olduğundan bir deneme daha yapılacak.</value>
+  </data>
+  <data name="event_BufferPoolAllocation" xml:space="preserve">
+    <value>Havuz {0} bayt ayırıyor.</value>
+  </data>
+  <data name="event_BufferPoolChangeQuota" xml:space="preserve">
+    <value>BufferPool {0} boyutunda, kota {1} değiştiriliyor.</value>
+  </data>
+  <data name="event_CacheRootMetadataStart" xml:space="preserve">
+    <value>CacheRootMetadata, '{0}' etkinliğinde başladı</value>
+  </data>
+  <data name="event_CacheRootMetadataStop" xml:space="preserve">
+    <value>CacheRootMetadata, {0} etkinliğinde durdu.</value>
+  </data>
+  <data name="event_CBAEntryRead" xml:space="preserve">
+    <value>İşlenen ServiceActivation Öğesi Göreli Adresi: '{0}', Normalleştirilmiş Göreli Adres: '{1}' .</value>
+  </data>
+  <data name="event_CBAMatchFound" xml:space="preserve">
+    <value>Gelen istek adresi '{0}' olan ServiceActivation öğesiyle eşleşiyor. </value>
+  </data>
+  <data name="event_ChannelFactoryCreated" xml:space="preserve">
+    <value>ChannelFactory oluşturuldu.</value>
+  </data>
+  <data name="event_ChannelInitializationTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ChannelReceiveStart" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - İleti alma döngüsü başladı.</value>
+  </data>
+  <data name="event_ChannelReceiveStop" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - İleti alma döngüsü durdu.</value>
+  </data>
+  <data name="event_ClientBaseCachedChannelFactoryCount" xml:space="preserve">
+    <value>Önbelleğe alınan kanal fabrikası sayısı: '{0}'. En fazla '{1}' kanal fabrikası önbelleğe alınabilir.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryAgedOutofCache" xml:space="preserve">
+    <value>Önbellek '{0}' olan sınırına ulaştığından önbellekteki bir kanal fabrikası yaşlandırılarak önbellekten çıkarıldı.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryCacheHit" xml:space="preserve">
+    <value>Önbellekte bulunan eşleşen kanal fabrikası kullanıldı.</value>
+  </data>
+  <data name="event_ClientBaseUsingLocalChannelFactory" xml:space="preserve">
+    <value>Önbellekteki kanal fabrikası kullanılmıyor; yani, örnek için önbellek devre dışı bırakıldı.</value>
+  </data>
+  <data name="event_ClientChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannel Açma Başladı.</value>
+  </data>
+  <data name="event_ClientChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannel Açma Durdu.</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStart" xml:space="preserve">
+    <value>İstemci yanıt iletisini seri durumdan çıkarmaya başladı.</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStop" xml:space="preserve">
+    <value>İstemci yanıt iletisini seri durumdan çıkarmayı tamamladı.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStart" xml:space="preserve">
+    <value>İstemci isteği serileştirmeye başladı.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStop" xml:space="preserve">
+    <value>İstemci istek iletisini serileştirmeyi tamamladı.</value>
+  </data>
+  <data name="event_ClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir ClientMessageInspector üzerinde 'AfterReceiveReply' çağırdı.</value>
+  </data>
+  <data name="event_ClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir ClientMessageInspector üzerinde 'BeforeSendRequest' çağırdı.</value>
+  </data>
+  <data name="event_ClientOperationPrepared" xml:space="preserve">
+    <value>İstemci, '{1}' sözleşmesiyle ilişkili '{0}' Eylemini yürütüyor. İleti '{2}' öğesine gönderilecek.</value>
+  </data>
+  <data name="event_ClientParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir ClientParameterInspector üzerinde 'AfterCall' çağırdı.</value>
+  </data>
+  <data name="event_ClientParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir ClientParameterInspector üzerinde 'BeforeCall' çağırdı.</value>
+  </data>
+  <data name="event_ClientReliableSessionReconnect" xml:space="preserve">
+    <value>SessionId:{0} yeniden bağlanıyor.</value>
+  </data>
+  <data name="event_ClientSendPreambleStart" xml:space="preserve">
+    <value>İstemci gönderme girişi başladı.</value>
+  </data>
+  <data name="event_ClientSendPreambleStop" xml:space="preserve">
+    <value>İstemci gönderme girişi durdu.</value>
+  </data>
+  <data name="event_CloseTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_CompensationState" xml:space="preserve">
+    <value>CompensableActivity '{0}', '{1}' durumunda.</value>
+  </data>
+  <data name="event_CompilationStart" xml:space="preserve">
+    <value>Derlemeyi başlat</value>
+  </data>
+  <data name="event_CompilationStop" xml:space="preserve">
+    <value>Derlemeyi sonlandır</value>
+  </data>
+  <data name="event_CompileVbExpressionStart" xml:space="preserve">
+    <value>VB ifadesi '{0}' derleniyor</value>
+  </data>
+  <data name="event_CompileVbExpressionStop" xml:space="preserve">
+    <value>VB ifadesinin derlenmesi bitti.</value>
+  </data>
+  <data name="event_CompleteBookmarkWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir BookmarkWorkItem tamamlandı. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CompleteCancelActivityWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir CancelActivityWorkItem tamamlandı.</value>
+  </data>
+  <data name="event_CompleteCompletionWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' üst Activity'si için bir CompletionWorkItem tamamlandı. DisplayName: '{4}', InstanceId: '{5}' olan '{3}' Activity'si tamamlandı.</value>
+  </data>
+  <data name="event_CompleteExecuteActivityWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir ExecuteActivityWorkItem tamamlandı.</value>
+  </data>
+  <data name="event_CompleteFaultWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir FaultWorkItem tamamlandı. Özel durum DisplayName: '{4}', InstanceId: '{5}' olan '{3}' Activity'sinden yayıldı.</value>
+  </data>
+  <data name="event_CompleteRuntimeWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir çalışma zamanı çalışma öğesi tamamlandı.</value>
+  </data>
+  <data name="event_CompleteTransactionContextWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir TransactionContextWorkItem tamamlandı.</value>
+  </data>
+  <data name="event_ConcurrentCallsRatio" xml:space="preserve">
+    <value>Eşzamanlı aramaların oranı: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentInstancesRatio" xml:space="preserve">
+    <value>Eşzamanlı örneklerin oranı: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentSessionsRatio" xml:space="preserve">
+    <value>Eşzamanlı oturumların oranı: {0}/{1}</value>
+  </data>
+  <data name="event_ConnectionPoolMiss" xml:space="preserve">
+    <value>{0} havuzunda hiç kullanılabilir bağlantı yok ve {1} meşgul bağlantı var.</value>
+  </data>
+  <data name="event_ConnectionPoolPreambleFailed" xml:space="preserve">
+    <value>ConnectionPoolPreambleFailed.</value>
+  </data>
+  <data name="event_ConnectionReaderSendFault" xml:space="preserve">
+    <value>Bağlantı okuyucusu '{0}' hatasını gönderiyor. </value>
+  </data>
+  <data name="event_CreateBookmark" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir Bookmark oluşturuldu. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CreateBookmarkScope" xml:space="preserve">
+    <value>Bir BookmarkScope oluşturuldu: {0}.</value>
+  </data>
+  <data name="event_CreateServiceHostStart" xml:space="preserve">
+    <value>CreateServiceHost'u başlat</value>
+  </data>
+  <data name="event_CreateServiceHostStop" xml:space="preserve">
+    <value>CreateServiceHost'u sonlandır</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStart" xml:space="preserve">
+    <value>CreateWorkflowServiceHost başlat</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStop" xml:space="preserve">
+    <value>CreateWorkflowServiceHost durdur</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStart" xml:space="preserve">
+    <value>Yedekleri olan {0} DataContract seri durumdan çıkarma başladı.</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStop" xml:space="preserve">
+    <value>Yedekleri olan DataContract seri durumdan çıkarma durdu.</value>
+  </data>
+  <data name="event_DCGenReaderStart" xml:space="preserve">
+    <value>{1} için DataContract üretme {0} okuyucusu başladı.</value>
+  </data>
+  <data name="event_DCGenReaderStop" xml:space="preserve">
+    <value>DataContract üretme durdu.</value>
+  </data>
+  <data name="event_DCGenWriterStart" xml:space="preserve">
+    <value>{1} için DataContract üretme {0} yazıcısı başladı.</value>
+  </data>
+  <data name="event_DCGenWriterStop" xml:space="preserve">
+    <value>DataContract üretme yazıcı durdu.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStart" xml:space="preserve">
+    <value>{1} için Json üretme {0} okuyucusu başladı.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStop" xml:space="preserve">
+    <value>Json okuyucu üretme durdu.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStart" xml:space="preserve">
+    <value>{1} için Json üretme {0} yazıcısı başladı.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStop" xml:space="preserve">
+    <value>Json üretme yazıcı durdu.</value>
+  </data>
+  <data name="event_DCResolverResolve" xml:space="preserve">
+    <value>DataContract çözümleyicisi {0} çözümlemesi başladı.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStart" xml:space="preserve">
+    <value>Yedekleri olan {0} DataContract seri hale getirme başladı.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStop" xml:space="preserve">
+    <value>Yedekleri olan DataContract seri hale getirme durdu.</value>
+  </data>
+  <data name="event_DecrementBusyCount" xml:space="preserve">
+    <value>DecrementBusyCount çağrıldı. Kaynak : {0}</value>
+  </data>
+  <data name="event_DiscoveryClientInClientChannelFailedToClose" xml:space="preserve">
+    <value>DiscoveryClientChannel içinde oluşturulan DiscoveryClient kapatılamadı ve bu nedenle iptal edildi.</value>
+  </data>
+  <data name="event_DiscoveryClientProtocolExceptionSuppressed" xml:space="preserve">
+    <value>DiscoveryClient kapatılırken bir ProtocolException bastırıldı. Bunun nedeni bir DiscoveryService'ın hala DiscoveryClient'a yanıt göndermeye çalışır olması olabilir.</value>
+  </data>
+  <data name="event_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>DiscoveryClient bir DiscoveryProxy'den çok noktaya yayını engelleme iletisi aldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>messageId='{1}' olan bir {0} iletisi, karşılık gelen {2} işlemi tamamlandığı için DiscoveryClient tarafından bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidContent" xml:space="preserve">
+    <value>messageId='{1}' olan bir {0} iletisi, geçersiz içeriğe sahip olduğundan bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>messageId='{1}' ve relatesTo='{2}' olan bir {0} iletisi, karşılık gelen {3} işlemi tamamlandığı ya da relatesTo değeri geçersiz olduğu için DiscoveryClient tarafından bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidReplyTo" xml:space="preserve">
+    <value>messageId='{0}' olan bir bulma isteği iletisi, ReplyTo adresi geçersiz olduğundan bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNoContent" xml:space="preserve">
+    <value>Bir {0} iletisi, herhangi bir içeriğe sahip olmadığından bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageId" xml:space="preserve">
+    <value>Bir {0} iletisi, ileti üst bilgisi gerekli MessageId özelliğini içermediğinden bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageSequence" xml:space="preserve">
+    <value>messageId='{1}' olan bir {0} iletisi, DiscoveryMessageSequence özelliğine sahip olmadığı için DiscoveryClient tarafından bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullRelatesTo" xml:space="preserve">
+    <value>messageId='{1}' olan bir {0} iletisi, ileti üst bilgisi RelatesTo özelliğini içermediği için DiscoveryClient tarafından bırakıldı.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullReplyTo" xml:space="preserve">
+    <value>messageId='{0}' olan bir bulma isteği iletisi, ReplyTo adresi olmadığından bırakıldı.</value>
+  </data>
+  <data name="event_DispatchFailed" xml:space="preserve">
+    <value>'{0}' işlemi hatalarla dağıtıldı.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStart" xml:space="preserve">
+    <value>Dağıtıcı istek iletisini seri durumdan çıkarmayı başlattı.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStop" xml:space="preserve">
+    <value>Dağıtıcı istek iletisini seri durumdan çıkarmayı tamamladı.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStart" xml:space="preserve">
+    <value>Dağıtıcı yanıt iletisini serileştirmeyi başlattı.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStop" xml:space="preserve">
+    <value>Dağıtıcı yanıt iletisini serileştirmeyi tamamladı.</value>
+  </data>
+  <data name="event_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>İleti dağıtma için yetkilendirmeyi başlatma</value>
+  </data>
+  <data name="event_DispatchMessageStart" xml:space="preserve">
+    <value>İleti dağıtma başladı.</value>
+  </data>
+  <data name="event_DispatchMessageStop" xml:space="preserve">
+    <value>İleti dağıtma tamamlandı</value>
+  </data>
+  <data name="event_DispatchSessionFailed" xml:space="preserve">
+    <value>Oturum gönderme işlemi başarısız oldu.</value>
+  </data>
+  <data name="event_DispatchSessionStart" xml:space="preserve">
+    <value>Oturum gönderme işlemi başlatıldı.</value>
+  </data>
+  <data name="event_DispatchSessionSuccess" xml:space="preserve">
+    <value>Oturum gönderme işlemi başarılı oldu.</value>
+  </data>
+  <data name="event_DispatchSuccessful" xml:space="preserve">
+    <value>'{0}' işlemi başarıyla dağıtıldı.</value>
+  </data>
+  <data name="event_DuplicateCorrelationQuery" xml:space="preserve">
+    <value>Where='{0}' olan yinelenen bir CorrelationQuery bulundu. Bağıntı hesaplanırken bu yinelenen sorgu kullanılmayacak.</value>
+  </data>
+  <data name="event_DuplicateDiscoveryMessage" xml:space="preserve">
+    <value>messageId='{1}' olan bir {0} iletisi, bir kopya olduğundan bırakıldı.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingStart" xml:space="preserve">
+    <value>Şifreli veri işleme başladı.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingSuccess" xml:space="preserve">
+    <value>Şifreli veri işleme başarılı.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>EndpointAddress='{0}' ve ListenUri='{1}' olan bitiş noktasının bulunabilirliği devre dışı bırakıldı.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>EndpointAddress='{0}' ve ListenUri='{1}' olan bitiş noktasının bulunabilirliği etkinleştirildi.</value>
+  </data>
+  <data name="event_EndSqlCommandExecute" xml:space="preserve">
+    <value>SQL komutunun yürütülmesini sonlandır: {0}</value>
+  </data>
+  <data name="event_EnterNoPersistBlock" xml:space="preserve">
+    <value>Kalıcı olmayan bloğa giriliyor.</value>
+  </data>
+  <data name="event_ErrorHandlerInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{2}' türü bir özel durumla '{0}' türünde bir ErrorHandler çağırdı.  ErrorHandled == '{1}'.</value>
+  </data>
+  <data name="event_EstablishConnectionStart" xml:space="preserve">
+    <value>{0} için bağlantı kurma işlemi başladı.</value>
+  </data>
+  <data name="event_EstablishConnectionStop" xml:space="preserve">
+    <value>Bağlantı kuruldu.</value>
+  </data>
+  <data name="event_EtwUnhandledException" xml:space="preserve">
+    <value>İşlenmemiş özel durum. Özel durum ayrıntıları: {0}</value>
+  </data>
+  <data name="event_ExecuteWorkItemStart" xml:space="preserve">
+    <value>İş öğesinin yürütülmesi başladı</value>
+  </data>
+  <data name="event_ExecuteWorkItemStop" xml:space="preserve">
+    <value>İş öğesinin yürütülmesi durdu</value>
+  </data>
+  <data name="event_ExitNoPersistBlock" xml:space="preserve">
+    <value>Kalıcı olmayan bloktan çıkılıyor.</value>
+  </data>
+  <data name="event_FailFastException" xml:space="preserve">
+    <value>FailFastException.</value>
+  </data>
+  <data name="event_FaultProviderInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{1}' türü bir özel durumla '{0}' türünde bir FaultProvider çağırdı.</value>
+  </data>
+  <data name="event_FederationMessageCreationStarted" xml:space="preserve">
+    <value>Form gönderme işleminden federasyon iletisi oluşturma başladı.</value>
+  </data>
+  <data name="event_FederationMessageCreationSuccess" xml:space="preserve">
+    <value>Form gönderme işleminden federasyon iletisi oluşturma başarılı oldu.</value>
+  </data>
+  <data name="event_FederationMessageProcessingStarted" xml:space="preserve">
+    <value>Federasyon iletisi işleme başladı.</value>
+  </data>
+  <data name="event_FederationMessageProcessingSuccess" xml:space="preserve">
+    <value>Federasyon iletisi işleme başarılı oldu.</value>
+  </data>
+  <data name="event_FindInitiatedInDiscoveryClientChannel" xml:space="preserve">
+    <value>DiscoveryClientChannel'da bitiş noktaları bulmak için bir Bulma işlevi başlatıldı.</value>
+  </data>
+  <data name="event_FlowchartEmpty" xml:space="preserve">
+    <value>Flowchart '{0}' - hiçbir Node olmadan yürütüldü.</value>
+  </data>
+  <data name="event_FlowchartNextNull" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowStep - Sonraki düğüm null. Akış diyagramının yürütülmesi sona erecek.</value>
+  </data>
+  <data name="event_FlowchartStart" xml:space="preserve">
+    <value>Flowchart '{0}' - Başlatma zamanlandı.</value>
+  </data>
+  <data name="event_FlowchartSwitchCase" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - '{1}' durumu seçildi.</value>
+  </data>
+  <data name="event_FlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>Flowchart '{{0}}'/FlowSwitch - Expression sonucu ile eşleşen ne bir Case etkinliği ne bir Default Case bulunamadı. Akış diyagramının yürütülmesi sona erecek.</value>
+  </data>
+  <data name="event_FlowchartSwitchDefault" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - Default Case seçildi.</value>
+  </data>
+  <data name="event_FoundProcessingError" xml:space="preserve">
+    <value>Komut başarısız oldu: {0}</value>
+  </data>
+  <data name="event_GenXmlSerializableStart" xml:space="preserve">
+    <value>'{0}' için seri duruma getirilebilir Xml üretme başladı.</value>
+  </data>
+  <data name="event_GenXmlSerializableStop" xml:space="preserve">
+    <value>Seri hale getirilebilir Xml üretme durdu.</value>
+  </data>
+  <data name="event_GetIssuerNameFailure" xml:space="preserve">
+    <value>{0} tokenId'den verenin adı alınamadı.</value>
+  </data>
+  <data name="event_GetIssuerNameSuccess" xml:space="preserve">
+    <value>{1} tokenId'den {0} veren adı başarıyla alındı.</value>
+  </data>
+  <data name="event_GetServiceInstanceStart" xml:space="preserve">
+    <value>Hizmet örneğinin alınması başladı.</value>
+  </data>
+  <data name="event_GetServiceInstanceStop" xml:space="preserve">
+    <value>Hizmet örneği alındı.</value>
+  </data>
+  <data name="event_HandledException" xml:space="preserve">
+    <value>Özel durum işleme. Özel durum ayrıntıları: {0}</value>
+  </data>
+  <data name="event_HandledExceptionError" xml:space="preserve">
+    <value>Özel durum işleme. Özel durum ayrıntıları: {0}</value>
+  </data>
+  <data name="event_HandledExceptionVerbose" xml:space="preserve">
+    <value>Özel durum işleme Özel durum ayrıntıları: {0}</value>
+  </data>
+  <data name="event_HandledExceptionWarning" xml:space="preserve">
+    <value>Özel durum işleme. Özel durum ayrıntıları: {0}</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStart" xml:space="preserve">
+    <value>HostedTransportConfigurationManager yapılandırma başlatmayı başlat</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStop" xml:space="preserve">
+    <value>HostedTransportConfigurationManager yapılandırma başlatmayı sonlandır</value>
+  </data>
+  <data name="event_HttpAuthFailed" xml:space="preserve">
+    <value>Http kimlik doğrulaması başarısız oldu.</value>
+  </data>
+  <data name="event_HttpChannelRequestAborted" xml:space="preserve">
+    <value>Http kanalı isteği iptal edildi.</value>
+  </data>
+  <data name="event_HttpChannelResponseAborted" xml:space="preserve">
+    <value>Http kanalı yanıtı iptal edildi.</value>
+  </data>
+  <data name="event_HttpContextBeforeProcessAuthentication" xml:space="preserve">
+    <value>İleti dağıtma için kimlik doğrulamasını başlatma</value>
+  </data>
+  <data name="event_HttpGetContextStart" xml:space="preserve">
+    <value>HttpGetContext başladı.</value>
+  </data>
+  <data name="event_HttpHandlerPickedForUrl" xml:space="preserve">
+    <value>'{0}' url'si kök öğe türü '{1}' olan XAML belgesini barındırıyor. Bu url'ye yapılan tüm isteklere hizmet vermek için HTTP işleyici türü '{2}' seçildi.</value>
+  </data>
+  <data name="event_HttpMessageReceiveFailed" xml:space="preserve">
+    <value>Http İletisi alma başarısız.</value>
+  </data>
+  <data name="event_HttpMessageReceiveStart" xml:space="preserve">
+    <value>Http aktarımından ileti alındı.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessInboundRequestStart" xml:space="preserve">
+    <value>Http ileti işleyicisi gelen isteği zaman uyumsuz olarak işlemeye başladı.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessResponseStart" xml:space="preserve">
+    <value>Http ileti işleyicisi yanıtı zaman uyumsuz olarak işlemeye başladı.</value>
+  </data>
+  <data name="event_HttpPipelineFaulted" xml:space="preserve">
+    <value>Http ileti işleyicisinde hata oluştu.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStart" xml:space="preserve">
+    <value>Http ileti işleyicisi gelen isteği işlemeye başladı.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStop" xml:space="preserve">
+    <value>Http ileti işleyicisi bir gelen isteği işlemeyi tamamladı.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStart" xml:space="preserve">
+    <value>Http ileti işleyicisi yanıtı işlemeye başladı.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStop" xml:space="preserve">
+    <value>Http ileti işleyicisi yanıtı işlemeyi tamamladı.</value>
+  </data>
+  <data name="event_HttpPipelineTimeoutException" xml:space="preserve">
+    <value>WebSocket bağlantısı zaman aşımına uğradı.</value>
+  </data>
+  <data name="event_HttpResponseReceiveStart" xml:space="preserve">
+    <value>Http aktarımı bir ileti almaya başladı.</value>
+  </data>
+  <data name="event_HttpSendMessageStart" xml:space="preserve">
+    <value>Http Gönderme İsteği Başladı.</value>
+  </data>
+  <data name="event_HttpSendStop" xml:space="preserve">
+    <value>Http Gönderme İsteği Durdu.</value>
+  </data>
+  <data name="event_HttpSendStreamedMessageStart" xml:space="preserve">
+    <value>Http Gönderme ileti akışı başladı.</value>
+  </data>
+  <data name="event_IdleServicesClosed" xml:space="preserve">
+    <value>Toplam {1} etkin hizmetten boşta olan {0} hizmet kapatıldı.</value>
+  </data>
+  <data name="event_IdleTimeout" xml:space="preserve">
+    <value>{0} Bağlantı havuzu anahtarı: {1}</value>
+  </data>
+  <data name="event_ImportKnownTypesStart" xml:space="preserve">
+    <value>ImportKnownTypes başladı.</value>
+  </data>
+  <data name="event_ImportKnownTypesStop" xml:space="preserve">
+    <value>ImportKnownTypes durdu.</value>
+  </data>
+  <data name="event_InactivityTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_InArgumentBound" xml:space="preserve">
+    <value>DisplayName: '{2}', InstanceId: '{3}' olan '{1}' Activity'sindeki '{0}' girdi bağımsız değişkeni {4} değeriyle bağlanmış.</value>
+  </data>
+  <data name="event_IncomingMessageVerified" xml:space="preserve">
+    <value>Gelen ileti doğrulandı.</value>
+  </data>
+  <data name="event_IncrementBusyCount" xml:space="preserve">
+    <value>IncrementBusyCount çağrıldı. Kaynak : {0}</value>
+  </data>
+  <data name="event_InferredContractDescription" xml:space="preserve">
+    <value>Name='{0}' ve Namespace='{1}' olan ContractDescription WorkflowService'dan çıkarsandı.</value>
+  </data>
+  <data name="event_InferredOperationDescription" xml:space="preserve">
+    <value>'{1}' sözleşmesinde Name='{0}' olan OperationDescription WorkflowService'dan çıkarsandı. IsOneWay={2}.</value>
+  </data>
+  <data name="event_InnerChannelCreationFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel, EndpointAddress='{0}' ve Via='{1}' olan bulunan bitiş noktasına sahip bir kanal oluşturamadı. DiscoveryClientChannel şimdi bir sonraki bulunmuş bitiş noktasını kullanmayı deneyecek.</value>
+  </data>
+  <data name="event_InnerChannelOpenFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel, EndpointAddress='{0}' ve Via='{1}' olan bulunan bitiş noktasına sahip kanalı açamadı. DiscoveryClientChannel şimdi bir sonraki bulunmuş bitiş noktasını kullanmayı deneyecek.</value>
+  </data>
+  <data name="event_InnerChannelOpenSucceeded" xml:space="preserve">
+    <value>DiscoveryClientChannel başarıyla bir bitiş noktası buldu ve bunu kullanarak kanalı açtı. İstemci EndpointAddress='{0}' ve Via='{1}' kullanarak bir hizmete bağlandı.</value>
+  </data>
+  <data name="event_InstanceLocksRecoveryError" xml:space="preserve">
+    <value>Aşağıdaki özel durum nedeniyle örnek kilitleri kurtarılamadı</value>
+  </data>
+  <data name="event_InternalCacheMetadataStart" xml:space="preserve">
+    <value>InternalCacheMetadata, '{0}' etkinliğinde başladı.</value>
+  </data>
+  <data name="event_InternalCacheMetadataStop" xml:space="preserve">
+    <value>InternalCacheMetadata, '{0}' etkinliğinde durdu.</value>
+  </data>
+  <data name="event_InvokedMethodThrewException" xml:space="preserve">
+    <value>'{0}' etkinliği tarafından çağrılan metotta bir özel durum oluşturuldu. {1}</value>
+  </data>
+  <data name="event_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metot zaman uyumsuz desen kullanmıyor.</value>
+  </data>
+  <data name="event_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metot Static değil.</value>
+  </data>
+  <data name="event_InvokeMethodIsStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metot Static.</value>
+  </data>
+  <data name="event_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - metot '{1}' ve '{2}' zaman uyumsuz desenini kullanıyor.</value>
+  </data>
+  <data name="event_JsonMessageDecodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder iletinin kodunu çözmeye başladı.</value>
+  </data>
+  <data name="event_JsonMessageEncodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder iletiyi kodlamaya başladı.</value>
+  </data>
+  <data name="event_LeaseTimeout" xml:space="preserve">
+    <value>{0} Bağlantı havuzu anahtarı: {1}</value>
+  </data>
+  <data name="event_ListenerOpenStart" xml:space="preserve">
+    <value>'{0}' için dinleyici açılıyor.</value>
+  </data>
+  <data name="event_ListenerOpenStop" xml:space="preserve">
+    <value>Dinleyiciyi açma tamamlandı.</value>
+  </data>
+  <data name="event_LockRetryTimeout" xml:space="preserve">
+    <value>Örnek kilidi alınmaya çalışılırken zaman aşımı oluştu. İşlem, ayrılan {0} zaman aşımı süresi içinde tamamlanmadı. Bu işleme ayrılan süre, daha uzun bir zaman aşımı süresinin bir bölümü olabilir.</value>
+  </data>
+  <data name="event_MaximumRetriesExceededForSqlCommand" xml:space="preserve">
+    <value>Maksimum yeniden deneme sayısına ulaşıldığından bir SQL komutunun yeniden denenmesinden vazgeçiliyor.</value>
+  </data>
+  <data name="event_MaxInstancesExceeded" xml:space="preserve">
+    <value>Sistem 'MaxConcurrentInstances' azaltması için belirlenen sınıra ulaştı. Bu azaltma için sınır {0} olarak ayarlanmıştı. Azaltma değeri, serviceThrottle öğesindeki 'maxConcurrentInstances' değiştirilerek veya ServiceThrottlingBehavior davranışındaki 'MaxConcurrentInstances' özelliği değiştirilerek değiştirilebilir.</value>
+  </data>
+  <data name="event_MaxOutboundConnectionsPerEndpointExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingConnectionsExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingMessagesPerChannelExceeded" xml:space="preserve">
+    <value>'MaxPendingMessagesPerChannel' azaltmasının '{0}' sınırına ulaşıldı. Bu sınırı artırmak için, BufferedReceiveServiceBehavior'daki MaxPendingMessagesPerChannel özelliğini ayarlayın.</value>
+  </data>
+  <data name="event_MaxReceivedMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxRetryCyclesExceededMsmq" xml:space="preserve">
+    <value>Kimliği '{0}' olan MSMQ iletisinde en fazla yeniden deneme döngüsü aşıldı</value>
+  </data>
+  <data name="event_MaxSentMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxSessionSizeReached" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir MessageInspector üzerinde 'AfterReceiveReply' çağırdı.</value>
+  </data>
+  <data name="event_MessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir MessageInspector üzerinde 'BeforeSendRequest' çağırdı.</value>
+  </data>
+  <data name="event_MessageLogEventSizeExceeded" xml:space="preserve">
+    <value>İleti ETW olayı boyutunu aştığından günlüğe kaydedilemedi</value>
+  </data>
+  <data name="event_MessageLogInfo" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageLogWarning" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketComplete" xml:space="preserve">
+    <value>MessageQueueDuplicatedSocketComplete</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketError" xml:space="preserve">
+    <value>İleti sırası yuvayı çoğaltamadı.</value>
+  </data>
+  <data name="event_MessageQueueRegisterAbort" xml:space="preserve">
+    <value>İleti sırası kaydı '{1}' uri'si için '{0}' durumuyla durdu.</value>
+  </data>
+  <data name="event_MessageQueueRegisterCompleted" xml:space="preserve">
+    <value>'{0}' uri'si için ileti sırası kaydı tamamlandı.</value>
+  </data>
+  <data name="event_MessageQueueRegisterFailed" xml:space="preserve">
+    <value>'{0}' uri'si için ileti sırası kaydı '{1}' durumuyla başarısız oldu.</value>
+  </data>
+  <data name="event_MessageQueueRegisterStart" xml:space="preserve">
+    <value>İleti sırası kaydı başladı.</value>
+  </data>
+  <data name="event_MessageQueueUnregisterSucceeded" xml:space="preserve">
+    <value>'{0}' uri'si için ileti sırası kaydı başarıyla silindi.</value>
+  </data>
+  <data name="event_MessageReadByEncoder" xml:space="preserve">
+    <value>Kodlayıcı tarafından boyutu '{0}' bayt olan bir ileti okundu.</value>
+  </data>
+  <data name="event_MessageReceivedByTransport" xml:space="preserve">
+    <value>Taşıma, '{0}' öğesinden bir ileti aldı.</value>
+  </data>
+  <data name="event_MessageReceivedFromTransport" xml:space="preserve">
+    <value>Dağıtıcı taşımadan bir ileti aldı. Bağıntı Kimliği == '{0}'.</value>
+  </data>
+  <data name="event_MessageSentByTransport" xml:space="preserve">
+    <value>Taşıma, '{0}' öğesine bir ileti gönderdi.</value>
+  </data>
+  <data name="event_MessageSentToTransport" xml:space="preserve">
+    <value>Dağıtıcı taşımaya bir ileti gönderdi. Bağıntı Kimliği == '{0}'.</value>
+  </data>
+  <data name="event_MessageThrottleAtSeventyPercent" xml:space="preserve">
+    <value>'{1}' öğesinin '{0}' azaltma sınırı %{6}0'te.</value>
+  </data>
+  <data name="event_MessageThrottleExceeded" xml:space="preserve">
+    <value>'{0}' azaltmasının '{1}' sınırına ulaşıldı.</value>
+  </data>
+  <data name="event_MessageWrittenAsynchronouslyByEncoder" xml:space="preserve">
+    <value>Kodlayıcı tarafından zaman uyumsuz olarak bir ileti yazıldı.</value>
+  </data>
+  <data name="event_MessageWrittenByEncoder" xml:space="preserve">
+    <value>Kodlayıcı tarafından boyutu '{0}' bayt olan bir ileti yazıldı.</value>
+  </data>
+  <data name="event_MtomMessageDecodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder iletinin kodunu çözmeye başladı.</value>
+  </data>
+  <data name="event_MtomMessageEncodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder iletiyi kodlamaya başladı.</value>
+  </data>
+  <data name="event_NamedPipeCreated" xml:space="preserve">
+    <value>NamedPipe '{0}' oluşturuldu.</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheRatio" xml:space="preserve">
+    <value>Anlaşma belirteci doğrulayıcı durumu önbellek oranı: {0}/{1}</value>
+  </data>
+  <data name="event_OpenListenerChannelInstanceFailed" xml:space="preserve">
+    <value>Hata Kodu: {0}</value>
+  </data>
+  <data name="event_OpenTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_OperationCompleted" xml:space="preserve">
+    <value>Bir OperationInvoker '{0}' metoduna çağrıyı tamamladı. Metot çağrısı süresi, '{1}' ms idi.</value>
+  </data>
+  <data name="event_OperationFailed" xml:space="preserve">
+    <value>'{0}' metodu, OperationInvoker tarafından çağrıldığında işlenmeyen bir özel durum oluşturdu. Metot çağrısı süresi '{1}' ms idi.</value>
+  </data>
+  <data name="event_OperationFaulted" xml:space="preserve">
+    <value>'{0}' metodu, OperationInvoker tarafından çağrıldığında bir FaultException oluşturdu. Metot çağrısı süresi '{1}' ms idi.</value>
+  </data>
+  <data name="event_OperationInvoked" xml:space="preserve">
+    <value>Bir OperationInvoker '{0}' metodunu çağırdı. Çağıran bilgisi: '{1}'.</value>
+  </data>
+  <data name="event_OutboundConnectionsPerEndpointRatio" xml:space="preserve">
+    <value>Uç nokta başına giden bağlantı oranı: {0}/{1}</value>
+  </data>
+  <data name="event_OutgoingMessageSecured" xml:space="preserve">
+    <value>Giden iletinin güvenliği sağlandı.</value>
+  </data>
+  <data name="event_ParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir ParameterInspector üzerinde 'AfterCall' çağırdı.</value>
+  </data>
+  <data name="event_ParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>Dağıtıcı, '{0}' türünde bir ParameterInspector üzerinde 'BeforeCall' çağırdı.</value>
+  </data>
+  <data name="event_PendingAcceptsAtZero" xml:space="preserve">
+    <value>Bekleyen kabul işlemi kalmadı</value>
+  </data>
+  <data name="event_PendingConnectionsRatio" xml:space="preserve">
+    <value>Bekleyen bağlantıların oranı: {0}/{1}</value>
+  </data>
+  <data name="event_PendingMessagesPerChannelRatio" xml:space="preserve">
+    <value>Kanal başına bekleyen ileti oranı: {0}/{1}</value>
+  </data>
+  <data name="event_PendingSessionQueueFull" xml:space="preserve">
+    <value>Bekleyen oturum sırası '{1}' öğeyle dolu olduğundan '{0}' için oturum gönderme işleme başarısız oldu.</value>
+  </data>
+  <data name="event_PendingSessionQueueRatio" xml:space="preserve">
+    <value>Bekleyen oturum sırası oranı: {0}/{1}</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStart" xml:space="preserve">
+    <value>Kanal bağlantısı kabul etme başladı: {0}.</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStop" xml:space="preserve">
+    <value>Kanal bağlantısı kabul edildi.</value>
+  </data>
+  <data name="event_PipeSharedMemoryCreated" xml:space="preserve">
+    <value>Kanal paylaşılan belleği '{0}' konumunda oluşturuldu.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStart" xml:space="preserve">
+    <value>{0} uri'sinde kanal aktarma dinleyicisi dinlemeye başladı.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStop" xml:space="preserve">
+    <value>Kanal aktarma dinleyicisi dinlemeyi durdurdu.</value>
+  </data>
+  <data name="event_PortSharingDuplicatedSocket" xml:space="preserve">
+    <value>{0} için yuva çoğaltıldı.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenStarted" xml:space="preserve">
+    <value>Oturum belirtecinden birincil ayarlama başladı.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenSuccess" xml:space="preserve">
+    <value>Oturum belirtecinden birincil ayarlama başarılı oldu.</value>
+  </data>
+  <data name="event_QueryCompositionExecuted" xml:space="preserve">
+    <value>'{0}' kullanılarak sorgu oluşturma İstek Uri'si üzerinde yürütüldü: '{1}'.</value>
+  </data>
+  <data name="event_QueuingSqlRetry" xml:space="preserve">
+    <value>SQL yeniden denemesi {0} milisaniye gecikmeli olarak sıraya alınıyor.</value>
+  </data>
+  <data name="event_ReadPoolMiss" xml:space="preserve">
+    <value>Yeni '{0}' oluşturuldu</value>
+  </data>
+  <data name="event_ReceiveContextAbandonFailed" xml:space="preserve">
+    <value>{0} Bırakılamadı.</value>
+  </data>
+  <data name="event_ReceiveContextAbandonWithException" xml:space="preserve">
+    <value>{0}, {1} özel durumuyla Bırakıldı.</value>
+  </data>
+  <data name="event_ReceiveContextCompleteFailed" xml:space="preserve">
+    <value>{0} Tamamlanamadı.</value>
+  </data>
+  <data name="event_ReceiveContextFaulted" xml:space="preserve">
+    <value>Alma İçeriği hatası oluştu.</value>
+  </data>
+  <data name="event_ReceiveRetryCountReached" xml:space="preserve">
+    <value>Kimliği '{0}' olan MSMQ iletisinde alma yeniden deneme sayısına ulaşıldı</value>
+  </data>
+  <data name="event_ReceiveTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ReliableSessionChannelFaulted" xml:space="preserve">
+    <value>SessionId:{0} hata oluşturdu.</value>
+  </data>
+  <data name="event_RenewLockSystemError" xml:space="preserve">
+    <value>Kilidin kullanım süresi uzatılamadı, kilidin süresi zaten doldu veya kilidin sahibi silindi. SqlWorkflowInstanceStore durduruluyor.</value>
+  </data>
+  <data name="event_ResumeSignpostEvent" xml:space="preserve">
+    <value>Etkinlik sınırı.</value>
+  </data>
+  <data name="event_RetryingSqlCommandDueToSqlError" xml:space="preserve">
+    <value>{0} numaralı SQL hatası nedeniyle bir SQL komutu yeniden deneniyor.</value>
+  </data>
+  <data name="event_RoutingServiceAbandoningReceiveContext" xml:space="preserve">
+    <value>Yönlendirme Hizmeti kimliği '{0}' olan İleti için ReceiveContext.Abandon'ı çağırıyor.</value>
+  </data>
+  <data name="event_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>Yönlendirme Hizmeti kanalda çağrıyı iptal ediyor: '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceChannelFaulted" xml:space="preserve">
+    <value>'{0}' Yönlendirme Hizmeti istemcisi hata verdi.</value>
+  </data>
+  <data name="event_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>Yönlendirme Hizmeti '{0}' giden istemcisini kapatırken başarısız oldu.</value>
+  </data>
+  <data name="event_RoutingServiceClosingClient" xml:space="preserve">
+    <value>Yönlendirme Hizmeti '{0}' istemcisini kapatıyor.</value>
+  </data>
+  <data name="event_RoutingServiceCommittingTransaction" xml:space="preserve">
+    <value>Yönlendirme Hizmeti kimliği '{0}' olan bir işlem yürütüyor.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingOneWay" xml:space="preserve">
+    <value>Tek yönlü bir Yönlendirme Hizmeti iletisi tamamlanıyor.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingReceiveContext" xml:space="preserve">
+    <value>Yönlendirme Hizmeti kimliği '{0}' olan İleti için ReceiveContext.Complete'i çağırıyor.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingTwoWay" xml:space="preserve">
+    <value>Bir Yönlendirme Hizmeti istek yanıt iletisi tamamlanıyor.</value>
+  </data>
+  <data name="event_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>Yönlendirme Hizmeti'ne yeni bir RoutingConfiguration uygulandı.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingClientForEndpoint" xml:space="preserve">
+    <value>Yönlendirme Hizmeti bitiş noktası için istemci oluşturuyor: '{0}'.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingTransaction" xml:space="preserve">
+    <value>Yönlendirme Hizmeti iletileri işlemek için kimliği '{0}' olan yeni bir İşlem oluşturdu.</value>
+  </data>
+  <data name="event_RoutingServiceDisplayConfig" xml:space="preserve">
+    <value>Yönlendirme Hizmeti RouteOnHeadersOnly: {0}, SoapProcessingEnabled: {1}, EnsureOrderedDispatch: {2} olarak yapılandırılmış.</value>
+  </data>
+  <data name="event_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>{0} Yönlendirme Hizmeti bileşeni bir çift yönlü geri çağırma özel durumuyla karşılaştı.</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStart" xml:space="preserve">
+    <value>Yönlendirme Hizmeti MessageFilterTable Eşleştirme Başlat.</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStop" xml:space="preserve">
+    <value>Yönlendirme Hizmeti MessageFilterTable Eşleştirme Durdur.</value>
+  </data>
+  <data name="event_RoutingServiceHandledException" xml:space="preserve">
+    <value>Yönlendirme Hizmeti bir özel durumu işledi.</value>
+  </data>
+  <data name="event_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>Yönlendirme Hizmeti kimliği '{0}' olan iletiyi {1} bitiş noktası listesine yönlendirdi.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingFailure" xml:space="preserve">
+    <value>Yönlendirme Hizmeti adresi '{0}' olan bitiş noktasında bir iletiyi işlerken başarısız oldu.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingMessage" xml:space="preserve">
+    <value>Yönlendirme Hizmeti Kimlik: '{0}', Eylem: '{1}', Gelen URL: '{2}', İşlemde Alındı: {3} olan bir iletiyi işliyor.</value>
+  </data>
+  <data name="event_RoutingServiceSendingFaultResponse" xml:space="preserve">
+    <value>Yönlendirme Hizmeti, '{0}' Eylemi ile bir Hata yanıt iletisi geri gönderiyor.</value>
+  </data>
+  <data name="event_RoutingServiceSendingResponse" xml:space="preserve">
+    <value>Yönlendirme Hizmeti, '{0}' Eylemi ile bir yanıt iletisi geri gönderiyor.</value>
+  </data>
+  <data name="event_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>Yönlendirme Hizmeti '{0}' hedefine gönderirken başarısız oldu.</value>
+  </data>
+  <data name="event_RoutingServiceUsingExistingTransaction" xml:space="preserve">
+    <value>Yönlendirme Hizmeti iletileri var olan '{0}' işlemini kullanarak gönderecek.</value>
+  </data>
+  <data name="event_RoutingTableLookupStart" xml:space="preserve">
+    <value>Yönlendirme tablosu araması başladı.</value>
+  </data>
+  <data name="event_RoutingTableLookupStop" xml:space="preserve">
+    <value>Yönlendirme tablosu araması tamamlandı.</value>
+  </data>
+  <data name="event_RunnableInstancesDetectionError" xml:space="preserve">
+    <value>Aşağıdaki özel durum nedeniyle çalıştırılabilir örnekler algılanamadı</value>
+  </data>
+  <data name="event_RuntimeTransactionComplete" xml:space="preserve">
+    <value>Çalışma zamanı işlemi '{0}' durumuyla tamamlandı.</value>
+  </data>
+  <data name="event_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si çalışma zamanı işleminin tamamlanmasını zamanladı.</value>
+  </data>
+  <data name="event_RuntimeTransactionSet" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si tarafından çalışma zamanı işlemi ayarlandı. Yürütme DisplayName: '{4}', InstanceId: '{5}' olan '{3}' Activity'sinde yalıtıldı.</value>
+  </data>
+  <data name="event_ScheduleBookmarkWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir BookmarkWorkItem zamanlandı. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_ScheduleCancelActivityWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir CancelActivityWorkItem zamanlandı.</value>
+  </data>
+  <data name="event_ScheduleCompletionWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' üst Activity'si için bir CompletionWorkItem zamanlandı. DisplayName: '{4}', InstanceId: '{5}' olan '{3}' Activity'si tamamlandı.</value>
+  </data>
+  <data name="event_ScheduleExecuteActivityWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir ExecuteActivityWorkItem zamanlandı.</value>
+  </data>
+  <data name="event_ScheduleFaultWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir FaultWorkItem zamanlandı. Özel durum DisplayName: '{4}', InstanceId: '{5}' olan '{3}' Activity'sinden yayıldı.</value>
+  </data>
+  <data name="event_ScheduleRuntimeWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir çalışma zamanı çalışma öğesi zamanlandı.</value>
+  </data>
+  <data name="event_ScheduleTransactionContextWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir TransactionContextWorkItem zamanlandı.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationFailure" xml:space="preserve">
+    <value>Güvenlik doğrulaması başarısız oldu.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationSuccess" xml:space="preserve">
+    <value>Güvenlik doğrulaması başarılı.</value>
+  </data>
+  <data name="event_SecurityImpersonationFailure" xml:space="preserve">
+    <value>Güvenlik kimliğine bürünme başarısız oldu.</value>
+  </data>
+  <data name="event_SecurityImpersonationSuccess" xml:space="preserve">
+    <value>Güvenlik kimliğine bürünme başarılı.</value>
+  </data>
+  <data name="event_SecurityNegotiationProcessingFailure" xml:space="preserve">
+    <value>Güvenlik anlaşması işleme başarısız oldu.</value>
+  </data>
+  <data name="event_SecurityNegotiationStart" xml:space="preserve">
+    <value>Güvenlik anlaşması başladı.</value>
+  </data>
+  <data name="event_SecurityNegotiationStop" xml:space="preserve">
+    <value>Güvenlik anlaşması tamamlandı.</value>
+  </data>
+  <data name="event_SecuritySessionRatio" xml:space="preserve">
+    <value>Güvenlik oturumu oranı: {0}/{1}</value>
+  </data>
+  <data name="event_SecurityTokenProviderOpened" xml:space="preserve">
+    <value>SecurityTokenProvider açma tamamlandı.</value>
+  </data>
+  <data name="event_SendMessageChannelCacheMiss" xml:space="preserve">
+    <value>SendMessageChannelCache bulunamadı</value>
+  </data>
+  <data name="event_SendTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_SequenceAcknowledgementSent" xml:space="preserve">
+    <value>SessionId:{0} bildirimi gönderildi.</value>
+  </data>
+  <data name="event_ServerMaxPooledConnectionsQuotaReached" xml:space="preserve">
+    <value>Sunucunun havuza alınan en fazla bağlantı sayısı kotasına ulaşıldı.</value>
+  </data>
+  <data name="event_ServiceActivationAvailableMemory" xml:space="preserve">
+    <value>Kullanılabilir bellek (bayt): {0}</value>
+  </data>
+  <data name="event_ServiceActivationException" xml:space="preserve">
+    <value>Hizmet etkinleştirilemedi. Özel durum ayrıntıları: {0}</value>
+  </data>
+  <data name="event_ServiceActivationStart" xml:space="preserve">
+    <value>Hizmet etkinleştirme başladı</value>
+  </data>
+  <data name="event_ServiceActivationStop" xml:space="preserve">
+    <value>Hizmet etkinleştirme durdu</value>
+  </data>
+  <data name="event_ServiceChannelBeginCallStart" xml:space="preserve">
+    <value>ServiceChannel zaman uyumsuz çağrıları başladı.</value>
+  </data>
+  <data name="event_ServiceChannelCallStart" xml:space="preserve">
+    <value>ServiceChannelCall başladı.</value>
+  </data>
+  <data name="event_ServiceChannelCallStop" xml:space="preserve">
+    <value>İstemci, '{1}' sözleşmesiyle ilişkili '{0}' Eylemini yürütmeyi tamamladı. İleti '{2}' öğesine gönderildi.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannelOpen başladı.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannelOpen tamamlandı.</value>
+  </data>
+  <data name="event_ServiceEndpointAdded" xml:space="preserve">
+    <value>Adres '{0}', bağlama '{1}' ve sözleşme '{2}' için bir hizmet bitiş noktası eklendi.</value>
+  </data>
+  <data name="event_ServiceException" xml:space="preserve">
+    <value>İleti işleme sırasında '{1}' türünde işlenmeyen bir özel durum oluştu. Tam Özel Durum Ayrıntıları: {0}.</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStart" xml:space="preserve">
+    <value>ServiceHostFactory oluşturmayı başlat</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStop" xml:space="preserve">
+    <value>ServiceHostFactory oluşturmayı sonlandır</value>
+  </data>
+  <data name="event_ServiceHostFaulted" xml:space="preserve">
+    <value>Hizmet ana bilgisayarında hata oluştu.</value>
+  </data>
+  <data name="event_ServiceHostOpenStart" xml:space="preserve">
+    <value>ServiceHost Açma başladı.</value>
+  </data>
+  <data name="event_ServiceHostOpenStop" xml:space="preserve">
+    <value>ServiceHost Açma tamamlandı.</value>
+  </data>
+  <data name="event_ServiceHostStarted" xml:space="preserve">
+    <value>ServiceHost başlatıldı: '{0}'.</value>
+  </data>
+  <data name="event_ServiceSecurityNegotiationCompleted" xml:space="preserve">
+    <value>Hizmet güvenliği anlaşması tamamlandı.</value>
+  </data>
+  <data name="event_ServiceStartPipeError" xml:space="preserve">
+    <value>Hizmet başlatma kanal hatası.</value>
+  </data>
+  <data name="event_SessionCookieReadingStarted" xml:space="preserve">
+    <value>Oturum tanımlama bilgisinden oturum belirteci okuma başladı.</value>
+  </data>
+  <data name="event_SessionCookieReadingSuccess" xml:space="preserve">
+    <value>Oturum tanımlama bilgisinden oturum belirteci okuma başarılı oldu.</value>
+  </data>
+  <data name="event_SessionIdleTimeout" xml:space="preserve">
+    <value>'{0}' uri'sine yönelik boştaki kanal için oturum iptal ediliyor.</value>
+  </data>
+  <data name="event_SessionPreambleUnderstood" xml:space="preserve">
+    <value>'{0}' için oturum girişi anlaşıldı.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterFailed" xml:space="preserve">
+    <value>SharedListenerProxy kaydı '{0}' durumuyla başarısız oldu.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStart" xml:space="preserve">
+    <value>Uri '{0}' için SharedListenerProxy kaydı başladı.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStop" xml:space="preserve">
+    <value>SharedListenerProxy Kaydı Durdu.</value>
+  </data>
+  <data name="event_ShipAssertExceptionMessage" xml:space="preserve">
+    <value>Beklenmeyen bir hata oluştu. Uygulamaların bu hatayı işlemeye çalışmaması gerekir. Tanı amacıyla, bu İngilizce ileti hatayla ilişkilendirildi: {0}.</value>
+  </data>
+  <data name="event_SignatureVerificationStart" xml:space="preserve">
+    <value>İmza doğrulama başladı.</value>
+  </data>
+  <data name="event_SignatureVerificationSuccess" xml:space="preserve">
+    <value>İmza doğrulama başarılı oldu</value>
+  </data>
+  <data name="event_SocketAcceptClosed" xml:space="preserve">
+    <value>Yuva kabulü kapandı.</value>
+  </data>
+  <data name="event_SocketAccepted" xml:space="preserve">
+    <value>ListenerId:{0} tarafından SocketId:{1} kabul edildi.</value>
+  </data>
+  <data name="event_SocketAcceptEnqueued" xml:space="preserve">
+    <value>Bağlantı kabulü başladı.</value>
+  </data>
+  <data name="event_SocketAsyncReadStop" xml:space="preserve">
+    <value>SocketId:{0}, '{1}' kaynağından '{2}' bayt okudu.</value>
+  </data>
+  <data name="event_SocketAsyncWriteStart" xml:space="preserve">
+    <value>SocketId:{0}, '{1}' hedefine '{2}' bayt yazıyor.</value>
+  </data>
+  <data name="event_SocketConnectionAbort" xml:space="preserve">
+    <value>SocketId:{0} iptal ediliyor.</value>
+  </data>
+  <data name="event_SocketReadStop" xml:space="preserve">
+    <value>SocketId:{0}, '{1}' kaynağından '{2}' bayt okudu.</value>
+  </data>
+  <data name="event_SocketWriteStart" xml:space="preserve">
+    <value>SocketId:{0}, '{1}' hedefine '{2}' bayt yazıyor.</value>
+  </data>
+  <data name="event_SqlExceptionCaught" xml:space="preserve">
+    <value>Yakalanan SQL Özel Durum numarası {0} ileti {1}.</value>
+  </data>
+  <data name="event_SslOnAcceptUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStop</value>
+  </data>
+  <data name="event_SslOnInitiateUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStart</value>
+  </data>
+  <data name="event_StartBookmarkWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir BookmarkWorkItem'ın yürütülmesine başlanıyor. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_StartCancelActivityWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir CancelActivityWorkItem'ın yürütülmesine başlanıyor.</value>
+  </data>
+  <data name="event_StartCompletionWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' üst Activity'si için bir CompletionWorkItem'ın yürütülmesine başlanıyor. DisplayName: '{4}', InstanceId: '{5}' olan '{3}' Activity'si tamamlandı.</value>
+  </data>
+  <data name="event_StartExecuteActivityWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir ExecuteActivityWorkItem'ın yürütülmesine başlanıyor.</value>
+  </data>
+  <data name="event_StartFaultWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir FaultWorkItem'ın yürütülmesine başlanıyor. Özel durum DisplayName: '{4}', InstanceId: '{5}' olan '{3}' Activity'sinden yayıldı.</value>
+  </data>
+  <data name="event_StartRuntimeWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir çalışma zamanı çalışma öğesinin yürütülmesine başlanıyor.</value>
+  </data>
+  <data name="event_StartSignpostEvent" xml:space="preserve">
+    <value>Etkinlik sınırı.</value>
+  </data>
+  <data name="event_StartSignpostEvent1" xml:space="preserve">
+    <value>Etkinlik sınırı.</value>
+  </data>
+  <data name="event_StartSqlCommandExecute" xml:space="preserve">
+    <value>SQL komutunun yürütülmesi başlatılıyor: {0}</value>
+  </data>
+  <data name="event_StartTransactionContextWorkItem" xml:space="preserve">
+    <value>DisplayName: '{1}', InstanceId: '{2}' olan '{0}' Activity'si için bir TransactionContextWorkItem'ın yürütülmesine başlanıyor.</value>
+  </data>
+  <data name="event_StopSignpostEvent" xml:space="preserve">
+    <value>Etkinlik sınırı.</value>
+  </data>
+  <data name="event_StopSignpostEvent1" xml:space="preserve">
+    <value>Etkinlik sınırı.</value>
+  </data>
+  <data name="event_StreamedMessageReadByEncoder" xml:space="preserve">
+    <value>Kodlayıcı tarafından akış yapılmış bir ileti okundu.</value>
+  </data>
+  <data name="event_StreamedMessageWrittenByEncoder" xml:space="preserve">
+    <value>Kodlayıcı tarafından akış yapılmış bir ileti yazıldı.</value>
+  </data>
+  <data name="event_SuspendSignpostEvent" xml:space="preserve">
+    <value>Etkinlik sınırı.</value>
+  </data>
+  <data name="event_SwitchCaseNotFound" xml:space="preserve">
+    <value>'{0}' Switch etkinliği Expression sonucuyla eşleşen bir Case etkinliği bulamadı.</value>
+  </data>
+  <data name="event_SynchronizationContextReset" xml:space="preserve">
+    <value>SynchronizationContext, DiscoveryClientChannel tarafından {0} olan özgün değerine sıfırlandı.</value>
+  </data>
+  <data name="event_SynchronizationContextSetToNull" xml:space="preserve">
+    <value>SynchronizationContext, Bulma işlemini başlatmadan önce DiscoveryClientChannel tarafından null olarak ayarlandı.</value>
+  </data>
+  <data name="event_TcpConnectionResetError" xml:space="preserve">
+    <value>{1} uzak adresine yönelik SocketId:{0} bir bağlantı sıfırlama hatası oluşturdu.</value>
+  </data>
+  <data name="event_TcpConnectionTimedOut" xml:space="preserve">
+    <value>{1} uzak adresine yönelik SocketId:{0} zaman aşımına uğradı.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStart" xml:space="preserve">
+    <value>'{0}' uri'sinde tcp aktarma dinleyicisi dinlemeye başlıyor.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStop" xml:space="preserve">
+    <value>Tcp aktarma dinleyicisi dinliyor.</value>
+  </data>
+  <data name="event_TextMessageDecodingStart" xml:space="preserve">
+    <value>TextMessageEncoder iletinin kodunu çözmeye başladı.</value>
+  </data>
+  <data name="event_TextMessageEncodingStart" xml:space="preserve">
+    <value>TextMessageEncoder iletiyi kodlamaya başladı.</value>
+  </data>
+  <data name="event_ThrowingEtwException" xml:space="preserve">
+    <value>Özel durum oluşturuluyor. Kaynak: {0}. Özel durum ayrıntıları: {1}</value>
+  </data>
+  <data name="event_ThrowingEtwExceptionVerbose" xml:space="preserve">
+    <value>Özel durum oluşturuluyor. Kaynak: {0}. Özel durum ayrıntıları: {1}</value>
+  </data>
+  <data name="event_ThrowingException" xml:space="preserve">
+    <value>Özel durum oluşturuluyor. Kaynak: {0}. Özel durum ayrıntıları: {1}</value>
+  </data>
+  <data name="event_ThrowingExceptionVerbose" xml:space="preserve">
+    <value>Özel durum oluşturuluyor. Kaynak: {0}. Özel durum ayrıntıları: {1}</value>
+  </data>
+  <data name="event_TimeoutOpeningSqlConnection" xml:space="preserve">
+    <value>Bir SQL bağlantısı açılmaya çalışılırken zaman aşımı oluştu. İşlem, ayrılan {0} zaman aşımı süresi içinde tamamlanmadı. Bu işleme ayrılan süre, daha uzun bir zaman aşımı süresinin bir bölümü olabilir.</value>
+  </data>
+  <data name="event_TokenValidationFailure" xml:space="preserve">
+    <value>SecurityToken ('{0}' türü ve '{1}' kimliği) doğrulaması başarısız oldu. {2}</value>
+  </data>
+  <data name="event_TokenValidationStarted" xml:space="preserve">
+    <value>SecurityToken ('{0}' türü ve '{1}' kimliği) doğrulaması başladı.</value>
+  </data>
+  <data name="event_TokenValidationSuccess" xml:space="preserve">
+    <value>SecurityToken ('{0}' türü ve '{1}' kimliği) doğrulaması başarılı oldu.</value>
+  </data>
+  <data name="event_TraceCodeEventLogCritical" xml:space="preserve">
+    <value>EventLog öğesine yazıldı.</value>
+  </data>
+  <data name="event_TraceCodeEventLogError" xml:space="preserve">
+    <value>EventLog öğesine yazıldı.</value>
+  </data>
+  <data name="event_TraceCodeEventLogInfo" xml:space="preserve">
+    <value>EventLog öğesine yazıldı.</value>
+  </data>
+  <data name="event_TraceCodeEventLogVerbose" xml:space="preserve">
+    <value>EventLog öğesine yazıldı.</value>
+  </data>
+  <data name="event_TraceCodeEventLogWarning" xml:space="preserve">
+    <value>EventLog öğesine yazıldı.</value>
+  </data>
+  <data name="event_TraceCorrelationKeys" xml:space="preserve">
+    <value>'{2}' üst kapsamındaki '{1}' değerleri kullanılarak '{0}' bağıntı anahtarı hesaplandı.</value>
+  </data>
+  <data name="event_TrackingDataExtracted" xml:space="preserve">
+    <value>{0} izleme verisi {1} etkinliğinde ayıklandı.</value>
+  </data>
+  <data name="event_TrackingProfileNotFound" xml:space="preserve">
+    <value>ActivityDefinitionId '{1}' için TrackingProfile '{0}' bulunamadı. TrackingProfile yapılandırma dosyasında bulunamadı veya ActivityDefinitionId eşleşmiyor.</value>
+  </data>
+  <data name="event_TrackingRecordDropped" xml:space="preserve">
+    <value>{0} izleme kaydının boyutu {1} sağlayıcısı için ETW oturumunun izin verdiği üst sınırı aşıyor</value>
+  </data>
+  <data name="event_TrackingRecordRaised" xml:space="preserve">
+    <value>{0} İzleme Kaydı yükseltildi: {1}.</value>
+  </data>
+  <data name="event_TrackingRecordTruncated" xml:space="preserve">
+    <value>{1} sağlayıcısındaki ETW oturumuna yazılan {0} izleme kaydı kesildi. Değişkenler/ek açıklamalar/kullanıcı verileri kaldırıldı</value>
+  </data>
+  <data name="event_TrackingValueNotSerializable" xml:space="preserve">
+    <value>Ayıklanan '{0}' bağımsız değişkeni/değişkeni serileştirilebilir değil.</value>
+  </data>
+  <data name="event_TransactedReceiveScopeEndCommitFailed" xml:space="preserve">
+    <value>Kimliği '{0}' olan CommittableTransaction'da EndCommit çağrısı, şu iletiyle bir TransactionException oluşturdu: '{1}'.</value>
+  </data>
+  <data name="event_TransactionScopeCreate" xml:space="preserve">
+    <value>LocalIdentifier:'{0}' ve DistributedIdentifier:'{1}' ile TransactionScope oluşturuluyor.</value>
+  </data>
+  <data name="event_TransferEmitted" xml:space="preserve">
+    <value>Aktarım olayı gösterildi.</value>
+  </data>
+  <data name="event_TransportListenerSessionsReceived" xml:space="preserve">
+    <value>'{0}' üzerinden aktarma dinleyicisi oturumu başladı</value>
+  </data>
+  <data name="event_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>'{0}' TryCatch etkinliğinin bir alt etkinliği iptal işlemi sırasında özel durum oluşturdu.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>'{0}' TryCatch etkinliğiyle ilişkili bir Catch veya Finally etkinliği özel durum oluşturdu.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>'{0}' TryCatch etkinliği '{1}' türünde bir özel durum yakaladı.</value>
+  </data>
+  <data name="event_UnhandledException" xml:space="preserve">
+    <value>İşlenmemiş özel durum. Özel durum ayrıntıları: {0}</value>
+  </data>
+  <data name="event_UnlockInstanceException" xml:space="preserve">
+    <value>Örneğin kilidi açılmaya çalışılırken {0} özel durumuyla karşılaşıldı.</value>
+  </data>
+  <data name="event_UserEvents" xml:space="preserve">
+    <value>Ad: '{0}', Başvuru: '{1}', Yük: {2}</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesCompleted" xml:space="preserve">
+    <value>Tüm dinleyici kanalı örneklerinin Was kapatılması tamamlandı.</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesFailed" xml:space="preserve">
+    <value>Hata Kodu: {0}</value>
+  </data>
+  <data name="event_WasConnected" xml:space="preserve">
+    <value>WAS Bağlandı.</value>
+  </data>
+  <data name="event_WasConnectionTimedout" xml:space="preserve">
+    <value>WAS bağlantısı zaman aşımına uğradı.</value>
+  </data>
+  <data name="event_WasDisconnected" xml:space="preserve">
+    <value>WAS Bağlantısı Kesildi.</value>
+  </data>
+  <data name="event_WebHostRequestStart" xml:space="preserve">
+    <value>'{0}' AppDomain'de '{1}' sanal yoluna sahip istek alındı.</value>
+  </data>
+  <data name="event_WebHostRequestStop" xml:space="preserve">
+    <value>WebHostRequest durdu.</value>
+  </data>
+  <data name="event_WebhostUnregisterProtocolFailed" xml:space="preserve">
+    <value>Hata Kodu: {0}</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStart" xml:space="preserve">
+    <value>WebSocketId:{0}, okuma başladı.</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStop" xml:space="preserve">
+    <value>WebSocketId:{0}, '{2}' kaynağından '{1}' bayt okudu.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStart" xml:space="preserve">
+    <value>WebSocketId:{0}, '{1}' hedefine '{2}' bayt yazıyor.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStop" xml:space="preserve">
+    <value>WebSocketId:{0}, zaman uyumsuz yazma durdu.</value>
+  </data>
+  <data name="event_WebSocketCloseOutputSent" xml:space="preserve">
+    <value>WebSocketId:{0}, '{1}' tarafına '{2}' kapatma durumuyla kapatma çıkış iletisi gönderiyor.</value>
+  </data>
+  <data name="event_WebSocketCloseSent" xml:space="preserve">
+    <value>WebSocketId:{0}, '{1}' tarafına '{2}' kapatma durumuyla kapatma iletisi gönderiyor.</value>
+  </data>
+  <data name="event_WebSocketCloseStatusReceived" xml:space="preserve">
+    <value>WebSocketId:{0}, '{1}' durumuyla bağlantı kapatma iletisi alındı.</value>
+  </data>
+  <data name="event_WebSocketConnectionAborted" xml:space="preserve">
+    <value>WebSocketId:{0}, bağlantı iptal edildi.</value>
+  </data>
+  <data name="event_WebSocketConnectionAccepted" xml:space="preserve">
+    <value>WebSocketId:{0}, bağlantı kabul edildi.</value>
+  </data>
+  <data name="event_WebSocketConnectionAcceptStart" xml:space="preserve">
+    <value>WebSocket bağlantı kabulü başladı.</value>
+  </data>
+  <data name="event_WebSocketConnectionClosed" xml:space="preserve">
+    <value>WebSocketId:{0}, bağlantı kapatıldı.</value>
+  </data>
+  <data name="event_WebSocketConnectionDeclined" xml:space="preserve">
+    <value>WebSocket bağlantısı '{0}' durum koduyla reddedildi</value>
+  </data>
+  <data name="event_WebSocketConnectionFailed" xml:space="preserve">
+    <value>WebSocket bağlantı isteği başarısız oldu: '{0}'</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStart" xml:space="preserve">
+    <value>'{0}' tarafına WebSocket bağlantı isteği gönderme başladı.</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStop" xml:space="preserve">
+    <value>WebSocketId:{0}, bağlantı isteği gönderildi.</value>
+  </data>
+  <data name="event_WebSocketCreateClientWebSocketWithFactory" xml:space="preserve">
+    <value>'{0}' fabrika türü ile istemci WebSocket'i oluşturuluyor.</value>
+  </data>
+  <data name="event_WebSocketUseVersionFromClientWebSocketFactory" xml:space="preserve">
+    <value>'{0}' fabrika türündeki istemci WebSocket'inden WebSocketVersion kullanılıyor.</value>
+  </data>
+  <data name="event_WfMessageReceived" xml:space="preserve">
+    <value>İleti iş akışı tarafından alındı</value>
+  </data>
+  <data name="event_WfMessageSent" xml:space="preserve">
+    <value>İleti iş akışı tarafından gönderildi</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnAcceptUpgrade" xml:space="preserve">
+    <value>Windows akış güvenliği yükseltmeyi kabul ediyor.</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnInitiateUpgrade" xml:space="preserve">
+    <value>WindowsStreamSecurity güvenlik yükseltmesini başlatıyor.</value>
+  </data>
+  <data name="event_WorkflowActivityResume" xml:space="preserve">
+    <value>WorkflowInstance Kimliği: '{0}' E2E Etkinliği</value>
+  </data>
+  <data name="event_WorkflowActivityStart" xml:space="preserve">
+    <value>WorkflowInstance Kimliği: '{0}' E2E Etkinliği</value>
+  </data>
+  <data name="event_WorkflowActivityStop" xml:space="preserve">
+    <value>WorkflowInstance Kimliği: '{0}' E2E Etkinliği</value>
+  </data>
+  <data name="event_WorkflowActivitySuspend" xml:space="preserve">
+    <value>WorkflowInstance Kimliği: '{0}' E2E Etkinliği</value>
+  </data>
+  <data name="event_WorkflowApplicationCompleted" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowInstance Kapalı durumunda tamamlandı.</value>
+  </data>
+  <data name="event_WorkflowApplicationIdled" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowApplication boşta durumuna geçti.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersistableIdle" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowApplication boşta ve kalıcı yapılabilir. Şu eylem gerçekleştirilecek: {1}.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersisted" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowApplication Persisted yapıldı.</value>
+  </data>
+  <data name="event_WorkflowApplicationTerminated" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowApplication sonlandırıldı. Faulted durumunda bir özel durumla tamamlandı.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnhandledException" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowInstance işlenmeyen bir özel durumla karşılaştı. Özel durum DisplayName: '{2}' olan '{1}' Activity'sinden kaynaklandı. Şu eylem gerçekleştirilecek: {3}.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnloaded" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowInstance Bellekten Kaldırıldı.</value>
+  </data>
+  <data name="event_WorkflowInstanceAborted" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowInstance bir özel durumla durduruldu.</value>
+  </data>
+  <data name="event_WorkflowInstanceAbortedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceAbortedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceCanceled" xml:space="preserve">
+    <value>Kimliği '{0}' olan WorkflowInstance İptal Edildi durumunda tamamlandı.</value>
+  </data>
+  <data name="event_WorkflowInstanceRecordWithId" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, State = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Reason = {4}, Annotations = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceUnhandledExceptionRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUnhandledExceptionRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, SourceName = {4}, SourceId = {5}, SourceInstanceId = {6}, SourceTypeName={7}, Exception={8}, Annotations= {9}, ProfileName = {10}, WorkflowDefinitionIdentity = {11}</value>
+  </data>
+  <data name="event_WorkflowInstanceUpdatedRecord" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceUpdatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, State = {4}, OriginalDefinitionIdentity = {5}, UpdatedDefinitionIdentity = {6}, Annotations = {7}, ProfileName = {8}</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionStart" xml:space="preserve">
+    <value>Sarılmış anahtarın şifresinin çözülmesi başladı.</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionSuccess" xml:space="preserve">
+    <value>Sarılmış anahtarın şifresinin çözülmesi başarılı.</value>
+  </data>
+  <data name="event_WritePoolMiss" xml:space="preserve">
+    <value>Yeni '{0}' oluşturuldu</value>
+  </data>
+  <data name="event_XamlServicesLoadStart" xml:space="preserve">
+    <value>XamlServicesLoad başlat</value>
+  </data>
+  <data name="event_XamlServicesLoadStop" xml:space="preserve">
+    <value>XamlServicesLoad durdur</value>
+  </data>
+  <data name="keyword_ActivationServices" xml:space="preserve">
+    <value>Etkinleştirme Hizmetleri</value>
+  </data>
+  <data name="keyword_Channel" xml:space="preserve">
+    <value>Kanal</value>
+  </data>
+  <data name="keyword_Discovery" xml:space="preserve">
+    <value>Bulma</value>
+  </data>
+  <data name="keyword_EndToEndMonitoring" xml:space="preserve">
+    <value>Bitişten-Bitişe İzleme</value>
+  </data>
+  <data name="keyword_HealthMonitoring" xml:space="preserve">
+    <value>Sistem Durumu İzleme</value>
+  </data>
+  <data name="keyword_HTTP" xml:space="preserve">
+    <value>HTTP Aktarımı</value>
+  </data>
+  <data name="keyword_Infrastructure" xml:space="preserve">
+    <value>Altyapı</value>
+  </data>
+  <data name="keyword_Quota" xml:space="preserve">
+    <value>Kota</value>
+  </data>
+  <data name="keyword_RoutingServices" xml:space="preserve">
+    <value>Yönlendirme Hizmetleri</value>
+  </data>
+  <data name="keyword_Security" xml:space="preserve">
+    <value>Güvenlik</value>
+  </data>
+  <data name="keyword_Serialization" xml:space="preserve">
+    <value>Serileştirme</value>
+  </data>
+  <data name="keyword_ServiceHost" xml:space="preserve">
+    <value>Hizmet Ana Bilgisayar</value>
+  </data>
+  <data name="keyword_ServiceModel" xml:space="preserve">
+    <value>ServiceModel</value>
+  </data>
+  <data name="keyword_TCP" xml:space="preserve">
+    <value>TCP Aktarımı</value>
+  </data>
+  <data name="keyword_Threading" xml:space="preserve">
+    <value>İş Parçacığı Oluşturma</value>
+  </data>
+  <data name="keyword_Transaction" xml:space="preserve">
+    <value>İşlem</value>
+  </data>
+  <data name="keyword_TransportGeneral" xml:space="preserve">
+    <value>Aktarma Genel</value>
+  </data>
+  <data name="keyword_Troubleshooting" xml:space="preserve">
+    <value>Sorun Giderme</value>
+  </data>
+  <data name="keyword_UserEvents" xml:space="preserve">
+    <value>Kullanıcı Olayları</value>
+  </data>
+  <data name="keyword_WCFMessageLogging" xml:space="preserve">
+    <value>WFC İleti Günlüğe Yazma</value>
+  </data>
+  <data name="keyword_WebHost" xml:space="preserve">
+    <value>Web Ana Bilgisayarı</value>
+  </data>
+  <data name="keyword_WebHTTP" xml:space="preserve">
+    <value>Web HTTP</value>
+  </data>
+  <data name="keyword_WFActivities" xml:space="preserve">
+    <value>İş Akışı Etkinlikleri</value>
+  </data>
+  <data name="keyword_WFInstanceStore" xml:space="preserve">
+    <value>İş Akışı InstanceStore</value>
+  </data>
+  <data name="keyword_WFRuntime" xml:space="preserve">
+    <value>İş Akışı Çalışma Zamanı</value>
+  </data>
+  <data name="keyword_WFServices" xml:space="preserve">
+    <value>İş Akışı ServiceHost</value>
+  </data>
+  <data name="keyword_WFTracking" xml:space="preserve">
+    <value>WF İzleme</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoBookmark" xml:space="preserve">
+    <value>NoBookmark</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoInstance" xml:space="preserve">
+    <value>NoInstance</value>
+  </data>
+  <data name="opcode_BufferPoolingAllocate" xml:space="preserve">
+    <value>Ayır</value>
+  </data>
+  <data name="opcode_BufferPoolingTune" xml:space="preserve">
+    <value>Ayarla</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStart" xml:space="preserve">
+    <value>ClientChannelOpenStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStop" xml:space="preserve">
+    <value>ClientChannelOpenStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStart" xml:space="preserve">
+    <value>ClientParameterInspectorStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStop" xml:space="preserve">
+    <value>ClientParameterInspectorStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeOperationPrepared" xml:space="preserve">
+    <value>OperationPrepared</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteBookmark" xml:space="preserve">
+    <value>CompleteBookmark</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCancelActivity" xml:space="preserve">
+    <value>CompleteCancelActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCompletion" xml:space="preserve">
+    <value>CompleteCompletion</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteExecuteActivity" xml:space="preserve">
+    <value>CompleteExecuteActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteFault" xml:space="preserve">
+    <value>CompleteFault</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteRuntime" xml:space="preserve">
+    <value>CompleteRuntime</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteTransactionContext" xml:space="preserve">
+    <value>CompleteTransactionContext</value>
+  </data>
+  <data name="opcode_CorrelationDuplicateQuery" xml:space="preserve">
+    <value>DuplicateQuery</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelCreationFailed" xml:space="preserve">
+    <value>CreationFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelFindInitiated" xml:space="preserve">
+    <value>FindInitiated</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenFailed" xml:space="preserve">
+    <value>OpenFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenSucceeded" xml:space="preserve">
+    <value>OpenSucceeded</value>
+  </data>
+  <data name="opcode_DiscoveryClientExceptionSuppressed" xml:space="preserve">
+    <value>ExceptionSuppressed</value>
+  </data>
+  <data name="opcode_DiscoveryClientFailedToClose" xml:space="preserve">
+    <value>FailedToClose</value>
+  </data>
+  <data name="opcode_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>ReceivedMulticastSuppression</value>
+  </data>
+  <data name="opcode_DiscoveryMessageDuplicate" xml:space="preserve">
+    <value>Çoğaltma</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidContent" xml:space="preserve">
+    <value>InvalidContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>InvalidRelatesToOrOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidReplyTo" xml:space="preserve">
+    <value>InvalidReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNoContent" xml:space="preserve">
+    <value>NoContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageId" xml:space="preserve">
+    <value>NullMessageId</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageSequence" xml:space="preserve">
+    <value>NullMessageSequence</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullRelatesTo" xml:space="preserve">
+    <value>NullRelatesTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullReplyTo" xml:space="preserve">
+    <value>NullReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>ReceivedAfterOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextReset" xml:space="preserve">
+    <value>Sıfırla</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextSetToNull" xml:space="preserve">
+    <value>SetToNull</value>
+  </data>
+  <data name="opcode_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>BeforeAuthorization</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStart" xml:space="preserve">
+    <value>DispatchStart</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStop" xml:space="preserve">
+    <value>DispatchStop</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStart" xml:space="preserve">
+    <value>OperationInvokerStart</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStop" xml:space="preserve">
+    <value>OperationInvokerStop</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStart" xml:space="preserve">
+    <value>ParameterInspectorStart</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStop" xml:space="preserve">
+    <value>ParameterInspectorStop</value>
+  </data>
+  <data name="opcode_DispatchMessageTransactionScopeCreate" xml:space="preserve">
+    <value>TransactionScopeCreate</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>Devre Dışı</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>Etkin</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartBegin" xml:space="preserve">
+    <value>Başlat</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartEmpty" xml:space="preserve">
+    <value>Boş</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartNextNull" xml:space="preserve">
+    <value>NextNull</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCase" xml:space="preserve">
+    <value>SwitchCase</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>SwitchCaseNotFound</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchDefault" xml:space="preserve">
+    <value>SwitchDefault</value>
+  </data>
+  <data name="opcode_ExpressionResultArrayItemValue" xml:space="preserve">
+    <value>ArrayItemValue</value>
+  </data>
+  <data name="opcode_ExpressionResultBinary" xml:space="preserve">
+    <value>İkili</value>
+  </data>
+  <data name="opcode_ExpressionResultMemberAccess" xml:space="preserve">
+    <value>MemberAccess</value>
+  </data>
+  <data name="opcode_ExpressionResultUnary" xml:space="preserve">
+    <value>Birli</value>
+  </data>
+  <data name="opcode_InferDescriptionContract" xml:space="preserve">
+    <value>Sözleşme</value>
+  </data>
+  <data name="opcode_InferDescriptionOperation" xml:space="preserve">
+    <value>İşlem</value>
+  </data>
+  <data name="opcode_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>DoesNotUseAsyncPattern</value>
+  </data>
+  <data name="opcode_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>IsNotStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodIsStatic" xml:space="preserve">
+    <value>IsStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodThrewException" xml:space="preserve">
+    <value>ThrewException</value>
+  </data>
+  <data name="opcode_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>UseAsyncPattern</value>
+  </data>
+  <data name="opcode_MessageChannelCacheMissed" xml:space="preserve">
+    <value>Kaçan</value>
+  </data>
+  <data name="opcode_ReliableSessionFaulted" xml:space="preserve">
+    <value>Hatalı</value>
+  </data>
+  <data name="opcode_ReliableSessionReconnect" xml:space="preserve">
+    <value>Yeniden bağlan</value>
+  </data>
+  <data name="opcode_ReliableSessionSequenceAck" xml:space="preserve">
+    <value>SequenceAck</value>
+  </data>
+  <data name="opcode_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>AbortingChannel</value>
+  </data>
+  <data name="opcode_RoutingServiceClientChannelFaulted" xml:space="preserve">
+    <value>ChannelFaulted</value>
+  </data>
+  <data name="opcode_RoutingServiceClientClosing" xml:space="preserve">
+    <value>Kapatma</value>
+  </data>
+  <data name="opcode_RoutingServiceClientCreatingForEndpoint" xml:space="preserve">
+    <value>CreatingForEndpoint</value>
+  </data>
+  <data name="opcode_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>CloseFailed</value>
+  </data>
+  <data name="opcode_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>ConfigurationApplied</value>
+  </data>
+  <data name="opcode_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>DuplexCallbackException</value>
+  </data>
+  <data name="opcode_RoutingServiceHandledException" xml:space="preserve">
+    <value>HandledException</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingOneWay" xml:space="preserve">
+    <value>CompletingOneWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingTwoWay" xml:space="preserve">
+    <value>CompletingTwoWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageMovedToBackup" xml:space="preserve">
+    <value>MovedToBackup</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingFailure" xml:space="preserve">
+    <value>ProcessingFailure</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingMessage" xml:space="preserve">
+    <value>ProcessingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>RoutedToEndpoints</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingFaultResponse" xml:space="preserve">
+    <value>SendingFaultResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingResponse" xml:space="preserve">
+    <value>SendingResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmitSucceeded" xml:space="preserve">
+    <value>TransmitSucceeded</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmittingMessage" xml:space="preserve">
+    <value>TransmittingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextAbandoning" xml:space="preserve">
+    <value>Terk Edilmiş</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextCompleting" xml:space="preserve">
+    <value>Tamamlama</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCommittingTransaction" xml:space="preserve">
+    <value>CommittingTransaction</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCreating" xml:space="preserve">
+    <value>Oluşturma</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionUsingExisting" xml:space="preserve">
+    <value>UsingExisting</value>
+  </data>
+  <data name="opcode_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>TransmitFailed</value>
+  </data>
+  <data name="opcode_RuntimeTransactionComplete" xml:space="preserve">
+    <value>Tamamlandı</value>
+  </data>
+  <data name="opcode_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>CompletionRequested</value>
+  </data>
+  <data name="opcode_RuntimeTransactionSet" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleBookmark" xml:space="preserve">
+    <value>ScheduleBookmark</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCancelActivity" xml:space="preserve">
+    <value>ScheduleCancelActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCompletion" xml:space="preserve">
+    <value>ScheduleCompletion</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleExecuteActivity" xml:space="preserve">
+    <value>ScheduleExecuteActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleFault" xml:space="preserve">
+    <value>ScheduleFault</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleRuntime" xml:space="preserve">
+    <value>ScheduleRuntime</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleTransactionContext" xml:space="preserve">
+    <value>ScheduleTransactionContext</value>
+  </data>
+  <data name="opcode_SessionUpgradeAccept" xml:space="preserve">
+    <value>Kabul Et</value>
+  </data>
+  <data name="opcode_SessionUpgradeInitiate" xml:space="preserve">
+    <value>Başlat</value>
+  </data>
+  <data name="opcode_Signpostsuspend" xml:space="preserve">
+    <value>askıya al</value>
+  </data>
+  <data name="opcode_StartWorkItemStartBookmark" xml:space="preserve">
+    <value>StartBookmark</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCancelActivity" xml:space="preserve">
+    <value>StartCancelActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCompletion" xml:space="preserve">
+    <value>StartCompletion</value>
+  </data>
+  <data name="opcode_StartWorkItemStartExecuteActivity" xml:space="preserve">
+    <value>StartExecuteActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartFault" xml:space="preserve">
+    <value>StartFault</value>
+  </data>
+  <data name="opcode_StartWorkItemStartRuntime" xml:space="preserve">
+    <value>StartRuntime</value>
+  </data>
+  <data name="opcode_StartWorkItemStartTransactionContext" xml:space="preserve">
+    <value>StartTransactionContext</value>
+  </data>
+  <data name="opcode_TrackingProfileNotFound" xml:space="preserve">
+    <value>NotFound</value>
+  </data>
+  <data name="opcode_TrackingRecordDropped" xml:space="preserve">
+    <value>Bırakıldı</value>
+  </data>
+  <data name="opcode_TrackingRecordRaised" xml:space="preserve">
+    <value>Raised</value>
+  </data>
+  <data name="opcode_TrackingRecordTruncated" xml:space="preserve">
+    <value>Kesildi</value>
+  </data>
+  <data name="opcode_TransportReceiveBeforeAuthentication" xml:space="preserve">
+    <value>BeforeAuthentication</value>
+  </data>
+  <data name="opcode_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>DuringCancelation</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>FromCatchOrFinally</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>FromTry</value>
+  </data>
+  <data name="opcode_WASActivationConnected" xml:space="preserve">
+    <value>Bağlandı</value>
+  </data>
+  <data name="opcode_WASActivationDisconnect" xml:space="preserve">
+    <value>Bağlantıyı Kes</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeCompleted" xml:space="preserve">
+    <value>Tamamlandı</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeIdled" xml:space="preserve">
+    <value>Boşta</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceAborted" xml:space="preserve">
+    <value>InstanceAborted</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceCanceled" xml:space="preserve">
+    <value>InstanceCanceled</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersistableIdle" xml:space="preserve">
+    <value>PersistableIdle</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersisted" xml:space="preserve">
+    <value>Kalıcı Yapıldı</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeTerminated" xml:space="preserve">
+    <value>Sonlandırıldı</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnhandledException" xml:space="preserve">
+    <value>UnhandledException</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnloaded" xml:space="preserve">
+    <value>Yüklenmedi</value>
+  </data>
+  <data name="opcode_WorkflowActivitysuspend" xml:space="preserve">
+    <value>askıya al</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedRecord" xml:space="preserve">
+    <value>AbortedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedWithId" xml:space="preserve">
+    <value>AbortedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedRecord" xml:space="preserve">
+    <value>SuspendedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedWithId" xml:space="preserve">
+    <value>SuspendedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedRecord" xml:space="preserve">
+    <value>TerminatedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedWithId" xml:space="preserve">
+    <value>TerminatedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionRecord" xml:space="preserve">
+    <value>UnhandledExceptionRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionWithId" xml:space="preserve">
+    <value>UnhandledExceptionWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUpdatedRecord" xml:space="preserve">
+    <value>UpdatedRecord</value>
+  </data>
+  <data name="task_ActivationDispatchSession" xml:space="preserve">
+    <value>ActivationDispatchSession</value>
+  </data>
+  <data name="task_ActivationDuplicateSocket" xml:space="preserve">
+    <value>ActivationDuplicateSocket</value>
+  </data>
+  <data name="task_ActivationListenerOpen" xml:space="preserve">
+    <value>ActivationListenerOpen</value>
+  </data>
+  <data name="task_ActivationPipeListenerListening" xml:space="preserve">
+    <value>ActivationPipeListenerListening</value>
+  </data>
+  <data name="task_ActivationRoutingTableLookup" xml:space="preserve">
+    <value>ActivationRoutingTableLookup</value>
+  </data>
+  <data name="task_ActivationServiceStart" xml:space="preserve">
+    <value>ActivationServiceStart</value>
+  </data>
+  <data name="task_ActivationTcpListenerListening" xml:space="preserve">
+    <value>ActivationTcpListenerListening</value>
+  </data>
+  <data name="task_AddServiceEndpoint" xml:space="preserve">
+    <value>AddServiceEndpoint</value>
+  </data>
+  <data name="task_BufferOutOfOrder" xml:space="preserve">
+    <value>BufferOutOfOrder</value>
+  </data>
+  <data name="task_BufferPooling" xml:space="preserve">
+    <value>BufferPooling</value>
+  </data>
+  <data name="task_CacheRootMetadata" xml:space="preserve">
+    <value>CacheRootMetadata</value>
+  </data>
+  <data name="task_ChannelFactoryCaching" xml:space="preserve">
+    <value>ChannelFactoryCaching</value>
+  </data>
+  <data name="task_ChannelFactoryCreate" xml:space="preserve">
+    <value>ChannelFactoryCreate</value>
+  </data>
+  <data name="task_ChannelReceive" xml:space="preserve">
+    <value>ChannelReceive</value>
+  </data>
+  <data name="task_ClientRuntime" xml:space="preserve">
+    <value>ClientRuntime</value>
+  </data>
+  <data name="task_ClientSendPreamble" xml:space="preserve">
+    <value>ClientSendPreamble</value>
+  </data>
+  <data name="task_CompensationState" xml:space="preserve">
+    <value>CompensationState</value>
+  </data>
+  <data name="task_CompleteActivity" xml:space="preserve">
+    <value>CompleteActivity</value>
+  </data>
+  <data name="task_CompleteWorkItem" xml:space="preserve">
+    <value>CompleteWorkItem</value>
+  </data>
+  <data name="task_Connect" xml:space="preserve">
+    <value>Bağlan</value>
+  </data>
+  <data name="task_ConnectionAbort" xml:space="preserve">
+    <value>ConnectionAbort</value>
+  </data>
+  <data name="task_ConnectionAccept" xml:space="preserve">
+    <value>ConnectionAccept</value>
+  </data>
+  <data name="task_ConnectionPooling" xml:space="preserve">
+    <value>ConnectionPooling</value>
+  </data>
+  <data name="task_Correlation" xml:space="preserve">
+    <value>Bağıntı</value>
+  </data>
+  <data name="task_CreateBookmark" xml:space="preserve">
+    <value>CreateBookmark</value>
+  </data>
+  <data name="task_CreateHttpMessageHandler" xml:space="preserve">
+    <value>CreateHttpMessageHandler</value>
+  </data>
+  <data name="task_CreateWorkflowServiceHost" xml:space="preserve">
+    <value>CreateWorkflowServiceHost</value>
+  </data>
+  <data name="task_CustomTrackingRecord" xml:space="preserve">
+    <value>CustomTrackingRecord</value>
+  </data>
+  <data name="task_DataContractResolver" xml:space="preserve">
+    <value>DataContractResolver</value>
+  </data>
+  <data name="task_DiscoveryClient" xml:space="preserve">
+    <value>DiscoveryClient</value>
+  </data>
+  <data name="task_DiscoveryClientChannel" xml:space="preserve">
+    <value>DiscoveryClientChannel</value>
+  </data>
+  <data name="task_DiscoveryMessage" xml:space="preserve">
+    <value>DiscoveryMessage</value>
+  </data>
+  <data name="task_DiscoverySynchronizationContext" xml:space="preserve">
+    <value>DiscoverySynchronizationContext</value>
+  </data>
+  <data name="task_DispatchMessage" xml:space="preserve">
+    <value>DispatchMessage</value>
+  </data>
+  <data name="task_EncryptedDataProcessing" xml:space="preserve">
+    <value>EncryptedDataProcessing</value>
+  </data>
+  <data name="task_EndpointDiscoverability" xml:space="preserve">
+    <value>EndpointDiscoverability</value>
+  </data>
+  <data name="task_ExecuteActivity" xml:space="preserve">
+    <value>ExecuteActivity</value>
+  </data>
+  <data name="task_ExecuteFlowchart" xml:space="preserve">
+    <value>ExecuteFlowchart</value>
+  </data>
+  <data name="task_ExecuteWorkItem" xml:space="preserve">
+    <value>ExecuteWorkItem</value>
+  </data>
+  <data name="task_ExpressionResult" xml:space="preserve">
+    <value>ExpressionResult</value>
+  </data>
+  <data name="task_FederationMessageCreation" xml:space="preserve">
+    <value>FederationMessageCreation</value>
+  </data>
+  <data name="task_FederationMessageProcessing" xml:space="preserve">
+    <value>FederationMessageProcessing</value>
+  </data>
+  <data name="task_FormatterDeserializeReply" xml:space="preserve">
+    <value>FormatterDeserializeReply</value>
+  </data>
+  <data name="task_FormatterDeserializeRequest" xml:space="preserve">
+    <value>FormatterDeserializeRequest</value>
+  </data>
+  <data name="task_FormatterSerializeReply" xml:space="preserve">
+    <value>FormatterSerializeReply</value>
+  </data>
+  <data name="task_FormatterSerializeRequest" xml:space="preserve">
+    <value>FormatterSerializeRequest</value>
+  </data>
+  <data name="task_GenerateDeserializer" xml:space="preserve">
+    <value>GenerateDeserializer</value>
+  </data>
+  <data name="task_GenerateSerializer" xml:space="preserve">
+    <value>GenerateSerializer</value>
+  </data>
+  <data name="task_GenerateXmlSerializable" xml:space="preserve">
+    <value>GenerateXmlSerializable</value>
+  </data>
+  <data name="task_GetIssuerName" xml:space="preserve">
+    <value>GetIssuerName</value>
+  </data>
+  <data name="task_HostedTransportConfigurationManagerConfigInit" xml:space="preserve">
+    <value>HostedTransportConfigurationManagerConfigInit</value>
+  </data>
+  <data name="task_ImportKnownType" xml:space="preserve">
+    <value>ImportKnownType</value>
+  </data>
+  <data name="task_InferDescription" xml:space="preserve">
+    <value>InferDescription</value>
+  </data>
+  <data name="task_InitializeBookmarkScope" xml:space="preserve">
+    <value>InitializeBookmarkScope</value>
+  </data>
+  <data name="task_InternalCacheMetadata" xml:space="preserve">
+    <value>InternalCacheMetadata</value>
+  </data>
+  <data name="task_InvokeMethod" xml:space="preserve">
+    <value>InvokeMethod</value>
+  </data>
+  <data name="task_ListenerOpen" xml:space="preserve">
+    <value>ListenerOpen</value>
+  </data>
+  <data name="task_LockWorkflowInstance" xml:space="preserve">
+    <value>LockWorkflowInstance</value>
+  </data>
+  <data name="task_MessageChannelCache" xml:space="preserve">
+    <value>MessageChannelCache</value>
+  </data>
+  <data name="task_MessageDecoding" xml:space="preserve">
+    <value>MessageDecoding</value>
+  </data>
+  <data name="task_MessageEncoding" xml:space="preserve">
+    <value>MessageEncoding</value>
+  </data>
+  <data name="task_MessageQueueRegister" xml:space="preserve">
+    <value>MessageQueueRegister</value>
+  </data>
+  <data name="task_MsmqQuotas" xml:space="preserve">
+    <value>MsmqQuotas</value>
+  </data>
+  <data name="task_NoPersistBlock" xml:space="preserve">
+    <value>NoPersistBlock</value>
+  </data>
+  <data name="task_PrincipalSetting" xml:space="preserve">
+    <value>PrincipalSetting</value>
+  </data>
+  <data name="task_Quotas" xml:space="preserve">
+    <value>Kotalar</value>
+  </data>
+  <data name="task_ReliableSession" xml:space="preserve">
+    <value>ReliableSession</value>
+  </data>
+  <data name="task_RoutingService" xml:space="preserve">
+    <value>RoutingService</value>
+  </data>
+  <data name="task_RoutingServiceClient" xml:space="preserve">
+    <value>RoutingServiceClient</value>
+  </data>
+  <data name="task_RoutingServiceFilterTableMatch" xml:space="preserve">
+    <value>RoutingServiceFilterTableMatch</value>
+  </data>
+  <data name="task_RoutingServiceMessage" xml:space="preserve">
+    <value>RoutingServiceMessage</value>
+  </data>
+  <data name="task_RoutingServiceReceiveContext" xml:space="preserve">
+    <value>RoutingServiceReceiveContext</value>
+  </data>
+  <data name="task_RoutingServiceTransaction" xml:space="preserve">
+    <value>RoutingServiceTransaction</value>
+  </data>
+  <data name="task_RuntimeTransaction" xml:space="preserve">
+    <value>RuntimeTransaction</value>
+  </data>
+  <data name="task_ScheduleActivity" xml:space="preserve">
+    <value>ScheduleActivity</value>
+  </data>
+  <data name="task_ScheduleWorkItem" xml:space="preserve">
+    <value>ScheduleWorkItem</value>
+  </data>
+  <data name="task_SecureMessage" xml:space="preserve">
+    <value>SecureMessage</value>
+  </data>
+  <data name="task_SecurityImpersonation" xml:space="preserve">
+    <value>SecurityImpersonation</value>
+  </data>
+  <data name="task_SecurityNegotiation" xml:space="preserve">
+    <value>SecurityNegotiation</value>
+  </data>
+  <data name="task_SecurityVerification" xml:space="preserve">
+    <value>SecurityVerification</value>
+  </data>
+  <data name="task_ServiceActivation" xml:space="preserve">
+    <value>ServiceActivation</value>
+  </data>
+  <data name="task_ServiceChannelCall" xml:space="preserve">
+    <value>ServiceChannelCall</value>
+  </data>
+  <data name="task_ServiceChannelOpen" xml:space="preserve">
+    <value>ServiceChannelOpen</value>
+  </data>
+  <data name="task_ServiceHostActivation" xml:space="preserve">
+    <value>ServiceHostActivation</value>
+  </data>
+  <data name="task_ServiceHostCompilation" xml:space="preserve">
+    <value>ServiceHostCompilation</value>
+  </data>
+  <data name="task_ServiceHostCreate" xml:space="preserve">
+    <value>ServiceHostCreate</value>
+  </data>
+  <data name="task_ServiceHostFactoryCreation" xml:space="preserve">
+    <value>ServiceHostFactoryCreation</value>
+  </data>
+  <data name="task_ServiceHostFault" xml:space="preserve">
+    <value>ServiceHostFault</value>
+  </data>
+  <data name="task_ServiceHostOpen" xml:space="preserve">
+    <value>ServiceHostOpen</value>
+  </data>
+  <data name="task_ServiceInstance" xml:space="preserve">
+    <value>ServiceInstance</value>
+  </data>
+  <data name="task_ServiceShutdown" xml:space="preserve">
+    <value>ServiceShutdown</value>
+  </data>
+  <data name="task_SessionCookieReading" xml:space="preserve">
+    <value>SessionCookieReading</value>
+  </data>
+  <data name="task_SessionStart" xml:space="preserve">
+    <value>SessionStart</value>
+  </data>
+  <data name="task_SessionUpgrade" xml:space="preserve">
+    <value>SessionUpgrade</value>
+  </data>
+  <data name="task_SignatureVerification" xml:space="preserve">
+    <value>SignatureVerification</value>
+  </data>
+  <data name="task_Signpost" xml:space="preserve">
+    <value>Signpost</value>
+  </data>
+  <data name="task_SqlCommandExecute" xml:space="preserve">
+    <value>SqlCommandExecute</value>
+  </data>
+  <data name="task_StartWorkItem" xml:space="preserve">
+    <value>StartWorkItem</value>
+  </data>
+  <data name="task_SurrogateDeserialize" xml:space="preserve">
+    <value>SurrogateDeserialize</value>
+  </data>
+  <data name="task_SurrogateSerialize" xml:space="preserve">
+    <value>SurrogateSerialize</value>
+  </data>
+  <data name="task_ThreadScheduling" xml:space="preserve">
+    <value>ThreadScheduling</value>
+  </data>
+  <data name="task_Throttles" xml:space="preserve">
+    <value>Throttles</value>
+  </data>
+  <data name="task_Timeout" xml:space="preserve">
+    <value>Zaman Aşımı</value>
+  </data>
+  <data name="task_TimeoutException" xml:space="preserve">
+    <value>TimeoutException</value>
+  </data>
+  <data name="task_TokenValidation" xml:space="preserve">
+    <value>TokenValidation</value>
+  </data>
+  <data name="task_TrackingProfile" xml:space="preserve">
+    <value>TrackingProfile</value>
+  </data>
+  <data name="task_TrackingRecord" xml:space="preserve">
+    <value>TrackingRecord</value>
+  </data>
+  <data name="task_TransportReceive" xml:space="preserve">
+    <value>TransportReceive</value>
+  </data>
+  <data name="task_TransportSend" xml:space="preserve">
+    <value>TransportSend</value>
+  </data>
+  <data name="task_TryCatchException" xml:space="preserve">
+    <value>TryCatchException</value>
+  </data>
+  <data name="task_VBExpressionCompile" xml:space="preserve">
+    <value>VBExpressionCompile</value>
+  </data>
+  <data name="task_WASActivation" xml:space="preserve">
+    <value>WASActivation</value>
+  </data>
+  <data name="task_WebHostRequest" xml:space="preserve">
+    <value>WebHostRequest</value>
+  </data>
+  <data name="task_WFApplicationStateChange" xml:space="preserve">
+    <value>WFApplicationStateChange</value>
+  </data>
+  <data name="task_WFMessage" xml:space="preserve">
+    <value>WFMessage</value>
+  </data>
+  <data name="task_WorkflowActivity" xml:space="preserve">
+    <value>WorkflowActivity</value>
+  </data>
+  <data name="task_WorkflowInstanceRecord" xml:space="preserve">
+    <value>WorkflowInstanceRecord</value>
+  </data>
+  <data name="task_WorkflowTracking" xml:space="preserve">
+    <value>WorkflowTracking</value>
+  </data>
+  <data name="task_WrappedKeyDecryption" xml:space="preserve">
+    <value>WrappedKeyDecryption</value>
+  </data>
+  <data name="task_XamlServicesLoad" xml:space="preserve">
+    <value>XamlServicesLoad</value>
+  </data>
+</root>

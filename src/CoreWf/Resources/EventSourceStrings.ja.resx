@@ -1,0 +1,2382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="event_ActionItemCallbackInvoked" xml:space="preserve">
+    <value>IO スレッド スケジューラのコールバックが呼び出されました。</value>
+  </data>
+  <data name="event_ActionItemScheduled" xml:space="preserve">
+    <value>IO スレッド スケジューラのコールバックが呼び出されました。</value>
+  </data>
+  <data name="event_ActivityCompleted" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' は '{3}' 状態で完了しました。</value>
+  </data>
+  <data name="event_ActivityScheduled" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' は、子 Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' をスケジュールしました。</value>
+  </data>
+  <data name="event_AppDomainUnload" xml:space="preserve">
+    <value>AppDomain をアンロードしています。AppDomain.FriendlyName {0}、ProcessName {1}、ProcessId {2}。</value>
+  </data>
+  <data name="event_AspNetRoute" xml:space="preserve">
+    <value>serviceType '{1}' および serviceHostFactoryType '{2}' の新しい Asp.Net ルート '{0}' が追加されます。</value>
+  </data>
+  <data name="event_AspNetRoutingService" xml:space="preserve">
+    <value>受信要求が、アドレス {0} の Asp.Net ルートで定義された WCF サービスと一致します。</value>
+  </data>
+  <data name="event_BinaryMessageDecodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder がメッセージのデコードを開始しました。</value>
+  </data>
+  <data name="event_BinaryMessageEncodingStart" xml:space="preserve">
+    <value>BinaryMessageEncoder がメッセージのエンコードを開始しました。</value>
+  </data>
+  <data name="event_BookmarkScopeInitialized" xml:space="preserve">
+    <value>TemporaryId: '{0}' を指定されていた BookmarkScope が ID: '{1}' で初期化されました。</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStart" xml:space="preserve">
+    <value>BufferId:{0} から基になるストリームへの '{1}' バイトの書き込みが完了しました。</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStop" xml:space="preserve">
+    <value>エンコーダーによってメッセージが非同期で書き込まれました。</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoBookmark" xml:space="preserve">
+    <value>サービス インスタンス '{0}' での操作 '{1}' は現時点では実行できません。サービス インスタンスがこの特定の操作を処理できる状態になったとき、もう一度試行されます。</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoInstance" xml:space="preserve">
+    <value>操作 '{0}' は現時点では実行できません。サービス インスタンスがこの特定の操作を処理できる状態になったとき、もう一度試行されます。</value>
+  </data>
+  <data name="event_BufferPoolAllocation" xml:space="preserve">
+    <value>プールが {0} バイトを割り当てています。</value>
+  </data>
+  <data name="event_BufferPoolChangeQuota" xml:space="preserve">
+    <value>BufferPool のサイズ: {0}、クォータの変更: {1}。</value>
+  </data>
+  <data name="event_CacheRootMetadataStart" xml:space="preserve">
+    <value>アクティビティ '{0}' で CacheRootMetadata が開始されました</value>
+  </data>
+  <data name="event_CacheRootMetadataStop" xml:space="preserve">
+    <value>アクティビティ {0} で CacheRootMetadata が停止されました。</value>
+  </data>
+  <data name="event_CBAEntryRead" xml:space="preserve">
+    <value>ServiceActivation 要素の相対アドレス: '{0}'、標準化相対アドレス '{1}' を処理しました。</value>
+  </data>
+  <data name="event_CBAMatchFound" xml:space="preserve">
+    <value>受信要求が、アドレス '{0}' の ServiceActivation 要素と一致します。 </value>
+  </data>
+  <data name="event_ChannelFactoryCreated" xml:space="preserve">
+    <value>ChannelFactory が作成されました。</value>
+  </data>
+  <data name="event_ChannelInitializationTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ChannelReceiveStart" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - メッセージ受信ループを開始しました。</value>
+  </data>
+  <data name="event_ChannelReceiveStop" xml:space="preserve">
+    <value>ChannelHandlerId:{0} - メッセージ受信ループを停止しました。</value>
+  </data>
+  <data name="event_ClientBaseCachedChannelFactoryCount" xml:space="preserve">
+    <value>キャッシュされているチャネル ファクトリの数は '{0}' です。キャッシュできるチャネル ファクトリの最大数は '{1}' です。</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryAgedOutofCache" xml:space="preserve">
+    <value>キャッシュが上限の '{0}' に達したため、チャネル ファクトリがキャッシュから削除されました。</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryCacheHit" xml:space="preserve">
+    <value>キャッシュで見つかった一致するチャネル ファクトリが使用されました。</value>
+  </data>
+  <data name="event_ClientBaseUsingLocalChannelFactory" xml:space="preserve">
+    <value>キャッシュのチャネル ファクトリは使用されません (つまり、インスタンスのキャッシュは無効になっています)。</value>
+  </data>
+  <data name="event_ClientChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannel Open を開始します。</value>
+  </data>
+  <data name="event_ClientChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannel Open を停止します。</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStart" xml:space="preserve">
+    <value>クライアントが応答メッセージのシリアル化解除を開始しました。</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStop" xml:space="preserve">
+    <value>クライアントが応答メッセージのシリアル化解除を完了しました。</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStart" xml:space="preserve">
+    <value>クライアント要求のシリアル化を開始しました。</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStop" xml:space="preserve">
+    <value>クライアントが要求メッセージのシリアル化を完了しました。</value>
+  </data>
+  <data name="event_ClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の ClientMessageInspector で 'AfterReceiveReply' を呼び出しました。</value>
+  </data>
+  <data name="event_ClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の ClientMessageInspector で 'BeforeSendRequest' を呼び出しました。</value>
+  </data>
+  <data name="event_ClientOperationPrepared" xml:space="preserve">
+    <value>クライアントは '{1}' コントラクトと関連付けられている Action '{0}' を実行しています。メッセージは '{2}' に送信されます。</value>
+  </data>
+  <data name="event_ClientParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の ClientParameterInspector で 'AfterCall' を呼び出しました。</value>
+  </data>
+  <data name="event_ClientParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の ClientParameterInspector で 'BeforeCall' を呼び出しました。</value>
+  </data>
+  <data name="event_ClientReliableSessionReconnect" xml:space="preserve">
+    <value>SessionId:{0} を再接続します。</value>
+  </data>
+  <data name="event_ClientSendPreambleStart" xml:space="preserve">
+    <value>クライアントがプリアンブルの送信を開始します。</value>
+  </data>
+  <data name="event_ClientSendPreambleStop" xml:space="preserve">
+    <value>クライアントがプリアンブルの送信を停止します。</value>
+  </data>
+  <data name="event_CloseTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_CompensationState" xml:space="preserve">
+    <value>CompensableActivity '{0}' は '{1}' の状態です。</value>
+  </data>
+  <data name="event_CompilationStart" xml:space="preserve">
+    <value>コンパイルを開始します</value>
+  </data>
+  <data name="event_CompilationStop" xml:space="preserve">
+    <value>コンパイルを終了します</value>
+  </data>
+  <data name="event_CompileVbExpressionStart" xml:space="preserve">
+    <value>VB の式 '{0}' をコンパイルしています</value>
+  </data>
+  <data name="event_CompileVbExpressionStop" xml:space="preserve">
+    <value>VB の式のコンパイルが完了しました。</value>
+  </data>
+  <data name="event_CompleteBookmarkWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の BookmarkWorkItem が完了しました。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="event_CompleteCancelActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CancelActivityWorkItem が完了しました。</value>
+  </data>
+  <data name="event_CompleteCompletionWorkItem" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CompletionWorkItem が完了しました。Activity '{3}'、DisplayName: '{4}、InstanceId: '{5}' が完了しました。</value>
+  </data>
+  <data name="event_CompleteExecuteActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の ExecuteActivityWorkItem が完了しました。</value>
+  </data>
+  <data name="event_CompleteFaultWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の FaultWorkItem が完了しました。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' から例外が返されました。</value>
+  </data>
+  <data name="event_CompleteRuntimeWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' のランタイム作業項目が完了しました。</value>
+  </data>
+  <data name="event_CompleteTransactionContextWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の TransactionContextWorkItem が完了しました。</value>
+  </data>
+  <data name="event_ConcurrentCallsRatio" xml:space="preserve">
+    <value>同時呼び出しの比率: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentInstancesRatio" xml:space="preserve">
+    <value>同時インスタンスの比率: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentSessionsRatio" xml:space="preserve">
+    <value>同時セッションの比率: {0}/{1}</value>
+  </data>
+  <data name="event_ConnectionPoolMiss" xml:space="preserve">
+    <value>{0} のプールに使用可能な接続がありません。{1} 個の接続がビジー状態です。</value>
+  </data>
+  <data name="event_ConnectionPoolPreambleFailed" xml:space="preserve">
+    <value>ConnectionPoolPreambleFailed。</value>
+  </data>
+  <data name="event_ConnectionReaderSendFault" xml:space="preserve">
+    <value>接続リーダーがエラー '{0}' を送信しています。 </value>
+  </data>
+  <data name="event_CreateBookmark" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対してブックマークが作成されました。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="event_CreateBookmarkScope" xml:space="preserve">
+    <value>BookmarkScope が作成されました: {0}。</value>
+  </data>
+  <data name="event_CreateServiceHostStart" xml:space="preserve">
+    <value>CreateServiceHost を開始します</value>
+  </data>
+  <data name="event_CreateServiceHostStop" xml:space="preserve">
+    <value>CreateServiceHost を終了します</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStart" xml:space="preserve">
+    <value>CreateWorkflowServiceHost が開始します</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStop" xml:space="preserve">
+    <value>CreateWorkflowServiceHost が停止します</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract のサロゲートによる {0} のシリアル化解除を開始します。</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract のサロゲートによるシリアル化解除を停止します。</value>
+  </data>
+  <data name="event_DCGenReaderStart" xml:space="preserve">
+    <value>DataContract の {1} の {0} リーダーの生成を開始します。</value>
+  </data>
+  <data name="event_DCGenReaderStop" xml:space="preserve">
+    <value>DataContract の生成を停止します。</value>
+  </data>
+  <data name="event_DCGenWriterStart" xml:space="preserve">
+    <value>DataContract の {1} の {0} ライターの生成を開始します。</value>
+  </data>
+  <data name="event_DCGenWriterStop" xml:space="preserve">
+    <value>DataContract のライターの生成を停止します。</value>
+  </data>
+  <data name="event_DCJsonGenReaderStart" xml:space="preserve">
+    <value>Json の {1} の {0} リーダーの生成を開始します。</value>
+  </data>
+  <data name="event_DCJsonGenReaderStop" xml:space="preserve">
+    <value>Json のリーダーの生成を停止します。</value>
+  </data>
+  <data name="event_DCJsonGenWriterStart" xml:space="preserve">
+    <value>Json の {1} の {0} ライターの生成を開始します。</value>
+  </data>
+  <data name="event_DCJsonGenWriterStop" xml:space="preserve">
+    <value>Json のライターの生成を停止します。</value>
+  </data>
+  <data name="event_DCResolverResolve" xml:space="preserve">
+    <value>DataContract リゾルバーが {0} の解決を開始します。</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract のサロゲートによる {0} のシリアル化を開始します。</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract のサロゲートによるシリアル化を停止します。</value>
+  </data>
+  <data name="event_DecrementBusyCount" xml:space="preserve">
+    <value>DecrementBusyCount が呼び出されました。ソース: {0}</value>
+  </data>
+  <data name="event_DiscoveryClientInClientChannelFailedToClose" xml:space="preserve">
+    <value>DiscoveryClientChannel 内で作成された DiscoveryClient を閉じることができず、異常終了しました。</value>
+  </data>
+  <data name="event_DiscoveryClientProtocolExceptionSuppressed" xml:space="preserve">
+    <value>DiscoveryClient を閉じているときに ProtocolException が抑制されました。その理由として、DiscoveryService がまだ DiscoveryClient に応答を送信しようとしていることが考えられます。</value>
+  </data>
+  <data name="event_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>DiscoveryClient は DiscoveryProxy からマルチキャスト抑制メッセージを受け取りました。</value>
+  </data>
+  <data name="event_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>messageId='{1}' の {0} メッセージは、対応する {2} 操作が完了したため、DiscoveryClient によってドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidContent" xml:space="preserve">
+    <value>messageId='{1}' の {0} メッセージは、無効なコンテンツがあったため、ドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>messageId='{1}' および relatesTo='{2}' の {0} メッセージは、対応する {3} 操作が完了したか、relatesTo 値が無効であるため、DiscoveryClient によってドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidReplyTo" xml:space="preserve">
+    <value>messageId='{0}' の探索要求メッセージは、無効な ReplyTo アドレスがあったため、ドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNoContent" xml:space="preserve">
+    <value>{0} メッセージは、コンテンツがなかったため、ドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageId" xml:space="preserve">
+    <value>{0} メッセージは、メッセージ ヘッダーに必要な MessageId プロパティが含まれていなかったため、ドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageSequence" xml:space="preserve">
+    <value>messageId='{1}' の {0} メッセージは、DiscoveryMessageSequence プロパティがなかったため、DiscoveryClient によってドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullRelatesTo" xml:space="preserve">
+    <value>messageId='{1}' の {0} メッセージは、メッセージ ヘッダーに必要な RelatesTo プロパティが含まれていなかったため、DiscoveryClient によってドロップされました。</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullReplyTo" xml:space="preserve">
+    <value>messageId='{0}' の探索要求メッセージは、ReplyTo アドレスがなかったため、ドロップされました。</value>
+  </data>
+  <data name="event_DispatchFailed" xml:space="preserve">
+    <value>'{0}' 操作のディスパッチでエラーが発生しました。</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStart" xml:space="preserve">
+    <value>ディスパッチャーが要求メッセージのシリアル化解除を開始しました。</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStop" xml:space="preserve">
+    <value>ディスパッチャーが要求メッセージのシリアル化解除を完了しました。</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStart" xml:space="preserve">
+    <value>ディスパッチャーが応答メッセージのシリアル化を開始しました。</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStop" xml:space="preserve">
+    <value>ディスパッチャーが応答メッセージのシリアル化を完了しました。</value>
+  </data>
+  <data name="event_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>メッセージのディスパッチの承認を開始します</value>
+  </data>
+  <data name="event_DispatchMessageStart" xml:space="preserve">
+    <value>メッセージのディスパッチを開始しました。</value>
+  </data>
+  <data name="event_DispatchMessageStop" xml:space="preserve">
+    <value>メッセージのディスパッチが完了しました</value>
+  </data>
+  <data name="event_DispatchSessionFailed" xml:space="preserve">
+    <value>セッション ディスパッチに失敗しました。</value>
+  </data>
+  <data name="event_DispatchSessionStart" xml:space="preserve">
+    <value>セッション ディスパッチを開始しました。</value>
+  </data>
+  <data name="event_DispatchSessionSuccess" xml:space="preserve">
+    <value>セッション ディスパッチに成功しました。</value>
+  </data>
+  <data name="event_DispatchSuccessful" xml:space="preserve">
+    <value>'{0}' 操作が正常にディスパッチされました。</value>
+  </data>
+  <data name="event_DuplicateCorrelationQuery" xml:space="preserve">
+    <value>Where='{0}' で重複する CorrelationQuery が見つかりました。この重複するクエリは、相関関係の計算には使用されません。</value>
+  </data>
+  <data name="event_DuplicateDiscoveryMessage" xml:space="preserve">
+    <value>messageId='{1}' の {0} メッセージは、重複していたため、ドロップされました。</value>
+  </data>
+  <data name="event_EncryptedDataProcessingStart" xml:space="preserve">
+    <value>暗号化されたデータの処理を開始しました。</value>
+  </data>
+  <data name="event_EncryptedDataProcessingSuccess" xml:space="preserve">
+    <value>暗号化されたデータの処理に成功しました。</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>EndpointAddress='{0}' および ListenUri='{1}' のエンドポイントの探索が無効になりました。</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>EndpointAddress='{0}' および ListenUri='{1}' のエンドポイントの探索が有効になりました。</value>
+  </data>
+  <data name="event_EndSqlCommandExecute" xml:space="preserve">
+    <value>SQL コマンドの実行を終了します: {0}</value>
+  </data>
+  <data name="event_EnterNoPersistBlock" xml:space="preserve">
+    <value>no persist ブロックに入ります。</value>
+  </data>
+  <data name="event_ErrorHandlerInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の ErrorHandler を呼び出し、種類 '{2}' の例外がスローされました。ErrorHandled == '{1}'。</value>
+  </data>
+  <data name="event_EstablishConnectionStart" xml:space="preserve">
+    <value>{0} の接続の確立を開始しました。</value>
+  </data>
+  <data name="event_EstablishConnectionStop" xml:space="preserve">
+    <value>接続が確立されました。</value>
+  </data>
+  <data name="event_EtwUnhandledException" xml:space="preserve">
+    <value>ハンドルされていない例外です。例外の詳細: {0}</value>
+  </data>
+  <data name="event_ExecuteWorkItemStart" xml:space="preserve">
+    <value>作業項目の実行を開始します</value>
+  </data>
+  <data name="event_ExecuteWorkItemStop" xml:space="preserve">
+    <value>作業項目の実行を停止します</value>
+  </data>
+  <data name="event_ExitNoPersistBlock" xml:space="preserve">
+    <value>no persist ブロックを終了します。</value>
+  </data>
+  <data name="event_FailFastException" xml:space="preserve">
+    <value>FailFastException。</value>
+  </data>
+  <data name="event_FaultProviderInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の FaultProvider を呼び出し、種類 '{1}' の例外がスローされました。</value>
+  </data>
+  <data name="event_FederationMessageCreationStarted" xml:space="preserve">
+    <value>フォーム ポストからのフェデレーション メッセージの作成を開始しました。</value>
+  </data>
+  <data name="event_FederationMessageCreationSuccess" xml:space="preserve">
+    <value>フォーム ポストからのフェデレーション メッセージの作成に成功しました。</value>
+  </data>
+  <data name="event_FederationMessageProcessingStarted" xml:space="preserve">
+    <value>フェデレーション メッセージの処理を開始しました。</value>
+  </data>
+  <data name="event_FederationMessageProcessingSuccess" xml:space="preserve">
+    <value>フェデレーション メッセージの処理に成功しました。</value>
+  </data>
+  <data name="event_FindInitiatedInDiscoveryClientChannel" xml:space="preserve">
+    <value>エンドポイントを探索するために、Find 操作が DiscoveryClientChannel で開始されました。</value>
+  </data>
+  <data name="event_FlowchartEmpty" xml:space="preserve">
+    <value>Flowchart '{0}' - ノードなしで実行されました。</value>
+  </data>
+  <data name="event_FlowchartNextNull" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowStep - 次のノードが NULL です。Flowchart の実行を終了します。</value>
+  </data>
+  <data name="event_FlowchartStart" xml:space="preserve">
+    <value>Flowchart '{0}' - 開始がスケジュールされています。</value>
+  </data>
+  <data name="event_FlowchartSwitchCase" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - Case '{1}' が選択されました。</value>
+  </data>
+  <data name="event_FlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - 式の結果と一致する Case アクティビティおよび既定の Case は見つかりませんでした。Flowchart の実行を終了します。</value>
+  </data>
+  <data name="event_FlowchartSwitchDefault" xml:space="preserve">
+    <value>Flowchart '{0}'/FlowSwitch - 既定の Case が選択されました。</value>
+  </data>
+  <data name="event_FoundProcessingError" xml:space="preserve">
+    <value>コマンドが失敗しました: {0}</value>
+  </data>
+  <data name="event_GenXmlSerializableStart" xml:space="preserve">
+    <value>'{0}' の XML シリアル化が可能な要素の生成を開始します。</value>
+  </data>
+  <data name="event_GenXmlSerializableStop" xml:space="preserve">
+    <value>XML シリアル化が可能な要素の生成を停止します。</value>
+  </data>
+  <data name="event_GetIssuerNameFailure" xml:space="preserve">
+    <value>トークン ID: {0} からの発行者名の取得に失敗しました。</value>
+  </data>
+  <data name="event_GetIssuerNameSuccess" xml:space="preserve">
+    <value>トークン ID: {1} からの発行者名: {0} の取得に成功しました。</value>
+  </data>
+  <data name="event_GetServiceInstanceStart" xml:space="preserve">
+    <value>サービス インスタンスの取得を開始しました。</value>
+  </data>
+  <data name="event_GetServiceInstanceStop" xml:space="preserve">
+    <value>サービス インスタンスが取得されました。</value>
+  </data>
+  <data name="event_HandledException" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="event_HandledExceptionError" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="event_HandledExceptionVerbose" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="event_HandledExceptionWarning" xml:space="preserve">
+    <value>例外を処理しています。例外の詳細: {0}</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStart" xml:space="preserve">
+    <value>HostedTransportConfigurationManager が構成の初期化を開始します</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStop" xml:space="preserve">
+    <value>HostedTransportConfigurationManager が構成の初期化を終了します</value>
+  </data>
+  <data name="event_HttpAuthFailed" xml:space="preserve">
+    <value>HTTP 認証に失敗しました。</value>
+  </data>
+  <data name="event_HttpChannelRequestAborted" xml:space="preserve">
+    <value>HTTP チャネルの要求が中止されました。</value>
+  </data>
+  <data name="event_HttpChannelResponseAborted" xml:space="preserve">
+    <value>HTTP チャネルの応答が中止されました。</value>
+  </data>
+  <data name="event_HttpContextBeforeProcessAuthentication" xml:space="preserve">
+    <value>メッセージのディスパッチの認証を開始します</value>
+  </data>
+  <data name="event_HttpGetContextStart" xml:space="preserve">
+    <value>HttpGetContext を開始します。</value>
+  </data>
+  <data name="event_HttpHandlerPickedForUrl" xml:space="preserve">
+    <value>URL '{0}' は、ルート要素型 '{1}' の XAML ドキュメントをホストします。この URL に対して行われるすべての要求を処理するために、HTTP ハンドラー型 '{2}' が選択されています。</value>
+  </data>
+  <data name="event_HttpMessageReceiveFailed" xml:space="preserve">
+    <value>HTTP メッセージの受信に失敗しました。</value>
+  </data>
+  <data name="event_HttpMessageReceiveStart" xml:space="preserve">
+    <value>HTTP トランスポートからメッセージを受信しました。</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessInboundRequestStart" xml:space="preserve">
+    <value>http メッセージ ハンドラーは、受信要求の非同期処理を開始しました。</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessResponseStart" xml:space="preserve">
+    <value>http メッセージ ハンドラーは、応答の非同期処理を開始しました。</value>
+  </data>
+  <data name="event_HttpPipelineFaulted" xml:space="preserve">
+    <value>http メッセージ ハンドラーに障害があります。</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStart" xml:space="preserve">
+    <value>http メッセージ ハンドラーは、受信要求の処理を開始しました。</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStop" xml:space="preserve">
+    <value>http メッセージ ハンドラーは、受信要求の処理を完了しました。</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStart" xml:space="preserve">
+    <value>http メッセージ ハンドラーは、応答の処理を開始しました。</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStop" xml:space="preserve">
+    <value>http メッセージ ハンドラーは、応答の処理を完了しました。</value>
+  </data>
+  <data name="event_HttpPipelineTimeoutException" xml:space="preserve">
+    <value>WebSocket の接続がタイムアウトしました。</value>
+  </data>
+  <data name="event_HttpResponseReceiveStart" xml:space="preserve">
+    <value>HTTP トランスポートがメッセージの受信を開始しました。</value>
+  </data>
+  <data name="event_HttpSendMessageStart" xml:space="preserve">
+    <value>HTTP 送信要求を開始します。</value>
+  </data>
+  <data name="event_HttpSendStop" xml:space="preserve">
+    <value>HTTP 送信要求を停止します。</value>
+  </data>
+  <data name="event_HttpSendStreamedMessageStart" xml:space="preserve">
+    <value>ストリーム メッセージの HTTP 送信を開始しました。</value>
+  </data>
+  <data name="event_IdleServicesClosed" xml:space="preserve">
+    <value>アクティブ化された合計 {1} 個のサービスのうち、アイドル状態の {0} 個のサービスが閉じられました。</value>
+  </data>
+  <data name="event_IdleTimeout" xml:space="preserve">
+    <value>{0} 接続プール キー: {1}</value>
+  </data>
+  <data name="event_ImportKnownTypesStart" xml:space="preserve">
+    <value>ImportKnownTypes を開始します。</value>
+  </data>
+  <data name="event_ImportKnownTypesStop" xml:space="preserve">
+    <value>ImportKnownTypes を停止します。</value>
+  </data>
+  <data name="event_InactivityTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_InArgumentBound" xml:space="preserve">
+    <value>Activity '{1}'、DisplayName: '{2}'、InstanceId: '{3}' の引数 '{0}' に値: {4} がバインドされました。</value>
+  </data>
+  <data name="event_IncomingMessageVerified" xml:space="preserve">
+    <value>受信メッセージが確認されました。</value>
+  </data>
+  <data name="event_IncrementBusyCount" xml:space="preserve">
+    <value>IncrementBusyCount が呼び出されました。ソース: {0}</value>
+  </data>
+  <data name="event_InferredContractDescription" xml:space="preserve">
+    <value>Name='{0}'、Namespace='{1}' の ContractDescription は WorkflowService から推論されました。</value>
+  </data>
+  <data name="event_InferredOperationDescription" xml:space="preserve">
+    <value>コントラクト '{1}' の Name='{0}' の OperationDescription は WorkflowService から推論されました。IsOneWay={2}.</value>
+  </data>
+  <data name="event_InnerChannelCreationFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel は、EndpointAddress='{0}' および Via='{1}' の探索されたエンドポイントを使用して、チャネルを作成できませんでした。DiscoveryClientChannel は、次に使用可能な探索されたエンドポイントを使用します。</value>
+  </data>
+  <data name="event_InnerChannelOpenFailed" xml:space="preserve">
+    <value>DiscoveryClientChannel は、EndpointAddress='{0}' および Via='{1}' の探索されたエンドポイントを使用して、チャネルを開くことができませんでした。DiscoveryClientChannel は、次に使用可能な探索されたエンドポイントを使用します。</value>
+  </data>
+  <data name="event_InnerChannelOpenSucceeded" xml:space="preserve">
+    <value>DiscoveryClientChannel は正常にエンドポイントを探索し、それを使用してチャネルを開きました。クライアントは、EndpointAddress='{0}' および Via='{1}'. を使用して、サービスに接続されています。</value>
+  </data>
+  <data name="event_InstanceLocksRecoveryError" xml:space="preserve">
+    <value>インスタンスのロックの回復は次の例外のために失敗しました</value>
+  </data>
+  <data name="event_InternalCacheMetadataStart" xml:space="preserve">
+    <value>アクティビティ '{0}' で InternalCacheMetadata が開始されました。</value>
+  </data>
+  <data name="event_InternalCacheMetadataStop" xml:space="preserve">
+    <value>アクティビティ '{0}' で InternalCacheMetadata が停止されました。</value>
+  </data>
+  <data name="event_InvokedMethodThrewException" xml:space="preserve">
+    <value>アクティビティ '{0}' によって呼び出されたメソッドで例外がスローされました。{1}</value>
+  </data>
+  <data name="event_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドは非同期パターンを使用しません。</value>
+  </data>
+  <data name="event_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドは Static ではありません。</value>
+  </data>
+  <data name="event_InvokeMethodIsStatic" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドは Static です。</value>
+  </data>
+  <data name="event_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod '{0}' - メソッドは、'{1}' および '{2}' の非同期パターンを使用します。</value>
+  </data>
+  <data name="event_JsonMessageDecodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder がメッセージのデコードを開始しました。</value>
+  </data>
+  <data name="event_JsonMessageEncodingStart" xml:space="preserve">
+    <value>JsonMessageEncoder がメッセージのエンコードを開始しました。</value>
+  </data>
+  <data name="event_LeaseTimeout" xml:space="preserve">
+    <value>{0} 接続プール キー: {1}</value>
+  </data>
+  <data name="event_ListenerOpenStart" xml:space="preserve">
+    <value>'{0}' のリスナーを開いています。</value>
+  </data>
+  <data name="event_ListenerOpenStop" xml:space="preserve">
+    <value>リスナーのオープンが完了しました。</value>
+  </data>
+  <data name="event_LockRetryTimeout" xml:space="preserve">
+    <value>インスタンス ロックを取得しようとしてタイムアウトしました。割り当てられたタイムアウト時間 {0} 内に操作が完了しませんでした。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="event_MaximumRetriesExceededForSqlCommand" xml:space="preserve">
+    <value>SQL コマンドが最大実行回数実行されたので、この SQL コマンドの再試行を停止します。</value>
+  </data>
+  <data name="event_MaxInstancesExceeded" xml:space="preserve">
+    <value>システムはスロットル 'MaxConcurrentInstances' に設定された制限に達しました。このスロットルの制限は {0} に設定されていました。スロットル値を変更するには、serviceThrottle 要素の属性 'maxConcurrentInstances' を変更するか、動作 ServiceThrottlingBehavior の 'MaxConcurrentInstances' プロパティを変更する必要があります。</value>
+  </data>
+  <data name="event_MaxOutboundConnectionsPerEndpointExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingConnectionsExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingMessagesPerChannelExceeded" xml:space="preserve">
+    <value>'{0}' のスロットル 'MaxPendingMessagesPerChannel' 制限に達しました。この制限を引き上げるには、BufferedReceiveServiceBehavior の MaxPendingMessagesPerChannel プロパティを調整してください。</value>
+  </data>
+  <data name="event_MaxReceivedMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxRetryCyclesExceededMsmq" xml:space="preserve">
+    <value>ID '{0}' の MSMQ メッセージが最大再試行サイクルを超えました</value>
+  </data>
+  <data name="event_MaxSentMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxSessionSizeReached" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の MessageInspector で 'AfterReceiveReply' を呼び出しました。</value>
+  </data>
+  <data name="event_MessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の MessageInspector で 'BeforeSendRequest' を呼び出しました。</value>
+  </data>
+  <data name="event_MessageLogEventSizeExceeded" xml:space="preserve">
+    <value>メッセージが ETW イベントのサイズを上回っているため、メッセージをログに記録できませんでした</value>
+  </data>
+  <data name="event_MessageLogInfo" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageLogWarning" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketComplete" xml:space="preserve">
+    <value>MessageQueueDuplicatedSocketComplete</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketError" xml:space="preserve">
+    <value>メッセージ キューがソケットの複製に失敗しました。</value>
+  </data>
+  <data name="event_MessageQueueRegisterAbort" xml:space="preserve">
+    <value>URI:'{1}' のメッセージ キューの登録が状態:'{0}' で中止されました。</value>
+  </data>
+  <data name="event_MessageQueueRegisterCompleted" xml:space="preserve">
+    <value>URI '{0}' のメッセージ キューの登録が完了しました。</value>
+  </data>
+  <data name="event_MessageQueueRegisterFailed" xml:space="preserve">
+    <value>URI:'{0}' のメッセージ キューの登録が状態:'{1}' で失敗しました。</value>
+  </data>
+  <data name="event_MessageQueueRegisterStart" xml:space="preserve">
+    <value>メッセージ キューの登録を開始します。</value>
+  </data>
+  <data name="event_MessageQueueUnregisterSucceeded" xml:space="preserve">
+    <value>URI:'{0}' のメッセージ キューの登録解除に成功しました。</value>
+  </data>
+  <data name="event_MessageReadByEncoder" xml:space="preserve">
+    <value>サイズ '{0}' バイトのメッセージがエンコーダーによって読み取られました。</value>
+  </data>
+  <data name="event_MessageReceivedByTransport" xml:space="preserve">
+    <value>トランスポートが '{0}' からメッセージを受信しました。</value>
+  </data>
+  <data name="event_MessageReceivedFromTransport" xml:space="preserve">
+    <value>ディスパッチャーがトランスポートからメッセージを受信しました。関連付け ID == '{0}'。</value>
+  </data>
+  <data name="event_MessageSentByTransport" xml:space="preserve">
+    <value>トランスポートが '{0}' にメッセージを送信しました。</value>
+  </data>
+  <data name="event_MessageSentToTransport" xml:space="preserve">
+    <value>ディスパッチャーがトランスポートにメッセージを送信しました。関連付け ID == '{0}'。</value>
+  </data>
+  <data name="event_MessageThrottleAtSeventyPercent" xml:space="preserve">
+    <value>スロットル '{0}' の '{1}' の制限は 70%% です。</value>
+  </data>
+  <data name="event_MessageThrottleExceeded" xml:space="preserve">
+    <value>スロットル '{0}' の '{1}' の制限に達しました。</value>
+  </data>
+  <data name="event_MessageWrittenAsynchronouslyByEncoder" xml:space="preserve">
+    <value>エンコーダーによってメッセージが非同期で書き込まれました。</value>
+  </data>
+  <data name="event_MessageWrittenByEncoder" xml:space="preserve">
+    <value>サイズ '{0}' バイトのメッセージがエンコーダーによって書き込まれました。</value>
+  </data>
+  <data name="event_MtomMessageDecodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder がメッセージのデコードを開始しました。</value>
+  </data>
+  <data name="event_MtomMessageEncodingStart" xml:space="preserve">
+    <value>MtomMessageEncoder がメッセージのエンコードを開始しました。</value>
+  </data>
+  <data name="event_NamedPipeCreated" xml:space="preserve">
+    <value>NamedPipe '{0}' が作成されました。</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheRatio" xml:space="preserve">
+    <value>トークン認証システムのネゴシエートの状態のキャッシュ比率: {0}/{1}</value>
+  </data>
+  <data name="event_OpenListenerChannelInstanceFailed" xml:space="preserve">
+    <value>エラー コード:{0}</value>
+  </data>
+  <data name="event_OpenTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_OperationCompleted" xml:space="preserve">
+    <value>OperationInvoker がメソッド '{0}' への呼び出しを完了しました。メソッド呼び出し時間は '{1}' ミリ秒でした。</value>
+  </data>
+  <data name="event_OperationFailed" xml:space="preserve">
+    <value>OperationInvoker によって呼び出されたメソッド '{0}' で、ハンドルされない例外がスローされました。メソッド呼び出し時間は '{1}' ミリ秒でした。</value>
+  </data>
+  <data name="event_OperationFaulted" xml:space="preserve">
+    <value>OperationInvoker によって呼び出されたメソッド '{0}' で FaultException がスローされました。メソッド呼び出し時間は '{1}' ミリ秒でした。</value>
+  </data>
+  <data name="event_OperationInvoked" xml:space="preserve">
+    <value>OperationInvoker が '{0}' メソッドを呼び出しました。呼び出し元の情報: '{1}'。</value>
+  </data>
+  <data name="event_OutboundConnectionsPerEndpointRatio" xml:space="preserve">
+    <value>エンドポイントごとの送信接続の比率: {0}/{1}</value>
+  </data>
+  <data name="event_OutgoingMessageSecured" xml:space="preserve">
+    <value>送信メッセージがセキュリティで保護されました。</value>
+  </data>
+  <data name="event_ParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の ParameterInspector で 'AfterCall' を呼び出しました。</value>
+  </data>
+  <data name="event_ParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>ディスパッチャーが型 '{0}' の ParameterInspector で 'BeforeCall' を呼び出しました。</value>
+  </data>
+  <data name="event_PendingAcceptsAtZero" xml:space="preserve">
+    <value>保留中の受け入れはありません</value>
+  </data>
+  <data name="event_PendingConnectionsRatio" xml:space="preserve">
+    <value>保留中の接続の比率: {0}/{1}</value>
+  </data>
+  <data name="event_PendingMessagesPerChannelRatio" xml:space="preserve">
+    <value>チャネルごとの保留メッセージの比率: {0}/{1}</value>
+  </data>
+  <data name="event_PendingSessionQueueFull" xml:space="preserve">
+    <value>'{0}' のセッション ディスパッチに失敗しました。保留セッション キューがいっぱいです。保留中の項目が '{1}' 個あります。</value>
+  </data>
+  <data name="event_PendingSessionQueueRatio" xml:space="preserve">
+    <value>保留セッション キューの比率: {0}/{1}</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStart" xml:space="preserve">
+    <value>{0} でパイプ接続の受け入れを開始しました。</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStop" xml:space="preserve">
+    <value>パイプ接続を受け入れました。</value>
+  </data>
+  <data name="event_PipeSharedMemoryCreated" xml:space="preserve">
+    <value>パイプ共有メモリが '{0}' に作成されました。</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStart" xml:space="preserve">
+    <value>パイプ トランスポート リスナーが URI:{0} でリッスンを開始します。</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStop" xml:space="preserve">
+    <value>パイプ トランスポート リスナーがリッスンを停止します。</value>
+  </data>
+  <data name="event_PortSharingDuplicatedSocket" xml:space="preserve">
+    <value>{0} のソケットが複製されました。</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenStarted" xml:space="preserve">
+    <value>セッション トークンからのプリンシパルの設定を開始しました。</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenSuccess" xml:space="preserve">
+    <value>セッション トークンからのプリンシパルの設定に成功しました。</value>
+  </data>
+  <data name="event_QueryCompositionExecuted" xml:space="preserve">
+    <value>'{0}' を使用したクエリの構成が要求 URI: '{1}' で実行されました。</value>
+  </data>
+  <data name="event_QueuingSqlRetry" xml:space="preserve">
+    <value>{0} ミリ秒の遅延で SQL の再試行をキューに登録しています。</value>
+  </data>
+  <data name="event_ReadPoolMiss" xml:space="preserve">
+    <value>新しい '{0}' を作成しました</value>
+  </data>
+  <data name="event_ReceiveContextAbandonFailed" xml:space="preserve">
+    <value>{0} を破棄できませんでした。</value>
+  </data>
+  <data name="event_ReceiveContextAbandonWithException" xml:space="preserve">
+    <value>例外 {1} が発生したため、{0} が破棄されました。</value>
+  </data>
+  <data name="event_ReceiveContextCompleteFailed" xml:space="preserve">
+    <value>{0} を完了できませんでした。</value>
+  </data>
+  <data name="event_ReceiveContextFaulted" xml:space="preserve">
+    <value>受信コンテキストでエラーが発生しました。</value>
+  </data>
+  <data name="event_ReceiveRetryCountReached" xml:space="preserve">
+    <value>ID '{0}' の MSMQ メッセージが受信再試行回数に達しました</value>
+  </data>
+  <data name="event_ReceiveTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ReliableSessionChannelFaulted" xml:space="preserve">
+    <value>SessionId:{0} でエラーが発生しました。</value>
+  </data>
+  <data name="event_RenewLockSystemError" xml:space="preserve">
+    <value>ロックの有効期限を延長できませんでした。ロックの有効期限が既に過ぎているか、ロック所有者が削除されました。SqlWorkflowInstanceStore を中止します。</value>
+  </data>
+  <data name="event_ResumeSignpostEvent" xml:space="preserve">
+    <value>アクティビティの境界</value>
+  </data>
+  <data name="event_RetryingSqlCommandDueToSqlError" xml:space="preserve">
+    <value>SQL エラー番号 {0} のため、SQL コマンドを再試行します。</value>
+  </data>
+  <data name="event_RoutingServiceAbandoningReceiveContext" xml:space="preserve">
+    <value>ルーティング サービスが、ID: '{0}' のメッセージに対して ReceiveContext.Abandon を呼び出しています。</value>
+  </data>
+  <data name="event_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>ルーティング サービスがチャネル '{0}' で中止を呼び出しています。</value>
+  </data>
+  <data name="event_RoutingServiceChannelFaulted" xml:space="preserve">
+    <value>ルーティング サービスのクライアント '{0}' が途中終了しました。</value>
+  </data>
+  <data name="event_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>発信クライアント '{0}' を終了しているときにルーティング サービスでエラーが発生しました。</value>
+  </data>
+  <data name="event_RoutingServiceClosingClient" xml:space="preserve">
+    <value>ルーティング サービスがクライアント '{0}' を終了しています。</value>
+  </data>
+  <data name="event_RoutingServiceCommittingTransaction" xml:space="preserve">
+    <value>ルーティング サービスが、ID: '{0}' のトランザクションをコミットしています。</value>
+  </data>
+  <data name="event_RoutingServiceCompletingOneWay" xml:space="preserve">
+    <value>ルーティング サービスの一方向メッセージを完了しています。</value>
+  </data>
+  <data name="event_RoutingServiceCompletingReceiveContext" xml:space="preserve">
+    <value>ルーティング サービスが、ID: '{0}' のメッセージに対して ReceiveContext.Complete を呼び出しています。</value>
+  </data>
+  <data name="event_RoutingServiceCompletingTwoWay" xml:space="preserve">
+    <value>ルーティング サービスの要求応答メッセージを完了しています。</value>
+  </data>
+  <data name="event_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>新しい RoutingConfiguration がルーティング サービスに適用されました。</value>
+  </data>
+  <data name="event_RoutingServiceCreatingClientForEndpoint" xml:space="preserve">
+    <value>ルーティング サービスが、エンドポイント: '{0}' のクライアントを作成しています。</value>
+  </data>
+  <data name="event_RoutingServiceCreatingTransaction" xml:space="preserve">
+    <value>ルーティング サービスが、メッセージを処理するために ID '{0}' の新しいトランザクションを作成しました。</value>
+  </data>
+  <data name="event_RoutingServiceDisplayConfig" xml:space="preserve">
+    <value>ルーティング サービスは、RouteOnHeadersOnly: {0}、SoapProcessingEnabled: {1}、EnsureOrderedDispatch: {2} に構成されています。</value>
+  </data>
+  <data name="event_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>ルーティング サービスのコンポーネント {0} で二重コールバックの例外が発生しました。</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStart" xml:space="preserve">
+    <value>ルーティング サービス MessageFilterTable の照合が開始します。</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStop" xml:space="preserve">
+    <value>ルーティング サービス MessageFilterTable の照合が停止します。</value>
+  </data>
+  <data name="event_RoutingServiceHandledException" xml:space="preserve">
+    <value>ルーティング サービスが例外を処理しました。</value>
+  </data>
+  <data name="event_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>ルーティング サービスにより、ID: '{0}' のメッセージが {1} エンドポイント リストにルーティングされました。</value>
+  </data>
+  <data name="event_RoutingServiceProcessingFailure" xml:space="preserve">
+    <value>アドレス '{0}' のエンドポイントでメッセージを処理しているときにルーティング サービスでエラーが発生しました。</value>
+  </data>
+  <data name="event_RoutingServiceProcessingMessage" xml:space="preserve">
+    <value>ルーティング サービスが、トランザクション: {3} で受信された ID: '{0}'、アクション: '{1}'、着信 URL: '{2}' のメッセージを処理しています。</value>
+  </data>
+  <data name="event_RoutingServiceSendingFaultResponse" xml:space="preserve">
+    <value>ルーティング サービスが、Action '{0}' を含むエラー応答メッセージを返送しています。</value>
+  </data>
+  <data name="event_RoutingServiceSendingResponse" xml:space="preserve">
+    <value>ルーティング サービスが、Action '{0}' を含む応答メッセージを返送しています。</value>
+  </data>
+  <data name="event_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>'{0}' への送信中にルーティング サービスでエラーが発生しました。</value>
+  </data>
+  <data name="event_RoutingServiceUsingExistingTransaction" xml:space="preserve">
+    <value>ルーティング サービスは、既存のトランザクション '{0}' を使用してメッセージを送信します。</value>
+  </data>
+  <data name="event_RoutingTableLookupStart" xml:space="preserve">
+    <value>ルーティング テーブルの参照を開始しました。</value>
+  </data>
+  <data name="event_RoutingTableLookupStop" xml:space="preserve">
+    <value>ルーティング テーブルの参照が完了しました。</value>
+  </data>
+  <data name="event_RunnableInstancesDetectionError" xml:space="preserve">
+    <value>実行可能インスタンスの検出は次の例外のために失敗しました</value>
+  </data>
+  <data name="event_RuntimeTransactionComplete" xml:space="preserve">
+    <value>ランタイム トランザクションは、状態 '{0}' で完了しました。</value>
+  </data>
+  <data name="event_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' は、ランタイム トランザクションの完了がスケジュールされました。</value>
+  </data>
+  <data name="event_RuntimeTransactionSet" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' によってランタイム トランザクションが設定されました。実行は、Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' に分離されました。</value>
+  </data>
+  <data name="event_ScheduleBookmarkWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して BookmarkWorkItem がスケジュールされました。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="event_ScheduleCancelActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して CancelActivityWorkItem がスケジュールされました。</value>
+  </data>
+  <data name="event_ScheduleCompletionWorkItem" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して CompletionWorkItem がスケジュールされました。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' が完了しました。</value>
+  </data>
+  <data name="event_ScheduleExecuteActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して ExecuteActivityWorkItem がスケジュールされました。</value>
+  </data>
+  <data name="event_ScheduleFaultWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して FaultWorkItem がスケジュールされました。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' から例外が返されました。</value>
+  </data>
+  <data name="event_ScheduleRuntimeWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対してランタイム作業項目がスケジュールされました。</value>
+  </data>
+  <data name="event_ScheduleTransactionContextWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' に対して TransactionContextWorkItem がスケジュールされました。</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationFailure" xml:space="preserve">
+    <value>セキュリティ検証に失敗しました。</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationSuccess" xml:space="preserve">
+    <value>セキュリティ検証が成功しました。</value>
+  </data>
+  <data name="event_SecurityImpersonationFailure" xml:space="preserve">
+    <value>セキュリティの偽装に失敗しました。</value>
+  </data>
+  <data name="event_SecurityImpersonationSuccess" xml:space="preserve">
+    <value>セキュリティの偽装に成功しました。</value>
+  </data>
+  <data name="event_SecurityNegotiationProcessingFailure" xml:space="preserve">
+    <value>セキュリティ ネゴシエーション処理が失敗しました。</value>
+  </data>
+  <data name="event_SecurityNegotiationStart" xml:space="preserve">
+    <value>セキュリティ ネゴシエーションを開始しました。</value>
+  </data>
+  <data name="event_SecurityNegotiationStop" xml:space="preserve">
+    <value>セキュリティ ネゴシエーションが完了しました。</value>
+  </data>
+  <data name="event_SecuritySessionRatio" xml:space="preserve">
+    <value>セキュリティ セッションの比率: {0}/{1}</value>
+  </data>
+  <data name="event_SecurityTokenProviderOpened" xml:space="preserve">
+    <value>SecurityTokenProvider のオープンが完了しました。</value>
+  </data>
+  <data name="event_SendMessageChannelCacheMiss" xml:space="preserve">
+    <value>SendMessageChannelCache ミス</value>
+  </data>
+  <data name="event_SendTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_SequenceAcknowledgementSent" xml:space="preserve">
+    <value>SessionId:{0} の受信確認が送信されました。</value>
+  </data>
+  <data name="event_ServerMaxPooledConnectionsQuotaReached" xml:space="preserve">
+    <value>サーバーのプールされた接続の最大クォータに達しました。</value>
+  </data>
+  <data name="event_ServiceActivationAvailableMemory" xml:space="preserve">
+    <value>使用可能なメモリ (バイト): {0}</value>
+  </data>
+  <data name="event_ServiceActivationException" xml:space="preserve">
+    <value>サービスをアクティブ化できませんでした。例外の詳細: {0}</value>
+  </data>
+  <data name="event_ServiceActivationStart" xml:space="preserve">
+    <value>サービスのアクティブ化を開始します</value>
+  </data>
+  <data name="event_ServiceActivationStop" xml:space="preserve">
+    <value>サービスのアクティブ化を停止します</value>
+  </data>
+  <data name="event_ServiceChannelBeginCallStart" xml:space="preserve">
+    <value>ServiceChannel の非同期呼び出しを開始しました。</value>
+  </data>
+  <data name="event_ServiceChannelCallStart" xml:space="preserve">
+    <value>ServiceChannelCall を開始しました。</value>
+  </data>
+  <data name="event_ServiceChannelCallStop" xml:space="preserve">
+    <value>クライアントは '{1}' コントラクトと関連付けられている Action '{0}' の実行を完了しました。メッセージは '{2}' に送信されました。</value>
+  </data>
+  <data name="event_ServiceChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannelOpen を開始しました。</value>
+  </data>
+  <data name="event_ServiceChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannelOpen が完了しました。</value>
+  </data>
+  <data name="event_ServiceEndpointAdded" xml:space="preserve">
+    <value>アドレス '{0}'、バインディング '{1}'、およびコントラクト '{2}' のサービス エンドポイントが追加されました。</value>
+  </data>
+  <data name="event_ServiceException" xml:space="preserve">
+    <value>メッセージの処理中に種類 '{1}' のハンドルされない例外がありました。完全な例外の詳細: {0}。</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStart" xml:space="preserve">
+    <value>ServiceHostFactory が作成を開始します</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStop" xml:space="preserve">
+    <value>ServiceHostFactory が作成を終了します</value>
+  </data>
+  <data name="event_ServiceHostFaulted" xml:space="preserve">
+    <value>サービス ホストが途中終了しました。</value>
+  </data>
+  <data name="event_ServiceHostOpenStart" xml:space="preserve">
+    <value>ServiceHost Open を開始しました。</value>
+  </data>
+  <data name="event_ServiceHostOpenStop" xml:space="preserve">
+    <value>ServiceHost Open が完了しました。</value>
+  </data>
+  <data name="event_ServiceHostStarted" xml:space="preserve">
+    <value>ServiceHost は '{0}' で開始されています。</value>
+  </data>
+  <data name="event_ServiceSecurityNegotiationCompleted" xml:space="preserve">
+    <value>サービス セキュリティ ネゴシエーションが完了しました。</value>
+  </data>
+  <data name="event_ServiceStartPipeError" xml:space="preserve">
+    <value>サービス開始パイプ エラー。</value>
+  </data>
+  <data name="event_SessionCookieReadingStarted" xml:space="preserve">
+    <value>セッション クッキーからのセッション トークンの読み取りを開始しました。</value>
+  </data>
+  <data name="event_SessionCookieReadingSuccess" xml:space="preserve">
+    <value>セッション クッキーからのセッション トークンの読み取りに成功しました。</value>
+  </data>
+  <data name="event_SessionIdleTimeout" xml:space="preserve">
+    <value>URI:'{0}' へのアイドル チャネルのセッションを中止しています。</value>
+  </data>
+  <data name="event_SessionPreambleUnderstood" xml:space="preserve">
+    <value>'{0}' のセッション プリアンブルが認識されました。</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterFailed" xml:space="preserve">
+    <value>SharedListenerProxy の登録は状態 '{0}' で失敗しました。</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStart" xml:space="preserve">
+    <value>URI '{0}' の SharedListenerProxy の登録を開始しました。</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStop" xml:space="preserve">
+    <value>SharedListenerProxy の登録を停止します。</value>
+  </data>
+  <data name="event_ShipAssertExceptionMessage" xml:space="preserve">
+    <value>予期しないエラーが発生しました。アプリケーションではこのエラーを処理することはできません。診断上の目的から、次の英語のメッセージがエラーに関連付けられています: {0}。</value>
+  </data>
+  <data name="event_SignatureVerificationStart" xml:space="preserve">
+    <value>署名の検証を開始しました。</value>
+  </data>
+  <data name="event_SignatureVerificationSuccess" xml:space="preserve">
+    <value>署名の検証に成功しました</value>
+  </data>
+  <data name="event_SocketAcceptClosed" xml:space="preserve">
+    <value>ソケットの受け入れを終了しました。</value>
+  </data>
+  <data name="event_SocketAccepted" xml:space="preserve">
+    <value>ListenerId:{0} が SocketId:{1} を受け入れました。</value>
+  </data>
+  <data name="event_SocketAcceptEnqueued" xml:space="preserve">
+    <value>接続の受け入れを開始しました。</value>
+  </data>
+  <data name="event_SocketAsyncReadStop" xml:space="preserve">
+    <value>SocketId:{0} が '{2}' から '{1}' バイトを読み取りました。</value>
+  </data>
+  <data name="event_SocketAsyncWriteStart" xml:space="preserve">
+    <value>SocketId:{0} が '{2}' に '{1}' バイトを書き込んでいます。</value>
+  </data>
+  <data name="event_SocketConnectionAbort" xml:space="preserve">
+    <value>SocketId:{0} を中止しています。</value>
+  </data>
+  <data name="event_SocketReadStop" xml:space="preserve">
+    <value>SocketId:{0} が '{2}' から '{1}' バイトを読み取りました。</value>
+  </data>
+  <data name="event_SocketWriteStart" xml:space="preserve">
+    <value>SocketId:{0} が '{2}' に '{1}' バイトを書き込んでいます。</value>
+  </data>
+  <data name="event_SqlExceptionCaught" xml:space="preserve">
+    <value>SQL 例外番号 {0} メッセージ {1} がキャッチされました。</value>
+  </data>
+  <data name="event_SslOnAcceptUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStop</value>
+  </data>
+  <data name="event_SslOnInitiateUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStart</value>
+  </data>
+  <data name="event_StartBookmarkWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の BookmarkWorkItem の実行を開始しています。BookmarkName: {3}、BookmarkScope: {4}。</value>
+  </data>
+  <data name="event_StartCancelActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CancelActivityWorkItem の実行を開始しています。</value>
+  </data>
+  <data name="event_StartCompletionWorkItem" xml:space="preserve">
+    <value>親 Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の CompletionWorkItem の実行を開始しています。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' が完了しました。</value>
+  </data>
+  <data name="event_StartExecuteActivityWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の ExecuteActivityWorkItem の実行を開始しています。</value>
+  </data>
+  <data name="event_StartFaultWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の FaultWorkItem の実行を開始しています。Activity '{3}'、DisplayName: '{4}'、InstanceId: '{5}' から例外が返されました。</value>
+  </data>
+  <data name="event_StartRuntimeWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' のランタイム作業項目の実行を開始しています。</value>
+  </data>
+  <data name="event_StartSignpostEvent" xml:space="preserve">
+    <value>アクティビティの境界</value>
+  </data>
+  <data name="event_StartSignpostEvent1" xml:space="preserve">
+    <value>アクティビティの境界。</value>
+  </data>
+  <data name="event_StartSqlCommandExecute" xml:space="preserve">
+    <value>SQL コマンドの実行を開始します: {0}</value>
+  </data>
+  <data name="event_StartTransactionContextWorkItem" xml:space="preserve">
+    <value>Activity '{0}'、DisplayName: '{1}'、InstanceId: '{2}' の TransactionContextWorkItem の実行を開始しています。</value>
+  </data>
+  <data name="event_StopSignpostEvent" xml:space="preserve">
+    <value>アクティビティの境界</value>
+  </data>
+  <data name="event_StopSignpostEvent1" xml:space="preserve">
+    <value>アクティビティの境界。</value>
+  </data>
+  <data name="event_StreamedMessageReadByEncoder" xml:space="preserve">
+    <value>エンコーダーによってストリーム メッセージが読み取られました。</value>
+  </data>
+  <data name="event_StreamedMessageWrittenByEncoder" xml:space="preserve">
+    <value>エンコーダーによってストリーム メッセージが書き込まれました。</value>
+  </data>
+  <data name="event_SuspendSignpostEvent" xml:space="preserve">
+    <value>アクティビティの境界</value>
+  </data>
+  <data name="event_SwitchCaseNotFound" xml:space="preserve">
+    <value>Switch アクティビティ '{0}' で、式の結果と一致する Case アクティビティは見つかりませんでした。</value>
+  </data>
+  <data name="event_SynchronizationContextReset" xml:space="preserve">
+    <value>SynchronizationContext は DiscoveryClientChannel によって、元の値 {0} にリセットされました。</value>
+  </data>
+  <data name="event_SynchronizationContextSetToNull" xml:space="preserve">
+    <value>SynchronizationContext は、Find 操作を開始する前に、DiscoveryClientChannel によって NULL に設定されました。</value>
+  </data>
+  <data name="event_TcpConnectionResetError" xml:space="preserve">
+    <value>リモート アドレス {1} への SocketId:{0} で接続リセット エラーが発生しました。</value>
+  </data>
+  <data name="event_TcpConnectionTimedOut" xml:space="preserve">
+    <value>リモート アドレス {1} への SocketId:{0} がタイムアウトしました。</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStart" xml:space="preserve">
+    <value>TCP トランスポート リスナーが URI:'{0}' でリッスンを開始しています。</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStop" xml:space="preserve">
+    <value>TCP トランスポート リスナーがリッスンしています。</value>
+  </data>
+  <data name="event_TextMessageDecodingStart" xml:space="preserve">
+    <value>TextMessageEncoder がメッセージのデコードを開始しました。</value>
+  </data>
+  <data name="event_TextMessageEncodingStart" xml:space="preserve">
+    <value>TextMessageEncoder がメッセージのエンコードを開始しました。</value>
+  </data>
+  <data name="event_ThrowingEtwException" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="event_ThrowingEtwExceptionVerbose" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="event_ThrowingException" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="event_ThrowingExceptionVerbose" xml:space="preserve">
+    <value>例外をスローしています。発生元 {0}。例外の詳細: {1}</value>
+  </data>
+  <data name="event_TimeoutOpeningSqlConnection" xml:space="preserve">
+    <value>SQL 接続を開こうとしてタイムアウトしました。割り当てられたタイムアウト時間 {0} 内に操作が完了しませんでした。この操作に割り当てられた時間は、より長いタイムアウト時間の一部であった可能性があります。</value>
+  </data>
+  <data name="event_TokenValidationFailure" xml:space="preserve">
+    <value>SecurityToken (型 '{0}'、ID '{1}') の検証に失敗しました。{2}</value>
+  </data>
+  <data name="event_TokenValidationStarted" xml:space="preserve">
+    <value>SecurityToken (型 '{0}'、ID '{1}') の検証を開始しました。</value>
+  </data>
+  <data name="event_TokenValidationSuccess" xml:space="preserve">
+    <value>SecurityToken (型 '{0}'、ID '{1}') の検証に成功しました。</value>
+  </data>
+  <data name="event_TraceCodeEventLogCritical" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="event_TraceCodeEventLogError" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="event_TraceCodeEventLogInfo" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="event_TraceCodeEventLogVerbose" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="event_TraceCodeEventLogWarning" xml:space="preserve">
+    <value>イベント ログに書き込みました。</value>
+  </data>
+  <data name="event_TraceCorrelationKeys" xml:space="preserve">
+    <value>親スコープ '{2}' の値 '{1}' を使用して相関関係キー '{0}' が計算されました。</value>
+  </data>
+  <data name="event_TrackingDataExtracted" xml:space="preserve">
+    <value>追跡データ {0} がアクティビティ {1} で抽出されました。</value>
+  </data>
+  <data name="event_TrackingProfileNotFound" xml:space="preserve">
+    <value>ActivityDefinitionId '{1}' の TrackingProfile '{0}' が見つかりません。config ファイルに TrackingProfile がないか、ActivityDefinitionId が一致しません。</value>
+  </data>
+  <data name="event_TrackingRecordDropped" xml:space="preserve">
+    <value>追跡レコード {0} は、プロバイダー {1} の ETW セッションで許可されている最大サイズを超えています。</value>
+  </data>
+  <data name="event_TrackingRecordRaised" xml:space="preserve">
+    <value>{1} に対する追跡レコード {0} が生成されました。</value>
+  </data>
+  <data name="event_TrackingRecordTruncated" xml:space="preserve">
+    <value>プロバイダー {1} の ETW セッションに書き込まれる追跡レコード {0} が切り詰められました。変数/注釈/ユーザー データは削除されました。</value>
+  </data>
+  <data name="event_TrackingValueNotSerializable" xml:space="preserve">
+    <value>抽出された引数/変数 '{0}' はシリアル化できません。</value>
+  </data>
+  <data name="event_TransactedReceiveScopeEndCommitFailed" xml:space="preserve">
+    <value>id = '{0}' の CommittableTransaction に対する EndCommit への呼び出しにより、次のメッセージと共に TransactionException がスローされました: '{1}'。</value>
+  </data>
+  <data name="event_TransactionScopeCreate" xml:space="preserve">
+    <value>LocalIdentifier:'{0}' および DistributedIdentifier:'{1}' の TransactionScope を作成しています。</value>
+  </data>
+  <data name="event_TransferEmitted" xml:space="preserve">
+    <value>転送イベントが作成されました。</value>
+  </data>
+  <data name="event_TransportListenerSessionsReceived" xml:space="preserve">
+    <value>'{0}' でトランスポート リスナー セッションを受信しました</value>
+  </data>
+  <data name="event_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>キャンセル中に、TryCatch アクティビティ '{0}' の子アクティビティが例外をスローしました。</value>
+  </data>
+  <data name="event_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>TryCatch アクティビティ '{0}' に関連付けられた Catch アクティビティまたは Finally アクティビティが例外をスローしました。</value>
+  </data>
+  <data name="event_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>TryCatch アクティビティ '{0}' によってタイプ '{1}' の例外がキャッチされました。</value>
+  </data>
+  <data name="event_UnhandledException" xml:space="preserve">
+    <value>ハンドルされていない例外です。例外の詳細: {0}</value>
+  </data>
+  <data name="event_UnlockInstanceException" xml:space="preserve">
+    <value>インスタンスのロックを解除しようとして、例外 {0} が発生しました。</value>
+  </data>
+  <data name="event_UserEvents" xml:space="preserve">
+    <value>名前:'{0}'、参照:'{1}'、ペイロード:{2}</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesCompleted" xml:space="preserve">
+    <value>WAS がすべてのリスナー チャネル インスタンスのクローズを完了しました。</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesFailed" xml:space="preserve">
+    <value>エラー コード:{0}</value>
+  </data>
+  <data name="event_WasConnected" xml:space="preserve">
+    <value>WAS が接続されました。</value>
+  </data>
+  <data name="event_WasConnectionTimedout" xml:space="preserve">
+    <value>WAS の接続がタイムアウトしました。</value>
+  </data>
+  <data name="event_WasDisconnected" xml:space="preserve">
+    <value>WAS の接続が解除されました。</value>
+  </data>
+  <data name="event_WebHostRequestStart" xml:space="preserve">
+    <value>AppDomain '{0}' からの仮想パス '{1}' で要求を受信しました。</value>
+  </data>
+  <data name="event_WebHostRequestStop" xml:space="preserve">
+    <value>WebHostRequest を停止します。</value>
+  </data>
+  <data name="event_WebhostUnregisterProtocolFailed" xml:space="preserve">
+    <value>エラー コード:{0}</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStart" xml:space="preserve">
+    <value>WebSocketId:{0} が読み取りを開始します。</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStop" xml:space="preserve">
+    <value>WebSocketId:{0} が '{2}' から '{1}' バイトを読み取りました。</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStart" xml:space="preserve">
+    <value>WebSocketId:{0} が '{2}' に '{1}' バイトを書き込んでいます。</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStop" xml:space="preserve">
+    <value>WebSocketId:{0} が非同期書き込みを停止します。</value>
+  </data>
+  <data name="event_WebSocketCloseOutputSent" xml:space="preserve">
+    <value>WebSocketId:{0} が、終了ステータス '{2}' の終了出力メッセージを '{1}' に送信しています。</value>
+  </data>
+  <data name="event_WebSocketCloseSent" xml:space="preserve">
+    <value>WebSocketId:{0} が、終了ステータス '{2}' の終了メッセージを '{1}' に送信しています。</value>
+  </data>
+  <data name="event_WebSocketCloseStatusReceived" xml:space="preserve">
+    <value>WebSocketId:{0} が、状態 '{1}' の接続終了メッセージを受信しました。</value>
+  </data>
+  <data name="event_WebSocketConnectionAborted" xml:space="preserve">
+    <value>WebSocketId:{0} の接続が中止されました。</value>
+  </data>
+  <data name="event_WebSocketConnectionAccepted" xml:space="preserve">
+    <value>WebSocketId:{0} の接続を受け入れました。</value>
+  </data>
+  <data name="event_WebSocketConnectionAcceptStart" xml:space="preserve">
+    <value>WebSocket 接続の受け入れを開始します。</value>
+  </data>
+  <data name="event_WebSocketConnectionClosed" xml:space="preserve">
+    <value>WebSocketId:{0} の接続を終了しました。</value>
+  </data>
+  <data name="event_WebSocketConnectionDeclined" xml:space="preserve">
+    <value>WebSocket 接続が状態コード '{0}' で拒否されました</value>
+  </data>
+  <data name="event_WebSocketConnectionFailed" xml:space="preserve">
+    <value>WebSocket 接続要求が失敗しました: '{0}'</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStart" xml:space="preserve">
+    <value>'{0}' への WebSocket 接続要求の送信を開始します。</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStop" xml:space="preserve">
+    <value>WebSocketId:{0} の接続要求を送信しました。</value>
+  </data>
+  <data name="event_WebSocketCreateClientWebSocketWithFactory" xml:space="preserve">
+    <value>型 '{0}' のファクトリでクライアント WebSocket を作成しています。</value>
+  </data>
+  <data name="event_WebSocketUseVersionFromClientWebSocketFactory" xml:space="preserve">
+    <value>型 '{0}' のクライアント WebSocket ファクトリから WebSocketVersion を使用しています。</value>
+  </data>
+  <data name="event_WfMessageReceived" xml:space="preserve">
+    <value>ワークフローによって受信されたメッセージ</value>
+  </data>
+  <data name="event_WfMessageSent" xml:space="preserve">
+    <value>ワークフローから送信されたメッセージ</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnAcceptUpgrade" xml:space="preserve">
+    <value>Windows ストリーミング セキュリティがアップグレードを受け入れています。</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnInitiateUpgrade" xml:space="preserve">
+    <value>WindowsStreamSecurity がセキュリティ アップグレードを開始しています。</value>
+  </data>
+  <data name="event_WorkflowActivityResume" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="event_WorkflowActivityStart" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="event_WorkflowActivityStop" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="event_WorkflowActivitySuspend" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' E2E アクティビティ</value>
+  </data>
+  <data name="event_WorkflowApplicationCompleted" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' が Closed 状態で完了しました。</value>
+  </data>
+  <data name="event_WorkflowApplicationIdled" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' がアイドル状態になりました。</value>
+  </data>
+  <data name="event_WorkflowApplicationPersistableIdle" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' がアイドル状態のままです。次の操作が実行されます: {1}。</value>
+  </data>
+  <data name="event_WorkflowApplicationPersisted" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' が永続化されました。</value>
+  </data>
+  <data name="event_WorkflowApplicationTerminated" xml:space="preserve">
+    <value>WorkflowApplication ID: '{0}' が終了しました。例外により Faulted 状態で完了しました。</value>
+  </data>
+  <data name="event_WorkflowApplicationUnhandledException" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' でハンドルされない例外が発生しました。例外は Activity '{1}'、DisplayName: '{2}' から発生しました。次の操作が実行されます: {3}。</value>
+  </data>
+  <data name="event_WorkflowApplicationUnloaded" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' がアンロードされました。</value>
+  </data>
+  <data name="event_WorkflowInstanceAborted" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' が例外により中止されました。</value>
+  </data>
+  <data name="event_WorkflowInstanceAbortedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceAbortedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceCanceled" xml:space="preserve">
+    <value>WorkflowInstance ID: '{0}' が Canceled 状態で完了しました。</value>
+  </data>
+  <data name="event_WorkflowInstanceRecordWithId" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、State = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、Reason = {4}、Annotations = {5}、ProfileName = {6}、WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceUnhandledExceptionRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUnhandledExceptionRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、SourceName = {4}、SourceId = {5}、SourceInstanceId = {6}、SourceTypeName={7}、Exception={8}、Annotations= {9}、ProfileName = {10}、WorkflowDefinitionIdentity = {11}</value>
+  </data>
+  <data name="event_WorkflowInstanceUpdatedRecord" xml:space="preserve">
+    <value>TrackRecord= WorkflowInstanceUpdatedRecord、InstanceID = {0}、RecordNumber = {1}、EventTime = {2}、ActivityDefinitionId = {3}、State = {4}、OriginalDefinitionIdentity = {5}、UpdatedDefinitionIdentity = {6}、Annotations = {7}、ProfileName = {8}</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionStart" xml:space="preserve">
+    <value>ラップされたキーの解読を開始しました。</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionSuccess" xml:space="preserve">
+    <value>ラップされたキーの解読に成功しました。</value>
+  </data>
+  <data name="event_WritePoolMiss" xml:space="preserve">
+    <value>新しい '{0}' を作成しました</value>
+  </data>
+  <data name="event_XamlServicesLoadStart" xml:space="preserve">
+    <value>XamlServicesLoad が開始します</value>
+  </data>
+  <data name="event_XamlServicesLoadStop" xml:space="preserve">
+    <value>XamlServicesLoad が停止します</value>
+  </data>
+  <data name="keyword_ActivationServices" xml:space="preserve">
+    <value>アクティブ化サービス</value>
+  </data>
+  <data name="keyword_Channel" xml:space="preserve">
+    <value>チャネル</value>
+  </data>
+  <data name="keyword_Discovery" xml:space="preserve">
+    <value>探索</value>
+  </data>
+  <data name="keyword_EndToEndMonitoring" xml:space="preserve">
+    <value>エンド ツー エンドの監視</value>
+  </data>
+  <data name="keyword_HealthMonitoring" xml:space="preserve">
+    <value>状態の監視</value>
+  </data>
+  <data name="keyword_HTTP" xml:space="preserve">
+    <value>HTTP トランスポート</value>
+  </data>
+  <data name="keyword_Infrastructure" xml:space="preserve">
+    <value>インフラストラクチャ</value>
+  </data>
+  <data name="keyword_Quota" xml:space="preserve">
+    <value>クォータ</value>
+  </data>
+  <data name="keyword_RoutingServices" xml:space="preserve">
+    <value>ルーティング サービス</value>
+  </data>
+  <data name="keyword_Security" xml:space="preserve">
+    <value>セキュリティ</value>
+  </data>
+  <data name="keyword_Serialization" xml:space="preserve">
+    <value>シリアル化</value>
+  </data>
+  <data name="keyword_ServiceHost" xml:space="preserve">
+    <value>サービス ホスト</value>
+  </data>
+  <data name="keyword_ServiceModel" xml:space="preserve">
+    <value>ServiceModel</value>
+  </data>
+  <data name="keyword_TCP" xml:space="preserve">
+    <value>TCP トランスポート</value>
+  </data>
+  <data name="keyword_Threading" xml:space="preserve">
+    <value>スレッド処理</value>
+  </data>
+  <data name="keyword_Transaction" xml:space="preserve">
+    <value>トランザクション</value>
+  </data>
+  <data name="keyword_TransportGeneral" xml:space="preserve">
+    <value>トランスポート全般</value>
+  </data>
+  <data name="keyword_Troubleshooting" xml:space="preserve">
+    <value>トラブルシューティング</value>
+  </data>
+  <data name="keyword_UserEvents" xml:space="preserve">
+    <value>ユーザー イベント</value>
+  </data>
+  <data name="keyword_WCFMessageLogging" xml:space="preserve">
+    <value>WCF メッセージ ログの記録</value>
+  </data>
+  <data name="keyword_WebHost" xml:space="preserve">
+    <value>Web ホスト</value>
+  </data>
+  <data name="keyword_WebHTTP" xml:space="preserve">
+    <value>Web HTTP</value>
+  </data>
+  <data name="keyword_WFActivities" xml:space="preserve">
+    <value>ワークフロー アクティビティ</value>
+  </data>
+  <data name="keyword_WFInstanceStore" xml:space="preserve">
+    <value>ワークフローの InstanceStore</value>
+  </data>
+  <data name="keyword_WFRuntime" xml:space="preserve">
+    <value>ワークフロー ランタイム</value>
+  </data>
+  <data name="keyword_WFServices" xml:space="preserve">
+    <value>ワークフローの ServiceHost</value>
+  </data>
+  <data name="keyword_WFTracking" xml:space="preserve">
+    <value>WF の追跡</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoBookmark" xml:space="preserve">
+    <value>NoBookmark</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoInstance" xml:space="preserve">
+    <value>NoInstance</value>
+  </data>
+  <data name="opcode_BufferPoolingAllocate" xml:space="preserve">
+    <value>Allocate</value>
+  </data>
+  <data name="opcode_BufferPoolingTune" xml:space="preserve">
+    <value>Tune</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStart" xml:space="preserve">
+    <value>ClientChannelOpenStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStop" xml:space="preserve">
+    <value>ClientChannelOpenStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStart" xml:space="preserve">
+    <value>ClientParameterInspectorStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStop" xml:space="preserve">
+    <value>ClientParameterInspectorStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeOperationPrepared" xml:space="preserve">
+    <value>OperationPrepared</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteBookmark" xml:space="preserve">
+    <value>CompleteBookmark</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCancelActivity" xml:space="preserve">
+    <value>CompleteCancelActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCompletion" xml:space="preserve">
+    <value>CompleteCompletion</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteExecuteActivity" xml:space="preserve">
+    <value>CompleteExecuteActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteFault" xml:space="preserve">
+    <value>CompleteFault</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteRuntime" xml:space="preserve">
+    <value>CompleteRuntime</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteTransactionContext" xml:space="preserve">
+    <value>CompleteTransactionContext</value>
+  </data>
+  <data name="opcode_CorrelationDuplicateQuery" xml:space="preserve">
+    <value>DuplicateQuery</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelCreationFailed" xml:space="preserve">
+    <value>CreationFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelFindInitiated" xml:space="preserve">
+    <value>FindInitiated</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenFailed" xml:space="preserve">
+    <value>OpenFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenSucceeded" xml:space="preserve">
+    <value>OpenSucceeded</value>
+  </data>
+  <data name="opcode_DiscoveryClientExceptionSuppressed" xml:space="preserve">
+    <value>ExceptionSuppressed</value>
+  </data>
+  <data name="opcode_DiscoveryClientFailedToClose" xml:space="preserve">
+    <value>FailedToClose</value>
+  </data>
+  <data name="opcode_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>ReceivedMulticastSuppression</value>
+  </data>
+  <data name="opcode_DiscoveryMessageDuplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidContent" xml:space="preserve">
+    <value>InvalidContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>InvalidRelatesToOrOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidReplyTo" xml:space="preserve">
+    <value>InvalidReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNoContent" xml:space="preserve">
+    <value>NoContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageId" xml:space="preserve">
+    <value>NullMessageId</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageSequence" xml:space="preserve">
+    <value>NullMessageSequence</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullRelatesTo" xml:space="preserve">
+    <value>NullRelatesTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullReplyTo" xml:space="preserve">
+    <value>NullReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>ReceivedAfterOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextSetToNull" xml:space="preserve">
+    <value>SetToNull</value>
+  </data>
+  <data name="opcode_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>BeforeAuthorization</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStart" xml:space="preserve">
+    <value>DispatchStart</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStop" xml:space="preserve">
+    <value>DispatchStop</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStart" xml:space="preserve">
+    <value>OperationInvokerStart</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStop" xml:space="preserve">
+    <value>OperationInvokerStop</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStart" xml:space="preserve">
+    <value>ParameterInspectorStart</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStop" xml:space="preserve">
+    <value>ParameterInspectorStop</value>
+  </data>
+  <data name="opcode_DispatchMessageTransactionScopeCreate" xml:space="preserve">
+    <value>TransactionScopeCreate</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartBegin" xml:space="preserve">
+    <value>Begin</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartNextNull" xml:space="preserve">
+    <value>NextNull</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCase" xml:space="preserve">
+    <value>SwitchCase</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>SwitchCaseNotFound</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchDefault" xml:space="preserve">
+    <value>SwitchDefault</value>
+  </data>
+  <data name="opcode_ExpressionResultArrayItemValue" xml:space="preserve">
+    <value>ArrayItemValue</value>
+  </data>
+  <data name="opcode_ExpressionResultBinary" xml:space="preserve">
+    <value>Binary</value>
+  </data>
+  <data name="opcode_ExpressionResultMemberAccess" xml:space="preserve">
+    <value>MemberAccess</value>
+  </data>
+  <data name="opcode_ExpressionResultUnary" xml:space="preserve">
+    <value>Unary</value>
+  </data>
+  <data name="opcode_InferDescriptionContract" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="opcode_InferDescriptionOperation" xml:space="preserve">
+    <value>Operation</value>
+  </data>
+  <data name="opcode_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>DoesNotUseAsyncPattern</value>
+  </data>
+  <data name="opcode_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>IsNotStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodIsStatic" xml:space="preserve">
+    <value>IsStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodThrewException" xml:space="preserve">
+    <value>ThrewException</value>
+  </data>
+  <data name="opcode_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>UseAsyncPattern</value>
+  </data>
+  <data name="opcode_MessageChannelCacheMissed" xml:space="preserve">
+    <value>Missed</value>
+  </data>
+  <data name="opcode_ReliableSessionFaulted" xml:space="preserve">
+    <value>Faulted</value>
+  </data>
+  <data name="opcode_ReliableSessionReconnect" xml:space="preserve">
+    <value>Reconnect</value>
+  </data>
+  <data name="opcode_ReliableSessionSequenceAck" xml:space="preserve">
+    <value>SequenceAck</value>
+  </data>
+  <data name="opcode_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>AbortingChannel</value>
+  </data>
+  <data name="opcode_RoutingServiceClientChannelFaulted" xml:space="preserve">
+    <value>ChannelFaulted</value>
+  </data>
+  <data name="opcode_RoutingServiceClientClosing" xml:space="preserve">
+    <value>Closing</value>
+  </data>
+  <data name="opcode_RoutingServiceClientCreatingForEndpoint" xml:space="preserve">
+    <value>CreatingForEndpoint</value>
+  </data>
+  <data name="opcode_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>CloseFailed</value>
+  </data>
+  <data name="opcode_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>ConfigurationApplied</value>
+  </data>
+  <data name="opcode_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>DuplexCallbackException</value>
+  </data>
+  <data name="opcode_RoutingServiceHandledException" xml:space="preserve">
+    <value>HandledException</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingOneWay" xml:space="preserve">
+    <value>CompletingOneWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingTwoWay" xml:space="preserve">
+    <value>CompletingTwoWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageMovedToBackup" xml:space="preserve">
+    <value>MovedToBackup</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingFailure" xml:space="preserve">
+    <value>ProcessingFailure</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingMessage" xml:space="preserve">
+    <value>ProcessingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>RoutedToEndpoints</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingFaultResponse" xml:space="preserve">
+    <value>SendingFaultResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingResponse" xml:space="preserve">
+    <value>SendingResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmitSucceeded" xml:space="preserve">
+    <value>TransmitSucceeded</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmittingMessage" xml:space="preserve">
+    <value>TransmittingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextAbandoning" xml:space="preserve">
+    <value>Abandoning</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextCompleting" xml:space="preserve">
+    <value>Completing</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCommittingTransaction" xml:space="preserve">
+    <value>CommittingTransaction</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCreating" xml:space="preserve">
+    <value>Creating</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionUsingExisting" xml:space="preserve">
+    <value>UsingExisting</value>
+  </data>
+  <data name="opcode_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>TransmitFailed</value>
+  </data>
+  <data name="opcode_RuntimeTransactionComplete" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="opcode_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>CompletionRequested</value>
+  </data>
+  <data name="opcode_RuntimeTransactionSet" xml:space="preserve">
+    <value>Set</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleBookmark" xml:space="preserve">
+    <value>ScheduleBookmark</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCancelActivity" xml:space="preserve">
+    <value>ScheduleCancelActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCompletion" xml:space="preserve">
+    <value>ScheduleCompletion</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleExecuteActivity" xml:space="preserve">
+    <value>ScheduleExecuteActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleFault" xml:space="preserve">
+    <value>ScheduleFault</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleRuntime" xml:space="preserve">
+    <value>ScheduleRuntime</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleTransactionContext" xml:space="preserve">
+    <value>ScheduleTransactionContext</value>
+  </data>
+  <data name="opcode_SessionUpgradeAccept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="opcode_SessionUpgradeInitiate" xml:space="preserve">
+    <value>Initiate</value>
+  </data>
+  <data name="opcode_Signpostsuspend" xml:space="preserve">
+    <value>suspend</value>
+  </data>
+  <data name="opcode_StartWorkItemStartBookmark" xml:space="preserve">
+    <value>StartBookmark</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCancelActivity" xml:space="preserve">
+    <value>StartCancelActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCompletion" xml:space="preserve">
+    <value>StartCompletion</value>
+  </data>
+  <data name="opcode_StartWorkItemStartExecuteActivity" xml:space="preserve">
+    <value>StartExecuteActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartFault" xml:space="preserve">
+    <value>StartFault</value>
+  </data>
+  <data name="opcode_StartWorkItemStartRuntime" xml:space="preserve">
+    <value>StartRuntime</value>
+  </data>
+  <data name="opcode_StartWorkItemStartTransactionContext" xml:space="preserve">
+    <value>StartTransactionContext</value>
+  </data>
+  <data name="opcode_TrackingProfileNotFound" xml:space="preserve">
+    <value>NotFound</value>
+  </data>
+  <data name="opcode_TrackingRecordDropped" xml:space="preserve">
+    <value>Dropped</value>
+  </data>
+  <data name="opcode_TrackingRecordRaised" xml:space="preserve">
+    <value>Raised</value>
+  </data>
+  <data name="opcode_TrackingRecordTruncated" xml:space="preserve">
+    <value>Truncated</value>
+  </data>
+  <data name="opcode_TransportReceiveBeforeAuthentication" xml:space="preserve">
+    <value>BeforeAuthentication</value>
+  </data>
+  <data name="opcode_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>DuringCancelation</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>FromCatchOrFinally</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>FromTry</value>
+  </data>
+  <data name="opcode_WASActivationConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="opcode_WASActivationDisconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeCompleted" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeIdled" xml:space="preserve">
+    <value>Idled</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceAborted" xml:space="preserve">
+    <value>InstanceAborted</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceCanceled" xml:space="preserve">
+    <value>InstanceCanceled</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersistableIdle" xml:space="preserve">
+    <value>PersistableIdle</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersisted" xml:space="preserve">
+    <value>Persisted</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeTerminated" xml:space="preserve">
+    <value>Terminated</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnhandledException" xml:space="preserve">
+    <value>UnhandledException</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnloaded" xml:space="preserve">
+    <value>Unloaded</value>
+  </data>
+  <data name="opcode_WorkflowActivitysuspend" xml:space="preserve">
+    <value>suspend</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedRecord" xml:space="preserve">
+    <value>AbortedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedWithId" xml:space="preserve">
+    <value>AbortedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedRecord" xml:space="preserve">
+    <value>SuspendedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedWithId" xml:space="preserve">
+    <value>SuspendedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedRecord" xml:space="preserve">
+    <value>TerminatedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedWithId" xml:space="preserve">
+    <value>TerminatedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionRecord" xml:space="preserve">
+    <value>UnhandledExceptionRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionWithId" xml:space="preserve">
+    <value>UnhandledExceptionWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUpdatedRecord" xml:space="preserve">
+    <value>UpdatedRecord</value>
+  </data>
+  <data name="task_ActivationDispatchSession" xml:space="preserve">
+    <value>ActivationDispatchSession</value>
+  </data>
+  <data name="task_ActivationDuplicateSocket" xml:space="preserve">
+    <value>ActivationDuplicateSocket</value>
+  </data>
+  <data name="task_ActivationListenerOpen" xml:space="preserve">
+    <value>ActivationListenerOpen</value>
+  </data>
+  <data name="task_ActivationPipeListenerListening" xml:space="preserve">
+    <value>ActivationPipeListenerListening</value>
+  </data>
+  <data name="task_ActivationRoutingTableLookup" xml:space="preserve">
+    <value>ActivationRoutingTableLookup</value>
+  </data>
+  <data name="task_ActivationServiceStart" xml:space="preserve">
+    <value>ActivationServiceStart</value>
+  </data>
+  <data name="task_ActivationTcpListenerListening" xml:space="preserve">
+    <value>ActivationTcpListenerListening</value>
+  </data>
+  <data name="task_AddServiceEndpoint" xml:space="preserve">
+    <value>AddServiceEndpoint</value>
+  </data>
+  <data name="task_BufferOutOfOrder" xml:space="preserve">
+    <value>BufferOutOfOrder</value>
+  </data>
+  <data name="task_BufferPooling" xml:space="preserve">
+    <value>BufferPooling</value>
+  </data>
+  <data name="task_CacheRootMetadata" xml:space="preserve">
+    <value>CacheRootMetadata</value>
+  </data>
+  <data name="task_ChannelFactoryCaching" xml:space="preserve">
+    <value>ChannelFactoryCaching</value>
+  </data>
+  <data name="task_ChannelFactoryCreate" xml:space="preserve">
+    <value>ChannelFactoryCreate</value>
+  </data>
+  <data name="task_ChannelReceive" xml:space="preserve">
+    <value>ChannelReceive</value>
+  </data>
+  <data name="task_ClientRuntime" xml:space="preserve">
+    <value>ClientRuntime</value>
+  </data>
+  <data name="task_ClientSendPreamble" xml:space="preserve">
+    <value>ClientSendPreamble</value>
+  </data>
+  <data name="task_CompensationState" xml:space="preserve">
+    <value>CompensationState</value>
+  </data>
+  <data name="task_CompleteActivity" xml:space="preserve">
+    <value>CompleteActivity</value>
+  </data>
+  <data name="task_CompleteWorkItem" xml:space="preserve">
+    <value>CompleteWorkItem</value>
+  </data>
+  <data name="task_Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="task_ConnectionAbort" xml:space="preserve">
+    <value>ConnectionAbort</value>
+  </data>
+  <data name="task_ConnectionAccept" xml:space="preserve">
+    <value>ConnectionAccept</value>
+  </data>
+  <data name="task_ConnectionPooling" xml:space="preserve">
+    <value>ConnectionPooling</value>
+  </data>
+  <data name="task_Correlation" xml:space="preserve">
+    <value>Correlation</value>
+  </data>
+  <data name="task_CreateBookmark" xml:space="preserve">
+    <value>CreateBookmark</value>
+  </data>
+  <data name="task_CreateHttpMessageHandler" xml:space="preserve">
+    <value>CreateHttpMessageHandler</value>
+  </data>
+  <data name="task_CreateWorkflowServiceHost" xml:space="preserve">
+    <value>CreateWorkflowServiceHost</value>
+  </data>
+  <data name="task_CustomTrackingRecord" xml:space="preserve">
+    <value>CustomTrackingRecord</value>
+  </data>
+  <data name="task_DataContractResolver" xml:space="preserve">
+    <value>DataContractResolver</value>
+  </data>
+  <data name="task_DiscoveryClient" xml:space="preserve">
+    <value>DiscoveryClient</value>
+  </data>
+  <data name="task_DiscoveryClientChannel" xml:space="preserve">
+    <value>DiscoveryClientChannel</value>
+  </data>
+  <data name="task_DiscoveryMessage" xml:space="preserve">
+    <value>DiscoveryMessage</value>
+  </data>
+  <data name="task_DiscoverySynchronizationContext" xml:space="preserve">
+    <value>DiscoverySynchronizationContext</value>
+  </data>
+  <data name="task_DispatchMessage" xml:space="preserve">
+    <value>DispatchMessage</value>
+  </data>
+  <data name="task_EncryptedDataProcessing" xml:space="preserve">
+    <value>EncryptedDataProcessing</value>
+  </data>
+  <data name="task_EndpointDiscoverability" xml:space="preserve">
+    <value>EndpointDiscoverability</value>
+  </data>
+  <data name="task_ExecuteActivity" xml:space="preserve">
+    <value>ExecuteActivity</value>
+  </data>
+  <data name="task_ExecuteFlowchart" xml:space="preserve">
+    <value>ExecuteFlowchart</value>
+  </data>
+  <data name="task_ExecuteWorkItem" xml:space="preserve">
+    <value>ExecuteWorkItem</value>
+  </data>
+  <data name="task_ExpressionResult" xml:space="preserve">
+    <value>ExpressionResult</value>
+  </data>
+  <data name="task_FederationMessageCreation" xml:space="preserve">
+    <value>FederationMessageCreation</value>
+  </data>
+  <data name="task_FederationMessageProcessing" xml:space="preserve">
+    <value>FederationMessageProcessing</value>
+  </data>
+  <data name="task_FormatterDeserializeReply" xml:space="preserve">
+    <value>FormatterDeserializeReply</value>
+  </data>
+  <data name="task_FormatterDeserializeRequest" xml:space="preserve">
+    <value>FormatterDeserializeRequest</value>
+  </data>
+  <data name="task_FormatterSerializeReply" xml:space="preserve">
+    <value>FormatterSerializeReply</value>
+  </data>
+  <data name="task_FormatterSerializeRequest" xml:space="preserve">
+    <value>FormatterSerializeRequest</value>
+  </data>
+  <data name="task_GenerateDeserializer" xml:space="preserve">
+    <value>GenerateDeserializer</value>
+  </data>
+  <data name="task_GenerateSerializer" xml:space="preserve">
+    <value>GenerateSerializer</value>
+  </data>
+  <data name="task_GenerateXmlSerializable" xml:space="preserve">
+    <value>GenerateXmlSerializable</value>
+  </data>
+  <data name="task_GetIssuerName" xml:space="preserve">
+    <value>GetIssuerName</value>
+  </data>
+  <data name="task_HostedTransportConfigurationManagerConfigInit" xml:space="preserve">
+    <value>HostedTransportConfigurationManagerConfigInit</value>
+  </data>
+  <data name="task_ImportKnownType" xml:space="preserve">
+    <value>ImportKnownType</value>
+  </data>
+  <data name="task_InferDescription" xml:space="preserve">
+    <value>InferDescription</value>
+  </data>
+  <data name="task_InitializeBookmarkScope" xml:space="preserve">
+    <value>InitializeBookmarkScope</value>
+  </data>
+  <data name="task_InternalCacheMetadata" xml:space="preserve">
+    <value>InternalCacheMetadata</value>
+  </data>
+  <data name="task_InvokeMethod" xml:space="preserve">
+    <value>InvokeMethod</value>
+  </data>
+  <data name="task_ListenerOpen" xml:space="preserve">
+    <value>ListenerOpen</value>
+  </data>
+  <data name="task_LockWorkflowInstance" xml:space="preserve">
+    <value>LockWorkflowInstance</value>
+  </data>
+  <data name="task_MessageChannelCache" xml:space="preserve">
+    <value>MessageChannelCache</value>
+  </data>
+  <data name="task_MessageDecoding" xml:space="preserve">
+    <value>MessageDecoding</value>
+  </data>
+  <data name="task_MessageEncoding" xml:space="preserve">
+    <value>MessageEncoding</value>
+  </data>
+  <data name="task_MessageQueueRegister" xml:space="preserve">
+    <value>MessageQueueRegister</value>
+  </data>
+  <data name="task_MsmqQuotas" xml:space="preserve">
+    <value>MsmqQuotas</value>
+  </data>
+  <data name="task_NoPersistBlock" xml:space="preserve">
+    <value>NoPersistBlock</value>
+  </data>
+  <data name="task_PrincipalSetting" xml:space="preserve">
+    <value>PrincipalSetting</value>
+  </data>
+  <data name="task_Quotas" xml:space="preserve">
+    <value>Quotas</value>
+  </data>
+  <data name="task_ReliableSession" xml:space="preserve">
+    <value>ReliableSession</value>
+  </data>
+  <data name="task_RoutingService" xml:space="preserve">
+    <value>RoutingService</value>
+  </data>
+  <data name="task_RoutingServiceClient" xml:space="preserve">
+    <value>RoutingServiceClient</value>
+  </data>
+  <data name="task_RoutingServiceFilterTableMatch" xml:space="preserve">
+    <value>RoutingServiceFilterTableMatch</value>
+  </data>
+  <data name="task_RoutingServiceMessage" xml:space="preserve">
+    <value>RoutingServiceMessage</value>
+  </data>
+  <data name="task_RoutingServiceReceiveContext" xml:space="preserve">
+    <value>RoutingServiceReceiveContext</value>
+  </data>
+  <data name="task_RoutingServiceTransaction" xml:space="preserve">
+    <value>RoutingServiceTransaction</value>
+  </data>
+  <data name="task_RuntimeTransaction" xml:space="preserve">
+    <value>RuntimeTransaction</value>
+  </data>
+  <data name="task_ScheduleActivity" xml:space="preserve">
+    <value>ScheduleActivity</value>
+  </data>
+  <data name="task_ScheduleWorkItem" xml:space="preserve">
+    <value>ScheduleWorkItem</value>
+  </data>
+  <data name="task_SecureMessage" xml:space="preserve">
+    <value>SecureMessage</value>
+  </data>
+  <data name="task_SecurityImpersonation" xml:space="preserve">
+    <value>SecurityImpersonation</value>
+  </data>
+  <data name="task_SecurityNegotiation" xml:space="preserve">
+    <value>SecurityNegotiation</value>
+  </data>
+  <data name="task_SecurityVerification" xml:space="preserve">
+    <value>SecurityVerification</value>
+  </data>
+  <data name="task_ServiceActivation" xml:space="preserve">
+    <value>ServiceActivation</value>
+  </data>
+  <data name="task_ServiceChannelCall" xml:space="preserve">
+    <value>ServiceChannelCall</value>
+  </data>
+  <data name="task_ServiceChannelOpen" xml:space="preserve">
+    <value>ServiceChannelOpen</value>
+  </data>
+  <data name="task_ServiceHostActivation" xml:space="preserve">
+    <value>ServiceHostActivation</value>
+  </data>
+  <data name="task_ServiceHostCompilation" xml:space="preserve">
+    <value>ServiceHostCompilation</value>
+  </data>
+  <data name="task_ServiceHostCreate" xml:space="preserve">
+    <value>ServiceHostCreate</value>
+  </data>
+  <data name="task_ServiceHostFactoryCreation" xml:space="preserve">
+    <value>ServiceHostFactoryCreation</value>
+  </data>
+  <data name="task_ServiceHostFault" xml:space="preserve">
+    <value>ServiceHostFault</value>
+  </data>
+  <data name="task_ServiceHostOpen" xml:space="preserve">
+    <value>ServiceHostOpen</value>
+  </data>
+  <data name="task_ServiceInstance" xml:space="preserve">
+    <value>ServiceInstance</value>
+  </data>
+  <data name="task_ServiceShutdown" xml:space="preserve">
+    <value>ServiceShutdown</value>
+  </data>
+  <data name="task_SessionCookieReading" xml:space="preserve">
+    <value>SessionCookieReading</value>
+  </data>
+  <data name="task_SessionStart" xml:space="preserve">
+    <value>SessionStart</value>
+  </data>
+  <data name="task_SessionUpgrade" xml:space="preserve">
+    <value>SessionUpgrade</value>
+  </data>
+  <data name="task_SignatureVerification" xml:space="preserve">
+    <value>SignatureVerification</value>
+  </data>
+  <data name="task_Signpost" xml:space="preserve">
+    <value>Signpost</value>
+  </data>
+  <data name="task_SqlCommandExecute" xml:space="preserve">
+    <value>SqlCommandExecute</value>
+  </data>
+  <data name="task_StartWorkItem" xml:space="preserve">
+    <value>StartWorkItem</value>
+  </data>
+  <data name="task_SurrogateDeserialize" xml:space="preserve">
+    <value>SurrogateDeserialize</value>
+  </data>
+  <data name="task_SurrogateSerialize" xml:space="preserve">
+    <value>SurrogateSerialize</value>
+  </data>
+  <data name="task_ThreadScheduling" xml:space="preserve">
+    <value>ThreadScheduling</value>
+  </data>
+  <data name="task_Throttles" xml:space="preserve">
+    <value>Throttles</value>
+  </data>
+  <data name="task_Timeout" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="task_TimeoutException" xml:space="preserve">
+    <value>TimeoutException</value>
+  </data>
+  <data name="task_TokenValidation" xml:space="preserve">
+    <value>TokenValidation</value>
+  </data>
+  <data name="task_TrackingProfile" xml:space="preserve">
+    <value>TrackingProfile</value>
+  </data>
+  <data name="task_TrackingRecord" xml:space="preserve">
+    <value>TrackingRecord</value>
+  </data>
+  <data name="task_TransportReceive" xml:space="preserve">
+    <value>TransportReceive</value>
+  </data>
+  <data name="task_TransportSend" xml:space="preserve">
+    <value>TransportSend</value>
+  </data>
+  <data name="task_TryCatchException" xml:space="preserve">
+    <value>TryCatchException</value>
+  </data>
+  <data name="task_VBExpressionCompile" xml:space="preserve">
+    <value>VBExpressionCompile</value>
+  </data>
+  <data name="task_WASActivation" xml:space="preserve">
+    <value>WASActivation</value>
+  </data>
+  <data name="task_WebHostRequest" xml:space="preserve">
+    <value>WebHostRequest</value>
+  </data>
+  <data name="task_WFApplicationStateChange" xml:space="preserve">
+    <value>WFApplicationStateChange</value>
+  </data>
+  <data name="task_WFMessage" xml:space="preserve">
+    <value>WFMessage</value>
+  </data>
+  <data name="task_WorkflowActivity" xml:space="preserve">
+    <value>WorkflowActivity</value>
+  </data>
+  <data name="task_WorkflowInstanceRecord" xml:space="preserve">
+    <value>WorkflowInstanceRecord</value>
+  </data>
+  <data name="task_WorkflowTracking" xml:space="preserve">
+    <value>WorkflowTracking</value>
+  </data>
+  <data name="task_WrappedKeyDecryption" xml:space="preserve">
+    <value>WrappedKeyDecryption</value>
+  </data>
+  <data name="task_XamlServicesLoad" xml:space="preserve">
+    <value>XamlServicesLoad</value>
+  </data>
+</root>

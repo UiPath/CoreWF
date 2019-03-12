@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="BuildResources" ToolsVersion="15.0">
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Core WF</Title>
@@ -43,12 +43,6 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Permissions" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Resx Include="Resources\*.restext" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\*.resources" />
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
     <Compile Remove="DynamicUpdate\**\*.cs" />
     <Compile Remove="XamlIntegration\DynamicUpdate*.cs" />
@@ -58,11 +52,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CoreWf.Transactions\System.Activities.Transactions.csproj" />
   </ItemGroup>
-  <Target Name="BuildResources">
-    <GenerateResource ExecuteAsTool="false" Sources="@(Resx)">
-      <Output TaskParameter="OutputResources" ItemName="Resources" />
-    </GenerateResource>
-  </Target>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveProjectReferences">
     <ItemGroup>
       <BuildOutputInPackage Include="@(_ResolvedProjectReferencePaths)" />

@@ -1,0 +1,2382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="event_ActionItemCallbackInvoked" xml:space="preserve">
+    <value>Megtörtént a be-/kimeneti szál ütemezőjének visszahívása.</value>
+  </data>
+  <data name="event_ActionItemScheduled" xml:space="preserve">
+    <value>Megtörtént a be-/kimeneti szál ütemezőjének visszahívása.</value>
+  </data>
+  <data name="event_ActivityCompleted" xml:space="preserve">
+    <value>A(z) „{0}” tevékenység „{3}” állapottal befejeződött. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_ActivityScheduled" xml:space="preserve">
+    <value>Szülőtevékenység: „{0}”, DisplayName: „{1}”, InstanceId: „{2}”; ütemezett gyermektevékenység: „{3}”, DisplayName: „{4}”, InstanceId: „{5}”.</value>
+  </data>
+  <data name="event_AppDomainUnload" xml:space="preserve">
+    <value>Az AppDomain memóriából való eltávolítása folyamatban. AppDomain.FriendlyName: {0}, ProcessName: {1}, ProcessId: {2}.</value>
+  </data>
+  <data name="event_AspNetRoute" xml:space="preserve">
+    <value>Új Asp.Net útvonal lett felvéve: „{0}”. serviceType: „{1}”; serviceHostFactoryType: „{2}”.</value>
+  </data>
+  <data name="event_AspNetRoutingService" xml:space="preserve">
+    <value>A bejövő kérelem megegyezik a(z) „{0}” címmel rendelkező, Asp.Net útvonalban meghatározott WCF Service szolgáltatással. </value>
+  </data>
+  <data name="event_BinaryMessageDecodingStart" xml:space="preserve">
+    <value>A BinaryMessageEncoder megkezdte az üzenet dekódolását.</value>
+  </data>
+  <data name="event_BinaryMessageEncodingStart" xml:space="preserve">
+    <value>A BinaryMessageEncoder megkezdte az üzenet kódolását.</value>
+  </data>
+  <data name="event_BookmarkScopeInitialized" xml:space="preserve">
+    <value>A BookmarkScope, amely korábban a(z) „{0}” TemporaryId ideiglenes azonosítóval rendelkezett, a következő Id azonosítóval lett inicializálva: „{1}”.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStart" xml:space="preserve">
+    <value>BufferId:{0} befejezte {1} bájt írását az alapul szolgáló adatfolyamba.</value>
+  </data>
+  <data name="event_BufferedAsyncWriteStop" xml:space="preserve">
+    <value>A kódoló aszinkron módon írt egy üzenetet.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoBookmark" xml:space="preserve">
+    <value>A(z) „{0}” szolgáltatáspéldányon jelenleg nem hajtható végre a következő művelet: „{1}”. Újabb végrehajtási kísérlet fog történni, amikor a szolgáltatáspéldány készen áll a művelet feldolgozására.</value>
+  </data>
+  <data name="event_BufferOutOfOrderMessageNoInstance" xml:space="preserve">
+    <value>Jelenleg nem hajtható végre a következő művelet: „{0}”. Újabb végrehajtási kísérlet fog történni, amikor a szolgáltatáspéldány készen áll a művelet feldolgozására.</value>
+  </data>
+  <data name="event_BufferPoolAllocation" xml:space="preserve">
+    <value>A készlet {0} bájtot foglal le.</value>
+  </data>
+  <data name="event_BufferPoolChangeQuota" xml:space="preserve">
+    <value>BufferPool mérete: {0}, a kvóta módosítása a következő értékkel: {1}.</value>
+  </data>
+  <data name="event_CacheRootMetadataStart" xml:space="preserve">
+    <value>CacheRootMetadata megkezdődött a következő tevékenységnél: „{0}”.</value>
+  </data>
+  <data name="event_CacheRootMetadataStop" xml:space="preserve">
+    <value>CacheRootMetadata befejeződött a következő tevékenységnél: „{0}”.</value>
+  </data>
+  <data name="event_CBAEntryRead" xml:space="preserve">
+    <value>Feldolgozott ServiceActivation elem relatív címe: „{0}”, normalizált relatív címe: „{1}”.</value>
+  </data>
+  <data name="event_CBAMatchFound" xml:space="preserve">
+    <value>A bejövő kérelem megfelel a következő című ServiceActivation elemnek: „{0}”. </value>
+  </data>
+  <data name="event_ChannelFactoryCreated" xml:space="preserve">
+    <value>ChannelFactory létrehozva.</value>
+  </data>
+  <data name="event_ChannelInitializationTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ChannelReceiveStart" xml:space="preserve">
+    <value>ChannelHandlerId:{0} – Az üzenetfogadási hurok elindítva.</value>
+  </data>
+  <data name="event_ChannelReceiveStop" xml:space="preserve">
+    <value>ChannelHandlerId:{0} – Az üzenetfogadási hurok leállítva.</value>
+  </data>
+  <data name="event_ClientBaseCachedChannelFactoryCount" xml:space="preserve">
+    <value>A gyorsítótárazott csatornagyárak száma: {0}. Legfeljebb {1} csatornagyár gyorsítótárazható.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryAgedOutofCache" xml:space="preserve">
+    <value>Egy csatornagyár kiöregedett a gyorsítótárból, mert a gyorsítótár elérte a(z) „{0}” méretkorlátját.</value>
+  </data>
+  <data name="event_ClientBaseChannelFactoryCacheHit" xml:space="preserve">
+    <value>A rendszer a gyorsítótárban talált megfelelő csatornagyárat használta.</value>
+  </data>
+  <data name="event_ClientBaseUsingLocalChannelFactory" xml:space="preserve">
+    <value>A rendszer nem a gyorsítótárban levő csatornagyárat használ, azaz a gyorsítótárazás le van tiltva a példányon.</value>
+  </data>
+  <data name="event_ClientChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannel megnyitásának megkezdése</value>
+  </data>
+  <data name="event_ClientChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannel megnyitásának befejezése</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStart" xml:space="preserve">
+    <value>Az ügyfél megkezdte a válaszüzenet deszerializálását.</value>
+  </data>
+  <data name="event_ClientFormatterDeserializeReplyStop" xml:space="preserve">
+    <value>Az ügyfél befejezte a válaszüzenet deszerializálását.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStart" xml:space="preserve">
+    <value>Az ügyfél megkezdte a kérelemüzenet szerializálását.</value>
+  </data>
+  <data name="event_ClientFormatterSerializeRequestStop" xml:space="preserve">
+    <value>Az ügyfél befejezte a kérelemüzenet szerializálását.</value>
+  </data>
+  <data name="event_ClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta az AfterReceiveReply metódust egy „{0}” típusú ClientMessageInspector vizsgálóra.</value>
+  </data>
+  <data name="event_ClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta a BeforeSendRequest metódust egy „{0}” típusú ClientMessageInspector vizsgálóra.</value>
+  </data>
+  <data name="event_ClientOperationPrepared" xml:space="preserve">
+    <value>Az ügyfélnél folyamatban van a(z) „{1}” egyezményhez társított „{0}” művelet végrehajtása. Az üzenet a következőnek lesz elküldve: „{2}”.</value>
+  </data>
+  <data name="event_ClientParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta az AfterCall metódust egy „{0}” típusú ClientParameterInspector vizsgálóra.</value>
+  </data>
+  <data name="event_ClientParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta a BeforeCall metódust egy „{0}” típusú ClientParameterInspector vizsgálóra.</value>
+  </data>
+  <data name="event_ClientReliableSessionReconnect" xml:space="preserve">
+    <value>SessionId:{0}, újrakapcsolódás folyamatban.</value>
+  </data>
+  <data name="event_ClientSendPreambleStart" xml:space="preserve">
+    <value>A bevezető szakasz ügyfél általi küldésének megkezdése</value>
+  </data>
+  <data name="event_ClientSendPreambleStop" xml:space="preserve">
+    <value>A bevezető szakasz ügyfél általi küldésének leállítása</value>
+  </data>
+  <data name="event_CloseTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_CompensationState" xml:space="preserve">
+    <value>A(z) „{0}” CompensableActivity „{1}” állapotban van.</value>
+  </data>
+  <data name="event_CompilationStart" xml:space="preserve">
+    <value>Fordítás megkezdése</value>
+  </data>
+  <data name="event_CompilationStop" xml:space="preserve">
+    <value>Fordítás befejezése</value>
+  </data>
+  <data name="event_CompileVbExpressionStart" xml:space="preserve">
+    <value>Folyamatban van a következő VB nyelvű kifejezés fordítása: „{0}”.</value>
+  </data>
+  <data name="event_CompileVbExpressionStop" xml:space="preserve">
+    <value>A VB nyelvű kifejezés fordítása befejeződött.</value>
+  </data>
+  <data name="event_CompleteBookmarkWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó BookmarkWorkItem végrehajtása befejeződött. DisplayName: „{1}”, InstanceId: „{2}”. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CompleteCancelActivityWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó CancelActivityWorkItem befejeződött. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_CompleteCompletionWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” szülőtevékenységhez tartozó CompletionWorkItem befejeződött. DisplayName: „{1}”, InstanceId: „{2}”. Befejezett tevékenység: „{3}”, DisplayName: „{4}”, InstanceId: „{5}”.</value>
+  </data>
+  <data name="event_CompleteExecuteActivityWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó ExecuteActivityWorkItem befejeződött. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_CompleteFaultWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó FaultWorkItem befejeződött. DisplayName: „{1}”, InstanceId: „{2}”. A kivétel a(z) „{3}” tevékenységből lett propagálva. DisplayName: „{4}”, InstanceId: „{5}”.</value>
+  </data>
+  <data name="event_CompleteRuntimeWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó futásidejű munkaelem befejeződött. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_CompleteTransactionContextWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó TransactionContextWorkItem befejeződött. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_ConcurrentCallsRatio" xml:space="preserve">
+    <value>Egyidejű hívások aránya: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentInstancesRatio" xml:space="preserve">
+    <value>Egyidejű példányok aránya: {0}/{1}</value>
+  </data>
+  <data name="event_ConcurrentSessionsRatio" xml:space="preserve">
+    <value>Egyidejű munkamenetek aránya: {0}/{1}</value>
+  </data>
+  <data name="event_ConnectionPoolMiss" xml:space="preserve">
+    <value>A(z) {0} készletében nincs használható kapcsolat, és {1} foglalt kapcsolat van.</value>
+  </data>
+  <data name="event_ConnectionPoolPreambleFailed" xml:space="preserve">
+    <value>ConnectionPoolPreambleFailed.</value>
+  </data>
+  <data name="event_ConnectionReaderSendFault" xml:space="preserve">
+    <value>A kapcsolatolvasó a következő hibát küldi: „{0}”. </value>
+  </data>
+  <data name="event_CreateBookmark" xml:space="preserve">
+    <value>Bookmark került létrehozásra a(z) „{0}” tevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_CreateBookmarkScope" xml:space="preserve">
+    <value>BookmarkScope lett létrehozva: {0}.</value>
+  </data>
+  <data name="event_CreateServiceHostStart" xml:space="preserve">
+    <value>CreateServiceHost megkezdése</value>
+  </data>
+  <data name="event_CreateServiceHostStop" xml:space="preserve">
+    <value>CreateServiceHost befejezése</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStart" xml:space="preserve">
+    <value>CreateWorkflowServiceHost indítása</value>
+  </data>
+  <data name="event_CreateWorkflowServiceHostStop" xml:space="preserve">
+    <value>CreateWorkflowServiceHost leállítása</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract deszerializálása {0} helyettessel megkezdve.</value>
+  </data>
+  <data name="event_DCDeserializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract deszerializálása helyettesekkel leállítva.</value>
+  </data>
+  <data name="event_DCGenReaderStart" xml:space="preserve">
+    <value>A DataContract megkezdte a(z) {0} olvasó létrehozását a következő számára: {1}.</value>
+  </data>
+  <data name="event_DCGenReaderStop" xml:space="preserve">
+    <value>A DataContract leállította a létrehozást.</value>
+  </data>
+  <data name="event_DCGenWriterStart" xml:space="preserve">
+    <value>A DataContract megkezdte a(z) {0} író létrehozását a következő számára: {1}.</value>
+  </data>
+  <data name="event_DCGenWriterStop" xml:space="preserve">
+    <value>A DataContract leállította az író létrehozását.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStart" xml:space="preserve">
+    <value>A Json megkezdte a(z) {0} olvasó létrehozását a következő számára: {1}.</value>
+  </data>
+  <data name="event_DCJsonGenReaderStop" xml:space="preserve">
+    <value>A Json leállította az olvasó létrehozását.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStart" xml:space="preserve">
+    <value>A Json megkezdte a(z) {0} író létrehozását a következő számára: {1}.</value>
+  </data>
+  <data name="event_DCJsonGenWriterStop" xml:space="preserve">
+    <value>A Json leállította az író létrehozását.</value>
+  </data>
+  <data name="event_DCResolverResolve" xml:space="preserve">
+    <value>A DataContract feloldója megkezdte a következő feloldását: {0}.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStart" xml:space="preserve">
+    <value>DataContract szerializálása {0} helyettessel megkezdve.</value>
+  </data>
+  <data name="event_DCSerializeWithSurrogateStop" xml:space="preserve">
+    <value>DataContract szerializálása helyettesekkel leállítva.</value>
+  </data>
+  <data name="event_DecrementBusyCount" xml:space="preserve">
+    <value>Meg lett hívva a DecrementBusyCount metódus. Forrás: {0}</value>
+  </data>
+  <data name="event_DiscoveryClientInClientChannelFailedToClose" xml:space="preserve">
+    <value>A DiscoveryClientChannel objektumban létrehozott DiscoveryClient bezárása sikertelen volt, ezért a működése meg lett szakítva.</value>
+  </data>
+  <data name="event_DiscoveryClientProtocolExceptionSuppressed" xml:space="preserve">
+    <value>A DiscoveryClient bezárása során egy ProtocolException figyelmen kívül lett hagyva. Ennek lehetséges oka, hogy a DiscoveryService még mindig választ próbál küldeni a DiscoveryClient részére.</value>
+  </data>
+  <data name="event_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>A DiscoveryClient egy csoportos küldésű figyelmen kívül hagyási üzenetet kapott a DiscoveryProxy objektumtól.</value>
+  </data>
+  <data name="event_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>A DiscoveryClient eldobott egy {0} üzenetet (messageId='{1}'), mert az annak megfelelő {2} művelet már befejeződött.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidContent" xml:space="preserve">
+    <value>A rendszer eldobott egy {0} üzenetet (messageId='{1}'), mert annak tartalma érvénytelen volt.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>A DiscoveryClient eldobott egy {0} üzenetet (messageId='{1}' és relatesTo='{2}'), mert az annak megfelelő {3} művelet már befejeződött, vagy mert a relatesTo érték érvénytelen.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithInvalidReplyTo" xml:space="preserve">
+    <value>A rendszer eldobott egy felderítéskérelmi üzenetet (messageId='{0}'), mert az érvénytelen ReplyTo címet tartalmazott.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNoContent" xml:space="preserve">
+    <value>A rendszer eldobott egy {0} üzenetet, mert annak semmilyen tartalma sem volt.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageId" xml:space="preserve">
+    <value>A rendszer eldobott egy {0} üzenetet, mert az üzenetfejléc nem tartalmazta a szükséges MessageId tulajdonságot.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullMessageSequence" xml:space="preserve">
+    <value>A DiscoveryClient eldobott egy {0} üzenetet (messageId='{1}'), mert az nem tartalmazta a DiscoveryMessageSequence tulajdonságot.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullRelatesTo" xml:space="preserve">
+    <value>A DiscoveryClient eldobott egy {0} üzenetet (messageId='{1}'), mert az üzenetfejléc nem tartalmazta a szükséges RelatesTo tulajdonságot.</value>
+  </data>
+  <data name="event_DiscoveryMessageWithNullReplyTo" xml:space="preserve">
+    <value>A rendszer eldobott egy felderítéskérelmi üzenetet (messageId='{0}'), mert az nem tartalmazott ReplyTo címet.</value>
+  </data>
+  <data name="event_DispatchFailed" xml:space="preserve">
+    <value>A következő művelet elküldése során hibák történtek: „{0}”.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStart" xml:space="preserve">
+    <value>A diszpécser megkezdte a kérelemüzenet deszerializálását.</value>
+  </data>
+  <data name="event_DispatchFormatterDeserializeRequestStop" xml:space="preserve">
+    <value>A diszpécser befejezte a kérelemüzenet deszerializálását.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStart" xml:space="preserve">
+    <value>A diszpécser megkezdte a válaszüzenet szerializálását.</value>
+  </data>
+  <data name="event_DispatchFormatterSerializeReplyStop" xml:space="preserve">
+    <value>A diszpécser befejezte a válaszüzenet szerializálását.</value>
+  </data>
+  <data name="event_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>Engedélyezés megkezdése az üzenetek terjesztéséhez</value>
+  </data>
+  <data name="event_DispatchMessageStart" xml:space="preserve">
+    <value>Az üzenetek elküldése megkezdődött.</value>
+  </data>
+  <data name="event_DispatchMessageStop" xml:space="preserve">
+    <value>Az üzenetek elküldése befejeződött.</value>
+  </data>
+  <data name="event_DispatchSessionFailed" xml:space="preserve">
+    <value>A munkamenet elküldése sikertelen volt.</value>
+  </data>
+  <data name="event_DispatchSessionStart" xml:space="preserve">
+    <value>A munkamenet küldése megkezdődött.</value>
+  </data>
+  <data name="event_DispatchSessionSuccess" xml:space="preserve">
+    <value>A munkamenet elküldése sikeresen befejeződött.</value>
+  </data>
+  <data name="event_DispatchSuccessful" xml:space="preserve">
+    <value>A következő művelet elküldése sikeresen befejeződött: „{0}”.</value>
+  </data>
+  <data name="event_DuplicateCorrelationQuery" xml:space="preserve">
+    <value>Duplikált CorrelationQuery található, Where='{0}' értékkel. Ez a duplikált lekérdezés nem lesz felhasználva a korreláció kiszámításához.</value>
+  </data>
+  <data name="event_DuplicateDiscoveryMessage" xml:space="preserve">
+    <value>A rendszer eldobott egy {0} üzenetet (messageId='{1}'), mert az duplikált volt.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingStart" xml:space="preserve">
+    <value>A titkosított adatok feldolgozása megkezdődött.</value>
+  </data>
+  <data name="event_EncryptedDataProcessingSuccess" xml:space="preserve">
+    <value>A titkosított adatok feldolgozása sikeresen befejeződött.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>Le lett tiltva az EndpointAddress='{0}' és ListenUri='{1}' című végpont felderíthetősége.</value>
+  </data>
+  <data name="event_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>Engedélyezve lett az EndpointAddress='{0}' és ListenUri='{1}' című végpont felderíthetősége.</value>
+  </data>
+  <data name="event_EndSqlCommandExecute" xml:space="preserve">
+    <value>SQL-parancs végrehajtásának befejezése: {0}</value>
+  </data>
+  <data name="event_EnterNoPersistBlock" xml:space="preserve">
+    <value>Belépés adatokat nem megőrző blokkba</value>
+  </data>
+  <data name="event_ErrorHandlerInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívott egy „{0}” típusú ErrorHandler hibakezelőt egy „{2}” típusú kivétellel. ErrorHandled == „{1}”.</value>
+  </data>
+  <data name="event_EstablishConnectionStart" xml:space="preserve">
+    <value>A kapcsolat felépítése megkezdődött a következő számára: {0}.</value>
+  </data>
+  <data name="event_EstablishConnectionStop" xml:space="preserve">
+    <value>A kapcsolat felépült.</value>
+  </data>
+  <data name="event_EtwUnhandledException" xml:space="preserve">
+    <value>Nem kezelt kivétel történt. A kivétel részletei: {0}</value>
+  </data>
+  <data name="event_ExecuteWorkItemStart" xml:space="preserve">
+    <value>Munkaelem végrehajtásának megkezdése</value>
+  </data>
+  <data name="event_ExecuteWorkItemStop" xml:space="preserve">
+    <value>Munkaelem végrehajtásának befejezése</value>
+  </data>
+  <data name="event_ExitNoPersistBlock" xml:space="preserve">
+    <value>Kilépés adatokat nem megőrző blokkból</value>
+  </data>
+  <data name="event_FailFastException" xml:space="preserve">
+    <value>FailFastException.</value>
+  </data>
+  <data name="event_FaultProviderInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívott egy „{0}” típusú FaultProvider szolgáltatót egy „{1}” típusú kivétellel.</value>
+  </data>
+  <data name="event_FederationMessageCreationStarted" xml:space="preserve">
+    <value>Megkezdődött az összevonási üzenet létrehozása a közzétett űrlapból.</value>
+  </data>
+  <data name="event_FederationMessageCreationSuccess" xml:space="preserve">
+    <value>Az összevonási üzenet létrehozása a közzétett űrlapból sikeresen befejeződött.</value>
+  </data>
+  <data name="event_FederationMessageProcessingStarted" xml:space="preserve">
+    <value>Az összevonási üzenet feldolgozása megkezdődött.</value>
+  </data>
+  <data name="event_FederationMessageProcessingSuccess" xml:space="preserve">
+    <value>Az összevonási üzenet feldolgozása sikeresen befejeződött.</value>
+  </data>
+  <data name="event_FindInitiatedInDiscoveryClientChannel" xml:space="preserve">
+    <value>A DiscoveryClientChannel egy Find műveletet kezdeményezett a végpont(ok) felderítéséhez.</value>
+  </data>
+  <data name="event_FlowchartEmpty" xml:space="preserve">
+    <value>Flowchart „{0}” – Node csomópontok nélkül került végrehajtásra.</value>
+  </data>
+  <data name="event_FlowchartNextNull" xml:space="preserve">
+    <value>Flowchart „{0}”/FlowStep – A következő csomópont null értékű. A Flowchart végrehajtása véget ér.</value>
+  </data>
+  <data name="event_FlowchartStart" xml:space="preserve">
+    <value>Flowchart „{0}” – indítás ütemezve.</value>
+  </data>
+  <data name="event_FlowchartSwitchCase" xml:space="preserve">
+    <value>Flowchart „{0}”/FlowSwitch – „{1}” Case kiválasztva.</value>
+  </data>
+  <data name="event_FlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>Flowchart „{0}”/FlowSwitch – nem található az Expression eredményhez illő Case tevékenység vagy Default Case. A Flowchart végrehajtása véget ér.</value>
+  </data>
+  <data name="event_FlowchartSwitchDefault" xml:space="preserve">
+    <value>Flowchart „{0}”/FlowSwitch – Default Case kiválasztva.</value>
+  </data>
+  <data name="event_FoundProcessingError" xml:space="preserve">
+    <value>Sikertelen parancs: {0}</value>
+  </data>
+  <data name="event_GenXmlSerializableStart" xml:space="preserve">
+    <value>A szerializálható XML létrehozásának megkezdése a következő számára: „{0}”</value>
+  </data>
+  <data name="event_GenXmlSerializableStop" xml:space="preserve">
+    <value>A szerializálható XML létrehozásának leállítása</value>
+  </data>
+  <data name="event_GetIssuerNameFailure" xml:space="preserve">
+    <value>A kibocsátó nevének beolvasása a következőből sikertelen volt: tokenId:{0}.</value>
+  </data>
+  <data name="event_GetIssuerNameSuccess" xml:space="preserve">
+    <value>A kibocsátó {0} nevének beolvasása a következőből sikeresen befejeződött: tokenId:{1}.</value>
+  </data>
+  <data name="event_GetServiceInstanceStart" xml:space="preserve">
+    <value>A szolgáltatáspéldány beolvasása megkezdődött.</value>
+  </data>
+  <data name="event_GetServiceInstanceStop" xml:space="preserve">
+    <value>A szolgáltatáspéldány beolvasása befejeződött.</value>
+  </data>
+  <data name="event_HandledException" xml:space="preserve">
+    <value>Kivétel kezelése. A kivétel részletei: {0}</value>
+  </data>
+  <data name="event_HandledExceptionError" xml:space="preserve">
+    <value>Kivétel kezelése. A kivétel részletei: {0}</value>
+  </data>
+  <data name="event_HandledExceptionVerbose" xml:space="preserve">
+    <value>Kivétel kezelése. A kivétel részletei: {0}</value>
+  </data>
+  <data name="event_HandledExceptionWarning" xml:space="preserve">
+    <value>Kivétel kezelése. A kivétel részletei: {0}</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStart" xml:space="preserve">
+    <value>HostedTransportConfigurationManager konfigurációinicializálás megkezdése</value>
+  </data>
+  <data name="event_HostedTransportConfigurationManagerConfigInitStop" xml:space="preserve">
+    <value>HostedTransportConfigurationManager konfigurációinicializálás befejezése</value>
+  </data>
+  <data name="event_HttpAuthFailed" xml:space="preserve">
+    <value>A HTTP-hitelesítés sikertelen volt.</value>
+  </data>
+  <data name="event_HttpChannelRequestAborted" xml:space="preserve">
+    <value>A HTTP-csatornakérelem meg lett szakítva.</value>
+  </data>
+  <data name="event_HttpChannelResponseAborted" xml:space="preserve">
+    <value>A HTTP-csatornaválasz meg lett szakítva.</value>
+  </data>
+  <data name="event_HttpContextBeforeProcessAuthentication" xml:space="preserve">
+    <value>Hitelesítés megkezdése az üzenetek terjesztéséhez</value>
+  </data>
+  <data name="event_HttpGetContextStart" xml:space="preserve">
+    <value>HttpGetContext megkezdése</value>
+  </data>
+  <data name="event_HttpHandlerPickedForUrl" xml:space="preserve">
+    <value>A(z) „{0}” URL-címen egy olyan XAML-dokumentum található, amelynek gyökéreleme „{1}” típusú. Az ezen URL-nek címzett összes kérelem kiszolgálására „{2}” típusú HTTP-kezelő lett kiválasztva.</value>
+  </data>
+  <data name="event_HttpMessageReceiveFailed" xml:space="preserve">
+    <value>A HTTP-üzenet fogadása sikertelen volt.</value>
+  </data>
+  <data name="event_HttpMessageReceiveStart" xml:space="preserve">
+    <value>Üzenet érkezett a HTTP-átviteltől.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessInboundRequestStart" xml:space="preserve">
+    <value>A HTTP-üzenetkezelő megkezdte a bejövő kérelem feldolgozását aszinkron módon.</value>
+  </data>
+  <data name="event_HttpPipelineBeginProcessResponseStart" xml:space="preserve">
+    <value>A HTTP-üzenetkezelő megkezdte a válasz feldolgozását aszinkron módon.</value>
+  </data>
+  <data name="event_HttpPipelineFaulted" xml:space="preserve">
+    <value>Hiba történt a HTTP-üzenetkezelő működésében.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStart" xml:space="preserve">
+    <value>A HTTP-üzenetkezelő megkezdte a bejövő kérelem feldolgozását.</value>
+  </data>
+  <data name="event_HttpPipelineProcessInboundRequestStop" xml:space="preserve">
+    <value>A HTTP-üzenetkezelő befejezte egy bejövő kérelem feldolgozását.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStart" xml:space="preserve">
+    <value>A HTTP-üzenetkezelő megkezdte a válasz feldolgozását.</value>
+  </data>
+  <data name="event_HttpPipelineProcessResponseStop" xml:space="preserve">
+    <value>A HTTP-üzenetkezelő befejezte a válasz feldolgozását.</value>
+  </data>
+  <data name="event_HttpPipelineTimeoutException" xml:space="preserve">
+    <value>A WebSocket-kapcsolat időtúllépés miatt megszakadt.</value>
+  </data>
+  <data name="event_HttpResponseReceiveStart" xml:space="preserve">
+    <value>A HTTP-átvitel megkezdte egy üzenet fogadását.</value>
+  </data>
+  <data name="event_HttpSendMessageStart" xml:space="preserve">
+    <value>HTTP-kérelem küldésének megkezdése</value>
+  </data>
+  <data name="event_HttpSendStop" xml:space="preserve">
+    <value>HTTP-kérelem küldésének befejezése</value>
+  </data>
+  <data name="event_HttpSendStreamedMessageStart" xml:space="preserve">
+    <value>Az adatfolyamos HTTP-üzenet elküldése megkezdődött.</value>
+  </data>
+  <data name="event_IdleServicesClosed" xml:space="preserve">
+    <value>Összesen {1} aktivált szolgáltatásból {0} tétlen szolgáltatás bezárva.</value>
+  </data>
+  <data name="event_IdleTimeout" xml:space="preserve">
+    <value>{0} kapcsolatkészlet kulcsa: {1}</value>
+  </data>
+  <data name="event_ImportKnownTypesStart" xml:space="preserve">
+    <value>ImportKnownTypes megkezdése</value>
+  </data>
+  <data name="event_ImportKnownTypesStop" xml:space="preserve">
+    <value>ImportKnownTypes leállítása</value>
+  </data>
+  <data name="event_InactivityTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_InArgumentBound" xml:space="preserve">
+    <value>A(z) „{1}” tevékenység „{0}” argumentumában (DisplayName: „{2}”, InstanceId: „{3}”)a következő értékű kötés jött létre: {4}.</value>
+  </data>
+  <data name="event_IncomingMessageVerified" xml:space="preserve">
+    <value>A bejövő üzenet ellenőrzése befejeződött.</value>
+  </data>
+  <data name="event_IncrementBusyCount" xml:space="preserve">
+    <value>Meg lett hívva az IncrementBusyCount metódus. Forrás: {0}</value>
+  </data>
+  <data name="event_InferredContractDescription" xml:space="preserve">
+    <value>Name='{0}' és Namespace='{1}' értékkel rendelkező ContractDescription lett kikövetkeztetve a WorkflowService objektumból.</value>
+  </data>
+  <data name="event_InferredOperationDescription" xml:space="preserve">
+    <value>A(z) „{1}” egyezményben található, Name='{0}' értékekkel rendelkező OperationDescription lett kikövetkeztetve a WorkflowService objektumból. IsOneWay={2}</value>
+  </data>
+  <data name="event_InnerChannelCreationFailed" xml:space="preserve">
+    <value>A DiscoveryClientChannel nem tudta létrehozni a csatornát egy felderített végponttal (EndpointAddress='{0}' és Via='{1}'). A DiscoveryClientChannel most megkísérli a következő elérhető felderített végpontot használni.</value>
+  </data>
+  <data name="event_InnerChannelOpenFailed" xml:space="preserve">
+    <value>A DiscoveryClientChannel nem tudta megnyitni a csatornát egy felderített végponttal (EndpointAddress='{0}' és Via='{1}'). A DiscoveryClientChannel most megkísérli a következő elérhető felderített végpontot használni.</value>
+  </data>
+  <data name="event_InnerChannelOpenSucceeded" xml:space="preserve">
+    <value>A DiscoveryClientChannel sikeresen felderített egy végpontot, és megnyitotta a csatornát annak használatával. Az ügyfél a következők használatával csatlakozik egy szolgáltatáshoz: EndpointAddress='{0}' és Via='{1}'.</value>
+  </data>
+  <data name="event_InstanceLocksRecoveryError" xml:space="preserve">
+    <value>A példányzárolások helyreállítása a következő kivétel miatt sikertelen volt:</value>
+  </data>
+  <data name="event_InternalCacheMetadataStart" xml:space="preserve">
+    <value>InternalCacheMetadata megkezdődött a következő tevékenységnél: „{0}”.</value>
+  </data>
+  <data name="event_InternalCacheMetadataStop" xml:space="preserve">
+    <value>InternalCacheMetadata befejeződött a következő tevékenységnél: „{0}”.</value>
+  </data>
+  <data name="event_InvokedMethodThrewException" xml:space="preserve">
+    <value>A(z) „{0}” tevékenység által meghívott metódus kivételt okozott. {1}</value>
+  </data>
+  <data name="event_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod „{0}” – a metódus nem használ aszinkron mintát.</value>
+  </data>
+  <data name="event_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>InvokeMethod „{0}” – a metódus nem Static jellegű.</value>
+  </data>
+  <data name="event_InvokeMethodIsStatic" xml:space="preserve">
+    <value>InvokeMethod „{0}” – a metódus Static jellegű.</value>
+  </data>
+  <data name="event_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>InvokeMethod „{0}” – a metódus aszinkron mintát használ: „{1}” és „{2}”.</value>
+  </data>
+  <data name="event_JsonMessageDecodingStart" xml:space="preserve">
+    <value>A JsonMessageEncoder megkezdte az üzenet dekódolását.</value>
+  </data>
+  <data name="event_JsonMessageEncodingStart" xml:space="preserve">
+    <value>A JsonMessageEncoder megkezdte az üzenet kódolását.</value>
+  </data>
+  <data name="event_LeaseTimeout" xml:space="preserve">
+    <value>{0} kapcsolatkészlet kulcsa: {1}</value>
+  </data>
+  <data name="event_ListenerOpenStart" xml:space="preserve">
+    <value>Folyamatban van a figyelő megnyitása a következő számára: „{0}”.</value>
+  </data>
+  <data name="event_ListenerOpenStop" xml:space="preserve">
+    <value>A figyelő megnyitása befejeződött.</value>
+  </data>
+  <data name="event_LockRetryTimeout" xml:space="preserve">
+    <value>Időtúllépés történt a példányzárolás megszerzésére tett kísérlet során. A művelet nem fejeződött be az engedélyezett {0} időkorláton belül. A jelen művelethez engedélyezett idő egy hosszabb időtúllépési intervallum része lehetett.</value>
+  </data>
+  <data name="event_MaximumRetriesExceededForSqlCommand" xml:space="preserve">
+    <value>A rendszer feladja egy SQL parancs végrehajtására irányuló ismételt kísérleteket, mert elvégezte a maximális számú újrapróbálkozást.</value>
+  </data>
+  <data name="event_MaxInstancesExceeded" xml:space="preserve">
+    <value>A rendszer elérte a „MaxConcurrentInstances” által meghatározott szabályozási határértéket. A beállított szabályozási határérték: {0}. A határérték megváltoztatásához módosítsa a serviceThrottle elem „maxConcurrentInstances” attribútumát vagy a ServiceThrottlingBehavior viselkedés „MaxConcurrentInstances” tulajdonságát.</value>
+  </data>
+  <data name="event_MaxOutboundConnectionsPerEndpointExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingConnectionsExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxPendingMessagesPerChannelExceeded" xml:space="preserve">
+    <value>A „MaxPendingMessagesPerChannel” szabályozási határérték („{0}”) el lett érve. A határérték növeléséhez módosítsa a BufferedReceiveServiceBehavior viselkedés MaxPendingMessagesPerChannel tulajdonságát.</value>
+  </data>
+  <data name="event_MaxReceivedMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxRetryCyclesExceededMsmq" xml:space="preserve">
+    <value>Túllépte az újrapróbálkozási ciklusok maximális számát a következő azonosítójú MSMQ-üzenetnél: „{0}”.</value>
+  </data>
+  <data name="event_MaxSentMessageSizeExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MaxSessionSizeReached" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta az AfterReceiveReply metódust egy „{0}” típusú MessageInspector vizsgálóra.</value>
+  </data>
+  <data name="event_MessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta a BeforeSendRequest metódust egy „{0}” típusú MessageInspector vizsgálóra.</value>
+  </data>
+  <data name="event_MessageLogEventSizeExceeded" xml:space="preserve">
+    <value>Az üzenet naplózása sikertelen, mert a mérete meghaladja az ETW-eseményméretet.</value>
+  </data>
+  <data name="event_MessageLogInfo" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageLogWarning" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketComplete" xml:space="preserve">
+    <value>MessageQueueDuplicatedSocketComplete</value>
+  </data>
+  <data name="event_MessageQueueDuplicatedSocketError" xml:space="preserve">
+    <value>Az üzenet-várólista nem tudta duplikálni a szoftvercsatornát.</value>
+  </data>
+  <data name="event_MessageQueueRegisterAbort" xml:space="preserve">
+    <value>Az üzenet-várólista regisztrálása megszakítva, állapot:„{0}”, URI:„{1}”.</value>
+  </data>
+  <data name="event_MessageQueueRegisterCompleted" xml:space="preserve">
+    <value>Az üzenet-várólista regisztrálása befejeződött a következő URI számára: „{0}”.</value>
+  </data>
+  <data name="event_MessageQueueRegisterFailed" xml:space="preserve">
+    <value>Az üzenet-várólista regisztrálása sikertelen volt a következő URI számára:„{0}”, állapot:„{1}”.</value>
+  </data>
+  <data name="event_MessageQueueRegisterStart" xml:space="preserve">
+    <value>Az üzenet-várólista regisztrálásának megkezdése</value>
+  </data>
+  <data name="event_MessageQueueUnregisterSucceeded" xml:space="preserve">
+    <value>Az üzenet-várólista regisztrációjának megszüntetése sikeresen befejeződött a következő URI számára:„{0}”.</value>
+  </data>
+  <data name="event_MessageReadByEncoder" xml:space="preserve">
+    <value>A kódoló beolvasott egy „{0}” bájt méretű üzenetet.</value>
+  </data>
+  <data name="event_MessageReceivedByTransport" xml:space="preserve">
+    <value>Az átvitel üzenetet kapott a következőtől: „{0}”.</value>
+  </data>
+  <data name="event_MessageReceivedFromTransport" xml:space="preserve">
+    <value>A kézbesítő üzenetet kapott az átviteltől. Korrelációazonosító: „{0}”.</value>
+  </data>
+  <data name="event_MessageSentByTransport" xml:space="preserve">
+    <value>Az átvitel elküldött egy üzenetet a következőnek: „{0}”.</value>
+  </data>
+  <data name="event_MessageSentToTransport" xml:space="preserve">
+    <value>A kézbesítő elküldött egy üzenetet az átvitelnek. Korrelációazonosító: „{0}”.</value>
+  </data>
+  <data name="event_MessageThrottleAtSeventyPercent" xml:space="preserve">
+    <value>Elérte a(z) „{0}” üzenetszabályozó „{1}” korlátjának 70%%-át.</value>
+  </data>
+  <data name="event_MessageThrottleExceeded" xml:space="preserve">
+    <value>Elérte a(z) „{0}” üzenetszabályozó „{1}” korlátját.</value>
+  </data>
+  <data name="event_MessageWrittenAsynchronouslyByEncoder" xml:space="preserve">
+    <value>A kódoló aszinkron módon írt egy üzenetet.</value>
+  </data>
+  <data name="event_MessageWrittenByEncoder" xml:space="preserve">
+    <value>A kódoló kiírt egy „{0}” bájt méretű üzenetet.</value>
+  </data>
+  <data name="event_MtomMessageDecodingStart" xml:space="preserve">
+    <value>Az MtomMessageEncoder megkezdte az üzenet dekódolását.</value>
+  </data>
+  <data name="event_MtomMessageEncodingStart" xml:space="preserve">
+    <value>Az MtomMessageEncoder megkezdte az üzenet kódolását.</value>
+  </data>
+  <data name="event_NamedPipeCreated" xml:space="preserve">
+    <value>A következő NamedPipe létrehozva: „{0}”.</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheExceeded" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_NegotiateTokenAuthenticatorStateCacheRatio" xml:space="preserve">
+    <value>Egyeztetési jogkivonat hitelesítési állapotainak gyorsítótári aránya: {0}/{1}</value>
+  </data>
+  <data name="event_OpenListenerChannelInstanceFailed" xml:space="preserve">
+    <value>Hibakód:{0}</value>
+  </data>
+  <data name="event_OpenTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_OperationCompleted" xml:space="preserve">
+    <value>Egy OperationInvoker befejezte a következő metódus hívását: „{0}”. A metódushívás időtartama {1} milliszekundum volt.</value>
+  </data>
+  <data name="event_OperationFailed" xml:space="preserve">
+    <value>A következő metódus nem kezelt kivételt váltott ki az OperationInvoker általi meghívásakor: „{0}”. A metódushívás időtartama {1} milliszekundum volt.</value>
+  </data>
+  <data name="event_OperationFaulted" xml:space="preserve">
+    <value>A következő metódus FaultException kivételt váltott ki az OperationInvoker általi meghívásakor: „{0}”. A metódushívás időtartama {1} milliszekundum volt.</value>
+  </data>
+  <data name="event_OperationInvoked" xml:space="preserve">
+    <value>Egy OperationInvoker meghívta a következő metódust: „{0}”. A hívó adatai: „{1}”.</value>
+  </data>
+  <data name="event_OutboundConnectionsPerEndpointRatio" xml:space="preserve">
+    <value>Kimenő kapcsolatok végpontonkénti aránya: {0}/{1}</value>
+  </data>
+  <data name="event_OutgoingMessageSecured" xml:space="preserve">
+    <value>A kimenő üzenet biztonságossá tétele befejeződött.</value>
+  </data>
+  <data name="event_ParameterInspectorAfterCallInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta az AfterCall metódust egy „{0}” típusú ParameterInspector vizsgálóra.</value>
+  </data>
+  <data name="event_ParameterInspectorBeforeCallInvoked" xml:space="preserve">
+    <value>A kézbesítő meghívta a BeforeCall metódust egy „{0}” típusú ParameterInspector vizsgálóra.</value>
+  </data>
+  <data name="event_PendingAcceptsAtZero" xml:space="preserve">
+    <value>Nincs több függőben levő elfogadás.</value>
+  </data>
+  <data name="event_PendingConnectionsRatio" xml:space="preserve">
+    <value>Függőben levő kapcsolatok aránya: {0}/{1}</value>
+  </data>
+  <data name="event_PendingMessagesPerChannelRatio" xml:space="preserve">
+    <value>Függőben levő üzenetek csatornánkénti aránya: {0}/{1}</value>
+  </data>
+  <data name="event_PendingSessionQueueFull" xml:space="preserve">
+    <value>A munkamenet küldése a(z) „{0}” számára sikertelen volt, mert a függőben levő munkamenetek sora megtelt, {1} függőben levő elemet tartalmaz.</value>
+  </data>
+  <data name="event_PendingSessionQueueRatio" xml:space="preserve">
+    <value>Függőben levő munkamenetek sorának aránya: {0}/{1}</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStart" xml:space="preserve">
+    <value>A csőkapcsolat elfogadása megkezdődött a következőn: {0}.</value>
+  </data>
+  <data name="event_PipeConnectionAcceptStop" xml:space="preserve">
+    <value>A csőkapcsolat elfogadva.</value>
+  </data>
+  <data name="event_PipeSharedMemoryCreated" xml:space="preserve">
+    <value>A cső megosztott memóriája létre lett hozva a következő helyen: „{0}”.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStart" xml:space="preserve">
+    <value>A csövön keresztüli átvitel figyelője megkezdi a figyelést a következő URI-címen:{0}.</value>
+  </data>
+  <data name="event_PipeTransportListenerListeningStop" xml:space="preserve">
+    <value>A csövön keresztüli átvitel figyelője leállítja a figyelést.</value>
+  </data>
+  <data name="event_PortSharingDuplicatedSocket" xml:space="preserve">
+    <value>A szoftvercsatorna duplikálva lett a következő számára: {0}.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenStarted" xml:space="preserve">
+    <value>Megkezdődött a résztvevő beállítása a munkamenet jogkivonatából.</value>
+  </data>
+  <data name="event_PrincipalSettingFromSessionTokenSuccess" xml:space="preserve">
+    <value>A résztvevő beállítása a munkamenet jogkivonatából sikeresen befejeződött.</value>
+  </data>
+  <data name="event_QueryCompositionExecuted" xml:space="preserve">
+    <value>A(z) „{0}” használatával történő lekérdezés-összeállítás végre lett hajtva a kérelem URI-címén: „{1}”.</value>
+  </data>
+  <data name="event_QueuingSqlRetry" xml:space="preserve">
+    <value>A rendszer sorba állítja az SQL-újrapróbálkozást {0} milliszekundum késleltetéssel.</value>
+  </data>
+  <data name="event_ReadPoolMiss" xml:space="preserve">
+    <value>Új „{0}” létrehozva</value>
+  </data>
+  <data name="event_ReceiveContextAbandonFailed" xml:space="preserve">
+    <value>A következő megszakítása sikertelen: {0}.</value>
+  </data>
+  <data name="event_ReceiveContextAbandonWithException" xml:space="preserve">
+    <value>{0} megszakításakor a következő kivétel történt: {1}.</value>
+  </data>
+  <data name="event_ReceiveContextCompleteFailed" xml:space="preserve">
+    <value>A következő befejezése sikertelen: {0}.</value>
+  </data>
+  <data name="event_ReceiveContextFaulted" xml:space="preserve">
+    <value>A fogadási környezet hibát jelzett.</value>
+  </data>
+  <data name="event_ReceiveRetryCountReached" xml:space="preserve">
+    <value>Elérte a fogadási újrapróbálkozások maximális számát a következő azonosítójú MSMQ-üzenetnél: „{0}”.</value>
+  </data>
+  <data name="event_ReceiveTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_ReliableSessionChannelFaulted" xml:space="preserve">
+    <value>SessionId:{0} hibát jelzett.</value>
+  </data>
+  <data name="event_RenewLockSystemError" xml:space="preserve">
+    <value>A zárolás lejáratának meghosszabbítása sikertelen, a zárolás lejárati ideje már elmúlt, vagy törölve lett a zárolás tulajdonosa. SqlWorkflowInstanceStore végrehajtása megszakad.</value>
+  </data>
+  <data name="event_ResumeSignpostEvent" xml:space="preserve">
+    <value>Tevékenységhatár</value>
+  </data>
+  <data name="event_RetryingSqlCommandDueToSqlError" xml:space="preserve">
+    <value>A rendszer megpróbál újból végrehajtani egy SQL parancsot a következő számú SQL-hiba miatt: {0}.</value>
+  </data>
+  <data name="event_RoutingServiceAbandoningReceiveContext" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás a ReceiveContext.Abandon metódust hívja a következő azonosítójú üzenetre: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás a következő csatorna megszakítását hívja: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceChannelFaulted" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás „{0}” ügyfele hibát jelzett.</value>
+  </data>
+  <data name="event_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>Hiba történt az Útválasztási szolgáltatásban a következő kimenő ügyfél bezárásakor: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceClosingClient" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás bezárja a következő ügyfelet: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceCommittingTransaction" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás a következő azonosítójú tranzakciót véglegesíti: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingOneWay" xml:space="preserve">
+    <value>Befejeződik az Útválasztási szolgáltatás egyirányú üzenete.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingReceiveContext" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás a ReceiveContext.Complete metódust hívja a következő azonosítójú üzenetre: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceCompletingTwoWay" xml:space="preserve">
+    <value>Befejeződik az Útválasztási szolgáltatás válaszkérő üzenete.</value>
+  </data>
+  <data name="event_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>A rendszer új RoutingConfiguration konfigurációt alkalmazott az Útválasztási szolgáltatásra.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingClientForEndpoint" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás ügyfelet hoz létre a következő végponthoz: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceCreatingTransaction" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás új, „{0}” azonosítójú tranzakciót hozott létre az üzenet(ek) feldolgozásához.</value>
+  </data>
+  <data name="event_RoutingServiceDisplayConfig" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás beállításai: RouteOnHeadersOnly: {0}, SoapProcessingEnabled: {1}, EnsureOrderedDispatch: {2}.</value>
+  </data>
+  <data name="event_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás {0} összetevője kétirányú visszahívási kivételbe ütközött.</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStart" xml:space="preserve">
+    <value>Az útválasztási szolgáltatás MessageFilterTable egyeztetésének indítása</value>
+  </data>
+  <data name="event_RoutingServiceFilterTableMatchStop" xml:space="preserve">
+    <value>Az útválasztási szolgáltatás MessageFilterTable egyeztetésének leállítása</value>
+  </data>
+  <data name="event_RoutingServiceHandledException" xml:space="preserve">
+    <value>Az útválasztási szolgáltatás kezelt egy kivételt.</value>
+  </data>
+  <data name="event_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás {1} végpontlista felé továbbította a következő azonosítójú üzenetet: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingFailure" xml:space="preserve">
+    <value>Hiba történt az Útválasztási szolgáltatásban egy üzenet feldolgozásakor a következő című végponton: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceProcessingMessage" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás üzenetet dolgoz fel. Azonosító: „{0}”, tevékenység: „{1}”, bejövő URL: „{2}”. A következő tranzakcióban érkezett: {3}.</value>
+  </data>
+  <data name="event_RoutingServiceSendingFaultResponse" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás „{0}” tevékenységgel rendelkező Fault válaszüzenetet küld vissza.</value>
+  </data>
+  <data name="event_RoutingServiceSendingResponse" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás „{0}” tevékenységgel rendelkező válaszüzenetet küld vissza.</value>
+  </data>
+  <data name="event_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>Hiba történt az Útválasztási szolgáltatásban a következő címzettnek való küldés közben: „{0}”.</value>
+  </data>
+  <data name="event_RoutingServiceUsingExistingTransaction" xml:space="preserve">
+    <value>Az Útválasztási szolgáltatás a meglévő „{0}” tranzakció használatával fog üzeneteket küldeni.</value>
+  </data>
+  <data name="event_RoutingTableLookupStart" xml:space="preserve">
+    <value>Az útválasztási táblában való keresés megkezdődött.</value>
+  </data>
+  <data name="event_RoutingTableLookupStop" xml:space="preserve">
+    <value>Az útválasztási táblában való keresés befejeződött.</value>
+  </data>
+  <data name="event_RunnableInstancesDetectionError" xml:space="preserve">
+    <value>A futtatható példányok észlelése a következő kivétel miatt sikertelen volt:</value>
+  </data>
+  <data name="event_RuntimeTransactionComplete" xml:space="preserve">
+    <value>A futásidejű tranzakció „{0}” állapottal befejeződött.</value>
+  </data>
+  <data name="event_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>A(z) „{0}” tevékenység a futásidejű tranzakció befejezését ütemezte. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_RuntimeTransactionSet" xml:space="preserve">
+    <value>A futásidejű tranzakciót a(z) „{0}” tevékenység állította be. DisplayName: „{1}”, InstanceId: „{2}”. A végrehajtás el van szigetelve: „{3}” tevékenység, DisplayName: „{4}”, InstanceId: „{5}”</value>
+  </data>
+  <data name="event_ScheduleBookmarkWorkItem" xml:space="preserve">
+    <value>Egy BookmarkWorkItem lett beütemezve a(z) „{0}” tevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_ScheduleCancelActivityWorkItem" xml:space="preserve">
+    <value>CancelActivityWorkItem lett beütemezve a(z) „{0}” tevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_ScheduleCompletionWorkItem" xml:space="preserve">
+    <value>CompletionWorkItem lett beütemezve a(z) „{0}” szülőtevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”. Befejezett tevékenység: „{3}”, DisplayName: „{4}”, InstanceId: „{5}”.</value>
+  </data>
+  <data name="event_ScheduleExecuteActivityWorkItem" xml:space="preserve">
+    <value>ExecuteActivityWorkItem lett beütemezve a(z) „{0}” tevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_ScheduleFaultWorkItem" xml:space="preserve">
+    <value>FaultWorkItem lett beütemezve a(z) „{0}” tevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”. A kivétel a(z) „{3}” tevékenységből lett propagálva. DisplayName: „{4}”, InstanceId: „{5}”.</value>
+  </data>
+  <data name="event_ScheduleRuntimeWorkItem" xml:space="preserve">
+    <value>Futásidejű munkaelem lett beütemezve a(z) „{0}” tevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_ScheduleTransactionContextWorkItem" xml:space="preserve">
+    <value>TransactionContextWorkItem lett beütemezve a(z) „{0}” tevékenységhez. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationFailure" xml:space="preserve">
+    <value>A biztonsági ellenőrzés sikertelen volt.</value>
+  </data>
+  <data name="event_SecurityIdentityVerificationSuccess" xml:space="preserve">
+    <value>A biztonsági ellenőrzés sikeresen befejeződött.</value>
+  </data>
+  <data name="event_SecurityImpersonationFailure" xml:space="preserve">
+    <value>A biztonsági megszemélyesítés sikertelen volt.</value>
+  </data>
+  <data name="event_SecurityImpersonationSuccess" xml:space="preserve">
+    <value>A biztonsági megszemélyesítés sikeresen befejeződött.</value>
+  </data>
+  <data name="event_SecurityNegotiationProcessingFailure" xml:space="preserve">
+    <value>A biztonsági egyeztetés feldolgozása sikertelen volt.</value>
+  </data>
+  <data name="event_SecurityNegotiationStart" xml:space="preserve">
+    <value>A biztonsági egyeztetés megkezdődött.</value>
+  </data>
+  <data name="event_SecurityNegotiationStop" xml:space="preserve">
+    <value>A biztonsági egyeztetés befejeződött.</value>
+  </data>
+  <data name="event_SecuritySessionRatio" xml:space="preserve">
+    <value>Biztonsági munkamenetek aránya: {0}/{1}</value>
+  </data>
+  <data name="event_SecurityTokenProviderOpened" xml:space="preserve">
+    <value>SecurityTokenProvider megnyitása befejeződött.</value>
+  </data>
+  <data name="event_SendMessageChannelCacheMiss" xml:space="preserve">
+    <value>SendMessageChannelCache tévesztés</value>
+  </data>
+  <data name="event_SendTimeout" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="event_SequenceAcknowledgementSent" xml:space="preserve">
+    <value>SessionId:{0}, nyugtázás elküldve.</value>
+  </data>
+  <data name="event_ServerMaxPooledConnectionsQuotaReached" xml:space="preserve">
+    <value>Elérte a kiszolgáló készletezett kapcsolatainak maximális számát megadó kvótát.</value>
+  </data>
+  <data name="event_ServiceActivationAvailableMemory" xml:space="preserve">
+    <value>Elérhető memória mérete (bájt): {0}</value>
+  </data>
+  <data name="event_ServiceActivationException" xml:space="preserve">
+    <value>A szolgáltatás aktiválása sikertelen volt. A kivétel részletei: {0}</value>
+  </data>
+  <data name="event_ServiceActivationStart" xml:space="preserve">
+    <value>Szolgáltatás aktiválásának megkezdése</value>
+  </data>
+  <data name="event_ServiceActivationStop" xml:space="preserve">
+    <value>Szolgáltatás aktiválásának leállítása</value>
+  </data>
+  <data name="event_ServiceChannelBeginCallStart" xml:space="preserve">
+    <value>ServiceChannel aszinkron hívásai megkezdődtek.</value>
+  </data>
+  <data name="event_ServiceChannelCallStart" xml:space="preserve">
+    <value>ServiceChannelCall megkezdődött.</value>
+  </data>
+  <data name="event_ServiceChannelCallStop" xml:space="preserve">
+    <value>Az ügyfél befejezte a(z) „{1}” egyezményhez társított „{0}” művelet végrehajtását. Az üzenet el lett küldve a következőnek: „{2}”.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStart" xml:space="preserve">
+    <value>ServiceChannelOpen megkezdődött.</value>
+  </data>
+  <data name="event_ServiceChannelOpenStop" xml:space="preserve">
+    <value>ServiceChannelOpen befejeződött.</value>
+  </data>
+  <data name="event_ServiceEndpointAdded" xml:space="preserve">
+    <value>Szolgáltatásvégpont lett hozzáadva a(z) „{0}” címhez, „{1}” kötéshez és „{2}” kivonathoz.</value>
+  </data>
+  <data name="event_ServiceException" xml:space="preserve">
+    <value>„{1}” típusú nem kezelt kivétel történt az üzenetfeldolgozás során. A kivétel részletes adatai: {0}.</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStart" xml:space="preserve">
+    <value>ServiceHostFactory létrehozásának megkezdése</value>
+  </data>
+  <data name="event_ServiceHostFactoryCreationStop" xml:space="preserve">
+    <value>ServiceHostFactory létrehozásának befejezése</value>
+  </data>
+  <data name="event_ServiceHostFaulted" xml:space="preserve">
+    <value>A gazdaszolgáltatás hibát jelzett.</value>
+  </data>
+  <data name="event_ServiceHostOpenStart" xml:space="preserve">
+    <value>ServiceHost megnyitása megkezdődött.</value>
+  </data>
+  <data name="event_ServiceHostOpenStop" xml:space="preserve">
+    <value>ServiceHost megnyitása befejeződött.</value>
+  </data>
+  <data name="event_ServiceHostStarted" xml:space="preserve">
+    <value>ServiceHost elindítva: „{0}”.</value>
+  </data>
+  <data name="event_ServiceSecurityNegotiationCompleted" xml:space="preserve">
+    <value>A szolgáltatás biztonsági egyeztetése befejeződött.</value>
+  </data>
+  <data name="event_ServiceStartPipeError" xml:space="preserve">
+    <value>Hiba történt a szolgáltatási cső indításakor.</value>
+  </data>
+  <data name="event_SessionCookieReadingStarted" xml:space="preserve">
+    <value>Megkezdődött a munkamenet jogkivonatának beolvasása a munkameneti cookie-ból.</value>
+  </data>
+  <data name="event_SessionCookieReadingSuccess" xml:space="preserve">
+    <value>A munkamenet jogkivonatának beolvasása a munkameneti cookie-ból sikeresen befejeződött.</value>
+  </data>
+  <data name="event_SessionIdleTimeout" xml:space="preserve">
+    <value>Folyamatban van a munkamenet megszakítása a következő URI-címhez vezető tétlen csatornán: „{0}”.</value>
+  </data>
+  <data name="event_SessionPreambleUnderstood" xml:space="preserve">
+    <value>A rendszer értelmezte a következőhöz tartozó munkamenet bevezető szakaszát: „{0}”.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterFailed" xml:space="preserve">
+    <value>A SharedListenerProxy regisztrálása sikertelen volt, állapot: „{0}”.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStart" xml:space="preserve">
+    <value>A SharedListenerProxy regisztrálása megkezdődött a következő URI-címhez: „{0}”.</value>
+  </data>
+  <data name="event_SharedListenerProxyRegisterStop" xml:space="preserve">
+    <value>SharedListenerProxy regisztrálásának leállítása</value>
+  </data>
+  <data name="event_ShipAssertExceptionMessage" xml:space="preserve">
+    <value>Váratlan hiba történt. Az alkalmazásoknak nem szabadna megpróbálniuk kezelni ezt a hibát. Diagnosztikai célra a következő, angol nyelvű üzenet tartozik a hibához: {0}.</value>
+  </data>
+  <data name="event_SignatureVerificationStart" xml:space="preserve">
+    <value>Az aláírás ellenőrzése megkezdődött.</value>
+  </data>
+  <data name="event_SignatureVerificationSuccess" xml:space="preserve">
+    <value>Az aláírás ellenőrzése sikeresen befejeződött.</value>
+  </data>
+  <data name="event_SocketAcceptClosed" xml:space="preserve">
+    <value>A szoftvercsatorna elfogadása lezárult.</value>
+  </data>
+  <data name="event_SocketAccepted" xml:space="preserve">
+    <value>ListenerId:{0} elfogadta a következő SocketId-t:{1}.</value>
+  </data>
+  <data name="event_SocketAcceptEnqueued" xml:space="preserve">
+    <value>A kapcsolat elfogadása megkezdődött.</value>
+  </data>
+  <data name="event_SocketAsyncReadStop" xml:space="preserve">
+    <value>SocketId:{0}, {1} bájt beolvasva a következő helyről: „{2}”.</value>
+  </data>
+  <data name="event_SocketAsyncWriteStart" xml:space="preserve">
+    <value>SocketId:{0}, {1} bájt írása folyamatban van a következő helyre: „{2}”.</value>
+  </data>
+  <data name="event_SocketConnectionAbort" xml:space="preserve">
+    <value>SocketId:{0} megszakítása folyamatban van.</value>
+  </data>
+  <data name="event_SocketReadStop" xml:space="preserve">
+    <value>SocketId:{0}, {1} bájt beolvasva a következő helyről: „{2}”.</value>
+  </data>
+  <data name="event_SocketWriteStart" xml:space="preserve">
+    <value>SocketId:{0}, {1} bájt írása folyamatban van a következő helyre: „{2}”.</value>
+  </data>
+  <data name="event_SqlExceptionCaught" xml:space="preserve">
+    <value>A rendszer elkapta a(z) {0} számú SQL-kivételt, melynek üzenete: {1}.</value>
+  </data>
+  <data name="event_SslOnAcceptUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStop</value>
+  </data>
+  <data name="event_SslOnInitiateUpgrade" xml:space="preserve">
+    <value>SslOnAcceptUpgradeStart</value>
+  </data>
+  <data name="event_StartBookmarkWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó BookmarkWorkItem végrehajtásának megkezdése. DisplayName: „{1}”, InstanceId: „{2}”. BookmarkName: {3}, BookmarkScope: {4}.</value>
+  </data>
+  <data name="event_StartCancelActivityWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó CancelActivityWorkItem végrehajtásának megkezdése. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_StartCompletionWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” szülőtevékenységhez tartozó CompletionWorkItem végrehajtásának megkezdése. DisplayName: „{1}”, InstanceId: „{2}”. Befejezett tevékenység: „{3}”, DisplayName: „{4}”, InstanceId: „{5}”.</value>
+  </data>
+  <data name="event_StartExecuteActivityWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó ExecuteActivityWorkItem végrehajtásának megkezdése. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_StartFaultWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó FaultWorkItem végrehajtásának megkezdése. DisplayName: „{1}”, InstanceId: „{2}”. A kivétel a(z) „{3}” tevékenységből lett propagálva. DisplayName: „{4}”, InstanceId: „{5}”.</value>
+  </data>
+  <data name="event_StartRuntimeWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó futásidejű munkaelem végrehajtásának megkezdése. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_StartSignpostEvent" xml:space="preserve">
+    <value>Tevékenységhatár</value>
+  </data>
+  <data name="event_StartSignpostEvent1" xml:space="preserve">
+    <value>Tevékenységhatár</value>
+  </data>
+  <data name="event_StartSqlCommandExecute" xml:space="preserve">
+    <value>SQL-parancs végrehajtásának indítása: {0}</value>
+  </data>
+  <data name="event_StartTransactionContextWorkItem" xml:space="preserve">
+    <value>A(z) „{0}” tevékenységhez tartozó TransactionContextWorkItem végrehajtásának megkezdése. DisplayName: „{1}”, InstanceId: „{2}”.</value>
+  </data>
+  <data name="event_StopSignpostEvent" xml:space="preserve">
+    <value>Tevékenységhatár</value>
+  </data>
+  <data name="event_StopSignpostEvent1" xml:space="preserve">
+    <value>Tevékenységhatár</value>
+  </data>
+  <data name="event_StreamedMessageReadByEncoder" xml:space="preserve">
+    <value>A kódoló beolvasott egy adatfolyamként továbbított üzenetet.</value>
+  </data>
+  <data name="event_StreamedMessageWrittenByEncoder" xml:space="preserve">
+    <value>A kódoló kiírt egy adatfolyamként továbbított üzenetet.</value>
+  </data>
+  <data name="event_SuspendSignpostEvent" xml:space="preserve">
+    <value>Tevékenységhatár</value>
+  </data>
+  <data name="event_SwitchCaseNotFound" xml:space="preserve">
+    <value>A(z) „{0}” Switch tevékenység nem talált az Expression eredményhez illő Case tevékenységet.</value>
+  </data>
+  <data name="event_SynchronizationContextReset" xml:space="preserve">
+    <value>A DiscoveryClientChannel alaphelyzetbe állította a SynchronizationContext tulajdonságot az eredeti {0} értékre.</value>
+  </data>
+  <data name="event_SynchronizationContextSetToNull" xml:space="preserve">
+    <value>A DiscoveryClientChannel null értékre állította be a SynchronizationContext tulajdonságot a Find művelet kezdeményezése előtt.</value>
+  </data>
+  <data name="event_TcpConnectionResetError" xml:space="preserve">
+    <value>SocketId:{0}, hiba történt a kapcsolat alaphelyzetbe állításakor a következő távoli címmel létesített kapcsolaton: {1}.</value>
+  </data>
+  <data name="event_TcpConnectionTimedOut" xml:space="preserve">
+    <value>SocketId:{0}, időtúllépés történt a következő távoli címmel létesített kapcsolaton: {1}.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStart" xml:space="preserve">
+    <value>A TCP-átvitelfigyelő megkezdi a figyelést a következő URI-címen:„{0}”.</value>
+  </data>
+  <data name="event_TcpTransportListenerListeningStop" xml:space="preserve">
+    <value>A TCP-átvitelfigyelő figyel.</value>
+  </data>
+  <data name="event_TextMessageDecodingStart" xml:space="preserve">
+    <value>A TextMessageEncoder megkezdte az üzenet dekódolását.</value>
+  </data>
+  <data name="event_TextMessageEncodingStart" xml:space="preserve">
+    <value>A TextMessageEncoder megkezdte az üzenet kódolását.</value>
+  </data>
+  <data name="event_ThrowingEtwException" xml:space="preserve">
+    <value>Kivétel kiváltása. Forrás: {0}. A kivétel részletei: {1}</value>
+  </data>
+  <data name="event_ThrowingEtwExceptionVerbose" xml:space="preserve">
+    <value>Kivétel kiváltása. Forrás: {0}. A kivétel részletei: {1}</value>
+  </data>
+  <data name="event_ThrowingException" xml:space="preserve">
+    <value>Kivétel kiváltása. Forrás: {0}. A kivétel részletei: {1}</value>
+  </data>
+  <data name="event_ThrowingExceptionVerbose" xml:space="preserve">
+    <value>Kivétel kiváltása. Forrás: {0}. A kivétel részletei: {1}</value>
+  </data>
+  <data name="event_TimeoutOpeningSqlConnection" xml:space="preserve">
+    <value>Időtúllépés történt egy SQL-kapcsolat megnyitására tett kísérlet során. A művelet nem fejeződött be az engedélyezett {0} időkorláton belül. A jelen művelethez engedélyezett idő egy hosszabb időtúllépési intervallum része lehetett.</value>
+  </data>
+  <data name="event_TokenValidationFailure" xml:space="preserve">
+    <value>A SecurityToken (típus: „{0}” és azonosító: „{1}”) érvényesítése sikertelen volt. {2}</value>
+  </data>
+  <data name="event_TokenValidationStarted" xml:space="preserve">
+    <value>A SecurityToken (típus: „{0}” és azonosító: „{1}”) érvényesítése megkezdődött.</value>
+  </data>
+  <data name="event_TokenValidationSuccess" xml:space="preserve">
+    <value>A SecurityToken (típus: „{0}” és azonosító: „{1}”) érvényesítése sikeresen befejeződött.</value>
+  </data>
+  <data name="event_TraceCodeEventLogCritical" xml:space="preserve">
+    <value>A program az EventLog naplóba írt.</value>
+  </data>
+  <data name="event_TraceCodeEventLogError" xml:space="preserve">
+    <value>A program az EventLog naplóba írt.</value>
+  </data>
+  <data name="event_TraceCodeEventLogInfo" xml:space="preserve">
+    <value>A program az EventLog naplóba írt.</value>
+  </data>
+  <data name="event_TraceCodeEventLogVerbose" xml:space="preserve">
+    <value>A program az EventLog naplóba írt.</value>
+  </data>
+  <data name="event_TraceCodeEventLogWarning" xml:space="preserve">
+    <value>A program az EventLog naplóba írt.</value>
+  </data>
+  <data name="event_TraceCorrelationKeys" xml:space="preserve">
+    <value>A rendszer kiszámította a(z) „{0}” korrelációs kulcsot a(z) „{2}” szülő hatókörben levő „{1}” értékek használatával.</value>
+  </data>
+  <data name="event_TrackingDataExtracted" xml:space="preserve">
+    <value>Folyamatban van a következő tevékenységben kibontott {0} adat nyomkövetése: {1}.</value>
+  </data>
+  <data name="event_TrackingProfileNotFound" xml:space="preserve">
+    <value>Nem található a(z) „{0}” TrackingProfile a következő ActivityDefinitionId azonosítóhoz: „{1}”. A TrackingProfile nem található a konfigurációs fájlban, vagy az ActivityDefinitionId nem megfelelő.</value>
+  </data>
+  <data name="event_TrackingRecordDropped" xml:space="preserve">
+    <value>A(z) {0} nyomkövetési rekord mérete meghaladja a(z) {1} szolgáltatóhoz tartozó ETW-munkamenet által meghatározott maximális értéket.</value>
+  </data>
+  <data name="event_TrackingRecordRaised" xml:space="preserve">
+    <value>A(z) {0} nyomkövetési rekord megemelve: {1}.</value>
+  </data>
+  <data name="event_TrackingRecordTruncated" xml:space="preserve">
+    <value>Csonkolt nyomkövetési rekord ({0}) került beírásra a(z) {1} szolgáltatás ETW-munkamenetébe. Lehetséges, hogy a változók/megjegyzések/felhasználói adatok el lettek távolítva</value>
+  </data>
+  <data name="event_TrackingValueNotSerializable" xml:space="preserve">
+    <value>A kibontott „{0}” argumentum/változó nem szerializálható.</value>
+  </data>
+  <data name="event_TransactedReceiveScopeEndCommitFailed" xml:space="preserve">
+    <value>Az EndCommit metódusnak az id = '{0}' beállítású CommittableTransaction tranzakcióhoz való meghívása TransactionException kivételt váltott ki a következő üzenettel: „{1}”.</value>
+  </data>
+  <data name="event_TransactionScopeCreate" xml:space="preserve">
+    <value>TransactionScope létrehozása folyamatban van, LocalIdentifier:„{0}” és DistributedIdentifier:„{1}”.</value>
+  </data>
+  <data name="event_TransferEmitted" xml:space="preserve">
+    <value>Átviteli esemény kibocsátva.</value>
+  </data>
+  <data name="event_TransportListenerSessionsReceived" xml:space="preserve">
+    <value>Átviteli figyelő-munkamenet érkezett a következőn keresztül: „{0}”.</value>
+  </data>
+  <data name="event_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>A(z) „{0}” TryCatch tevékenység gyermektevékenysége kivételt okozott a megszakítás közben.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>A(z) „{0}” TryCatch tevékenységhez kapcsolódó Catch vagy Finally tevékenység kivételt okozott.</value>
+  </data>
+  <data name="event_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>A(z) „{0}” TryCatch tevékenység „{1}” típusú kivételbe ütközött.</value>
+  </data>
+  <data name="event_UnhandledException" xml:space="preserve">
+    <value>Nem kezelt kivétel történt. A kivétel részletei: {0}</value>
+  </data>
+  <data name="event_UnlockInstanceException" xml:space="preserve">
+    <value>A következő kivétel történt a példány zárolásának feloldására irányuló kísérlet során: {0}.</value>
+  </data>
+  <data name="event_UserEvents" xml:space="preserve">
+    <value>Név: „{0}”, hivatkozás: „{1}”, hasznos adatcsomag: {2}</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesCompleted" xml:space="preserve">
+    <value>A WAS befejezte az összes figyelőcsatorna-példány bezárását.</value>
+  </data>
+  <data name="event_WasCloseAllListenerChannelInstancesFailed" xml:space="preserve">
+    <value>Hibakód:{0}</value>
+  </data>
+  <data name="event_WasConnected" xml:space="preserve">
+    <value>A WAS szolgáltatás csatlakoztatva.</value>
+  </data>
+  <data name="event_WasConnectionTimedout" xml:space="preserve">
+    <value>A WAS-kapcsolat időtúllépés miatt megszakadt.</value>
+  </data>
+  <data name="event_WasDisconnected" xml:space="preserve">
+    <value>A WAS szolgáltatás leválasztva.</value>
+  </data>
+  <data name="event_WebHostRequestStart" xml:space="preserve">
+    <value>Egy „{1}” virtuális elérési utat tartalmazó kérelem érkezett a következő AppDomain tartományból: „{0}”.</value>
+  </data>
+  <data name="event_WebHostRequestStop" xml:space="preserve">
+    <value>WebHostRequest befejezése</value>
+  </data>
+  <data name="event_WebhostUnregisterProtocolFailed" xml:space="preserve">
+    <value>Hibakód:{0}</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStart" xml:space="preserve">
+    <value>Megkezdődött a WebSocketId:{0} olvasása.</value>
+  </data>
+  <data name="event_WebSocketAsyncReadStop" xml:space="preserve">
+    <value>WebSocketId:{0}, {1} bájt beolvasva a következő helyről: {2}.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStart" xml:space="preserve">
+    <value>WebSocketId:{0}, {1} bájt írása folyamatban van a következő helyre: {2}.</value>
+  </data>
+  <data name="event_WebSocketAsyncWriteStop" xml:space="preserve">
+    <value>Leállt a WebSocketId:{0} aszinkron írása.</value>
+  </data>
+  <data name="event_WebSocketCloseOutputSent" xml:space="preserve">
+    <value>A WebSocketId:{0} lezárási kimenetüzenetet küld a következőnek „{2}” lezárási állapottal: „{1}”.</value>
+  </data>
+  <data name="event_WebSocketCloseSent" xml:space="preserve">
+    <value>A WebSocketId:{0} lezárási üzenetet küld a következőnek „{2}” lezárási állapottal: „{1}”.</value>
+  </data>
+  <data name="event_WebSocketCloseStatusReceived" xml:space="preserve">
+    <value>WebSocketId:{0} kapcsolatlezárási üzenet érkezett a következő állapottal: „{1}”.</value>
+  </data>
+  <data name="event_WebSocketConnectionAborted" xml:space="preserve">
+    <value>A WebSocketId:{0} kapcsolódás megszakítva.</value>
+  </data>
+  <data name="event_WebSocketConnectionAccepted" xml:space="preserve">
+    <value>Befejeződött a WebSocketId:{0} kapcsolat elfogadása.</value>
+  </data>
+  <data name="event_WebSocketConnectionAcceptStart" xml:space="preserve">
+    <value>Megkezdődött a WebSocket-kapcsolat elfogadása.</value>
+  </data>
+  <data name="event_WebSocketConnectionClosed" xml:space="preserve">
+    <value>A WebSocketId:{0} kapcsolat lezárult.</value>
+  </data>
+  <data name="event_WebSocketConnectionDeclined" xml:space="preserve">
+    <value>A WebSocket-kapcsolat elutasítva a következő állapotkóddal: „{0}”.</value>
+  </data>
+  <data name="event_WebSocketConnectionFailed" xml:space="preserve">
+    <value>A WebSocket-kapcsolódási kérelem sikertelen volt: „{0}”.</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStart" xml:space="preserve">
+    <value>Megkezdődött a WebSocket-kapcsolódási kérelem elküldése a következőnek: „{0}”.</value>
+  </data>
+  <data name="event_WebSocketConnectionRequestSendStop" xml:space="preserve">
+    <value>Befejeződött a WebSocketId:{0} kapcsolódási kérelem elküldése.</value>
+  </data>
+  <data name="event_WebSocketCreateClientWebSocketWithFactory" xml:space="preserve">
+    <value>Folyamatban van az ügyfél WebSocket létrehozása egy „{0}” típusú gyárral.</value>
+  </data>
+  <data name="event_WebSocketUseVersionFromClientWebSocketFactory" xml:space="preserve">
+    <value>A rendszer egy „{0}” típusú ügyfél WebSocket-gyárból származó WebSocketVersion verziót használ.</value>
+  </data>
+  <data name="event_WfMessageReceived" xml:space="preserve">
+    <value>A munkafolyamat által fogadott üzenet</value>
+  </data>
+  <data name="event_WfMessageSent" xml:space="preserve">
+    <value>A munkafolyamat által küldött üzenet</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnAcceptUpgrade" xml:space="preserve">
+    <value>A Windows adatfolyamos biztonsági szolgáltatásának frissítése elfogadás alatt áll.</value>
+  </data>
+  <data name="event_WindowsStreamSecurityOnInitiateUpgrade" xml:space="preserve">
+    <value>A WindowsStreamSecurity kezdeményezi a biztonság frissítését.</value>
+  </data>
+  <data name="event_WorkflowActivityResume" xml:space="preserve">
+    <value>WorkflowInstance azonosítója: „{0}” E2E tevékenység</value>
+  </data>
+  <data name="event_WorkflowActivityStart" xml:space="preserve">
+    <value>WorkflowInstance azonosítója: „{0}” E2E tevékenység</value>
+  </data>
+  <data name="event_WorkflowActivityStop" xml:space="preserve">
+    <value>WorkflowInstance azonosítója: „{0}” E2E tevékenység</value>
+  </data>
+  <data name="event_WorkflowActivitySuspend" xml:space="preserve">
+    <value>WorkflowInstance azonosítója: „{0}” E2E tevékenység</value>
+  </data>
+  <data name="event_WorkflowApplicationCompleted" xml:space="preserve">
+    <value>Az „{0}” Id azonosítóval rendelkező WorkflowInstance Closed állapotban befejeződött.</value>
+  </data>
+  <data name="event_WorkflowApplicationIdled" xml:space="preserve">
+    <value>Az „{0}” Id azonosítóval rendelkező WorkflowApplication tétlen állapotú.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersistableIdle" xml:space="preserve">
+    <value>A(z) „{0}” Id azonosítójú WorkflowApplication tétlen és megőrizhető. A következő művelet kerül végrehajtásra: {1}.</value>
+  </data>
+  <data name="event_WorkflowApplicationPersisted" xml:space="preserve">
+    <value>Az „{0}” Id azonosítójú WorkflowApplication megőrzésre került (Persisted).</value>
+  </data>
+  <data name="event_WorkflowApplicationTerminated" xml:space="preserve">
+    <value>Az „{0}” Id azonosítóval rendelkező WorkflowApplication leállt. Kivétel okozása mellett, Faulted állapotban befejeződött.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnhandledException" xml:space="preserve">
+    <value>Az „{0}” Id azonosítóval rendelkező WorkflowInstance nem kezelt kivételt észlelt. A kivétel forrása a(z) „{1}” Activity. DisplayName: „{2}”. A következő művelet kerül végrehajtásra: {3}.</value>
+  </data>
+  <data name="event_WorkflowApplicationUnloaded" xml:space="preserve">
+    <value>Az „{0}” Id azonosítóval rendelkező WorkflowInstance el lett távolítva a memóriából (Unloaded).</value>
+  </data>
+  <data name="event_WorkflowInstanceAborted" xml:space="preserve">
+    <value>Az „{0}” Id azonosítóval rendelkező WorkflowInstance kivétel mellett meg lett szakítva.</value>
+  </data>
+  <data name="event_WorkflowInstanceAbortedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceAbortedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Ok = {4}, Jegyzetek = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceCanceled" xml:space="preserve">
+    <value>Az „{0}” Id azonosítóval rendelkező WorkflowInstance Canceled állapotban befejeződött.</value>
+  </data>
+  <data name="event_WorkflowInstanceRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Állapot = {4}, Jegyzetek = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Ok = {4}, Jegyzetek = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceSuspendedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceSuspendedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Ok = {4}, Jegyzetek = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Ok = {4}, Jegyzetek = {5}, ProfileName = {6}</value>
+  </data>
+  <data name="event_WorkflowInstanceTerminatedRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceTerminatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Ok = {4}, Jegyzetek = {5}, ProfileName = {6}, WorkflowDefinitionIdentity = {7}</value>
+  </data>
+  <data name="event_WorkflowInstanceUnhandledExceptionRecordWithId" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUnhandledExceptionRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, SourceName = {4}, SourceId = {5}, SourceInstanceId = {6}, SourceTypeName ={7}, Kivétel ={8}, Jegyzetek = {9}, ProfileName = {10}, WorkflowDefinitionIdentity = {11}</value>
+  </data>
+  <data name="event_WorkflowInstanceUpdatedRecord" xml:space="preserve">
+    <value>TrackRecord = WorkflowInstanceUpdatedRecord, InstanceID = {0}, RecordNumber = {1}, EventTime = {2}, ActivityDefinitionId = {3}, Állapot = {4}, OriginalDefinitionIdentity = {5}, UpdatedDefinitionIdentity = {6}, Jegyzetek = {7}, ProfileName = {8}</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionStart" xml:space="preserve">
+    <value>A becsomagolt kulcs visszafejtése megkezdődött.</value>
+  </data>
+  <data name="event_WrappedKeyDecryptionSuccess" xml:space="preserve">
+    <value>A becsomagolt kulcs visszafejtése sikeresen befejeződött.</value>
+  </data>
+  <data name="event_WritePoolMiss" xml:space="preserve">
+    <value>Új „{0}” létrehozva</value>
+  </data>
+  <data name="event_XamlServicesLoadStart" xml:space="preserve">
+    <value>XamlServicesLoad indítása</value>
+  </data>
+  <data name="event_XamlServicesLoadStop" xml:space="preserve">
+    <value>XamlServicesLoad leállítása</value>
+  </data>
+  <data name="keyword_ActivationServices" xml:space="preserve">
+    <value>Aktiválási szolgáltatások</value>
+  </data>
+  <data name="keyword_Channel" xml:space="preserve">
+    <value>Csatorna</value>
+  </data>
+  <data name="keyword_Discovery" xml:space="preserve">
+    <value>Felfedezés</value>
+  </data>
+  <data name="keyword_EndToEndMonitoring" xml:space="preserve">
+    <value>Teljes körű figyelés</value>
+  </data>
+  <data name="keyword_HealthMonitoring" xml:space="preserve">
+    <value>Állapotkövető</value>
+  </data>
+  <data name="keyword_HTTP" xml:space="preserve">
+    <value>HTTP-átvitel</value>
+  </data>
+  <data name="keyword_Infrastructure" xml:space="preserve">
+    <value>Infrastruktúra</value>
+  </data>
+  <data name="keyword_Quota" xml:space="preserve">
+    <value>Kvóta</value>
+  </data>
+  <data name="keyword_RoutingServices" xml:space="preserve">
+    <value>Útválasztási szolgáltatások</value>
+  </data>
+  <data name="keyword_Security" xml:space="preserve">
+    <value>Biztonság</value>
+  </data>
+  <data name="keyword_Serialization" xml:space="preserve">
+    <value>Szerializálás</value>
+  </data>
+  <data name="keyword_ServiceHost" xml:space="preserve">
+    <value>Gazdaszolgáltatás</value>
+  </data>
+  <data name="keyword_ServiceModel" xml:space="preserve">
+    <value>ServiceModel</value>
+  </data>
+  <data name="keyword_TCP" xml:space="preserve">
+    <value>TCP-átvitel</value>
+  </data>
+  <data name="keyword_Threading" xml:space="preserve">
+    <value>Szálkezelés</value>
+  </data>
+  <data name="keyword_Transaction" xml:space="preserve">
+    <value>Tranzakció</value>
+  </data>
+  <data name="keyword_TransportGeneral" xml:space="preserve">
+    <value>Átvitel általános adatai</value>
+  </data>
+  <data name="keyword_Troubleshooting" xml:space="preserve">
+    <value>Hibaelhárítás</value>
+  </data>
+  <data name="keyword_UserEvents" xml:space="preserve">
+    <value>Felhasználói események</value>
+  </data>
+  <data name="keyword_WCFMessageLogging" xml:space="preserve">
+    <value>WCF üzenetnaplózás</value>
+  </data>
+  <data name="keyword_WebHost" xml:space="preserve">
+    <value>Webállomás</value>
+  </data>
+  <data name="keyword_WebHTTP" xml:space="preserve">
+    <value>Webes HTTP</value>
+  </data>
+  <data name="keyword_WFActivities" xml:space="preserve">
+    <value>Munkafolyamat tevékenységei</value>
+  </data>
+  <data name="keyword_WFInstanceStore" xml:space="preserve">
+    <value>Munkafolyamathoz tartozó InstanceStore</value>
+  </data>
+  <data name="keyword_WFRuntime" xml:space="preserve">
+    <value>Munkafolyamat-futtatórendszer</value>
+  </data>
+  <data name="keyword_WFServices" xml:space="preserve">
+    <value>Munkafolyamathoz tartozó ServiceHost</value>
+  </data>
+  <data name="keyword_WFTracking" xml:space="preserve">
+    <value>WF nyomkövetés</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoBookmark" xml:space="preserve">
+    <value>NoBookmark</value>
+  </data>
+  <data name="opcode_BufferOutOfOrderNoInstance" xml:space="preserve">
+    <value>NoInstance</value>
+  </data>
+  <data name="opcode_BufferPoolingAllocate" xml:space="preserve">
+    <value>Lefoglalás</value>
+  </data>
+  <data name="opcode_BufferPoolingTune" xml:space="preserve">
+    <value>Finomhangolás</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStart" xml:space="preserve">
+    <value>ClientChannelOpenStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientChannelOpenStop" xml:space="preserve">
+    <value>ClientChannelOpenStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>ClientMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStart" xml:space="preserve">
+    <value>ClientParameterInspectorStart</value>
+  </data>
+  <data name="opcode_ClientRuntimeClientParameterInspectorStop" xml:space="preserve">
+    <value>ClientParameterInspectorStop</value>
+  </data>
+  <data name="opcode_ClientRuntimeOperationPrepared" xml:space="preserve">
+    <value>OperationPrepared</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteBookmark" xml:space="preserve">
+    <value>CompleteBookmark</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCancelActivity" xml:space="preserve">
+    <value>CompleteCancelActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteCompletion" xml:space="preserve">
+    <value>CompleteCompletion</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteExecuteActivity" xml:space="preserve">
+    <value>CompleteExecuteActivity</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteFault" xml:space="preserve">
+    <value>CompleteFault</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteRuntime" xml:space="preserve">
+    <value>CompleteRuntime</value>
+  </data>
+  <data name="opcode_CompleteWorkItemCompleteTransactionContext" xml:space="preserve">
+    <value>CompleteTransactionContext</value>
+  </data>
+  <data name="opcode_CorrelationDuplicateQuery" xml:space="preserve">
+    <value>DuplicateQuery</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelCreationFailed" xml:space="preserve">
+    <value>CreationFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelFindInitiated" xml:space="preserve">
+    <value>FindInitiated</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenFailed" xml:space="preserve">
+    <value>OpenFailed</value>
+  </data>
+  <data name="opcode_DiscoveryClientChannelOpenSucceeded" xml:space="preserve">
+    <value>OpenSucceeded</value>
+  </data>
+  <data name="opcode_DiscoveryClientExceptionSuppressed" xml:space="preserve">
+    <value>ExceptionSuppressed</value>
+  </data>
+  <data name="opcode_DiscoveryClientFailedToClose" xml:space="preserve">
+    <value>FailedToClose</value>
+  </data>
+  <data name="opcode_DiscoveryClientReceivedMulticastSuppression" xml:space="preserve">
+    <value>ReceivedMulticastSuppression</value>
+  </data>
+  <data name="opcode_DiscoveryMessageDuplicate" xml:space="preserve">
+    <value>Duplikálás</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidContent" xml:space="preserve">
+    <value>InvalidContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidRelatesToOrOperationCompleted" xml:space="preserve">
+    <value>InvalidRelatesToOrOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoveryMessageInvalidReplyTo" xml:space="preserve">
+    <value>InvalidReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNoContent" xml:space="preserve">
+    <value>NoContent</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageId" xml:space="preserve">
+    <value>NullMessageId</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullMessageSequence" xml:space="preserve">
+    <value>NullMessageSequence</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullRelatesTo" xml:space="preserve">
+    <value>NullRelatesTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageNullReplyTo" xml:space="preserve">
+    <value>NullReplyTo</value>
+  </data>
+  <data name="opcode_DiscoveryMessageReceivedAfterOperationCompleted" xml:space="preserve">
+    <value>ReceivedAfterOperationCompleted</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextReset" xml:space="preserve">
+    <value>Alaphelyzet</value>
+  </data>
+  <data name="opcode_DiscoverySynchronizationContextSetToNull" xml:space="preserve">
+    <value>SetToNull</value>
+  </data>
+  <data name="opcode_DispatchMessageBeforeAuthorization" xml:space="preserve">
+    <value>BeforeAuthorization</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStart" xml:space="preserve">
+    <value>DispatchStart</value>
+  </data>
+  <data name="opcode_DispatchMessageDispatchStop" xml:space="preserve">
+    <value>DispatchStop</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorAfterReceiveInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorAfterReceiveInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageDispathMessageInspectorBeforeSendInvoked" xml:space="preserve">
+    <value>DispathMessageInspectorBeforeSendInvoked</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStart" xml:space="preserve">
+    <value>OperationInvokerStart</value>
+  </data>
+  <data name="opcode_DispatchMessageOperationInvokerStop" xml:space="preserve">
+    <value>OperationInvokerStop</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStart" xml:space="preserve">
+    <value>ParameterInspectorStart</value>
+  </data>
+  <data name="opcode_DispatchMessageParameterInspectorStop" xml:space="preserve">
+    <value>ParameterInspectorStop</value>
+  </data>
+  <data name="opcode_DispatchMessageTransactionScopeCreate" xml:space="preserve">
+    <value>TransactionScopeCreate</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityDisabled" xml:space="preserve">
+    <value>Letiltva</value>
+  </data>
+  <data name="opcode_EndpointDiscoverabilityEnabled" xml:space="preserve">
+    <value>Engedélyezve</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartBegin" xml:space="preserve">
+    <value>Kezdés</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartEmpty" xml:space="preserve">
+    <value>Üres</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartNextNull" xml:space="preserve">
+    <value>NextNull</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCase" xml:space="preserve">
+    <value>SwitchCase</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchCaseNotFound" xml:space="preserve">
+    <value>SwitchCaseNotFound</value>
+  </data>
+  <data name="opcode_ExecuteFlowchartSwitchDefault" xml:space="preserve">
+    <value>SwitchDefault</value>
+  </data>
+  <data name="opcode_ExpressionResultArrayItemValue" xml:space="preserve">
+    <value>ArrayItemValue</value>
+  </data>
+  <data name="opcode_ExpressionResultBinary" xml:space="preserve">
+    <value>Bináris</value>
+  </data>
+  <data name="opcode_ExpressionResultMemberAccess" xml:space="preserve">
+    <value>MemberAccess</value>
+  </data>
+  <data name="opcode_ExpressionResultUnary" xml:space="preserve">
+    <value>Unáris</value>
+  </data>
+  <data name="opcode_InferDescriptionContract" xml:space="preserve">
+    <value>Kivonat</value>
+  </data>
+  <data name="opcode_InferDescriptionOperation" xml:space="preserve">
+    <value>Művelet</value>
+  </data>
+  <data name="opcode_InvokeMethodDoesNotUseAsyncPattern" xml:space="preserve">
+    <value>DoesNotUseAsyncPattern</value>
+  </data>
+  <data name="opcode_InvokeMethodIsNotStatic" xml:space="preserve">
+    <value>IsNotStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodIsStatic" xml:space="preserve">
+    <value>IsStatic</value>
+  </data>
+  <data name="opcode_InvokeMethodThrewException" xml:space="preserve">
+    <value>ThrewException</value>
+  </data>
+  <data name="opcode_InvokeMethodUseAsyncPattern" xml:space="preserve">
+    <value>UseAsyncPattern</value>
+  </data>
+  <data name="opcode_MessageChannelCacheMissed" xml:space="preserve">
+    <value>Kihagyott</value>
+  </data>
+  <data name="opcode_ReliableSessionFaulted" xml:space="preserve">
+    <value>Hibás</value>
+  </data>
+  <data name="opcode_ReliableSessionReconnect" xml:space="preserve">
+    <value>Újrakapcsolódás</value>
+  </data>
+  <data name="opcode_ReliableSessionSequenceAck" xml:space="preserve">
+    <value>SequenceAck</value>
+  </data>
+  <data name="opcode_RoutingServiceAbortingChannel" xml:space="preserve">
+    <value>AbortingChannel</value>
+  </data>
+  <data name="opcode_RoutingServiceClientChannelFaulted" xml:space="preserve">
+    <value>ChannelFaulted</value>
+  </data>
+  <data name="opcode_RoutingServiceClientClosing" xml:space="preserve">
+    <value>Bezárás folyamatban</value>
+  </data>
+  <data name="opcode_RoutingServiceClientCreatingForEndpoint" xml:space="preserve">
+    <value>CreatingForEndpoint</value>
+  </data>
+  <data name="opcode_RoutingServiceCloseFailed" xml:space="preserve">
+    <value>CloseFailed</value>
+  </data>
+  <data name="opcode_RoutingServiceConfigurationApplied" xml:space="preserve">
+    <value>ConfigurationApplied</value>
+  </data>
+  <data name="opcode_RoutingServiceDuplexCallbackException" xml:space="preserve">
+    <value>DuplexCallbackException</value>
+  </data>
+  <data name="opcode_RoutingServiceHandledException" xml:space="preserve">
+    <value>HandledException</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingOneWay" xml:space="preserve">
+    <value>CompletingOneWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageCompletingTwoWay" xml:space="preserve">
+    <value>CompletingTwoWay</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageMovedToBackup" xml:space="preserve">
+    <value>MovedToBackup</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingFailure" xml:space="preserve">
+    <value>ProcessingFailure</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageProcessingMessage" xml:space="preserve">
+    <value>ProcessingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageRoutedToEndpoints" xml:space="preserve">
+    <value>RoutedToEndpoints</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingFaultResponse" xml:space="preserve">
+    <value>SendingFaultResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageSendingResponse" xml:space="preserve">
+    <value>SendingResponse</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmitSucceeded" xml:space="preserve">
+    <value>TransmitSucceeded</value>
+  </data>
+  <data name="opcode_RoutingServiceMessageTransmittingMessage" xml:space="preserve">
+    <value>TransmittingMessage</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextAbandoning" xml:space="preserve">
+    <value>Megszakítás folyamatban</value>
+  </data>
+  <data name="opcode_RoutingServiceReceiveContextCompleting" xml:space="preserve">
+    <value>Befejezés folyamatban</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCommittingTransaction" xml:space="preserve">
+    <value>CommittingTransaction</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionCreating" xml:space="preserve">
+    <value>Létrehozás folyamatban</value>
+  </data>
+  <data name="opcode_RoutingServiceTransactionUsingExisting" xml:space="preserve">
+    <value>UsingExisting</value>
+  </data>
+  <data name="opcode_RoutingServiceTransmitFailed" xml:space="preserve">
+    <value>TransmitFailed</value>
+  </data>
+  <data name="opcode_RuntimeTransactionComplete" xml:space="preserve">
+    <value>Kész</value>
+  </data>
+  <data name="opcode_RuntimeTransactionCompletionRequested" xml:space="preserve">
+    <value>CompletionRequested</value>
+  </data>
+  <data name="opcode_RuntimeTransactionSet" xml:space="preserve">
+    <value>Beállítva</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleBookmark" xml:space="preserve">
+    <value>ScheduleBookmark</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCancelActivity" xml:space="preserve">
+    <value>ScheduleCancelActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleCompletion" xml:space="preserve">
+    <value>ScheduleCompletion</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleExecuteActivity" xml:space="preserve">
+    <value>ScheduleExecuteActivity</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleFault" xml:space="preserve">
+    <value>ScheduleFault</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleRuntime" xml:space="preserve">
+    <value>ScheduleRuntime</value>
+  </data>
+  <data name="opcode_ScheduleWorkItemScheduleTransactionContext" xml:space="preserve">
+    <value>ScheduleTransactionContext</value>
+  </data>
+  <data name="opcode_SessionUpgradeAccept" xml:space="preserve">
+    <value>Elfogadás</value>
+  </data>
+  <data name="opcode_SessionUpgradeInitiate" xml:space="preserve">
+    <value>Kezdeményezés</value>
+  </data>
+  <data name="opcode_Signpostsuspend" xml:space="preserve">
+    <value>felfüggesztés</value>
+  </data>
+  <data name="opcode_StartWorkItemStartBookmark" xml:space="preserve">
+    <value>StartBookmark</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCancelActivity" xml:space="preserve">
+    <value>StartCancelActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartCompletion" xml:space="preserve">
+    <value>StartCompletion</value>
+  </data>
+  <data name="opcode_StartWorkItemStartExecuteActivity" xml:space="preserve">
+    <value>StartExecuteActivity</value>
+  </data>
+  <data name="opcode_StartWorkItemStartFault" xml:space="preserve">
+    <value>StartFault</value>
+  </data>
+  <data name="opcode_StartWorkItemStartRuntime" xml:space="preserve">
+    <value>StartRuntime</value>
+  </data>
+  <data name="opcode_StartWorkItemStartTransactionContext" xml:space="preserve">
+    <value>StartTransactionContext</value>
+  </data>
+  <data name="opcode_TrackingProfileNotFound" xml:space="preserve">
+    <value>NotFound</value>
+  </data>
+  <data name="opcode_TrackingRecordDropped" xml:space="preserve">
+    <value>Eldobva</value>
+  </data>
+  <data name="opcode_TrackingRecordRaised" xml:space="preserve">
+    <value>Domború</value>
+  </data>
+  <data name="opcode_TrackingRecordTruncated" xml:space="preserve">
+    <value>Csonkolt</value>
+  </data>
+  <data name="opcode_TransportReceiveBeforeAuthentication" xml:space="preserve">
+    <value>BeforeAuthentication</value>
+  </data>
+  <data name="opcode_TryCatchExceptionDuringCancelation" xml:space="preserve">
+    <value>DuringCancelation</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromCatchOrFinally" xml:space="preserve">
+    <value>FromCatchOrFinally</value>
+  </data>
+  <data name="opcode_TryCatchExceptionFromTry" xml:space="preserve">
+    <value>FromTry</value>
+  </data>
+  <data name="opcode_WASActivationConnected" xml:space="preserve">
+    <value>Csatlakoztatott</value>
+  </data>
+  <data name="opcode_WASActivationDisconnect" xml:space="preserve">
+    <value>Kapcsolat bontása</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeCompleted" xml:space="preserve">
+    <value>Befejezve</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeIdled" xml:space="preserve">
+    <value>Tétlen</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceAborted" xml:space="preserve">
+    <value>InstanceAborted</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeInstanceCanceled" xml:space="preserve">
+    <value>InstanceCanceled</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersistableIdle" xml:space="preserve">
+    <value>PersistableIdle</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangePersisted" xml:space="preserve">
+    <value>Megőrizve</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeTerminated" xml:space="preserve">
+    <value>Leállítva</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnhandledException" xml:space="preserve">
+    <value>UnhandledException</value>
+  </data>
+  <data name="opcode_WFApplicationStateChangeUnloaded" xml:space="preserve">
+    <value>Memóriából eltávolítva</value>
+  </data>
+  <data name="opcode_WorkflowActivitysuspend" xml:space="preserve">
+    <value>felfüggesztés</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedRecord" xml:space="preserve">
+    <value>AbortedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordAbortedWithId" xml:space="preserve">
+    <value>AbortedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedRecord" xml:space="preserve">
+    <value>SuspendedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordSuspendedWithId" xml:space="preserve">
+    <value>SuspendedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedRecord" xml:space="preserve">
+    <value>TerminatedRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordTerminatedWithId" xml:space="preserve">
+    <value>TerminatedWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionRecord" xml:space="preserve">
+    <value>UnhandledExceptionRecord</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUnhandledExceptionWithId" xml:space="preserve">
+    <value>UnhandledExceptionWithId</value>
+  </data>
+  <data name="opcode_WorkflowInstanceRecordUpdatedRecord" xml:space="preserve">
+    <value>UpdatedRecord</value>
+  </data>
+  <data name="task_ActivationDispatchSession" xml:space="preserve">
+    <value>ActivationDispatchSession</value>
+  </data>
+  <data name="task_ActivationDuplicateSocket" xml:space="preserve">
+    <value>ActivationDuplicateSocket</value>
+  </data>
+  <data name="task_ActivationListenerOpen" xml:space="preserve">
+    <value>ActivationListenerOpen</value>
+  </data>
+  <data name="task_ActivationPipeListenerListening" xml:space="preserve">
+    <value>ActivationPipeListenerListening</value>
+  </data>
+  <data name="task_ActivationRoutingTableLookup" xml:space="preserve">
+    <value>ActivationRoutingTableLookup</value>
+  </data>
+  <data name="task_ActivationServiceStart" xml:space="preserve">
+    <value>ActivationServiceStart</value>
+  </data>
+  <data name="task_ActivationTcpListenerListening" xml:space="preserve">
+    <value>ActivationTcpListenerListening</value>
+  </data>
+  <data name="task_AddServiceEndpoint" xml:space="preserve">
+    <value>AddServiceEndpoint</value>
+  </data>
+  <data name="task_BufferOutOfOrder" xml:space="preserve">
+    <value>BufferOutOfOrder</value>
+  </data>
+  <data name="task_BufferPooling" xml:space="preserve">
+    <value>BufferPooling</value>
+  </data>
+  <data name="task_CacheRootMetadata" xml:space="preserve">
+    <value>CacheRootMetadata</value>
+  </data>
+  <data name="task_ChannelFactoryCaching" xml:space="preserve">
+    <value>ChannelFactoryCaching</value>
+  </data>
+  <data name="task_ChannelFactoryCreate" xml:space="preserve">
+    <value>ChannelFactoryCreate</value>
+  </data>
+  <data name="task_ChannelReceive" xml:space="preserve">
+    <value>ChannelReceive</value>
+  </data>
+  <data name="task_ClientRuntime" xml:space="preserve">
+    <value>ClientRuntime</value>
+  </data>
+  <data name="task_ClientSendPreamble" xml:space="preserve">
+    <value>ClientSendPreamble</value>
+  </data>
+  <data name="task_CompensationState" xml:space="preserve">
+    <value>CompensationState</value>
+  </data>
+  <data name="task_CompleteActivity" xml:space="preserve">
+    <value>CompleteActivity</value>
+  </data>
+  <data name="task_CompleteWorkItem" xml:space="preserve">
+    <value>CompleteWorkItem</value>
+  </data>
+  <data name="task_Connect" xml:space="preserve">
+    <value>Kapcsolódás</value>
+  </data>
+  <data name="task_ConnectionAbort" xml:space="preserve">
+    <value>ConnectionAbort</value>
+  </data>
+  <data name="task_ConnectionAccept" xml:space="preserve">
+    <value>ConnectionAccept</value>
+  </data>
+  <data name="task_ConnectionPooling" xml:space="preserve">
+    <value>ConnectionPooling</value>
+  </data>
+  <data name="task_Correlation" xml:space="preserve">
+    <value>Korreláció</value>
+  </data>
+  <data name="task_CreateBookmark" xml:space="preserve">
+    <value>CreateBookmark</value>
+  </data>
+  <data name="task_CreateHttpMessageHandler" xml:space="preserve">
+    <value>CreateHttpMessageHandler</value>
+  </data>
+  <data name="task_CreateWorkflowServiceHost" xml:space="preserve">
+    <value>CreateWorkflowServiceHost</value>
+  </data>
+  <data name="task_CustomTrackingRecord" xml:space="preserve">
+    <value>CustomTrackingRecord</value>
+  </data>
+  <data name="task_DataContractResolver" xml:space="preserve">
+    <value>DataContractResolver</value>
+  </data>
+  <data name="task_DiscoveryClient" xml:space="preserve">
+    <value>DiscoveryClient</value>
+  </data>
+  <data name="task_DiscoveryClientChannel" xml:space="preserve">
+    <value>DiscoveryClientChannel</value>
+  </data>
+  <data name="task_DiscoveryMessage" xml:space="preserve">
+    <value>DiscoveryMessage</value>
+  </data>
+  <data name="task_DiscoverySynchronizationContext" xml:space="preserve">
+    <value>DiscoverySynchronizationContext</value>
+  </data>
+  <data name="task_DispatchMessage" xml:space="preserve">
+    <value>DispatchMessage</value>
+  </data>
+  <data name="task_EncryptedDataProcessing" xml:space="preserve">
+    <value>EncryptedDataProcessing</value>
+  </data>
+  <data name="task_EndpointDiscoverability" xml:space="preserve">
+    <value>EndpointDiscoverability</value>
+  </data>
+  <data name="task_ExecuteActivity" xml:space="preserve">
+    <value>ExecuteActivity</value>
+  </data>
+  <data name="task_ExecuteFlowchart" xml:space="preserve">
+    <value>ExecuteFlowchart</value>
+  </data>
+  <data name="task_ExecuteWorkItem" xml:space="preserve">
+    <value>ExecuteWorkItem</value>
+  </data>
+  <data name="task_ExpressionResult" xml:space="preserve">
+    <value>ExpressionResult</value>
+  </data>
+  <data name="task_FederationMessageCreation" xml:space="preserve">
+    <value>FederationMessageCreation</value>
+  </data>
+  <data name="task_FederationMessageProcessing" xml:space="preserve">
+    <value>FederationMessageProcessing</value>
+  </data>
+  <data name="task_FormatterDeserializeReply" xml:space="preserve">
+    <value>FormatterDeserializeReply</value>
+  </data>
+  <data name="task_FormatterDeserializeRequest" xml:space="preserve">
+    <value>FormatterDeserializeRequest</value>
+  </data>
+  <data name="task_FormatterSerializeReply" xml:space="preserve">
+    <value>FormatterSerializeReply</value>
+  </data>
+  <data name="task_FormatterSerializeRequest" xml:space="preserve">
+    <value>FormatterSerializeRequest</value>
+  </data>
+  <data name="task_GenerateDeserializer" xml:space="preserve">
+    <value>GenerateDeserializer</value>
+  </data>
+  <data name="task_GenerateSerializer" xml:space="preserve">
+    <value>GenerateSerializer</value>
+  </data>
+  <data name="task_GenerateXmlSerializable" xml:space="preserve">
+    <value>GenerateXmlSerializable</value>
+  </data>
+  <data name="task_GetIssuerName" xml:space="preserve">
+    <value>GetIssuerName</value>
+  </data>
+  <data name="task_HostedTransportConfigurationManagerConfigInit" xml:space="preserve">
+    <value>HostedTransportConfigurationManagerConfigInit</value>
+  </data>
+  <data name="task_ImportKnownType" xml:space="preserve">
+    <value>ImportKnownType</value>
+  </data>
+  <data name="task_InferDescription" xml:space="preserve">
+    <value>InferDescription</value>
+  </data>
+  <data name="task_InitializeBookmarkScope" xml:space="preserve">
+    <value>InitializeBookmarkScope</value>
+  </data>
+  <data name="task_InternalCacheMetadata" xml:space="preserve">
+    <value>InternalCacheMetadata</value>
+  </data>
+  <data name="task_InvokeMethod" xml:space="preserve">
+    <value>InvokeMethod</value>
+  </data>
+  <data name="task_ListenerOpen" xml:space="preserve">
+    <value>ListenerOpen</value>
+  </data>
+  <data name="task_LockWorkflowInstance" xml:space="preserve">
+    <value>LockWorkflowInstance</value>
+  </data>
+  <data name="task_MessageChannelCache" xml:space="preserve">
+    <value>MessageChannelCache</value>
+  </data>
+  <data name="task_MessageDecoding" xml:space="preserve">
+    <value>MessageDecoding</value>
+  </data>
+  <data name="task_MessageEncoding" xml:space="preserve">
+    <value>MessageEncoding</value>
+  </data>
+  <data name="task_MessageQueueRegister" xml:space="preserve">
+    <value>MessageQueueRegister</value>
+  </data>
+  <data name="task_MsmqQuotas" xml:space="preserve">
+    <value>MsmqQuotas</value>
+  </data>
+  <data name="task_NoPersistBlock" xml:space="preserve">
+    <value>NoPersistBlock</value>
+  </data>
+  <data name="task_PrincipalSetting" xml:space="preserve">
+    <value>PrincipalSetting</value>
+  </data>
+  <data name="task_Quotas" xml:space="preserve">
+    <value>Kvóták</value>
+  </data>
+  <data name="task_ReliableSession" xml:space="preserve">
+    <value>ReliableSession</value>
+  </data>
+  <data name="task_RoutingService" xml:space="preserve">
+    <value>RoutingService</value>
+  </data>
+  <data name="task_RoutingServiceClient" xml:space="preserve">
+    <value>RoutingServiceClient</value>
+  </data>
+  <data name="task_RoutingServiceFilterTableMatch" xml:space="preserve">
+    <value>RoutingServiceFilterTableMatch</value>
+  </data>
+  <data name="task_RoutingServiceMessage" xml:space="preserve">
+    <value>RoutingServiceMessage</value>
+  </data>
+  <data name="task_RoutingServiceReceiveContext" xml:space="preserve">
+    <value>RoutingServiceReceiveContext</value>
+  </data>
+  <data name="task_RoutingServiceTransaction" xml:space="preserve">
+    <value>RoutingServiceTransaction</value>
+  </data>
+  <data name="task_RuntimeTransaction" xml:space="preserve">
+    <value>RuntimeTransaction</value>
+  </data>
+  <data name="task_ScheduleActivity" xml:space="preserve">
+    <value>ScheduleActivity</value>
+  </data>
+  <data name="task_ScheduleWorkItem" xml:space="preserve">
+    <value>ScheduleWorkItem</value>
+  </data>
+  <data name="task_SecureMessage" xml:space="preserve">
+    <value>SecureMessage</value>
+  </data>
+  <data name="task_SecurityImpersonation" xml:space="preserve">
+    <value>SecurityImpersonation</value>
+  </data>
+  <data name="task_SecurityNegotiation" xml:space="preserve">
+    <value>SecurityNegotiation</value>
+  </data>
+  <data name="task_SecurityVerification" xml:space="preserve">
+    <value>SecurityVerification</value>
+  </data>
+  <data name="task_ServiceActivation" xml:space="preserve">
+    <value>ServiceActivation</value>
+  </data>
+  <data name="task_ServiceChannelCall" xml:space="preserve">
+    <value>ServiceChannelCall</value>
+  </data>
+  <data name="task_ServiceChannelOpen" xml:space="preserve">
+    <value>ServiceChannelOpen</value>
+  </data>
+  <data name="task_ServiceHostActivation" xml:space="preserve">
+    <value>ServiceHostActivation</value>
+  </data>
+  <data name="task_ServiceHostCompilation" xml:space="preserve">
+    <value>ServiceHostCompilation</value>
+  </data>
+  <data name="task_ServiceHostCreate" xml:space="preserve">
+    <value>ServiceHostCreate</value>
+  </data>
+  <data name="task_ServiceHostFactoryCreation" xml:space="preserve">
+    <value>ServiceHostFactoryCreation</value>
+  </data>
+  <data name="task_ServiceHostFault" xml:space="preserve">
+    <value>ServiceHostFault</value>
+  </data>
+  <data name="task_ServiceHostOpen" xml:space="preserve">
+    <value>ServiceHostOpen</value>
+  </data>
+  <data name="task_ServiceInstance" xml:space="preserve">
+    <value>ServiceInstance</value>
+  </data>
+  <data name="task_ServiceShutdown" xml:space="preserve">
+    <value>ServiceShutdown</value>
+  </data>
+  <data name="task_SessionCookieReading" xml:space="preserve">
+    <value>SessionCookieReading</value>
+  </data>
+  <data name="task_SessionStart" xml:space="preserve">
+    <value>SessionStart</value>
+  </data>
+  <data name="task_SessionUpgrade" xml:space="preserve">
+    <value>SessionUpgrade</value>
+  </data>
+  <data name="task_SignatureVerification" xml:space="preserve">
+    <value>SignatureVerification</value>
+  </data>
+  <data name="task_Signpost" xml:space="preserve">
+    <value>Jelzőtábla</value>
+  </data>
+  <data name="task_SqlCommandExecute" xml:space="preserve">
+    <value>SqlCommandExecute</value>
+  </data>
+  <data name="task_StartWorkItem" xml:space="preserve">
+    <value>StartWorkItem</value>
+  </data>
+  <data name="task_SurrogateDeserialize" xml:space="preserve">
+    <value>SurrogateDeserialize</value>
+  </data>
+  <data name="task_SurrogateSerialize" xml:space="preserve">
+    <value>SurrogateSerialize</value>
+  </data>
+  <data name="task_ThreadScheduling" xml:space="preserve">
+    <value>ThreadScheduling</value>
+  </data>
+  <data name="task_Throttles" xml:space="preserve">
+    <value>Szabályozók</value>
+  </data>
+  <data name="task_Timeout" xml:space="preserve">
+    <value>Időtúllépés</value>
+  </data>
+  <data name="task_TimeoutException" xml:space="preserve">
+    <value>TimeoutException</value>
+  </data>
+  <data name="task_TokenValidation" xml:space="preserve">
+    <value>TokenValidation</value>
+  </data>
+  <data name="task_TrackingProfile" xml:space="preserve">
+    <value>TrackingProfile</value>
+  </data>
+  <data name="task_TrackingRecord" xml:space="preserve">
+    <value>TrackingRecord</value>
+  </data>
+  <data name="task_TransportReceive" xml:space="preserve">
+    <value>TransportReceive</value>
+  </data>
+  <data name="task_TransportSend" xml:space="preserve">
+    <value>TransportSend</value>
+  </data>
+  <data name="task_TryCatchException" xml:space="preserve">
+    <value>TryCatchException</value>
+  </data>
+  <data name="task_VBExpressionCompile" xml:space="preserve">
+    <value>VBExpressionCompile</value>
+  </data>
+  <data name="task_WASActivation" xml:space="preserve">
+    <value>WASActivation</value>
+  </data>
+  <data name="task_WebHostRequest" xml:space="preserve">
+    <value>WebHostRequest</value>
+  </data>
+  <data name="task_WFApplicationStateChange" xml:space="preserve">
+    <value>WFApplicationStateChange</value>
+  </data>
+  <data name="task_WFMessage" xml:space="preserve">
+    <value>WFMessage</value>
+  </data>
+  <data name="task_WorkflowActivity" xml:space="preserve">
+    <value>WorkflowActivity</value>
+  </data>
+  <data name="task_WorkflowInstanceRecord" xml:space="preserve">
+    <value>WorkflowInstanceRecord</value>
+  </data>
+  <data name="task_WorkflowTracking" xml:space="preserve">
+    <value>WorkflowTracking</value>
+  </data>
+  <data name="task_WrappedKeyDecryption" xml:space="preserve">
+    <value>WrappedKeyDecryption</value>
+  </data>
+  <data name="task_XamlServicesLoad" xml:space="preserve">
+    <value>XamlServicesLoad</value>
+  </data>
+</root>
