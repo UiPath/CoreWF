@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CoreWf.Transactions\System.Activities.Transactions.csproj" />
     <ProjectReference Include="..\CoreWf\System.Activities.csproj" />
   </ItemGroup>
 
