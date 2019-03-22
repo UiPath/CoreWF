@@ -174,5 +174,29 @@ namespace XamlTestCases
             Assert.True(outputs.ContainsKey("myOutput"));
             Assert.Equal(1, (int)outputs["myOutput"]);
         }
+
+        [Fact]
+        public void XamlWorkflowWithInputObject()
+        {
+            var xamlString = @"
+                    <Activity x:Class=""WFTemplate""
+                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
+                              xmlns:s=""clr-namespace:System;assembly=mscorlib""
+                              xmlns:s1=""clr-namespace:System;assembly=System""
+                              xmlns:sa=""clr-namespace:CoreWf;assembly=CoreWf""
+                              xmlns:hw=""clr-namespace:XamlTestCases;assembly=XamlTestCases""
+                              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                        <x:Members>
+                            <x:Property Name=""myInput"" Type=""InArgument(hw:HelloWorld2Input)"" />
+                        </x:Members>
+                        <hw:HelloWorldConsole2 Input=""[myInput]"" />
+                    </Activity>";
+
+            var settings = new ActivityXamlServicesSettings { CompileExpressions = true };
+            var activity = ActivityXamlServices.Load(GenerateStreamFromString(xamlString), settings);
+            var inputs = new Dictionary<string, object>();
+            inputs.Add("myInput", new HelloWorld2Input { FirstName = "Jane", LastName = "Doe" });
+            var result = WorkflowInvoker.Invoke(activity, inputs);
+        }
     }
 }

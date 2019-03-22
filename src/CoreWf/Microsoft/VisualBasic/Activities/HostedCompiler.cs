@@ -65,14 +65,26 @@ namespace Microsoft.VisualBasic.Activities
 
         private static string GetTypeName(Type type) => TypeNameFormatter.FormatTypeName(type, TypeOptions);
 
-        private static readonly dynamic TypeOptions =
-            Activator.CreateInstance(typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions"));
+        private static readonly dynamic TypeOptions;
 
         private static readonly dynamic TypeNameFormatter =
             typeof(VisualBasicScript).Assembly.GetType("Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting.VisualBasicObjectFormatter")
             .AsDynamicType()
             .s_impl
             .TypeNameFormatter;
+
+        static HostedCompiler()
+        {
+            var type = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
+
+            var args = new object[]
+            {
+                0, /* arrayBoundRadix */
+                true /* showNamespaces */
+            };
+
+            TypeOptions = Activator.CreateInstance(type, args: args);
+        }
 
         internal void Dispose()
         {
