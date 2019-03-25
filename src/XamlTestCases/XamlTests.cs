@@ -189,7 +189,7 @@ namespace XamlTestCases
                         <x:Members>
                             <x:Property Name=""myInput"" Type=""InArgument(hw:PersonToGreet)"" />
                         </x:Members>
-                        <hw:HelloWorldConsole2 Input=""[myInput]"" />
+                        <hw:ActivityWithObjectArgument Input=""[myInput]"" />
                     </Activity>";
 
             var settings = new ActivityXamlServicesSettings { CompileExpressions = true };

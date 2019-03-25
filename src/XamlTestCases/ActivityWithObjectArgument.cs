@@ -9,7 +9,7 @@ namespace XamlTestCases
         public string LastName { get; set; }
     }
 
-    public sealed class HelloWorldConsole2 : CodeActivity<bool>
+    public sealed class ActivityWithObjectArgument : CodeActivity<bool>
     {
         // Define an activity input argument of type string
         public InArgument<PersonToGreet> Input { get; set; }
@@ -22,11 +22,11 @@ namespace XamlTestCases
             var inputValue = Input.Get(context);
             if (inputValue == null)
             {
-                Console.WriteLine("Hello World from HelloWorldConsole2 CodeActivity without InArguments");
+                Console.WriteLine("Hello World from ActivityWithObjectArgument");
             }
             else
             {
-                Console.WriteLine("Hello " + inputValue.FirstName + " " + inputValue.LastName + " from HelloWorldConsole2 CodeActivity with InArguments");
+                Console.WriteLine("Hello " + inputValue.FirstName + " " + inputValue.LastName + " from ActivityWithObjectArgument");
                 withArguments = true;
             }
             return withArguments;
