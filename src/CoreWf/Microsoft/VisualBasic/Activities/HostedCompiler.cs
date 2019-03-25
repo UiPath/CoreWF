@@ -83,7 +83,7 @@ namespace Microsoft.VisualBasic.Activities
                 true /* showNamespaces */
             };
 
-            TypeOptions = Activator.CreateInstance(type, args: args);
+            TypeOptions = Activator.CreateInstance(type, args);
         }
 
         internal void Dispose()
