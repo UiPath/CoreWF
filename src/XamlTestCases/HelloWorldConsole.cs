@@ -16,7 +16,7 @@ namespace XamlTestCases
         {
             bool argumented = false;
             string textValue = Text.Get(context);
-            if (textValue != null & textValue != String.Empty)
+            if (string.IsNullOrEmpty(textValue))
             {
                 Console.WriteLine("Hello World from HelloWorldConsole CodeActivity without InArguments");
             }
