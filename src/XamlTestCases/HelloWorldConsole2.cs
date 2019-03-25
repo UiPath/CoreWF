@@ -3,15 +3,16 @@ using System.Activities;
 
 namespace XamlTestCases
 {
-    public class HelloWorld2Input
+    public class PersonToGreet
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
+
     public sealed class HelloWorldConsole2 : CodeActivity<bool>
     {
         // Define an activity input argument of type string
-        public InArgument<HelloWorld2Input> Input { get; set; }
+        public InArgument<PersonToGreet> Input { get; set; }
 
         // If your activity returns a value, derive from CodeActivity<TResult>
         // and return the value from the Execute method.
