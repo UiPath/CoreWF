@@ -12,7 +12,7 @@ namespace System.Activities.Runtime
     using System.Runtime.Serialization;
     using System.Security;
     using System.Threading;
-    using System.Activities.Transactions;
+    using System.Transactions;
     using System.Activities.Internals;
     using System.Diagnostics.Tracing;
     using System.Activities.Runtime.DurableInstancing;

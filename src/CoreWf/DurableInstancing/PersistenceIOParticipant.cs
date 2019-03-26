@@ -5,7 +5,7 @@ namespace System.Activities.Persistence
 {
     using System;
     using System.Collections.Generic;
-    using System.Activities.Transactions;
+    using System.Transactions;
     using System.Xml.Linq;
     using System.Activities.Runtime;
 

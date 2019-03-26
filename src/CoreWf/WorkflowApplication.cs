@@ -13,9 +13,10 @@ namespace System.Activities
     using System.Linq;
     using System.Activities.Runtime.DurableInstancing;
     using System.Threading;
-    using System.Activities.Transactions;
+    using System.Transactions;
     using System.Xml.Linq;
     using System.Activities.Internals;
+    using System.Transactions;
 
 #if NET45
     using System.Activities.DynamicUpdate; 

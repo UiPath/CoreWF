@@ -3,7 +3,7 @@
 namespace System.Activities.Runtime.DurableInstancing
 {
     using System;
-    using System.Activities.Transactions;
+    using System.Transactions;
 
     // AsyncResult starts acquired; Complete releases.
     [Fx.Tag.SynchronizationPrimitive(Fx.Tag.BlocksUsing.ManualResetEvent, SupportsAsync = true, ReleaseMethod = "Complete")]
