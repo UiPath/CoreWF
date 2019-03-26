@@ -2,7 +2,7 @@
 // See LICENSE file in the project root for full license information.
 namespace System.Activities.Runtime
 {
-    using System.Activities.Transactions;
+    using System.Transactions;
 
     internal static class TransactionHelper
     {

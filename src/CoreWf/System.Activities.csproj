@@ -58,9 +58,6 @@
     <Compile Remove="Tracking\WorkflowInstanceUpdatedRecord.cs" />
     <Compile Remove="XamlIntegration\ObjectMatchInfoConverter.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CoreWf.Transactions\System.Activities.Transactions.csproj" PrivateAssets="all" />
-  </ItemGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveProjectReferences">
     <ItemGroup>
       <BuildOutputInPackage Include="@(_ResolvedProjectReferencePaths)" />

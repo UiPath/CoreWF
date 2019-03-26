@@ -6,7 +6,7 @@ namespace System.Activities
     using System;
     using System.Activities.Runtime;
     using System.Runtime.Serialization;
-    using System.Activities.Transactions;
+    using System.Transactions;
     using System.Activities.Internals;
 
     [Fx.Tag.XamlVisible(false)]

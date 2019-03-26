@@ -4,7 +4,7 @@
 namespace System.Activities
 {
     using System.Activities.Runtime;
-    using System.Activities.Transactions;
+    using System.Transactions;
     using System.Activities.Internals;
 
     [Fx.Tag.XamlVisible(false)]

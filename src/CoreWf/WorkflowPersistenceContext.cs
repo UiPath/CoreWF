@@ -3,7 +3,7 @@
 
 namespace System.Activities
 {
-    using System.Activities.Transactions;
+    using System.Transactions;
     using System;
     using System.Activities.Runtime;
 
