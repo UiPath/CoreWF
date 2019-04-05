@@ -1,5 +1,3 @@
-[![Build status](https://uipath.visualstudio.com/Core WF/_apis/build/status/CI)](https://uipath.visualstudio.com/Core WF/_build/latest?definitionId=318)
-
 # Core WF
 A port of the Windows Workflow Foundation (WF) runtime to the .NET Standard.
 
