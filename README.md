@@ -1,4 +1,5 @@
 [![Build status](https://uipath.visualstudio.com/Core%20WF/_apis/build/status/CI)](https://uipath.visualstudio.com/Core%20WF/_build/latest?definitionId=318)
+[![MyGet (dev)](https://github.com/UiPath/corewf/blob/master/CoreWf.svg)](https://www.myget.org/feed/uipath-dev/package/nuget/System.Activities)
 # Core WF
 A port of the Windows Workflow Foundation (WF) runtime to the .NET Standard.
 

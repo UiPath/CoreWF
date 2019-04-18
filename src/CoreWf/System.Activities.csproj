@@ -7,7 +7,7 @@
     <Copyright>Copyright © Dustin Metzgar 2018</Copyright>
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
-    <PackageIconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</PackageIconUrl>
+    <PackageIconUrl>https://github.com/UiPath/corewf/blob/master/CoreWf.svg</PackageIconUrl>
     <Version>1.2.1</Version>
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <OldToolsVersion>15.0</OldToolsVersion>
