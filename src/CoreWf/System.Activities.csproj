@@ -6,7 +6,7 @@
     <Authors>Dustin Metzgar,Jim Carley</Authors>
     <Copyright>Copyright © Dustin Metzgar 2018</Copyright>
     <PackageTags>.NET Core workflow</PackageTags>
-    <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
     <PackageIconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</PackageIconUrl>
     <Version>1.2.1</Version>
     <FileUpgradeFlags>40</FileUpgradeFlags>
