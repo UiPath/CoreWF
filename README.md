@@ -22,9 +22,6 @@ Framework that are not being ported to .NET Core. The most sizable features are:
 
 * XAML - replaced with Portable.Xaml
 
-None of these components are trivial. I'll do my best to describe the options for each 
-one.
-
 ### Instance stores 
 The .NET Framework shipped with the SQL Workflow Instance Store (SWIS). This should be a straightforward port to 
 the .NET Standard ([issue link](https://github.com/dmetzgar/corewf/issues/15)).
