@@ -8,6 +8,7 @@
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
     <PackageIconUrl>https://github.com/UiPath/corewf/blob/master/CoreWf.svg</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/UiPath/corewf/blob/master/LICENSE</PackageLicenseUrl>
     <Version>1.2.1</Version>
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <OldToolsVersion>15.0</OldToolsVersion>
