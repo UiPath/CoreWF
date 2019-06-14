@@ -534,7 +534,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Unload and load flowchart while executing condition of flow conditional.
         /// </summary>        
-        [Fact(Skip = "Duplicate activities found in validation")]
+        [Fact()]
         public void UnloadFlowchartWhileExecutingFlowConditionalCondition()
         {
             TestFlowchart flowchart = new TestFlowchart();
@@ -578,7 +578,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Unload and load flowchart while executing flow switch's expression.
         /// </summary>        
-        [Fact(Skip = "Duplicate activities found in validation")]
+        [Fact()]
         public void UnloadFlowchartWhileExecutingFlowSwitchExpression()
         {
             TestFlowchart flowchart = new TestFlowchart();
@@ -684,7 +684,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Unload and load flowchart while executing flow step
         /// </summary>        
-        [Fact(Skip = "Duplicate activities found in validation")]
+        [Fact()]
         public void UnloadFlowchartWhileExecutingFlowStep()
         {
             TestFlowchart flowchart = new TestFlowchart();
