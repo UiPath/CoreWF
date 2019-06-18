@@ -10,9 +10,11 @@ namespace System.Activities
     using System.Runtime.Serialization;
     using System.Globalization;
     using System.Activities.Internals;
+    using System.ComponentModel;
 
     [DataContract]
     [Fx.Tag.XamlVisible(false)]
+    [TypeConverter(typeof(BookmarkConverter))]
     public class Bookmark : IEquatable<Bookmark>
     {
         private static readonly Bookmark asyncOperationCompletionBookmark = new Bookmark(-1);

@@ -297,7 +297,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
             }
         }
 
-        [Fact(Skip = "Test is flaky, fails after 60 seconds")]
+        [Fact()]
         public static void TestPersistDuringResumeBookmark()
         {
             bool isSync = true;

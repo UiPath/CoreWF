@@ -355,6 +355,8 @@ namespace System.Activities.Hosting
             this.executor.ThrowIfNonSerializable();
 
             EnsureDefinitionReady();
+
+            InitializeCore(null, null);
         }
 #endif
 

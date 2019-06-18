@@ -193,7 +193,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
             runtime.WaitForAborted(out Exception excepion, expectedTrace);
         }
 
-        [Fact(Skip = "Test is flaky, fails after 60 seconds")]
+        [Fact()]
         public void TestAbortLoad()
         {
             Variable<int> value = VariableHelper.Create<int>("value");
