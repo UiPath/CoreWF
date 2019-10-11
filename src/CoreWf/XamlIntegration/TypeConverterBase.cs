@@ -9,7 +9,7 @@ namespace System.Activities.XamlIntegration
     using System.Globalization;
     using System.Activities.Internals;
     using System.Activities.Runtime;
-    using Portable.Xaml;
+    using System.Xaml;
 
     public abstract class TypeConverterBase : TypeConverter
     {

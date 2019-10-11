@@ -8,15 +8,15 @@ namespace System.Activities.Debugger
     using System.IO;
     using System.Reflection;
     using System.Runtime;
-    using Portable.Xaml;
-    using Portable.Xaml.Schema;
+    using System.Xaml;
+    using System.Xaml.Schema;
     using System.ComponentModel;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.XamlIntegration;
     using System;
     using System.Activities.Runtime;
 
-    public class XamlDebuggerXmlReader : XamlReader, IXamlLineInfo
+    public class XamlDebuggerXmlReader : Xaml.XamlReader, IXamlLineInfo
     {
         //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
         public static readonly AttachableMemberIdentifier StartLineName = new AttachableMemberIdentifier(typeof(XamlDebuggerXmlReader), StartLineMemberName);
@@ -56,7 +56,7 @@ namespace System.Activities.Debugger
         private XamlSchemaContext schemaContext;
         private IXamlLineInfo xamlLineInfo;
         private XmlReaderWithSourceLocation xmlReaderWithSourceLocation;
-        private XamlReader underlyingReader;
+        private Xaml.XamlReader underlyingReader;
         private Stack<XamlNode> objectDeclarationRecords;
         private Dictionary<XamlNode, DocumentRange> initializationValueRanges;
         private Queue<XamlNode> bufferedXamlNodes;
@@ -95,14 +95,14 @@ namespace System.Activities.Debugger
         // This constructor is fundamentally flawed because it allows any XAML reader
         // Which could output some XAML node that does not correspond to source.
         [Obsolete("Don't use this constructor. Use \"public XamlDebuggerXmlReader(TextReader underlyingTextReader)\" or \"public XamlDebuggerXmlReader(TextReader underlyingTextReader, XamlSchemaContext schemaContext)\" instead.")]
-        public XamlDebuggerXmlReader(XamlReader underlyingReader, TextReader textReader)
+        public XamlDebuggerXmlReader(Xaml.XamlReader underlyingReader, TextReader textReader)
             : this(underlyingReader, underlyingReader as IXamlLineInfo, textReader)
         {
         }
 
         // This one is worse because in implementation we expect the same object instance through two parameters.
         [Obsolete("Don't use this constructor. Use \"public XamlDebuggerXmlReader(TextReader underlyingTextReader)\" or \"public XamlDebuggerXmlReader(TextReader underlyingTextReader, XamlSchemaContext schemaContext)\" instead.")]
-        public XamlDebuggerXmlReader(XamlReader underlyingReader, IXamlLineInfo xamlLineInfo, TextReader textReader)
+        public XamlDebuggerXmlReader(Xaml.XamlReader underlyingReader, IXamlLineInfo xamlLineInfo, TextReader textReader)
         {
             this.underlyingReader = underlyingReader;
             this.xamlLineInfo = xamlLineInfo;
@@ -525,7 +525,7 @@ namespace System.Activities.Debugger
             }
         }
 
-        private static XamlNode CreateCurrentNode(XamlReader xamlReader, IXamlLineInfo xamlLineInfo)
+        private static XamlNode CreateCurrentNode(Xaml.XamlReader xamlReader, IXamlLineInfo xamlLineInfo)
         {
             XamlNode currentNode = new XamlNode
             {

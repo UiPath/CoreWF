@@ -15,7 +15,6 @@
     <dependencies>
       <group targetFramework=".NETStandard2.0">
         <dependency id="Microsoft.Extensions.Localization" version="2.1.1" exclude="Build,Analyzers" />
-        <dependency id="Portable.Xaml" version="0.23.0" exclude="Build,Analyzers" />
         <dependency id="System.ComponentModel.EventBasedAsync" version="4.3.0" exclude="Build,Analyzers" />
         <dependency id="System.Reflection.TypeExtensions" version="4.5.0" exclude="Build,Analyzers" />
         <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" exclude="Build,Analyzers" />

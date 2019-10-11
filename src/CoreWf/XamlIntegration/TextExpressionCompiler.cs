@@ -15,8 +15,8 @@ namespace System.Activities.XamlIntegration
     using System.Collections.Generic;
     using Microsoft.VisualBasic.Activities;
     using Microsoft.VisualBasic;
-    using Portable.Xaml.Markup;
-    using Portable.Xaml;
+    using System.Windows.Markup;
+    using System.Xaml;
     using System.Activities.Debugger;
     using System.IO;
     using System.Activities.Expressions;

@@ -9,7 +9,7 @@ namespace System.Activities.Statements
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.Runtime;
 
     [ContentProperty("Body")]

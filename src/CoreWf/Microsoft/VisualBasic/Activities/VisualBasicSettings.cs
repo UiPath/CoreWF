@@ -9,8 +9,8 @@ namespace Microsoft.VisualBasic.Activities
     using System.Activities;
     using System.Collections.Generic;
     using System.Activities.Runtime;
-    using Portable.Xaml.Markup;
-    using Portable.Xaml;
+    using System.Windows.Markup;
+    using System.Xaml;
     using System.ComponentModel;
     using System.Reflection;
     using System.Activities.Internals;

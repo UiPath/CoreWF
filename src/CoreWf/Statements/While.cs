@@ -8,7 +8,7 @@ namespace System.Activities.Statements
     using System.ComponentModel;
     using System.Linq.Expressions;
     using System.Activities.Runtime.Collections;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System;
     using System.Activities.Internals;
     using System.Activities.Runtime;

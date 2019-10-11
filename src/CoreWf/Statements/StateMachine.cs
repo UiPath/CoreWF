@@ -12,7 +12,7 @@ namespace System.Activities.Statements
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Activities.Runtime.Collections;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.Internals;
     using System.Activities.Runtime;
 

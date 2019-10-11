@@ -5,7 +5,7 @@ namespace System.Activities.XamlIntegration
 {
     using System;
     using System.ComponentModel;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.Internals;
 
     [MarkupExtensionReturnType(typeof(object))]

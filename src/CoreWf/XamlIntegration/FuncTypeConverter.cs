@@ -4,7 +4,7 @@
 namespace System.Activities.XamlIntegration
 {
     using System;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Activities.Internals;
 
     public class FuncDeferringLoader : XamlDeferringLoader

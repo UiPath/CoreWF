@@ -10,7 +10,7 @@ namespace System.Activities.Expressions
     using System.Activities.Internals;
     using System.Activities.Runtime;
     using System.Activities.Runtime.Collections;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
 
     [ContentProperty("Indices")]
     public sealed class MultidimensionalArrayItemReference<TItem> : CodeActivity<Location<TItem>>

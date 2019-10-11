@@ -1,5 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
+    <UseWPF>true</UseWPF>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <Title>Core WF</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</Description>
@@ -37,7 +38,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Portable.Xaml" Version="0.24.0" />
     <PackageReference Include="ReflectionMagic" Version="4.0.0" />
     <PackageReference Include="System.CodeDom" Version="4.5.0" />
     <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />

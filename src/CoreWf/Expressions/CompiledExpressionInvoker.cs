@@ -7,7 +7,7 @@ namespace System.Activities.Expressions
     using System.Activities.XamlIntegration;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Activities.Internals;
 
     public class CompiledExpressionInvoker

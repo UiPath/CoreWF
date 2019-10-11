@@ -8,7 +8,7 @@ namespace System.Activities.Statements
     using System.ComponentModel;
     using System.Globalization;
     using System.Activities.Runtime;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
 
 #if NET45
     using System.Activities.DynamicUpdate; 

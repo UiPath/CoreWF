@@ -12,7 +12,7 @@ namespace System.Activities.Debugger
     using System.Reflection;
     using System.Security;
     using System.Security.Permissions;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Xml;
     using System.IO;
     using System.Activities.Validation;

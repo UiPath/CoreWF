@@ -7,7 +7,7 @@ namespace System.Activities.XamlIntegration
     using System.Activities.Expressions;
     using System.ComponentModel;
     using System.Text.RegularExpressions;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Activities.Runtime;
     using System.Activities.Internals;
     using Microsoft.VisualBasic.Activities;

@@ -12,7 +12,7 @@ namespace Microsoft.VisualBasic.Activities
     using System.Activities.ExpressionParser;
     using System.Activities.XamlIntegration;
     using System.Linq.Expressions;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.ComponentModel;
     using System.Activities.Runtime;
     using System.Activities.Internals;

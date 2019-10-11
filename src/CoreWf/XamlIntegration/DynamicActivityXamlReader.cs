@@ -7,8 +7,8 @@ namespace System.Activities.XamlIntegration
     using System.Collections.Generic;
     using System.Activities.Internals;
     using System.Activities.Runtime;
-    using Portable.Xaml;
-    using Portable.Xaml.Schema;
+    using System.Xaml;
+    using System.Xaml.Schema;
 
     // This Xaml Reader converts an <Activity x:Class=Foo to <DynamicActivity Name=Foo
     // it does the folowing

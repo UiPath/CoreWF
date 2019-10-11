@@ -12,8 +12,8 @@ namespace System.Activities.Debugger
     using System.Linq;
     using System.Linq.Expressions;
     using System.Runtime;
-    using Portable.Xaml.Markup;
-    using Portable.Xaml;
+    using System.Windows.Markup;
+    using System.Xaml;
     using System.Activities.Internals;
     using System.Activities.Runtime;
 
