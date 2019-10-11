@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <Title>Core WF</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</Description>
     <Authors>Dustin Metzgar,Jim Carley</Authors>
@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
     <PackageIconUrl>https://github.com/UiPath/corewf/blob/master/CoreWf.svg</PackageIconUrl>
     <PackageLicenseUrl>https://github.com/UiPath/corewf/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>1.2.1</Version>
+    <Version>3.0.0</Version>
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <OldToolsVersion>15.0</OldToolsVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -21,12 +21,6 @@
     <RepositoryUrl>https://github.com/UiPath/corewf</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OfficialBuild)'=='true'">
     <SignAssembly>True</SignAssembly>
@@ -51,7 +45,7 @@
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.1" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Security.Permissions" Version="4.5.0" />
+    <PackageReference Include="System.Security.Permissions" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
     <Compile Remove="DynamicUpdate\**\*.cs" />

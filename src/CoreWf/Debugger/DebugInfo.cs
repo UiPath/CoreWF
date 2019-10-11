@@ -7,7 +7,6 @@ namespace System.Activities.Debugger
     using System.Activities.XamlIntegration;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;

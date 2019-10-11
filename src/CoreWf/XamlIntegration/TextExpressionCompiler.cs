@@ -27,7 +27,6 @@ namespace System.Activities.XamlIntegration
     using System.Globalization;
     using System.Activities.Debugger.Symbol;
     using System.Linq.Expressions;
-    using System.Diagnostics;
     using System.Activities.Internals;
 
     public class TextExpressionCompiler
@@ -1535,7 +1534,7 @@ namespace System.Activities.XamlIntegration
             expressionMethod.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             expressionMethod.Name = string.Format(CultureInfo.InvariantCulture, expressionGetString, nextExpressionId);
             expressionMethod.ReturnType = new CodeTypeReference(resultType);
-            expressionMethod.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(DebuggerHiddenAttribute))));
+            expressionMethod.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(Diagnostics.DebuggerHiddenAttribute))));
 
             CodeLinePragma pragma;
             AlignText(activity, ref expressionText, out pragma);
@@ -1579,7 +1578,7 @@ namespace System.Activities.XamlIntegration
             CodeMemberMethod expressionMethod = new CodeMemberMethod();
             expressionMethod.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             expressionMethod.Name = string.Format(CultureInfo.InvariantCulture, expressionSetString, nextExpressionId);
-            expressionMethod.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(DebuggerHiddenAttribute))));
+            expressionMethod.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(Diagnostics.DebuggerHiddenAttribute))));
 
             var exprValueParam = new CodeParameterDeclarationExpression(resultType, paramName);
             expressionMethod.Parameters.Add(exprValueParam);
@@ -1629,7 +1628,7 @@ namespace System.Activities.XamlIntegration
             CodeMemberMethod expressionMethod = new CodeMemberMethod();
             expressionMethod.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             expressionMethod.Name = string.Format(CultureInfo.InvariantCulture, expressionStatementString, nextExpressionId);
-            expressionMethod.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(DebuggerHiddenAttribute))));
+            expressionMethod.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(Diagnostics.DebuggerHiddenAttribute))));
 
             CodeLinePragma pragma;
             AlignText(activity, ref expressionText, out pragma);

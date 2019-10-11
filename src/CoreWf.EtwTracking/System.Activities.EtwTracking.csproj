@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <Title>Core WF ETW Tracking Provider</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) ETW tracking provider to the .NET Standard</Description>
     <Authors>Dustin Metzgar,Jim Carley</Authors>
