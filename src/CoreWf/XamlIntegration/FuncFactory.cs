@@ -6,18 +6,17 @@ namespace System.Activities.XamlIntegration
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using System.Windows.Markup;
     using System.Xaml;
 
     internal abstract class FuncFactory
     {
-        public static Func<object> CreateFunc(Xaml.XamlReader reader, Type returnType)
+        public static Func<object> CreateFunc(XamlReader reader, Type returnType)
         {
             FuncFactory factory = CreateFactory(null, reader, returnType);
             return factory.GetFunc();
         }
 
-        public static Func<T> CreateFunc<T>(Xaml.XamlReader reader) where T : class
+        public static Func<T> CreateFunc<T>(XamlReader reader) where T : class
         {
             FuncFactory<T> factory = new FuncFactory<T>(null, reader);
             return factory.GetTypedFunc();
@@ -44,10 +43,10 @@ namespace System.Activities.XamlIntegration
 
         internal abstract Func<object> GetFunc();
 
-        internal static FuncFactory CreateFactory(Xaml.XamlReader xamlReader, IServiceProvider context)
+        internal static FuncFactory CreateFactory(XamlReader xamlReader, IServiceProvider context)
         {
-            IXamlObjectWriterFactory objectWriterFactory = context.GetService(typeof(IXamlObjectWriterFactory)) as IXamlObjectWriterFactory;
-            IProvideValueTarget provideValueService = context.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
+            var objectWriterFactory = context.GetService(typeof(IXamlObjectWriterFactory)) as IXamlObjectWriterFactory;
+            var provideValueService = context.GetService(typeof(Windows.Markup.IProvideValueTarget)) as Windows.Markup.IProvideValueTarget;
 
             Type propertyType = null;
             //
@@ -67,7 +66,7 @@ namespace System.Activities.XamlIntegration
         // Back-compat workaround: returnType should only be a single value. But in 4.0 we didn't
         // validate this; we just passed the array in to MakeGenericType, which would throw if there
         // were multiple values. To preserve the same exception, we allow passing in an array here.
-        private static FuncFactory CreateFactory(IXamlObjectWriterFactory objectWriterFactory, Xaml.XamlReader xamlReader, params Type[] returnType)
+        private static FuncFactory CreateFactory(IXamlObjectWriterFactory objectWriterFactory, XamlReader xamlReader, params Type[] returnType)
         {
             Type closedType = typeof(FuncFactory<>).MakeGenericType(returnType);
             return (FuncFactory)Activator.CreateInstance(closedType, objectWriterFactory, xamlReader);
@@ -78,7 +77,7 @@ namespace System.Activities.XamlIntegration
     {
         private readonly IXamlObjectWriterFactory objectWriterFactory;
 
-        public FuncFactory(IXamlObjectWriterFactory objectWriterFactory, Xaml.XamlReader reader)
+        public FuncFactory(IXamlObjectWriterFactory objectWriterFactory, XamlReader reader)
         {
             this.objectWriterFactory = objectWriterFactory;
             this.Nodes = new XamlNodeList(reader.SchemaContext);
