@@ -4,8 +4,8 @@
 namespace System.Activities.XamlIntegration
 {
     using System;
-    using Portable.Xaml.Markup;
-    using Portable.Xaml;
+    using System.Windows.Markup;
+    using System.Xaml;
     using System.Activities.Internals;
 
     public sealed class ActivityWithResultValueSerializer : ValueSerializer

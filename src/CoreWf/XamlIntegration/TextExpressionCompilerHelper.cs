@@ -6,7 +6,7 @@ namespace System.Activities.XamlIntegration
     using System.Activities.Expressions;
     using System.Collections.Generic;
     using System.IO;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Xml;
 
     internal static class TextExpressionCompilerHelper

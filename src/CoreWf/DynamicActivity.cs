@@ -9,7 +9,7 @@ namespace System.Activities
     using System.Activities.XamlIntegration;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
 
     [ContentProperty("Implementation")]
     public sealed class DynamicActivity : Activity, ICustomTypeDescriptor, IDynamicActivity

@@ -4,7 +4,7 @@ namespace System.Activities.Debugger.Symbol
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Activities.Runtime;
 
     [Fx.Tag.XamlVisible(false)]

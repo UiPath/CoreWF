@@ -5,8 +5,8 @@
 namespace Microsoft.VisualBasic.Activities.XamlIntegration
 {
     using System.Collections.Generic;
-    using Portable.Xaml.Markup;
-    using Portable.Xaml;
+    using System.Windows.Markup;
+    using System.Xaml;
 
     // this value serializer always returns false for CanConvertToString, but
     // needs to add namespace declarations to the context

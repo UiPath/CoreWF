@@ -8,7 +8,7 @@ namespace System.Activities.Expressions
     using System.Reflection;
     using System.Activities.Runtime.Collections;
     using System.Runtime.Serialization;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Threading;
     using System;
     using System.Activities.Runtime;

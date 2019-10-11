@@ -7,7 +7,7 @@ namespace System.Activities.Statements
     using System.Activities;
     using System.ComponentModel;
     using System.Collections.ObjectModel;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.Internals;
 
     [ContentProperty("Exception")]

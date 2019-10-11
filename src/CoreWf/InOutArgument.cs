@@ -9,7 +9,7 @@ namespace System.Activities
     using System.Activities.Runtime;
     using System.ComponentModel;
     using System.Linq.Expressions;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.Internals;
 
     public abstract class InOutArgument : Argument

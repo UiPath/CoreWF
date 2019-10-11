@@ -8,7 +8,7 @@ namespace System.Activities.Expressions
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Text.RegularExpressions;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.Runtime;
 
     [DebuggerStepThrough]

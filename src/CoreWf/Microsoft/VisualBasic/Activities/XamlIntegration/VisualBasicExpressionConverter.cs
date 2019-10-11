@@ -13,8 +13,8 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
     using System.Reflection;
     using System.Xml.Linq;
     using System.ComponentModel;
-    using Portable.Xaml;
-    using Portable.Xaml.Markup;
+    using System.Xaml;
+    using System.Windows.Markup;
     using System.Security;
     using System.Security.Permissions;
     using System.Activities.Runtime;

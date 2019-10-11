@@ -4,8 +4,8 @@
 namespace System.Activities.Debugger
 {
     using System.Reflection;
-    using Portable.Xaml;
-    using Portable.Xaml.Schema;
+    using System.Xaml;
+    using System.Xaml.Schema;
 
     internal static class XamlMemberExtensions
     {

@@ -4,7 +4,7 @@
 namespace System.Activities.Expressions
 {
     using System.ComponentModel;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
 
 #if NET45
     using System.Activities.DynamicUpdate; 

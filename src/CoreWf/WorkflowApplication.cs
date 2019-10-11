@@ -16,7 +16,6 @@ namespace System.Activities
     using System.Transactions;
     using System.Xml.Linq;
     using System.Activities.Internals;
-    using System.Transactions;
 
 #if NET45
     using System.Activities.DynamicUpdate; 

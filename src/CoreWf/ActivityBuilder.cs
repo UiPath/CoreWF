@@ -12,8 +12,8 @@ namespace System.Activities
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using Portable.Xaml.Markup;
-    using Portable.Xaml;
+    using System.Windows.Markup;
+    using System.Xaml;
     using System;
 
     [ContentProperty("Implementation")]

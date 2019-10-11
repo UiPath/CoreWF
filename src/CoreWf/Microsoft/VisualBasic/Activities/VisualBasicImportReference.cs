@@ -8,7 +8,7 @@ namespace Microsoft.VisualBasic.Activities
     using System.Globalization;
     using System.Reflection;
     using System.Activities.Expressions;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Xml.Linq;
 
     public class VisualBasicImportReference : IEquatable<VisualBasicImportReference>

@@ -8,10 +8,10 @@ namespace System.Activities.XamlIntegration
     using System.Globalization;
     using System.IO;
     using System.Reflection;
-    using Portable.Xaml;
+    using System.Xaml;
     using System.Xml;
     using System.Security;
-    //using Portable.Xaml.Permissions;
+    //using System.Xaml.Permissions;
     using System.Activities.Expressions;
     using System.Activities.Validation;
     using System.Activities.Internals;

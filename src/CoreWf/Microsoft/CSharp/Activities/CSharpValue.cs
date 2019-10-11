@@ -15,7 +15,7 @@ namespace Microsoft.CSharp.Activities
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Activities.Runtime;
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
     using System.Activities.Internals;
 
     [DebuggerStepThrough]

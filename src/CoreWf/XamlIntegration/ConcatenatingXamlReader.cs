@@ -4,7 +4,7 @@
 namespace System.Activities.XamlIntegration
 {
     using System.Collections.Generic;
-    using Portable.Xaml;
+    using System.Xaml;
 
     internal class ConcatenatingXamlReader : XamlReader
     {

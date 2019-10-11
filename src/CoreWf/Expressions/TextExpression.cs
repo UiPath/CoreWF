@@ -8,7 +8,7 @@ namespace System.Activities.Expressions
     using System.Collections.ObjectModel;
     using System.Reflection;
     using System.Activities.Internals;
-    using Portable.Xaml;
+    using System.Xaml;
 
     public static class TextExpression
     {

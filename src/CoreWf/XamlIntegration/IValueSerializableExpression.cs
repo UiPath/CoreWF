@@ -3,7 +3,7 @@
 
 namespace System.Activities.XamlIntegration
 {
-    using Portable.Xaml.Markup;
+    using System.Windows.Markup;
 
     public interface IValueSerializableExpression
     {
