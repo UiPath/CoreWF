@@ -174,7 +174,7 @@ namespace TestCases.Activities
 
         /// <summary>
         /// Set condition to a valid rule and run with an activity in it. Condition is false initially, then set to
-        /// Set condition to a valid rule and run wih an actibity in it. Condition is false initially, then set to true in the do part.
+        /// Set condition to a valid rule and run with an actibity in it. Condition is false initially, then set to true in the do part.
         /// </summary>        
         [Fact]
         public void SimpleDoWhileConditionFalseSetToTrue()
