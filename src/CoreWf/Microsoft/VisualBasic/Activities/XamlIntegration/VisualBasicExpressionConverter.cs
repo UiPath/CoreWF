@@ -183,7 +183,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
             // This is here so that obtaining the lock is not required to be SecurityCritical.
             public static object XmlnsMappingsLockObject = new object();
 
-            [Fx.Tag.SecurityNote(Critical = "Critical because we are storing assembly references and if we alloed PT access, they could mess with that.")]
+            [Fx.Tag.SecurityNote(Critical = "Critical because we are storing assembly references and if we allowed PT access, they could mess with that.")]
             [SecurityCritical]
             static Dictionary<XNamespace, XmlnsMapping> xmlnsMappings;
 
