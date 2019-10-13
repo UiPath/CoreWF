@@ -283,7 +283,7 @@ namespace Test.Common.TestObjects.Tracking
 
         internal void ValidateTraces(ExpectedTrace expectedTrace, ActualTrace actualTrace)
         {
-            //If no tracking participant tracks all events tracign validation will fail since it doesn't accoutn for the tracking profiles.
+            //If no tracking participant tracks all events tracign validation will fail since it doesn't account for the tracking profiles.
             //This is true ONLY for some trakcing test cases & not for runtime test cases which run with all tracking turned Off.
             //Hence we will not to tracing validation in this case & only do the tracking validation.
             //if (!TestTrackingDataManager.DoesAnyProfileTrackAllEvents(TestConfiguration.Current.TrackingServiceConfigurations))
