@@ -100,7 +100,7 @@ namespace Test.Common.TestObjects.Utilities.Validation
         }
 
         /// <summary>
-        /// This method removes all of the non-acitivity traces, and then orders the activity traces so they will match
+        /// This method removes all of the non-activity traces, and then orders the activity traces so they will match
         ///  more closely the expected traces. This is required for complex parallel traces.
         /// </summary>
         public void OrderTraces()

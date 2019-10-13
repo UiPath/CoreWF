@@ -601,7 +601,7 @@ namespace TestCases.Activities
                 HintIterationCount = 10,
             };
 
-            ExceptionThrowingActivitiy<bool> throwFromCondition = new ExceptionThrowingActivitiy<bool>();
+            ExceptionThrowingActivity<bool> throwFromCondition = new ExceptionThrowingActivity<bool>();
             ((System.Activities.Statements.While)whileAct.ProductActivity).Condition = throwFromCondition;
             increment.ToVariable = counter;
             increment.ValueExpression = ((env) => (((int)counter.Get(env))) + 1);
@@ -922,7 +922,7 @@ namespace TestCases.Activities
             TestRuntime.RunAndValidateWorkflow(root);
         }
     }
-    public class ExceptionThrowingActivitiy<T> : NativeActivity<bool>
+    public class ExceptionThrowingActivity<T> : NativeActivity<bool>
     {
         protected override void Execute(NativeActivityContext context)
         {

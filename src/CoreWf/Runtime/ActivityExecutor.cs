@@ -1667,7 +1667,7 @@ namespace System.Activities.Runtime
 
             // If we are not supposed to persist exceptions, call EnterNoPersist so that we don't persist while we are
             // propagating the exception.
-            // We call ExitNoPersist when we abort an activit or when we call a fault callback. But we may end up
+            // We call ExitNoPersist when we abort an activity or when we call a fault callback. But we may end up
             // re-propagating and thus calling EnterNoPersist again.
             // We also do an exit if the workflow is aborted or the exception ends up being unhandled.
             if (!this.PersistExceptions)

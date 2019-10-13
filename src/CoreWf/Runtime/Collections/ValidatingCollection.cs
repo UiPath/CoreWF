@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 namespace System.Activities.Runtime.Collections
 {
     // simple helper class to allow passing in a func that performs validations of
-    // acceptible values
+    // acceptable values
     internal class ValidatingCollection<T> : Collection<T>
     {
         public ValidatingCollection()
