@@ -614,7 +614,7 @@ namespace TestCases.Activities
         }
 
         /// <summary>
-        /// Cancel in the first activity - Sequence should mark first activity cancelled, all other activites as completed/cancelled
+        /// Cancel in the first activity - Sequence should mark first activity cancelled, all other activities as completed/cancelled
         /// CancelSequenceInTheMiddle
         /// </summary>        
         [Fact]
