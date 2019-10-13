@@ -6,7 +6,6 @@ namespace System.Activities.Debugger
     using System.Collections.Generic;
     using System.IO;
 
-    // TODO, andrewau, P3, find an appropriately naming for this internal class.
     internal partial class CharacterSpottingTextReader : TextReader
     {
         // These 'special characters' couple with the fact that we are working on XML.
