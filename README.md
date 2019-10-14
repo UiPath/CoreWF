@@ -1,7 +1,7 @@
 [![Build status](https://uipath.visualstudio.com/Core%20WF/_apis/build/status/CI)](https://uipath.visualstudio.com/Core%20WF/_build/latest?definitionId=318)
 [![MyGet (dev)](https://img.shields.io/badge/CoreWf-MyGet-brightgreen.svg)](https://www.myget.org/feed/uipath-dev/package/nuget/System.Activities)
 # Core WF
-A port of the Windows Workflow Foundation (WF) runtime to the .NET Standard.
+A port of the Windows Workflow Foundation (WF) runtime to .NET Core 3.0.
 
 __This is not an official Microsoft release of WF on .NET Core. Core WF is a derivative work of Microsoft's copyrighted Windows Workflow Foundation.__
 
@@ -14,13 +14,7 @@ The Windows Workflow Foundation (WF) handles the long-running work of many compa
 powers SharePoint workflows, PowerShell workflows, Team Foundation Server build 
 processes, and many applications in all types of businesses. As more developers look into
 adopting .NET Core, some are asking if WF will be officially ported. This project only 
-ports the WF runtime and ETW tracking provider to the .NET Standard. But much more work 
-is needed before it can substitute for the .NET Framework version. 
-
-The problem with porting is that WF integrates heavily with other features of the .NET 
-Framework that are not being ported to .NET Core. The most sizable features are:
-
-* XAML - replaced with Portable.Xaml
+ports the WF runtime and ETW tracking provider.
 
 ### Instance stores 
 The .NET Framework shipped with the SQL Workflow Instance Store (SWIS). This should be a straightforward port to 
