@@ -14,7 +14,7 @@ The Windows Workflow Foundation (WF) handles the long-running work of many compa
 powers SharePoint workflows, PowerShell workflows, Team Foundation Server build 
 processes, and many applications in all types of businesses. As more developers look into
 adopting .NET Core, some are asking if WF will be officially ported. This project only 
-ports the WF runtime and ETW tracking provider.
+ports the WF runtime and the ETW tracking provider.
 
 ### Instance stores 
 The .NET Framework shipped with the SQL Workflow Instance Store (SWIS). This should be a straightforward port to 
