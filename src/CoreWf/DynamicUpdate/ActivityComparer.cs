@@ -1,11 +1,11 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.DynamicUpdate
+namespace System.Activities.DynamicUpdate
 {
     using System;
-    using CoreWf.DynamicUpdate;
-    using CoreWf.Validation;
+    using System.Activities.DynamicUpdate;
+    using System.Activities.Validation;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -13,6 +13,8 @@ namespace CoreWf.DynamicUpdate
     using System.Linq;
     using System.Runtime;
     using System.Runtime.CompilerServices;
+    using System.Activities;
+    using System.Activities.Runtime;
 
     static class ActivityComparer
     {

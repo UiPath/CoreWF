@@ -1,11 +1,12 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.DynamicUpdate
+namespace System.Activities.DynamicUpdate
 {
     using System;
-    using CoreWf;
-    using CoreWf.Runtime;
+    using System.Activities;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
@@ -184,8 +185,8 @@ namespace CoreWf.DynamicUpdate
             return this.innerContext.GetValue(argument);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "We explicitly provide a RuntimeArgument overload to avoid requiring the object type parameter.")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "We explicitly provide a RuntimeArgument overload to avoid requiring the object type parameter.")]
         public object GetValue(RuntimeArgument runtimeArgument)
         {
             ThrowIfDisposed();
@@ -198,39 +199,39 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.SetValue(argument, value);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]      
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]      
         public T GetValue<T>(Variable<T> variable)
         {
             ThrowIfDisposed();
             return this.innerContext.GetValue(variable);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
         public object GetValue(Variable variable)
         {
             ThrowIfDisposed();
             return this.innerContext.GetValue(variable);
         }       
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
         public void SetValue<T>(Variable<T> variable, T value)
         {
             ThrowIfDisposed();
             this.innerContext.SetValue(variable, value);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "We explicitly provide a Variable overload to avoid requiring the object type parameter.")]
         public void SetValue(Variable variable, object value)
         {
             ThrowIfDisposed();
             this.innerContext.SetValue(variable, value);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters, Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters, Justification = "Generic needed for type inference")]
         public Location<T> GetLocation<T>(Variable variable)
         {
             ThrowIfDisposed();
@@ -326,54 +327,54 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleActivity(activity, onCompleted, onFaulted);
         }
         
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleActivity<TResult>(Activity<TResult> activity, CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleActivity<TResult>(activity, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction(ActivityAction activityAction, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleAction(activityAction, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T>(ActivityAction<T> activityAction, T argument, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleAction<T>(activityAction, argument, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2>(ActivityAction<T1, T2> activityAction, T1 argument1, T2 argument2, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3>(ActivityAction<T1, T2, T3> activityAction, T1 argument1, T2 argument2, T3 argument3, CompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, argument3, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4>(
             ActivityAction<T1, T2, T3, T4> activityAction, 
             T1 argument1, 
@@ -387,9 +388,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, argument3, argument4, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5>(
             ActivityAction<T1, T2, T3, T4, T5> activityAction, 
             T1 argument1, 
@@ -404,9 +405,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, argument3, argument4, argument5, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6>(
             ActivityAction<T1, T2, T3, T4, T5, T6> activityAction,
             T1 argument1, 
@@ -422,9 +423,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, argument3, argument4, argument5, argument6, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7> activityAction,
             T1 argument1, 
@@ -441,9 +442,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, argument3, argument4, argument5, argument6, argument7, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8> activityAction,
             T1 argument1, 
@@ -461,9 +462,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, argument3, argument4, argument5, argument6, argument7, argument8, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9> activityAction,
             T1 argument1,
@@ -482,9 +483,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleAction(activityAction, argument1, argument2, argument3, argument4, argument5, argument6, argument7, argument8, argument9, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> activityAction,
             T1 argument1,
@@ -517,9 +518,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> activityAction,
             T1 argument1, 
@@ -554,9 +555,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> activityAction,
             T1 argument1,
@@ -593,9 +594,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> activityAction,
             T1 argument1,
@@ -634,9 +635,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> activityAction,
             T1 argument1,
@@ -677,9 +678,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> activityAction,
             T1 argument1,
@@ -722,9 +723,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
             ActivityAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> activityAction,
             T1 argument1, 
@@ -769,36 +770,36 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
         
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<TResult>(ActivityFunc<TResult> activityFunc, CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleFunc(activityFunc, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T, TResult>(ActivityFunc<T, TResult> activityFunc, T argument, CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleFunc(activityFunc, argument, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, TResult>(ActivityFunc<T1, T2, TResult> activityFunc, T1 argument1, T2 argument2, CompletionCallback<TResult> onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, TResult>(
             ActivityFunc<T1, T2, T3, TResult> activityFunc, 
             T1 argument1, 
@@ -811,9 +812,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, TResult>(
             ActivityFunc<T1, T2, T3, T4, TResult> activityFunc, 
             T1 argument1,
@@ -827,9 +828,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, argument4, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-           Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+           //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, TResult> activityFunc,
             T1 argument1, 
@@ -844,9 +845,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, argument4, argument5, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, TResult> activityFunc,
             T1 argument1, 
@@ -862,9 +863,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, argument4, argument5, argument6, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, TResult> activityFunc,
             T1 argument1, 
@@ -881,9 +882,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, argument4, argument5, argument6, argument7, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, TResult> activityFunc,
             T1 argument1, 
@@ -901,9 +902,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, argument4, argument5, argument6, argument7, argument8, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> activityFunc,
             T1 argument1, 
@@ -922,9 +923,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, argument4, argument5, argument6, argument7, argument8, argument9, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> activityFunc,
             T1 argument1,
@@ -944,9 +945,9 @@ namespace CoreWf.DynamicUpdate
             this.innerContext.ScheduleFunc(activityFunc, argument1, argument2, argument3, argument4, argument5, argument6, argument7, argument8, argument9, argument10, onCompleted, onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> activityFunc,
             T1 argument1,
@@ -981,9 +982,8 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters, Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult> activityFunc,
             T1 argument1, 
@@ -1020,9 +1020,8 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters, Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult> activityFunc,
             T1 argument1,
@@ -1061,9 +1060,8 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters, Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult> activityFunc,
             T1 argument1,
@@ -1104,9 +1102,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult> activityFunc,
             T1 argument1,
@@ -1149,9 +1147,9 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-            Justification = "Generic needed for type inference")]
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
+            //Justification = "Generic needed for type inference")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult>(
             ActivityFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TResult> activityFunc,
             T1 argument1,
@@ -1196,7 +1194,7 @@ namespace CoreWf.DynamicUpdate
                 onFaulted);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefaultParametersShouldNotBeUsed, Justification = "Temporary suppression - to be addressed by DCR 127467")]
         public void ScheduleDelegate(ActivityDelegate activityDelegate, IDictionary<string, object> inputParameters, DelegateCompletionCallback onCompleted = null, FaultCallback onFaulted = null)
         {
             ThrowIfDisposed();

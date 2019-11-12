@@ -10,9 +10,7 @@ namespace System.Activities.Statements
     using System.Collections.ObjectModel;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     [ContentProperty("Action")]
     public sealed class InvokeAction : NativeActivity

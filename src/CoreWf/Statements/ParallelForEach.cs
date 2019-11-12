@@ -11,9 +11,7 @@ namespace System.Activities.Statements
     using System.Activities.Internals;
     using System;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     [ContentProperty("Body")]
     public sealed class ParallelForEach<T> : NativeActivity

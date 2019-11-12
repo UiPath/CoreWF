@@ -14,9 +14,7 @@ namespace System.Activities.Statements
     using System.Activities.Runtime;
     using System;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     [ContentProperty("Nodes")]
     public sealed class Flowchart : NativeActivity

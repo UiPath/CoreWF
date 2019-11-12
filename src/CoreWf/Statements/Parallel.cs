@@ -10,9 +10,7 @@ namespace System.Activities.Statements
     using System.Activities.Runtime.Collections;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     [ContentProperty("Branches")]
     public sealed class Parallel : NativeActivity

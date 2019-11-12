@@ -1,15 +1,15 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.DynamicUpdate
+namespace System.Activities.DynamicUpdate
 {
     using System;
     using System.IO;
-    using CoreWf;
-    using CoreWf.Expressions;
-    using CoreWf.DynamicUpdate;
-    using CoreWf.Hosting;
-    using CoreWf.Runtime;
+    using System.Activities;
+    using System.Activities.Expressions;
+    using System.Activities.DynamicUpdate;
+    using System.Activities.Hosting;
+    using System.Activities.Runtime;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -17,9 +17,10 @@ namespace CoreWf.DynamicUpdate
     using System.Globalization;
     using System.Runtime;
     using System.Runtime.CompilerServices;
-    using Portable.Xaml;
-    using CoreWf.Validation;
+    using System.Xaml;
+    using System.Activities.Validation;
     using Microsoft.VisualBasic.Activities;
+    using System.Activities.Internals;
 
     public static class DynamicUpdateServices
     {
@@ -97,7 +98,7 @@ namespace CoreWf.DynamicUpdate
             return CreateUpdateMap(updatedWorkflowDefinition, disallowUpdateInsideActivities, out activitiesBlockingUpdate);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters, Justification = "Approved Design. Need to return the map and the block list.")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters, Justification = "Approved Design. Need to return the map and the block list.")]
         public static DynamicUpdateMap CreateUpdateMap(Activity updatedWorkflowDefinition, IEnumerable<Activity> disallowUpdateInsideActivities, out IList<ActivityBlockingUpdate> activitiesBlockingUpdate)
         {
             if (updatedWorkflowDefinition == null)
@@ -136,7 +137,7 @@ namespace CoreWf.DynamicUpdate
             return CreateUpdateMap(updatedActivityDefinition, disallowUpdateInsideActivities, out activitiesBlockingUpdate);
         }
 
-        [SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters, Justification = "Approved Design. Need to return the map and the block list.")]
+        //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters, Justification = "Approved Design. Need to return the map and the block list.")]
         public static DynamicUpdateMap CreateUpdateMap(ActivityBuilder updatedActivityDefinition, IEnumerable<Activity> disallowUpdateInsideActivities, out IList<ActivityBlockingUpdate> activitiesBlockingUpdate)
         {
             if (updatedActivityDefinition == null)

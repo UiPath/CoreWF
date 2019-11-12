@@ -17,9 +17,7 @@ namespace System.Activities
     using System.Xml.Linq;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     // WorkflowApplication is free-threaded. It is responsible for the correct locking and usage of the ActivityExecutor.
     // Given that there are two simultaneous users of ActivityExecutor (WorkflowApplication and NativeActivityContext),

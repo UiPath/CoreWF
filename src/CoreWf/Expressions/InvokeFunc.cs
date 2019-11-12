@@ -6,9 +6,7 @@ namespace System.Activities.Expressions
     using System.ComponentModel;
     using System.Windows.Markup;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     [ContentProperty("Func")]
     public sealed class InvokeFunc<TResult> : NativeActivity<TResult>

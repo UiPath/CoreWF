@@ -11,9 +11,7 @@ namespace System.Activities.Statements
     using System.Diagnostics.CodeAnalysis;
     using System.Activities.Runtime;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     /// <summary>
     /// InternalState is internal representation of State.

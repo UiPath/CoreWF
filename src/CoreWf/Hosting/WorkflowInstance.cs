@@ -13,9 +13,7 @@ namespace System.Activities.Hosting
     using System.Activities.Runtime.DurableInstancing;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     [Fx.Tag.XamlVisible(false)]
     public abstract class WorkflowInstance

@@ -13,9 +13,7 @@ namespace System.Activities
     using System.Runtime.Serialization;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate;
-#endif
+using System.Activities.DynamicUpdate;
 
     [DataContract(Name = XD.ActivityInstance.Name, Namespace = XD.Runtime.Namespace)]
     [Fx.Tag.XamlVisible(false)]

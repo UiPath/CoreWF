@@ -7,9 +7,7 @@ namespace System.Activities.Expressions
     using System.Activities.Statements;
     using System.ComponentModel;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [OrElse])")]
     public sealed class OrElse : Activity<bool>

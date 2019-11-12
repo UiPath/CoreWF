@@ -8,9 +8,7 @@ namespace System.Activities.Runtime
     using System.Runtime.Serialization;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate;
-#endif
+using System.Activities.DynamicUpdate;
 
     [DataContract(Name = XD.Runtime.ActivityInstanceMap, Namespace = XD.Runtime.Namespace)]
     internal class ActivityInstanceMap

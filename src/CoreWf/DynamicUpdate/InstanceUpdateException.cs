@@ -1,7 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.DynamicUpdate
+namespace System.Activities.DynamicUpdate
 {
     using System;
     using System.Collections.Generic;
@@ -10,6 +10,7 @@ namespace CoreWf.DynamicUpdate
     using System.Text;
     using System.Security;
     using System.Runtime;
+    using System.Activities.Runtime;
 
     [Serializable]
     public class InstanceUpdateException : Exception

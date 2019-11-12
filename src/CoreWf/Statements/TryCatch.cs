@@ -14,9 +14,7 @@ namespace System.Activities.Statements
     using System.Windows.Markup;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate;
-#endif
+using System.Activities.DynamicUpdate;
 
     public sealed class TryCatch : NativeActivity
     {

@@ -16,9 +16,7 @@ using System.Threading;
 using System.Windows.Markup;
 using System.Activities.Internals;
 
-#if NET45
 using System.Activities.DynamicUpdate;
-#endif
 
 namespace System.Activities
 {
@@ -1238,7 +1236,6 @@ namespace System.Activities
             SetArgumentsCollection(information.GetArguments(), metadata.CreateEmptyBindings);
         }
 
-#if NET45
         internal virtual void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
             DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
         {
@@ -1256,7 +1253,6 @@ namespace System.Activities
         protected virtual void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
         {
         }
-#endif
 
         internal void AddDefaultExtensionProvider<T>(Func<T> extensionProvider)
             where T : class

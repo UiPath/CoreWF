@@ -11,9 +11,7 @@ namespace System.Activities
     using System.Activities.Runtime;
     using System.Activities.Internals;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     // Wrapper over instance data retrieved from the Instance Store but not yet loaded into a WorkflowApplication.
     // Once this instance is loaded into a WFApp using WFApp.Load(), this object is stale and trying to abort or reload it wil throw.

@@ -1,18 +1,18 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace CoreWf.DynamicUpdate
+namespace System.Activities.DynamicUpdate
 {
     using System;
-    using CoreWf.DynamicUpdate;
-    using CoreWf.Validation;
+    using System.Activities.DynamicUpdate;
+    using System.Activities.Validation;
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
-    using CoreWf.Runtime;
-    using CoreWf.Internals;
+    using System.Activities.Runtime;
+    using System.Activities.Internals;
     using System.Runtime.CompilerServices;
 
     public class DynamicUpdateMapBuilder

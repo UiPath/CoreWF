@@ -8,9 +8,7 @@ namespace System.Activities
     using System;
     using System.Runtime.Serialization;
 
-#if NET45
-    using System.Activities.DynamicUpdate;
-#endif
+using System.Activities.DynamicUpdate;
     public abstract class AsyncCodeActivity : Activity, IAsyncCodeActivity
     {
         private static AsyncCallback onExecuteComplete;

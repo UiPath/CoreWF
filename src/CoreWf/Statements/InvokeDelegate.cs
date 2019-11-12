@@ -10,9 +10,7 @@ namespace System.Activities.Statements
     using System.Activities.Runtime;
     using System.Windows.Markup;
 
-#if NET45
-    using System.Activities.DynamicUpdate; 
-#endif
+using System.Activities.DynamicUpdate;
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,
     //    Justification = "Approved Workflow naming")]

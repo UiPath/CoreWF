@@ -48,8 +48,6 @@
     <PackageReference Include="System.Security.Permissions" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
-    <Compile Remove="DynamicUpdate\**\*.cs" />
-    <Compile Remove="XamlIntegration\DynamicUpdate*.cs" />
     <Compile Remove="Tracking\WorkflowInstanceUpdatedRecord.cs" />
     <Compile Remove="XamlIntegration\ObjectMatchInfoConverter.cs" />
   </ItemGroup>
