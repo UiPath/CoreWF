@@ -27,8 +27,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using System.Windows.Markup;
+using MonoTests.System.Xaml;
 #if PCL
-using System.Xaml.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 #else
@@ -39,7 +40,7 @@ using System.Xaml.Schema;
 
 using Category = NUnit.Framework.CategoryAttribute;
 
-namespace MonoTests.System.Xaml.Markup
+namespace MonoTests.System.Windows.Markup
 {
 	[TestFixture]
 	public class XamlDeferLoadTest

@@ -30,7 +30,7 @@ using MonoTests.System.Xaml;
 using System.ComponentModel;
 #endif
 #if PCL
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.Xaml.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
@@ -43,7 +43,7 @@ using System.Xaml.Schema;
 
 using Category = NUnit.Framework.CategoryAttribute;
 
-namespace MonoTests.System.Xaml.Markup
+namespace MonoTests.System.Windows.Markup
 {
 #if HAS_TYPE_CONVERTER
 	[TestFixture]

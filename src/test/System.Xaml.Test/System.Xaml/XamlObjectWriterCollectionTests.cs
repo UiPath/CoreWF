@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Collections;
 using n = NUnit.Framework;
 #if PCL
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 using System.Xaml.ComponentModel;

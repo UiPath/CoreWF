@@ -28,7 +28,7 @@ using System.Text;
 using System.Xml;
 using NUnit.Framework;
 #if PCL
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.Xaml.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
@@ -106,7 +106,7 @@ namespace MonoTests.System.Xaml.Schema
 		{
 			// ... so, it does not seem to just call XamlType.ToString(), but rather first try to use UnderlyingType if possible.
 			Assert.AreEqual ("System.String", c.ConvertTo (null, null, XamlLanguage.String, typeof (string)), "#1"); // huh?
-			Assert.AreEqual ("System.Xaml.Markup.TypeExtension".Fixup(), c.ConvertTo (null, null, XamlLanguage.Type, typeof (string)), "#1"); // huh?
+			Assert.AreEqual ("System.Windows.Markup.TypeExtension".Fixup(), c.ConvertTo (null, null, XamlLanguage.Type, typeof (string)), "#1"); // huh?
 			Assert.AreEqual ("{urn:foo}Foo", c.ConvertTo (null, null, new XamlType ("urn:foo", "Foo", null, sctx), typeof (string)), "#2");
 		}
 

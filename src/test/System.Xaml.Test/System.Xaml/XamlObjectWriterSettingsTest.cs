@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 #if PCL
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.Xaml.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;

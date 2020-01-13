@@ -28,8 +28,8 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using MonoTests.System.Xaml;
+using System.Windows.Markup;
 #if PCL
-using System.Xaml.Markup;
 using System.Xaml.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
@@ -42,7 +42,7 @@ using System.Xaml.Schema;
 
 using Category = NUnit.Framework.CategoryAttribute;
 
-namespace MonoTests.System.Xaml.Markup
+namespace MonoTests.System.Windows.Markup
 {
 	[TestFixture]
 	public class ValueSerializerTest
@@ -55,7 +55,7 @@ namespace MonoTests.System.Xaml.Markup
 
 		static readonly List<XamlType> std_types;
 		object[] test_values = { null, true, "test", 3, 'x', 5.5, -1.414m, (byte)255, new Uri("urn:foo"), new NullExtension(), new object(), new PropertyDefinition(), new Reference("Foo"), new StaticExtension(), TimeSpan.FromMinutes(5), new TypeExtension("TypeExt"), new XData() { Text = "test xdata" } }; // can we instantiate MemberDefinition?
-		string[] test_strings = { String.Empty, "True", "test", "3", "x", "5.5", "-1.414", "255", "urn:foo", "System.Xaml.Markup.NullExtension", "System.Object", "System.Xaml.Markup.PropertyDefinition", "System.Xaml.Markup.Reference", "System.Xaml.Markup.StaticExtension", "00:05:00", "System.Xaml.Markup.TypeExtension", "System.Xaml.Markup.XData" };
+		string[] test_strings = { String.Empty, "True", "test", "3", "x", "5.5", "-1.414", "255", "urn:foo", "System.Windows.Markup.NullExtension", "System.Object", "System.Windows.Markup.PropertyDefinition", "System.Windows.Markup.Reference", "System.Windows.Markup.StaticExtension", "00:05:00", "System.Windows.Markup.TypeExtension", "System.Windows.Markup.XData" };
 
 		[Test]
 		public void SerializerInAllTypes()

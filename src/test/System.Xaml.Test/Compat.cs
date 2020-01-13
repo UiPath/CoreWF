@@ -56,7 +56,7 @@ namespace MonoTests.System.Xaml
 			return str;
 #else
 			return str
-				.Replace ("System.Xaml.Markup", "System.Windows.Markup")
+				.Replace ("System.Windows.Markup", "System.Windows.Markup")
 				.Replace ("System.Xaml", Namespace);
 #endif
 		}

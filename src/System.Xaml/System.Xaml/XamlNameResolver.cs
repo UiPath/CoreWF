@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Xaml.ComponentModel;
 using System.Linq;
-using System.Xaml.Markup;
+using System.Windows.Markup;
 
 namespace System.Xaml
 {

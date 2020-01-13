@@ -33,7 +33,7 @@ using System.Globalization;
 using System.ComponentModel;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 #if PCL
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.Xaml.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;

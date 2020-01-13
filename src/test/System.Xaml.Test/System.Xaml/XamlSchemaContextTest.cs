@@ -27,8 +27,8 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using System.IO;
+using System.Windows.Markup;
 #if PCL
-using System.Xaml.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 #else

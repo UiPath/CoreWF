@@ -27,9 +27,9 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Xaml.Schema;
-using System.Xaml.Markup;
+using System.Windows.Markup;
 
-[assembly:XmlnsDefinition (System.Xaml.XamlLanguage.Xaml2006Namespace, "System.Xaml.Markup")] // FIXME: verify.
+[assembly:XmlnsDefinition (System.Xaml.XamlLanguage.Xaml2006Namespace, "System.Windows.Markup")] // FIXME: verify.
 
 namespace System.Xaml
 {

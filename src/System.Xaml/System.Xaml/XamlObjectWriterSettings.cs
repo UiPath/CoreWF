@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Xaml.ComponentModel;
 using System.Reflection;
-using System.Xaml.Markup;
+using System.Windows.Markup;
 #if !__MOBILE__ && !PCL
 using System.Xaml.Permissions;
 #endif

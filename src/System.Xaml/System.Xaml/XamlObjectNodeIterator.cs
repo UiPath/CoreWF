@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Xaml.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 using System.Xml;

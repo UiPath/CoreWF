@@ -28,7 +28,7 @@ using System.Xaml.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 using System.Xml;

@@ -26,8 +26,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using NUnit.Framework;
+using System.Windows.Markup;
 #if PCL
-using System.Xaml.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 #else
@@ -38,7 +38,7 @@ using System.Xaml.Schema;
 
 using Category = NUnit.Framework.CategoryAttribute;
 
-namespace MonoTests.System.Xaml.Markup
+namespace MonoTests.System.Windows.Markup
 {
 	[TestFixture]
 	public class ArrayExtensionTest

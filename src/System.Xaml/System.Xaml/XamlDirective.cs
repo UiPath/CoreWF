@@ -26,7 +26,7 @@ using System.Xaml.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Xaml.Schema;
-using System.Xaml.Markup;
+using System.Windows.Markup;
 using System.ComponentModel;
 
 namespace System.Xaml

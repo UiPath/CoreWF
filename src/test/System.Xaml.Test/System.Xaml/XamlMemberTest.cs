@@ -28,10 +28,10 @@ using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using MonoTests.System.Xaml.NamespaceTest;
+using System.Windows.Markup;
 
 
 #if PCL
-using System.Xaml.Markup;
 using System.Xaml.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
@@ -414,7 +414,7 @@ namespace MonoTests.System.Xaml
 			Assert.AreEqual ("{http://schemas.microsoft.com/winfx/2006/xaml}_Initialization", XamlLanguage.Initialization.ToString (), "#1");
 
 			// Wow. Uncomment this, and it will show .NET returns the XamlMember.ToString() results *inconsistently*.
-			//Assert.AreEqual ("System.Xaml.Markup.XData", XamlLanguage.XData.ToString (), "#2pre");
+			//Assert.AreEqual ("System.Windows.Markup.XData", XamlLanguage.XData.ToString (), "#2pre");
 			Assert.AreEqual (XamlLanguage.Xaml2006Namespace, XamlLanguage.XData.PreferredXamlNamespace, "#2pre2");
 
 			Assert.AreEqual ("{http://schemas.microsoft.com/winfx/2006/xaml}XData.Text", XamlLanguage.XData.GetMember ("Text").ToString (), "#2");
