@@ -1,0 +1,5 @@
+<ArgumentWithIntConstructor xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<x:Arguments>
+		<x:String>12</x:String>
+	</x:Arguments>
+</ArgumentWithIntConstructor>

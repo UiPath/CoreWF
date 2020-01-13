@@ -1,0 +1,14 @@
+<NamedItem2 x:Name="i1" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <NamedItem2.References>
+    <NamedItem2 x:Name="i4">
+      <NamedItem2.References>
+        <x:Reference>i3</x:Reference>
+      </NamedItem2.References>
+    </NamedItem2>
+    <NamedItem2 x:Name="i2">
+      <NamedItem2.References>
+        <NamedItem2 x:Name="i3" />
+      </NamedItem2.References>
+    </NamedItem2>
+  </NamedItem2.References>
+</NamedItem2>

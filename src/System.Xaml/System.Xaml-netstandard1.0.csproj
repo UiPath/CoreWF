@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <RootNamespace>Portable.Xaml</RootNamespace>
+    <AssemblyName>Portable.Xaml</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
+    <DefineConstants>TRACE;PCL;NETSTANDARD;DEBUG;HAS_TYPE_CONVERTER;NETSTANDARD1_0</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
+    <DefineConstants>TRACE;PCL;NETSTANDARD;RELEASE;HAS_TYPE_CONVERTER;NETSTANDARD1_0</DefineConstants>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
+  </ItemGroup>
+</Project>

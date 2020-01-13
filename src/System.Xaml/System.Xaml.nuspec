@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+	<metadata>
+		<id>System.Xaml</id>
+		<version>$version$</version>
+		<title>System.Xaml</title>
+		<authors>Mono development team</authors>
+		<owners>Mono development team</owners>
+		<licenseUrl>https://github.com/cwensley/System.Xaml/blob/master/LICENSE.txt</licenseUrl>
+		<projectUrl>https://github.com/cwensley/System.Xaml</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Portable Xaml reader/writer</summary>
+		<description>
+System.Xaml is a port of mono's System.Xaml to .NET Standard.
+
+This allows you to read/write xaml for desktop, mobile, and .NET Core projects.
+		</description>
+		<copyright>(c) Various Mono authors</copyright>
+		<tags>cross platform xaml</tags>
+		<dependencies>
+            <group targetFramework=".NETStandard1.0">
+                <dependency id="NETStandard.Library" version="1.6.1" />
+                <dependency id="System.ComponentModel.TypeConverter" version="4.3.0" />
+                <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+            </group>
+            <group targetFramework=".NETStandard1.3">
+                <dependency id="NETStandard.Library" version="1.6.1" />
+                <dependency id="System.ComponentModel.TypeConverter" version="4.3.0" />
+                <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+            </group>
+            <group targetFramework=".NETStandard2.0">
+            </group>
+        </dependencies>
+	</metadata>
+	<files>
+		<file src="..\..\artifacts\core\$configuration$\netstandard1.0\System.Xaml.dll" target="lib\netstandard1.0" />
+		<file src="..\..\artifacts\core\$configuration$\netstandard1.3\System.Xaml.dll" target="lib\netstandard1.3" />
+		<file src="..\..\artifacts\core\$configuration$\netstandard2.0\System.Xaml.dll" target="lib\netstandard2.0" />
+		<file src="..\..\LICENSE.txt" target="LICENSE.txt" />
+	</files>
+</package>

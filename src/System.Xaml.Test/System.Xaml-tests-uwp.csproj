@@ -1,0 +1,383 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{1B4909D0-ECFB-4E32-8C02-B164DB1D64C6}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MonoTests.Portable.Xaml</RootNamespace>
+    <AssemblyName>Portable.Xaml_test_uwp</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>UnitTestProject2_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <UnitTestPlatformVersion Condition="'$(UnitTestPlatformVersion)' == ''">$(VisualStudioVersion)</UnitTestPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\artifacts\test\Debug\uwp\x86\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;PCL;NETSTANDARD</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\..\artifacts\test\Release\uwp\x86\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;PCL;NETSTANDARD</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\artifacts\test\Debug\uwp\ARM\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;PCL;NETSTANDARD</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>..\..\artifacts\test\Release\uwp\ARM\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;PCL;NETSTANDARD</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\artifacts\test\Debug\uwp\x64\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;PCL;NETSTANDARD</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\..\artifacts\test\Release\uwp\x64\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;PCL;NETSTANDARD</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Categories.cs" />
+    <Compile Include="Compat.cs" />
+    <Compile Include="MainTestPage.xaml.cs">
+      <DependentUpon>MainTestPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="System.Windows.Markup\ArrayExtensionTest.cs" />
+    <Compile Include="System.Windows.Markup\ReferenceTest.cs" />
+    <Compile Include="System.Windows.Markup\StaticExtensionTest.cs" />
+    <Compile Include="System.Windows.Markup\TypeExtensionConverterTest.cs" />
+    <Compile Include="System.Windows.Markup\TypeExtensionTest.cs" />
+    <Compile Include="System.Windows.Markup\ValueSerializerAttributeTest.cs" />
+    <Compile Include="System.Windows.Markup\ValueSerializerTest.cs" />
+    <Compile Include="System.Windows.Markup\XamlDeferLoadTest.cs" />
+    <Compile Include="System.Windows.Markup\XDataTest.cs" />
+    <Compile Include="System.Xaml.Schema\XamlMemberInvokerTest.cs" />
+    <Compile Include="System.Xaml.Schema\XamlTypeInvokerTest.cs" />
+    <Compile Include="System.Xaml.Schema\XamlTypeNameTest.cs" />
+    <Compile Include="System.Xaml.Schema\XamlTypeTypeConverterTest.cs" />
+    <Compile Include="System.Xaml.Schema\XamlValueConverterTest.cs" />
+    <Compile Include="System.Xaml\AmbientPropertyValueTest.cs" />
+    <Compile Include="System.Xaml\AttachableMemberIdentifierTest.cs" />
+    <Compile Include="System.Xaml\AttachablePropertyServicesTest.cs" />
+    <Compile Include="System.Xaml\DummyValueSerializerContext.cs" />
+    <Compile Include="System.Xaml\NamespaceDeclarationTest.cs" />
+    <Compile Include="System.Xaml\TestedTypes.cs" />
+    <Compile Include="System.Xaml\ValueSerializerContextTest.cs" />
+    <Compile Include="System.Xaml\XamlBackgroundReaderTest.cs" />
+    <Compile Include="System.Xaml\XamlDeferringLoaderTest.cs" />
+    <Compile Include="System.Xaml\XamlDirectiveTest.cs" />
+    <Compile Include="System.Xaml\XamlDuplicateMemberExceptionTest.cs" />
+    <Compile Include="System.Xaml\XamlLanguageTest.cs" />
+    <Compile Include="System.Xaml\XamlMemberTest.cs" />
+    <Compile Include="System.Xaml\XamlNodeListTest.cs" />
+    <Compile Include="System.Xaml\XamlNodeQueueTest.cs" />
+    <Compile Include="System.Xaml\XamlObjectEventArgsTest.cs" />
+    <Compile Include="System.Xaml\XamlObjectReaderSettingsTest.cs" />
+    <Compile Include="System.Xaml\XamlObjectReaderTest.cs" />
+    <Compile Include="System.Xaml\XamlObjectWriterCollectionTests.cs" />
+    <Compile Include="System.Xaml\XamlObjectWriterSettingsTest.cs" />
+    <Compile Include="System.Xaml\XamlObjectWriterTest.cs" />
+    <Compile Include="System.Xaml\XamlReaderSettingsTest.cs" />
+    <Compile Include="System.Xaml\XamlReaderTest.cs" />
+    <Compile Include="System.Xaml\XamlReaderTestBase.cs" />
+    <Compile Include="System.Xaml\XamlSchemaContextSettingsTest.cs" />
+    <Compile Include="System.Xaml\XamlSchemaContextTest.cs" />
+    <Compile Include="System.Xaml\XamlTypeTest.cs" />
+    <Compile Include="System.Xaml\XamlXmlReaderSettingsTest.cs" />
+    <Compile Include="System.Xaml\XamlXmlReaderTest.cs" />
+    <Compile Include="System.Xaml\XamlXmlWriterSettingsTest.cs" />
+    <Compile Include="System.Xaml\XamlXmlWriterTest.cs" />
+    <Compile Include="UnitTestApp.xaml.cs">
+      <DependentUpon>UnitTestApp.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="UnitTestApp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="System.Windows.Markup\ChangeLog" />
+    <None Include="System.Xaml.Schema\ChangeLog" />
+    <None Include="System.Xaml\ChangeLog" />
+    <None Include="UnitTestProject2_TemporaryKey.pfx" />
+    <None Include="XmlFiles\ChangeLog" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\NUnitLockScreenLogo.scale-200.png" />
+    <Content Include="Assets\NUnitSplashScreen.scale-200.png" />
+    <Content Include="Assets\NUnitSquare150x150Logo.scale-200.png" />
+    <Content Include="Assets\NUnitSquare44x44Logo.scale-200.png" />
+    <Content Include="Assets\NUnitSquare44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\NUnitStoreLogo.png" />
+    <Content Include="Assets\NUnitWide310x150Logo.scale-200.png" />
+    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="XmlFiles\AbstractContainer.xml" />
+    <Content Include="XmlFiles\AbstractWrapper.xml" />
+    <Content Include="XmlFiles\AmbientPropertyContainer.xml" />
+    <Content Include="XmlFiles\AmbientPropertyContainer2.xml" />
+    <Content Include="XmlFiles\AmbientPropertyContainer3.xml" />
+    <Content Include="XmlFiles\AmbientPropertyContainer4.xml" />
+    <Content Include="XmlFiles\ArgumentAttributed.xml" />
+    <Content Include="XmlFiles\ArgumentMultipleTypesFromAttribute.xml" />
+    <Content Include="XmlFiles\ArgumentMultipleTypesFromInt.xml" />
+    <Content Include="XmlFiles\ArgumentMultipleTypesFromString.xml" />
+    <Content Include="XmlFiles\ArgumentNonAttributed.xml" />
+    <Content Include="XmlFiles\ArgumentWithIntConstructorFromAttribute.xml" />
+    <Content Include="XmlFiles\ArgumentWithIntConstructorFromInt.xml" />
+    <Content Include="XmlFiles\ArgumentWithIntConstructorFromString.xml" />
+    <Content Include="XmlFiles\ArrayExtension.xml" />
+    <Content Include="XmlFiles\ArrayExtension2.xml" />
+    <Content Include="XmlFiles\ArrayList.xml" />
+    <Content Include="XmlFiles\Array_Int32.xml" />
+    <Content Include="XmlFiles\AttachedProperty.xml" />
+    <Content Include="XmlFiles\CollectionContentProperty.xml" />
+    <Content Include="XmlFiles\CollectionContentProperty2.xml" />
+    <Content Include="XmlFiles\CollectionContentPropertyX.xml" />
+    <Content Include="XmlFiles\CollectionContentPropertyX2.xml" />
+    <Content Include="XmlFiles\ComplexPositionalParameterWrapper.xml" />
+    <Content Include="XmlFiles\ComplexPositionalParameterWrapper2.xml" />
+    <Content Include="XmlFiles\ContentIncluded.xml" />
+    <Content Include="XmlFiles\ContentPropertyContainer.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithChild.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithChildExtensionAndNamedProperty.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithCommasInNamedValue.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithCommasInPositionalValue.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithEscapeChars.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithPositionalAndNamed.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithPositionalChild.xml" />
+    <Content Include="XmlFiles\CustomExtensionWithPositonalAfterExplicitProperty.xml" />
+    <Content Include="XmlFiles\DateTime.xml" />
+    <Content Include="XmlFiles\DateTime2.xml" />
+    <Content Include="XmlFiles\DateTime3.xml" />
+    <Content Include="XmlFiles\DateTime4.xml" />
+    <Content Include="XmlFiles\DateTime5.xml" />
+    <Content Include="XmlFiles\DateTime6.xml" />
+    <Content Include="XmlFiles\DefaultNamespaces.xml" />
+    <Content Include="XmlFiles\DefaultNamespaces_WithDefinedNamespace.xml" />
+    <Content Include="XmlFiles\DeferredLoadingCollectionContainer.xml" />
+    <Content Include="XmlFiles\DeferredLoadingContainerMember.xml" />
+    <Content Include="XmlFiles\DeferredLoadingContainerMember2.xml" />
+    <Content Include="XmlFiles\DeferredLoadingContainerMemberStringType.xml" />
+    <Content Include="XmlFiles\DeferredLoadingContainerType.xml" />
+    <Content Include="XmlFiles\DeferredLoadingWithInvalidType.xml" />
+    <Content Include="XmlFiles\Dictionary_Int32_String.xml" />
+    <Content Include="XmlFiles\Dictionary_String_Double.xml" />
+    <Content Include="XmlFiles\Dictionary_String_Type.xml" />
+    <Content Include="XmlFiles\Dictionary_String_Type_2.xml" />
+    <Content Include="XmlFiles\DirectDictionaryContainer.xml" />
+    <Content Include="XmlFiles\DirectDictionaryContainer2.xml" />
+    <Content Include="XmlFiles\DirectListContainer.xml" />
+    <Content Include="XmlFiles\EnumContainer.xml" />
+    <Content Include="XmlFiles\EventContainer.xml" />
+    <Content Include="XmlFiles\EventStore.xml" />
+    <Content Include="XmlFiles\EventStore2.xml" />
+    <Content Include="XmlFiles\EventStore3.xml" />
+    <Content Include="XmlFiles\EventStore4.xml" />
+    <Content Include="XmlFiles\ExplicitKeyDictionary.xml" />
+    <Content Include="XmlFiles\GenericTypeWithClrNamespace.xml" />
+    <Content Include="XmlFiles\GenericTypeWithXamlNamespace.xml" />
+    <Content Include="XmlFiles\Guid.xml" />
+    <Content Include="XmlFiles\GuidFactoryMethod.xml" />
+    <Content Include="XmlFiles\ImmutableCollectionContainer.xml" />
+    <Content Include="XmlFiles\ImmutableTypeMultipleArguments.xml" />
+    <Content Include="XmlFiles\ImmutableTypeMultipleConstructors1.xml" />
+    <Content Include="XmlFiles\ImmutableTypeMultipleConstructors2.xml" />
+    <Content Include="XmlFiles\ImmutableTypeMultipleConstructors3.xml" />
+    <Content Include="XmlFiles\ImmutableTypeMultipleConstructors4.xml" />
+    <Content Include="XmlFiles\ImmutableTypeOptionalParameters1.xml" />
+    <Content Include="XmlFiles\ImmutableTypeOptionalParameters2.xml" />
+    <Content Include="XmlFiles\ImmutableTypeSingleArgument.xml" />
+    <Content Include="XmlFiles\ImmutableTypeWithCollectionProperty.xml" />
+    <Content Include="XmlFiles\ImmutableTypeWithNames.xml" />
+    <Content Include="XmlFiles\ImmutableTypeWithWritableProperty.xml" />
+    <Content Include="XmlFiles\Int32.xml" />
+    <Content Include="XmlFiles\ListWrapper.xml" />
+    <Content Include="XmlFiles\ListWrapper2.xml" />
+    <Content Include="XmlFiles\List_Array.xml" />
+    <Content Include="XmlFiles\List_Int32.xml" />
+    <Content Include="XmlFiles\List_Int32_2.xml" />
+    <Content Include="XmlFiles\List_Type.px.xml" />
+    <Content Include="XmlFiles\List_Type.sx.xml" />
+    <Content Include="XmlFiles\List_Type.xml" />
+    <Content Include="XmlFiles\List_XmlSerializable.xml" />
+    <Content Include="XmlFiles\LocalAssembly.xml" />
+    <Content Include="XmlFiles\LookupCorrectEvent.xml" />
+    <Content Include="XmlFiles\LookupCorrectEvent2.xml" />
+    <Content Include="XmlFiles\LookupCorrectEvent3.xml" />
+    <Content Include="XmlFiles\MyArrayExtension.xml" />
+    <Content Include="XmlFiles\MyArrayExtensionA.xml" />
+    <Content Include="XmlFiles\MyExtension.xml" />
+    <Content Include="XmlFiles\MyExtension2.xml" />
+    <Content Include="XmlFiles\MyExtension3.xml" />
+    <Content Include="XmlFiles\MyExtension4.xml" />
+    <Content Include="XmlFiles\MyExtension6.xml" />
+    <Content Include="XmlFiles\NamedItems.xml" />
+    <Content Include="XmlFiles\NamedItems2.xml" />
+    <Content Include="XmlFiles\NamedItems3.xml" />
+    <Content Include="XmlFiles\NamedItems4.xml" />
+    <Content Include="XmlFiles\NonPrimitive.xml" />
+    <Content Include="XmlFiles\NullableContainer.xml" />
+    <Content Include="XmlFiles\NullableWithConverter.xml" />
+    <Content Include="XmlFiles\NullExtension.xml" />
+    <Content Include="XmlFiles\NumericValues.xml" />
+    <Content Include="XmlFiles\NumericValues_Max.xml" />
+    <Content Include="XmlFiles\NumericValues_NaN.xml" />
+    <Content Include="XmlFiles\NumericValues_NegativeInfinity.xml" />
+    <Content Include="XmlFiles\NumericValues_PositiveInfinity.xml" />
+    <Content Include="XmlFiles\NumericValues_StandardTypes.xml" />
+    <Content Include="XmlFiles\PositionalParametersWrapper.xml" />
+    <Content Include="XmlFiles\PropertyDefinition.xml" />
+    <Content Include="XmlFiles\ReadOnlyPropertyContainer.xml" />
+    <Content Include="XmlFiles\Reference.xml" />
+    <Content Include="XmlFiles\StaticExtension.xml" />
+    <Content Include="XmlFiles\StaticExtensionWrapper.xml" />
+    <Content Include="XmlFiles\StaticExtensionWrapper2.xml" />
+    <Content Include="XmlFiles\StaticMember.xml" />
+    <Content Include="XmlFiles\String.xml" />
+    <Content Include="XmlFiles\TestClass4.xml" />
+    <Content Include="XmlFiles\TestClass5.xml" />
+    <Content Include="XmlFiles\TimeSpan.xml" />
+    <Content Include="XmlFiles\Type.xml" />
+    <Content Include="XmlFiles\Type2.xml" />
+    <Content Include="XmlFiles\TypeConverterOnListMember.xml" />
+    <Content Include="XmlFiles\TypeExtensionWrapper.xml" />
+    <Content Include="XmlFiles\TypeExtensionWrapper2.xml" />
+    <Content Include="XmlFiles\Uri.xml" />
+    <Content Include="XmlFiles\XmlDocument.xml" />
+    <Content Include="XmlFiles\XmlSerializable.xml" />
+    <Content Include="XmlFiles\XmlSerializableWrapper.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>5.3.2</Version>
+    </PackageReference>
+    <PackageReference Include="MSTest.TestAdapter">
+      <Version>1.1.14</Version>
+    </PackageReference>
+    <PackageReference Include="MSTest.TestFramework">
+      <Version>1.1.14</Version>
+    </PackageReference>
+    <PackageReference Include="NUnit">
+      <Version>3.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="nunit.xamarin">
+      <Version>3.6.1</Version>
+    </PackageReference>
+    <PackageReference Include="PCLStorage">
+      <Version>1.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="System.AppDomain">
+      <Version>2.0.11</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Xml.ReaderWriter">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Xml.XmlDocument">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Xml.XmlSerializer">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Forms">
+      <Version>2.3.4.231</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Portable.Xaml\Portable.Xaml-netstandard1.3.csproj">
+      <Project>{cdc8f791-56fc-4b15-aad2-bc460657cc02}</Project>
+      <Name>Portable.Xaml-netstandard1.3</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="XmlFiles\CurrentVersion.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Page Include="MainTestPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Content Include="XmlFiles\SilverlightApp1.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
