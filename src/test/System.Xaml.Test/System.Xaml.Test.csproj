@@ -32,6 +32,6 @@
 	  </PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\System.Xaml\System.Xaml.csproj" />
+	  <ProjectReference Include="..\..\System.Xaml\System.Xaml.csproj" />
 	</ItemGroup>
 </Project>
