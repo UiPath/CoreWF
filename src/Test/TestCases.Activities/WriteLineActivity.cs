@@ -660,7 +660,7 @@ namespace TestCases.Activities
 
             string[] texts = File.ReadAllLines(path);
 
-            if (!(texts.Length == textToVerify.Length))
+            if (texts.Length < textToVerify.Length)
             {
                 throw new Exception(string.Format("Expecting {0} strings to verify and actually got {1}", textToVerify.Length, texts.Length));
             }
