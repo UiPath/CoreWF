@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>System.Xaml</RootNamespace>
     <AssemblyName>System.Xaml</AssemblyName>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

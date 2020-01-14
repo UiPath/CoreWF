@@ -4,6 +4,7 @@
 		<TargetFramework>netcoreapp2.1</TargetFramework>
 		<RootNamespace>MonoTests.System.Xaml</RootNamespace>
 		<AssemblyName>System.Xaml.Test</AssemblyName>
+		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DefineConstants>TRACE;NETSTANDARD;PCL;CORE;DEBUG;NETCOREAPP2_0</DefineConstants>
