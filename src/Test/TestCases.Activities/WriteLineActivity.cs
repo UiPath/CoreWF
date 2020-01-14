@@ -298,7 +298,7 @@ namespace TestCases.Activities
 
                 TestRuntime.RunAndValidateWorkflow(sequence);
 
-                Assert.True((stringBuilder.ToString().Equals(stringToWrite + "\r\n")), "String builder did not equal the string to be written.");
+                Assert.True((stringBuilder.ToString().Equals(stringToWrite + Environment.NewLine)), "String builder did not equal the string to be written.");
             }
         }
 
