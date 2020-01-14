@@ -7,12 +7,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\artifacts\core\Debug\</OutputPath>
     <DefineConstants>TRACE;PCL;NETSTANDARD;DEBUG;HAS_TYPE_CONVERTER;HAS_CUSTOM_ATTRIBUTE_PROVIDER;NETSTANDARD2_0;HAS_ISUPPORT_INITIALIZE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <OutputPath>..\..\artifacts\core\Release\</OutputPath>
     <DefineConstants>TRACE;PCL;NETSTANDARD;RELEASE;HAS_TYPE_CONVERTER;HAS_CUSTOM_ATTRIBUTE_PROVIDER;NETSTANDARD2_0;HAS_ISUPPORT_INITIALIZE</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>

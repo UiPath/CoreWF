@@ -7,23 +7,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Activities", "CoreWf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Activities.EtwTracking", "CoreWf.EtwTracking\System.Activities.EtwTracking.csproj", "{B6738F70-5DBF-4BF5-9FEB-F504D56886FA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7B4FEB02-E589-4337-B563-086AF23FB97D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestObjects", "Test\TestObjects\TestObjects.csproj", "{E73908B0-BC1A-4CB1-BD6A-35790B1815D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestObjects", "test\TestObjects\TestObjects.csproj", "{E73908B0-BC1A-4CB1-BD6A-35790B1815D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Activities", "Test\TestCases.Activities\TestCases.Activities.csproj", "{E57F197D-6102-44AF-B5DA-478AEF7F7340}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Activities", "test\TestCases.Activities\TestCases.Activities.csproj", "{E57F197D-6102-44AF-B5DA-478AEF7F7340}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Runtime", "Test\TestCases.Runtime\TestCases.Runtime.csproj", "{3BBAAB5F-5EBB-409C-98D4-7693D4C545E0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Runtime", "test\TestCases.Runtime\TestCases.Runtime.csproj", "{3BBAAB5F-5EBB-409C-98D4-7693D4C545E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonFileInstanceStore", "Test\JsonFileInstanceStore\JsonFileInstanceStore.csproj", "{A02ADBAD-8E07-479D-946B-93591EDC487E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonFileInstanceStore", "test\JsonFileInstanceStore\JsonFileInstanceStore.csproj", "{A02ADBAD-8E07-479D-946B-93591EDC487E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XamlTestCases", "Test\XamlTestCases\XamlTestCases.csproj", "{36AE306E-FDB2-41A4-861F-67112AA5CB7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XamlTestCases", "XamlTestCases\XamlTestCases.csproj", "{36AE306E-FDB2-41A4-861F-67112AA5CB7B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImperativeTestCases", "ImperativeTestCases\ImperativeTestCases.csproj", "{A31AC815-D67E-46DD-920F-7D9B5CC63932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImperativeTestCases", "Test\ImperativeTestCases\ImperativeTestCases.csproj", "{A31AC815-D67E-46DD-920F-7D9B5CC63932}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml", "System.Xaml\System.Xaml.csproj", "{5485B8F0-BC29-4199-A581-C8C566DBC777}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml.Test", "test\System.Xaml.Test\System.Xaml.Test.csproj", "{B464A1B3-7186-42C4-809D-2E28F25986E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml.Test", "Test\System.Xaml.Test\System.Xaml.Test.csproj", "{B464A1B3-7186-42C4-809D-2E28F25986E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
