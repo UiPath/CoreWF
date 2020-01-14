@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml", "System.Xaml.csproj", "{F96E97D7-61AB-4408-AC8C-51E872F59794}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml.Test", "..\System.Xaml.Test\System.Xaml.Test.csproj", "{088A172C-BF62-4B95-AEFF-F5B2DC9D2609}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F96E97D7-61AB-4408-AC8C-51E872F59794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F96E97D7-61AB-4408-AC8C-51E872F59794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F96E97D7-61AB-4408-AC8C-51E872F59794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F96E97D7-61AB-4408-AC8C-51E872F59794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{088A172C-BF62-4B95-AEFF-F5B2DC9D2609}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{088A172C-BF62-4B95-AEFF-F5B2DC9D2609}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{088A172C-BF62-4B95-AEFF-F5B2DC9D2609}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{088A172C-BF62-4B95-AEFF-F5B2DC9D2609}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {192B732C-5C05-478D-8C04-B0BAAA8D5420}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,11 @@
+<AmbientResourceProvider xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib">
+  <AmbientResourceProvider.Resources>
+    <s:String x:Key="FooResourceKey">other resource content</s:String>
+  </AmbientResourceProvider.Resources>
+  <AmbientResourceProvider>
+    <AmbientResourceProvider.Resources>
+      <s:String x:Key="FooResourceKey">resource content</s:String>
+    </AmbientResourceProvider.Resources>
+    <AmbientResourceWrapper Foo="{AmbientValue FooResourceKey}"/>
+  </AmbientResourceProvider>
+</AmbientResourceProvider>

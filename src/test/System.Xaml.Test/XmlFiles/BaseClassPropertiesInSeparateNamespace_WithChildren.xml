@@ -1,0 +1,5 @@
+<TestClassWithDifferentBaseNamespace Bar="TheBar" SomeOtherProperty="OtherValue" TheName="MyName" xmlns="urn:mono-test2" xmlns:msx="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test">
+  <TestClassWithDifferentBaseNamespace.Other>
+    <msx:TestClass5WithName Bar="TheBar2" />
+  </TestClassWithDifferentBaseNamespace.Other>
+</TestClassWithDifferentBaseNamespace>

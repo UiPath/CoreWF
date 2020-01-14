@@ -1,0 +1,9 @@
+<ResourceContainerSubclass xmlns="http://www.domain.com/path" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceContainerSubclass.Resources>
+	  <TestObject x:Key="TestDictItem" />
+    <TestObject x:Key="okay" TestProperty="{Resource2 TestDictItem}" />
+  </ResourceContainerSubclass.Resources>
+  <ResourceContainerSubclass.TestObject>
+    <TestObject TestProperty="{Resource2 okay}" />
+  </ResourceContainerSubclass.TestObject>
+</ResourceContainerSubclass>

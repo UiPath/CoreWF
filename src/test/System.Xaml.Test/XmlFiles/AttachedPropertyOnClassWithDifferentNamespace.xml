@@ -1,0 +1,7 @@
+<ns:AttachedWrapperWithDifferentBaseNamespace xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test"
+                                        xmlns:ns="clr-namespace:MonoTests.System.Xaml.NamespaceTest2;assembly=System.Xaml.Test"
+                                        Attachable.Foo="x" >
+  <ns:AttachedWrapperWithDifferentBaseNamespace.Value>
+    <Attached Attachable.Foo="y" />
+  </ns:AttachedWrapperWithDifferentBaseNamespace.Value>
+</ns:AttachedWrapperWithDifferentBaseNamespace>

@@ -1,0 +1,8 @@
+<NumericValues xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+	<NumericValues.ByteValue><sys:Byte>123</sys:Byte></NumericValues.ByteValue>
+	<NumericValues.DecimalValue><sys:Decimal>234.567</sys:Decimal></NumericValues.DecimalValue>
+	<NumericValues.DoubleValue><sys:Double>123.456</sys:Double></NumericValues.DoubleValue>
+	<NumericValues.FloatValue><sys:Single>345.678</sys:Single></NumericValues.FloatValue>
+	<NumericValues.IntValue><sys:Int32>123456</sys:Int32></NumericValues.IntValue>
+	<NumericValues.LongValue><sys:Int64>234567</sys:Int64></NumericValues.LongValue>
+</NumericValues>

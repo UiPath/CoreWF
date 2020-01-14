@@ -1,0 +1,1 @@
+<StaticExtensionWrapper2 Param="{x:Static StaticExtensionWrapper2.Foo}" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
