@@ -1319,7 +1319,6 @@ namespace System.Activities
         {
             public const EventOpcode BufferOutOfOrderNoBookmark = (EventOpcode)10;
             public const EventOpcode ExecuteFlowchartBegin = (EventOpcode)11;
-            public const EventOpcode BufferOutOfOrderNoInstance = (EventOpcode)11;
             public const EventOpcode BufferPoolingAllocate = (EventOpcode)12;
             public const EventOpcode BufferPoolingTune = (EventOpcode)13;
             public const EventOpcode ClientRuntimeClientChannelOpenStart = (EventOpcode)14;
