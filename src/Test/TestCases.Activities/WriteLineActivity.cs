@@ -23,8 +23,9 @@ namespace TestCases.Activities
 
         public WriteLineActivity()
         {
-            _tempFilePath = Path.GetTempFileName();
-            _tempFile1Path = Path.GetTempFileName();
+            var tempPath = Path.GetTempPath();
+            _tempFilePath = Path.Combine(tempPath, Path.GetRandomFileName());
+            _tempFile1Path = Path.Combine(tempPath, Path.GetRandomFileName());
             _origConsoleOut = Console.Out;
         }
 
@@ -660,7 +661,7 @@ namespace TestCases.Activities
 
             string[] texts = File.ReadAllLines(path);
 
-            if (texts.Length < textToVerify.Length)
+            if (texts.Length != textToVerify.Length)
             {
                 throw new Exception(string.Format("Expecting {0} strings to verify and actually got {1}", textToVerify.Length, texts.Length));
             }
