@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
+    <ProjectReference Include="..\..\System.Xaml\System.Xaml.csproj" />
   </ItemGroup>
 
 </Project>
