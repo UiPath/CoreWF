@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
+    <ProjectReference Include="..\..\System.Xaml\System.Xaml.csproj" Condition=" '$(TargetFramework)' == 'netstandard2.0' " PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
