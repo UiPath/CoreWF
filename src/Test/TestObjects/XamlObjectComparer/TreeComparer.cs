@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -122,32 +125,29 @@ namespace TestObjects.XamlObjectComparer
             }
 
             bool same = false;
-            //lock (TreeComparer._objectsInTree)
-            //{
-                // Create hashtables that will contain objects in the trees.
-                // This is used to break loops.
-                TreeComparer._objectsInTree[0] = new List<int>();
-                TreeComparer._objectsInTree[1] = new List<int>();
+            // Create hashtables that will contain objects in the trees.
+            // This is used to break loops.
+            TreeComparer._objectsInTree[0] = new List<int>();
+            TreeComparer._objectsInTree[1] = new List<int>();
 
-                TreeComparer._skipProperties = propertiesToIgnore;
+            TreeComparer._skipProperties = propertiesToIgnore;
 
-                // Include default skip properties if necessary.
-                if (TreeComparer._skipProperties != TreeComparer._skipPropertiesDefault)
-                {
-                    TreeComparer._MergeDictionaries(TreeComparer._skipProperties, TreeComparer._skipPropertiesDefault);
-                }
+            // Include default skip properties if necessary.
+            if (TreeComparer._skipProperties != TreeComparer._skipPropertiesDefault)
+            {
+                TreeComparer._MergeDictionaries(TreeComparer._skipProperties, TreeComparer._skipPropertiesDefault);
+            }
 
-                try
-                {
-                    same = CompareObjects(firstTree, secondTree);
-                }
-                finally
-                {
-                    _objectsInTree[0] = null;
-                    _objectsInTree[1] = null;
-                    _skipProperties = null;
-                }
-            //}
+            try
+            {
+                same = CompareObjects(firstTree, secondTree);
+            }
+            finally
+            {
+                _objectsInTree[0] = null;
+                _objectsInTree[1] = null;
+                _skipProperties = null;
+            }
 
             // Two trees are equivalent
             if (same)

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
+using System;
 using System.Collections;
 using System.Data;
 using System.Globalization;
@@ -47,6 +50,7 @@ namespace TestObjects.XamlTestDriver
             return stringBuilder.ToString();
 
         }
+
         public void Dump(string name, object o)
         {
             for (int i = 0; i < this.indent; i++)
@@ -299,6 +303,7 @@ namespace TestObjects.XamlTestDriver
                 this.writer.WriteLine(" = \"" + s + "\"");
             }
         }
+
         void DumpBytes(byte[] buf, int start, int len)
         {
             bool more = false;

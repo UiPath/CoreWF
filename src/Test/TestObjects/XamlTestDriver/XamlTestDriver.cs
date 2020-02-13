@@ -1,10 +1,12 @@
-﻿using System;
+﻿// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
+using System;
 using System.Activities.Statements;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Text;
 using System.Xaml;
 using System.Xml;
@@ -13,8 +15,6 @@ using System.Xml.XPath;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Utilities;
 using TestObjects.XamlObjectComparer;
-//using CDF.Test.PartialTrustCaller;
-//using Microsoft.CDF.Test.ExpressionUtilities.Activities;
 
 namespace TestObjects.XamlTestDriver
 {
@@ -23,64 +23,43 @@ namespace TestObjects.XamlTestDriver
 
         public static object RoundTripAndCompareObjects(object obj, params string[] propertyNamesToBeIgnored)
         {
-            //try
-            //{
-                //if (TestParameters.IsWCFPartialTrustRun)
-                //{
-                //    PermissionSet permissions = PartialTrustUtility.LoadPermisionSet(TestParameters.ClientTrustLevel);
-                //    permissions.PermitOnly(); // applying the ClientTrustLevel
-                //}
-                if (obj == null)
+            if (obj == null)
+            {
+                throw new ArgumentNullException("obj");
+            }
+
+            MemoryStream xamlStream = null;
+            object roundTrippedObject = XamlTestDriver.RoundTrip(obj, out xamlStream);
+
+            using (xamlStream)
+            {
+
+                Dictionary<string, PropertyToIgnore> ignore = new Dictionary<string, PropertyToIgnore>();
+                foreach (string propertyName in propertyNamesToBeIgnored)
                 {
-                    throw new ArgumentNullException("obj");
+                    ignore.Add(propertyName, new PropertyToIgnore() { WhatToIgnore = IgnoreProperty.IgnoreValueOnly });
                 }
 
-                MemoryStream xamlStream = null;
-                object roundTrippedObject = XamlTestDriver.RoundTrip(obj, out xamlStream);
-
-                using (xamlStream)
+                TreeComparerResult result;
+                if (ignore.Count == 0)
                 {
-
-                    Dictionary<string, PropertyToIgnore> ignore = new Dictionary<string, PropertyToIgnore>();
-                    foreach (string propertyName in propertyNamesToBeIgnored)
-                    {
-                        ignore.Add(propertyName, new PropertyToIgnore() { WhatToIgnore = IgnoreProperty.IgnoreValueOnly });
-                    }
-
-                    TreeComparerResult result;
-                    if (ignore.Count == 0)
-                    {
-                        result = TreeComparer.CompareLogical(obj, roundTrippedObject);
-                    }
-                    else
-                    {
-                        result = TreeComparer.CompareLogical(obj, roundTrippedObject, ignore);
-                    }
-
-                    if (result.Result == CompareResult.Different)
-                    {
-                        string source = new ObjectDumper().DumpToString(null, obj);
-                        string target = new ObjectDumper().DumpToString(null, roundTrippedObject);
-                        //Log.TraceInternal("Two objects are different when compared by XAML tree comparer.");
-                        //Log.TraceInternal("Before roundtripping: ");
-                        //Log.TraceInternal(source);
-                        //Log.TraceInternal("After roundtripping: ");
-                        //Log.TraceInternal(target);
-                        //Log.TraceInternal("XAML file generated during serializing: ");
-                        XamlTestDriver.TraceXamlFile(xamlStream);
-                        throw new Exception("Two objects are different.");
-                    }
-
-                    return roundTrippedObject;
+                    result = TreeComparer.CompareLogical(obj, roundTrippedObject);
                 }
-            //}
-            //finally
-            //{
-            //    if (TestParameters.IsWCFPartialTrustRun)
-            //    {
-            //        CodeAccessPermission.RevertPermitOnly(); // Revert and cleanup the setting of the PermissionSet
-            //    }
-            //}
+                else
+                {
+                    result = TreeComparer.CompareLogical(obj, roundTrippedObject, ignore);
+                }
+
+                if (result.Result == CompareResult.Different)
+                {
+                    string source = new ObjectDumper().DumpToString(null, obj);
+                    string target = new ObjectDumper().DumpToString(null, roundTrippedObject);
+                    XamlTestDriver.TraceXamlFile(xamlStream);
+                    throw new Exception("Two objects are different.");
+                }
+
+                return roundTrippedObject;
+            }
         }
 
         public static object RoundTripAndExamineXAML(object obj, string[] xPathExpressions, XmlNamespaceManager namespaceManager)
