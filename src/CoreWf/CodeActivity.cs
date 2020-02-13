@@ -115,6 +115,7 @@ using System.Activities.DynamicUpdate;
         {
         }
 
+        [IgnoreDataMember]
         protected internal sealed override Version ImplementationVersion
         {
             get
