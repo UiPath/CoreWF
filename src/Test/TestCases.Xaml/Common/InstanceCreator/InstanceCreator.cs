@@ -128,46 +128,29 @@ namespace TestCases.Xaml.Common.InstanceCreator
         }
         public static object CreateInstanceOf(Type type, Random rndGen)
         {
+            if (type == typeof(System.Activities.Activity<bool>))
+                return new System.Activities.Expressions.Literal<bool>(true);
             if (PrimitiveCreator.CanCreateInstanceOf(type))
-            {
                 return PrimitiveCreator.CreatePrimitiveInstance(type, rndGen);
-            }
             if (type.IsArray)
-            {
                 return CreateInstanceOfArray(type, rndGen);
-            }
             if (type.IsGenericType)
             {
                 if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                {
                     return CreateInstanceOfNullableOfT(type, rndGen);
-                }
                 if (type.GetGenericTypeDefinition() == typeof(List<>))
-                {
                     return CreateInstanceOfListOfT(type, rndGen);
-                }
                 if (type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-                {
                     return CreateInstanceOfDictionaryOfKAndV(type, rndGen);
-                }
             }
             if (type == typeof(System.Array))
-            {
                 return CreateInstanceOfSystemArray(rndGen);
-            }
             if (type.IsEnum)
-            {
                 return CreateInstanceOfEnum(type, rndGen);
-            }
-
             if (ContainsAttribute(type, typeof(DataContractAttribute)))
-            {
                 return DataContractInstanceCreator.CreateInstanceOf(type, rndGen);
-            }
             if (type.IsPublic)
-            {
                 return POCOInstanceCreator.CreateInstanceOf(type, rndGen);
-            }
             return Activator.CreateInstance(type);
         }
     }

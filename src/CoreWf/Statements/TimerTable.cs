@@ -270,8 +270,6 @@ namespace System.Activities.Statements
             }
         }
 
-        // In Dev11 we don't need to keep the timers in sorted order, since they each have their own IOThreadTimer.
-        // However we still sort it for back-compat with Dev10.
         [DataContract]
         internal class SortedTimerList
         {
@@ -332,7 +330,7 @@ namespace System.Activities.Statements
 
             public void OnLoad()
             {
-                // If upgrading from Dev10, the dictionary will be empty, so we need to create it
+                // If upgrading from 4.0, the dictionary will be empty, so we need to create it
                 if (_dictionary == null)
                 {
                     _dictionary = new Dictionary<Bookmark, TimerData>();

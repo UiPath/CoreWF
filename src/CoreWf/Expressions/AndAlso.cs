@@ -10,7 +10,9 @@ namespace System.Activities.Expressions
 using System.Activities.DynamicUpdate;
 
     //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [AndAlso])")]
+#pragma warning disable CA1716 // Identifiers should not match keywords
     public sealed class AndAlso : Activity<bool>
+#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public AndAlso()
             : base()

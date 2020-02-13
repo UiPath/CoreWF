@@ -48,9 +48,7 @@ namespace TestCases.Xaml.Common.InstanceCreator
             properties.Sort(new Comparison<PropertyInfo>(CompareMembers));
             foreach (PropertyInfo property in properties)
             {
-                if (property.GetSetMethod() == null)
-                    continue;
-                if (property.Name == "EvaluationOrder")
+                if (property.GetSetMethod() == null || property.Name == "EvaluationOrder" || property.PropertyType.Name.StartsWith("OutArgument"))
                     continue;
                 object propertyValue = InstanceCreator.CreateInstanceOf(property.PropertyType, rndGen);
                 property.SetValue(obj, propertyValue, null);

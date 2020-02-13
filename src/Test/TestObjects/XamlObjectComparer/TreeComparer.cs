@@ -122,8 +122,8 @@ namespace TestObjects.XamlObjectComparer
             }
 
             bool same = false;
-            lock (TreeComparer._objectsInTree)
-            {
+            //lock (TreeComparer._objectsInTree)
+            //{
                 // Create hashtables that will contain objects in the trees.
                 // This is used to break loops.
                 TreeComparer._objectsInTree[0] = new List<int>();
@@ -147,7 +147,7 @@ namespace TestObjects.XamlObjectComparer
                     _objectsInTree[1] = null;
                     _skipProperties = null;
                 }
-            }
+            //}
 
             // Two trees are equivalent
             if (same)
@@ -470,7 +470,7 @@ namespace TestObjects.XamlObjectComparer
         private static bool IsReadablePropertyDescriptor(PropertyDescriptor property)
         {
             return !(property.ComponentType is System.Reflection.MemberInfo)
-                   || !TreeComparer.IsGenericTypeMember(property.ComponentType, property.Name);
+                   && !TreeComparer.IsGenericTypeMember(property.ComponentType, property.Name);
         }
 
         // Checks if the given type member is a generic-only member on a non-generic type.
@@ -516,7 +516,7 @@ namespace TestObjects.XamlObjectComparer
                 {
                     obj1 = property1.GetValue(owner1);
                 }
-                catch (System.Reflection.TargetInvocationException e) // jasonv - approved; specific, commented, handled
+                catch (System.Reflection.TargetInvocationException e) 
                 {
                     obj1 = e.InnerException;
                 }
@@ -525,7 +525,7 @@ namespace TestObjects.XamlObjectComparer
                 {
                     obj2 = property2.GetValue(owner2);
                 }
-                catch (System.Reflection.TargetInvocationException e) // jasonv - approved; specific, commented, handled
+                catch (System.Reflection.TargetInvocationException e) 
                 {
                     obj2 = e.InnerException;
                 }

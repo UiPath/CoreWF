@@ -349,7 +349,7 @@ namespace TestObjects.XamlTestDriver
                 }
 
                 //string fileName = DirectoryAssistance.GetTempFileWithGuid("Xaml\\XamlRoundtrip_{0}.xaml");
-                string fileName = Path.Combine(Path.GetTempPath(), $@"Xaml\XamlRoundtrip_{Guid.NewGuid().ToString()}.xaml");
+                string fileName = Path.Combine(Path.GetTempPath(), $"XamlRoundtrip_{Guid.NewGuid().ToString()}.xaml");
                 //Log.TraceInternal("Saving xaml to {0}.", fileName);
                 //Log.TraceInternal("For official lab runs, the file will also be available on the file tab.");
                 File.WriteAllText(fileName, GetStringFromMemoryStream(xamlStream));

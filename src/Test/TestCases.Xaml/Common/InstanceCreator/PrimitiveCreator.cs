@@ -53,7 +53,7 @@ namespace TestCases.Xaml.Common.InstanceCreator
 
         private static Dictionary<string, MethodInfo> AddCreatorMethod(this Dictionary<string, MethodInfo> dict, Type type)
         {
-            var name = elideTypeGenerics.Replace(type.Name, "");
+            var name = GetTypeMethodName(type);
             dict.Add(name, primitiveCreatorType.GetMethod($"CreateInstanceOf{name}", BindingFlags.Public | BindingFlags.Static, null, basicMethodParams, null));
             return dict;
         }
@@ -836,7 +836,7 @@ namespace TestCases.Xaml.Common.InstanceCreator
         public static InArgument<T> CreateInstanceOfInArgument<T>(Random rndGen)
         {
             if (!CanCreateInstanceOf(typeof(T)))
-                throw new ArgumentException($"InArgument<{nameof(T)}> not supported");
+                throw new ArgumentException($"InArgument<{typeof(T).Name}> not supported");
             var value = (T)CreatePrimitiveInstance(typeof(T), rndGen);
             var literal = new System.Activities.Expressions.Literal<T>(value);
             var inArg = new System.Activities.InArgument<T>(literal);
@@ -845,15 +845,28 @@ namespace TestCases.Xaml.Common.InstanceCreator
 
 #endif
 
+        private static string GetTypeMethodName(Type type)
+        {
+            return elideTypeGenerics.Replace(type.Name, "").Replace("[]", "Array");
+        }
+
         public static bool CanCreateInstanceOf(Type type)
         {
-            var name = elideTypeGenerics.Replace(type.Name, "");
-            return Creators.ContainsKey(name);
+            var name = GetTypeMethodName(type);
+            if (Creators.ContainsKey(name))
+                return true;
+            if (name.EndsWith("Array"))
+            {
+                name = name.Substring(0, name.Length - "Array".Length);
+                return Creators.ContainsKey(name);
+            }
+
+            return false;
         }
 
         public static object CreatePrimitiveInstance(Type type, Random rndGen)
         {
-            var name = elideTypeGenerics.Replace(type.Name, "");
+            var name = GetTypeMethodName(type);
             MethodInfo creatorMethod = null;
             if (Creators.TryGetValue(name, out creatorMethod))
             {
@@ -861,10 +874,22 @@ namespace TestCases.Xaml.Common.InstanceCreator
                     creatorMethod = creatorMethod.MakeGenericMethod(type.GenericTypeArguments[0]);
                 return creatorMethod.Invoke(null, new object[] { rndGen });
             }
-            else
+            else if (name.EndsWith("Array"))
             {
-                throw new ArgumentException("Type " + type.FullName + " not supported");
+                name = name.Substring(0, name.Length - "Array".Length);
+                if (Creators.TryGetValue(name, out creatorMethod))
+                {
+                    var itemType = type.GetElementType();
+                    if (creatorMethod.IsGenericMethodDefinition && itemType.GenericTypeArguments.Length == 1)
+                        creatorMethod = creatorMethod.MakeGenericMethod(itemType.GenericTypeArguments[0]);
+                    var arrayItem = creatorMethod.Invoke(null, new object[] { rndGen });
+                    var arr = Array.CreateInstance(itemType, 1);
+                    arr.SetValue(arrayItem, 0);
+                    return arr;
+                }
             }
+
+            throw new ArgumentException("Type " + type.FullName + " not supported");
         }
     }
 }
