@@ -39,7 +39,6 @@ namespace System.Activities.Statements
         /// <param name="bookmark">The value of Bookmark to be resumed</param>
         public void ResumeBookmark(Bookmark bookmark)
         {
-            // This method is necessary due to CSDMain 223257.
             IAsyncResult asyncResult = this.instance.BeginResumeBookmark(bookmark, null, Fx.ThunkCallback(new AsyncCallback(StateMachineExtension.OnResumeBookmarkCompleted)), this.instance);
             if (asyncResult.CompletedSynchronously)
             {

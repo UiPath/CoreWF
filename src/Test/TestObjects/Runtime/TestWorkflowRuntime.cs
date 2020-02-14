@@ -1029,9 +1029,9 @@ namespace Test.Common.TestObjects.Runtime
                 //testWorkflowRuntimeConfiguration = TestWorkflowRuntimeConfiguration.GenerateDefaultConfiguration(testActivity, definitionIdentity);
             }
 
-            //To do: Dev11 M2: CSDMain176701: Remove all unintended UsePartialTrust parameters in adp4.5 test cases and 
+            //To do:Remove all unintended UsePartialTrust parameters in adp4.5 test cases and 
             //enable PartialTrust for standalone WorkflowApplication/WorkflowInvoker host by uncommenting below code
-            //In Dev11 M1: Need to uncomment below to run tests under PT for prototyping.
+            //Need to uncomment below to run tests under PT for prototyping.
             //if (TestParameters.UsePartialTrust)
             //{
             //    testWorkflowRuntimeConfiguration.TestHostingConfiguration.AppDomainConfigurationName = AppDomainConfiguration.PartialTrustAppDomain;
