@@ -29,7 +29,6 @@
     <AssemblyOriginatorKeyFile>..\..\CoreWF.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\System.Xaml\System.Xaml.csproj" Condition=" '$(TargetFramework)' == 'netstandard2.0' " PrivateAssets="All" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -53,6 +52,10 @@
     <Compile Remove="Tracking\WorkflowInstanceUpdatedRecord.cs" />
     <Compile Remove="XamlIntegration\ObjectMatchInfoConverter.cs" />
   </ItemGroup>
+
+  <!-- Add reference to System.Xaml if netstandard or lower than netcoreapp3.0 -->
+  <Import Project="../SysXamlRef.props" />
+
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />

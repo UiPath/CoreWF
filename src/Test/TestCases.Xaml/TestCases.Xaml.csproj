@@ -1,19 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;netcoreapp2.1</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
 
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,8 +15,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../TestObjects/TestObjects.csproj" />
     <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
   </ItemGroup>
+
+  <!-- Add reference to System.Xaml if netstandard or lower than netcoreapp3.0 -->
+  <Import Project="../../SysXamlRef.props" />
 
 </Project>
