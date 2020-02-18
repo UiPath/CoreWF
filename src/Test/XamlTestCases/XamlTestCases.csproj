@@ -18,7 +18,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
-    <ProjectReference Include="..\..\System.Xaml\System.Xaml.csproj" />
   </ItemGroup>
+
+  <!-- Add reference to System.Xaml if netstandard or lower than netcoreapp3.0 -->
+  <Import Project="../../SysXamlRef.props" />
 
 </Project>

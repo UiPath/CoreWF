@@ -17,6 +17,7 @@ using System.Windows.Markup;
 using System.Activities.Internals;
 
 using System.Activities.DynamicUpdate;
+using System.Runtime.Serialization;
 
 namespace System.Activities
 {
@@ -67,6 +68,7 @@ namespace System.Activities
 
         [TypeConverter(typeof(ImplementationVersionConverter))]
         [DefaultValue(null)]
+        [IgnoreDataMember]
         protected virtual internal Version ImplementationVersion
         {
             get;
@@ -77,6 +79,7 @@ namespace System.Activities
         [DefaultValue(null)]
         [Browsable(false)]
         [Ambient]
+        [IgnoreDataMember]
         public virtual Func<Activity> Implementation
         {
             get;

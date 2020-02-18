@@ -1,8 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;netcoreapp2.1</TargetFrameworks>
+
     <IsPackable>false</IsPackable>
+
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
 
@@ -16,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../TestObjects/TestObjects.csproj" />
     <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
   </ItemGroup>
 

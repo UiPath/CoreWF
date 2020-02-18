@@ -408,7 +408,6 @@ namespace System.Activities.Statements
             }
         }
 
-        //TODO, 76926, CSDMain            
         private class ObtainType : CodeActivity<Type>
         {
             public ObtainType()

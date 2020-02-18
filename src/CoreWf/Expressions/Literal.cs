@@ -105,10 +105,6 @@ namespace System.Activities.Expressions
         {
             if (literalValue.Second == 0 && literalValue.Millisecond == 0 && literalValue.Kind == DateTimeKind.Unspecified)
             {
-                // Dev10's DateTime's string conversion lost seconds, milliseconds, the remaining ticks and DateTimeKind data.
-                // In Dev11, DateTime is special-cased, and is expanded to the property element syntax under a certain condition,
-                // so that all aspects of DateTime data are completely preserved after xaml roundtrip.
-
                 DateTime noLeftOverTicksDateTime = new DateTime(
                     literalValue.Year,
                     literalValue.Month,
@@ -121,7 +117,6 @@ namespace System.Activities.Expressions
 
                 if (literalValue.Ticks == noLeftOverTicksDateTime.Ticks)
                 {
-                    // Dev10 DateTime string conversion does not preserve leftover ticks
                     return true;
                 }
             }
@@ -131,7 +126,7 @@ namespace System.Activities.Expressions
 
         private static bool IsShortTimeFormattingSafe(DateTimeOffset literalValue)
         {
-            // DateTimeOffset is similar to DateTime in how its Dev10 string conversion did not preserve seconds, milliseconds, the remaining ticks and DateTimeKind data.
+            // DateTimeOffset is similar to DateTime in how its 4.0 string conversion did not preserve seconds, milliseconds, the remaining ticks and DateTimeKind data.
             return IsShortTimeFormattingSafe(literalValue.DateTime);
         }
         

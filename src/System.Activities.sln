@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml.Test", "Test\Sy
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{4D92EFCA-7902-49DE-B98F-8CF7675ED86C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCases.Xaml", "Test\TestCases.Xaml\TestCases.Xaml.csproj", "{A5B620F9-4E5F-4130-A524-EC1E8C11249B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{B464A1B3-7186-42C4-809D-2E28F25986E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B464A1B3-7186-42C4-809D-2E28F25986E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B464A1B3-7186-42C4-809D-2E28F25986E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5B620F9-4E5F-4130-A524-EC1E8C11249B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5B620F9-4E5F-4130-A524-EC1E8C11249B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5B620F9-4E5F-4130-A524-EC1E8C11249B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5B620F9-4E5F-4130-A524-EC1E8C11249B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +89,7 @@ Global
 		{36AE306E-FDB2-41A4-861F-67112AA5CB7B} = {4D92EFCA-7902-49DE-B98F-8CF7675ED86C}
 		{A31AC815-D67E-46DD-920F-7D9B5CC63932} = {4D92EFCA-7902-49DE-B98F-8CF7675ED86C}
 		{B464A1B3-7186-42C4-809D-2E28F25986E7} = {4D92EFCA-7902-49DE-B98F-8CF7675ED86C}
+		{A5B620F9-4E5F-4130-A524-EC1E8C11249B} = {4D92EFCA-7902-49DE-B98F-8CF7675ED86C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1ED6A6D7-ACEE-4780-B630-50DCAED74BA9}

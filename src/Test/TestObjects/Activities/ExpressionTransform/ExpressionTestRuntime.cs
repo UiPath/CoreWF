@@ -249,7 +249,7 @@ namespace Test.Common.TestObjects.Activities.ExpressionTransform
             {
                 //Log.TraceInternal("Expected exception: {0}\n", expectedException == null ? "null" : expectedException.ToString());
                 //Log.TraceInternal("Actual exception: {0}\n", actualException == null ? "null" : actualException.ToString());
-                throw new Exception("Actual exception and expected exceptiond do not match!");
+                throw new Exception("Actual exception and expected exception do not match!");
             }
 
             //Log.TraceInternal(string.Format("Expected exception: {0}", expectedException.ToString()));

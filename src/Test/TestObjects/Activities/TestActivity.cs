@@ -6,6 +6,7 @@ using System.Activities;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Utilities.Validation;
+using TestObjects.XamlTestDriver;
 
 namespace Test.Common.TestObjects.Activities
 {
@@ -62,11 +63,11 @@ namespace Test.Common.TestObjects.Activities
             set { this.ProductActivity.DisplayName = value; }
         }
 
-        // public XamlTestDriver.ModifyXaml ModifyXamlDelegate
-        // {
-        //     get;
-        //     set;
-        // }
+        public XamlTestDriver.ModifyXaml ModifyXamlDelegate
+        {
+            get;
+            set;
+        }
 
         public IList<WorkflowTraceStep> ActivitySpecificTraces
         {

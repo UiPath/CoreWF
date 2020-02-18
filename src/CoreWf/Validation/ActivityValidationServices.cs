@@ -532,8 +532,8 @@ namespace System.Activities.Validation
                         if (childActivity.Activity.HasNonEmptySubtree)
                         {
                             this.expressionRoot = childActivity.Activity;
-                            // Back-compat: In Dev10 we always used ProcessActivityTreeOptions.FullCachingOptions here, and ignored this.options.
-                            // So we need to continue to do that, unless the new Dev11 flag SkipRootConfigurationValidation is passed.
+                            // Back-compat: In 4.0 we always used ProcessActivityTreeOptions.FullCachingOptions here, and ignored this.options.
+                            // So we need to continue to do that, unless the new 4.5 flag SkipRootConfigurationValidation is passed.
                             ProcessActivityTreeOptions options = this.options.SkipRootConfigurationValidation ? this.options : ProcessActivityTreeOptions.FullCachingOptions;
                             ActivityUtilities.FinishCachingSubtree(childActivity, parentChain, options, ValidateExpressionSubtree);
                             this.expressionRoot = null;
