@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace XamlTestCases
+namespace TestCases.Workflows
 {
     public sealed class HelloWorldConsole : CodeActivity<bool>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Activities;
 
-namespace XamlTestCases
+namespace TestCases.Workflows
 {
     public class PersonToGreet
     {
