@@ -5,7 +5,7 @@ using System.IO;
 using Shouldly;
 using Xunit;
 
-namespace XamlTestCases
+namespace TestCases.Workflows
 {
     using IStringDictionary = IDictionary<string, object>;
     using StringDictionary = Dictionary<string, object>;
@@ -105,7 +105,7 @@ namespace XamlTestCases
                             xmlns:s=""clr-namespace:System;assembly=mscorlib""
                             xmlns:s1=""clr-namespace:System;assembly=System""
                             xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
-                            xmlns:hw=""clr-namespace:XamlTestCases;assembly=XamlTestCases""
+                            xmlns:hw=""clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows""
                             xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                     <x:Members>
                         <x:Property Name=""myInput"" Type=""InArgument(x:String)"" />
@@ -156,7 +156,7 @@ namespace XamlTestCases
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
                               xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
-                              xmlns:hw=""clr-namespace:XamlTestCases;assembly=XamlTestCases""
+                              xmlns:hw=""clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
                         <x:Members>
                             <x:Property Name=""myInput"" Type=""InArgument(hw:PersonToGreet)"" />
