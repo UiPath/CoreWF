@@ -1,16 +1,11 @@
 <Project>
-   <PropertyGroup>
-    <BuildRoot>$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), build.root))</BuildRoot>
-  </PropertyGroup>
-
   <PropertyGroup>
     <IsNetCoreApp>$(TargetFramework.StartsWith("netcoreapp"))</IsNetCoreApp>
     <NetCoreVersionString Condition="$(IsNetCoreApp)">$(TargetFramework.Substring(10))</NetCoreVersionString>
     <NetCoreVersion Condition="$(IsNetCoreApp)">$([System.Double]::Parse($(NetCoreVersionString)))</NetCoreVersion>
   </PropertyGroup>
 
-  <ItemGroup Condition="!$(IsNetCoreApp) Or $(NetCoreVersion) &lt; 3.0">
-    <ProjectReference Include="$(BuildRoot)\System.Xaml\System.Xaml.csproj" PrivateAssets="All" />
+  <ItemGroup Condition="(!$(IsNetCoreApp) Or $(NetCoreVersion) &lt; 3.0) And '$(AssemblyName)' != 'System.Xaml' ">
+    <ProjectReference Include="$(SolutionDir)\System.Xaml\System.Xaml.csproj" PrivateAssets="All" />
   </ItemGroup>
-
 </Project>
