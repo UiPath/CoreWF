@@ -11,12 +11,6 @@
     <RootNamespace>System.Activities.EtwTracking</RootNamespace>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(OfficialBuild)'=='true'">
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\CoreWF.snk</AssemblyOriginatorKeyFile>
