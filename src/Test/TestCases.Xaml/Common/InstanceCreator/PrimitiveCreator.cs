@@ -839,7 +839,10 @@ namespace TestCases.Xaml.Common.InstanceCreator
         public static InArgument<T> CreateInstanceOfInArgument<T>(Random rndGen)
         {
             if (!CanCreateInstanceOf(typeof(T)))
-                throw new ArgumentException($"InArgument<{typeof(T).Name}> not supported");
+            {
+                //throw new ArgumentException($"InArgument<{typeof(T).Name}> not supported");
+                return null;
+            }
             var value = (T)CreatePrimitiveInstance(typeof(T), rndGen);
             var literal = new System.Activities.Expressions.Literal<T>(value);
             var inArg = new System.Activities.InArgument<T>(literal);
@@ -873,8 +876,14 @@ namespace TestCases.Xaml.Common.InstanceCreator
             MethodInfo creatorMethod = null;
             if (Creators.TryGetValue(name, out creatorMethod))
             {
-                if (creatorMethod.IsGenericMethodDefinition && type.GenericTypeArguments.Length == 1)
+                if (creatorMethod.IsGenericMethodDefinition)
+                {
+                    if (type.GenericTypeArguments.Length != 1)
+                    {
+                        return null;
+                    }
                     creatorMethod = creatorMethod.MakeGenericMethod(type.GenericTypeArguments[0]);
+                }
                 return creatorMethod.Invoke(null, new object[] { rndGen });
             }
             else if (name.EndsWith("Array"))
