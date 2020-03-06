@@ -751,7 +751,7 @@ namespace MonoTests.System.Xaml
 			XamlServices.Transform (new XamlObjectReader (obj), xxw);
 			Console.Error.WriteLine (sw);
 			*/
-			var xml = "<TestClass3 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'><TestClass3.Nested><TestClass3 Nested='{x:Null}' /></TestClass3.Nested></TestClass3>".UpdateXml();
+			var xml = "<TestClass3 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'><TestClass3.Nested><TestClass3 Nested='{x:Null}' /></TestClass3.Nested></TestClass3>".UpdateXml();
 			var settings = new XamlObjectWriterSettings();
 			bool invoked = false;
 			settings.XamlSetValueHandler = (sender, e) =>
@@ -2283,7 +2283,7 @@ namespace MonoTests.System.Xaml
 		{
 			var xml =
 $@"<TestClass7 
-		xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test' 
+		xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases' 
 		xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' />".UpdateXml();
 			
 			XamlSchemaContext context = new XamlSchemaContext();
@@ -2354,7 +2354,7 @@ $@"<TestClass7
 		public void TestIsUsableDuringInitializationWithCollection()
 		{
 			string xml =
-				@"<TestClass10 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'>
+				@"<TestClass10 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'>
 					<TestClass9 Baz='Test1' Bar='42'/>
 					<TestClass9 Baz='Test2'/>
 					<TestClass9/>
@@ -2380,7 +2380,7 @@ $@"<TestClass7
 		public void CollectionShouldNotBeAssigned()
 		{
 			var xml = $@"
-<CollectionAssignnmentTest xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'>
+<CollectionAssignnmentTest xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'>
     <TestClass4/>	
 </CollectionAssignnmentTest>".UpdateXml();
 			var result = (CollectionAssignnmentTest)XamlServices.Parse(xml);
@@ -2393,7 +2393,7 @@ $@"<TestClass7
 		public void CollectionShouldNotBeAssigned2()
 		{
 			var xml = $@"
-<CollectionAssignnmentTest xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'>
+<CollectionAssignnmentTest xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'>
     <TestClass4/>	
     <TestClass4/>	
 </CollectionAssignnmentTest>".UpdateXml();
@@ -2407,7 +2407,7 @@ $@"<TestClass7
 		public void CollectionShouldBeAssigned()
 		{
 			var xml = $@"
-<CollectionAssignnmentTest xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'
+<CollectionAssignnmentTest xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'
 					  	   xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
 						   xmlns:scg='clr-namespace:System.Collections.Generic;assembly=mscorlib'>
 	<scg:List x:TypeArguments='TestClass4'>
@@ -2424,7 +2424,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownForNotFoundType()
 		{
-			string xml = @"<TestClass10 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'>
+			string xml = @"<TestClass10 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'>
     <NotFound/>
 </TestClass10>".UpdateXml();
 			var ex = Assert.Throws<XamlObjectWriterException>(() => ParseWithLineInfo(xml));
@@ -2435,7 +2435,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownForNotFoundProperty()
 		{
-			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'
+			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'
     Baz='baz'
     NotFound='foo'/>".UpdateXml();
 			var ex = Assert.Throws<XamlObjectWriterException>(() => ParseWithLineInfo(xml));
@@ -2446,7 +2446,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownForInvalidPropertyValue()
 		{
-			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'
+			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'
     Baz='baz'
     Bar='foo'/>".UpdateXml();
 			var ex = Assert.Throws<XamlObjectWriterException>(() => ParseWithLineInfo(xml));
@@ -2457,7 +2457,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownWhenSetterThrows()
 		{
-			string xml = @"<SetterThatThrows xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'
+			string xml = @"<SetterThatThrows xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'
     Throw='foo'/>".UpdateXml();
 			var ex = Assert.Throws<XamlObjectWriterException>(() => ParseWithLineInfo(xml));
 			Assert.AreEqual(2, ex.LineNumber);
@@ -2469,7 +2469,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownForDuplicateAttribute()
 		{
-			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'
+			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'
     Baz='foo'
     Baz='bar'/>".UpdateXml();
 			var ex = Assert.Throws<XmlException>(() => ParseWithLineInfo(xml));
@@ -2481,7 +2481,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownForDuplicateContent()
 		{
-			string xml = @"<ContentIncludedClass xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'
+			string xml = @"<ContentIncludedClass xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'
 												 xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
 	<x:String>Foo</x:String>
 	<x:String>Bar</x:String>
@@ -2497,7 +2497,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownForDuplicateElement()
 		{
-			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'>
+			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'>
   <TestClass9.Baz>foo</TestClass9.Baz>
   <TestClass9.Baz>bar</TestClass9.Baz>
 </TestClass9>".UpdateXml();
@@ -2513,7 +2513,7 @@ $@"<TestClass7
 		[Test]
 		public void ExceptionShouldBeThrownForDuplicateAttributeAndElement()
 		{
-			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test' Baz='foo'>
+			string xml = @"<TestClass9 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases' Baz='foo'>
   <TestClass9.Baz>foo</TestClass9.Baz>
 </TestClass9>".UpdateXml();
 			var ex = Assert.Throws<XamlDuplicateMemberException>(() => ParseWithLineInfo(xml));

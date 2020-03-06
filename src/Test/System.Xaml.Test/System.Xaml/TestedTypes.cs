@@ -1721,7 +1721,7 @@ namespace MonoTests.System.Xaml
 	[ContentProperty("Child")]
 	public class DeferredLoadingContainerMemberStringType
 	{
-		[XamlDeferLoad("MonoTests.System.Xaml.TestDeferredLoader,System.Xaml.Test", "MonoTests.System.Xaml.DeferredLoadingChild,System.Xaml.Test")]
+		[XamlDeferLoad("MonoTests.System.Xaml.TestDeferredLoader,System.Xaml.TestCases", "MonoTests.System.Xaml.DeferredLoadingChild,System.Xaml.TestCases")]
 		public DeferredLoadingChild Child { get; set; }
 	}
 

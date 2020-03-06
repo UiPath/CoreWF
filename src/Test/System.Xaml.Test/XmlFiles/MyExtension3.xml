@@ -1,1 +1,1 @@
-<MyExtension3 xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test">MonoTests.System.Xaml.MyExtension3</MyExtension3>
+<MyExtension3 xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases">MonoTests.System.Xaml.MyExtension3</MyExtension3>

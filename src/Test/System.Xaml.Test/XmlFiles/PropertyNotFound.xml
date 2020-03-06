@@ -1,2 +1,2 @@
-<TestClass4 Baz="{x:Null}" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test"
+<TestClass4 Baz="{x:Null}" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />

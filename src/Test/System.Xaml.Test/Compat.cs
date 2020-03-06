@@ -77,7 +77,7 @@ namespace MonoTests.System.Xaml
 		{
 			return str
 				.Replace("assembly=System.Xaml_test_net_4_5", $"assembly={TestAssemblyName}")
-				.Replace("assembly=System.Xaml.Test", $"assembly={TestAssemblyName}")
+				.Replace("assembly=System.Xaml.TestCases", $"assembly={TestAssemblyName}")
 				.Replace("net_4_0", Compat.Version)
 				.Replace("net_4_5", Compat.Version)
 				.Replace("clr-namespace:System.Xaml;assembly=System.Xaml", $"clr-namespace:{Compat.Namespace};assembly={Compat.Namespace}")

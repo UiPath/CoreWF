@@ -1,4 +1,4 @@
-<ListWrapper2 xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ListWrapper2 xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <ListWrapper2.Items>
     <scg:List x:TypeArguments="x:Int32" Capacity="3">
       <x:Int32>5</x:Int32>

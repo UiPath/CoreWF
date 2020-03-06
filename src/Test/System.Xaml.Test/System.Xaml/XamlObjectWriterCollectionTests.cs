@@ -32,7 +32,7 @@ namespace MonoTests.System.Xaml
 		[Test] // works on both MS.NET and System.Xaml, but no way to make use of type converters
         public void TestCustomCollectionAddOverride ()
 		{
-			var xaml = @"<CollectionParentCustomAddOverride xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'><OtherItem/></CollectionParentCustomAddOverride>".UpdateXml ();
+			var xaml = @"<CollectionParentCustomAddOverride xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'><OtherItem/></CollectionParentCustomAddOverride>".UpdateXml ();
 			var parent = (CollectionParentCustomAddOverride)XamlServices.Load (new StringReader (xaml));
 
 			Assert.IsNotNull (parent, "#1");
@@ -52,7 +52,7 @@ namespace MonoTests.System.Xaml
 			if (!Compat.IsPortableXaml)
 				Assert.Ignore("doesn't work in MS.NET, it does not use type converters for items in a list");
 
-			var xaml = @"<CollectionParentGenericList xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'><OtherItem/></CollectionParentGenericList>".UpdateXml ();
+			var xaml = @"<CollectionParentGenericList xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'><OtherItem/></CollectionParentGenericList>".UpdateXml ();
 			var parent = (CollectionParentGenericList)XamlServices.Load (new StringReader (xaml));
 
 			Assert.IsNotNull (parent, "#1");
@@ -72,7 +72,7 @@ namespace MonoTests.System.Xaml
 			if (!Compat.IsPortableXaml)
 				Assert.Ignore("New in System.Xaml, doesn't work in MS.NET, but should");
 
-			var xaml = @"<CollectionParentCustomNoOverride xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'><OtherItem/></CollectionParentCustomNoOverride>".UpdateXml ();
+			var xaml = @"<CollectionParentCustomNoOverride xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'><OtherItem/></CollectionParentCustomNoOverride>".UpdateXml ();
 			var parent = (CollectionParentCustomNoOverride)XamlServices.Load (new StringReader (xaml));
 
 			Assert.IsNotNull (parent, "#1");

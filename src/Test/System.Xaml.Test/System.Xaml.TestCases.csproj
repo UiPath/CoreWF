@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
-		<RootNamespace>MonoTests.System.Xaml</RootNamespace>
+		<RootNamespace>System.Xaml.TestCases</RootNamespace>
 		<AssemblyName>System.Xaml.TestCases</AssemblyName>
 		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
 		<ApplicationIcon />

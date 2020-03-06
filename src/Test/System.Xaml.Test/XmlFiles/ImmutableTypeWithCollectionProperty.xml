@@ -1,4 +1,4 @@
-<ImmutableTypeWithCollectionProperty Name="hello" Num="200" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ImmutableTypeWithCollectionProperty Name="hello" Num="200" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<TestClass4 Foo="Hello"/>
 	<TestClass4 Foo="There"/>
 </ImmutableTypeWithCollectionProperty>

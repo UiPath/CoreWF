@@ -1,4 +1,4 @@
-<AmbientResourceProvider xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib">
+<AmbientResourceProvider xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib">
   <AmbientResourceProvider.Resources>
     <s:String x:Key="FooResourceKey">other resource content</s:String>
   </AmbientResourceProvider.Resources>

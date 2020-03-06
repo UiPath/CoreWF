@@ -530,7 +530,7 @@ namespace MonoTests.System.Xaml
 			var r = GetReaderText(@"<ValueWrapper 
 	StringValue='{MyExtension2 Bar=Hello {0}}' 
 	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-	xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'/>");
+	xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'/>");
 
 			r.Read(); // ns
 			Assert.AreEqual(XamlNodeType.NamespaceDeclaration, r.NodeType);
@@ -578,7 +578,7 @@ namespace MonoTests.System.Xaml
 			var r = GetReaderText(@"<ValueWrapper 
 	StringValue='{MyExtension2 Bar={}{0} Hello}' 
 	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-	xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'/>");
+	xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'/>");
 
 			r.Read(); // ns
 			Assert.AreEqual(XamlNodeType.NamespaceDeclaration, r.NodeType);
@@ -648,7 +648,7 @@ namespace MonoTests.System.Xaml
 <ValueWrapper 
 	StringValue='{MyExtension8 SomeValue, Bar={x:Type x:String}}' 
 	xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-	xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test' />
+	xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases' />
 ".UpdateXml();
 			var result = (ValueWrapper)XamlServices.Parse(xml);
 		}
@@ -1011,7 +1011,7 @@ namespace MonoTests.System.Xaml
 		[Test]
 		public void Read_ContentObjectSameAsPropertyName ()
 		{
-			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'><OtherItem/></CollectionParentItem>".UpdateXml ();
+			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'><OtherItem/></CollectionParentItem>".UpdateXml ();
 			var parent = (CollectionParentItem)XamlServices.Load (new StringReader (xaml));
 
 			Assert.IsNotNull (parent, "#1");
@@ -1028,7 +1028,7 @@ namespace MonoTests.System.Xaml
 		[Test]
 		public void Read_ContentObjectSameAsPropertyName2 ()
 		{
-			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'><CollectionItem Name='Direct'/></CollectionParentItem>".UpdateXml ();
+			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'><CollectionItem Name='Direct'/></CollectionParentItem>".UpdateXml ();
 			var parent = (CollectionParentItem)XamlServices.Load (new StringReader (xaml));
 
 			Assert.IsNotNull (parent, "#1");
@@ -1046,7 +1046,7 @@ namespace MonoTests.System.Xaml
 			if (!Compat.IsPortableXaml)
 				Assert.Ignore("System.Xaml doesn't use typeconverters nor passes the value");
 
-			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'><CollectionItem Name='Item1'/>SomeContent</CollectionParentItem>".UpdateXml();
+			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'><CollectionItem Name='Item1'/>SomeContent</CollectionParentItem>".UpdateXml();
 			var parent = (CollectionParentItem)XamlServices.Load(new StringReader(xaml));
 
 			Assert.IsNotNull(parent, "#1");
@@ -1260,12 +1260,12 @@ namespace MonoTests.System.Xaml
 		[Test]
 		public void Read_InvalidPropertiesShouldBeRead2()
 		{
-			var xaml = @"<TestClassWithDifferentBaseNamespace base:UnknownProperty=""Woo"" xmlns=""urn:mono-test2"" xmlns:base=""clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test""/>";
+			var xaml = @"<TestClassWithDifferentBaseNamespace base:UnknownProperty=""Woo"" xmlns=""urn:mono-test2"" xmlns:base=""clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases""/>";
 			var reader = GetReaderText(xaml);
 
 			ReadNamespace(reader, string.Empty, "urn:mono-test2", "");
 
-			var ns = "clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test".UpdateXml();
+			var ns = "clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases".UpdateXml();
 			ReadNamespace(reader, "base", ns, "");
 
 			XamlType xt;
@@ -1304,7 +1304,7 @@ namespace MonoTests.System.Xaml
 		[Test]
 		public void Read_UnknownContent()
 		{
-			var xaml = @"<TestClass1 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'><TestClass3/><TestClass4/></TestClass1>".UpdateXml ();
+			var xaml = @"<TestClass1 xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'><TestClass3/><TestClass4/></TestClass1>".UpdateXml ();
 			var reader = GetReaderText(xaml);
 
 			reader.Read(); // xmlns
@@ -1392,7 +1392,7 @@ namespace MonoTests.System.Xaml
 		[Test]
 		public void Read_ContentCollectionShouldParsePropertyAfterInnerItem()
 		{
-			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'>
+			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'>
     <CollectionItem Name='World'/>
 	<CollectionParentItem.OtherItem>True</CollectionParentItem.OtherItem>
 </CollectionParentItem>";
@@ -1464,7 +1464,7 @@ namespace MonoTests.System.Xaml
 		[Test]
 		public void Read_ContentCollectionWithTypeConverterShouldParseInnerTextAndItems()
 		{
-			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test'>
+			var xaml = @"<CollectionParentItem xmlns='clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases'>
 	Hello
     <CollectionItem Name='World'/>
 	!

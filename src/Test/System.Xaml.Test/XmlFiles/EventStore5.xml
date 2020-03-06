@@ -1,3 +1,3 @@
-<EventStore xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test">
+<EventStore xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases">
   <EventStore.Event3>Method1</EventStore.Event3>
 </EventStore>

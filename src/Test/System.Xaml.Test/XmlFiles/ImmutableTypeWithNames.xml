@@ -1,4 +1,4 @@
-<NamedItem3 xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sci="clr-namespace:System.Collections.Immutable;assembly=System.Collections.Immutable">
+<NamedItem3 xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sci="clr-namespace:System.Collections.Immutable;assembly=System.Collections.Immutable">
   <NamedItem3.ImmutableReferences>
     <sci:ImmutableArray x:TypeArguments="NamedItem3">
       <NamedItem3 x:Name="i4">

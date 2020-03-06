@@ -1,1 +1,1 @@
-<NumericValues ByteValue="123" DecimalValue="234.567" DoubleValue="123.456" FloatValue="345.678" IntValue="123456" LongValue="234567" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" />
+<NumericValues ByteValue="123" DecimalValue="234.567" DoubleValue="123.456" FloatValue="345.678" IntValue="123456" LongValue="234567" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" />

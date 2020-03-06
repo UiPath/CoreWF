@@ -1,4 +1,4 @@
-<ImmutableCollectionContainer xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sci="clr-namespace:System.Collections.Immutable;assembly=System.Collections.Immutable">
+<ImmutableCollectionContainer xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sci="clr-namespace:System.Collections.Immutable;assembly=System.Collections.Immutable">
   <ImmutableCollectionContainer.ImmutableList>
     <sci:ImmutableList x:TypeArguments="ImmutableCollectionItem">
       <ImmutableCollectionItem Foo="Item1" />

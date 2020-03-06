@@ -1,1 +1,1 @@
-<TestClass5 Bar="{}{ Some Value That Should Be Escaped" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" />
+<TestClass5 Bar="{}{ Some Value That Should Be Escaped" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" />
