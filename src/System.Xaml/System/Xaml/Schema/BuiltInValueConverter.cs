@@ -306,7 +306,7 @@ namespace System.Xaml.Schema
 
                     if (stdConverter == null)
                     {
-                        s_Uri = new BuiltInValueConverter<TypeConverter>(typeof(Replacements.UriTypeConverter), () => new Replacements.UriTypeConverter());
+                        s_Uri = new BuiltInValueConverter<TypeConverter>(typeof(UriTypeConverter), () => new UriTypeConverter());
                     }
                     else
                     {

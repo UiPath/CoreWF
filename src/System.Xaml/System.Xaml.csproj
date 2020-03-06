@@ -8,34 +8,6 @@
     <DefineConstants>$(DefineConstants);OLDRESOURCES;SYSTEM_XAML</DefineConstants>
     <EnableAnalyzers>true</EnableAnalyzers>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="System\Xaml\XamlProperty.cs" />
-    <Compile Remove="System\Xaml\Schema\ClrProperty.cs" />
-    <Compile Remove="System\Xaml\Schema\ImplicitProperty.cs" />
-    <Compile Remove="System\Xaml\Schema\ClrAttachableEvent.cs" />
-    <Compile Remove="System\Xaml\Schema\ClrAttachableProperty.cs" />
-    <Compile Remove="System\Xaml\Schema\ClrEvent.cs" />
-    <Compile Remove="System\Xaml\Schema\Xasl*.cs" />
-    <Compile Remove="System\Xaml\IXamlSavedContextProvider.cs" />
-    <Compile Remove="System\Xaml\ObjectReaderSettings.cs" />
-    <Compile Remove="System\Xaml\Schema\UnknownProperty.cs" />
-    <Compile Remove="System\Xaml\Schema\IXamlTemplate.cs" />
-    <Compile Remove="System\Xaml\Schema\Permissions\*.cs" />
-    <Compile Remove="System\Xaml\InfosetObjects\XamlTextReader.cs" />
-    <Compile Remove="System\Xaml\InfosetObjects\ObjectWriterSettings.cs" />
-    <Compile Remove="System\Xaml\Schema\XmlNamespace.cs" />
-    <Compile Remove="System\Xaml\IXamlTemplate.cs" />
-    <Compile Remove="System\Xaml\Schema\DirectiveProperty.cs" />
-    <Compile Remove="System\Xaml\MS\Impl\XamlDirectiveCollection.cs" />
-    <Compile Remove="System\Xaml\Events\ObjectCreatedEventArgs.cs" />
-    <Compile Remove="System\Xaml\InfosetObjects\XamlTextReaderSettings.cs" />
-    <Compile Remove="System\Xaml\Context\HashSet.cs" />
-    <Compile Remove="System\Xaml\MS\Impl\ConcurrentDictionary.cs" />
-    <Compile Remove="System\Xaml\MS\Impl\XamlPropertyInfoKey.cs" />
-    <!-- Do not include reference assembly files. -->
-    <Compile Remove="ref\System.Xaml.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
