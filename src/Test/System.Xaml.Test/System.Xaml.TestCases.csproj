@@ -3,8 +3,11 @@
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
 		<RootNamespace>MonoTests.System.Xaml</RootNamespace>
-		<AssemblyName>System.Xaml.Test</AssemblyName>
+		<AssemblyName>System.Xaml.TestCases</AssemblyName>
 		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+		<ApplicationIcon />
+		<OutputType>Library</OutputType>
+		<StartupObject />
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DefineConstants>TRACE;DEBUG;NETSTANDARD;CORE;NETCOREAPP2_0;HAS_TYPE_CONVERTER</DefineConstants>

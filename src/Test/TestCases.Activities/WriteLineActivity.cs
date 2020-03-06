@@ -5,6 +5,7 @@ using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
@@ -12,6 +13,7 @@ using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Utilities.Validation;
 using Xunit;
+using Shouldly;
 
 namespace TestCases.Activities
 {
@@ -660,19 +662,19 @@ namespace TestCases.Activities
             }
 
             string[] texts = File.ReadAllLines(path);
+            textToVerify.ShouldBeSubsetOf(texts);
+            //if (texts.Length != textToVerify.Length)
+            //{
+            //    throw new Exception(string.Format("Expecting {0} strings to verify and actually got {1}", textToVerify.Length, texts.Length));
+            //}
 
-            if (texts.Length != textToVerify.Length)
-            {
-                throw new Exception(string.Format("Expecting {0} strings to verify and actually got {1}", textToVerify.Length, texts.Length));
-            }
-
-            for (int i = 0; i < texts.Length; i++)
-            {
-                if (!texts[i].Equals(textToVerify[i]))
-                {
-                    throw new Exception(string.Format("Expecting '{0}' to verify and actually got '{1}'", textToVerify[i], texts[i]));
-                }
-            }
+            //for (int i = 0; i < texts.Length; i++)
+            //{
+            //    if (!texts[i].Equals(textToVerify[i]))
+            //    {
+            //        throw new Exception(string.Format("Expecting '{0}' to verify and actually got '{1}'", textToVerify[i], texts[i]));
+            //    }
+            //}
         }
 
         /// <summary>

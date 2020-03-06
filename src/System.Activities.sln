@@ -19,9 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Workflows", "Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImperativeTestCases", "Test\ImperativeTestCases\ImperativeTestCases.csproj", "{A31AC815-D67E-46DD-920F-7D9B5CC63932}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml", "System.Xaml\System.Xaml.csproj", "{5485B8F0-BC29-4199-A581-C8C566DBC777}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml", "System.Xaml\System.Xaml.csproj", "{9AC36357-34B7-40A1-95CA-FE9F46D089A7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml.Test", "Test\System.Xaml.Test\System.Xaml.Test.csproj", "{B464A1B3-7186-42C4-809D-2E28F25986E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml.TestCases", "Test\System.Xaml.Test\System.Xaml.TestCases.csproj", "{B464A1B3-7186-42C4-809D-2E28F25986E7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{4D92EFCA-7902-49DE-B98F-8CF7675ED86C}"
 EndProject
@@ -65,10 +65,10 @@ Global
 		{A31AC815-D67E-46DD-920F-7D9B5CC63932}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A31AC815-D67E-46DD-920F-7D9B5CC63932}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A31AC815-D67E-46DD-920F-7D9B5CC63932}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5485B8F0-BC29-4199-A581-C8C566DBC777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5485B8F0-BC29-4199-A581-C8C566DBC777}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5485B8F0-BC29-4199-A581-C8C566DBC777}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5485B8F0-BC29-4199-A581-C8C566DBC777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AC36357-34B7-40A1-95CA-FE9F46D089A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AC36357-34B7-40A1-95CA-FE9F46D089A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AC36357-34B7-40A1-95CA-FE9F46D089A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AC36357-34B7-40A1-95CA-FE9F46D089A7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B464A1B3-7186-42C4-809D-2E28F25986E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B464A1B3-7186-42C4-809D-2E28F25986E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B464A1B3-7186-42C4-809D-2E28F25986E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
