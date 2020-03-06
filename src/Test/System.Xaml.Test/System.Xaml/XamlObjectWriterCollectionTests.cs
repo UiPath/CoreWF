@@ -13,7 +13,7 @@ using n = NUnit.Framework;
 using System.Windows.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
-using System.Xaml.ComponentModel;
+
 #else
 using System.Windows.Markup;
 using System.Xaml;

@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<TargetFrameworks>netcoreapp2.1;netcoreapp3.0</TargetFrameworks>
 		<RootNamespace>MonoTests.System.Xaml</RootNamespace>
 		<AssemblyName>System.Xaml.Test</AssemblyName>
 		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DefineConstants>TRACE;NETSTANDARD;PCL;CORE;DEBUG;NETCOREAPP2_0</DefineConstants>
+		<DefineConstants>TRACE;DEBUG;NETSTANDARD;CORE;NETCOREAPP2_0;HAS_TYPE_CONVERTER</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<DebugType>
 		</DebugType>
-		<DefineConstants>TRACE;RELEASE;NETCOREAPP2_0;NETSTANDARD;PCL;CORE;</DefineConstants>
-	</PropertyGroup>
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;CORE;NETCOREAPP2_0;HAS_TYPE_CONVERTER</DefineConstants>
+  </PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="MainTestPage.*" />
 		<Compile Remove="UnitTestApp.*" />

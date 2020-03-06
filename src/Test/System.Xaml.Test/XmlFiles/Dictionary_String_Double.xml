@@ -1,4 +1,4 @@
-<Dictionary x:TypeArguments="x:String, x:Object" xmlns="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+<Dictionary x:TypeArguments="x:String, x:Object" xmlns="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=System.Private.CoreLib">
   <x:Double x:Key="Foo">5</x:Double>
   <x:Double x:Key="Bar">-6.5</x:Double>
   <sys:Double x:Key="Woo">123.45</sys:Double>

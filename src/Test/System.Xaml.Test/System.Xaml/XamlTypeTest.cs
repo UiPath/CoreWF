@@ -28,7 +28,7 @@ using System.Reflection;
 using NUnit.Framework;
 #if PCL
 using System.Windows.Markup;
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 #else
@@ -39,6 +39,7 @@ using System.Xaml.Schema;
 #endif
 
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
+using XamlReader = System.Xaml.XamlReader;
 #if NETSTANDARD
 using System.ComponentModel;
 #endif
@@ -72,7 +73,7 @@ namespace MonoTests.System.Xaml
 			Assert.IsNotNull (t.BaseType, "#3-1");
 			// So, it is type aware. It's weird that t.Name still returns full name just as it is passed to the .ctor.
 			Assert.AreEqual ("ValueType", t.BaseType.Name, "#3-2");
-			Assert.AreEqual ("clr-namespace:System;assembly=mscorlib", t.BaseType.PreferredXamlNamespace, "#3-3");
+			Assert.AreEqual ("clr-namespace:System;assembly=System.Private.CoreLib", t.BaseType.PreferredXamlNamespace, "#3-3");
 			// It is likely only for primitive types such as int.
 			Assert.AreEqual (XamlLanguage.Xaml2006Namespace, t.PreferredXamlNamespace, "#4");
 
@@ -364,7 +365,7 @@ namespace MonoTests.System.Xaml
 			Assert.IsFalse (t.IsUnknown, "#3");
 			Assert.AreEqual ("Type", t.Name, "#4");
 			// Note that Type is not a standard type. An instance of System.Type is usually represented as TypeExtension.
-			Assert.AreEqual ("clr-namespace:System;assembly=mscorlib", t.PreferredXamlNamespace, "#5");
+			Assert.AreEqual ("clr-namespace:System;assembly=System.Private.CoreLib", t.PreferredXamlNamespace, "#5");
 			Assert.IsNull (t.TypeArguments, "#6");
 			Assert.AreEqual (typeof (Type), t.UnderlyingType, "#7");
 			Assert.IsTrue (t.ConstructionRequiresArguments, "#8"); // yes, true.
@@ -626,7 +627,7 @@ namespace MonoTests.System.Xaml
 			var l = xt.GetXamlNamespaces ().ToList ();
 			l.Sort ();
 			Assert.AreEqual (2, l.Count, "#1-1");
-			Assert.AreEqual ("clr-namespace:System;assembly=mscorlib", l [0], "#1-2");
+			Assert.AreEqual ("clr-namespace:System;assembly=System.Private.CoreLib", l [0], "#1-2");
 			Assert.AreEqual (XamlLanguage.Xaml2006Namespace, l [1], "#1-3");
 
 			xt = new XamlType (typeof (TypeExtension), new XamlSchemaContext (null, null));
@@ -641,7 +642,7 @@ namespace MonoTests.System.Xaml
 			l = xt.GetXamlNamespaces ().ToList ();
 			l.Sort ();
 			Assert.AreEqual (1, l.Count, "#3-1");
-			Assert.AreEqual ("clr-namespace:System.Collections.Generic;assembly=mscorlib", l [0], "#3-2");
+			Assert.AreEqual ("clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib", l [0], "#3-2");
 		}
 		
 		[Test]
@@ -897,7 +898,7 @@ namespace MonoTests.System.Xaml
 			var xm = xt.GetMember ("TestProp");
 			Assert.IsTrue (xm.Type.IsGeneric, "#3");
 			Assert.IsTrue (xm.Type.IsNullable, "#4");
-			Assert.AreEqual ("clr-namespace:System;assembly=mscorlib", xm.Type.PreferredXamlNamespace, "#5");
+			Assert.AreEqual ("clr-namespace:System;assembly=System.Private.CoreLib", xm.Type.PreferredXamlNamespace, "#5");
 			Assert.AreEqual (1, xm.Type.TypeArguments.Count, "#6");
 			Assert.AreEqual (XamlLanguage.Int32, xm.Type.TypeArguments [0], "#7");
 #if HAS_TYPE_CONVERTER
@@ -930,7 +931,7 @@ namespace MonoTests.System.Xaml
 			Assert.AreEqual(xt.BaseType, sctx.GetXamlType(typeof(ValueType)), "#2");
 			Assert.IsNull(xt.ValueSerializer, "#3");
 #if HAS_TYPE_CONVERTER
-			Assert.IsNotInstanceOf<System.ComponentModel.DateTimeConverter>(xt.TypeConverter.ConverterInstance, "#4");
+			Assert.IsNotInstanceOf<DateTimeConverter>(xt.TypeConverter.ConverterInstance, "#4");
 #if PCL
 			Assert.IsInstanceOf(typeof(global::System.Xaml.XamlSchemaContext).Assembly.GetType("System.Xaml.ComponentModel.PortableXamlDateTimeConverter"), xt.TypeConverter.ConverterInstance, "#4");
 #endif

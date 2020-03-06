@@ -31,7 +31,7 @@ using System.Xml;
 using NUnit.Framework;
 using System.Windows.Markup;
 #if PCL
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 #else
@@ -42,6 +42,8 @@ using System.Xaml.Schema;
 #endif
 
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
+using XamlReader = System.Xaml.XamlReader;
+using XamlParseException = System.Xaml.XamlParseException;
 
 namespace MonoTests.System.Xaml
 {
@@ -168,7 +170,7 @@ namespace MonoTests.System.Xaml
 
 			Assert.IsTrue (r.Read (), "ns#1");
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#2");
-			Assert.AreEqual ("clr-namespace:System;assembly=mscorlib", r.Namespace.Namespace, "ns#3");
+			Assert.AreEqual ("clr-namespace:System;assembly=System.Private.CoreLib", r.Namespace.Namespace, "ns#3");
 
 			Assert.IsTrue (r.Read (), "so#1");
 			Assert.AreEqual (XamlNodeType.StartObject, r.NodeType, "so#2");
@@ -199,7 +201,7 @@ namespace MonoTests.System.Xaml
 
 			Assert.IsTrue (r.Read (), "ns#1");
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#2");
-			Assert.AreEqual ("clr-namespace:System;assembly=mscorlib", r.Namespace.Namespace, "ns#3");
+			Assert.AreEqual ("clr-namespace:System;assembly=System.Private.CoreLib", r.Namespace.Namespace, "ns#3");
 			Assert.AreEqual (String.Empty, r.Namespace.Prefix, "ns#4");
 
 			Assert.IsTrue (r.Read (), "ns2#1");
