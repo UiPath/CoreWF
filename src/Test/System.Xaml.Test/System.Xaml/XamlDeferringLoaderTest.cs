@@ -2,7 +2,7 @@
 using NUnit.Framework;
 #if PCL
 using System.Windows.Markup;
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 #else

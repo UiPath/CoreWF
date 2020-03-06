@@ -6,15 +6,15 @@ using System.Reflection;
 using NUnit.Framework;
 using System.Windows.Markup;
 #if PCL
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 #else
-using System.Windows.Markup;
 using System.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
 #endif
+using XamlReader = System.Xaml.XamlReader;
 
 namespace MonoTests.System.Xaml
 {

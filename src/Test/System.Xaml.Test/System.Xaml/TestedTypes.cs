@@ -45,16 +45,16 @@ using System.ComponentModel;
 
 #if PCL
 using System.Windows.Markup;
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 
 #else
-using System.Windows.Markup;
-using System.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
+using System.Windows.Markup;
 #endif
+using XamlReader = System.Xaml.XamlReader;
 
 [assembly: XmlnsDefinition("http://www.domain.com/path", "XamlTest")]
 // bug #680385

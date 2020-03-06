@@ -29,7 +29,7 @@ using System.Reflection;
 using NUnit.Framework;
 using System.Windows.Markup;
 #if PCL
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 #else
@@ -835,13 +835,14 @@ namespace MonoTests.System.Xaml
 			var obj = new ArrayExtension (typeof(int));
 			Assert.AreEqual (ReadXml ("ArrayExtension2.xml").Trim (), XamlServices.Save (obj), "#1");
 		}
-
+#if NETCOREAPP2_1
 		[Test]
 		public void Write_ArrayList ()
 		{
 			var obj = new ArrayList (new int [] { 5, -3, 0 });
 			Assert.AreEqual (ReadXml ("ArrayList.xml").Trim (), XamlServices.Save (obj), "#1");
 		}
+#endif
 
 		[Test]
 		public void ComplexPositionalParameterWrapper ()
@@ -1099,7 +1100,7 @@ namespace MonoTests.System.Xaml
 			};
 			Assert.AreEqual(ReadXml("NumericValues.xml").Trim(), XamlServices.Save(obj), "#1");
 		}
-
+#if NETCOREAPP2_1
 		[Test]
 		public void Write_NumericValues_Max()
 		{
@@ -1114,7 +1115,7 @@ namespace MonoTests.System.Xaml
 			};
 			Assert.AreEqual(ReadXml("NumericValues_Max.xml").Trim(), XamlServices.Save(obj), "#1");
 		}
-
+#endif
 		[Test]
 		public void Write_NumericValues_PositiveInfinity()
 		{

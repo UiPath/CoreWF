@@ -1,4 +1,4 @@
-<NumericValues xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+<NumericValues xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" xmlns:sys="clr-namespace:System;assembly=System.Private.CoreLib">
 	<NumericValues.ByteValue><sys:Byte>123</sys:Byte></NumericValues.ByteValue>
 	<NumericValues.DecimalValue><sys:Decimal>234.567</sys:Decimal></NumericValues.DecimalValue>
 	<NumericValues.DoubleValue><sys:Double>123.456</sys:Double></NumericValues.DoubleValue>

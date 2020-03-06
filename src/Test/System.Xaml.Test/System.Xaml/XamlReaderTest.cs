@@ -40,6 +40,7 @@ using System.Xaml.Schema;
 #endif
 
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
+using XamlReader = System.Xaml.XamlReader;
 
 namespace MonoTests.System.Xaml
 {

@@ -76,7 +76,7 @@ namespace MonoTests.System.Xaml
 		public PropertyDescriptor PropertyDescriptor {
 			get { throw new NotImplementedException (); }
 		}
-		public ValueSerializer GetValueSerializerFor (PropertyInfo descriptor)
+		public ValueSerializer GetValueSerializerFor (PropertyDescriptor descriptor)
 		{
 			throw new NotImplementedException ();
 		}

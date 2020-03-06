@@ -30,17 +30,17 @@ using System.Xml;
 using NUnit.Framework;
 using System.Windows.Markup;
 #if PCL
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 #else
-using System.Windows.Markup;
 using System.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
 #endif
 
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
+using XamlReader = System.Xaml.XamlReader;
 
 // Some test result remarks:
 // - TypeExtension: [ConstructorArgument] -> PositionalParameters
@@ -507,7 +507,7 @@ namespace MonoTests.System.Xaml
 			Assert.IsTrue (r.Read (), "ns#1-1");
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#1-2");
 
-			var defns = "clr-namespace:System.Collections.Generic;assembly=mscorlib";
+			var defns = "clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib";
 
 			Assert.AreEqual (String.Empty, r.Namespace.Prefix, "ns#1-3");
 			Assert.AreEqual (defns, r.Namespace.Namespace, "ns#1-4");
@@ -580,9 +580,9 @@ namespace MonoTests.System.Xaml
 		{
 
 			IEnumerable<NamespaceDeclaration> namespaces = new [] {
-				new NamespaceDeclaration ("clr-namespace:System.Collections.Generic;assembly=mscorlib", string.Empty),
+				new NamespaceDeclaration ("clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib", string.Empty),
 				new NamespaceDeclaration ("clr-namespace:" + Compat.Namespace + ";assembly=" + Compat.Namespace, Compat.Prefix),
-				new NamespaceDeclaration ("clr-namespace:System;assembly=mscorlib", "s"),
+				new NamespaceDeclaration ("clr-namespace:System;assembly=System.Private.CoreLib", "s"),
 				new NamespaceDeclaration (XamlLanguage.Xaml2006Namespace, "x")
 			};
 
@@ -656,8 +656,8 @@ namespace MonoTests.System.Xaml
 			Assert.IsTrue (r.Read (), "ns#1-1");
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#1-2");
 
-			var defns = "clr-namespace:System.Collections.Generic;assembly=mscorlib";
-			var defns2 = "clr-namespace:System;assembly=mscorlib";
+			var defns = "clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib";
+			var defns2 = "clr-namespace:System;assembly=System.Private.CoreLib";
 			//var defns3 = "clr-namespace:System.Xaml;assembly=System.Xaml";
 
 			Assert.AreEqual (String.Empty, r.Namespace.Prefix, "ns#1-3");
@@ -1489,7 +1489,7 @@ namespace MonoTests.System.Xaml
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#1-2");
 			Assert.IsNotNull (r.Namespace, "ns#1-3");
 			Assert.AreEqual (String.Empty, r.Namespace.Prefix, "ns#1-4");
-			Assert.AreEqual ("clr-namespace:System.Collections.Generic;assembly=mscorlib", r.Namespace.Namespace, "ns#1-5");
+			Assert.AreEqual ("clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib", r.Namespace.Namespace, "ns#1-5");
 
 			Assert.IsTrue (r.Read (), "ns#2-1");
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#2-2");
@@ -1498,7 +1498,7 @@ namespace MonoTests.System.Xaml
 			Assert.AreEqual (XamlLanguage.Xaml2006Namespace, r.Namespace.Namespace, "ns#2-5");
 
 			if (includeSystemNamespace)
-				ReadNamespace(r, "sys", "clr-namespace:System;assembly=mscorlib", "#3");
+				ReadNamespace(r, "sys", "clr-namespace:System;assembly=System.Private.CoreLib", "#3");
 
 			Assert.IsTrue (r.Read (), "so#1-1");
 			Assert.AreEqual (XamlNodeType.StartObject, r.NodeType, "so#1-2");
@@ -1560,9 +1560,9 @@ namespace MonoTests.System.Xaml
 		protected void Read_Dictionary2 (XamlReader r, XamlMember ctorArgMember, bool order = true)
 		{
 			IEnumerable<NamespaceDeclaration> namespaces = new [] {
-				new NamespaceDeclaration ("clr-namespace:System.Collections.Generic;assembly=mscorlib", string.Empty),
+				new NamespaceDeclaration ("clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib", string.Empty),
 				new NamespaceDeclaration ("clr-namespace:" + Compat.Namespace + ";assembly=" + Compat.Namespace, Compat.Prefix),
-				new NamespaceDeclaration ("clr-namespace:System;assembly=mscorlib", "s"),
+				new NamespaceDeclaration ("clr-namespace:System;assembly=System.Private.CoreLib", "s"),
 				new NamespaceDeclaration (XamlLanguage.Xaml2006Namespace, "x")
 			};
 
@@ -1893,7 +1893,7 @@ namespace MonoTests.System.Xaml
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "#7");
 			Assert.IsNotNull (r.Namespace, "#8");
 			Assert.AreEqual ("scg", r.Namespace.Prefix, "#8-2");
-			Assert.AreEqual ("clr-namespace:System.Collections.Generic;assembly=mscorlib", r.Namespace.Namespace, "#8-3");
+			Assert.AreEqual ("clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib", r.Namespace.Namespace, "#8-3");
 
 			Assert.IsTrue (r.Read (), "#11");
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "#12");
@@ -2713,7 +2713,7 @@ namespace MonoTests.System.Xaml
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#2-2");
 			Assert.IsNotNull (r.Namespace, "ns#2-3");
 			Assert.AreEqual ("scg", r.Namespace.Prefix, "ns#2-4");
-			assns = "clr-namespace:System.Collections.Generic;assembly=mscorlib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
+			assns = "clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
 			Assert.AreEqual (assns, r.Namespace.Namespace, "ns#2-5");
 
 			Assert.IsTrue (r.Read (), "ns#3-1");
@@ -2806,14 +2806,14 @@ namespace MonoTests.System.Xaml
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#2-2");
 			Assert.IsNotNull (r.Namespace, "ns#2-3");
 			Assert.AreEqual ("sc", r.Namespace.Prefix, "ns#2-4");
-			assns = "clr-namespace:System.Collections;assembly=mscorlib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
+			assns = "clr-namespace:System.Collections;assembly=System.Private.CoreLib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
 			Assert.AreEqual (assns, r.Namespace.Namespace, "ns#2-5");
 
 			Assert.IsTrue (r.Read (), "ns#x-1");
 			Assert.AreEqual (XamlNodeType.NamespaceDeclaration, r.NodeType, "ns#x-2");
 			Assert.IsNotNull (r.Namespace, "ns#x-3");
 			Assert.AreEqual ("scg", r.Namespace.Prefix, "ns#x-4");
-			assns = "clr-namespace:System.Collections.Generic;assembly=mscorlib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
+			assns = "clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
 			Assert.AreEqual (assns, r.Namespace.Namespace, "ns#x-5");
 
 			Assert.IsTrue (r.Read (), "ns#3-1");
@@ -3259,7 +3259,7 @@ namespace MonoTests.System.Xaml
 		protected void Read_DirectListContainer (XamlReader r)
 		{
 			var assns1 = "clr-namespace:MonoTests.System.Xaml;assembly=" + GetType ().GetTypeInfo().Assembly.GetName ().Name;
-			var assns2 = "clr-namespace:System.Collections.Generic;assembly=mscorlib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
+			var assns2 = "clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib";// + typeof (IList<>).GetTypeInfo().Assembly.GetName ().Name;
 			ReadNamespace (r, String.Empty, assns1, "ns#1");
 			ReadNamespace (r, "scg", assns2, "ns#2");
 			ReadNamespace (r, "x", XamlLanguage.Xaml2006Namespace, "ns#3");
@@ -3773,7 +3773,7 @@ if (i == 0) {
 		static string GetFixedAssemblyName(Type type)
 		{
 			if (mscorlib_assemblies.Contains(type.GetTypeInfo().Assembly))
-				return "mscorlib";
+				return "System.Private.CoreLib";
 			return type.GetTypeInfo().Assembly.GetName().Name;
 		}
 

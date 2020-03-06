@@ -30,7 +30,7 @@ using System.Xml;
 using NUnit.Framework;
 using System.Windows.Markup;
 #if PCL
-using System.Xaml.ComponentModel;
+
 using System.Xaml;
 using System.Xaml.Schema;
 #else
@@ -281,7 +281,6 @@ namespace MonoTests.System.Xaml
 			var r = new XamlObjectReader (obj);
 			Read_ListType (r, true);
 		}
-
 		[Test]
 		public void Read_ListArray ()
 		{
@@ -289,7 +288,7 @@ namespace MonoTests.System.Xaml
 			var r = new XamlObjectReader (obj);
 			Read_ListArray (r);
 		}
-
+#if NETCOREAPP2_1
 		[Test]
 		public void Read_ArrayList ()
 		{
@@ -297,7 +296,7 @@ namespace MonoTests.System.Xaml
 			var r = new XamlObjectReader (obj);
 			Read_ArrayList (r);
 		}
-
+#endif
 		[Test]
 		public void Read_Array ()
 		{

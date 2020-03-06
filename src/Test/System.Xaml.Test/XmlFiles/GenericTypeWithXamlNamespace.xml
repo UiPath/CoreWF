@@ -1,7 +1,7 @@
 <CustomGenericType x:TypeArguments="NamespaceTestClass"
 		xmlns="urn:mono-test"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-		xmlns:sys="clr-namespace:System.Collections.Generic;assembly=mscorlib">
+		xmlns:sys="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib">
   <NamespaceTestClass Foo="1"></NamespaceTestClass>
   <NamespaceTestClass Foo="2"></NamespaceTestClass>
   <NamespaceTestClass Foo="3"></NamespaceTestClass>
