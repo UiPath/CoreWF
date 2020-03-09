@@ -102,7 +102,6 @@ namespace TestCases.Xaml
                     new object[] { typeof(While) },
                     new object[] { typeof(WorkflowTerminatedException) },
                     new object[] { typeof(WriteLine) },
-                    new object[] { typeof(Assign) },
                 };
             }
         }
