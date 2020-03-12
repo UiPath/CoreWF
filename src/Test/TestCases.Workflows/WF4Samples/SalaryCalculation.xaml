@@ -1,0 +1,42 @@
+﻿<!-- Copyright (c) Microsoft Corporation.  All rights reserved.     -->
+<Activity mc:Ignorable="sap" x:Class="TestCases.Workflows.WF4Samples.SalaryCalculation" mva:VisualBasic.Settings="Assembly references and imported namespaces serialized as XML namespaces" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mswe="clr-namespace:TestCases.Workflows.WF4Samples;assembly=TestCases.Workflows" xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:sad="clr-namespace:System.Activities.Debugger;assembly=System.Activities" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sapx="clr-namespace:System.Activities.Presentation.Xaml;assembly=System.Activities.Presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Sequence sap:VirtualizedContainerService.HintSize="290.003333333333,728.83">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="mswe:Employee" Default="[New Employee(&quot;John&quot;, &quot;Doe&quot;, 55000.0)]" Name="Employee1" />
+      <Variable x:TypeArguments="mswe:Employee" Default="[New Employee(&quot;Frank&quot;, &quot;Kimono&quot;, 89000.0)]" Name="Employee2" />
+      <Variable x:TypeArguments="mswe:SalaryStats" Default="[New SalaryStats()]" Name="SalaryStats" />
+    </Sequence.Variables>
+    <sap:WorkflowViewStateService.ViewState>
+      <scg:Dictionary x:TypeArguments="x:String, s:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <WriteLine sap:VirtualizedContainerService.HintSize="244.003333333333,71.2766666666667" Text="[Employee1.FirstName &amp; &quot; &quot; &amp; Employee1.LastName &amp; &quot; earns &quot; &amp; Employee1.Salary.ToString(&quot;$0.00&quot;)]" />
+    <WriteLine sap:VirtualizedContainerService.HintSize="244.003333333333,71.2766666666667" Text="[Employee2.FirstName &amp; &quot; &quot; &amp; Employee2.LastName &amp; &quot; earns &quot; &amp; Employee2.Salary.ToString(&quot;$0.00&quot;)]" />
+    <Assign sap:VirtualizedContainerService.HintSize="244.003333333333,59">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Double">[SalaryStats.MinSalary]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Double">[Math.Min(Employee1.Salary, Employee2.Salary)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign sap:VirtualizedContainerService.HintSize="244.003333333333,59">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Double">[SalaryStats.MaxSalary]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Double">[Math.Max(Employee1.Salary, Employee2.Salary)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <Assign sap:VirtualizedContainerService.HintSize="244.003333333333,59">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Double">[SalaryStats.AvgSalary]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Double">[(Employee1.Salary + Employee2.Salary) / 2.0]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <WriteLine sap:VirtualizedContainerService.HintSize="244.003333333333,71.2766666666667" Text="[String.Format(&quot;Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}&quot;, SalaryStats.MinSalary, SalaryStats.MaxSalary, SalaryStats.AvgSalary)]" />
+  </Sequence>
+</Activity>

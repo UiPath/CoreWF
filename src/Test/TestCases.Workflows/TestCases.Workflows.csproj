@@ -6,4 +6,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WF4Samples\SalaryCalculation.xaml" />
+  </ItemGroup>
 </Project>
