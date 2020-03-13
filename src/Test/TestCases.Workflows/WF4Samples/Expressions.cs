@@ -3,10 +3,7 @@ using System;
 using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
-using System.Activities.XamlIntegration;
 using System.IO;
-using System.Text;
-using System.Threading;
 using System.Xaml;
 using Xunit;
 
@@ -27,16 +24,15 @@ Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, ave
         [Fact]
         public void ActivityXamlServicesLoad()
         {
-            var xamlStream = this.GetType().Assembly.GetManifestResourceStream(this.GetType().Namespace + ".SalaryCalculation.xaml");
-            var activity = ActivityXamlServices.Load(xamlStream);
-            InvokeWorkflow(activity).ShouldBe(CorrectOutput);
+            var activity = TestHelper.GetActivityFromXamlResource(TestXamls.SalaryCalculation);
+            TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
 
         [Fact]
         public void Code()
         {
             var activity = CreateCodeOnlyWorkflow();
-            InvokeWorkflow(activity).ShouldBe(CorrectOutput);
+            TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
 
         [Fact]
@@ -45,25 +41,7 @@ Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, ave
             var activity = CreateXamlSerializableCodeWorkflow();
             string workflowXamlString = XamlServices.Save(activity);
             activity = (Activity)XamlServices.Load(new StringReader(workflowXamlString));
-            InvokeWorkflow(activity).ShouldBe(CorrectOutput);
-        }
-
-        private string InvokeWorkflow(Activity activity)
-        {
-            var stringBuilder = new StringBuilder();
-            var consoleOutputWriter = new StringWriter(stringBuilder);
-            AutoResetEvent are = new AutoResetEvent(false);
-            var workflowApp = new WorkflowApplication(activity);
-            workflowApp.Extensions.Add((TextWriter)consoleOutputWriter);
-            workflowApp.Run();
-            workflowApp.Completed = e =>
-            {
-                e.CompletionState.ShouldBe(ActivityInstanceState.Closed);
-                are.Set();
-            };
-            workflowApp.Run();
-            are.WaitOne();
-            return stringBuilder.ToString();
+            TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
 
         private Activity CreateCodeOnlyWorkflow()

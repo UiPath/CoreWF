@@ -7,6 +7,12 @@
     <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="WF4Samples\SalaryCalculation.xaml" />
+    <None Remove="WF4Samples\SalaryCalculation.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestXamls\NonGenericForEach.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestXamls\SalaryCalculation.xaml" />
   </ItemGroup>
 </Project>
