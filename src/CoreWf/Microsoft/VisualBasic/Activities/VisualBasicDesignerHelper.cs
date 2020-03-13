@@ -16,6 +16,7 @@ namespace Microsoft.VisualBasic.Activities
     using System.Reflection;
     using System.Activities.Runtime;
     using System.Activities.Internals;
+    using System.Linq;
 
     public static class VisualBasicDesignerHelper
     {
