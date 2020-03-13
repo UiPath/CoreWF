@@ -17,16 +17,16 @@ namespace Microsoft.VisualBasic.Activities
 {
     internal class VbCompiler : Compiler
     {
-        public override LambdaExpression CompileExpression(CompilerRequest compilerRequest)
+        public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
-                .AddReferences(compilerRequest.ReferencedAssemblies)
-                .AddImports(compilerRequest.ImportedNamespaces);
-            var untypedExpressionScript = VisualBasicScript.Create($"? {compilerRequest.ExpressionString}", options);
+                .AddReferences(expressionToCompile.ReferencedAssemblies)
+                .AddImports(expressionToCompile.ImportedNamespaces);
+            var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.ExpressionString}", options);
             var identifiers = IdentifiersWalker.GetIdentifiers(untypedExpressionScript);
             var resolvedIdentifiers =
                 identifiers
-                .Select(name => (Name: name, Type: compilerRequest.VariableTypeGetter(name)))
+                .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name)))
                 .Where(var => var.Type != null)
                 .ToArray();
             const string Comma = ", ";
@@ -34,11 +34,11 @@ namespace Microsoft.VisualBasic.Activities
             var types = string.Join(Comma,
                 resolvedIdentifiers
                 .Select(var => var.Type)
-                .Concat(new[] { compilerRequest.LambdaReturnType ?? typeof(object) })
+                .Concat(new[] { expressionToCompile.LambdaReturnType ?? typeof(object) })
                 .Select(type => GetTypeName(type)));
             var typedExpressionScript = 
                 VisualBasicScript
-                .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({compilerRequest.ExpressionString})", options)
+                .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({expressionToCompile.ExpressionString})", options)
                 .ContinueWith("? resultExpression", options);
             try
             {
@@ -46,7 +46,7 @@ namespace Microsoft.VisualBasic.Activities
             }
             catch (CompilationErrorException ex)
             {
-                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(compilerRequest.ExpressionString, ex.ToString())));
+                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.ExpressionString, ex.ToString())));
             }
         }
 

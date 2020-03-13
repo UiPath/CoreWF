@@ -352,7 +352,7 @@ namespace Microsoft.VisualBasic.Activities
                 {
                     try
                     {
-                        lambda = compiler.CompileExpression(GetCompilerRequest(scriptAndTypeScope.FindVariable));
+                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable));
                     }
                     catch(Exception e)
                     {
@@ -393,8 +393,8 @@ namespace Microsoft.VisualBasic.Activities
             return Expression.Lambda(lambda.Type, finalBody, lambda.Parameters);
         }
 
-        CompilerRequest GetCompilerRequest(Func<string, Type> variableTypeGetter, Type lambdaReturnType = null) => 
-            new CompilerRequest(TextToCompile, referencedAssemblies, namespaceImports)
+        ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType = null) => 
+            new ExpressionToCompile(TextToCompile, referencedAssemblies, namespaceImports)
             {
                 VariableTypeGetter = variableTypeGetter,
                 LambdaReturnType = lambdaReturnType,
@@ -497,7 +497,7 @@ namespace Microsoft.VisualBasic.Activities
                 {
                     try
                     {
-                        lambda = compiler.CompileExpression(GetCompilerRequest(scriptAndTypeScope.FindVariable, lambdaReturnType));
+                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, lambdaReturnType));
                     }
                     catch(Exception e)
                     {

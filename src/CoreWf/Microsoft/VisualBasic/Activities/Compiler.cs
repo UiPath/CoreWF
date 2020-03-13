@@ -6,11 +6,11 @@ namespace System.Activities
 {
     public abstract class Compiler
     {
-        public abstract LambdaExpression CompileExpression(CompilerRequest compilerRequest);
+        public abstract LambdaExpression CompileExpression(ExpressionToCompile compilerRequest);
     }
-    public class CompilerRequest
+    public class ExpressionToCompile
     {
-        public CompilerRequest(string expressionString, IReadOnlyCollection<Assembly> referencedAssemblies, IReadOnlyCollection<string> importedNamespaces)
+        public ExpressionToCompile(string expressionString, IReadOnlyCollection<Assembly> referencedAssemblies, IReadOnlyCollection<string> importedNamespaces)
         {
             ExpressionString = expressionString;
             ReferencedAssemblies = referencedAssemblies;
