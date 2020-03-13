@@ -2354,7 +2354,14 @@ namespace System.Activities.XamlIntegration
         {
             List<TextExpressionCompilerError> messages = new List<TextExpressionCompilerError>();
             CompilerParameters compilerParameters = GetCompilerParameters(messages);
-            
+
+#if !NET45
+            using (CodeDomProvider codeDomProvider = CodeDomProvider.CreateProvider(this.settings.Language))
+            {
+                return TextExpressionCompilerRoslyn.CompileWithRoslyn(this.settings.Language, this.compileUnit, codeDomProvider,
+                    compilerParameters, this.activityFullName);
+            }
+#else
             CompilerResults compilerResults = null;
             using (CodeDomProvider codeDomProvider = CodeDomProvider.CreateProvider(this.settings.Language))
             {
@@ -2404,6 +2411,7 @@ namespace System.Activities.XamlIntegration
             }
 
             return results;
+#endif
         }
 
         [Fx.Tag.SecurityNote(Critical = "Critical because we are using the CompilerParameters class, which has a link demand for Full Trust.",

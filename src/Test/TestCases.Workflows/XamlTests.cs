@@ -156,8 +156,14 @@ namespace TestCases.Workflows
                               xmlns:s=""clr-namespace:System;assembly=mscorlib""
                               xmlns:s1=""clr-namespace:System;assembly=System""
                               xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
+                              xmlns:sco=""clr-namespace:System.Collections.ObjectModel;assembly=mscorlib""
                               xmlns:hw=""clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows""
                               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                        <TextExpression.ReferencesForImplementation>
+                            <sco:Collection x:TypeArguments=""AssemblyReference"">
+                               <AssemblyReference>TestCases.Workflows</AssemblyReference>
+                            </sco:Collection>
+                        </TextExpression.ReferencesForImplementation>
                         <x:Members>
                             <x:Property Name=""myInput"" Type=""InArgument(hw:PersonToGreet)"" />
                         </x:Members>

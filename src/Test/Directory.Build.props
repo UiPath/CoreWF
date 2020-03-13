@@ -5,7 +5,13 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" PrivateAssets="All" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" PrivateAssets="All">
+      <NoWarn>NU1701</NoWarn>
+    </PackageReference>
     <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Condition="'$(TargetFramework)' == 'netcoreapp2.1'" Include="..\..\System.Xaml\System.Xaml.csproj" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
 using Microsoft.CodeAnalysis.VisualBasic;
-using Microsoft.CodeAnalysis.VisualBasic.Scripting;
+//using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ReflectionMagic;
 using System;
@@ -16,6 +16,9 @@ namespace Microsoft.VisualBasic.Activities
     {
         public LambdaExpression CompileExpression(string expressionString, Func<string, Type> getVariableType, ScriptOptions options, Type lambdaReturnType = null)
         {
+            throw new NotImplementedException();
+        }
+            /*
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionString}", options);
             var identifiers = IdentifiersWalker.GetIdentifiers(untypedExpressionScript);
             var resolvedIdentifiers =
@@ -30,11 +33,12 @@ namespace Microsoft.VisualBasic.Activities
                 .Select(var => var.Type)
                 .Concat(new[] { lambdaReturnType ?? typeof(object) })
                 .Select(type => GetTypeName(type)));
-            var typedExpressionScript = 
+            var typedExpressionScript =
                 VisualBasicScript
                 .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({expressionString})", options)
                 .ContinueWith("? resultExpression", options);
             return (LambdaExpression)typedExpressionScript.RunAsync().GetAwaiter().GetResult().ReturnValue;
+
         }
 
         class IdentifiersWalker : VisualBasicSyntaxWalker
@@ -79,12 +83,13 @@ namespace Microsoft.VisualBasic.Activities
 
             var args = new object[]
             {
-                0, /* arrayBoundRadix */
-                true /* showNamespaces */
+                0, // arrayBoundRadix
+                true // showNamespaces
             };
 
             TypeOptions = Activator.CreateInstance(type, args);
         }
+    */
 
         internal void Dispose()
         {
