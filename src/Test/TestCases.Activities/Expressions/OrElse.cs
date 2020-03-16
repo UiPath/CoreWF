@@ -67,7 +67,7 @@ namespace Test.TestCases.Activities.Expressions
         /// </summary>
         /// This test is disabled in desktop and failing too.         
         //[Fact]
-        public void ThrowExceptionInRightActivity()
+        private void ThrowExceptionInRightActivity()
         {
             TestOrElse orElse = new TestOrElse
             {
@@ -90,7 +90,7 @@ namespace Test.TestCases.Activities.Expressions
         /// </summary>
         /// This test is disabled in desktop and failing too.         
         //[Fact]
-        public void ThrowExceptionWhileEvaluatingLeft()
+        private void ThrowExceptionWhileEvaluatingLeft()
         {
             TestOrElse orElse = new TestOrElse
             {
