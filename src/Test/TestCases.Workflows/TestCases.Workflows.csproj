@@ -3,4 +3,7 @@
     <TargetFrameworks>netcoreapp3.0;netcoreapp2.1</TargetFrameworks>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
+  </ItemGroup>
 </Project>

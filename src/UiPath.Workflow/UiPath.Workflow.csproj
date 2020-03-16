@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
+    <Description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Scripting" Version="2.8.0-dev-62823-01" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreWf\System.Activities.csproj" />
+    <PackageReference Include="ReflectionMagic" Version="4.1.0" />
+  </ItemGroup>
+</Project>

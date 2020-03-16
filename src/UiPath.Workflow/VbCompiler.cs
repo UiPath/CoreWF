@@ -6,21 +6,27 @@ using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ReflectionMagic;
 using System;
+using System.Activities;
+using System.Activities.ExpressionParser;
+using System.Activities.Internals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace Microsoft.VisualBasic.Activities
 {
-    internal class HostedCompiler
+    internal class VbCompiler : Compiler
     {
-        public LambdaExpression CompileExpression(string expressionString, Func<string, Type> getVariableType, ScriptOptions options, Type lambdaReturnType = null)
+        public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
-            var untypedExpressionScript = VisualBasicScript.Create($"? {expressionString}", options);
+            var options = ScriptOptions.Default
+                .AddReferences(expressionToCompile.ReferencedAssemblies)
+                .AddImports(expressionToCompile.ImportedNamespaces);
+            var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.ExpressionString}", options);
             var identifiers = IdentifiersWalker.GetIdentifiers(untypedExpressionScript);
             var resolvedIdentifiers =
                 identifiers
-                .Select(name => (Name: name, Type: getVariableType(name)))
+                .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name)))
                 .Where(var => var.Type != null)
                 .ToArray();
             const string Comma = ", ";
@@ -28,13 +34,20 @@ namespace Microsoft.VisualBasic.Activities
             var types = string.Join(Comma,
                 resolvedIdentifiers
                 .Select(var => var.Type)
-                .Concat(new[] { lambdaReturnType ?? typeof(object) })
+                .Concat(new[] { expressionToCompile.LambdaReturnType ?? typeof(object) })
                 .Select(type => GetTypeName(type)));
             var typedExpressionScript = 
                 VisualBasicScript
-                .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({expressionString})", options)
+                .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({expressionToCompile.ExpressionString})", options)
                 .ContinueWith("? resultExpression", options);
-            return (LambdaExpression)typedExpressionScript.RunAsync().GetAwaiter().GetResult().ReturnValue;
+            try
+            {
+                return (LambdaExpression)typedExpressionScript.RunAsync().GetAwaiter().GetResult().ReturnValue;
+            }
+            catch (CompilationErrorException ex)
+            {
+                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.ExpressionString, ex.ToString())));
+            }
         }
 
         class IdentifiersWalker : VisualBasicSyntaxWalker
@@ -73,7 +86,7 @@ namespace Microsoft.VisualBasic.Activities
             .s_impl
             .TypeNameFormatter;
 
-        static HostedCompiler()
+        static VbCompiler()
         {
             var type = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
 
