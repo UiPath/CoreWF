@@ -102,9 +102,5 @@ namespace Microsoft.VisualBasic.Activities
 
             TypeOptions = Activator.CreateInstance(type, args);
         }
-
-        internal void Dispose()
-        {
-        }
     }
 }
