@@ -586,6 +586,19 @@ namespace TestCases.Activities
             TestRuntime.RunAndValidateWorkflow(sequence);
         }
 
+        public void DummyMethod()
+        {
+            // This is a dummy method
+        }
+
+        public void CheckValue(Stack<Guid> stack)
+        {
+            if (stack.Pop().CompareTo(new Guid("11111111-1111-1111-1111-111111111111")) != 0)
+            {
+                throw new Exception("disappointed that stack doesnt compare me");
+            }
+        }
+
         /// <summary>
         /// SequenceWithWorkFlowInvoker
         /// </summary>        
