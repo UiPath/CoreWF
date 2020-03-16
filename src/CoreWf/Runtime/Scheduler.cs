@@ -19,7 +19,7 @@ namespace System.Activities.Runtime
         private SynchronizationContext synchronizationContext;
         private bool isPausing;
         private bool isRunning;
-        private bool resumeTraceRequired;
+        //private bool resumeTraceRequired;
         private Callbacks callbacks;
         private Quack<WorkItem> workItemQueue;
 
@@ -282,11 +282,11 @@ namespace System.Activities.Runtime
             if (notifyStart)
             {
                 this.synchronizationContext.OperationStarted();
-                this.resumeTraceRequired = true;
+                //this.resumeTraceRequired = true;
             }
             else
             {
-                this.resumeTraceRequired = false;
+                //this.resumeTraceRequired = false;
             }
             this.synchronizationContext.Post(Scheduler.onScheduledWorkCallback, this);
         }
@@ -438,8 +438,8 @@ namespace System.Activities.Runtime
                 }
             }
 
-            bool notifiedCompletion = false;
-            bool isInstanceComplete = false;
+            //bool notifiedCompletion = false;
+            //bool isInstanceComplete = false;
 
             if (idleOrPaused || object.ReferenceEquals(nextAction, abortAction))
             {
@@ -447,7 +447,7 @@ namespace System.Activities.Runtime
                 thisPtr.isRunning = false;
 
                 thisPtr.NotifyWorkCompletion();
-                notifiedCompletion = true;
+                //notifiedCompletion = true;
 
                 //if (isTracingEnabled)
                 //{
@@ -475,7 +475,7 @@ namespace System.Activities.Runtime
                 thisPtr.isRunning = false;
 
                 thisPtr.NotifyWorkCompletion();
-                notifiedCompletion = true;
+                //notifiedCompletion = true;
 
                 //if (isTracingEnabled)
                 //{

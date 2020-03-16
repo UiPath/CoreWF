@@ -36,7 +36,7 @@ using System.Activities.DynamicUpdate;
         private bool isAborted;
         private Exception abortedException;
 
-#if DEBUG
+#if DEBUG && NET45
         private readonly Diagnostics.StackTrace abortStack;
 #endif
 

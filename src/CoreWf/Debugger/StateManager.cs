@@ -639,7 +639,7 @@ namespace System.Activities.Debugger
             {
                 MethodBuilder methodbuilder = this.CreateMethodBuilder(typeBuilder, threadWorkerControllerType, state, withPrimingTest);
                 ILGenerator ilGenerator = methodbuilder.GetILGenerator();
-                const int lineHidden = 0xFeeFee; // #line hidden directive
+                //const int lineHidden = 0xFeeFee; // #line hidden directive
 
                 // Island:
                 // void MethodName(Manager m)

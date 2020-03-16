@@ -91,7 +91,7 @@ namespace System.Activities.Debugger
             sourcePath = XamlDebuggerXmlReader.GetFileName(rootActivity) as string;
             Dictionary<object, SourceLocation> mapping;
             Assembly localAssembly;
-            bool permissionRevertNeeded = false;
+            //bool permissionRevertNeeded = false;
 
             // This may not be the local assembly since it may not be the real root for x:Class 
             localAssembly = rootActivity.GetType().Assembly;
