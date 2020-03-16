@@ -24,10 +24,20 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Xaml.TestCases", "Test\System.Xaml.TestCases\System.Xaml.TestCases.csproj", "{B464A1B3-7186-42C4-809D-2E28F25986E7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{4D92EFCA-7902-49DE-B98F-8CF7675ED86C}"
+	ProjectSection(SolutionItems) = preProject
+		Test\Directory.Build.props = Test\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCases.Xaml", "Test\TestCases.Xaml\TestCases.Xaml.csproj", "{A5B620F9-4E5F-4130-A524-EC1E8C11249B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiPath.Workflow", "UiPath.Workflow\UiPath.Workflow.csproj", "{B339275C-7BB1-4777-9E4A-3FB46D252675}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UiPath.Workflow", "UiPath.Workflow\UiPath.Workflow.csproj", "{B339275C-7BB1-4777-9E4A-3FB46D252675}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1BAA33A-CA2E-4755-8C42-C61447D0D33A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		NuGet.Config = NuGet.Config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
