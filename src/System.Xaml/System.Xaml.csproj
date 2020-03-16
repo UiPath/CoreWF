@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.SDK">
   <PropertyGroup>
-    <ProjectGuid>{9AC36357-34B7-40A1-95CA-FE9F46D089A7}</ProjectGuid>
     <AssemblyName>System.Xaml</AssemblyName>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
