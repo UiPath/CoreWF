@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <UseWPF>true</UseWPF>
-    <TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;netstandard2.0</TargetFrameworks>
     <Title>System.Activities</Title>
     <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
