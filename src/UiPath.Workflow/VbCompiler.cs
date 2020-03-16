@@ -76,7 +76,11 @@ namespace Microsoft.VisualBasic.Activities
             }
         }
 
-        private static string GetTypeName(Type type) => TypeNameFormatter.FormatTypeName(type, TypeOptions);
+        private static string GetTypeName(Type type)
+        {
+            var typeName = (string) TypeNameFormatter.FormatTypeName(type, TypeOptions);
+            return typeName.Replace("[]", "()");
+        }
 
         private static readonly dynamic TypeOptions;
 

@@ -26,7 +26,7 @@ Iterate ArrayList
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
     }
-
+    [ContentProperty("Body")]
     public sealed class ForEach : NativeActivity
     {
         Variable<IEnumerator> valueEnumerator;
