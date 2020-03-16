@@ -32,7 +32,7 @@ namespace Test.Common.TestObjects.Runtime
         private InstanceStore _instanceStore;
         private readonly PersistableIdleAction _idleAction;
 
-        private InstanceStoreVersion _instanceStoreVersion;
+        //private InstanceStoreVersion _instanceStoreVersion;
         private Type _instanceStoreType;
         //PersistenceProviderHelper persistenceProviderHelper;
         //TestPersistenceProviderInfo persistenceProviderInfo;
@@ -105,7 +105,7 @@ namespace Test.Common.TestObjects.Runtime
             _asyncResultCollection = new AsyncResultCollection();
             _waitForCompletionTimeout = TimeSpan.FromMinutes(5);
             _waitForIdleTimeout = TimeSpan.FromMinutes(5);
-            _instanceStoreVersion = InstanceStoreVersion.Version40; // TestParameters.GetInstanceStoreVersion();
+            //_instanceStoreVersion = InstanceStoreVersion.Version40; // TestParameters.GetInstanceStoreVersion();
 
             _defaultOwnerMetadata = new Dictionary<XName, InstanceValue>();
             string WFInstanceScopeName = "RemoteWorkflowRuntimeInstance_" + Guid.NewGuid().ToString();
@@ -1068,12 +1068,12 @@ namespace Test.Common.TestObjects.Runtime
             ThrowIfWorkflowInstanceInvalid();
 
             IAsyncResult asyncResult = _asyncResultCollection.GetAsyncResult(asyncResultId, true);
-            bool isLoadbyInstance = false;
+            //bool isLoadbyInstance = false;
             WorkflowApplicationInstance wfAppInstance = null;
 
             if (oldDefinitionIdentity == null && identityMask == null)
             {
-                isLoadbyInstance = true;
+                //isLoadbyInstance = true;
             }
 
             //if (isLoadbyInstance)

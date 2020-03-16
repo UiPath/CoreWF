@@ -70,7 +70,7 @@ namespace Test.Common.TestObjects.Tracking
             //So the only chance we have to see it is if we log it.
             catch (Exception e)
             {
-                //Log.WarnInternal("Exception thrown in Track() method\n" + e.ToString());
+                TestTraceManager.OptionalLogTrace(e.ToString());
                 throw;
             }
         }

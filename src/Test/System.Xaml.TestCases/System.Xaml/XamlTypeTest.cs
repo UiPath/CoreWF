@@ -41,7 +41,6 @@ using System.Xaml.Schema;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 using XamlReader = System.Xaml.XamlReader;
 #if NETSTANDARD
-using System.ComponentModel;
 #endif
 
 namespace MonoTests.System.Xaml

@@ -585,6 +585,7 @@ namespace Test.Common.TestObjects.Utilities.Sql
                 }
                 catch (SqlException e) // jasonv - approved; specific, commented, rethrows after retries
                 {
+                    TestTraceManager.OptionalLogTrace(e.ToString());
                     //Log.TraceInternal(e.Message);
                     //Log.TraceInternal("[SqlInstance] After exception Connection state is " + conn.State);
                     if (tryCount++ < 3)

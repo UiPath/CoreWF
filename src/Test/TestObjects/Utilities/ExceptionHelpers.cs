@@ -181,27 +181,12 @@ namespace Test.Common.TestObjects.Utilities
         {
             // The normal state for this method is for an exception to be thrown
             bool exceptionThrown = true;
-            try
-            {
-                // call delegate
-                tryCode();
+            // call delegate
+            tryCode();
 
-                // We did not get an exception.  Normally we would throw here, but due to the
-                // catch handler below we set the flag and throw outside the try block
-                exceptionThrown = false;
-            }
-            catch (TargetInvocationException ex) // jasonv - approved; delegate may throw any exception; we rethrow as inner in case of failure
-            {
-                //if (ex.InnerException != null && (ex.InnerException is FaultException<ExceptionDetail>))
-                //{
-                //    FaultException<ExceptionDetail> faultEx = (FaultException<ExceptionDetail>)ex.InnerException;
-                //    ValidateFaultException(faultEx, exceptionType, exceptionProperties);
-                //}
-                //else
-                //{
-                //    throw ex;
-                //}
-            }
+            // We did not get an exception.  Normally we would throw here, but due to the
+            // catch handler below we set the flag and throw outside the try block
+            exceptionThrown = false;
 
             if (!exceptionThrown)
             {

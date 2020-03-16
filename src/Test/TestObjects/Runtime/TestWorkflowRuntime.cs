@@ -21,7 +21,6 @@ namespace Test.Common.TestObjects.Runtime
         private bool _usingExpectedWorkflowInstanceTrace;
         private TestActivity _hostActivity;
         private RemoteWorkflowRuntime _remoteWorkflowRuntime;
-        private readonly TestWorkflowRuntimeConfiguration _testWorkflowRuntimeConfiguration;
         private OrderedTraces _workflowInstanceTrace;
         private WorkflowInstanceAction _previousAction;
         private WorkflowIdentity _previousIdentity;

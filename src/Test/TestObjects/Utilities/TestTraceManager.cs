@@ -36,6 +36,7 @@ namespace Test.Common.TestObjects.Utilities
         {
             if (!IsDefaultTrackingConfiguration)
             {
+                System.Diagnostics.Trace.TraceInformation(trace, args);
                 //Log.TraceInternal(trace, args);
             }
         }

@@ -31,7 +31,6 @@ using System.Windows.Markup;
 using System.Xaml;
 using System.Xaml.Schema;
 #else
-using System.Windows.Markup;
 using System.ComponentModel;
 using System.Xaml;
 using System.Xaml.Schema;
