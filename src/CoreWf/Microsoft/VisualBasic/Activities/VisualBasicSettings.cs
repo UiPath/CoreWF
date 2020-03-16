@@ -64,12 +64,18 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
+        public Func<Compiler> CompilerFactory { get; set; } = () => (Compiler) 
+            Activator.CreateInstance(Type.GetType("Microsoft.VisualBasic.Activities.VbCompiler, UiPath.Workflow") ?? 
+                                                throw new NotSupportedException("Consider referencing the UiPath.Workflow package instead."));
+
         internal bool SuppressXamlSerialization 
         { 
             get; 
             set; 
         }
-        
+
+        internal static Compiler CreateCompiler() => Default.CompilerFactory();
+
         internal void GenerateXamlReferences(IValueSerializerContext context)
         {
             // promote settings to xmlns declarations

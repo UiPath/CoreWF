@@ -134,7 +134,7 @@ namespace Microsoft.VisualBasic.Activities
                     }                    
                 }
 
-                hcompilerWrapper = new HostedCompilerWrapper(new VbCompiler());
+                hcompilerWrapper = new HostedCompilerWrapper(VisualBasicSettings.CreateCompiler());
                 HostedCompilerCache[assemblySet] = hcompilerWrapper;
                 hcompilerWrapper.Reserve(unchecked(++VisualBasicHelper.lastTimestamp));
 

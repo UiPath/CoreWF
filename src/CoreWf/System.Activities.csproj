@@ -2,17 +2,10 @@
   <PropertyGroup>
     <UseWPF>true</UseWPF>
     <TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
-    <Title>Core WF</Title>
-    <Description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</Description>
-    <Authors>Dustin Metzgar,Jim Carley</Authors>
-    <Copyright>Copyright © Dustin Metzgar 2018</Copyright>
-    <PackageTags>.NET Core workflow</PackageTags>
+    <Title>System.Activities</Title>
     <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/UiPath/corewf/blob/master/CoreWf.svg</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/UiPath/corewf/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>3.0.0</Version>
-    <FileUpgradeFlags>40</FileUpgradeFlags>
-    <OldToolsVersion>15.0</OldToolsVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <RootNamespace>System.Activities</RootNamespace>
@@ -20,7 +13,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
@@ -29,17 +21,11 @@
     <AssemblyOriginatorKeyFile>..\..\CoreWF.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Scripting" Version="2.8.0-dev-62823-01" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="3.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="ReflectionMagic" Version="4.1.0" />
     <PackageReference Include="System.CodeDom" Version="4.6.0" />
     <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
