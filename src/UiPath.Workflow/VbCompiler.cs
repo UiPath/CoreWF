@@ -49,15 +49,11 @@ namespace Microsoft.VisualBasic.Activities
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.ExpressionString, ex.ToString())));
             }
         }
-
         class IdentifiersWalker : VisualBasicSyntaxWalker
         {
             private readonly HashSet<string> _identifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
             public SemanticModel SemanticModel { get; }
-
             private IdentifiersWalker(SemanticModel semanticModel) => SemanticModel = semanticModel;
-
             public static string[] GetIdentifiers(Script script)
             {
                 var compilation = script.GetCompilation();
@@ -68,38 +64,31 @@ namespace Microsoft.VisualBasic.Activities
                 walker.Visit(root);
                 return walker._identifiers.ToArray();
             }
-
             public override void VisitIdentifierName(IdentifierNameSyntax node)
             {
                 _identifiers.Add(node.Identifier.Text);
                 base.VisitIdentifierName(node);
             }
         }
-
         private static string GetTypeName(Type type)
         {
             var typeName = (string) TypeNameFormatter.FormatTypeName(type, TypeOptions);
             return typeName.Replace("[]", "()");
         }
-
         private static readonly dynamic TypeOptions;
-
         private static readonly dynamic TypeNameFormatter =
             typeof(VisualBasicScript).Assembly.GetType("Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting.VisualBasicObjectFormatter")
             .AsDynamicType()
             .s_impl
             .TypeNameFormatter;
-
         static VbCompiler()
         {
             var type = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
-
             var args = new object[]
             {
                 0, /* arrayBoundRadix */
                 true /* showNamespaces */
             };
-
             TypeOptions = Activator.CreateInstance(type, args);
         }
     }
