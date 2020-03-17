@@ -463,9 +463,9 @@ namespace TestCases.Activities
 
             Variable<Stack<Guid>> stack = VariableHelper.Create<Stack<Guid>>("keyed_collection");
 
-            TestInvokeMethod invokeact = new TestInvokeMethod("method invoke act", typeof(Sequence).GetMethod("CheckValue"))
+            TestInvokeMethod invokeact = new TestInvokeMethod("method invoke act", typeof(MethodHelper).GetMethod("CheckValue"))
             {
-                TargetObject = new TestArgument<Sequence>(Direction.In, "TargetObject", (context => new Sequence()))
+                TargetObject = new TestArgument<MethodHelper>(Direction.In, "TargetObject", (context => new MethodHelper()))
             };
             invokeact.Arguments.Add(new TestArgument<Stack<Guid>>(Direction.In, "stack", stack));
             TestSequence sequence6 = new TestSequence("seq5")
@@ -547,9 +547,9 @@ namespace TestCases.Activities
             //  Execute empty sequence activity - expected to pass
             TestSequence sequence = new TestSequence("Seq");
 
-            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinvoke", this.GetType().GetMethod("DummyMethod"))
+            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinvoke", typeof(MethodHelper).GetMethod("DummyMethod"))
             {
-                TargetObject = new TestArgument<Sequence>(Direction.In, "TargetObject", (context => this))
+                TargetObject = new TestArgument<MethodHelper>(Direction.In, "TargetObject", (context => new MethodHelper()))
             };
             sequence.Activities.Add(methodInvokeAct);
             TestRuntime.RunAndValidateWorkflow(sequence);
@@ -586,16 +586,19 @@ namespace TestCases.Activities
             TestRuntime.RunAndValidateWorkflow(sequence);
         }
 
-        public void DummyMethod()
+        class MethodHelper
         {
-            // This is a dummy method
-        }
-
-        public void CheckValue(Stack<Guid> stack)
-        {
-            if (stack.Pop().CompareTo(new Guid("11111111-1111-1111-1111-111111111111")) != 0)
+            public void DummyMethod()
             {
-                throw new Exception("disappointed that stack doesnt compare me");
+                // This is a dummy method
+            }
+
+            public void CheckValue(Stack<Guid> stack)
+            {
+                if (stack.Pop().CompareTo(new Guid("11111111-1111-1111-1111-111111111111")) != 0)
+                {
+                    throw new Exception("disappointed that stack doesnt compare me");
+                }
             }
         }
 

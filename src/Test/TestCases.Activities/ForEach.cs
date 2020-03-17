@@ -133,10 +133,9 @@ namespace TestCases.Activities
 
             Variable<List<string>> foreachList = new Variable<List<string>>("foreachList", context => stringList);
 
-            BindingFlags flags = /*BindingFlags.InvokeMethod |*/ BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
-            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinvoke", this.GetType().GetMethod("ChangeListToNewList", flags))
+            var methodInvokeAct = new TestInvokeMethod("methodinvoke", typeof(MethodHelper).GetMethod("ChangeListToNewList"))
             {
-                TargetObject = new TestArgument<ForEach>(Direction.In, "TargetObject", context => new ForEach())
+                TargetObject = new TestArgument<MethodHelper>(Direction.In, "TargetObject", context => new MethodHelper())
             };
             methodInvokeAct.Arguments.Add(new TestArgument<List<string>>(Direction.InOut, "listOfStrings", foreachList));
 
@@ -200,10 +199,9 @@ namespace TestCases.Activities
 
             Variable<List<string>> foreachList = new Variable<List<string>>("foreachList", context => strArray);
 
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public /*| BindingFlags.InvokeMethod*/;
-            TestInvokeMethod methodInvokeAct = new TestInvokeMethod("methodinv", this.GetType().GetMethod("ChangeListToNull", flags));
+            var methodInvokeAct = new TestInvokeMethod("methodinv", typeof(MethodHelper).GetMethod("ChangeListToNull"));
             methodInvokeAct.Arguments.Add(new TestArgument<List<string>>(Direction.In, "listOfStrings", foreachList));
-            methodInvokeAct.TargetObject = new TestArgument<ForEach>(Direction.In, "TargetObject", context => new ForEach());
+            methodInvokeAct.TargetObject = new TestArgument<MethodHelper>(Direction.In, "TargetObject", context => new MethodHelper());
 
             writeLine.Message = "Here we are!";
 
@@ -373,8 +371,7 @@ namespace TestCases.Activities
 
             Variable<string[]> valuesArray = new Variable<string[]>("valuesArray", context => new string[3]);
 
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public /*| BindingFlags.InvokeMethod*/;
-            TestInvokeMethod toArray = new TestInvokeMethod("invoke act", t.GetMethod("SortList", flags));
+            var toArray = new TestInvokeMethod("invoke act", t.GetMethod("SortList"));
             toArray.Arguments.Add(new TestArgument<List<string>>(Direction.In, "listOfStrings", values));
             toArray.SetResultVariable<string[]>(valuesArray);
             toArray.TargetObject = new TestArgument<ForEach>(Direction.In, "TargetObject", context => new ForEach());
@@ -826,14 +823,16 @@ namespace TestCases.Activities
             TestRuntime.RunAndValidateWorkflow(outerSequence);
         }
 
-        public void ChangeListToNewList(ref List<string> listOfStrings)
+        class MethodHelper
         {
-            listOfStrings.Add("var4");
-        }
-
-        public void ChangeListToNull(List<string> listOfStrings)
-        {
-            listOfStrings.Clear();
+            public void ChangeListToNewList(ref List<string> listOfStrings)
+            {
+                listOfStrings.Add("var4");
+            }
+            public void ChangeListToNull(List<string> listOfStrings)
+            {
+                listOfStrings.Clear();
+            }
         }
 
         public string[] SortList(List<string> listOfStrings)

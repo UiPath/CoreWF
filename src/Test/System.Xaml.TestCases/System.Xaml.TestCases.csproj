@@ -1,14 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-		<RootNamespace>System.Xaml.TestCases</RootNamespace>
-		<AssemblyName>System.Xaml.TestCases</AssemblyName>
-		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-		<ApplicationIcon />
-		<OutputType>Library</OutputType>
-		<StartupObject />
-	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DefineConstants>TRACE;DEBUG;NETSTANDARD;CORE;NETCOREAPP2_0;HAS_TYPE_CONVERTER</DefineConstants>
 	</PropertyGroup>

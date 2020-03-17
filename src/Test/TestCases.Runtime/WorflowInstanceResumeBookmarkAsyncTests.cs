@@ -88,7 +88,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
             workflowRuntime.WaitForCompletion(expectedTrace);
         }
 
-        public static void ResumeBookmarkCallback(IAsyncResult result)
+        private static void ResumeBookmarkCallback(IAsyncResult result)
         {
             TestWorkflowRuntimeAsyncState asyncState = (TestWorkflowRuntimeAsyncState)result.AsyncState;
             int operationId = (int)asyncState.State;

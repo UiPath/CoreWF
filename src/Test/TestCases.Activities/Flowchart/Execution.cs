@@ -429,7 +429,7 @@ namespace TestCases.Activities.Flowchart
         /// </summary> 
         /// /// Disabled and failed in desktop         
         //[Fact]
-        public void BlockingActivityInFlowchart()
+        private void BlockingActivityInFlowchart()
         {
             TestFlowchart flowchart = new TestFlowchart();
 
@@ -474,7 +474,7 @@ namespace TestCases.Activities.Flowchart
         /// </summary>   
         /// Disabled and failed in desktop     
         //[Fact]
-        public void FiveLevelDeepNestedFlowchartWithBlockingActivity()
+        private void FiveLevelDeepNestedFlowchartWithBlockingActivity()
         {
             TestFlowchart parent = new TestFlowchart();
             TestFlowchart child1 = new TestFlowchart();

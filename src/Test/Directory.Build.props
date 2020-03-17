@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;netcoreapp2.1</TargetFrameworks>
+  </PropertyGroup>
   <Import Project="$(SolutionDir)Directory.Build.props" />
   <ItemGroup>
     <PackageReference Include="Shouldly" Version="3.0.2" />
