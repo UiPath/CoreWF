@@ -15,7 +15,7 @@ using System.Linq.Expressions;
 
 namespace Microsoft.VisualBasic.Activities
 {
-    internal class VbCompiler : Compiler
+    internal class VbJitCompiler : JitCompiler
     {
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
@@ -81,7 +81,8 @@ namespace Microsoft.VisualBasic.Activities
             .AsDynamicType()
             .s_impl
             .TypeNameFormatter;
-        static VbCompiler()
+
+        static VbJitCompiler()
         {
             var type = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
             var args = new object[]

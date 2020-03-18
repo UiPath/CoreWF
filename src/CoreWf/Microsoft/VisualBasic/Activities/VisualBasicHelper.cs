@@ -1611,7 +1611,7 @@ namespace Microsoft.VisualBasic.Activities
             bool isCached;
             int refCount;
 
-            public HostedCompilerWrapper(Compiler compiler)
+            public HostedCompilerWrapper(JitCompiler compiler)
             {
                 Fx.Assert(compiler != null, "HostedCompilerWrapper must be assigned a non-null compiler");
                 wrapperLock = new object();
@@ -1620,7 +1620,7 @@ namespace Microsoft.VisualBasic.Activities
                 refCount = 0;
             }
 
-            public Compiler Compiler { get; private set; }
+            public JitCompiler Compiler { get; private set; }
 
             // Storing ticks of the time it last used.
             public ulong Timestamp { get; private set; }

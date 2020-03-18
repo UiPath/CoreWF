@@ -64,8 +64,8 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public Func<Compiler> CompilerFactory { get; set; } = () => (Compiler) 
-            Activator.CreateInstance(Type.GetType("Microsoft.VisualBasic.Activities.VbCompiler, UiPath.Workflow") ?? 
+        public Func<JitCompiler> CompilerFactory { get; set; } = () => (JitCompiler) 
+            Activator.CreateInstance(Type.GetType("Microsoft.VisualBasic.Activities.VbJitCompiler, UiPath.Workflow") ?? 
                                                 throw new NotSupportedException("Consider referencing the UiPath.Workflow package instead."));
 
         internal bool SuppressXamlSerialization 
@@ -74,7 +74,7 @@ namespace Microsoft.VisualBasic.Activities
             set; 
         }
 
-        internal static Compiler CreateCompiler() => Default.CompilerFactory();
+        internal static JitCompiler CreateCompiler() => Default.CompilerFactory();
 
         internal void GenerateXamlReferences(IValueSerializerContext context)
         {
