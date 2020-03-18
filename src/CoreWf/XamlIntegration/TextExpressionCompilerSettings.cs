@@ -14,6 +14,8 @@ namespace System.Activities.XamlIntegration
             this.ForImplementation = true;
         }
 
+        public AotCompiler Compiler { get; set; }
+
         public Activity Activity
         {
             get;

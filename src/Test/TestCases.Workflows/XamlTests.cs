@@ -1,7 +1,11 @@
-﻿using System.Activities;
+﻿using System;
+using System.Activities;
 using System.Activities.XamlIntegration;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Shouldly;
 using Xunit;
 
@@ -30,16 +34,8 @@ namespace TestCases.Workflows
                         <WriteLine Text=""HelloWorld"" />
                     </Sequence>
                 </Activity>" },
-            new object[] { @"
-                <Activity x:Class=""WFTemplate""
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                    <Sequence>
-                        <WriteLine Text=""HelloWorld"" />
-                    </Sequence>
-                </Activity>" },
             // This test is broken
-            //yield return new object[] { @"
+            //new object[] { @"
             //    <Activity x:Class=""WFTemplate""
             //              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
             //              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -167,11 +163,34 @@ namespace TestCases.Workflows
             var inputs = new StringDictionary { ["myInput"] = new PersonToGreet { FirstName = "Jane", LastName = "Doe" } };
             var result = InvokeWorkflow(xamlString, inputs);
         }
-
+        const string CSharpExpressions = @"
+                <Activity x:Class=""WFTemplate""
+                          xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
+                          xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"">
+                    <Sequence>
+                        <WriteLine>
+                          <InArgument x:TypeArguments=""x:String"">
+                            <mca:CSharpValue x:TypeArguments=""x:String"">""constant""</mca:CSharpValue>
+                          </InArgument>
+                        </WriteLine>
+                    </Sequence>
+                </Activity>";
+        [Fact]
+        public void CompileExpressionsThrows() =>
+            new Action(()=>InvokeWorkflow(CSharpExpressions)).ShouldThrow<NotSupportedException>().Message.ShouldBe("Consider setting CompileExpressions to false or passing a compiler in ActivityXamlServicesSettings.");
+        [Fact]
+        public void CompileExpressionsWithCompiler() =>
+            new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
+                new ActivityXamlServicesSettings { CompileExpressions = true, CSharpCompiler = new CSharpCompiler() })).ShouldThrow<NotImplementedException>();
         private static IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
         {
             var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = true });
             return WorkflowInvoker.Invoke(activity, inputs ?? new StringDictionary());
+        }
+        class CSharpCompiler : AotCompiler
+        {
+            public override CompilerResults Compile(CompilerParameters options, CodeCompileUnit compilationUnit) => throw new NotImplementedException();
         }
     }
 }

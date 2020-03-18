@@ -16,5 +16,21 @@ namespace System.Activities.XamlIntegration
             get;
             set;
         }
+
+        public AotCompiler VbCompiler { get; set; }
+        public AotCompiler CSharpCompiler { get; set; }
+
+        internal AotCompiler GetCompiler(string language)
+        {
+            switch (language)
+            {
+                case "VB":
+                    return VbCompiler;
+                case "C#":
+                    return CSharpCompiler;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(language), language, "Unknown language. Supported values : VB and C#."); 
+            }
+        }
     }
 }

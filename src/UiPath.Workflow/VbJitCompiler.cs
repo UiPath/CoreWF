@@ -81,16 +81,12 @@ namespace Microsoft.VisualBasic.Activities
             .AsDynamicType()
             .s_impl
             .TypeNameFormatter;
-
         static VbJitCompiler()
         {
             var type = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
-            var args = new object[]
-            {
-                0, /* arrayBoundRadix */
-                true /* showNamespaces */
-            };
-            TypeOptions = Activator.CreateInstance(type, args);
+            const int ArrayBoundRadix = 0;
+            const bool ShowNamespaces = true;
+            TypeOptions = Activator.CreateInstance(type, new object[] { ArrayBoundRadix, ShowNamespaces });
         }
     }
 }

@@ -2352,16 +2352,12 @@ namespace System.Activities.XamlIntegration
         ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         TextExpressionCompilerResults CompileInMemory()
         {
-            List<TextExpressionCompilerError> messages = new List<TextExpressionCompilerError>();
-            CompilerParameters compilerParameters = GetCompilerParameters(messages);
+            var messages = new List<TextExpressionCompilerError>();
+            var compilerParameters = GetCompilerParameters(messages);
             
-            CompilerResults compilerResults = null;
-            using (CodeDomProvider codeDomProvider = CodeDomProvider.CreateProvider(this.settings.Language))
-            {
-                compilerResults = codeDomProvider.CompileAssemblyFromDom(compilerParameters, this.compileUnit);
-            }
+            var compilerResults = settings.Compiler.Compile(compilerParameters, compileUnit);
 
-            TextExpressionCompilerResults results = new TextExpressionCompilerResults();
+            var results = new TextExpressionCompilerResults();
 
             if (compilerResults.Errors == null || !compilerResults.Errors.HasErrors)
             {
