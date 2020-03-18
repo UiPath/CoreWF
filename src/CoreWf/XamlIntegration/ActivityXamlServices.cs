@@ -16,6 +16,7 @@ namespace System.Activities.XamlIntegration
     using System.Activities.Validation;
     using System.Activities.Internals;
     using System.Activities.Runtime;
+    using System.Text;
 
     public static class ActivityXamlServices
     {
@@ -165,7 +166,7 @@ namespace System.Activities.XamlIntegration
 
             if (result is IDynamicActivity dynamicActivity && settings.CompileExpressions)
             {
-                Compile(dynamicActivity, settings.LocationReferenceEnvironment);
+                Compile(dynamicActivity, settings);
             }
 
             return result;
@@ -263,50 +264,54 @@ namespace System.Activities.XamlIntegration
             return FuncFactory.CreateFunc<T>(reader);
         }
 
-        private static void Compile(IDynamicActivity dynamicActivity, LocationReferenceEnvironment environment)
+        private static void Compile(IDynamicActivity dynamicActivity, ActivityXamlServicesSettings settings)
         {
-#if NET45
             string language = null;
-            if (RequiresCompilation(dynamicActivity, environment, out language))
+            if (!RequiresCompilation(dynamicActivity, settings.LocationReferenceEnvironment, out language))
             {
-                TextExpressionCompiler compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language));
-                TextExpressionCompilerResults results = compiler.Compile();
+                return;
+            }
+            var aotCompiler = settings.GetCompiler(language);
+            if (aotCompiler == null)
+            {
+                throw new NotSupportedException("Consider setting CompileExpressions to false or passing a compiler in ActivityXamlServicesSettings.");
+            }
+            var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, aotCompiler));
+            var results = compiler.Compile();
 
-                if (results.HasErrors)
+            if (results.HasErrors)
+            {
+                var messages = new StringBuilder();
+                messages.Append("\r\n");
+                messages.Append("\r\n");
+
+                foreach (TextExpressionCompilerError message in results.CompilerMessages)
                 {
-                    StringBuilder messages = new StringBuilder();
-                    messages.Append("\r\n");
-                    messages.Append("\r\n");
-
-                    foreach (TextExpressionCompilerError message in results.CompilerMessages)
+                    messages.Append("\t");
+                    if (results.HasSourceInfo)
                     {
-                        messages.Append("\t");
-                        if (results.HasSourceInfo)
-                        {
-                            messages.Append(string.Concat(" ", SR.ActivityXamlServiceLineString, " ", message.SourceLineNumber, ": "));
-                        }
-                        messages.Append(message.Message);
-
+                        messages.Append(string.Concat(" ", SR.ActivityXamlServiceLineString, " ", message.SourceLineNumber, ": "));
                     }
+                    messages.Append(message.Message);
 
-                    messages.Append("\r\n");
-                    messages.Append("\r\n");
-
-                    InvalidOperationException exception = new InvalidOperationException(SR.ActivityXamlServicesCompilationFailed(messages.ToString()));
-
-                    foreach (TextExpressionCompilerError message in results.CompilerMessages)
-                    {
-                        exception.Data.Add(message, message.Message);
-                    }
-                    throw FxTrace.Exception.AsError(exception);
                 }
 
-                Type compiledExpressionRootType = results.ResultType;
+                messages.Append("\r\n");
+                messages.Append("\r\n");
 
-                ICompiledExpressionRoot compiledExpressionRoot = Activator.CreateInstance(compiledExpressionRootType, new object[] { dynamicActivity }) as ICompiledExpressionRoot;
-                CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(dynamicActivity, compiledExpressionRoot);
+                InvalidOperationException exception = new InvalidOperationException(SR.ActivityXamlServicesCompilationFailed(messages.ToString()));
+
+                foreach (TextExpressionCompilerError message in results.CompilerMessages)
+                {
+                    exception.Data.Add(message, message.Message);
+                }
+                throw FxTrace.Exception.AsError(exception);
             }
-#endif
+
+            Type compiledExpressionRootType = results.ResultType;
+
+            ICompiledExpressionRoot compiledExpressionRoot = Activator.CreateInstance(compiledExpressionRootType, new object[] { dynamicActivity }) as ICompiledExpressionRoot;
+            CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(dynamicActivity, compiledExpressionRoot);
         }
 
         private static bool RequiresCompilation(IDynamicActivity dynamicActivity, LocationReferenceEnvironment environment, out string language)
@@ -351,7 +356,7 @@ namespace System.Activities.XamlIntegration
             return true;
         }
 
-        private static TextExpressionCompilerSettings GetCompilerSettings(IDynamicActivity dynamicActivity, string language)
+        private static TextExpressionCompilerSettings GetCompilerSettings(IDynamicActivity dynamicActivity, string language, AotCompiler compiler)
         {
             int lastIndexOfDot = dynamicActivity.Name.LastIndexOf('.');
             int lengthOfName = dynamicActivity.Name.Length;
@@ -368,7 +373,8 @@ namespace System.Activities.XamlIntegration
                 RootNamespace = null,
                 GenerateAsPartialClass = false,
                 AlwaysGenerateSource = true,
-                Language = language
+                Language = language,
+                Compiler = compiler
             };
         }
 
