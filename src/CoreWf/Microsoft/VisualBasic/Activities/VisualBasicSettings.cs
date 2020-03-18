@@ -65,7 +65,7 @@ namespace Microsoft.VisualBasic.Activities
         }
 
         public Func<JustInTimeCompiler> CompilerFactory { get; set; } = () => (JustInTimeCompiler) 
-            Activator.CreateInstance(Type.GetType("Microsoft.VisualBasic.Activities.VbJitCompiler, UiPath.Workflow") ?? 
+            Activator.CreateInstance(Type.GetType("Microsoft.VisualBasic.Activities.VbJustInTimeCompiler, UiPath.Workflow") ?? 
                                                 throw new NotSupportedException("Consider referencing the UiPath.Workflow package instead."));
 
         internal bool SuppressXamlSerialization 
