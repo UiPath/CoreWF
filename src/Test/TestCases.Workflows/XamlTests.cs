@@ -188,7 +188,7 @@ namespace TestCases.Workflows
             var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = true });
             return WorkflowInvoker.Invoke(activity, inputs ?? new StringDictionary());
         }
-        class CSharpCompiler : AotCompiler
+        class CSharpCompiler : AheadOfTimeCompiler
         {
             public override CompilerResults Compile(CompilerParameters options, CodeCompileUnit compilationUnit) => throw new NotImplementedException();
         }

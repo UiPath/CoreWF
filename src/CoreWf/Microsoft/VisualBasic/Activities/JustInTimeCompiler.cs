@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace System.Activities
 {
-    public abstract class JitCompiler
+    public abstract class JustInTimeCompiler
     {
         public abstract LambdaExpression CompileExpression(ExpressionToCompile compilerRequest);
     }

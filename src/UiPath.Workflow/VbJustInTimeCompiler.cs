@@ -15,7 +15,7 @@ using System.Linq.Expressions;
 
 namespace Microsoft.VisualBasic.Activities
 {
-    internal class VbJitCompiler : JitCompiler
+    internal class VbJustInTimeCompiler : JustInTimeCompiler
     {
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
@@ -81,7 +81,7 @@ namespace Microsoft.VisualBasic.Activities
             .AsDynamicType()
             .s_impl
             .TypeNameFormatter;
-        static VbJitCompiler()
+        static VbJustInTimeCompiler()
         {
             var type = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
             const int ArrayBoundRadix = 0;

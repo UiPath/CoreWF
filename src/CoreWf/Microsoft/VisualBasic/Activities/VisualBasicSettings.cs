@@ -64,7 +64,7 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public Func<JitCompiler> CompilerFactory { get; set; } = () => (JitCompiler) 
+        public Func<JustInTimeCompiler> CompilerFactory { get; set; } = () => (JustInTimeCompiler) 
             Activator.CreateInstance(Type.GetType("Microsoft.VisualBasic.Activities.VbJitCompiler, UiPath.Workflow") ?? 
                                                 throw new NotSupportedException("Consider referencing the UiPath.Workflow package instead."));
 
@@ -74,7 +74,7 @@ namespace Microsoft.VisualBasic.Activities
             set; 
         }
 
-        internal static JitCompiler CreateCompiler() => Default.CompilerFactory();
+        internal static JustInTimeCompiler CreateCompiler() => Default.CompilerFactory();
 
         internal void GenerateXamlReferences(IValueSerializerContext context)
         {

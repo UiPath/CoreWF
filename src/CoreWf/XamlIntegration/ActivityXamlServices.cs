@@ -356,7 +356,7 @@ namespace System.Activities.XamlIntegration
             return true;
         }
 
-        private static TextExpressionCompilerSettings GetCompilerSettings(IDynamicActivity dynamicActivity, string language, AotCompiler compiler)
+        private static TextExpressionCompilerSettings GetCompilerSettings(IDynamicActivity dynamicActivity, string language, AheadOfTimeCompiler compiler)
         {
             int lastIndexOfDot = dynamicActivity.Name.LastIndexOf('.');
             int lengthOfName = dynamicActivity.Name.Length;

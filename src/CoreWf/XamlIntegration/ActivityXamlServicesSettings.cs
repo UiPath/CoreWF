@@ -17,10 +17,10 @@ namespace System.Activities.XamlIntegration
             set;
         }
 
-        public AotCompiler VbCompiler { get; set; }
-        public AotCompiler CSharpCompiler { get; set; }
+        public AheadOfTimeCompiler VbCompiler { get; set; }
+        public AheadOfTimeCompiler CSharpCompiler { get; set; }
 
-        internal AotCompiler GetCompiler(string language)
+        internal AheadOfTimeCompiler GetCompiler(string language)
         {
             switch (language)
             {

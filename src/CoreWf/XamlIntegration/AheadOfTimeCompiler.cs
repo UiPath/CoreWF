@@ -6,7 +6,7 @@ namespace System.Activities.XamlIntegration
     using System.CodeDom;
     using System.CodeDom.Compiler;
 
-    public abstract class AotCompiler
+    public abstract class AheadOfTimeCompiler
     {
         public abstract CompilerResults Compile(CompilerParameters options, CodeCompileUnit compilationUnit);
     }
