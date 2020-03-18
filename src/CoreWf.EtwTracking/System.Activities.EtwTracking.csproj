@@ -2,11 +2,11 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Title>Core WF ETW Tracking Provider</Title>
-    <Description>Unofficial port of the Windows Workflow Foundation (WF) ETW tracking provider to the .NET Standard</Description>
-    <Authors>Dustin Metzgar,Jim Carley</Authors>
-    <Copyright>Copyright © Dustin Metzgar 2017</Copyright> 
+    <Description>Unofficial port of the Windows Workflow Foundation (WF) ETW tracking provider to .NET Core/Standard</Description>
+    <Authors>Lucian Bargaoanu,Dustin Metzgar</Authors>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright> 
     <PackageTags>.NET Core workflow</PackageTags>
-    <PackageProjectUrl>https://github.com/dmetzgar/corewf</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/uipath-open/corewf</PackageProjectUrl>
     <Version>1.2.0</Version>
     <RootNamespace>System.Activities.EtwTracking</RootNamespace>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>

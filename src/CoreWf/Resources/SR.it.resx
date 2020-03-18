@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Il flusso di lavoro contiene espressioni lambda specificate nel codice. Queste espressioni non sono serializzabili in XAML. Per rendere il flusso di lavoro serializzabile in XAML, utilizzare VisualBasicValue/VisualBasicReference o ExpressionServices.Convert(lambda). In questo modo le espressioni lambda verranno convertite in attività di espressione.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Tutti i diritti sono riservati.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Il numero di righe specificato per l'attività {0} è troppo elevato per essere supportato in attendibilità parziale</value>
   </data>

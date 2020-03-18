@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Deze workflow bevat lambda-expressies die in code zijn opgegeven. Deze expressies kunnen niet in XAML worden geserialiseerd. Als u uw workflow XAML-serialiseerbaar wilt maken moet u ofwel VisualBasicValue/VisualBasicReference ofwel ExpressionServices.Convert(lambda) gebruiken. Hiermee kunt u uw lambda-expressies converteren naar expressieactiviteiten.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Alle rechten voorbehouden.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Het opgegeven regelnummer voor activiteit {0} is te groot om te kunnen worden ondersteund in gedeeltelijk vertrouwen</value>
   </data>

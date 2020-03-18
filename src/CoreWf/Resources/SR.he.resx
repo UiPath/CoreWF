@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>זרימת עבודה זו מכילה ביטויי למדא המצוינים בקוד. ביטויים אלה אינם ניתנים לעריכה בסידרת XAML. כדי שזרימת העבודה שלך תהיה ניתנת לעריכה בסידרת XAML, השתמש ב- VisualBasicValue/VisualBasicReference או ExpressionServices.Convert(lambda). פעולה זו תמיר את ביטויי הלמדא שלך לפעילויות ביטוי.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation.  כל הזכויות שמורות.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>מספר השורה שצוין עבור הפעילות {0} גדול מדי ואינו נתמך במצב אמון חלקי</value>
   </data>
