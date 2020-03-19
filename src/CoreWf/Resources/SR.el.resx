@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Αυτή η ροή εργασιών περιέχει παραστάσεις λάμδα που καθορίζονται σε κώδικα. Αυτές οι παραστάσεις δεν σειριοποιούνται με XAML. Προκειμένου να καταστήσετε δυνατή τη σειριοποίηση της ροής εργασιών σας με XAML, είτε χρησιμοποιήστε VisualBasicValue/VisualBasicReference είτε ExpressionServices.Convert(lambda). Αυτό θα μετατρέψει τις παραστάσεις σας λάμδα σε δραστηριότητες παράστασης.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Με επιφύλαξη κάθε νόμιμου δικαιώματος.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Ο καθορισμένος αριθμός γραμμών {0} είναι πολύ μεγάλος για να υποστηρίζεται στη μερική αξιοπιστία</value>
   </data>

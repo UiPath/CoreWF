@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>此工作流包含以代码形式指定的 lambda 表达式。这些表达式不可序列化为 XAML。若要使工作流可序列化为 XAML，请使用 VisualBasicValue/VisualBasicReference 或 ExpressionServices.Convert(lambda)。这会将 lambda 表达式转换为表达式活动。</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation。保留所有权利。</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>为活动 {0} 指定的行数过大，在部分信任环境中不受支持</value>
   </data>

@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Tämä työnkulku sisältää koodissa määritettyjä lambda-lausekkeita, jotka eivät ole XAML-sarjoitettavia. Voit tehdä työnkulusta XAML-sarjoitettavan muuntamalla lambda-lausekkeet lauseketehtäviksi käyttämällä VisualBasicValue-arvoa, VisualBasicReference-viittausta tai ExpressionServices.Convert(lambda)-menetelmää. Lambda-lausekkeet muutetaan tällöin lauseketehtäviksi.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Kaikki oikeudet pidätetään.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Tehtävän {0} määritetty rivin numero on liian suuri tuettavaksi osittaisen luottamuksen tilassa</value>
   </data>

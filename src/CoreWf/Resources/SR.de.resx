@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Dieser Workflow enthält im Code spezifizierte Lambda-Ausdrücke. Diese Ausdrücke sind nicht XAML-serialisierbar. Um den Workflow XAML-serialisierbar zu machen, verwenden Sie entweder VisualBasicValue/VisualBasicReference oder ExpressionServices.Convert(lambda). Dadurch werden die Lambda-Ausdrücke in Ausdrucksaktivitäten konvertiert.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Alle Rechte vorbehalten.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Die angegebene Zeilennummer für die Aktivität {0} ist zu hoch, um bei teilweiser Vertrauenswürdigkeit unterstützt zu werden.</value>
   </data>

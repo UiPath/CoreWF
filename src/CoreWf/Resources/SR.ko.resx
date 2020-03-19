@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>이 워크플로에는 코드에 지정된 람다 식이 포함됩니다. 이러한 식은 직렬화할 수 있는 XAML 식이 아닙니다. 워크플로를 직렬화할 수 있는 XAML로 만들려면 VisualBasicValue/VisualBasicReference 또는 ExpressionServices.Convert(lambda)를 사용하십시오. 그러면 람다 식이 식 작업으로 변환됩니다.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. All rights reserved.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>{0} 작업에 대해 지정한 줄 번호가 너무 커서 부분 신뢰에서 지원되지 않습니다.</value>
   </data>

@@ -4,13 +4,12 @@
     <id>CoreWf</id>
     <version>1.2.1</version>
     <title>Core WF</title>
-    <authors>Dustin Metzgar,Jim Carley</authors>
-    <owners>Dustin Metzgar,Jim Carley</owners>
+    <authors>Lucian Bargaoanu,Dustin Metzgar</authors>
+    <owners>Lucian Bargaoanu,Dustin Metzgar</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <projectUrl>https://github.com/dmetzgar/corewf</projectUrl>
-    <iconUrl>https://dmsignalrtest.blob.core.windows.net/blogimages/CoreWf.svg</iconUrl>
-    <description>Unofficial port of the Windows Workflow Foundation (WF) to the .NET Standard</description>
-    <copyright>Copyright © Dustin Metzgar 2018</copyright>
+    <projectUrl>https://github.com/uipath-open/corewf</projectUrl>
+    <description>Unofficial port of the Windows Workflow Foundation (WF) to .NET Core/Standard</description>
+    <copyright>Copyright © .NET Foundation and Contributors</copyright>
     <tags>.NET Core workflow</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">

@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>يحتوي سير العمل هذا على تعبيرات lambda محددة في التعليمات البرمجية. هذه التعبيرات ليست XAML قابلة للتسلسل. وحتى يمكن جعل سير العمل XAML-قابلاً للتسلسل، استخدم VisualBasicValue/VisualBasicReference أو ExpressionServices.Convert(lambda). سيؤدي ذلك إلى تحويل تعبيرات lambda إلى أنشطة تعبير.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. كافة الحقوق محفوظة.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>عدد الأعمدة المحدد للنشاط {0} أكبر بكثير مما يمكن اعتماده في الثقة الجزئية</value>
   </data>

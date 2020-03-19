@@ -1825,7 +1825,7 @@
     <value>This workflow contains lambda expressions specified in code. These expressions are not XAML serializable. In order to make your workflow XAML-serializable, either use VisualBasicValue/VisualBasicReference or ExpressionServices.Convert(lambda). This will convert your lambda expressions into expression activities.</value>
   </data>
   <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation.  All rights reserved.</value>
+    <value>© .NET Foundation and Contributors</value>
   </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>The specified line number for activity {0} is too large to be supported in Partial Trust</value>

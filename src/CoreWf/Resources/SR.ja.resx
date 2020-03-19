@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>このワークフローには、コードで指定されたラムダ式が含まれています。これらの式は XAML にシリアル化できません。このワークフローを XAML にシリアル化できるようにするには、VisualBasicValue/VisualBasicReference を使用するか、ExpressionServices.Convert(lambda) を使用します。これにより、ラムダ式が式アクティビティに変換されます。</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>(C) Microsoft Corporation.  All rights reserved.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>アクティビティ {0} に指定されている行番号は、部分的な信頼には大きすぎます。</value>
   </data>

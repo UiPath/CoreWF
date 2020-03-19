@@ -1,6 +1,6 @@
-﻿// <copyright>
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// </copyright>
+﻿// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
 #pragma warning disable 0436 //Disable the type conflict warning for the types used by LocalAppContext framework due to InternalsVisibleTo for System.ServiceModel.Internals (Quirking)
 namespace System.Activities
 {

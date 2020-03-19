@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Данный рабочий процесс содержит в коде лямбда-выражения. Эти выражения XAML-несериализуемы. Чтобы сделать рабочий процесс XAML-сериализуемым, используйте или VisualBasicValue/VisualBasicReference, или ExpressionServices.Convert(lambda). При этом лямбда-выражения будут преобразованы в действия выражений.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Корпорация Майкрософт (Microsoft Corporation). Все права защищены.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Указанный номер строки для действия {0} слишком велик и не поддерживается системой частичной проверки</value>
   </data>
