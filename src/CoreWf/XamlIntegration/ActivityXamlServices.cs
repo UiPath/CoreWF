@@ -271,12 +271,11 @@ namespace System.Activities.XamlIntegration
             {
                 return;
             }
-            var aotCompiler = settings.GetCompiler(language);
-            if (aotCompiler == null)
+            if (settings.CSharpCompiler == null)
             {
                 throw new NotSupportedException("Consider setting CompileExpressions to false or passing a compiler in ActivityXamlServicesSettings.");
             }
-            var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, aotCompiler));
+            var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, settings.CSharpCompiler));
             var results = compiler.Compile();
 
             if (results.HasErrors)

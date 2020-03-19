@@ -5,6 +5,8 @@ namespace System.Activities.XamlIntegration
 {
     public class ActivityXamlServicesSettings
     {
+        private AheadOfTimeCompiler cSharpCompiler;
+
         public bool CompileExpressions
         {
             get;
@@ -17,19 +19,13 @@ namespace System.Activities.XamlIntegration
             set;
         }
 
-        public AheadOfTimeCompiler VbCompiler { get; set; }
-        public AheadOfTimeCompiler CSharpCompiler { get; set; }
-
-        internal AheadOfTimeCompiler GetCompiler(string language)
+        public AheadOfTimeCompiler CSharpCompiler
         {
-            switch (language)
+            get => cSharpCompiler;
+            set
             {
-                case "VB":
-                    return VbCompiler;
-                case "C#":
-                    return CSharpCompiler;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(language), language, "Unknown language. Supported values : VB and C#."); 
+                cSharpCompiler = value;
+                CompileExpressions = value != null;
             }
         }
     }

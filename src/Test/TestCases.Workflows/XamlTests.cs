@@ -182,7 +182,7 @@ namespace TestCases.Workflows
         [Fact]
         public void CompileExpressionsWithCompiler() =>
             new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
-                new ActivityXamlServicesSettings { CompileExpressions = true, CSharpCompiler = new CSharpCompiler() })).ShouldThrow<NotImplementedException>();
+                new ActivityXamlServicesSettings { CSharpCompiler = new CSharpCompiler() })).ShouldThrow<NotImplementedException>();
         private static IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
         {
             var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = true });
