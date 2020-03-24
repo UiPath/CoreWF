@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the LICENSE file in the project root for more information. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace></RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="VBScriptingResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <CustomToolNamespace>Microsoft.CodeAnalysis.VisualBasic.Scripting</CustomToolNamespace>
+      <LastGenOutput>VBScriptingResources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="vbi" />
+    <InternalsVisibleTo Include="Microsoft.CodeAnalysis.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.CodeAnalysis.VisualBasic.Emit.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.CodeAnalysis.Scripting.TestUtilities" />
+    <InternalsVisibleTo Include="Microsoft.CodeAnalysis.Scripting.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.CodeAnalysis.VisualBasic.Scripting.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.CodeAnalysis.VisualBasic.Scripting.Desktop.UnitTests" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublicAPI Include="PublicAPI.Shipped.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublicAPI Include="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="3.5.0" />
+    <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="3.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="VBScriptingResources.Designer.vb">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>VBScriptingResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

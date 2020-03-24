@@ -36,8 +36,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
-		NuGet.Config = NuGet.Config
 	EndProjectSection
+EndProject
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Microsoft.CodeAnalysis.VisualBasic.Scripting", "VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj", "{766C237E-1920-494B-BF44-BA374EC2FCF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +94,10 @@ Global
 		{B339275C-7BB1-4777-9E4A-3FB46D252675}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B339275C-7BB1-4777-9E4A-3FB46D252675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B339275C-7BB1-4777-9E4A-3FB46D252675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{766C237E-1920-494B-BF44-BA374EC2FCF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{766C237E-1920-494B-BF44-BA374EC2FCF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{766C237E-1920-494B-BF44-BA374EC2FCF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{766C237E-1920-494B-BF44-BA374EC2FCF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
