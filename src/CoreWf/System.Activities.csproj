@@ -10,6 +10,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <NoWarn>$(NoWarn);NU5105</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OfficialBuild)'=='true'">
     <SignAssembly>True</SignAssembly>
