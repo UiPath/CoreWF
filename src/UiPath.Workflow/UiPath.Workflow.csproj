@@ -21,7 +21,7 @@
   </ItemGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
+      <BuildOutputInPackage Include="$(OutputPath)Microsoft.CodeAnalysis.VisualBasic.Scripting.*" />
     </ItemGroup>
   </Target>
 </Project>
