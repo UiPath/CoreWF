@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoreWf\System.Activities.csproj" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <ProjectReference Include="..\VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="3.5.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
