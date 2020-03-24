@@ -13,7 +13,7 @@
     <NoWarn>$(NoWarn);NU5118</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CoreWf\System.Activities.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\CoreWf\System.Activities.csproj" />
     <ProjectReference Include="..\VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="3.5.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
@@ -21,7 +21,7 @@
   </ItemGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
     </ItemGroup>
   </Target>
 </Project>
