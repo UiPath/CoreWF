@@ -1,10 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Scripting.Hosting;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
+using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using ReflectionMagic;
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
@@ -35,7 +34,7 @@ namespace Microsoft.VisualBasic.Activities
                 resolvedIdentifiers
                 .Select(var => var.Type)
                 .Concat(new[] { expressionToCompile.LambdaReturnType ?? typeof(object) })
-                .Select(type => GetTypeName(type)));
+                .Select(VisualBasicObjectFormatter.FormatTypeName));
             var typedExpressionScript = 
                 VisualBasicScript
                 .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({expressionToCompile.ExpressionString})", options)
@@ -69,24 +68,6 @@ namespace Microsoft.VisualBasic.Activities
                 _identifiers.Add(node.Identifier.Text);
                 base.VisitIdentifierName(node);
             }
-        }
-        private static string GetTypeName(Type type)
-        {
-            var typeName = (string) TypeNameFormatter.FormatTypeName(type, TypeOptions);
-            return typeName.Replace("[]", "()");
-        }
-        private static readonly dynamic TypeOptions;
-        private static readonly dynamic TypeNameFormatter =
-            typeof(VisualBasicScript).Assembly.GetType("Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting.VisualBasicObjectFormatter")
-            .AsDynamicType()
-            .s_impl
-            .TypeNameFormatter;
-        static VbJustInTimeCompiler()
-        {
-            var type = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
-            const int ArrayBoundRadix = 0;
-            const bool ShowNamespaces = true;
-            TypeOptions = Activator.CreateInstance(type, new object[] { ArrayBoundRadix, ShowNamespaces });
         }
     }
 }
