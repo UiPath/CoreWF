@@ -8,13 +8,14 @@ using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Microsoft.VisualBasic.Activities
+namespace UiPath.Workflow
 {
-    internal class VbJustInTimeCompiler : JustInTimeCompiler
+    class VbJustInTimeCompiler : JustInTimeCompiler
     {
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
@@ -41,7 +42,7 @@ namespace Microsoft.VisualBasic.Activities
                 .ContinueWith("? resultExpression", options);
             try
             {
-                return (LambdaExpression)typedExpressionScript.RunAsync().GetAwaiter().GetResult().ReturnValue;
+                return (LambdaExpression)typedExpressionScript.RunAsync().GetResult().ReturnValue;
             }
             catch (CompilationErrorException ex)
             {

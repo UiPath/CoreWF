@@ -28,6 +28,7 @@ namespace System.Activities.XamlIntegration
     using System.Activities.Debugger.Symbol;
     using System.Linq.Expressions;
     using System.Activities.Internals;
+    using System.Linq;
 
     public class TextExpressionCompiler
     {
@@ -2361,7 +2362,7 @@ namespace System.Activities.XamlIntegration
 
             if (compilerResults.Errors == null || !compilerResults.Errors.HasErrors)
             {
-                results.ResultType = compilerResults.CompiledAssembly.GetType(this.activityFullName);
+                results.ResultType = compilerResults.CompiledAssembly.ExportedTypes.Single(t=>t.Name.EndsWith(activityFullName));
             }
 
             results.HasSourceInfo = this.symbols != null;

@@ -3,15 +3,31 @@
 
 namespace System.Activities.XamlIntegration
 {
+    using Microsoft.CSharp;
     using System.Activities.Expressions;
+    using System.CodeDom;
+    using System.CodeDom.Compiler;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
     using System.Xaml;
     using System.Xml;
 
-    internal static class TextExpressionCompilerHelper
+    public static class TextExpressionCompilerHelper
     {
-        public static void GetNamespacesLineInfo(string sourceXamlFileName, Dictionary<string, int> lineNumbersForNSes, Dictionary<string, int> lineNumbersForNSesForImpl)
+        public static T GetResult<T>(this Task<T> task) => task.GetAwaiter().GetResult();
+
+        public static string[] GetReferences(this CompilerParameters options) => options.ReferencedAssemblies.Cast<string>().ToArray();
+
+        public static string GetCSharpCode(this CodeCompileUnit compilationUnit)
+        {
+            var codeWriter = new StringWriter();
+            new CSharpCodeProvider().GenerateCodeFromCompileUnit(compilationUnit, codeWriter, new CodeGeneratorOptions());
+            return codeWriter.ToString();
+        }
+
+        internal static void GetNamespacesLineInfo(string sourceXamlFileName, Dictionary<string, int> lineNumbersForNSes, Dictionary<string, int> lineNumbersForNSesForImpl)
         {
             // read until StartMember: TextExpression.NamespacesForImplementation OR TextExpression.Namespaces
             // create a subtree reader,

@@ -177,8 +177,7 @@ namespace TestCases.Workflows
                     </Sequence>
                 </Activity>";
         [Fact]
-        public void CompileExpressionsThrows() =>
-            new Action(()=>InvokeWorkflow(CSharpExpressions)).ShouldThrow<NotSupportedException>().Message.ShouldBe("Consider setting CompileExpressions to false or passing a compiler in ActivityXamlServicesSettings.");
+        public void CompileExpressions() => InvokeWorkflow(CSharpExpressions);
         [Fact]
         public void CompileExpressionsWithCompiler() =>
             new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
