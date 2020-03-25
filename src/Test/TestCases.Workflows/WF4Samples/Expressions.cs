@@ -3,12 +3,14 @@ using System;
 using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
+using System.Collections.Generic;
 using System.IO;
 using System.Xaml;
 using Xunit;
 
 namespace TestCases.Workflows.WF4Samples
 {
+    using StringDictionary = Dictionary<string, object>;
     /// <summary>
     /// These tests are taken from the 
     /// <a href="https://social.technet.microsoft.com/wiki/contents/articles/12326.windows-workflow-wf-4-x-samples.aspx">WF 4.0 Samples</a>
@@ -26,6 +28,14 @@ Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, ave
         {
             var activity = TestHelper.GetActivityFromXamlResource(TestXamls.SalaryCalculation);
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
+        }
+
+        [Fact]
+        public void CSharpCalculation()
+        {
+            var activity = TestHelper.GetActivityFromXamlResource(TestXamls.CSharpCalculation);
+            var inputs = new StringDictionary { ["XX"] = 16, ["YY"] = 16 };
+            TestHelper.InvokeWorkflow(activity, inputs).ShouldBe("Result == XX^2"+Environment.NewLine);
         }
 
         [Fact]
@@ -178,5 +188,30 @@ Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, ave
         public double MinSalary { get; set; }
         public double MaxSalary { get; set; }
         public double AvgSalary { get; set; }
+    }
+    /// <summary>
+    /// Simple X*Y=Z. CodeActivity with typed output through generic.
+    /// </summary>
+    public class Multiply : CodeActivity<int>
+    {
+        protected override int Execute(CodeActivityContext context)
+        {
+            var r = X.Get(context) * Y.Get(context);
+            Z.Set(context, r);
+            System.Diagnostics.Debug.WriteLine("Multiply done");
+            return r;
+        }
+
+        [RequiredArgument]//https://msdn.microsoft.com/en-us/library/ee358733%28v=vs.110%29.aspx
+        public InArgument<int> X { get; set; }
+
+        [RequiredArgument]
+        public InArgument<int> Y { get; set; }
+
+        /// <summary>
+        /// This is compiled however in production codes, OutArgument should not be defined.
+        /// </summary>
+        public OutArgument<int> Z { get; set; }
+
     }
 }
