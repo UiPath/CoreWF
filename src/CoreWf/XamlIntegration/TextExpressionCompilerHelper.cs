@@ -18,12 +18,16 @@ namespace System.Activities.XamlIntegration
     {
         public static T GetResult<T>(this Task<T> task) => task.GetAwaiter().GetResult();
 
-        public static string[] GetReferences(this CompilerParameters options) => options.ReferencedAssemblies.Cast<string>().ToArray();
+        public static IEnumerable<string> GetReferences(this CompilerParameters options) => options.ReferencedAssemblies.Cast<string>();
+
+        public static IEnumerable<string> GetImports(this CodeCompileUnit compilationUnit) => 
+            compilationUnit.Namespaces[0].Imports.Cast<CodeNamespaceImport>().Select(c => c.Namespace);
 
         public static string GetCSharpCode(this CodeCompileUnit compilationUnit)
         {
             var codeWriter = new StringWriter();
-            new CSharpCodeProvider().GenerateCodeFromCompileUnit(compilationUnit, codeWriter, new CodeGeneratorOptions());
+            var typeDeclaration = compilationUnit.Namespaces[0].Types[0];
+            new CSharpCodeProvider().GenerateCodeFromType(typeDeclaration, codeWriter, new CodeGeneratorOptions());
             return codeWriter.ToString();
         }
 

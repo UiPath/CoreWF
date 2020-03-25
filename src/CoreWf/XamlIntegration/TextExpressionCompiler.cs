@@ -2362,7 +2362,7 @@ namespace System.Activities.XamlIntegration
 
             if (compilerResults.Errors == null || !compilerResults.Errors.HasErrors)
             {
-                results.ResultType = compilerResults.CompiledAssembly.ExportedTypes.Single(t=>t.Name.EndsWith(activityFullName));
+                results.ResultType = compilerResults.CompiledAssembly.ExportedTypes.Single(t=>t.Name.EndsWith(settings.ActivityName));
             }
 
             results.HasSourceInfo = this.symbols != null;

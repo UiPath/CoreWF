@@ -1,0 +1,99 @@
+﻿<Activity x:Class="TestCases.Workflows.WF4Samples.Calculation"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:fa="clr-namespace:TestCases.Workflows.WF4Samples;assembly=TestCases.Workflows"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="Result" Type="OutArgument(x:Int32)" />
+    <x:Property Name="XX" Type="InArgument(x:Int32)" />
+    <x:Property Name="YY" Type="InArgument(x:Int32)" />
+  </x:Members>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Text</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>Microsoft.CSharp</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence >
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:Int32" Name="multiplyResult" />
+    </Sequence.Variables>
+    <fa:Multiply>
+      <fa:Multiply.Result>
+        <OutArgument x:TypeArguments="x:Int32">
+          <mca:CSharpReference x:TypeArguments="x:Int32">multiplyResult</mca:CSharpReference>
+        </OutArgument>
+      </fa:Multiply.Result>
+      <fa:Multiply.X>
+        <InArgument x:TypeArguments="x:Int32">
+          <mca:CSharpValue x:TypeArguments="x:Int32">XX</mca:CSharpValue>
+        </InArgument>
+      </fa:Multiply.X>
+      <fa:Multiply.Y>
+        <InArgument x:TypeArguments="x:Int32">
+          <mca:CSharpValue x:TypeArguments="x:Int32">YY</mca:CSharpValue>
+        </InArgument>
+      </fa:Multiply.Y>
+    </fa:Multiply>
+    <If >
+      <If.Condition>
+        <InArgument x:TypeArguments="x:Boolean">
+          <mca:CSharpValue x:TypeArguments="x:Boolean">multiplyResult==256</mca:CSharpValue>
+        </InArgument>
+      </If.Condition>
+      <If.Then>
+        <Sequence >
+          <If >
+            <If.Condition>
+              <InArgument x:TypeArguments="x:Boolean">
+                <mca:CSharpValue x:TypeArguments="x:Boolean">XX==YY</mca:CSharpValue>
+              </InArgument>
+            </If.Condition>
+            <If.Then>
+              <WriteLine  Text="Result == XX^2" />
+            </If.Then>
+            <If.Else>
+              <WriteLine  Text="Result != XX^2" />
+            </If.Else>
+          </If>
+        </Sequence>
+      </If.Then>
+      <If.Else>
+        <Sequence >
+          <WriteLine  Text="multiplyResult is not 256." />
+        </Sequence>
+      </If.Else>
+    </If>
+    <Delay >
+      <InArgument x:TypeArguments="x:TimeSpan">
+        <mca:CSharpValue x:TypeArguments="x:TimeSpan">TimeSpan.FromMilliseconds(0)</mca:CSharpValue>
+      </InArgument>
+    </Delay>
+    <Assign >
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Int32">
+          <mca:CSharpReference x:TypeArguments="x:Int32">Result</mca:CSharpReference>
+        </OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Int32">
+          <mca:CSharpValue x:TypeArguments="x:Int32">multiplyResult</mca:CSharpValue>
+        </InArgument>
+      </Assign.Value>
+    </Assign>
+  </Sequence>
+</Activity>

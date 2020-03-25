@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Activities.XamlIntegration;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.CSharp;
 using System.IO;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -20,7 +17,7 @@ namespace UiPath.Workflow
         {
             var results = new CompilerResults(options.TempFiles);
             var code = compilationUnit.GetCSharpCode();
-            var scriptOptions = ScriptOptions.Default.WithReferences(options.GetReferences());
+            var scriptOptions = ScriptOptions.Default.WithReferences(options.GetReferences()).WithImports(compilationUnit.GetImports());
             var script = CSharpScript.Create(code, scriptOptions);
             var compilation = script.GetCompilation();
             var diagnostics = compilation.GetDiagnostics();
