@@ -52,7 +52,7 @@ namespace UiPath.Workflow
                     Line = lineSpan.StartLinePosition.Line,
                     FileName = lineSpan.Path,
                     ErrorNumber = diagnostic.Id,
-                    ErrorText = diagnostic.Descriptor.Description.ToString(),
+                    ErrorText = diagnostic.ToString(),
                     IsWarning = diagnostic.Severity < DiagnosticSeverity.Error,
                 };
             }

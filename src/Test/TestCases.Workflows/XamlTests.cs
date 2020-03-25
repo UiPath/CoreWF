@@ -5,6 +5,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Shouldly;
 using Xunit;
@@ -182,6 +183,25 @@ namespace TestCases.Workflows
         public void CompileExpressionsWithCompiler() =>
             new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
                 new ActivityXamlServicesSettings { CSharpCompiler = new CSharpCompiler() })).ShouldThrow<NotImplementedException>();
+        [Fact]
+        public void CSharpCompileError()
+        {
+            var xaml = @"
+                <Activity x:Class=""WFTemplate""
+                          xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
+                          xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"">
+                    <Sequence>
+                        <WriteLine>
+                          <InArgument x:TypeArguments=""x:String"">
+                            <mca:CSharpValue x:TypeArguments=""x:String"">constant</mca:CSharpValue>
+                          </InArgument>
+                        </WriteLine>
+                    </Sequence>
+                </Activity>";
+            new Action(() => InvokeWorkflow(xaml)).ShouldThrow<InvalidOperationException>().Data.Values.Cast<string>()
+                .ShouldAllBe(error=>error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
+        }
         private static IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
         {
             var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = true });
