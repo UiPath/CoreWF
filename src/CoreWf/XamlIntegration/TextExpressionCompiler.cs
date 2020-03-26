@@ -2355,52 +2355,8 @@ namespace System.Activities.XamlIntegration
         {
             var messages = new List<TextExpressionCompilerError>();
             var compilerParameters = GetCompilerParameters(messages);
-            
-            var compilerResults = settings.Compiler.Compile(compilerParameters, compileUnit);
-
-            var results = new TextExpressionCompilerResults();
-
-            if (compilerResults.Errors == null || !compilerResults.Errors.HasErrors)
-            {
-                results.ResultType = compilerResults.CompiledAssembly.ExportedTypes.Single(t=>t.Name.EndsWith(settings.ActivityName));
-            }
-
-            results.HasSourceInfo = this.symbols != null;
-
-            bool hasErrors = false;
-            if (compilerResults.Errors != null && (compilerResults.Errors.HasWarnings || compilerResults.Errors.HasErrors))
-            {
-
-                foreach (CompilerError ce in compilerResults.Errors)
-                {
-                    TextExpressionCompilerError message = new TextExpressionCompilerError();
-
-                    message.Message = ce.ErrorText;
-                    message.Number = ce.ErrorNumber;
-
-                    if (results.HasSourceInfo)
-                    {
-                        message.SourceLineNumber = ce.Line;
-                    }
-                    else
-                    {
-                        message.SourceLineNumber = -1;
-                    }
-
-                    message.IsWarning = ce.IsWarning;
-
-                    messages.Add(message);
-
-                    hasErrors |= !message.IsWarning;
-                }
-            }
-
-            if (messages != null && messages.Count > 0)
-            {
-                results.SetMessages(messages, hasErrors);
-            }
-
-            return results;
+            var classToCompile = new ClassToCompile(settings.ActivityName, compilerParameters, compileUnit);
+            return settings.Compiler.Compile(classToCompile);
         }
 
         [Fx.Tag.SecurityNote(Critical = "Critical because we are using the CompilerParameters class, which has a link demand for Full Trust.",

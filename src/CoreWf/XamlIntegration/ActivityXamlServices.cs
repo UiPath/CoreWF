@@ -275,7 +275,7 @@ namespace System.Activities.XamlIntegration
             var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, cSharpCompiler));
             var results = compiler.Compile();
 
-            if (results.HasErrors)
+            if (results.HasErrors())
             {
                 var messages = new StringBuilder();
                 messages.Append("\r\n");
@@ -284,10 +284,7 @@ namespace System.Activities.XamlIntegration
                 foreach (TextExpressionCompilerError message in results.CompilerMessages)
                 {
                     messages.Append("\t");
-                    if (results.HasSourceInfo)
-                    {
-                        messages.Append(string.Concat(" ", SR.ActivityXamlServiceLineString, " ", message.SourceLineNumber, ": "));
-                    }
+                    messages.Append(string.Concat(" ", SR.ActivityXamlServiceLineString, " ", message.SourceLineNumber, ": "));
                     messages.Append(message.Message);
 
                 }
