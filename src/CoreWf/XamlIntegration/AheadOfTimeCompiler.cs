@@ -1,13 +1,25 @@
-﻿// This file is part of Core WF which is licensed under the MIT license.
-// See LICENSE file in the project root for full license information.
+﻿using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 
 namespace System.Activities.XamlIntegration
 {
-    using System.CodeDom;
-    using System.CodeDom.Compiler;
-
     public abstract class AheadOfTimeCompiler
     {
-        public abstract CompilerResults Compile(CompilerParameters options, CodeCompileUnit compilationUnit);
+        public abstract TextExpressionCompilerResults Compile(ClassToCompile classToCompile);
+    }
+    public class ClassToCompile
+    {
+        public ClassToCompile(string className, CompilerParameters options, CodeCompileUnit compilationUnit)
+        {
+            Code = compilationUnit.GetCSharpCode();
+            References = options.GetReferences();
+            Imports = compilationUnit.GetImports();
+            ClassName = className;
+        }
+        public string Code { get; }
+        public IReadOnlyCollection<string> References { get; }
+        public IReadOnlyCollection<string> Imports { get; }
+        public string ClassName { get; }
     }
 }

@@ -5,46 +5,14 @@ namespace System.Activities.XamlIntegration
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
+    using System.Linq;
 
     public class TextExpressionCompilerResults
     {
-        private ReadOnlyCollection<TextExpressionCompilerError> messages;
-
-        internal TextExpressionCompilerResults()
-        {
-        }
-
-        public Type ResultType
-        {
-            get;
-            internal set;
-        }
-
-        public bool HasErrors
-        {
-            get;
-            internal set;
-        }
-
-        public bool HasSourceInfo
-        {
-            get;
-            internal set;
-        }
-
-        public ReadOnlyCollection<TextExpressionCompilerError> CompilerMessages
-        {
-            get
-            {
-                return this.messages;
-            }
-        }
-
-        internal void SetMessages(IList<TextExpressionCompilerError> messages, bool hasErrors)
-        {
-            this.messages = new ReadOnlyCollection<TextExpressionCompilerError>(messages);
-            this.HasErrors = hasErrors;
-        }
+        private readonly List<TextExpressionCompilerError> _messages = new List<TextExpressionCompilerError>();
+        public Type ResultType { get; set; }
+        public bool HasErrors() => _messages.Any(m => !m.IsWarning);
+        public IReadOnlyCollection<TextExpressionCompilerError> CompilerMessages => _messages;
+        public void AddMessages(IEnumerable<TextExpressionCompilerError> messages) => _messages.AddRange(messages);
     }
 }

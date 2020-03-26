@@ -245,7 +245,7 @@ namespace TestCases.Workflows
         }
         class CSharpCompiler : AheadOfTimeCompiler
         {
-            public override CompilerResults Compile(CompilerParameters options, CodeCompileUnit compilationUnit) => throw new NotImplementedException();
+            public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile) => throw new NotImplementedException();
         }
     }
 }

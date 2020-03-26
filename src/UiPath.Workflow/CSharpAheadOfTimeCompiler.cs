@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using System.Activities.XamlIntegration;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.CodeAnalysis.Scripting;
@@ -13,16 +11,14 @@ namespace UiPath.Workflow
 {
     class CSharpAheadOfTimeCompiler : AheadOfTimeCompiler
     {
-        public override CompilerResults Compile(CompilerParameters options, CodeCompileUnit compilationUnit)
+        public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile)
         {
-            var results = new CompilerResults(options.TempFiles);
-            var code = compilationUnit.GetCSharpCode();
-            var scriptOptions = ScriptOptions.Default.WithReferences(options.GetReferences()).WithImports(compilationUnit.GetImports());
-            var script = CSharpScript.Create(code, scriptOptions);
-            var compilation = script.GetCompilation();
+            var results = new TextExpressionCompilerResults();
+            var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.References).WithImports(classToCompile.Imports);
+            var compilation = CSharpScript.Create(classToCompile.Code, scriptOptions).GetCompilation();
             var diagnostics = compilation.GetDiagnostics();
             AddDiagnostics(diagnostics);
-            if (results.Errors.HasErrors)
+            if (results.HasErrors())
             {
                 return results;
             }
@@ -37,22 +33,16 @@ namespace UiPath.Workflow
                 }
                 scriptAssemblyBytes = stream.ToArray();
             }
-            results.CompiledAssembly = Assembly.Load(scriptAssemblyBytes);
+            results.ResultType = Assembly.Load(scriptAssemblyBytes).GetType(compilation.ScriptClass.Name).GetNestedType(classToCompile.ClassName);
             return results;
-            void AddDiagnostics(IEnumerable<Diagnostic> diagnosticsToAdd) => results.Errors.AddRange(diagnosticsToAdd.Select(ToCompilerError).ToArray());
-            CompilerError ToCompilerError(Diagnostic diagnostic)
-            {
-                var lineSpan = diagnostic.Location.GetMappedLineSpan();
-                return new CompilerError
-                {
-                    Column = lineSpan.StartLinePosition.Character,
-                    Line = lineSpan.StartLinePosition.Line,
-                    FileName = lineSpan.Path,
-                    ErrorNumber = diagnostic.Id,
-                    ErrorText = diagnostic.ToString(),
-                    IsWarning = diagnostic.Severity < DiagnosticSeverity.Error,
-                };
-            }
+            void AddDiagnostics(IEnumerable<Diagnostic> diagnosticsToAdd) => 
+                results.AddMessages(diagnosticsToAdd.Select(diagnostic => new TextExpressionCompilerError
+                    {
+                        SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
+                        Number = diagnostic.Id,
+                        Message = diagnostic.ToString(),
+                        IsWarning = diagnostic.Severity < DiagnosticSeverity.Error,
+                    }));
         }
     }
 }
