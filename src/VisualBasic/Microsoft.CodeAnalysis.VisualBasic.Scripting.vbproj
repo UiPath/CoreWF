@@ -6,8 +6,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace></RootNamespace>
     <SignAssembly>true</SignAssembly>
+    <PublicSign>True</PublicSign>
     <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>true</DelaySign>
+    <DelaySign>False</DelaySign>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Update="VBScriptingResources.resx">
