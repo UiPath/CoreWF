@@ -1,6 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 using System;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Markup;
@@ -15,6 +16,8 @@ using System.Windows.Markup;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("97bdccfe-43bf-4c17-991d-c797c2ef2243")]
+
+[assembly: NeutralResourcesLanguage("en")]
 
 // Define XAML namespace mappings
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities")]
