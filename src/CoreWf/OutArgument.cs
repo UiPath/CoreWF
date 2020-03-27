@@ -56,7 +56,7 @@ namespace System.Activities
     }
 
     [ContentProperty("Expression")]
-    [TypeConverter(typeof(OutArgumentConverter))]    
+    [TypeConverter(TypeConverters.OutArgumentConverter)]    
     [ValueSerializer(typeof(ArgumentValueSerializer))]
     public sealed class OutArgument<T> : OutArgument
     {

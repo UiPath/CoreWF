@@ -27,10 +27,6 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Permissions" Version="4.6.0" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
-    <Compile Remove="Tracking\WorkflowInstanceUpdatedRecord.cs" />
-    <Compile Remove="XamlIntegration\ObjectMatchInfoConverter.cs" />
-  </ItemGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />

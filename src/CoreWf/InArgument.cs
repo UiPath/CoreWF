@@ -57,7 +57,7 @@ namespace System.Activities
     }
 
     [ContentProperty("Expression")]
-    [TypeConverter(typeof(InArgumentConverter))]
+    [TypeConverter(TypeConverters.InArgumentConverter)]
     [ValueSerializer(typeof(ArgumentValueSerializer))]
     public sealed class InArgument<T> : InArgument
     {

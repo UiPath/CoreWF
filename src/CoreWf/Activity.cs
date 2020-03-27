@@ -66,7 +66,7 @@ namespace System.Activities
             this.thisLock = new object();
         }
 
-        [TypeConverter(typeof(ImplementationVersionConverter))]
+        [TypeConverter(TypeConverters.ImplementationVersionConverter)]
         [DefaultValue(null)]
         [IgnoreDataMember]
         protected virtual internal Version ImplementationVersion
@@ -75,7 +75,7 @@ namespace System.Activities
             set;
         }
 
-        [XamlDeferLoad(typeof(FuncDeferringLoader), typeof(Activity))]
+        [XamlDeferLoad(OtherXaml.FuncDeferringLoader, OtherXaml.Activity)]
         [DefaultValue(null)]
         [Browsable(false)]
         [Ambient]
@@ -1792,7 +1792,7 @@ namespace System.Activities
         }
     }
 
-    [TypeConverter(typeof(ActivityWithResultConverter))]
+    [TypeConverter(TypeConverters.ActivityWithResultConverter)]
     [ValueSerializer(typeof(ActivityWithResultValueSerializer))]
     public abstract class Activity<TResult> : ActivityWithResult
     {
