@@ -586,7 +586,9 @@ namespace System.Activities.DynamicUpdate
                 this.UpdateDisallowedReason = null;
                 this.SavedOriginalValuesForCurrentActivity = null;
                 this.savedOriginalValuesForReferencedChildren = false;
+#if NET45
                 currentElement.OnInternalCreateDynamicUpdateMap(this, matcher, originalElement);
+#endif
                 if (this.AllowUpdateInsideCurrentActivity == false)
                 {
                     this.BlockUpdate(currentElement, originalElement.Id, UpdateBlockedReason.Custom, mapEntry, this.UpdateDisallowedReason);
