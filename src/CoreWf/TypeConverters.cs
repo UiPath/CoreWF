@@ -18,5 +18,6 @@ namespace System.Activities
     {
         public const string FuncDeferringLoader = "System.Activities.XamlIntegration.FuncDeferringLoader, UiPath.Workflow";
         public const string Activity = "System.Activities.Activity, System.Activities";
+        public const string ArgumentValueSerializer = "System.Activities.XamlIntegration.ArgumentValueSerializer, UiPath.Workflow";
     }
 }
