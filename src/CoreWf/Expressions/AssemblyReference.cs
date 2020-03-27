@@ -14,7 +14,7 @@ namespace System.Activities.Expressions
     using System.Activities.Runtime;
     using System.Activities.Internals;
 
-    [TypeConverter(typeof(AssemblyReferenceConverter))]
+    [TypeConverter(TypeConverters.AssemblyReferenceConverter)]
     public class AssemblyReference
     {
         private const int AssemblyToAssemblyNameCacheInitSize = 100;

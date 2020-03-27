@@ -15,7 +15,7 @@ namespace System.Activities
 
     [DataContract]
     [Serializable]
-    [TypeConverter(typeof(WorkflowIdentityConverter))]
+    [TypeConverter(TypeConverters.WorkflowIdentityConverter)]
     public class WorkflowIdentity : IEquatable<WorkflowIdentity>
     {
         private static Regex identityString = new Regex(

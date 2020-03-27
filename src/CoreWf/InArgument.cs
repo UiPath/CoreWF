@@ -57,8 +57,8 @@ namespace System.Activities
     }
 
     [ContentProperty("Expression")]
-    [TypeConverter(typeof(InArgumentConverter))]
-    [ValueSerializer(typeof(ArgumentValueSerializer))]
+    [TypeConverter(TypeConverters.InArgumentConverter)]
+    [ValueSerializer(OtherXaml.ArgumentValueSerializer)]
     public sealed class InArgument<T> : InArgument
     {
         public InArgument(Variable variable)

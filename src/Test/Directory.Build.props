@@ -11,7 +11,4 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" PrivateAssets="All" />
     <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="!$(IsNetCoreApp) Or $(NetCoreVersion) &lt; 3.0">
-    <ProjectReference Include="$(SolutionDir)\System.Xaml\System.Xaml.csproj" PrivateAssets="All" />
-  </ItemGroup>
 </Project>

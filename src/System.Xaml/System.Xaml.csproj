@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.SDK">
   <PropertyGroup>
-    <AssemblyName>System.Xaml</AssemblyName>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
     <NoWarn>$(NoWarn);0618;NU5125;0618</NoWarn>

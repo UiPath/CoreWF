@@ -56,8 +56,8 @@ namespace System.Activities
     }
 
     [ContentProperty("Expression")]
-    [TypeConverter(typeof(OutArgumentConverter))]    
-    [ValueSerializer(typeof(ArgumentValueSerializer))]
+    [TypeConverter(TypeConverters.OutArgumentConverter)]    
+    [ValueSerializer(OtherXaml.ArgumentValueSerializer)]
     public sealed class OutArgument<T> : OutArgument
     {
         public OutArgument(Variable variable)

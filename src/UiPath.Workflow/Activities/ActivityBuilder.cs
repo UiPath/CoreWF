@@ -82,7 +82,7 @@ namespace System.Activities
             }
         }
 
-        [TypeConverter(typeof(ImplementationVersionConverter))]
+        [TypeConverter(TypeConverters.ImplementationVersionConverter)]
         [DefaultValue(null)]
         [DependsOn("Name")]
         public Version ImplementationVersion
@@ -350,7 +350,7 @@ namespace System.Activities
             }
         }
 
-        [TypeConverter(typeof(ImplementationVersionConverter))]
+        [TypeConverter(TypeConverters.ImplementationVersionConverter)]
         [DefaultValue(null)]
         [DependsOn("Name")]
         public Version ImplementationVersion
