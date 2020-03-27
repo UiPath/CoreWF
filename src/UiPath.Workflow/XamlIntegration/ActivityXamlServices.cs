@@ -17,6 +17,7 @@ namespace System.Activities.XamlIntegration
     using System.Activities.Internals;
     using System.Activities.Runtime;
     using System.Text;
+    using UiPath.Workflow;
 
     public static class ActivityXamlServices
     {
@@ -271,7 +272,7 @@ namespace System.Activities.XamlIntegration
             {
                 return;
             }
-            var cSharpCompiler = settings.CSharpCompiler ?? CreateDefaultCompiler();
+            var cSharpCompiler = settings.CSharpCompiler ?? new CSharpAheadOfTimeCompiler();
             var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, cSharpCompiler));
             var results = compiler.Compile();
 
@@ -305,10 +306,6 @@ namespace System.Activities.XamlIntegration
 
             ICompiledExpressionRoot compiledExpressionRoot = Activator.CreateInstance(compiledExpressionRootType, new object[] { dynamicActivity }) as ICompiledExpressionRoot;
             CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(dynamicActivity, compiledExpressionRoot);
-            return;
-            AheadOfTimeCompiler CreateDefaultCompiler() => (AheadOfTimeCompiler)
-                Activator.CreateInstance(Type.GetType("UiPath.Workflow.CSharpAheadOfTimeCompiler, UiPath.Workflow") ??
-                                                    throw new NotSupportedException("Consider setting CompileExpressions to false or passing a compiler in ActivityXamlServicesSettings."));
         }
 
         private static bool RequiresCompilation(IDynamicActivity dynamicActivity, LocationReferenceEnvironment environment, out string language)

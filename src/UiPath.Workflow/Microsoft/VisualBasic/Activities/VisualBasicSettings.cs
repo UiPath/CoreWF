@@ -13,6 +13,7 @@ namespace Microsoft.VisualBasic.Activities
     using System.ComponentModel;
     using System.Reflection;
     using System.Activities.Internals;
+    using UiPath.Workflow;
 
     [ValueSerializer(typeof(VisualBasicSettingsValueSerializer))]
     [TypeConverter(typeof(VisualBasicSettingsConverter))]
@@ -63,9 +64,7 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public Func<JustInTimeCompiler> CompilerFactory { get; set; } = () => (JustInTimeCompiler) 
-            Activator.CreateInstance(Type.GetType("UiPath.Workflow.VbJustInTimeCompiler, UiPath.Workflow") ?? 
-                                                throw new NotSupportedException("Consider referencing the UiPath.Workflow package instead."));
+        public Func<JustInTimeCompiler> CompilerFactory { get; set; } = () => new VbJustInTimeCompiler();
 
         internal bool SuppressXamlSerialization 
         { 
