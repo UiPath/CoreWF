@@ -168,7 +168,7 @@ namespace TestCases.Workflows
                 <Activity x:Class=""WFTemplate""
                           xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                           xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"">
+                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=UiPath.Workflow"">
                     <Sequence>
                         <WriteLine>
                           <InArgument x:TypeArguments=""x:String"">
@@ -190,7 +190,7 @@ namespace TestCases.Workflows
                 <Activity x:Class=""WFTemplate""
                           xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                           xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"">
+                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=UiPath.Workflow"">
                     <Sequence>
                         <WriteLine>
                           <InArgument x:TypeArguments=""x:String"">
@@ -209,7 +209,7 @@ namespace TestCases.Workflows
                 <Activity x:Class=""WFTemplate""
                           xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
                           xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"">
+                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=UiPath.Workflow"">
                     <x:Members>
                         <x:Property Name=""myOutput"" Type=""OutArgument(x:Int32)"" />
                         <x:Property Name=""myInput"" Type=""InArgument(x:Int32)"" />
