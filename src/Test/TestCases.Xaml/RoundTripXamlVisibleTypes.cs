@@ -1,10 +1,13 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Shouldly;
 using System;
+using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Markup;
 using TestCases.Xaml.Common.InstanceCreator;
 using TestObjects.XamlTestDriver;
@@ -137,6 +140,24 @@ namespace TestCases.Xaml
             {
                 Assert.NotNull(exc.InnerException);
                 Assert.Equal(typeof(System.NotSupportedException), exc.InnerException.GetType());
+            }
+        }
+
+        [Theory]
+        [InlineData(typeof(TypeConverters))]
+        [InlineData(typeof(OtherXaml))]
+        public void Converters(Type type)
+        {
+            var typeNames = type.GetFields().ToDictionary(f=>f.Name, f=>f.GetRawConstantValue().ToString());
+            var types = typeNames.Values.Select(Type.GetType).ToArray();
+            foreach (var (typeName, typeObject) in typeNames.Zip(types, (typeName, typeObject)=>(typeName, typeObject)))
+            {
+                typeObject.Name.ShouldBe(typeName.Key);
+                if (typeObject != typeof(Activity))
+                {
+                    typeObject.Namespace.ShouldBe("System.Activities.XamlIntegration");
+                    typeObject.Assembly.ShouldBe(typeof(ActivityBuilder).Assembly);
+                }
             }
         }
     }
