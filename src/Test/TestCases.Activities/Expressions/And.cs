@@ -173,7 +173,7 @@ namespace Test.TestCases.Activities.Expressions
 
         //This is disabled in desktop and failing too.
         //[Fact]
-        public void ThrowWhileEvaluatingLeft()
+        private void ThrowWhileEvaluatingLeft()
         {
             TestAnd<bool, bool, bool> and = new TestAnd<bool, bool, bool>
             {

@@ -74,7 +74,7 @@ namespace Test.TestCases.Activities.Expressions
         /// </summary>  
         /// This is disabled in desktop and failing too.      
         //[Fact]
-        public void ThrowExceptionWhileEvaluatingLeft()
+        private void ThrowExceptionWhileEvaluatingLeft()
         {
             TestAndAlso andAlso = new TestAndAlso
             {

@@ -33,8 +33,8 @@ namespace System.Activities.Runtime
 
 #if NET45
         private DebugController _debugController;
-#endif
         private readonly bool _hasRaisedWorkflowStarted;
+#endif
 
         private Guid _instanceId;
         private bool _instanceIdSet;

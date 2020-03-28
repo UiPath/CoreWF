@@ -1,0 +1,3 @@
+<DeferredLoadingContainerMemberStringType xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases">
+  <DeferredLoadingChild Foo = "Blah"></DeferredLoadingChild>
+</DeferredLoadingContainerMemberStringType>

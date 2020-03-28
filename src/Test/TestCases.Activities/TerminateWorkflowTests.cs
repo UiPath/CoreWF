@@ -157,7 +157,7 @@ namespace TestCases.Activities
         #endregion Helper
 
         #region Sample
-        public void runTerminate()
+        private static void runTerminate()
         {
             AutoResetEvent waitForWorkflow = new AutoResetEvent(false);
 
@@ -997,9 +997,9 @@ namespace TestCases.Activities
             {
                 Branches =
                 {
-                    new TestInvokeMethod(typeof(TerminateWorkflowTests).GetMethod("MyMethod"))
+                    new TestInvokeMethod(typeof(MethodHelper).GetMethod("MyMethod"))
                     {
-                        TargetObject = new TestArgument<TerminateWorkflowTests>(Direction.In, "TargetObject", (context => this)),
+                        TargetObject = new TestArgument<MethodHelper>(Direction.In, "TargetObject", (context => new MethodHelper())),
                         RunAsynchronously = true,
                         ExpectedOutcome = Outcome.Faulted
                     },
@@ -1015,13 +1015,15 @@ namespace TestCases.Activities
 
             //TestParameters.SetParameter("DisableXamlRoundTrip", "False");
         }
-
-        public void MyMethod()
+        class MethodHelper
         {
-            for (int i = 0; i < 100; i++)
+            public void MyMethod()
             {
-                Console.WriteLine(i.ToString());
-                Thread.Sleep(50);
+                for (int i = 0; i < 100; i++)
+                {
+                    Console.WriteLine(i.ToString());
+                    Thread.Sleep(50);
+                }
             }
         }
 

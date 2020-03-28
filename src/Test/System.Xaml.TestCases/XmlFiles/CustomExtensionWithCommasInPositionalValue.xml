@@ -1,0 +1,4 @@
+<ValueWrapper 
+	StringValue="{MyExtension6 'Some Value, With Commas'}" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" />

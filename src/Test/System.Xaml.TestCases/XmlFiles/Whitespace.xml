@@ -1,0 +1,13 @@
+<Whitespace xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Whitespace.TabConvertedToSpaces>hello	world</Whitespace.TabConvertedToSpaces>
+  <Whitespace.NewlineConvertedToSpaces>hello	
+  world</Whitespace.NewlineConvertedToSpaces>
+  <Whitespace.ConsecutiveSpaces>hello     	world</Whitespace.ConsecutiveSpaces>
+  <Whitespace.SpacesAroundTags>  
+    hello world  
+  </Whitespace.SpacesAroundTags>
+  <Whitespace.Preserve><x:String xml:space="preserve">  hello world	</x:String></Whitespace.Preserve>
+  <WhitespaceChild>
+    hello world
+  </WhitespaceChild>
+</Whitespace>

@@ -2,6 +2,8 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
+using System.Activities;
+using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -131,7 +133,11 @@ namespace TestCases.Xaml.Common.InstanceCreator
         }
         public static object CreateInstanceOf(Type type, Random rndGen)
         {
-            if (type == typeof(System.Activities.Activity<bool>))
+            if (type == typeof(Type))
+            {
+                return typeof(int);
+            }
+            if (type == typeof(System.Activities.Activity<bool>) || type == typeof(Activity))
                 return new System.Activities.Expressions.Literal<bool>(true);
             if (PrimitiveCreator.CanCreateInstanceOf(type))
                 return PrimitiveCreator.CreatePrimitiveInstance(type, rndGen);
@@ -152,8 +158,23 @@ namespace TestCases.Xaml.Common.InstanceCreator
                 return CreateInstanceOfEnum(type, rndGen);
             if (ContainsAttribute(type, typeof(DataContractAttribute)))
                 return DataContractInstanceCreator.CreateInstanceOf(type, rndGen);
+            if (type == typeof(FlowNode))
+            {
+                return new FlowStep();
+            }
+            if (type.IsAbstract)
+            {
+                return null;
+            }
             if (type.IsPublic)
-                return POCOInstanceCreator.CreateInstanceOf(type, rndGen);
+            {
+                var result = POCOInstanceCreator.CreateInstanceOf(type, rndGen);
+                if (result is Activity activity)
+                {
+                    activity.Implementation = null;//orelse for example
+                }
+                return result;
+            }
             return Activator.CreateInstance(type);
         }
     }

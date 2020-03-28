@@ -277,7 +277,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Make sure flowchart which includes an activity with : in Display name can be used.
         /// </summary>        
-        //[Fact]
+        [Fact]
         public void FlowchartContainingActivityWithColonInDisplayName()
         {
             TestDelay delay = new TestDelay
@@ -847,7 +847,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Validation error expected when start node is null.
         /// </summary>        
-        //[Fact]
+        [Fact]
         public void StartNodeNullNodeCollectionNotNull()
         {
             TestFlowchart flowchart = new TestFlowchart();

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DefineConstants>TRACE;DEBUG;NETSTANDARD;CORE;NETCOREAPP2_0;HAS_TYPE_CONVERTER</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>
+		</DebugType>
+    <DefineConstants>TRACE;RELEASE;NETSTANDARD;CORE;NETCOREAPP2_0;HAS_TYPE_CONVERTER</DefineConstants>
+  </PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="MainTestPage.*" />
+		<Compile Remove="UnitTestApp.*" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="MainTestPage.*" />
+		<None Remove="UnitTestApp.*" />
+		<None Remove="*.appxmanifest" />
+		<None Update="XmlFiles\*.*" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="NUnit" Version="3.12.0" />
+	  <PackageReference Include="NUnit3TestAdapter" Version="3.16.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+</Project>

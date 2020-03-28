@@ -1,3 +1,0 @@
-<DeferredLoadingContainerMember2 xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test">
-  <TestClass4 Foo="Blah"/>
-</DeferredLoadingContainerMember2>

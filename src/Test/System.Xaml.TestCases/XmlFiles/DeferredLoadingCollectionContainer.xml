@@ -1,0 +1,8 @@
+<DeferredLoadingContainerType xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases">
+	<DeferredLoadingChild2>
+		<CollectionParentGenericList>
+			<CollectionItem Name="1" />
+			<CollectionItem Name="2" />
+		</CollectionParentGenericList>
+	</DeferredLoadingChild2>
+</DeferredLoadingContainerType>

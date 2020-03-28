@@ -381,7 +381,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Throw while evaluating expression.
         /// </summary>        
-        //[Fact]
+        [Fact]
         public void ThrowWhileEvaluatingExpression()
         {
             TestFlowchart flowchart = new TestFlowchart();

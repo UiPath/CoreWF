@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Denne arbeidsflyten inneholder lambda-uttrykk som er angitt i kode. Disse uttrykkene kan ikke serialiseres i XAML. For å kunne serialisere arbeidsflyten i XAML bruker du VisualBasicValue/VisualBasicReference eller ExpressionServices.Convert (lambda). På den måten konverteres lambda-uttrykk til uttrykksaktiviteter.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Med enerett.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Det angitte linjeantallet for aktiviteten {0} er for høyt til at det kan støttes ved delvis klarering</value>
   </data>

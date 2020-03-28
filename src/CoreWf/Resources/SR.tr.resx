@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Bu iş akışı kodda belirtilmiş lambda ifadeleri içeriyor. Bu ifadeler XAML ile seri hale getirilebilir değil. İş akışınızı XAML ile seri hale getirilebilir yapmak için, VisualBasicValue/VisualBasicReference ya da ExpressionServices.Convert(lambda) kullanın. Bu işlem lambda ifadelerinizi ifade etkinliklerine dönüştürür.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Tüm hakları saklıdır.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>{0} etkinliği için belirtilen satır numarası Kısmi Güvende desteklenemeyecek kadar büyük</value>
   </data>

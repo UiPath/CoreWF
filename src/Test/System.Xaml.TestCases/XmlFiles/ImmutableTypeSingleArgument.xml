@@ -1,0 +1,2 @@
+<ImmutableTypeSingleArgument Name="hello" xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+</ImmutableTypeSingleArgument>

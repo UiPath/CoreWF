@@ -1,9 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
@@ -12,14 +7,5 @@
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
     <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
     <PackageReference Include="System.Xml.XPath" Version="4.3.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
-  </ItemGroup>
-
-  <!-- Add reference to System.Xaml if netstandard or lower than netcoreapp3.0 -->
-  <Import Project="../../SysXamlRef.props" />
-
 </Project>

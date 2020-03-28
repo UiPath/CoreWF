@@ -46,7 +46,7 @@ namespace TestCases.Activities.Flowchart
         /// </summary>
         /// Disabled in desktop and failing.        
         //[Fact]
-        public void FlowchartInTryCatchBlock_FaultHandled()
+        private void FlowchartInTryCatchBlock_FaultHandled()
         {
             TestFlowchart flowchart = new TestFlowchart();
             flowchart.AddStartLink(new TestThrow<Exception>()
@@ -74,7 +74,7 @@ namespace TestCases.Activities.Flowchart
         /// </summary> 
         /// This test is disabled in desktop and failing too.       
         //[Fact]
-        public void FaultWhileExpressionEvaluation()
+        private void FaultWhileExpressionEvaluation()
         {
             const string exceptionString = "I am a faulty little expression's exception";
             TestFlowchart flowchart = new TestFlowchart("Flow1");
@@ -101,7 +101,7 @@ namespace TestCases.Activities.Flowchart
         /// </summary>
         /// This test is disabled in desktop and failing too.        
         //[Fact]
-        public void FaultWhileSwitchExpressionEvaluation()
+        private void FaultWhileSwitchExpressionEvaluation()
         {
             TestFlowchart flowchart = new TestFlowchart();
 
@@ -169,7 +169,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Exception thrown from 5 level deep nested flowchart and handled at the top level.
         /// </summary>        
-        //[Fact]
+        [Fact]
         public void FaultFromFiveLevelDeepNestedFlowchart_Handled()
         {
             TestFlowchart parent = new TestFlowchart();

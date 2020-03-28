@@ -68,7 +68,7 @@ namespace System.Activities
             }
         }
 
-        [TypeConverter(typeof(ImplementationVersionConverter))]
+        [TypeConverter(TypeConverters.ImplementationVersionConverter)]
         [DefaultValue(null)]
         public new Version ImplementationVersion
         {
@@ -82,7 +82,7 @@ namespace System.Activities
             }
         }
 
-        [XamlDeferLoad(typeof(FuncDeferringLoader), typeof(Activity))]
+        [XamlDeferLoad(OtherXaml.FuncDeferringLoader, OtherXaml.Activity)]
         [DefaultValue(null)]
         [Browsable(false)]
         [Ambient]
@@ -256,7 +256,7 @@ namespace System.Activities
             }
         }
 
-        [TypeConverter(typeof(ImplementationVersionConverter))]
+        [TypeConverter(TypeConverters.ImplementationVersionConverter)]
         [DefaultValue(null)]
         public new Version ImplementationVersion
         {
@@ -270,7 +270,7 @@ namespace System.Activities
             }
         }
 
-        [XamlDeferLoad(typeof(FuncDeferringLoader), typeof(Activity))]
+        [XamlDeferLoad(OtherXaml.FuncDeferringLoader, OtherXaml.Activity)]
         [DefaultValue(null)]
         [Browsable(false)]
         [Ambient]

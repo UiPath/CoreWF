@@ -66,7 +66,7 @@ namespace System.Activities
             this.thisLock = new object();
         }
 
-        [TypeConverter(typeof(ImplementationVersionConverter))]
+        [TypeConverter(TypeConverters.ImplementationVersionConverter)]
         [DefaultValue(null)]
         [IgnoreDataMember]
         protected virtual internal Version ImplementationVersion
@@ -75,7 +75,7 @@ namespace System.Activities
             set;
         }
 
-        [XamlDeferLoad(typeof(FuncDeferringLoader), typeof(Activity))]
+        [XamlDeferLoad(OtherXaml.FuncDeferringLoader, OtherXaml.Activity)]
         [DefaultValue(null)]
         [Browsable(false)]
         [Ambient]
@@ -1238,7 +1238,7 @@ namespace System.Activities
             SetImportedDelegatesCollection(information.GetDelegates());
             SetArgumentsCollection(information.GetArguments(), metadata.CreateEmptyBindings);
         }
-
+#if NET45
         internal virtual void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
             DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
         {
@@ -1252,10 +1252,10 @@ namespace System.Activities
                 metadata.Dispose();
             }
         }
-
         protected virtual void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
         {
         }
+#endif
 
         internal void AddDefaultExtensionProvider<T>(Func<T> extensionProvider)
             where T : class
@@ -1792,7 +1792,7 @@ namespace System.Activities
         }
     }
 
-    [TypeConverter(typeof(ActivityWithResultConverter))]
+    [TypeConverter(TypeConverters.ActivityWithResultConverter)]
     [ValueSerializer(typeof(ActivityWithResultValueSerializer))]
     public abstract class Activity<TResult> : ActivityWithResult
     {
@@ -2005,4 +2005,5 @@ namespace System.Activities
             throw Fx.AssertAndThrow("This should only be called on CodeActivity<T>");
         }
     }
+    namespace DynamicUpdate { }
 }

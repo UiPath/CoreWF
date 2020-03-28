@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Ez a munkafolyamat kódban megadott lambdakifejezéseket tartalmaz. Ezek a kifejezések XAML környezetben nem szerializálhatók. Ahhoz, hogy a munkafolyamat XAML környezetben szerializálható legyen, használja a VisualBasicValue/VisualBasicReference vagy ExpressionServices.Convert(lambda) metódust. Ezzel a lambdakifejezéseket kifejezéstevékenységgé alakítja.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Minden jog fenntartva.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>A következő tevékenységhez megadott sorszám túl nagy, így részleges megbízhatóság esetén nem támogatott: {0}.</value>
   </data>

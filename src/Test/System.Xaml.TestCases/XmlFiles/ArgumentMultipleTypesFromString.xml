@@ -1,0 +1,5 @@
+<ArgumentMultipleTypes xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Arguments>
+    <x:String>foo</x:String>
+  </x:Arguments>
+</ArgumentMultipleTypes>

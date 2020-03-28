@@ -1,0 +1,49 @@
+<ImmutableCollectionContainer xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.TestCases" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sci="clr-namespace:System.Collections.Immutable;assembly=System.Collections.Immutable">
+  <ImmutableCollectionContainer.ImmutableList>
+    <sci:ImmutableList x:TypeArguments="ImmutableCollectionItem">
+      <ImmutableCollectionItem Foo="Item1" />
+      <ImmutableCollectionItem Foo="Item2" />
+      <ImmutableCollectionItem Foo="Item3" />
+    </sci:ImmutableList>
+  </ImmutableCollectionContainer.ImmutableList>
+  	<ImmutableCollectionContainer.ImmutableArray>
+		<ImmutableCollectionItem Foo="Item1" />
+		<ImmutableCollectionItem Foo="Item2" />
+		<ImmutableCollectionItem Foo="Item3" />
+	</ImmutableCollectionContainer.ImmutableArray>
+	<!--ImmutableCollectionContainer.ImmutableList>
+		<ImmutableCollectionItem Foo="Item1" />
+		<ImmutableCollectionItem Foo="Item2" />
+		<ImmutableCollectionItem Foo="Item3" />
+	</ImmutableCollectionContainer.ImmutableList-->
+	<ImmutableCollectionContainer.ImmutableHashSet>
+		<ImmutableCollectionItem Foo="Item1" />
+		<ImmutableCollectionItem Foo="Item2" />
+		<ImmutableCollectionItem Foo="Item3" />
+	</ImmutableCollectionContainer.ImmutableHashSet>
+	<ImmutableCollectionContainer.ImmutableQueue>
+		<ImmutableCollectionItem Foo="Item1" />
+		<ImmutableCollectionItem Foo="Item2" />
+		<ImmutableCollectionItem Foo="Item3" />
+	</ImmutableCollectionContainer.ImmutableQueue>
+	<ImmutableCollectionContainer.ImmutableStack>
+		<ImmutableCollectionItem Foo="Item1" />
+		<ImmutableCollectionItem Foo="Item2" />
+		<ImmutableCollectionItem Foo="Item3" />
+	</ImmutableCollectionContainer.ImmutableStack>
+	<ImmutableCollectionContainer.ImmutableSortedSet>
+		<ImmutableCollectionItem Foo="Item2" />
+		<ImmutableCollectionItem Foo="Item1" />
+		<ImmutableCollectionItem Foo="Item3" />
+	</ImmutableCollectionContainer.ImmutableSortedSet>
+	<ImmutableCollectionContainer.ImmutableDictionary>
+		<ImmutableCollectionItem Foo="Item1" x:Key="0" />
+		<ImmutableCollectionItem Foo="Item2" x:Key="1" />
+		<ImmutableCollectionItem Foo="Item3" x:Key="2" />
+	</ImmutableCollectionContainer.ImmutableDictionary>
+	<ImmutableCollectionContainer.ImmutableSortedDictionary>
+		<ImmutableCollectionItem Foo="Item1" x:Key="0" />
+		<ImmutableCollectionItem Foo="Item2" x:Key="1" />
+		<ImmutableCollectionItem Foo="Item3" x:Key="2" />
+	</ImmutableCollectionContainer.ImmutableSortedDictionary>
+</ImmutableCollectionContainer>

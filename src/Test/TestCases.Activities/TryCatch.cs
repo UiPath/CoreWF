@@ -134,7 +134,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void SimpleTryCatchSequential()
+        private void SimpleTryCatchSequential()
         {
             // try
             TestSequence trySeq = new TestSequence();
@@ -163,7 +163,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void SimpleTryCatchFlowchart()
+        private void SimpleTryCatchFlowchart()
         {
             // try
             TestSequence trySeq = new TestSequence();
@@ -223,7 +223,7 @@ namespace TestCases.Activities
         /// </summary>
         /// Disabled and failed in desktop        
         //[Fact]
-        public void InheritedExceptions2()
+        private void InheritedExceptions2()
         {
             // try
             TestSequence trySeq = new TestSequence();
@@ -245,7 +245,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void InheritedExceptions3()
+        private void InheritedExceptions3()
         {
             // try
             TestSequence trySeq = new TestSequence();
@@ -331,7 +331,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void TryCatchFinallyWithExceptionInUncatchingCatch()
+        private void TryCatchFinallyWithExceptionInUncatchingCatch()
         {
             // try
             TestSequence trySeq = new TestSequence("Try");
@@ -586,7 +586,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void TryCatchInParallelWithMissMatchingExceptions()
+        private void TryCatchInParallelWithMissMatchingExceptions()
         {
             TestParallel parallel = new TestParallel("ParallelCatch")
             {
@@ -637,7 +637,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void TryCatchInParallel()
+        private void TryCatchInParallel()
         {
             TestParallel parallel = new TestParallel("ParallelCatch")
             {
@@ -683,7 +683,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void ParallelInTryCatch()
+        private void ParallelInTryCatch()
         {
             TestTryCatch tryCatch = new TestTryCatch("TryCatch")
             {
@@ -804,7 +804,7 @@ namespace TestCases.Activities
         /// </summary>        
         /// Disabled and failed in desktop        
         //[Fact]
-        public void TryCatchFinallyNested()
+        private void TryCatchFinallyNested()
         {
             TestTryCatch NestedTryCatch = new TestTryCatch("Level1Try")
             {

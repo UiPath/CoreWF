@@ -1,4 +1,0 @@
-<ValueWrapper 
-	StringValue="{MyExtension6 SomeValue, Foo=OtherValue}" 
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns="clr-namespace:MonoTests.System.Xaml;assembly=System.Xaml.Test" />

@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Tento pracovní postup obsahuje výrazy lambda určené v kódu. Tyto výrazy nelze serializovat metodou XAML. Chcete-li pro pracovní postupy XAML používat serializace, použijte funkce VisualBasicValue/VisualBasicReference nebo ExpressionServices.Convert(lambda). Tím převedete výrazy lambda na aktivity výrazů.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Všechna práva vyhrazena.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Zadaný počet řádků pro aktivitu {0} je příliš velký, a proto není v částečném vztahu důvěryhodnosti podporován.</value>
   </data>

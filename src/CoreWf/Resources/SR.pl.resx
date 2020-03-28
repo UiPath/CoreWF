@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>Ten przepływ pracy zawiera wyrażenia lambda określone w kodzie. Wyrażenia te nie są możliwe do serializacji w języku XAML. Aby przepływ pracy był możliwy do serializacji w języku XAML, użyj obiektu VisualBasicValue/VisualBasicReference lub metody ExpressionServices.Convert(lambda). W ten sposób wyrażenia lambda zostaną przekonwertowane na działania wyrażeń.</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation. Wszelkie prawa zastrzeżone.</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>Numer wiersza określony dla działania {0} jest za duży, aby można go było obsługiwać w przypadku zaufania częściowego.</value>
   </data>

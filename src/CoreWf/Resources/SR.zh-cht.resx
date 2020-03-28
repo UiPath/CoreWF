@@ -1815,9 +1815,6 @@
   <data name="LambdaNotXamlSerializable" xml:space="preserve">
     <value>這個工作流程包含程式碼中指定的 Lambda 運算式。這些運算式並非 XAML 可序列化。若要讓您的工作流程成為 XAML 可序列化，請使用 VisualBasicValue/VisualBasicReference 或 ExpressionServices.Convert(lambda)。這會將您的 Lambda 運算式轉換成運算式活動。</value>
   </data>
-  <data name="LegalCopyright" xml:space="preserve">
-    <value>© Microsoft Corporation.  著作權所有，並保留一切權利。</value>
-  </data>
   <data name="LineNumberTooLarge" xml:space="preserve">
     <value>活動 {0} 的指定行號太大，無法在部分信任中支援</value>
   </data>
