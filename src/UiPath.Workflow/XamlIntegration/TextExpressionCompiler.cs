@@ -17,7 +17,6 @@ namespace System.Activities.XamlIntegration
     using Microsoft.VisualBasic;
     using System.Windows.Markup;
     using System.Xaml;
-    using System.Activities.Debugger;
     using System.IO;
     using System.Activities.Expressions;
     using System.Activities.Runtime;
@@ -25,7 +24,6 @@ namespace System.Activities.XamlIntegration
     using System.Security;
     using System.Security.Permissions;
     using System.Globalization;
-    using System.Activities.Debugger.Symbol;
     using System.Linq.Expressions;
     using System.Activities.Internals;
     using System.Linq;
@@ -70,7 +68,6 @@ namespace System.Activities.XamlIntegration
         CodeTypeDeclaration classDeclaration;
         CodeCompileUnit compileUnit;
 
-        Dictionary<object, SourceLocation> symbols = null;
         string fileName = null;
 
         // Dictionary of namespace name => [Line#]
@@ -239,13 +236,6 @@ namespace System.Activities.XamlIntegration
 
                     throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompiledExpressionsCacheMetadataException(this.settings.Activity.GetType().AssemblyQualifiedName, e.ToString())));
                 }
-            }
-
-            // Get the source location for an activity             
-            if (this.TryGetSymbols(this.settings.Activity, out this.symbols, out this.fileName))
-            {
-                // Get line number info for namespaces
-                TextExpressionCompilerHelper.GetNamespacesLineInfo(this.fileName, this.lineNumbersForNSes, this.lineNumbersForNSesForImpl);
             }
            
             this.compileUnit = new CodeCompileUnit();
@@ -2421,51 +2411,6 @@ namespace System.Activities.XamlIntegration
         void AlignText(Activity activity, ref string expressionText, out CodeLinePragma pragma)
         {
             pragma = null;
-            if (this.symbols != null)
-            {
-                SourceLocation sourceLocation = null;
-
-                Activity currentActivity = activity;
-                while (currentActivity != null && !symbols.TryGetValue(currentActivity, out sourceLocation))
-                {
-                    currentActivity = currentActivity.Parent;
-                }
-
-                if (sourceLocation != null && !string.IsNullOrWhiteSpace(sourceLocation.FileName))
-                {
-                    int startLine = sourceLocation.StartLine;
-                    if (startLine > 1)
-                    {
-                        bool aligned = TryAlign(sourceLocation.StartColumn, ref expressionText);
-                        if (aligned)
-                        {
-                            // Alignment inserts an extra blank line at the beginning of the expression
-                            startLine--;
-                        }
-                    }
-
-                    pragma = new CodeLinePragma(sourceLocation.FileName, startLine);
-                }
-            }
-        }
-
-        bool TryAlign(int alignment, ref string expressionText)
-        {
-            if (!this.IsVB && !this.IsCS)
-            {
-                return false;
-            }
-
-            StringBuilder builder = new StringBuilder();
-            if (this.IsVB)
-            {
-                builder.Append('_');
-            }
-            builder.Append(Environment.NewLine);
-            builder.Append(new string(' ', alignment - 1));
-            builder.Append(expressionText);
-            expressionText = builder.ToString();
-            return true;
         }
 
         CodeLinePragma GenerateLinePragmaForNamespace(string namespaceName)
@@ -2486,64 +2431,6 @@ namespace System.Activities.XamlIntegration
                 return new CodeLinePragma(this.fileName, lineNumber);
             }
             return null;
-        }
-
-        bool TryGetSymbols(Activity rootActivity, out Dictionary<object, SourceLocation> symbols, out string fileName)
-        {
-            symbols = null;
-            fileName = null;
-            Activity implementationRoot = null;
-            if (this.settings.ForImplementation)
-            {
-                // Regular compilation case via XamlBuildTask or for DynamicActivity  
-                // Debugger Symbols are attached to the first implementation child of rootActivity
-                IEnumerable<Activity> children = WorkflowInspectionServices.GetActivities(rootActivity);
-                foreach (Activity child in children)
-                {
-                    // Find the first implementation child of an activity
-                    if (child.Id.Contains("."))
-                    {
-                        implementationRoot = child;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                // XamlX case
-                // Debugger Symbols are attached to WorkflowService.Body which is passed in the rootActivity
-                implementationRoot = rootActivity;
-            }
-
-            if (implementationRoot == null)
-            {
-                return false;
-            }
-
-            try
-            {
-                string symbolString = DebugSymbol.GetSymbol(implementationRoot) as string;
-                if (!string.IsNullOrEmpty(symbolString))
-                {
-                    WorkflowSymbol wfSymbol = WorkflowSymbol.Decode(symbolString);
-                    if (wfSymbol != null)
-                    {
-                        symbols = SourceLocationProvider.GetSourceLocations(rootActivity, wfSymbol);
-                        fileName = wfSymbol.FileName;
-                        return true;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
-                // Ignore invalid symbols.
-            }
-
-            return false;
         }
 
         string GetActivityFullName(TextExpressionCompilerSettings settings)
