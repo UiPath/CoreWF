@@ -17,12 +17,13 @@ Included items must then not match any entries in the exclude list to remain inc
             <!-- Match assembly file paths: -->
             <ModulePaths>
               <Include>
-                <ModulePath>.*\.dll$</ModulePath>
-                <ModulePath>.*\.exe$</ModulePath>
+                <ModulePath>.*System\.Activities\.dll$</ModulePath>
+                <ModulePath>.*UiPath\.Workflow\.dll$</ModulePath>
+                <ModulePath>.*System\.Xaml\.dll$</ModulePath>
               </Include>
-              <Exclude>
+              <!-- <Exclude>
                 <ModulePath>.*System\.Xaml.*</ModulePath>
-              </Exclude>
+              </Exclude> -->
             </ModulePaths>
 
 
