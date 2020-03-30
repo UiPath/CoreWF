@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File name extension must be .runsettings -->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+            <!--
+About include/exclude lists:
+Empty "Include" clauses imply all; empty "Exclude" clauses imply none.
+Each element in the list is a regular expression (ECMAScript syntax). See http://msdn.microsoft.com/library/2k3te2cs.aspx.
+An item must first match at least one entry in the include list to be included.
+Included items must then not match any entries in the exclude list to remain included.
+-->
+
+            <!-- Match assembly file paths: -->
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*System\.Activities\.dll$</ModulePath>
+                <ModulePath>.*UiPath\.Workflow\.dll$</ModulePath>
+                <ModulePath>.*System\.Xaml\.dll$</ModulePath>
+              </Include>
+              <!-- <Exclude>
+                <ModulePath>.*System\.Xaml.*</ModulePath>
+              </Exclude> -->
+            </ModulePaths>
+
+
+            <!-- Match the company name property in the assembly: -->
+            <!-- Commented as not all UiPath assemblies have the company specified in AssemlyInfo -->
+            <!-- <CompanyNames>
+              <Include>
+                <CompanyName>.*UiPath.*</CompanyName>
+              </Include>
+            </CompanyNames>   -->
+
+            <!-- We recommend you do not change the following values: -->
+            <UseVerifiableInstrumentation>True</UseVerifiableInstrumentation>
+            <AllowLowIntegrityProcesses>True</AllowLowIntegrityProcesses>
+            <CollectFromChildProcesses>True</CollectFromChildProcesses>
+            <CollectAspDotNet>True</CollectAspDotNet>
+
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

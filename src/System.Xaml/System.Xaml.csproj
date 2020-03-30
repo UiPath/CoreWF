@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.SDK">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
-    <NoWarn>$(NoWarn);0618;NU5125;0618</NoWarn>
-    <DefineConstants>$(DefineConstants);OLDRESOURCES;SYSTEM_XAML</DefineConstants>
-    <EnableAnalyzers>true</EnableAnalyzers>
+    <NoWarn>$(NoWarn);0618;NU5125;</NoWarn>
+    <DefineConstants>$(DefineConstants);SYSTEM_XAML</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
