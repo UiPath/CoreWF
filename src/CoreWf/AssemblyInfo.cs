@@ -17,7 +17,7 @@ using System.Windows.Markup;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("97bdccfe-43bf-4c17-991d-c797c2ef2243")]
 
-[assembly: NeutralResourcesLanguage("en")]
+[assembly: NeutralResourcesLanguage("en", UltimateResourceFallbackLocation.Satellite)]
 
 // Define XAML namespace mappings
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities")]
