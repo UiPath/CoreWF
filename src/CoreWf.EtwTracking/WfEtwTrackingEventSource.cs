@@ -9,7 +9,7 @@ using Tasks = System.Activities.WfEventSource.Tasks;
 
 namespace System.Activities.EtwTracking
 {
-    [EventSource(Name = "WF ETW Tracking Participant", Guid = "71346678-F84B-45B6-AD09-36658D8239CE", LocalizationResources = "System.Activities.Strings.EventSource")]
+    [EventSource(Name = "WF ETW Tracking Participant", Guid = "71346678-F84B-45B6-AD09-36658D8239CE", LocalizationResources = "System.Activities.EtwTracking.Resources.EventSourceStrings")]
     public sealed class WfEtwTrackingEventSource : EventSource
     {
         public static WfEtwTrackingEventSource Instance = new WfEtwTrackingEventSource();
