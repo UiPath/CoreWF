@@ -2365,7 +2365,9 @@ namespace System.Activities.XamlIntegration
                 {
                     compilerParameters.CompilerOptions = string.Concat("/rootnamespace:", this.settings.RootNamespace);
                 }
-                VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
+                // VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
+                // pass everything to include the assemblies of the XAML CLR namespaces
+                assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a=>!a.IsDynamic).Select(a => new AssemblyReference(a, a.GetName())).ToList();
             }
             else
             {
