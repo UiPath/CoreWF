@@ -194,7 +194,7 @@ namespace Microsoft.VisualBasic.Activities
             }
         }
 
-        public static void GetAllImportReferences(Activity activity, bool isDesignTime, out IList<string> namespaces, out IList<AssemblyReference> assemblies)
+        public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces, out List<AssemblyReference> assemblies)
         {
             List<string> namespaceList = new List<string>();
             List<AssemblyReference> assemblyList = new List<AssemblyReference>();
@@ -264,8 +264,8 @@ namespace Microsoft.VisualBasic.Activities
 
         public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
         {
-            IList<string> localNamespaces;
-            IList<AssemblyReference> localAssemblies;
+            List<string> localNamespaces;
+            List<AssemblyReference> localAssemblies;
             GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity,
                 false, out localNamespaces, out localAssemblies);
 

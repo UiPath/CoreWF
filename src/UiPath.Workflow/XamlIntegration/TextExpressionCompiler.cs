@@ -2345,7 +2345,7 @@ namespace System.Activities.XamlIntegration
         {
             var messages = new List<TextExpressionCompilerError>();
             var compilerParameters = GetCompilerParameters(messages);
-            var classToCompile = new ClassToCompile(settings.ActivityName, compilerParameters, compileUnit);
+            var classToCompile = new ClassToCompile(settings.ActivityName, compilerParameters, compileUnit, settings.Language);
             return settings.Compiler.Compile(classToCompile);
         }
 
@@ -2358,17 +2358,22 @@ namespace System.Activities.XamlIntegration
             CompilerParameters compilerParameters = new CompilerParameters();
             compilerParameters.GenerateExecutable = false;
             compilerParameters.GenerateInMemory = false;
-
-            if (this.IsVB && !string.IsNullOrWhiteSpace(this.settings.RootNamespace))
+            List<AssemblyReference> assemblies;
+            if (IsVB)
             {
-                compilerParameters.CompilerOptions = string.Concat("/rootnamespace:", this.settings.RootNamespace);
+                if (!string.IsNullOrWhiteSpace(this.settings.RootNamespace))
+                {
+                    compilerParameters.CompilerOptions = string.Concat("/rootnamespace:", this.settings.RootNamespace);
+                }
+                VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
             }
-
-            List<AssemblyReference> assemblies = this.settings.ForImplementation ?
-                new List<AssemblyReference>(TextExpression.GetReferencesForImplementation(this.settings.Activity)) :
-                new List<AssemblyReference>(TextExpression.GetReferences(this.settings.Activity));
-
-            assemblies.AddRange(TextExpression.DefaultReferences);
+            else
+            {
+                assemblies = this.settings.ForImplementation ?
+                    new List<AssemblyReference>(TextExpression.GetReferencesForImplementation(this.settings.Activity)) :
+                    new List<AssemblyReference>(TextExpression.GetReferences(this.settings.Activity));
+                assemblies.AddRange(TextExpression.DefaultReferences);
+            }
 
             foreach (AssemblyReference assemblyReference in assemblies)
             {

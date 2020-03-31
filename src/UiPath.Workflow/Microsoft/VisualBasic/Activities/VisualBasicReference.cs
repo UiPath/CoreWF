@@ -54,12 +54,13 @@ namespace Microsoft.VisualBasic.Activities
         {
             get
             {
-                return false;
+                return true;
             }
         }
 
         protected override Location<TResult> Execute(CodeActivityContext context)
         {
+            return (Location<TResult>) invoker.InvokeExpression(context);
             if (!this.invoker.IsStaticallyCompiled)
             {
                 if (this.expressionTree != null)
@@ -86,21 +87,21 @@ namespace Microsoft.VisualBasic.Activities
         {
             this.expressionTree = null;
             this.invoker = new CompiledExpressionInvoker(this, true, metadata);
-            if (this.invoker.IsStaticallyCompiled)
-            {
-                return;
-            }
+            //if (this.invoker.IsStaticallyCompiled)
+            //{
+            //    return;
+            //}
             
-            string validationError;
+            //string validationError;
 
-            // If ICER is not implemented that means we haven't been compiled
-            CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-            this.expressionTree = this.CompileLocationExpression(publicAccessor, out validationError);
+            //// If ICER is not implemented that means we haven't been compiled
+            //CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+            //this.expressionTree = this.CompileLocationExpression(publicAccessor, out validationError);
 
-            if (validationError != null)
-            {
-                metadata.AddValidationError(validationError);
-            }            
+            //if (validationError != null)
+            //{
+            //    metadata.AddValidationError(validationError);
+            //}            
         }
 
         public bool CanConvertToString(IValueSerializerContext context)

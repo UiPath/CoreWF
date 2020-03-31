@@ -272,8 +272,8 @@ namespace System.Activities.XamlIntegration
             {
                 return;
             }
-            var cSharpCompiler = settings.CSharpCompiler ?? new CSharpAheadOfTimeCompiler();
-            var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, cSharpCompiler));
+            var aotCompiler = settings.GetCompiler(language);
+            var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, aotCompiler));
             var results = compiler.Compile();
 
             if (results.HasErrors())

@@ -240,7 +240,7 @@ namespace TestCases.Workflows
         }
         private static IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
         {
-            var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = true });
+            var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = false });
             return WorkflowInvoker.Invoke(activity, inputs ?? new StringDictionary());
         }
         class CSharpCompiler : AheadOfTimeCompiler

@@ -16,7 +16,7 @@ namespace TestCases.Workflows.WF4Samples
         {
             var consoleOutputWriter = new StringWriter();
             var invoker = new WorkflowInvoker(activity);
-            invoker.Extensions.Add((TextWriter)consoleOutputWriter);
+            invoker.Extensions.Add(consoleOutputWriter);
             invoker.Invoke(inputs ?? new StringDictionary());
             return consoleOutputWriter.ToString();
         }

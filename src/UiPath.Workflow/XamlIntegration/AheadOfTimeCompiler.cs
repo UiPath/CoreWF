@@ -10,9 +10,9 @@ namespace System.Activities.XamlIntegration
     }
     public class ClassToCompile
     {
-        public ClassToCompile(string className, CompilerParameters options, CodeCompileUnit compilationUnit)
+        public ClassToCompile(string className, CompilerParameters options, CodeCompileUnit compilationUnit, string language)
         {
-            Code = compilationUnit.GetCSharpCode();
+            Code = compilationUnit.GetCode(language);
             References = options.GetReferences();
             Imports = compilationUnit.GetImports();
             ClassName = className;
