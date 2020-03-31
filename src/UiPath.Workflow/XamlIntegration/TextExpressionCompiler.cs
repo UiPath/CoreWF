@@ -2346,8 +2346,13 @@ namespace System.Activities.XamlIntegration
         {
             var messages = new List<TextExpressionCompilerError>();
             var compilerParameters = GetCompilerParameters(messages);
-            var classToCompile = new ClassToCompile(settings.ActivityName, compilerParameters, compileUnit, settings.Language);
-            return settings.Compiler.Compile(classToCompile);
+            var references = compilerParameters.GetReferences();
+            var code = compileUnit.GetCode(settings.Language);
+            var imports = compileUnit.GetImports();
+            var classToCompile = new ClassToCompile(settings.ActivityName, code, references, imports);
+            var result = settings.Compiler.Compile(classToCompile);
+            result.AddMessages(messages);
+            return result;
         }
 
         [Fx.Tag.SecurityNote(Critical = "Critical because we are using the CompilerParameters class, which has a link demand for Full Trust.",
@@ -2366,9 +2371,7 @@ namespace System.Activities.XamlIntegration
                 {
                     compilerParameters.CompilerOptions = string.Concat("/rootnamespace:", this.settings.RootNamespace);
                 }
-                // VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
-                // pass everything to include the assemblies of the XAML CLR namespaces
-                assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a=>!a.IsDynamic).Select(a => new AssemblyReference(a, a.GetName())).ToList();
+                VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
             }
             else
             {

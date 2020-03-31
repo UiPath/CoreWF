@@ -26,60 +26,60 @@ namespace TestCases.Workflows
         public static IEnumerable<object[]> XamlNoInputs { get; } = new[]
         {
             new object[] { @"
-                <Activity x:Class=""WFTemplate""
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:s=""clr-namespace:System;assembly=mscorlib""
-                            xmlns:s1=""clr-namespace:System;assembly=System""
-                            xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                <Activity x:Class='WFTemplate'
+                            xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                            xmlns:s='clr-namespace:System;assembly=mscorlib'
+                            xmlns:s1='clr-namespace:System;assembly=System'
+                            xmlns:sa='clr-namespace:System.Activities;assembly=System.Activities'
+                            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                 </Activity>" },
             new object[] { @"
-                <Activity x:Class=""WFTemplate""
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                <Activity x:Class='WFTemplate'
+                            xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                     <Sequence>
-                        <WriteLine Text=""HelloWorld"" />
+                        <WriteLine Text='HelloWorld' />
                     </Sequence>
                 </Activity>" },
             // This test is broken
             //new object[] { @"
-            //    <Activity x:Class=""WFTemplate""
-            //              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-            //              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+            //    <Activity x:Class='WFTemplate'
+            //              xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+            //              xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
             //        <Sequence>
             //            <WriteLine>
             //                <Content>
-            //                    <Text>""HelloWorld""</Text>
+            //                    <Text>'HelloWorld'</Text>
             //                </Content>
             //            </WriteLine>
             //        </Sequence>
             //    </Activity>" },
             new object[] { @"
                 <Activity
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                            xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                     <Sequence>
                         <Sequence.Variables>
-                            <Variable x:TypeArguments=""x:String"" Default=""My variable text"" Name=""MyVar"" />
+                            <Variable x:TypeArguments='x:String' Default='My variable text' Name='MyVar' />
                         </Sequence.Variables>
-                        <WriteLine Text=""[MyVar]"" />
+                        <WriteLine Text='[MyVar]' />
                     </Sequence>
                 </Activity>" },
             new object[] { @"
-                <Activity x:Class=""WFTemplate""
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-                    <WriteLine Text=""HelloWorld"" />
+                <Activity x:Class='WFTemplate'
+                            xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+                    <WriteLine Text='HelloWorld' />
                 </Activity>" },
             new object[] { @"
                 <Activity
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                            xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                     <Sequence>
                         <Sequence.Variables>
-                            <Variable x:TypeArguments=""x:String"" Default=""My variable text"" Name=""text"" />
+                            <Variable x:TypeArguments='x:String' Default='My variable text' Name='text' />
                         </Sequence.Variables>
-                        <WriteLine Text=""[text]"" />
+                        <WriteLine Text='[text]' />
                     </Sequence>
                 </Activity>" },
         };
@@ -91,29 +91,29 @@ namespace TestCases.Workflows
         public static IEnumerable<object[]> XamlWithInputs { get; } = new[]
         {
             new object[] { @"
-                <Activity x:Class=""WFTemplate""
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:s=""clr-namespace:System;assembly=mscorlib""
-                            xmlns:s1=""clr-namespace:System;assembly=System""
-                            xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                <Activity x:Class='WFTemplate'
+                            xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                            xmlns:s='clr-namespace:System;assembly=mscorlib'
+                            xmlns:s1='clr-namespace:System;assembly=System'
+                            xmlns:sa='clr-namespace:System.Activities;assembly=System.Activities'
+                            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                     <x:Members>
-                        <x:Property Name=""myInput"" Type=""InArgument(x:String)"" />
+                        <x:Property Name='myInput' Type='InArgument(x:String)' />
                     </x:Members>
-                    <WriteLine Text=""[myInput]"" />
+                    <WriteLine Text='[myInput]' />
                 </Activity>" },
             new object[] { @"
-                <Activity x:Class=""WFTemplate""
-                            xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                            xmlns:s=""clr-namespace:System;assembly=mscorlib""
-                            xmlns:s1=""clr-namespace:System;assembly=System""
-                            xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
-                            xmlns:hw=""clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows""
-                            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                <Activity x:Class='WFTemplate'
+                            xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                            xmlns:s='clr-namespace:System;assembly=mscorlib'
+                            xmlns:s1='clr-namespace:System;assembly=System'
+                            xmlns:sa='clr-namespace:System.Activities;assembly=System.Activities'
+                            xmlns:hw='clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows'
+                            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                     <x:Members>
-                        <x:Property Name=""myInput"" Type=""InArgument(x:String)"" />
+                        <x:Property Name='myInput' Type='InArgument(x:String)' />
                     </x:Members>
-                    <hw:HelloWorldConsole Text=""[myInput]"" />
+                    <hw:HelloWorldConsole Text='[myInput]' />
                 </Activity>" },
         };
 
@@ -125,22 +125,22 @@ namespace TestCases.Workflows
         public void XamlWorkflowWithInputsOutputs()
         {
             var xamlString = @"
-            <Activity x:Class=""WFTemplate""
-                      xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                      xmlns:s=""clr-namespace:System;assembly=mscorlib""
-                      xmlns:s1=""clr-namespace:System;assembly=System""
-                      xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
-                      xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+            <Activity x:Class='WFTemplate'
+                      xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                      xmlns:s='clr-namespace:System;assembly=mscorlib'
+                      xmlns:s1='clr-namespace:System;assembly=System'
+                      xmlns:sa='clr-namespace:System.Activities;assembly=System.Activities'
+                      xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                 <x:Members>
-                    <x:Property Name=""myOutput"" Type=""OutArgument(x:Int32)"" />
-                    <x:Property Name=""myInput"" Type=""InArgument(x:Int32)"" />
+                    <x:Property Name='myOutput' Type='OutArgument(x:Int32)' />
+                    <x:Property Name='myInput' Type='InArgument(x:Int32)' />
                 </x:Members>
                 <Assign>
                     <Assign.To>
-                        <OutArgument x:TypeArguments=""x:Int32"">[myOutput]</OutArgument>
+                        <OutArgument x:TypeArguments='x:Int32'>[myOutput]</OutArgument>
                     </Assign.To>
                     <Assign.Value>
-                        <InArgument x:TypeArguments=""x:Int32"">[myInput]</InArgument>
+                        <InArgument x:TypeArguments='x:Int32'>[myInput]</InArgument>
                     </Assign.Value>
                 </Assign>
             </Activity>";
@@ -154,17 +154,23 @@ namespace TestCases.Workflows
         public void XamlWorkflowWithInputObject()
         {
             var xamlString = @"
-                    <Activity x:Class=""WFTemplate""
-                              xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                              xmlns:s=""clr-namespace:System;assembly=mscorlib""
-                              xmlns:s1=""clr-namespace:System;assembly=System""
-                              xmlns:sa=""clr-namespace:System.Activities;assembly=System.Activities""
-                              xmlns:hw=""clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows""
-                              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+                    <Activity x:Class='WFTemplate'
+                              xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                              xmlns:s='clr-namespace:System;assembly=mscorlib'
+                              xmlns:s1='clr-namespace:System;assembly=System'
+                              xmlns:sa='clr-namespace:System.Activities;assembly=System.Activities'
+                              xmlns:hw='clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows'
+                              xmlns:sco='clr-namespace:System.Collections.ObjectModel;assembly=mscorlib'
+                              xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
                         <x:Members>
-                            <x:Property Name=""myInput"" Type=""InArgument(hw:PersonToGreet)"" />
+                            <x:Property Name='myInput' Type='InArgument(hw:PersonToGreet)' />
                         </x:Members>
-                        <hw:ActivityWithObjectArgument Input=""[myInput]"" />
+                        <TextExpression.ReferencesForImplementation>
+                            <sco:Collection x:TypeArguments='AssemblyReference'>
+                              <AssemblyReference>TestCases.Workflows</AssemblyReference>
+                            </sco:Collection>
+                        </TextExpression.ReferencesForImplementation>
+                        <hw:ActivityWithObjectArgument Input='[myInput]' />
                     </Activity>";
 
             var inputs = new StringDictionary { ["myInput"] = new PersonToGreet { FirstName = "Jane", LastName = "Doe" } };
@@ -180,14 +186,14 @@ namespace TestCases.Workflows
         protected override bool CompileExpressions => true;
 
         const string CSharpExpressions = @"
-                <Activity x:Class=""WFTemplate""
-                          xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                          xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=UiPath.Workflow"">
+                <Activity x:Class='WFTemplate'
+                          xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                          xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                          xmlns:mca='clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities'>
                     <Sequence>
                         <WriteLine>
-                          <InArgument x:TypeArguments=""x:String"">
-                            <mca:CSharpValue x:TypeArguments=""x:String"">""constant""</mca:CSharpValue>
+                          <InArgument x:TypeArguments='x:String'>
+                            <mca:CSharpValue x:TypeArguments='x:String'>""constant""</mca:CSharpValue>
                           </InArgument>
                         </WriteLine>
                     </Sequence>
@@ -202,14 +208,14 @@ namespace TestCases.Workflows
         public void CSharpCompileError()
         {
             var xaml = @"
-                <Activity x:Class=""WFTemplate""
-                          xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                          xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=UiPath.Workflow"">
+                <Activity x:Class='WFTemplate'
+                          xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                          xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                          xmlns:mca='clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities'>
                     <Sequence>
                         <WriteLine>
-                          <InArgument x:TypeArguments=""x:String"">
-                            <mca:CSharpValue x:TypeArguments=""x:String"">constant</mca:CSharpValue>
+                          <InArgument x:TypeArguments='x:String'>
+                            <mca:CSharpValue x:TypeArguments='x:String'>constant</mca:CSharpValue>
                           </InArgument>
                         </WriteLine>
                     </Sequence>
@@ -221,30 +227,30 @@ namespace TestCases.Workflows
         public void CSharpInputOutput()
         {
             var xamlString = @"
-                <Activity x:Class=""WFTemplate""
-                          xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
-                          xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-                          xmlns:mca=""clr-namespace:Microsoft.CSharp.Activities;assembly=UiPath.Workflow"">
+                <Activity x:Class='WFTemplate'
+                          xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                          xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                          xmlns:mca='clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities'>
                     <x:Members>
-                        <x:Property Name=""myOutput"" Type=""OutArgument(x:Int32)"" />
-                        <x:Property Name=""myInput"" Type=""InArgument(x:Int32)"" />
+                        <x:Property Name='myOutput' Type='OutArgument(x:Int32)' />
+                        <x:Property Name='myInput' Type='InArgument(x:Int32)' />
                     </x:Members>
                     <Sequence>
                         <Assign>
                           <Assign.To>
-                            <OutArgument x:TypeArguments=""x:Int32"">
-                              <mca:CSharpReference x:TypeArguments=""x:Int32"">myOutput</mca:CSharpReference>
+                            <OutArgument x:TypeArguments='x:Int32'>
+                              <mca:CSharpReference x:TypeArguments='x:Int32'>myOutput</mca:CSharpReference>
                             </OutArgument>
                           </Assign.To>
                           <Assign.Value>
-                            <InArgument x:TypeArguments=""x:Int32"">
-                              <mca:CSharpValue x:TypeArguments=""x:Int32"">(myInput+myInput)/2</mca:CSharpValue>
+                            <InArgument x:TypeArguments='x:Int32'>
+                              <mca:CSharpValue x:TypeArguments='x:Int32'>(myInput+myInput)/2</mca:CSharpValue>
                             </InArgument>
                           </Assign.Value>
                         </Assign>
                         <WriteLine>
-                          <InArgument x:TypeArguments=""x:String"">
-                            <mca:CSharpValue x:TypeArguments=""x:String"">myOutput.ToString()</mca:CSharpValue>
+                          <InArgument x:TypeArguments='x:String'>
+                            <mca:CSharpValue x:TypeArguments='x:String'>myOutput.ToString()</mca:CSharpValue>
                           </InArgument>
                         </WriteLine>
                     </Sequence>
