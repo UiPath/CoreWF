@@ -13,8 +13,6 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities.XamlIntegration")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "Microsoft.CSharp.Activities")]
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "Microsoft.VisualBasic.Activities")]
-[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
-[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
 
 [assembly: InternalsVisibleTo("UiPath.Workflow")]
 #if NET45
@@ -22,4 +20,13 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "System.Activities.Debugger.Symbol")]
 [assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "sads")]
 
+[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
+[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
+#else
+
+[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.CSharp.Activities;assembly=UiPath.Workflow", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
+[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.VisualBasic.Activities;assembly=UiPath.Workflow", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
+
 #endif
+
+[assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2009/xaml/activities", "mca")]
