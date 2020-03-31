@@ -317,7 +317,7 @@ namespace System.Activities.XamlIntegration
                 IList<ValidationError> validationErrors = null;
                 if (environment == null)
                 {
-                    environment = new ActivityLocationReferenceEnvironment();
+                    environment = new ActivityLocationReferenceEnvironment { CompileExpressions = true };
                 }
 
                 try

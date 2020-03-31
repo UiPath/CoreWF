@@ -15,8 +15,14 @@ namespace TestCases.Workflows
     using IStringDictionary = IDictionary<string, object>;
     using StringDictionary = Dictionary<string, object>;
 
-    public class XamlTests
+    public abstract class XamlTestsBase
     {
+        protected abstract bool CompileExpressions { get; }
+        protected IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
+        {
+            var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = CompileExpressions });
+            return WorkflowInvoker.Invoke(activity, inputs ?? new StringDictionary());
+        }
         public static IEnumerable<object[]> XamlNoInputs { get; } = new[]
         {
             new object[] { @"
@@ -164,6 +170,15 @@ namespace TestCases.Workflows
             var inputs = new StringDictionary { ["myInput"] = new PersonToGreet { FirstName = "Jane", LastName = "Doe" } };
             var result = InvokeWorkflow(xamlString, inputs);
         }
+    }
+    public class JustInTimeXamlTests : XamlTestsBase
+    {
+        protected override bool CompileExpressions => false;
+    }
+    public class AheadOfTimeXamlTests : XamlTestsBase
+    {
+        protected override bool CompileExpressions => true;
+
         const string CSharpExpressions = @"
                 <Activity x:Class=""WFTemplate""
                           xmlns=""http://schemas.microsoft.com/netfx/2009/xaml/activities""
@@ -178,7 +193,7 @@ namespace TestCases.Workflows
                     </Sequence>
                 </Activity>";
         [Fact]
-        public void CompileExpressions() => InvokeWorkflow(CSharpExpressions);
+        public void CompileExpressionsDefault() => InvokeWorkflow(CSharpExpressions);
         [Fact]
         public void CompileExpressionsWithCompiler() =>
             new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
@@ -237,11 +252,6 @@ namespace TestCases.Workflows
             var inputs = new StringDictionary { ["myInput"] = 5 };
             var outputs = InvokeWorkflow(xamlString, inputs);
             outputs["myOutput"].ShouldBe(5);
-        }
-        private static IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
-        {
-            var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = true });
-            return WorkflowInvoker.Invoke(activity, inputs ?? new StringDictionary());
         }
         class CSharpCompiler : AheadOfTimeCompiler
         {

@@ -220,12 +220,13 @@ namespace System.Activities.XamlIntegration
         
         void Parse()
         {                    
-            if (!this.settings.Activity.IsMetadataCached)
+            if (!settings.Activity.IsMetadataCached)
             {
                 IList<ValidationError> validationErrors = null;
+                var environment = new ActivityLocationReferenceEnvironment { CompileExpressions = true };
                 try
                 {
-                    ActivityUtilities.CacheRootMetadata(this.settings.Activity, new ActivityLocationReferenceEnvironment(), ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
+                    ActivityUtilities.CacheRootMetadata(settings.Activity, environment, ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
                 }
                 catch (Exception e)
                 {
@@ -234,7 +235,7 @@ namespace System.Activities.XamlIntegration
                         throw;
                     }
 
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompiledExpressionsCacheMetadataException(this.settings.Activity.GetType().AssemblyQualifiedName, e.ToString())));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompiledExpressionsCacheMetadataException(settings.Activity.GetType().AssemblyQualifiedName, e.ToString())));
                 }
             }
            

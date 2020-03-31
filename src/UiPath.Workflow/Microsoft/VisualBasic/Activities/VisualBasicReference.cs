@@ -60,48 +60,33 @@ namespace Microsoft.VisualBasic.Activities
 
         protected override Location<TResult> Execute(CodeActivityContext context)
         {
-            return (Location<TResult>) invoker.InvokeExpression(context);
-            if (!this.invoker.IsStaticallyCompiled)
+            if (expressionTree == null)
             {
-                if (this.expressionTree != null)
-                {
-                    if (this.locationFactory == null)
-                    {
-                        this.locationFactory = ExpressionUtilities.CreateLocationFactory<TResult>(this.expressionTree);
-                    }
-
-                    return this.locationFactory.CreateLocation(context);
-                }
-                else
-                {
-                    return null;
-                }
+                return (Location<TResult>)invoker.InvokeExpression(context);
             }
-            else
+            if (locationFactory == null)
             {
-                return (Location<TResult>) this.invoker.InvokeExpression(context);
+                locationFactory = ExpressionUtilities.CreateLocationFactory<TResult>(this.expressionTree);
             }
+            return locationFactory.CreateLocation(context);
         }
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
-            this.expressionTree = null;
-            this.invoker = new CompiledExpressionInvoker(this, true, metadata);
-            //if (this.invoker.IsStaticallyCompiled)
-            //{
-            //    return;
-            //}
-            
-            //string validationError;
-
-            //// If ICER is not implemented that means we haven't been compiled
-            //CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-            //this.expressionTree = this.CompileLocationExpression(publicAccessor, out validationError);
-
-            //if (validationError != null)
-            //{
-            //    metadata.AddValidationError(validationError);
-            //}            
+            expressionTree = null;
+            invoker = new CompiledExpressionInvoker(this, true, metadata);
+            if (metadata.Environment.CompileExpressions)
+            {
+                return;
+            }
+            string validationError;
+            // If ICER is not implemented that means we haven't been compiled
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+            expressionTree = CompileLocationExpression(publicAccessor, out validationError);
+            if (validationError != null)
+            {
+                metadata.AddValidationError(validationError);
+            }
         }
 
         public bool CanConvertToString(IValueSerializerContext context)

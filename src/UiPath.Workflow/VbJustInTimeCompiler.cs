@@ -19,7 +19,6 @@ namespace UiPath.Workflow
     {
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
-            throw new NotSupportedException();
             var options = ScriptOptions.Default
                 .AddReferences(expressionToCompile.ReferencedAssemblies)
                 .AddImports(expressionToCompile.ImportedNamespaces);

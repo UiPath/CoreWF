@@ -11,14 +11,14 @@ using Xunit;
 namespace TestCases.Workflows.WF4Samples
 {
     using StringDictionary = Dictionary<string, object>;
-    /// <summary>
-    /// These tests are taken from the 
-    /// <a href="https://social.technet.microsoft.com/wiki/contents/articles/12326.windows-workflow-wf-4-x-samples.aspx">WF 4.0 Samples</a>
-    /// under Basic/Expressions
-    /// </summary>
-    public class Expressions
+
+    public abstract class ExpressionsBase
     {
-        private const string CorrectOutput = @"John Doe earns $55000.00
+        protected abstract bool CompileExpressions { get; }
+        protected Activity GetActivityFromXamlResource(TestXamls xamlName) => TestHelper.GetActivityFromXamlResource(xamlName, CompileExpressions);
+
+
+        protected const string CorrectOutput = @"John Doe earns $55000.00
 Frank Kimono earns $89000.00
 Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, average salary is $72000.00
 ";
@@ -26,14 +26,45 @@ Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, ave
         [Fact]
         public void ActivityXamlServicesLoad()
         {
-            var activity = TestHelper.GetActivityFromXamlResource(TestXamls.SalaryCalculation);
+            var activity = GetActivityFromXamlResource(TestXamls.SalaryCalculation);
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
+
+        private const string ForEachCorrectOutput = @"Iterate Array
+...bill
+...steve
+...ray
+Iterate ArrayList
+...Bob
+...John
+";
+
+        [Fact]
+        public void NonGenericForEach()
+        {
+            var activity = GetActivityFromXamlResource(TestXamls.NonGenericForEach);
+            TestHelper.InvokeWorkflow(activity).ShouldBe(ForEachCorrectOutput);
+        }
+    }
+
+    public class JustTimeExpressions : ExpressionsBase
+    {
+        protected override bool CompileExpressions => false;
+    }
+
+    /// <summary>
+    /// These tests are taken from the 
+    /// <a href="https://social.technet.microsoft.com/wiki/contents/articles/12326.windows-workflow-wf-4-x-samples.aspx">WF 4.0 Samples</a>
+    /// under Basic/Expressions
+    /// </summary>
+    public class AheadOfTimeExpressions : ExpressionsBase
+    {
+        protected override bool CompileExpressions => true;
 
         [Fact]
         public void CSharpCalculation()
         {
-            var activity = TestHelper.GetActivityFromXamlResource(TestXamls.CSharpCalculation);
+            var activity = GetActivityFromXamlResource(TestXamls.CSharpCalculation);
             var inputs = new StringDictionary { ["XX"] = 16, ["YY"] = 16 };
             TestHelper.InvokeWorkflow(activity, inputs).ShouldBe("Result == XX^2"+Environment.NewLine);
         }
