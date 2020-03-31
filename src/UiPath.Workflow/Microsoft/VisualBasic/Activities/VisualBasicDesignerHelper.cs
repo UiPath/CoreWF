@@ -50,8 +50,8 @@ namespace Microsoft.VisualBasic.Activities
             string expressionText = textExpression.ExpressionText;
             LocationReferenceEnvironment environment = visualBasicValue.GetParentEnvironment();
 
-            IList<string> namespaces;
-            IList<string> referencedAssemblies;
+            List<string> namespaces;
+            List<string> referencedAssemblies;
             GetAllImportReferences(visualBasicValue, out namespaces, out referencedAssemblies);
 
             return CreatePrecompiledVisualBasicValue(
@@ -83,8 +83,8 @@ namespace Microsoft.VisualBasic.Activities
             string expressionText = textExpression.ExpressionText;
             LocationReferenceEnvironment environment = visualBasicReference.GetParentEnvironment();
 
-            IList<string> namespaces;
-            IList<string> referencedAssemblies;
+            List<string> namespaces;
+            List<string> referencedAssemblies;
             GetAllImportReferences(visualBasicReference, out namespaces, out referencedAssemblies);
 
             return CreatePrecompiledVisualBasicReference(
@@ -685,9 +685,9 @@ namespace Microsoft.VisualBasic.Activities
             }
         }
 
-        static void GetAllImportReferences(Activity activity, out IList<string> namespaces, out IList<string> assemblies)
+        static void GetAllImportReferences(Activity activity, out List<string> namespaces, out List<string> assemblies)
         {
-            IList<AssemblyReference> referencedAssemblies;
+            List<AssemblyReference> referencedAssemblies;
             VisualBasicHelper.GetAllImportReferences(activity, true, out namespaces, out referencedAssemblies);
 
             assemblies = new List<string>();

@@ -54,48 +54,36 @@ namespace Microsoft.VisualBasic.Activities
         {
             get
             {
-                return false;
+                return true;
             }
         }
 
         protected override TResult Execute(CodeActivityContext context)
         {
-            if (!this.invoker.IsStaticallyCompiled)
+            if (expressionTree == null)
             {
-                if (this.expressionTree != null)
-                {
-                    if (this.compiledExpression == null)
-                    {
-                        this.compiledExpression = this.expressionTree.Compile();
-                    }
-                    return this.compiledExpression(context);
-                }
-                else
-                {
-                    return default(TResult);
-                }
+                return (TResult)invoker.InvokeExpression(context);
             }
-            else
+            if (compiledExpression == null)
             {
-                return (TResult)this.invoker.InvokeExpression(context);
+                compiledExpression = expressionTree.Compile();
             }
+            return compiledExpression(context);
         }
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
-            this.expressionTree = null;
-            this.invoker = new CompiledExpressionInvoker(this, false, metadata);
-            if (this.invoker.IsStaticallyCompiled == true)
+            expressionTree = null;
+            invoker = new CompiledExpressionInvoker(this, false, metadata);
+            if (metadata.Environment.CompileExpressions)
             {
                 return;
             }
-
             // If ICER is not implemented that means we haven't been compiled
-
-            CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);            
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
             try
             {
-                this.expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
+                expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
             }
             catch (SourceExpressionException e)
             {

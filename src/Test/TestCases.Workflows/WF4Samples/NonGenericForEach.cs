@@ -8,24 +8,6 @@ using Xunit;
 
 namespace TestCases.Workflows.WF4Samples
 {
-    public class NonGenericForEach
-    {
-        private const string CorrectOutput = @"Iterate Array
-...bill
-...steve
-...ray
-Iterate ArrayList
-...Bob
-...John
-";
-
-        [Fact]
-        public void Xaml()
-        {
-            var activity = TestHelper.GetActivityFromXamlResource(TestXamls.NonGenericForEach);
-            TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
-        }
-    }
     [ContentProperty("Body")]
     public sealed class ForEach : NativeActivity
     {

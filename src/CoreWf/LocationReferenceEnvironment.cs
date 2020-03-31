@@ -13,6 +13,8 @@ namespace System.Activities
         {
         }
 
+        internal bool CompileExpressions { get; set; }
+
         public abstract Activity Root { get; }
 
         public LocationReferenceEnvironment Parent

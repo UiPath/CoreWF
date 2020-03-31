@@ -220,12 +220,13 @@ namespace System.Activities.XamlIntegration
         
         void Parse()
         {                    
-            if (!this.settings.Activity.IsMetadataCached)
+            if (!settings.Activity.IsMetadataCached)
             {
                 IList<ValidationError> validationErrors = null;
+                var environment = new ActivityLocationReferenceEnvironment { CompileExpressions = true };
                 try
                 {
-                    ActivityUtilities.CacheRootMetadata(this.settings.Activity, new ActivityLocationReferenceEnvironment(), ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
+                    ActivityUtilities.CacheRootMetadata(settings.Activity, environment, ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
                 }
                 catch (Exception e)
                 {
@@ -234,7 +235,7 @@ namespace System.Activities.XamlIntegration
                         throw;
                     }
 
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompiledExpressionsCacheMetadataException(this.settings.Activity.GetType().AssemblyQualifiedName, e.ToString())));
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompiledExpressionsCacheMetadataException(settings.Activity.GetType().AssemblyQualifiedName, e.ToString())));
                 }
             }
            
@@ -2345,8 +2346,13 @@ namespace System.Activities.XamlIntegration
         {
             var messages = new List<TextExpressionCompilerError>();
             var compilerParameters = GetCompilerParameters(messages);
-            var classToCompile = new ClassToCompile(settings.ActivityName, compilerParameters, compileUnit);
-            return settings.Compiler.Compile(classToCompile);
+            var references = compilerParameters.GetReferences();
+            var code = compileUnit.GetCode(settings.Language);
+            var imports = compileUnit.GetImports();
+            var classToCompile = new ClassToCompile(settings.ActivityName, code, references, imports);
+            var result = settings.Compiler.Compile(classToCompile);
+            result.AddMessages(messages);
+            return result;
         }
 
         [Fx.Tag.SecurityNote(Critical = "Critical because we are using the CompilerParameters class, which has a link demand for Full Trust.",
@@ -2358,17 +2364,22 @@ namespace System.Activities.XamlIntegration
             CompilerParameters compilerParameters = new CompilerParameters();
             compilerParameters.GenerateExecutable = false;
             compilerParameters.GenerateInMemory = false;
-
-            if (this.IsVB && !string.IsNullOrWhiteSpace(this.settings.RootNamespace))
+            List<AssemblyReference> assemblies;
+            if (IsVB)
             {
-                compilerParameters.CompilerOptions = string.Concat("/rootnamespace:", this.settings.RootNamespace);
+                if (!string.IsNullOrWhiteSpace(this.settings.RootNamespace))
+                {
+                    compilerParameters.CompilerOptions = string.Concat("/rootnamespace:", this.settings.RootNamespace);
+                }
+                VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
             }
-
-            List<AssemblyReference> assemblies = this.settings.ForImplementation ?
-                new List<AssemblyReference>(TextExpression.GetReferencesForImplementation(this.settings.Activity)) :
-                new List<AssemblyReference>(TextExpression.GetReferences(this.settings.Activity));
-
-            assemblies.AddRange(TextExpression.DefaultReferences);
+            else
+            {
+                assemblies = this.settings.ForImplementation ?
+                    new List<AssemblyReference>(TextExpression.GetReferencesForImplementation(this.settings.Activity)) :
+                    new List<AssemblyReference>(TextExpression.GetReferences(this.settings.Activity));
+                assemblies.AddRange(TextExpression.DefaultReferences);
+            }
 
             foreach (AssemblyReference assemblyReference in assemblies)
             {

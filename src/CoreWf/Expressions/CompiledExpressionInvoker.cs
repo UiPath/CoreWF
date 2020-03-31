@@ -263,7 +263,7 @@ namespace System.Activities.Expressions
                 // for locations that are referenced in the expressions. To maintain 
                 // consistency the we call the CreateRequiredArguments method seperately to
                 // generates auto arguments only for locations that are referenced.
-                if (!this.textExpression.RequiresCompilation)
+                if (textExpression.Language == "VB")
                 {
                     IList<string> requiredLocationNames = this.compiledRoot.GetRequiredLocations(this.expressionId);
                     this.CreateRequiredArguments(requiredLocationNames);
