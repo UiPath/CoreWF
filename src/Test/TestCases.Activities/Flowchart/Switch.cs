@@ -284,7 +284,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Add case in flow switch with key null and valid flow element. Evaluate to null.
         /// </summary>        
-        [Fact(Skip = "Dependency on Null Handler in TD")]
+        [Fact]
         public void AddNullKeyInFlowSwitch()
         {
             TestFlowchart flowchart = new TestFlowchart();
@@ -296,12 +296,11 @@ namespace TestCases.Activities.Flowchart
             cases.Add("One", new TestWriteLine("One", "One"));
             cases.Add("Two", new TestWriteLine("Two", "Two"));
             cases.Add("Three", new TestWriteLine("Three", "Three"));
-            cases.Add("Four", new TestWriteLine("Four", "Four"));
 
             List<int> hints = new List<int> { 3 };
 
             TestFlowSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => stringVar.Get(e), new TestWriteLine("Default", "Default Activity")) as TestFlowSwitch<object>;
-            flowSwitch.AddNullCase(new TestWriteLine("Five", "Five"));
+            flowSwitch.AddNullCase(new TestWriteLine("Four", "Four"));
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -309,7 +308,7 @@ namespace TestCases.Activities.Flowchart
         /// <summary>
         /// Add case in flow switch with both key and value null. Evaluate to null.
         /// </summary>        
-        [Fact(Skip = "Dependency on Null Handler in TD")]
+        [Fact]
         public void FlowSwitchWithBothKeyAndValueNull()
         {
             TestFlowchart flowchart = new TestFlowchart();
