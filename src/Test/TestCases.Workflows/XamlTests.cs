@@ -41,19 +41,6 @@ namespace TestCases.Workflows
                         <WriteLine Text='HelloWorld' />
                     </Sequence>
                 </Activity>" },
-            // This test is broken
-            //new object[] { @"
-            //    <Activity x:Class='WFTemplate'
-            //              xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
-            //              xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
-            //        <Sequence>
-            //            <WriteLine>
-            //                <Content>
-            //                    <Text>'HelloWorld'</Text>
-            //                </Content>
-            //            </WriteLine>
-            //        </Sequence>
-            //    </Activity>" },
             new object[] { @"
                 <Activity
                             xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
