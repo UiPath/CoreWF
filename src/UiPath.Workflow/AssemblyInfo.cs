@@ -11,6 +11,11 @@ using System.Windows.Markup;
 
 // Define XAML namespace mappings
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities.XamlIntegration")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "Microsoft.CSharp.Activities")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "Microsoft.VisualBasic.Activities")]
+[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
+[assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
+
 [assembly: InternalsVisibleTo("UiPath.Workflow")]
 #if NET45
 

@@ -18,16 +18,19 @@ namespace System.Activities.XamlIntegration
     {
         public static T GetResult<T>(this Task<T> task) => task.GetAwaiter().GetResult();
 
-        public static IReadOnlyCollection<string> GetReferences(this CompilerParameters options) => options.ReferencedAssemblies.Cast<string>().ToArray();
+        public static IReadOnlyCollection<string> GetReferences(this CompilerParameters options) => options.ReferencedAssemblies.Cast<string>().Distinct().ToArray();
 
         public static IReadOnlyCollection<string> GetImports(this CodeCompileUnit compilationUnit) => 
-            compilationUnit.Namespaces[0].Imports.Cast<CodeNamespaceImport>().Select(c => c.Namespace).ToArray();
+            compilationUnit.Namespaces[0].Imports.Cast<CodeNamespaceImport>().Select(c => c.Namespace).Distinct().ToArray();
 
-        public static string GetCSharpCode(this CodeCompileUnit compilationUnit)
+        public static string GetCode(this CodeCompileUnit compilationUnit, string language)
         {
             var codeWriter = new StringWriter();
             var typeDeclaration = compilationUnit.Namespaces[0].Types[0];
-            new CSharpCodeProvider().GenerateCodeFromType(typeDeclaration, codeWriter, new CodeGeneratorOptions());
+            using (var codeDomProvider = CodeDomProvider.CreateProvider(language))
+            {
+                codeDomProvider.GenerateCodeFromType(typeDeclaration, codeWriter, new CodeGeneratorOptions());
+            }
             return codeWriter.ToString();
         }
 

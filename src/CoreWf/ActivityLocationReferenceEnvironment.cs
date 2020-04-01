@@ -20,11 +20,11 @@ namespace System.Activities
 
         public ActivityLocationReferenceEnvironment(LocationReferenceEnvironment parent)
         {
-            this.Parent = parent;
-
-            if (this.Parent != null)
+            Parent = parent;
+            if (Parent != null)
             {
-                this.InternalRoot = parent.Root;
+                CompileExpressions = parent.CompileExpressions;
+                InternalRoot = parent.Root;
             }
         }
 

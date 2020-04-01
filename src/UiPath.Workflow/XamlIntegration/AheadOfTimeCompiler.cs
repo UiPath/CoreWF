@@ -1,6 +1,7 @@
 ﻿using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace System.Activities.XamlIntegration
 {
@@ -10,12 +11,12 @@ namespace System.Activities.XamlIntegration
     }
     public class ClassToCompile
     {
-        public ClassToCompile(string className, CompilerParameters options, CodeCompileUnit compilationUnit)
+        public ClassToCompile(string className, string code, IReadOnlyCollection<string> references, IReadOnlyCollection<string> imports)
         {
-            Code = compilationUnit.GetCSharpCode();
-            References = options.GetReferences();
-            Imports = compilationUnit.GetImports();
             ClassName = className;
+            Code = code;
+            References = references;
+            Imports = imports;
         }
         public string Code { get; }
         public IReadOnlyCollection<string> References { get; }

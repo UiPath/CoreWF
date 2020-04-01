@@ -272,8 +272,8 @@ namespace System.Activities.XamlIntegration
             {
                 return;
             }
-            var cSharpCompiler = settings.CSharpCompiler ?? new CSharpAheadOfTimeCompiler();
-            var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, cSharpCompiler));
+            var aotCompiler = settings.GetCompiler(language);
+            var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, aotCompiler));
             var results = compiler.Compile();
 
             if (results.HasErrors())
@@ -317,7 +317,7 @@ namespace System.Activities.XamlIntegration
                 IList<ValidationError> validationErrors = null;
                 if (environment == null)
                 {
-                    environment = new ActivityLocationReferenceEnvironment();
+                    environment = new ActivityLocationReferenceEnvironment { CompileExpressions = true };
                 }
 
                 try
@@ -352,16 +352,18 @@ namespace System.Activities.XamlIntegration
 
         private static TextExpressionCompilerSettings GetCompilerSettings(IDynamicActivity dynamicActivity, string language, AheadOfTimeCompiler compiler)
         {
-            int lastIndexOfDot = dynamicActivity.Name.LastIndexOf('.');
-            int lengthOfName = dynamicActivity.Name.Length;
+            var activity = (Activity)dynamicActivity;
+            var name = dynamicActivity.Name ?? activity.DisplayName;
+            int lastIndexOfDot = name.LastIndexOf('.');
+            int lengthOfName = name.Length;
 
-            string activityName = lastIndexOfDot > 0 ? dynamicActivity.Name.Substring(lastIndexOfDot + 1) : dynamicActivity.Name;
+            string activityName = lastIndexOfDot > 0 ? name.Substring(lastIndexOfDot + 1) : name;
             activityName += "_CompiledExpressionRoot";
-            string activityNamespace = lastIndexOfDot > 0 ? dynamicActivity.Name.Substring(0, lastIndexOfDot) : null;
+            string activityNamespace = lastIndexOfDot > 0 ? name.Substring(0, lastIndexOfDot) : null;
 
             return new TextExpressionCompilerSettings()
             {
-                Activity = (Activity)dynamicActivity,
+                Activity = activity,
                 ActivityName = activityName,
                 ActivityNamespace = activityNamespace,
                 RootNamespace = null,

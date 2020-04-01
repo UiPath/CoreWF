@@ -9,9 +9,11 @@ using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
 using System.Activities.XamlIntegration;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace UiPath.Workflow
 {
@@ -70,5 +72,16 @@ namespace UiPath.Workflow
                 base.VisitIdentifierName(node);
             }
         }
+    }
+    static class ReferencesCache
+    {
+        static readonly ConcurrentDictionary<string, MetadataReference> References = new ConcurrentDictionary<string, MetadataReference>();
+
+        static MetadataReference GetReference(string path) => References.GetOrAdd(path, filePath => MetadataReference.CreateFromFile(filePath));
+
+        public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<string> assemblies) => assemblies.Select(GetReference);
+
+        public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) =>
+            assemblies.Select(a => a.Location).GetMetadataReferences();
     }
 }

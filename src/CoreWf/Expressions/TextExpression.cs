@@ -9,6 +9,7 @@ namespace System.Activities.Expressions
     using System.Reflection;
     using System.Activities.Internals;
     using System.Xaml;
+    using System.Linq;
 
     public static class TextExpression
     {
@@ -37,10 +38,11 @@ namespace System.Activities.Expressions
 
         private static readonly ReadOnlyCollection<AssemblyReference> defaultReferences = new ReadOnlyCollection<AssemblyReference>(new AssemblyReference[]
         {
-            new AssemblyName("mscorlib"),
-            new AssemblyName("System"),
-            new AssemblyName("System.Activities"),
-            new AssemblyName("System.Core")
+            typeof(Activity).Assembly,
+            typeof(IQueryable).Assembly,
+            typeof(Data.ConflictOption).Assembly,
+            typeof(CodeDom.Compiler.GeneratedCodeAttribute).Assembly,
+            typeof(ComponentModel.BrowsableAttribute).Assembly,
         });
 
         public static IList<string> DefaultNamespaces

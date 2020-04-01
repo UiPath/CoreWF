@@ -16,20 +16,20 @@ namespace TestCases.Workflows.WF4Samples
         {
             var consoleOutputWriter = new StringWriter();
             var invoker = new WorkflowInvoker(activity);
-            invoker.Extensions.Add((TextWriter)consoleOutputWriter);
+            invoker.Extensions.Add(consoleOutputWriter);
             invoker.Invoke(inputs ?? new StringDictionary());
             return consoleOutputWriter.ToString();
         }
 
-        internal static Activity GetActivityFromXamlResource(TestXamls xamlName)
+        internal static Activity GetActivityFromXamlResource(TestXamls xamlName, bool compileExpressions)
         {
             var asm = typeof(TestHelper).Assembly;
             var xamlStream = asm.GetManifestResourceStream($"{asm.GetName().Name}.TestXamls.{xamlName}.xaml");
-            return ActivityXamlServices.Load(xamlStream, new ActivityXamlServicesSettings { CompileExpressions = true });
+            return ActivityXamlServices.Load(xamlStream, new ActivityXamlServicesSettings { CompileExpressions = compileExpressions });
         }
     }
 
-    internal enum TestXamls
+    public enum TestXamls
     {
         NonGenericForEach,
         SalaryCalculation,
