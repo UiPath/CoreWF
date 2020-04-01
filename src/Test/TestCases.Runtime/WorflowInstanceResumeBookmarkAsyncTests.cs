@@ -374,7 +374,7 @@ namespace TestCases.Runtime.WorkflowInstanceTest
                 {
                     new TestDelay()
                     {
-                        Duration = TimeSpan.FromMilliseconds(1)
+                        Duration = TimeSpan.FromMilliseconds(10)
                     },
                 }
             };
