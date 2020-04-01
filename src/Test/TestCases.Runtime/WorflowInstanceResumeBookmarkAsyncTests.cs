@@ -366,19 +366,15 @@ namespace TestCases.Runtime.WorkflowInstanceTest
         }
 
         [Fact]
-        public static void TestResumeCompletedWorkflow()
+        public static void TestResumeWithDelay()
         {
             var testSequence = new TestSequence()
             {
                 Activities =
                 {
-                    new TestWriteLine()
-                    {
-                        Message = "Workflow Started"
-                    },
                     new TestDelay()
                     {
-                        Duration = TimeSpan.FromMilliseconds(10)
+                        Duration = TimeSpan.FromMilliseconds(1)
                     },
                 }
             };
