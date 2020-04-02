@@ -364,5 +364,28 @@ namespace TestCases.Runtime.WorkflowInstanceTest
             workflowRuntime.ResumeBookMark("PersistBookmark", "Yes");
             workflowRuntime.WaitForCompletion(false);
         }
+
+        [Fact]
+        public static void TestResumeWithDelay()
+        {
+            var testSequence = new TestSequence()
+            {
+                Activities =
+                {
+                    new TestDelay()
+                    {
+                        Duration = TimeSpan.FromMilliseconds(100)
+                    },
+                }
+            };
+            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            TestWorkflowRuntime workflowRuntime = TestRuntime.CreateTestWorkflowRuntime(testSequence, null, jsonStore, PersistableIdleAction.Unload);
+            workflowRuntime.ExecuteWorkflow();
+            workflowRuntime.PersistWorkflow();
+            workflowRuntime.WaitForUnloaded();
+            workflowRuntime.LoadWorkflow();
+            workflowRuntime.ResumeWorkflow();
+            workflowRuntime.WaitForCompletion(false);
+        }
     }
 }

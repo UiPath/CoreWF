@@ -73,7 +73,7 @@ namespace System.Activities.Statements
                 {
                     _sortedTimerList.Remove(bookmark);
                     //expirationTimeData.IOThreadTimer.Cancel();
-                    expirationTimeData.DelayTimer.Cancel();
+                    expirationTimeData.DelayTimer?.Cancel();
                 }
             }
             else
