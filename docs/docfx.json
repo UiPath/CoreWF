@@ -3,15 +3,18 @@
     {
       "src": [
         {
+          "src": "../src",
           "files": [
-            "CoreWf/bin/Debug/netcoreapp3.1/System.Activities.dll"
-          ],
-          "src": "../src"
+            "CoreWf/bin/Debug/netcoreapp3.1/System.Activities.dll",
+            "CoreWf.EtwTracking/bin/Debug/netcoreapp3.1/System.Activities.EtwTracking.dll",
+            "UiPath.Workflow/bin/Debug/netcoreapp3.1/UiPath.Workflow.dll"
+          ]
         }
       ],
       "dest": "api",
       "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "disableDefaultFilter": false,
+      "filter": "filterConfig.yml"
     }
   ],
   "build": {
@@ -53,7 +56,8 @@
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default"
+      "default",
+      "docfx-tmpl"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",

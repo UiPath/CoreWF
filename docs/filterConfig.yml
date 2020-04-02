@@ -1,0 +1,4 @@
+apiRules:
+    - exclude:
+        uidRegex: \`([5-9]|1\d)$
+        type: Type
