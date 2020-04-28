@@ -16,10 +16,5 @@ using System.Windows.Markup;
 [assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
 [assembly: XmlnsCompatibleWith("clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities", "http://schemas.microsoft.com/netfx/2009/xaml/activities")]
 
-[assembly: InternalsVisibleTo("UiPath.Workflow")]
-#if NET45
-
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "System.Activities.Debugger.Symbol")]
 [assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "sads")]
-
-#endif
