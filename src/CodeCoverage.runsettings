@@ -17,9 +17,9 @@ Included items must then not match any entries in the exclude list to remain inc
             <!-- Match assembly file paths: -->
             <ModulePaths>
               <Include>
-                <ModulePath>.*System\.Activities\.dll$</ModulePath>
-                <ModulePath>.*UiPath\.Workflow\.dll$</ModulePath>
-                <ModulePath>.*System\.Xaml\.dll$</ModulePath>
+                <ModulePath>.*\\netcoreapp2\.1\\System\.Activities\.dll$</ModulePath>
+                <ModulePath>.*\\netcoreapp2\.1\\UiPath\.Workflow\.dll$</ModulePath>
+                <ModulePath>.*\\netcoreapp2\.1\\System\.Xaml\.dll$</ModulePath>
               </Include>
               <!-- <Exclude>
                 <ModulePath>.*System\.Xaml.*</ModulePath>
