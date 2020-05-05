@@ -28,4 +28,7 @@
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
     </ItemGroup>
   </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)" />
+  </Target>
 </Project>
