@@ -162,7 +162,7 @@ namespace TestCases.Xaml.Common.InstanceCreator
             {
                 return new FlowStep();
             }
-            if (type.IsAbstract)
+            if (type.IsAbstract || type.IsSubclassOf(typeof(Delegate)))
             {
                 return null;
             }

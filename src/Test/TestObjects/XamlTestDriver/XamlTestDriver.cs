@@ -1,6 +1,7 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Shouldly;
 using System;
 using System.Activities.Statements;
 using System.Collections;
@@ -331,7 +332,10 @@ namespace TestObjects.XamlTestDriver
                 string fileName = Path.Combine(Path.GetTempPath(), $"XamlRoundtrip_{Guid.NewGuid().ToString()}.xaml");
                 //Log.TraceInternal("Saving xaml to {0}.", fileName);
                 //Log.TraceInternal("For official lab runs, the file will also be available on the file tab.");
-                File.WriteAllText(fileName, GetStringFromMemoryStream(xamlStream));
+                var xamlString = GetStringFromMemoryStream(xamlStream);
+                xamlString.ShouldNotContain("System.Activities");
+                xamlString.ShouldNotContain("UiPath.Workflow");
+                File.WriteAllText(fileName, xamlString);
 
                 xamlStream.Position = 0;
                 using (XmlReader reader = XmlReader.Create(xamlStream))

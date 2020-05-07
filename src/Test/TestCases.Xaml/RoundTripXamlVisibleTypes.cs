@@ -1,6 +1,8 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Microsoft.CSharp.Activities;
+using Microsoft.VisualBasic.Activities;
 using Shouldly;
 using System;
 using System.Activities;
@@ -22,6 +24,12 @@ namespace TestCases.Xaml
             get
             {
                 return new object[][] {
+                    new object[] { typeof(VisualBasicSettings) },
+                    new object[] { typeof(VisualBasicReference<int>) },
+                    new object[] { typeof(VisualBasicValue<int>) },
+                    new object[] { typeof(CSharpReference<int>) },
+                    new object[] { typeof(CSharpValue<int>) },
+                    new object[] { typeof(ActivityBuilder) },
                     new object[] { typeof(Add<int, int, int>) },
                     new object[] { typeof(And<bool, bool, bool>) },
                     new object[] { typeof(ArrayItemReference<int>) },
