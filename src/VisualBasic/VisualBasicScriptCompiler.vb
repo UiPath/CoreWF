@@ -2,11 +2,13 @@
 ' The .NET Foundation licenses this file to you under the MIT license.
 ' See the LICENSE file in the project root for more information.
 
+Imports System.Collections.Immutable
 Imports System.Reflection
 Imports System.Threading
 Imports Microsoft.CodeAnalysis.Scripting
 Imports Microsoft.CodeAnalysis.Text
 Imports Microsoft.CodeAnalysis.VisualBasic
+Imports Microsoft.CodeAnalysis.PooledObjects
 
 Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
 
@@ -16,7 +18,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
         Public Shared ReadOnly Instance As ScriptCompiler = New VisualBasicScriptCompiler()
 
         Private Shared ReadOnly s_defaultOptions As VisualBasicParseOptions = New VisualBasicParseOptions(kind:=SourceCodeKind.Script, languageVersion:=LanguageVersion.Latest)
-        Private Shared ReadOnly s_vbRuntimeReference As MetadataReference = MetadataReference.CreateFromAssemblyInternal(GetType(CompilerServices.NewLateBinding).GetTypeInfo().Assembly)
+        'Private Shared ReadOnly s_vbRuntimeReference As MetadataReference = MetadataReference.CreateFromAssemblyInternal(GetType(CompilerServices.NewLateBinding).GetTypeInfo().Assembly)
 
         Private Sub New()
         End Sub
@@ -54,7 +56,8 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
             End If
 
             Dim diagnostics = DiagnosticBag.GetInstance()
-            Dim references = script.GetReferencesForCompilation(MessageProvider.Instance, diagnostics, s_vbRuntimeReference)
+            'Dim references = script.GetReferencesForCompilation(MessageProvider.Instance, diagnostics, s_vbRuntimeReference)
+            Dim references = GetReferencesForCompilation(MessageProvider.Instance, diagnostics, script)
 
             '  TODO report Diagnostics
             diagnostics.Free()
@@ -96,6 +99,35 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
                 script.GlobalsType)
 
             Return submission
+        End Function
+        ''' <summary>
+        ''' Gets the references that need to be assigned to the compilation.
+        ''' This can be different than the list of references defined by the <see cref="T:Microsoft.CodeAnalysis.Scripting.ScriptOptions" /> instance.
+        ''' </summary>
+        Friend Function GetReferencesForCompilation(ByVal messageProvider As CommonMessageProvider, ByVal diagnostics As DiagnosticBag, ByVal script As Script) As ImmutableArray(Of MetadataReference)
+            Dim metadataReferences As ImmutableArray(Of MetadataReference)
+            Dim metadataResolver As MetadataReferenceResolver = script.Options.MetadataResolver
+            Dim instance As ArrayBuilder(Of MetadataReference) = ArrayBuilder(Of MetadataReference).GetInstance()
+            Try
+                metadataReferences = script.Options.MetadataReferences
+                For Each metadataReference In metadataReferences
+                    Dim unresolvedMetadataReference As UnresolvedMetadataReference = TryCast(metadataReference, UnresolvedMetadataReference)
+                    If (unresolvedMetadataReference Is Nothing) Then
+                        instance.Add(metadataReference)
+                    Else
+                        Dim immutableArray As ImmutableArray(Of PortableExecutableReference) = metadataResolver.ResolveReference(unresolvedMetadataReference.Reference, Nothing, unresolvedMetadataReference.Properties)
+                        If (Not immutableArray.IsDefault) Then
+                            instance.AddRange(immutableArray)
+                        Else
+                            diagnostics.Add(messageProvider.CreateDiagnostic(messageProvider.ERR_MetadataFileNotFound, Location.None, New Object() {unresolvedMetadataReference.Reference}))
+                        End If
+                    End If
+                Next
+                metadataReferences = instance.ToImmutable()
+            Finally
+                instance.Free()
+            End Try
+            Return metadataReferences
         End Function
     End Class
 

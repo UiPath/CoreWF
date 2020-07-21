@@ -15,13 +15,15 @@ using System.Linq.Expressions;
 
 namespace UiPath.Workflow
 {
-    class VbJustInTimeCompiler : JustInTimeCompiler
+    public class VbJustInTimeCompiler : JustInTimeCompiler
     {
+        protected virtual ScriptOptions AddOptions(ScriptOptions options) => options;
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
                 .AddReferences(expressionToCompile.ReferencedAssemblies)
                 .AddImports(expressionToCompile.ImportedNamespaces);
+            options = AddOptions(options);
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.ExpressionString}", options);
             var identifiers = IdentifiersWalker.GetIdentifiers(untypedExpressionScript);
             var resolvedIdentifiers =

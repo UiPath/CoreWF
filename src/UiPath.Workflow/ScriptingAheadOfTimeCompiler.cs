@@ -10,10 +10,10 @@ using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 
 namespace UiPath.Workflow
 {
-    abstract class ScriptingAheadOfTimeCompiler : AheadOfTimeCompiler
+    public abstract class ScriptingAheadOfTimeCompiler : AheadOfTimeCompiler
     {
         protected abstract Script<object> Create(string code, ScriptOptions options);
-        public sealed override TextExpressionCompilerResults Compile(ClassToCompile classToCompile)
+        public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile)
         {
             var results = new TextExpressionCompilerResults();
             var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.References).WithImports(classToCompile.Imports);
@@ -47,11 +47,11 @@ namespace UiPath.Workflow
                 }));
         }
     }
-    class CSharpAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
+    public class CSharpAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
     {
         protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
     }
-    class VbAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
+    public class VbAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
     {
         protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create(code, options);
     }

@@ -2400,8 +2400,8 @@ namespace System.Activities.XamlIntegration
 
                     continue;
                 }
-
-                if (assemblyReference.Assembly.CodeBase == null)
+                var codeBase = assemblyReference.Assembly.CodeBase;
+                if (codeBase == null)
                 {
                     TextExpressionCompilerError warning = new TextExpressionCompilerError();
                     warning.IsWarning = true;
@@ -2411,11 +2411,9 @@ namespace System.Activities.XamlIntegration
 
                     continue;
                 }
-
-                string fileName = new Uri(assemblyReference.Assembly.CodeBase).LocalPath;
+                var fileName = Uri.TryCreate(codeBase, UriKind.Absolute, out var uri) ? uri.LocalPath : codeBase;
                 compilerParameters.ReferencedAssemblies.Add(fileName);
             }
-
             return compilerParameters;
         }
         

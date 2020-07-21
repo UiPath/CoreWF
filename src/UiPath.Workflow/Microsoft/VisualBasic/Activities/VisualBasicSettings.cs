@@ -23,7 +23,7 @@ namespace Microsoft.VisualBasic.Activities
         static readonly HashSet<VisualBasicImportReference> defaultImportReferences = new HashSet<VisualBasicImportReference>()
         {
             //"mscorlib"
-            new VisualBasicImportReference { Import = "System", Assembly = "mscorlib" },
+            new VisualBasicImportReference { Import = "System", Assembly = typeof(object).Assembly.FullName },
             new VisualBasicImportReference { Import = "System.Collections", Assembly = "mscorlib" },
             new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = "mscorlib" },
             //"system"
@@ -33,6 +33,8 @@ namespace Microsoft.VisualBasic.Activities
             new VisualBasicImportReference { Import = "System.Activities", Assembly = "System.Activities" },
             new VisualBasicImportReference { Import = "System.Activities.Statements", Assembly = "System.Activities" },
             new VisualBasicImportReference { Import = "System.Activities.Expressions", Assembly = "System.Activities" },
+            // Microsoft.VisualBasic
+            new VisualBasicImportReference { Import = "Microsoft.VisualBasic", Assembly = typeof(CompilerServices.Conversions).Assembly.FullName },
         };
 
         static VisualBasicSettings defaultSettings = new VisualBasicSettings(defaultImportReferences);
