@@ -9,11 +9,9 @@ using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
 using System.Activities.XamlIntegration;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace UiPath.Workflow
 {
@@ -73,15 +71,21 @@ namespace UiPath.Workflow
             }
         }
     }
-    static class ReferencesCache
-    {
-        static readonly ConcurrentDictionary<string, MetadataReference> References = new ConcurrentDictionary<string, MetadataReference>();
-
-        static MetadataReference GetReference(string path) => References.GetOrAdd(path, filePath => MetadataReference.CreateFromFile(filePath));
-
-        public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<string> assemblies) => assemblies.Select(GetReference);
-
-        public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) =>
-            assemblies.Select(a => a.Location).GetMetadataReferences();
-    }
+    //static class References
+    //{
+    //    unsafe static MetadataReference GetReference(Assembly assembly)
+    //    {
+    //        if (!assembly.TryGetRawMetadata(out var blob, out var length))
+    //        {
+    //            throw new NotSupportedException();
+    //        }
+    //        var moduleMetadata = ModuleMetadata.CreateFromMetadata((IntPtr)blob, length);
+    //        var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+    //        return assemblyMetadata.GetReference();
+    //    }
+    //    public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<string> assemblies) => 
+    //        assemblies.Select(Assembly.Load).GetMetadataReferences();
+    //    public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) =>
+    //        assemblies.Select(GetReference);
+    //}
 }
