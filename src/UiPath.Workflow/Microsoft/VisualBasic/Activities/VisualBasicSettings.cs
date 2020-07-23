@@ -24,11 +24,11 @@ namespace Microsoft.VisualBasic.Activities
         {
             //"mscorlib"
             new VisualBasicImportReference { Import = "System", Assembly = typeof(object).Assembly.FullName },
-            new VisualBasicImportReference { Import = "System.Collections", Assembly = "mscorlib" },
+            new VisualBasicImportReference { Import = "System.Collections", Assembly = "netstandard" },
             new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = "mscorlib" },
             //"system"
             new VisualBasicImportReference { Import = "System", Assembly = "system" },
-            new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = "system" },
+            new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = typeof(HashSet<>).Assembly.FullName },
             //"System.Activities"
             new VisualBasicImportReference { Import = "System.Activities", Assembly = "System.Activities" },
             new VisualBasicImportReference { Import = "System.Activities.Statements", Assembly = "System.Activities" },

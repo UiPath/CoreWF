@@ -16,7 +16,7 @@ namespace System.Activities
             ReferencedAssemblies = referencedAssemblies;
             ImportedNamespaces = importedNamespaces;
         }
-        public IReadOnlyCollection<Assembly> ReferencedAssemblies { get; }
+        public IReadOnlyCollection<Assembly> ReferencedAssemblies { get; set; }
         public IReadOnlyCollection<string> ImportedNamespaces { get; }
         public string ExpressionString { get; }
         public Func<string, Type> VariableTypeGetter { get; set; }

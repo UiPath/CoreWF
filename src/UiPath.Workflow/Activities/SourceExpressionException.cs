@@ -1,22 +1,21 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.Internals;
+using System.Activities.Runtime;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Runtime.Serialization;
+using System.Security;
+using System.Activities.XamlIntegration;
+using System.Linq;
+
 namespace System.Activities.ExpressionParser
 {
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
-    using System;
-    using System.CodeDom.Compiler;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Runtime.Serialization;
-    using System.Security;
-    using System.Security.Permissions;
-
     [Serializable]
     public class SourceExpressionException : Exception, ISerializable
     {
-        CompilerError[] errors;
+        TextExpressionCompilerError[] errors;
 
         public SourceExpressionException()
             : base(SR.CompilerError)
@@ -33,11 +32,10 @@ namespace System.Activities.ExpressionParser
         {
         }
 
-        public SourceExpressionException(string message, CompilerErrorCollection errors)
+        public SourceExpressionException(string message, IReadOnlyCollection<TextExpressionCompilerError> errors)
             : base(message)
         {
-            this.errors = new CompilerError[errors.Count];
-            errors.CopyTo(this.errors, 0);
+            this.errors = errors.ToArray();
         }
 
         protected SourceExpressionException(SerializationInfo info, StreamingContext context)
@@ -48,28 +46,23 @@ namespace System.Activities.ExpressionParser
                 throw FxTrace.Exception.ArgumentNull(nameof(info));
             }
             int length = info.GetInt32("count");
-            this.errors = new CompilerError[length];
+            errors = new TextExpressionCompilerError[length];
             for (int i = 0; i < length; ++i)
             {
+                var error = new TextExpressionCompilerError();
                 string index = i.ToString(CultureInfo.InvariantCulture);
-                string fileName = info.GetString("file" + index);
-                int line = info.GetInt32("line" + index);
-                int column = info.GetInt32("column" + index);
-                string errorNumber = info.GetString("number" + index);
-                string errorText = info.GetString("text" + index);
-                this.errors[i] = new CompilerError(fileName, line, column, errorNumber, errorText);
+                error.SourceLineNumber = info.GetInt32("line" + index);
+                error.Number = info.GetString("number" + index);
+                error.Message = info.GetString("text" + index);
+                errors[i] = error;
             }
         }
 
-        public IEnumerable<CompilerError> Errors
+        public IEnumerable<TextExpressionCompilerError> Errors
         {
             get
             {
-                if (this.errors == null)
-                {
-                    this.errors = new CompilerError[0];
-                }
-                return this.errors;
+                return errors ?? (errors = new TextExpressionCompilerError[0]);
             }
         }
 
@@ -90,13 +83,11 @@ namespace System.Activities.ExpressionParser
                 info.AddValue("count", this.errors.Length);
                 for (int i = 0; i < this.errors.Length; ++i)
                 {
-                    CompilerError error = this.errors[i];
+                    var error = this.errors[i];
                     string index = i.ToString(CultureInfo.InvariantCulture);
-                    info.AddValue("file" + index, error.FileName);
-                    info.AddValue("line" + index, error.Line);
-                    info.AddValue("column" + index, error.Column);
-                    info.AddValue("number" + index, error.ErrorNumber);
-                    info.AddValue("text" + index, error.ErrorText);
+                    info.AddValue("line" + index, error.SourceLineNumber);
+                    info.AddValue("number" + index, error.Number);
+                    info.AddValue("text" + index, error.Message);
                 }
             }
             base.GetObjectData(info, context);

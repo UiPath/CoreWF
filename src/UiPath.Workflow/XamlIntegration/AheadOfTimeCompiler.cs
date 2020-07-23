@@ -19,7 +19,7 @@ namespace System.Activities.XamlIntegration
             Imports = imports;
         }
         public string Code { get; }
-        public IReadOnlyCollection<string> References { get; }
+        public IReadOnlyCollection<string> References { get; set; }
         public IReadOnlyCollection<string> Imports { get; }
         public string ClassName { get; }
     }

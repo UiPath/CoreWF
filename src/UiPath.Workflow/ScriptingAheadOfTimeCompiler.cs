@@ -15,9 +15,20 @@ namespace UiPath.Workflow
         protected abstract Script<object> Create(string code, ScriptOptions options);
         public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile)
         {
-            var results = new TextExpressionCompilerResults();
             var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.References).WithImports(classToCompile.Imports);
-            var compilation = Create(classToCompile.Code, scriptOptions).GetCompilation();
+            var script = Create(classToCompile.Code, scriptOptions);
+            var results = Compile(script);
+            if (results.HasErrors())
+            {
+                return results;
+            }
+            results.ResultType = results.ResultType.GetNestedType(classToCompile.ClassName);
+            return results;
+        }
+        internal static TextExpressionCompilerResults Compile(Script script)
+        {
+            var results = new TextExpressionCompilerResults();
+            var compilation = script.GetCompilation();
             var diagnostics = compilation.GetDiagnostics();
             AddDiagnostics(diagnostics);
             if (results.HasErrors())
@@ -35,7 +46,7 @@ namespace UiPath.Workflow
                 }
                 scriptAssemblyBytes = stream.ToArray();
             }
-            results.ResultType = Assembly.Load(scriptAssemblyBytes).GetType(compilation.ScriptClass.Name).GetNestedType(classToCompile.ClassName);
+            results.ResultType = Assembly.Load(scriptAssemblyBytes).GetType(compilation.ScriptClass.Name);
             return results;
             void AddDiagnostics(IEnumerable<Diagnostic> diagnosticsToAdd) =>
                 results.AddMessages(diagnosticsToAdd.Select(diagnostic => new TextExpressionCompilerError

@@ -8,7 +8,6 @@ using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
-using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -38,18 +37,15 @@ namespace UiPath.Workflow
                 .Select(var => var.Type)
                 .Concat(new[] { expressionToCompile.LambdaReturnType ?? typeof(object) })
                 .Select(VisualBasicObjectFormatter.FormatTypeName));
-            var typedExpressionScript = 
+            var typedExpressionScript =
                 VisualBasicScript
-                .Create($"Dim resultExpression As Expression(Of Func(Of {types})) = Function({names}) ({expressionToCompile.ExpressionString})", options)
-                .ContinueWith("? resultExpression", options);
-            try
+                .Create($"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.ExpressionString})\nEnd Function", options);
+            var results = ScriptingAheadOfTimeCompiler.Compile(typedExpressionScript);
+            if (results.HasErrors())
             {
-                return (LambdaExpression)typedExpressionScript.RunAsync().GetResult().ReturnValue;
+                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.ExpressionString, results), results.CompilerMessages));
             }
-            catch (CompilationErrorException ex)
-            {
-                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.ExpressionString, ex.ToString())));
-            }
+            return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
         }
         class IdentifiersWalker : VisualBasicSyntaxWalker
         {

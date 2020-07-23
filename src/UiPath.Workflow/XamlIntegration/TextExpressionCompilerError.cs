@@ -35,5 +35,6 @@ namespace System.Activities.XamlIntegration
             get;
             internal set;
         }
+        public override string ToString() => Message;
     }
 }
