@@ -164,6 +164,7 @@ namespace Microsoft.VisualBasic.Activities
 
         void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
         {
+            namespaceImportsNames.Add("System");
             namespaceImportsNames.Add("System.Linq.Expressions");
             namespaceImportsNames.Remove("");
             namespaceImportsNames.Remove(null);
@@ -351,7 +352,7 @@ namespace Microsoft.VisualBasic.Activities
                 {
                     try
                     {
-                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable));
+                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, typeof(object)));
                     }
                     catch(Exception e)
                     {
@@ -382,17 +383,16 @@ namespace Microsoft.VisualBasic.Activities
                 // we return null which eventually evaluates to default(TResult) at execution time.
                 return null;
             }
-
             // add the pre-rewrite lambda to RawTreeCache
             AddToRawTreeCache(rawTreeKey, rawTreeHolder, lambda);
 
-            finalBody = Rewrite(lambda.Body, null, false, out abort);
+            finalBody = Rewrite(((UnaryExpression)lambda.Body).Operand, null, false, out abort);
             Fx.Assert(abort == false, "this non-shortcut Rewrite must always return abort == false");
 
-            return Expression.Lambda(lambda.Type, finalBody, lambda.Parameters);
+            return Expression.Lambda(finalBody, lambda.Parameters);
         }
 
-        ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType = null) => 
+        ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType) => 
             new ExpressionToCompile(TextToCompile, referencedAssemblies, namespaceImports)
             {
                 VariableTypeGetter = variableTypeGetter,

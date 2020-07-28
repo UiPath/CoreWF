@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.VisualBasic.Activities;
 using Shouldly;
 using Xunit;
 
@@ -167,6 +168,14 @@ namespace TestCases.Workflows
     public class JustInTimeXamlTests : XamlTestsBase
     {
         protected override bool CompileExpressions => false;
+        [Fact]
+        public void Should_infer_type()
+        {
+            var empty = Array.Empty<string>();
+            var text = "\"test\"";
+            var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
+            ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
+        }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
     {

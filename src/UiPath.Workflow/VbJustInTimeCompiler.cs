@@ -35,7 +35,7 @@ namespace UiPath.Workflow
             var types = string.Join(Comma,
                 resolvedIdentifiers
                 .Select(var => var.Type)
-                .Concat(new[] { expressionToCompile.LambdaReturnType ?? typeof(object) })
+                .Concat(new[] { expressionToCompile.LambdaReturnType })
                 .Select(VisualBasicObjectFormatter.FormatTypeName));
             var typedExpressionScript =
                 VisualBasicScript

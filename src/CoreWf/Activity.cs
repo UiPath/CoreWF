@@ -484,7 +484,7 @@ namespace System.Activities
             }
         }
 
-        internal LocationReferenceEnvironment PublicEnvironment
+        public LocationReferenceEnvironment PublicEnvironment
         {
             get;
             set;
