@@ -175,6 +175,8 @@ namespace TestCases.Workflows
             var text = "\"test\"";
             var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
             ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
+            value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
+            ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase

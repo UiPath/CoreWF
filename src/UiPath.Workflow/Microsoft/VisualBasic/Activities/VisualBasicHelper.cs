@@ -384,9 +384,10 @@ namespace Microsoft.VisualBasic.Activities
                 return null;
             }
             // add the pre-rewrite lambda to RawTreeCache
-            AddToRawTreeCache(rawTreeKey, rawTreeHolder, lambda);
+            var typedLambda = Expression.Lambda(((UnaryExpression)lambda.Body).Operand, lambda.Parameters);
+            AddToRawTreeCache(rawTreeKey, rawTreeHolder, typedLambda);
 
-            finalBody = Rewrite(((UnaryExpression)lambda.Body).Operand, null, false, out abort);
+            finalBody = Rewrite(typedLambda.Body, null, false, out abort);
             Fx.Assert(abort == false, "this non-shortcut Rewrite must always return abort == false");
 
             return Expression.Lambda(finalBody, lambda.Parameters);
