@@ -484,6 +484,7 @@ namespace System.Activities
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public LocationReferenceEnvironment PublicEnvironment
         {
             get;
