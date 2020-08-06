@@ -26,7 +26,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting
         End Function
 
         Public Function FormatType(type As Type) As String
-            Return TypeNameFormatter.FormatTypeName(type, New CommonTypeNameFormatterOptions(arrayBoundRadix:=0, showNamespaces:=True)).Replace("[]", "()")
+            Return TypeNameFormatter.FormatTypeName(type, New CommonTypeNameFormatterOptions(arrayBoundRadix:=0, showNamespaces:=True))
         End Function
     End Class
 
