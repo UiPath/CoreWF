@@ -77,13 +77,7 @@ namespace System.Activities.Validation
         public string Id
         {
             get;
-            internal set;
-        }
-
-        public void ResetObjects()
-        {
-            Source = null;
-            SourceDetail = null;
+            set;
         }
 
         public Activity Source
@@ -92,7 +86,7 @@ namespace System.Activities.Validation
             {
                 return this.source;
             }
-            internal set
+            set
             {
                 this.source = value;
                 if (this.source != null && this.SourceDetail == null)
@@ -105,7 +99,7 @@ namespace System.Activities.Validation
         public object SourceDetail
         {
             get;
-            internal set;
+            set;
         }
         
         public override string ToString()
