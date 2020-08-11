@@ -80,6 +80,12 @@ namespace System.Activities.Validation
             internal set;
         }
 
+        public void ResetObjects()
+        {
+            Source = null;
+            SourceDetail = null;
+        }
+
         public Activity Source
         {
             get
