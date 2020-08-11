@@ -22,5 +22,6 @@ namespace System.Activities.XamlIntegration
         public IReadOnlyCollection<string> References { get; set; }
         public IReadOnlyCollection<string> Imports { get; }
         public string ClassName { get; }
+        public override string ToString() => Code;
     }
 }

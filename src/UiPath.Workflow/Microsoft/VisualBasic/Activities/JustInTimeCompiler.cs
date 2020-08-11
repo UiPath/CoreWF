@@ -21,5 +21,6 @@ namespace System.Activities
         public string ExpressionString { get; }
         public Func<string, Type> VariableTypeGetter { get; set; }
         public Type LambdaReturnType { get; set; }
+        public override string ToString() => ExpressionString;
     }
 }
