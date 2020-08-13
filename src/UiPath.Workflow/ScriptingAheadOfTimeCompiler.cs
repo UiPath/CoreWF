@@ -15,7 +15,7 @@ namespace UiPath.Workflow
         protected abstract Script<object> Create(string code, ScriptOptions options);
         public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile)
         {
-            var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.References).WithImports(classToCompile.Imports);
+            var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.ReferencedAssemblies).WithImports(classToCompile.ImportedNamespaces);
             var script = Create(classToCompile.Code, scriptOptions);
             var results = Compile(script);
             if (results.HasErrors())

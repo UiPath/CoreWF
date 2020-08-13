@@ -23,7 +23,7 @@ namespace UiPath.Workflow
                 .AddReferences(expressionToCompile.ReferencedAssemblies)
                 .AddImports(expressionToCompile.ImportedNamespaces);
             options = AddOptions(options);
-            var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.ExpressionString}", options);
+            var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
             var identifiers = IdentifiersWalker.GetIdentifiers(untypedExpressionScript);
             var resolvedIdentifiers =
                 identifiers
@@ -39,11 +39,11 @@ namespace UiPath.Workflow
                 .Select(VisualBasicObjectFormatter.FormatTypeName));
             var typedExpressionScript =
                 VisualBasicScript
-                .Create($"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.ExpressionString})\nEnd Function", options);
+                .Create($"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.Code})\nEnd Function", options);
             var results = ScriptingAheadOfTimeCompiler.Compile(typedExpressionScript);
             if (results.HasErrors())
             {
-                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.ExpressionString, results), results.CompilerMessages));
+                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.Code, results), results.CompilerMessages));
             }
             return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
         }
