@@ -2345,8 +2345,7 @@ namespace System.Activities.XamlIntegration
         TextExpressionCompilerResults CompileInMemory()
         {
             var messages = new List<TextExpressionCompilerError>();
-            var compilerParameters = GetCompilerParameters(messages);
-            var references = compilerParameters.GetReferences();
+            var references = GetReferences(messages);
             var code = compileUnit.GetCode(settings.Language);
             var imports = compileUnit.GetImports();
             var classToCompile = new ClassToCompile(settings.ActivityName, code, references, imports);
@@ -2355,66 +2354,39 @@ namespace System.Activities.XamlIntegration
             return result;
         }
 
-        [Fx.Tag.SecurityNote(Critical = "Critical because we are using the CompilerParameters class, which has a link demand for Full Trust.",
-            Safe = "Safe because we are demanding FullTrust")]
-        [SecuritySafeCritical]
-        ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        CompilerParameters GetCompilerParameters(IList<TextExpressionCompilerError> messages)
+        List<Assembly> GetReferences(IList<TextExpressionCompilerError> messages)
         {
-            CompilerParameters compilerParameters = new CompilerParameters();
-            compilerParameters.GenerateExecutable = false;
-            compilerParameters.GenerateInMemory = false;
             List<AssemblyReference> assemblies;
             if (IsVB)
             {
-                if (!string.IsNullOrWhiteSpace(this.settings.RootNamespace))
-                {
-                    compilerParameters.CompilerOptions = string.Concat("/rootnamespace:", this.settings.RootNamespace);
-                }
                 VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
             }
             else
             {
-                assemblies = this.settings.ForImplementation ?
-                    new List<AssemblyReference>(TextExpression.GetReferencesForImplementation(this.settings.Activity)) :
-                    new List<AssemblyReference>(TextExpression.GetReferences(this.settings.Activity));
+                assemblies = settings.ForImplementation ?
+                    new List<AssemblyReference>(TextExpression.GetReferencesForImplementation(settings.Activity)) :
+                    new List<AssemblyReference>(TextExpression.GetReferences(settings.Activity));
                 assemblies.AddRange(TextExpression.DefaultReferences);
             }
-
+            var references = new List<Assembly>();
             foreach (AssemblyReference assemblyReference in assemblies)
             {
                 if (assemblyReference == null)
                 {
                     continue;
                 }
-
                 assemblyReference.LoadAssembly();
-
                 if (assemblyReference.Assembly == null)
                 {
                     TextExpressionCompilerError warning = new TextExpressionCompilerError();
                     warning.IsWarning = true;
                     warning.Message = SR.TextExpressionCompilerUnableToLoadAssembly(assemblyReference.AssemblyName);
-
                     messages.Add(warning);
-
                     continue;
                 }
-                var codeBase = assemblyReference.Assembly.CodeBase;
-                if (codeBase == null)
-                {
-                    TextExpressionCompilerError warning = new TextExpressionCompilerError();
-                    warning.IsWarning = true;
-                    warning.Message = SR.TextExpressionCompilerNoCodebase(assemblyReference.AssemblyName);
-
-                    messages.Add(warning);
-
-                    continue;
-                }
-                var fileName = Uri.TryCreate(codeBase, UriKind.Absolute, out var uri) ? uri.LocalPath : codeBase;
-                compilerParameters.ReferencedAssemblies.Add(fileName);
+                references.Add(assemblyReference.Assembly);
             }
-            return compilerParameters;
+            return references;
         }
         
         void AlignText(Activity activity, ref string expressionText, out CodeLinePragma pragma)

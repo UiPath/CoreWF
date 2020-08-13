@@ -1,6 +1,4 @@
-﻿using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 
 namespace System.Activities.XamlIntegration
@@ -11,7 +9,7 @@ namespace System.Activities.XamlIntegration
     }
     public class ClassToCompile
     {
-        public ClassToCompile(string className, string code, IReadOnlyCollection<string> references, IReadOnlyCollection<string> imports)
+        public ClassToCompile(string className, string code, IReadOnlyCollection<Assembly> references, IReadOnlyCollection<string> imports)
         {
             ClassName = className;
             Code = code;
@@ -19,7 +17,7 @@ namespace System.Activities.XamlIntegration
             Imports = imports;
         }
         public string Code { get; }
-        public IReadOnlyCollection<string> References { get; set; }
+        public IReadOnlyCollection<Assembly> References { get; set; }
         public IReadOnlyCollection<string> Imports { get; }
         public string ClassName { get; }
         public override string ToString() => Code;
