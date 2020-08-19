@@ -334,7 +334,7 @@ namespace System.Activities
             return new Location<T>();
         }
 
-        internal interface IExpressionWrapper
+        public interface IExpressionWrapper
         {
             ActivityWithResult InnerExpression { get; }
         }
