@@ -11,6 +11,8 @@ using System.Activities.Internals;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Reflection.Metadata;
 
 namespace UiPath.Workflow
 {
@@ -20,7 +22,7 @@ namespace UiPath.Workflow
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
-                .AddReferences(expressionToCompile.ReferencedAssemblies)
+                .AddReferences(expressionToCompile.ReferencedAssemblies.GetMetadataReferences())
                 .AddImports(expressionToCompile.ImportedNamespaces);
             options = AddOptions(options);
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
@@ -69,21 +71,23 @@ namespace UiPath.Workflow
             }
         }
     }
-    //static class References
-    //{
-    //    unsafe static MetadataReference GetReference(Assembly assembly)
-    //    {
-    //        if (!assembly.TryGetRawMetadata(out var blob, out var length))
-    //        {
-    //            throw new NotSupportedException();
-    //        }
-    //        var moduleMetadata = ModuleMetadata.CreateFromMetadata((IntPtr)blob, length);
-    //        var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
-    //        return assemblyMetadata.GetReference();
-    //    }
-    //    public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<string> assemblies) => 
-    //        assemblies.Select(Assembly.Load).GetMetadataReferences();
-    //    public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) =>
-    //        assemblies.Select(GetReference);
-    //}
+    static class References
+    {
+        unsafe static MetadataReference GetReference(Assembly assembly)
+        {
+#if NETCOREAPP
+            if (!assembly.TryGetRawMetadata(out var blob, out var length))
+            {
+                throw new NotSupportedException();
+            }
+            var moduleMetadata = ModuleMetadata.CreateFromMetadata((IntPtr)blob, length);
+            var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+            return assemblyMetadata.GetReference();
+#else
+            return MetadataReference.CreateFromFile(assembly.Location);
+#endif
+        }
+        public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) =>
+            assemblies.Select(GetReference);
+    }
 }
