@@ -276,7 +276,7 @@ namespace System.Activities.XamlIntegration
             var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, aotCompiler));
             var results = compiler.Compile();
 
-            if (results.HasErrors())
+            if (results.HasErrors)
             {
                 var messages = new StringBuilder();
                 messages.Append("\r\n");

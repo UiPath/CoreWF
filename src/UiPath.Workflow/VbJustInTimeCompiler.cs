@@ -43,7 +43,7 @@ namespace UiPath.Workflow
                 VisualBasicScript
                 .Create($"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.Code})\nEnd Function", options);
             var results = ScriptingAheadOfTimeCompiler.Compile(typedExpressionScript);
-            if (results.HasErrors())
+            if (results.HasErrors)
             {
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.Code, results), results.CompilerMessages));
             }

@@ -18,7 +18,7 @@ namespace UiPath.Workflow
             var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.ReferencedAssemblies.GetMetadataReferences()).WithImports(classToCompile.ImportedNamespaces);
             var script = Create(classToCompile.Code, scriptOptions);
             var results = Compile(script);
-            if (results.HasErrors())
+            if (results.HasErrors)
             {
                 return results;
             }
@@ -31,7 +31,7 @@ namespace UiPath.Workflow
             var compilation = script.GetCompilation();
             var diagnostics = compilation.GetDiagnostics();
             AddDiagnostics(diagnostics);
-            if (results.HasErrors())
+            if (results.HasErrors)
             {
                 return results;
             }
