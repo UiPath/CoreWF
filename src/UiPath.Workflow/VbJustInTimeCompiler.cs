@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
@@ -26,7 +27,9 @@ namespace UiPath.Workflow
                 .AddImports(expressionToCompile.ImportedNamespaces);
             options = AddOptions(options);
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
-            var identifiers = IdentifiersWalker.GetIdentifiers(untypedExpressionScript);
+            var compilation = untypedExpressionScript.GetCompilation();
+            var syntaxTree = compilation.SyntaxTrees.First();
+            var identifiers = IdentifiersWalker.GetIdentifiers(compilation, syntaxTree);
             var resolvedIdentifiers =
                 identifiers
                 .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name)))
@@ -39,10 +42,9 @@ namespace UiPath.Workflow
                 .Select(var => var.Type)
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
                 .Select(VisualBasicObjectFormatter.FormatTypeName));
-            var typedExpressionScript =
-                VisualBasicScript
-                .Create($"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.Code})\nEnd Function", options);
-            var results = ScriptingAheadOfTimeCompiler.Compile(typedExpressionScript);
+            var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
+                $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.Code})\nEnd Function")));
+            var results = ScriptingAheadOfTimeCompiler.Compile(finalCompilation);
             if (results.HasErrors)
             {
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.Code, results), results.CompilerMessages));
@@ -54,10 +56,8 @@ namespace UiPath.Workflow
             private readonly HashSet<string> _identifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             public SemanticModel SemanticModel { get; }
             private IdentifiersWalker(SemanticModel semanticModel) => SemanticModel = semanticModel;
-            public static string[] GetIdentifiers(Script script)
+            public static string[] GetIdentifiers(Compilation compilation, SyntaxTree syntaxTree)
             {
-                var compilation = script.GetCompilation();
-                var syntaxTree = compilation.SyntaxTrees.First();
                 var semanticModel = compilation.GetSemanticModel(syntaxTree);
                 var root = syntaxTree.GetRoot();
                 var walker = new IdentifiersWalker(semanticModel);

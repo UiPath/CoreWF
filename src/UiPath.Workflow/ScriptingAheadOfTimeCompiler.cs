@@ -17,7 +17,7 @@ namespace UiPath.Workflow
         {
             var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.ReferencedAssemblies.GetMetadataReferences()).WithImports(classToCompile.ImportedNamespaces);
             var script = Create(classToCompile.Code, scriptOptions);
-            var results = Compile(script);
+            var results = Compile(script.GetCompilation());
             if (results.HasErrors)
             {
                 return results;
@@ -25,10 +25,9 @@ namespace UiPath.Workflow
             results.ResultType = results.ResultType.GetNestedType(classToCompile.ClassName);
             return results;
         }
-        internal static TextExpressionCompilerResults Compile(Script script)
+        internal static TextExpressionCompilerResults Compile(Compilation compilation)
         {
             var results = new TextExpressionCompilerResults();
-            var compilation = script.GetCompilation();
             var diagnostics = compilation.GetDiagnostics();
             AddDiagnostics(diagnostics);
             if (results.HasErrors)
