@@ -44,7 +44,7 @@ namespace UiPath.Workflow
                 .Select(VisualBasicObjectFormatter.FormatTypeName));
             var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
                 $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.Code})\nEnd Function")));
-            var results = ScriptingAheadOfTimeCompiler.Compile(finalCompilation);
+            var results = ScriptingAheadOfTimeCompiler.BuildAssembly(finalCompilation);
             if (results.HasErrors)
             {
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.Code, results), results.CompilerMessages));
