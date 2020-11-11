@@ -3,6 +3,7 @@
     <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Page Remove="**\*.xaml" />
     <EmbeddedResource Include="TestXamls\*.xaml" />
   </ItemGroup>
 </Project>

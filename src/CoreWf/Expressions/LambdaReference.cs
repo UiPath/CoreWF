@@ -5,7 +5,6 @@ namespace System.Activities.Expressions
 {
     using System;
     using System.Activities.XamlIntegration;
-    using System.Diagnostics;
     using System.Linq.Expressions;
     using System.Windows.Markup;
     using System.Activities.Runtime;
@@ -17,7 +16,7 @@ namespace System.Activities.Expressions
 
     // consciously not XAML-friendly since Linq Expressions aren't create-set-use
     [Fx.Tag.XamlVisible(false)]
-    [DebuggerStepThrough]
+    [System.Diagnostics.DebuggerStepThrough]
     public sealed class LambdaReference<T> : CodeActivity<Location<T>>, IExpressionContainer, IValueSerializableExpression
     {
         private readonly Expression<Func<ActivityContext, T>> locationExpression;

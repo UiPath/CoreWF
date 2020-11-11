@@ -35,11 +35,6 @@ namespace System.Activities.Expressions
 
         public CompiledExpressionInvoker(ITextExpression expression, bool isReference, CodeActivityMetadata metadata)
         {
-            if (metadata == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(metadata));
-            }
-
             this.expressionId = -1;
             this.textExpression = expression ?? throw FxTrace.Exception.ArgumentNull(nameof(expression));
             this.expressionActivity = expression as Activity;
