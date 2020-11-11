@@ -341,15 +341,15 @@ namespace System.Xaml.Schema
                     // Throwing MissingMethodException for equivalence with Activator.CreateInstance
                     throw new MissingMethodException(SR.Get(SRID.NoDefaultConstructor, underlyingType.FullName));
                 }
-                if ((tConstInfo.IsSecurityCritical && !tConstInfo.IsSecuritySafeCritical) ||
-                    (tConstInfo.Attributes & MethodAttributes.HasSecurity) == MethodAttributes.HasSecurity ||
-                    (underlyingType.Attributes & TypeAttributes.HasSecurity) == TypeAttributes.HasSecurity)
-                {
-                    // We don't want to bypass security checks for a critical or demanding ctor,
-                    // so just treat it as if it were non-public
-                    type._isPublic = ThreeValuedBool.False;
-                    return false;
-                }
+                //if ((tConstInfo.IsSecurityCritical && !tConstInfo.IsSecuritySafeCritical) ||
+                //    (tConstInfo.Attributes & MethodAttributes.HasSecurity) == MethodAttributes.HasSecurity ||
+                //    (underlyingType.Attributes & TypeAttributes.HasSecurity) == TypeAttributes.HasSecurity)
+                //{
+                //    // We don't want to bypass security checks for a critical or demanding ctor,
+                //    // so just treat it as if it were non-public
+                //    type._isPublic = ThreeValuedBool.False;
+                //    return false;
+                //}
                 IntPtr constPtr = tConstInfo.MethodHandle.GetFunctionPointer();
                 // This requires Reflection Permission
                 Action<object> ctorDelegate = ctorDelegate =
