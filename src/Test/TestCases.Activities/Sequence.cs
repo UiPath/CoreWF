@@ -95,7 +95,7 @@ namespace TestCases.Activities
             catch (ArgumentException exc)
             {
                 if (!exc.StackTrace.Contains("DisplayName"))
-                    throw exc;
+                    throw;
             }
 
             try
@@ -105,7 +105,7 @@ namespace TestCases.Activities
             catch (ArgumentException exc)
             {
                 if (!exc.StackTrace.Contains("DisplayName"))
-                    throw exc;
+                    throw;
             }
         }
 

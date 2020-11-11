@@ -485,16 +485,6 @@ namespace TestObjects.XamlObjectComparer
                     || memberName == "IsGenericTypeDefinition"
                     || memberName == "DeclaringMethod");
         }
-
-        // <summary>
-        // Compare two clr properties.
-        // </summary>
-        // <returns>
-        // true, if they are the same
-        // false, otherwise
-        // </returns>
-        //Justification: Safe to assert permission because it does not call our produce code from the using statement and code inspection
-        [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Assert, Name = "FullTrust")]
         private static bool CompareClrProperty(
                 object owner1,
                 PropertyDescriptor property1,
