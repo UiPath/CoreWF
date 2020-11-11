@@ -5,7 +5,6 @@ namespace Microsoft.VisualBasic.Activities
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Activities;
     using System.Activities.Expressions;
     using System.Activities.ExpressionParser;
@@ -16,7 +15,7 @@ namespace Microsoft.VisualBasic.Activities
     using System.Activities.Runtime;
     using System.Activities.Internals;
 
-    [DebuggerStepThrough]
+    [System.Diagnostics.DebuggerStepThrough]
     public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSerializableExpression, IExpressionContainer, ITextExpression
     {
         Expression<Func<ActivityContext, TResult>> expressionTree;

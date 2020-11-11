@@ -13,7 +13,8 @@
 		<Compile Remove="UnitTestApp.*" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Remove="MainTestPage.*" />
+    <Page Remove="**\*.xaml" />
+    <None Remove="MainTestPage.*" />
 		<None Remove="UnitTestApp.*" />
 		<None Remove="*.appxmanifest" />
 		<None Update="XmlFiles\*.*" CopyToOutputDirectory="PreserveNewest" />

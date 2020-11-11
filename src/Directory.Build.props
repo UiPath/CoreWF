@@ -2,11 +2,9 @@
   <PropertyGroup>
     <Version>1.0.0</Version>
     <WarningsAsErrors>true</WarningsAsErrors>
-    <IsNetCoreApp>$(TargetFramework.StartsWith("netcoreapp"))</IsNetCoreApp>
-    <NetCoreVersionString Condition="$(IsNetCoreApp)">$(TargetFramework.Substring(10))</NetCoreVersionString>
-    <NetCoreVersion Condition="$(IsNetCoreApp)">$([System.Double]::Parse($(NetCoreVersionString)))</NetCoreVersion>
+    <UseWPF Condition="$(TargetFramework) == 'net5.0-windows'">true</UseWPF>
   </PropertyGroup>
-  <ItemGroup Condition="(!$(IsNetCoreApp) Or $(NetCoreVersion) &lt; 3.0) And $(AssemblyName) != 'System.Xaml'">
+  <ItemGroup Condition="$(AssemblyName) != 'System.Xaml' AND $(TargetFramework) != 'net5.0-windows'">
     <ProjectReference Include="$(SolutionDir)\System.Xaml\System.Xaml.csproj" PrivateAssets="All" />
   </ItemGroup>
 </Project>

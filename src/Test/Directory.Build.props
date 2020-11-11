@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
   </PropertyGroup>
   <Import Project="$(SolutionDir)Directory.Build.props" />
   <ItemGroup>
