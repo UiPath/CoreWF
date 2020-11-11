@@ -75,7 +75,6 @@ namespace UiPath.Workflow
     {
         unsafe static MetadataReference GetReference(Assembly assembly)
         {
-#if NETCOREAPP
             if (!assembly.TryGetRawMetadata(out var blob, out var length))
             {
                 throw new NotSupportedException();
@@ -83,9 +82,6 @@ namespace UiPath.Workflow
             var moduleMetadata = ModuleMetadata.CreateFromMetadata((IntPtr)blob, length);
             var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
             return assemblyMetadata.GetReference();
-#else
-            return MetadataReference.CreateFromFile(assembly.Location);
-#endif
         }
         public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) =>
             assemblies.Select(GetReference);
