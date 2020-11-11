@@ -13,11 +13,11 @@
 		<Compile Remove="UnitTestApp.*" />
 	</ItemGroup>
 	<ItemGroup>
-    <Page Remove="**\*.xaml" />
-    <None Remove="MainTestPage.*" />
+		<None Remove="MainTestPage.*" />
 		<None Remove="UnitTestApp.*" />
 		<None Remove="*.appxmanifest" />
-		<None Update="XmlFiles\*.*" CopyToOutputDirectory="PreserveNewest" />
+		<Page Remove="**\*.xaml" />
+		<None Include="XmlFiles\*.*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="NUnit" Version="3.12.0" />
