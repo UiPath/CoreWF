@@ -2354,7 +2354,7 @@ namespace System.Activities.XamlIntegration
             return result;
         }
 
-        List<Assembly> GetReferences(IList<TextExpressionCompilerError> messages)
+        HashSet<Assembly> GetReferences(IList<TextExpressionCompilerError> messages)
         {
             List<AssemblyReference> assemblies;
             if (IsVB)
@@ -2368,7 +2368,7 @@ namespace System.Activities.XamlIntegration
                     new List<AssemblyReference>(TextExpression.GetReferences(settings.Activity));
                 assemblies.AddRange(TextExpression.DefaultReferences);
             }
-            var references = new List<Assembly>();
+            var references = new HashSet<Assembly>();
             foreach (AssemblyReference assemblyReference in assemblies)
             {
                 if (assemblyReference == null)

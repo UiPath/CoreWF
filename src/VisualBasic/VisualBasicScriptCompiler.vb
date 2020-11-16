@@ -92,6 +92,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
                     xmlReferenceResolver:=Nothing, ' don't support XML file references in interactive (permissions & doc comment includes)
                     sourceReferenceResolver:=SourceFileResolver.Default,
                     metadataReferenceResolver:=script.Options.MetadataResolver,
+                    concurrentBuild:=False,
                     assemblyIdentityComparer:=DesktopAssemblyIdentityComparer.Default).
                     WithIgnoreCorLibraryDuplicatedTypes(True),
                 previousSubmission,
