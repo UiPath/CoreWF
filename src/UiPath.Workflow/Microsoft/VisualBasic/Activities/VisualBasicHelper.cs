@@ -8,23 +8,16 @@ namespace Microsoft.VisualBasic.Activities
     using System.Activities.ExpressionParser;
     using System.Activities.Expressions;
     using System.CodeDom;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
-    using System.IO;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Activities.Runtime;
     using System.Runtime.Collections;
-    using System.Text;
     using System.Threading;
-    //using Microsoft.Compiler.VisualBasic;
     using System.Collections.ObjectModel;
-    //using Microsoft.VisualBasic.CompilerServices;
+    using Microsoft.VisualBasic.CompilerServices;
     using System.Security;
-    using System.Security.Permissions;
     using System.Activities.Internals;
 
     class VisualBasicHelper
@@ -44,7 +37,7 @@ namespace Microsoft.VisualBasic.Activities
                 typeof(int).Assembly, // mscorlib
                 typeof(CodeTypeDeclaration).Assembly, // System
                 typeof(Expression).Assembly,             // System.Core
-                Assembly.Load("Microsoft.VisualBasic"),
+                typeof(Conversions).Assembly, //Microsoft.VisualBasic.Core
                 typeof(Activity).Assembly  // System.Activities
             };
 
