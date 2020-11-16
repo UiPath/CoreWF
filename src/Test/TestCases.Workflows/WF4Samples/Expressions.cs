@@ -47,7 +47,7 @@ Iterate ArrayList
         }
     }
 
-    public class JustTimeExpressions : ExpressionsBase
+    public class JustInTimeExpressions : ExpressionsBase
     {
         protected override bool CompileExpressions => false;
     }
