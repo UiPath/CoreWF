@@ -18,7 +18,7 @@ namespace System.Activities
             {
                 if (_resourceManager == null)
                 {
-                    _resourceManager = new ResourceManager("System.Activities.Resources", typeof(SR).GetTypeInfo().Assembly);
+                    _resourceManager = new ResourceManager("System.Activities.Resources.SR", typeof(SR).Assembly);
                 }
                 return _resourceManager;
             }
