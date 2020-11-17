@@ -19,13 +19,12 @@ namespace UiPath.Workflow
 {
     public class VbJustInTimeCompiler : JustInTimeCompiler
     {
-        private readonly MetadataReference[] _metadataReferences;
-        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) =>
-            _metadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
+        protected MetadataReference[] MetadataReferences { get; set; }
+        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
-                .AddReferences(_metadataReferences)
+                .AddReferences(MetadataReferences)
                 .AddImports(expressionToCompile.ImportedNamespaces);
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
             var compilation = untypedExpressionScript.GetCompilation();
