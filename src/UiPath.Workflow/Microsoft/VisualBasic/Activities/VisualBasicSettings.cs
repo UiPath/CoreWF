@@ -11,6 +11,7 @@ using System.Xaml;
 using System.ComponentModel;
 using System.Activities.Internals;
 using UiPath.Workflow;
+using System.Reflection;
 
 namespace Microsoft.VisualBasic.Activities
 {
@@ -67,7 +68,7 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public Func<JustInTimeCompiler> CompilerFactory { get; set; } = () => new VbJustInTimeCompiler();
+        public Func<HashSet<Assembly>, JustInTimeCompiler> CompilerFactory { get; set; } = references => new VbJustInTimeCompiler(references);
 
         internal bool SuppressXamlSerialization 
         { 
@@ -75,7 +76,7 @@ namespace Microsoft.VisualBasic.Activities
             set; 
         }
 
-        internal static JustInTimeCompiler CreateCompiler() => Default.CompilerFactory();
+        internal static JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => Default.CompilerFactory(references);
 
         internal void GenerateXamlReferences(IValueSerializerContext context)
         {

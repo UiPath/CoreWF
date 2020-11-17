@@ -126,7 +126,7 @@ namespace Microsoft.VisualBasic.Activities
                     }                    
                 }
 
-                hcompilerWrapper = new HostedCompilerWrapper(VisualBasicSettings.CreateCompiler());
+                hcompilerWrapper = new HostedCompilerWrapper(VisualBasicSettings.CreateCompiler(assemblySet));
                 HostedCompilerCache[assemblySet] = hcompilerWrapper;
                 hcompilerWrapper.Reserve(unchecked(++VisualBasicHelper.lastTimestamp));
 
@@ -387,7 +387,7 @@ namespace Microsoft.VisualBasic.Activities
         }
 
         ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType) => 
-            new ExpressionToCompile(TextToCompile, referencedAssemblies, namespaceImports)
+            new ExpressionToCompile(TextToCompile, namespaceImports)
             {
                 VariableTypeGetter = variableTypeGetter,
                 LambdaReturnType = lambdaReturnType,

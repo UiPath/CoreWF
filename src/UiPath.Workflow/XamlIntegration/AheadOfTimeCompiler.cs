@@ -10,7 +10,12 @@ namespace System.Activities.XamlIntegration
     public class ClassToCompile : CompilerInput
     {
         public ClassToCompile(string className, string code, IReadOnlyCollection<Assembly> referencedAssemblies, IReadOnlyCollection<string> importedNamespaces) :
-            base(code, referencedAssemblies, importedNamespaces) => ClassName = className;
+            base(code, importedNamespaces)
+        {
+            ClassName = className;
+            ReferencedAssemblies = referencedAssemblies;
+        }
         public string ClassName { get; }
+        public IReadOnlyCollection<Assembly> ReferencedAssemblies { get; set; }
     }
 }
