@@ -19,6 +19,7 @@
     <ProjectReference Include="..\VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.8.0" />
+    <PackageReference Include="System.CodeDom" Version="5.0.0" />
   </ItemGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
