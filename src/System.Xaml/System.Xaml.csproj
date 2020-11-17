@@ -5,8 +5,6 @@
     <DefineConstants>$(DefineConstants);SYSTEM_XAML</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
   </ItemGroup>
 </Project>
