@@ -998,7 +998,7 @@ namespace System.Xaml
             }
             else
             {
-                isReferenced = !assembly.ReflectionOnly &&
+                isReferenced = (assembly.IsDynamic || !assembly.ReflectionOnly) &&
                     typeof(object).Assembly.GetType().IsAssignableFrom(assembly.GetType());
             }
 
@@ -1084,7 +1084,7 @@ namespace System.Xaml
         {
             lock (_syncAccessingUnexaminedAssemblies)
             {
-                if (!args.LoadedAssembly.ReflectionOnly && !_unexaminedAssemblies.Contains(args.LoadedAssembly))
+                if ((args.LoadedAssembly.IsDynamic || !args.LoadedAssembly.ReflectionOnly) && !_unexaminedAssemblies.Contains(args.LoadedAssembly))
                 {
                     _unexaminedAssemblies.Add(args.LoadedAssembly);
                     if (args.LoadedAssembly.IsDynamic)
