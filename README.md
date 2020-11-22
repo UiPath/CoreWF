@@ -1,9 +1,9 @@
 [![Build status](https://uipath.visualstudio.com/Core%20WF/_apis/build/status/CI)](https://uipath.visualstudio.com/Core%20WF/_build/latest?definitionId=318)
 [![MyGet (dev)](https://img.shields.io/badge/CoreWf-MyGet-brightgreen.svg)](https://www.myget.org/feed/uipath-dev/package/nuget/UiPath.Workflow)
 # CoreWF
-A port of the Windows Workflow Foundation (WF) runtime to .NET Core. This project is still in the experimental phase. It is [licensed](LICENSE) under the MIT License.
+A port of the Windows Workflow Foundation (WF) runtime to .NET 5. This project is still in the experimental phase. It is [licensed](LICENSE) under the MIT License.
 
-__This is not an official Microsoft release of WF on .NET Core. CoreWF is a derivative work of Microsoft's copyrighted Windows Workflow Foundation.__
+__This is not an official Microsoft release of WF on .NET 5. CoreWF is a derivative work of Microsoft's copyrighted Windows Workflow Foundation.__
 
 ## WF Overview
 Workflows are multi-step processes composed of activities. Activities are single-purpose elements that can be composed of other activities. Workflows have only one root activity in the same way that an XML document has only one root element. 
@@ -52,7 +52,7 @@ WF in the .NET Framework includes a visual, drag-and-drop designer for workflows
 The designer experience is not part of CoreWF but the XAML produced by the designer can be run in CoreWF (with some limitations). The WF designer experience is available in Visual Studio 2019 by enabling the "Windows Workflow Foundation" individual component in the Visual Studio Installer.
 
 ## Target Frameworks
-CoreWF targets .NET Core 3.1 and .NET Standard 2.0. The .NET Core 3.1 target is meant for Windows runtimes as it uses the [Microsoft.WindowsDesktop.App.WPF](https://www.nuget.org/packages/Microsoft.WindowsDesktop.App.Ref) framework extension to access **System.Xaml**. To use CoreWF on non-Windows runtimes, use the .NET Standard 2.0 target. This is possible because CoreWF includes a copy of the **System.Xaml** code.
+CoreWF targets .NET 5 and .NET 5 Windows. The .NET Windows target uses the **System.Xaml** included in the .NET Desktop Runtime. To use CoreWF on non-Windows runtimes, use the portable .NET 5 target. This is possible because CoreWF includes a copy of the **System.Xaml** code.
 
 ## Usage
 To add this library to your project, use the [NuGet package](https://www.myget.org/feed/uipath-dev/package/nuget/UiPath.Workflow).
