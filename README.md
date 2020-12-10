@@ -55,7 +55,7 @@ The designer experience is not part of CoreWF but the XAML produced by the desig
 CoreWF targets .NET 5 and .NET 5 Windows. The .NET Windows target uses the **System.Xaml** included in the .NET Desktop Runtime. To use CoreWF on non-Windows runtimes, use the portable .NET 5 target. This is possible because CoreWF includes a copy of the **System.Xaml** code.
 
 ## Usage
-To add this library to your project, use the [NuGet package](https://www.myget.org/feed/uipath-dev/package/nuget/UiPath.Workflow).
+To add this library to your project, use the [MyGet package](https://www.myget.org/feed/uipath-dev/package/nuget/UiPath.Workflow).
 
 ## Contributing
 Check out the [contributing guide](CONTRIBUTING.md) for information on how to help CoreWF.
