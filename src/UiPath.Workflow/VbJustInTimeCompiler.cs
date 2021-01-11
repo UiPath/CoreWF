@@ -26,6 +26,7 @@ namespace UiPath.Workflow
             var options = ScriptOptions.Default
                 .AddReferences(MetadataReferences)
                 .AddImports(expressionToCompile.ImportedNamespaces);
+            options = AddOptions(options);
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
             var compilation = untypedExpressionScript.GetCompilation();
             var syntaxTree = compilation.SyntaxTrees.First();
@@ -51,6 +52,7 @@ namespace UiPath.Workflow
             }
             return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
         }
+        public virtual ScriptOptions AddOptions(ScriptOptions options) => options;
         class IdentifiersWalker : VisualBasicSyntaxWalker
         {
             private readonly HashSet<string> _identifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
