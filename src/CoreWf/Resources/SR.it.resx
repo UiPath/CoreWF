@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' è un riferimento a variabile ambiguo. Per gli identificatori di VisualBasic non viene fatta distinzione tra maiuscole e minuscole.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' è un riferimento a variabile ambiguo.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Scaricamento di AppDomain in corso. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>La mappa di aggiornamento non corrisponde alla definizione di flusso di lavoro. Assicurarsi che si tratti della mappa corretta per questa definizione e che la mappa serializzata non sia stata modificata manualmente.]D;]A;    ]D;]A;Dettagli della risoluzione dei problemi: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Il valore della proprietà Settings non è valido. Impostare la proprietà Settings su una stringa vuota o sulla stringa "Riferimenti ad assembly e spazi dei nomi importati serializzati come spazi dei nomi XML".</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Il tipo di variabile '{0}' non corrisponde al tipo di posizione '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree: impossibile recuperare un albero di espressioni perché il testo dell'espressione VisualBasic o l'elemento LocationReferenceEnvironment visibile è stato modificato dal momento in cui è stato memorizzato nella cache. Messaggio di errore di compilazione: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree: impossibile recuperare un albero di espressioni perché il testo dell'espressione o l'elemento LocationReferenceEnvironment visibile è stato modificato dal momento in cui è stato memorizzato nella cache. Messaggio di errore di compilazione: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Un oggetto InstanceHandle può avere solo un'operazione WaitForEvents o BeginWaitForEvents in attesa in corso alla volta. È stata tentata l'esecuzione di una seconda operazione. Chiamare WaitForEvents / BeginWaitForEvents solo al termine dell'operazione precedente.</value>

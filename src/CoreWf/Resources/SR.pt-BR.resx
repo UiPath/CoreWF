@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' é uma referência variável ambígua. Os identificadores VisualBasic diferenciam maiúsculas de minúsculas.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' é uma referência variável ambígua.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain descarregando. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>O mapa de atualização não corresponde à definição de fluxo de trabalho. Verifique se esse é o mapa correto para essa definição e se o mapa serializado não foi alterado manualmente]D;]A;    ]D;]A;Detalhes de resolução de problemas: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>A propriedade Settings tem valor inválido. Defina a propriedade Settings como uma cadeia de caracteres vazia ou como a cadeia de caracteres "Referências de assembly e namespaces importados serializados como namespaces XML".</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>O tipo de variável '{0}' não corresponde ao tipo Location '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Falha do GetExpressionTree ao obter uma árvore de expressões porque o texto da expressão do VisualBasic ou o LocationReferenceEnvironment visível para ele foi alterado desde que foi armazenado em cache. Mensagem de erro de compilação: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Falha do GetExpressionTree ao obter uma árvore de expressões porque o texto da expressão do ou o LocationReferenceEnvironment visível para ele foi alterado desde que foi armazenado em cache. Mensagem de erro de compilação: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Um InstanceHandle pode ter no máximo uma operação WaitForEvents ou BeginWaitForEvents pendente em andamento por vez. Foi feita uma tentativa de uma segunda operação. Chame apenas WaitForEvents / BeginWaitForEvents assim que a operação anterior tiver sido concluída.</value>

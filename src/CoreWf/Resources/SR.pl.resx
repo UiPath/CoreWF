@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>{0} jest niejednoznacznym odwołaniem do zmiennej. W przypadku identyfikatorów języka VisualBasic jest rozróżniana wielkość liter.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>{0} jest niejednoznacznym odwołaniem do zmiennej.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Zwalnianie obiektu AppDomain. AppDomain.FriendlyName: {0}; ProcessName: {1}; ProcessId: {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Mapa aktualizacji nie pasuje do definicji przepływu pracy. Upewnij się, że jest to poprawna mapa dla tej definicji i że zserializowana mapa nie została ręcznie zmieniona.]D;]A; ]D;]A;Szczegóły dotyczące rozwiązywania problemów: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Właściwość Settings ma nieprawidłową wartość. Ustaw dla właściwości Settings wartość będącą ciągiem pustym lub ciągiem „Odwołania do zestawów i importowane przestrzenie nazw serializowane jako przestrzenie nazw XML”.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Typ zmiennej {0} jest niezgodny z typem lokalizacji {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Metoda GetExpressionTree nie może pobrać drzewa wyrażeń, ponieważ tekst wyrażenia języka VisualBasic lub widoczna dla niego zmienna LocationReferenceEnvironment została zmieniona po umieszczeniu go w pamięci podręcznej. Komunikat o błędzie kompilacji: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Metoda GetExpressionTree nie może pobrać drzewa wyrażeń, ponieważ tekst wyrażenia języka lub widoczna dla niego zmienna LocationReferenceEnvironment została zmieniona po umieszczeniu go w pamięci podręcznej. Komunikat o błędzie kompilacji: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>W danej chwili dla obiektu InstanceHandle może trwać tylko jedna oczekująca operacja WaitForEvents lub BeginWaitForEvents. Podjęto próbę wykonania drugiej operacji. Operację WaitForEvents/BeginWaitForEvents można wywołać tylko po ukończeniu poprzedniej operacji.</value>

@@ -4,25 +4,24 @@
 namespace Microsoft.VisualBasic.Activities
 {
     using System;
-    using System.Collections.Generic;
     using System.Activities;
-    using System.Activities.Expressions;
     using System.Activities.ExpressionParser;
-    using System.Activities.XamlIntegration;
+    using System.Activities.Expressions;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
+    using System.ComponentModel;
     using System.Linq.Expressions;
     using System.Windows.Markup;
-    using System.ComponentModel;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
 
     [System.Diagnostics.DebuggerStepThrough]
-    public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResult>>, IValueSerializableExpression, IExpressionContainer, ITextExpression
+    [ContentProperty("ExpressionText")]
+    public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResult>>, IExpressionContainer, ITextExpression
     {
         Expression<Func<ActivityContext, TResult>> expressionTree;
         LocationFactory<TResult> locationFactory;
         CompiledExpressionInvoker invoker;
 
-        public VisualBasicReference() 
+        public VisualBasicReference()
             : base()
         {
             this.UseOldFastPath = true;
@@ -88,18 +87,6 @@ namespace Microsoft.VisualBasic.Activities
             }
         }
 
-        public bool CanConvertToString(IValueSerializerContext context)
-        {
-            // we can always convert to a string 
-            return true;
-        }
-
-        public string ConvertToString(IValueSerializerContext context)
-        {
-            // Return our bracket-escaped text
-            return "[" + this.ExpressionText + "]";
-        }
-
         public Expression GetExpressionTree()
         {
             if (this.IsMetadataCached)
@@ -118,17 +105,17 @@ namespace Microsoft.VisualBasic.Activities
 
                         if (validationError != null)
                         {
-                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VBExpressionTamperedSinceLastCompiled(validationError)));
-                        }            
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(validationError)));
+                        }
                     }
                     finally
                     {
                         metadata.Dispose();
-                    }                    
+                    }
                 }
 
                 Fx.Assert(this.expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
-                return ExpressionUtilities.RewriteNonCompiledExpressionTree((LambdaExpression)this.expressionTree);
+                return ExpressionUtilities.RewriteNonCompiledExpressionTree(expressionTree);
             }
             else
             {
@@ -137,7 +124,7 @@ namespace Microsoft.VisualBasic.Activities
         }
 
         private Expression<Func<ActivityContext, TResult>> CompileLocationExpression(CodeActivityPublicEnvironmentAccessor publicAccessor, out string validationError)
-        {            
+        {
             Expression<Func<ActivityContext, TResult>> expressionTreeToReturn = null;
             validationError = null;
             try

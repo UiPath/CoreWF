@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>يعد '{0}' مرجعًا متغيرًا مبهمًا.  وتعد معرفات VisualBasic حساسة لحالة الأحرف.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>يعد '{0}' مرجعًا متغيرًا مبهمًا.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>إلغاء تحميل AppDomain. AppDomain.FriendlyName {0}، ProcessName {1}، ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>لا تطابق خريطة التحديثات تعريف سير العمل. يرجى التأكد من أن هذا هي الخريطة الصحيحة لهذا التعريف، وأن الخريطة المسلسلة لم يتم تغييرها يدويًا.]D;]A; ]D;]A;تفاصيل استكشاف الأخطاء وإصلاحها: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>لدى الخاصية "إعدادات" قيمة غير صالحة. قم بتحديد الخاصية "إعدادات" إلى سلسلة فارغة أو سلسلة "مراجع تجميع ومساحات أسماء مستوردة ومسلسلة كمساحات أسماء XML".</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>لا يطابق نوع المتغير '{0}' نوع الموقع '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>فشل GetExpressionTree في الحصول على شجرة تعبير نظرًا لتبديل نص تعبير VisualBasic أو LocationReferenceEnvironment المرئي له منذ تم تخزينه مؤقتًا.  رسالة خطأ التحويل  البرمجي هي : {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>فشل GetExpressionTree في الحصول على شجرة تعبير نظرًا لتبديل نص تعبير أو LocationReferenceEnvironment المرئي له منذ تم تخزينه مؤقتًا.  رسالة خطأ التحويل  البرمجي هي : {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>يمكن أن يكون لـ InstanceHandle عملية WaitForEvents أو BeginWaitForEvents واحدة معلقة قيد التقدم على الأكثر في كل مرة. تمت محاولة عملية ثانية. قم باستدعاء WaitForEvents / BeginWaitForEvents بمجرد إكمال العملية السابقة.</value>

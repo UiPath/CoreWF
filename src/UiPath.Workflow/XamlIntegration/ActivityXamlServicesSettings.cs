@@ -49,7 +49,7 @@ namespace System.Activities.XamlIntegration
                 case "C#":
                     return CSharpCompiler ?? new CSharpAheadOfTimeCompiler();
                 case "VB":
-                    return VbCompiler ?? new VbAheadOfTimeCompiler();
+                    return VbCompiler ?? new VisualBasicAheadOfTimeCompiler();
             }
             throw new ArgumentOutOfRangeException(nameof(language), language, "Supported values: C# and VB.");
         }

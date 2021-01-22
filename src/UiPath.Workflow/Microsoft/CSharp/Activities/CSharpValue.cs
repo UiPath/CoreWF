@@ -5,31 +5,30 @@ namespace Microsoft.CSharp.Activities
 {
     using System;
     using System.Activities;
+    using System.Activities.ExpressionParser;
     using System.Activities.Expressions;
-    using System.Activities.Validation;
-    using System.Activities.XamlIntegration;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Linq.Expressions;
-    using System.Reflection;
-    using System.Activities.Runtime;
-    using System.Windows.Markup;
     using System.Activities.Internals;
+    using System.Activities.Runtime;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using System.Windows.Markup;
 
-    [DebuggerStepThrough]
+    [System.Diagnostics.DebuggerStepThrough]
     [ContentProperty("ExpressionText")]
-    public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
+    public sealed class CSharpValue<TResult> : CodeActivity<TResult>, IExpressionContainer, ITextExpression
     {
+        Expression<Func<ActivityContext, TResult>> expressionTree;
+        Func<ActivityContext, TResult> compiledExpression;
         CompiledExpressionInvoker invoker;
-          
+
         public CSharpValue()
+            : base()
         {
             this.UseOldFastPath = true;
         }
 
-        public CSharpValue(string expressionText) :
-            this()
+        public CSharpValue(string expressionText)
+            : this()
         {
             this.ExpressionText = expressionText;
         }
@@ -45,7 +44,7 @@ namespace Microsoft.CSharp.Activities
         {
             get
             {
-                return "C#";
+                return CSharpHelper.Language;
             }
         }
 
@@ -57,21 +56,65 @@ namespace Microsoft.CSharp.Activities
             }
         }
 
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            this.invoker = new CompiledExpressionInvoker(this, false, metadata);
-        }
-
         protected override TResult Execute(CodeActivityContext context)
         {
-            return (TResult)this.invoker.InvokeExpression(context);
+            if (expressionTree == null)
+            {
+                return (TResult)invoker.InvokeExpression(context);
+            }
+            if (compiledExpression == null)
+            {
+                compiledExpression = expressionTree.Compile();
+            }
+            return compiledExpression(context);
+        }
+
+        protected override void CacheMetadata(CodeActivityMetadata metadata)
+        {
+            expressionTree = null;
+            invoker = new CompiledExpressionInvoker(this, false, metadata);
+            if (metadata.Environment.CompileExpressions)
+            {
+                return;
+            }
+            // If ICER is not implemented that means we haven't been compiled
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+            try
+            {
+                expressionTree = CSharpHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
+            }
+            catch (SourceExpressionException e)
+            {
+                metadata.AddValidationError(e.Message);
+            }
         }
 
         public Expression GetExpressionTree()
         {
             if (this.IsMetadataCached)
             {
-                return this.invoker.GetExpressionTree();
+                if (this.expressionTree == null)
+                {
+                    // it's safe to create this CodeActivityMetadata here,
+                    // because we know we are using it only as lookup purpose.
+                    CodeActivityMetadata metadata = new CodeActivityMetadata(this, this.GetParentEnvironment(), false);
+                    CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
+                    try
+                    {
+                        this.expressionTree = CSharpHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
+                    }
+                    catch (SourceExpressionException e)
+                    {
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message)));
+                    }
+                    finally
+                    {
+                        metadata.Dispose();
+                    }
+                }
+
+                Fx.Assert(this.expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
+                return ExpressionUtilities.RewriteNonCompiledExpressionTree(expressionTree);
             }
             else
             {

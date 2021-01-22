@@ -4,25 +4,24 @@
 namespace Microsoft.VisualBasic.Activities
 {
     using System;
-    using System.Collections.Generic;
     using System.Activities;
-    using System.Activities.Expressions;
     using System.Activities.ExpressionParser;
-    using System.Activities.XamlIntegration;
+    using System.Activities.Expressions;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
+    using System.ComponentModel;
     using System.Linq.Expressions;
     using System.Windows.Markup;
-    using System.ComponentModel;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
 
     [System.Diagnostics.DebuggerStepThrough]
-    public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSerializableExpression, IExpressionContainer, ITextExpression
+    [ContentProperty("ExpressionText")]
+    public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IExpressionContainer, ITextExpression
     {
         Expression<Func<ActivityContext, TResult>> expressionTree;
         Func<ActivityContext, TResult> compiledExpression;
-        CompiledExpressionInvoker invoker; 
+        CompiledExpressionInvoker invoker;
 
-        public VisualBasicValue() 
+        public VisualBasicValue()
             : base()
         {
             this.UseOldFastPath = true;
@@ -90,20 +89,8 @@ namespace Microsoft.VisualBasic.Activities
             }
         }
 
-        public bool CanConvertToString(IValueSerializerContext context)
-        {
-            // we can always convert to a string 
-            return true;
-        }
-
-        public string ConvertToString(IValueSerializerContext context)
-        {
-            // Return our bracket-escaped text
-            return "[" + this.ExpressionText + "]";
-        }
-
         public Expression GetExpressionTree()
-        {            
+        {
             if (this.IsMetadataCached)
             {
                 if (this.expressionTree == null)
@@ -113,25 +100,25 @@ namespace Microsoft.VisualBasic.Activities
                     CodeActivityMetadata metadata = new CodeActivityMetadata(this, this.GetParentEnvironment(), false);
                     CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
                     try
-                    {                                                
+                    {
                         this.expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
                     }
                     catch (SourceExpressionException e)
                     {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VBExpressionTamperedSinceLastCompiled(e.Message))); 
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message)));
                     }
                     finally
                     {
                         metadata.Dispose();
-                    }                   
+                    }
                 }
 
                 Fx.Assert(this.expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
-                return ExpressionUtilities.RewriteNonCompiledExpressionTree((LambdaExpression)this.expressionTree);
+                return ExpressionUtilities.RewriteNonCompiledExpressionTree(expressionTree);
             }
             else
             {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached)); 
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
             }
         }
     }

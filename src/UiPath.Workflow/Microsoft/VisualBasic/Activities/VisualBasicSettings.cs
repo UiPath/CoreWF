@@ -1,25 +1,23 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-
-using Microsoft.VisualBasic.Activities.XamlIntegration;
-using System;
-using System.Activities;
-using System.Collections.Generic;
-using System.Activities.Runtime;
-using System.Windows.Markup;
-using System.Xaml;
-using System.ComponentModel;
-using System.Activities.Internals;
-using UiPath.Workflow;
-using System.Reflection;
-
 namespace Microsoft.VisualBasic.Activities
 {
+    using Microsoft.VisualBasic.Activities.XamlIntegration;
+    using System;
+    using System.Activities;
+    using System.Activities.Internals;
+    using System.Activities.Runtime;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Reflection;
+    using System.Windows.Markup;
+    using System.Xaml;
+
     [ValueSerializer(typeof(VisualBasicSettingsValueSerializer))]
     [TypeConverter(typeof(VisualBasicSettingsConverter))]
     public class VisualBasicSettings
     {
-        
+
         static readonly HashSet<VisualBasicImportReference> defaultImportReferences = new HashSet<VisualBasicImportReference>()
         {
             //"mscorlib"
@@ -39,7 +37,7 @@ namespace Microsoft.VisualBasic.Activities
             new VisualBasicImportReference { Import = "Microsoft.VisualBasic", Assembly = typeof(CompilerServices.Conversions).Assembly.FullName },
         };
 
-        static VisualBasicSettings defaultSettings = new VisualBasicSettings(defaultImportReferences);
+        static readonly VisualBasicSettings defaultSettings = new VisualBasicSettings(defaultImportReferences);
 
         public VisualBasicSettings()
         {
@@ -68,12 +66,12 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public Func<HashSet<Assembly>, JustInTimeCompiler> CompilerFactory { get; set; } = references => new VbJustInTimeCompiler(references);
+        public Func<HashSet<Assembly>, JustInTimeCompiler> CompilerFactory { get; set; } = references => new VisualBasicJustInTimeCompiler(references);
 
-        internal bool SuppressXamlSerialization 
-        { 
-            get; 
-            set; 
+        internal bool SuppressXamlSerialization
+        {
+            get;
+            set;
         }
 
         internal static JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => Default.CompilerFactory(references);

@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' belirsiz bir değişken başvurusu. VisualBasic tanımlayıcıları büyük/küçük harfe duyarlı değildir.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' belirsiz bir değişken başvurusu.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain boşaltma. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Güncelleştirme haritası iş akışı tanımıyla eşleşmiyor. Lütfen bunun bu tanım için doğru eşleme olduğundan ve seri hale getirilmiş haritanın el ile değiştirilmediğinden emin olun.]D;]A;    ]D;]A;Sorun giderme ayrıntıları: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Settings özelliğinin değeri geçersiz. Settings özelliğini boş bir dizeye veya "Bütünleştirilmiş kod başvuruları ve XML ad alanları olarak serileştirilen içe aktarılmış ad alanları" dizesine ayarlayın.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>'{0}' değişken türü '{1}' Konum türüyle eşleşmiyor.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree ifade ağacını alamadı, çünkü VisualBasic ifade metni veya ona görünür olan LocationReferenceEnvironment önbelleğe alındıktan sonra değiştirildi.  Derleme hata iletisi: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree ifade ağacını alamadı, çünkü ifade metni veya ona görünür olan LocationReferenceEnvironment önbelleğe alındıktan sonra değiştirildi.  Derleme hata iletisi: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle'ın aynı anda devam eden en fazla bir bekleyen WaitForEvents veya BeginWaitForEvents işlemi olabilir. İkinci bir işlem denendi. WaitForEvents / BeginWaitForEvents çağrısını yalnızca önceki işlem tamamlandığında yapın.</value>

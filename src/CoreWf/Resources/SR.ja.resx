@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' はあいまいな変数参照です。VisualBasic の識別子では大文字と小文字が区別されません。</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' はあいまいな変数参照です。</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain をアンロードしています。AppDomain.FriendlyName {0}、ProcessName {1}、ProcessId {2}。</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>更新マップがワークフロー定義と一致しません。これがこの定義の正しいマップであること、およびシリアル化されたマップが手動で変更されていないことを確認してください。]D;]A;    ]D;]A;トラブルシューティングの詳細: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Settings プロパティの値が無効です。Settings プロパティは、空の文字列または "アセンブリ参照と、XML 名前空間としてシリアル化されるインポートされた名前空間" の文字列のいずれかに設定してください。</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>変数の型 '{0}' は Location 型 '{1}' に一致しません。</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>VisualBasic 式テキストまたはその LocationReferenceEnvironment 変数がキャッシュ後に変更されたため、GetExpressionTree は式ツリーを取得できませんでした。コンパイラ エラー メッセージ: {0}。</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>式テキストまたはその LocationReferenceEnvironment 変数がキャッシュ後に変更されたため、GetExpressionTree は式ツリーを取得できませんでした。コンパイラ エラー メッセージ: {0}。</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle が処理できる WaitForEvents または BeginWaitForEvents 操作は 1 度に 1 つまでです。別の操作が試行されました。前の操作が完了してからのみ、WaitForEvents/BeginWaitForEvents を呼び出してください。</value>

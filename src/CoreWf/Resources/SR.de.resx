@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' ist kein eindeutiger Variablenverweis. Bei VisualBasic-Bezeichnern wird zwischen Groß- und Kleinschreibung unterschieden.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' ist kein eindeutiger Variablenverweis. Bei VisualBasic-Bezeichnern wird zwischen Groß- und Kleinschreibung unterschieden.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain wird entladen. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Die Aktualisierungszuordnung entspricht nicht der Aktivitätsdefinition. Stellen Sie sicher, dass es sich um die richtige Zuordnung für diese Definition handelt und die serialisierte Zuordnung nicht manuell geändert wurde.]D;]A; ]D;]A;Details für die Problembehandlung: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Die Settings-Eigenschaft hat einen ungültigen Wert. Legen Sie die Settings-Eigenschaft entweder auf eine leere Zeichenfolge oder auf die Zeichenfolge "Als XML-Namespaces serialisierte Assemblyverweise und importierte Namespaces" fest.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Der Variablentyp '{0}' entspricht nicht dem Location-Typ '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree konnte keine Ausdrucksstruktur abrufen, da der VisualBasic-Ausdruckstext oder das für die Funktion sichtbare LocationReferenceEnvironment seit dem Zwischenspeichern geändert wurde. Compilerfehlermeldung: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree konnte keine Ausdrucksstruktur abrufen, da der ausdruckstext oder das für die Funktion sichtbare LocationReferenceEnvironment seit dem Zwischenspeichern geändert wurde. Compilerfehlermeldung: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>In einem InstanceHandle darf maximal jeweils ein ausstehender WaitForEvents- oder BeginWaitForEvents-Vorgang ausgeführt werden. Es wurde versucht, einen zweiten Vorgang auszuführen. Rufen Sie nur den WaitForEvents- bzw. den BeginWaitForEvents-Vorgang auf, sobald der vorherige Vorgang abgeschlossen wurde.</value>

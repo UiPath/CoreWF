@@ -1,10 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.VisualBasic;
-using Microsoft.CodeAnalysis.VisualBasic.Scripting;
-using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
@@ -14,20 +13,22 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Text;
+using UiPath.Workflow;
 
-namespace UiPath.Workflow
+namespace Microsoft.CSharp.Activities
 {
-    public class VbJustInTimeCompiler : JustInTimeCompiler
+    public class CSharpJustInTimeCompiler : JustInTimeCompiler
     {
         protected MetadataReference[] MetadataReferences { get; set; }
-        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
+        public CSharpJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
                 .AddReferences(MetadataReferences)
                 .AddImports(expressionToCompile.ImportedNamespaces);
             options = AddOptions(options);
-            var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
+            var untypedExpressionScript = CSharpScript.Create(expressionToCompile.Code, options);
             var compilation = untypedExpressionScript.GetCompilation();
             var syntaxTree = compilation.SyntaxTrees.First();
             var identifiers = IdentifiersWalker.GetIdentifiers(compilation, syntaxTree);
@@ -42,9 +43,9 @@ namespace UiPath.Workflow
                 resolvedIdentifiers
                 .Select(var => var.Type)
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
-                .Select(VisualBasicObjectFormatter.FormatTypeName));
+                .Select(GetFriendlyTypeName));
             var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
-                $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.Code})\nEnd Function")));
+              $"public static Expression<Func<{types}>> CreateExpression(){{ \nreturn ({names}) => {expressionToCompile.Code};\n}}")));
             var results = ScriptingAheadOfTimeCompiler.BuildAssembly(finalCompilation);
             if (results.HasErrors)
             {
@@ -52,8 +53,47 @@ namespace UiPath.Workflow
             }
             return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
         }
+
+        private static string GetFriendlyTypeName(Type type)
+        {
+            var preFormat = "<";
+            var postFormat = ">";
+            if (type == null)
+            {
+                return null;
+            }
+
+            if (type.IsGenericParameter)
+            {
+                return type.Name;
+            }
+
+            if (!type.IsGenericType)
+            {
+                return type.FullName;
+            }
+
+            var builder = new StringBuilder();
+            var name = type.Name;
+            var index = name.IndexOf("`", StringComparison.Ordinal);
+            builder.AppendFormat("{0}.{1}", type.Namespace, name.Substring(0, index));
+            builder.Append(preFormat);
+            var first = true;
+            foreach (var arg in type.GetGenericArguments())
+            {
+                if (!first)
+                {
+                    builder.Append(',');
+                }
+                builder.Append(GetFriendlyTypeName(arg));
+                first = false;
+            }
+            builder.Append(postFormat);
+            return builder.ToString();
+        }
+
         public virtual ScriptOptions AddOptions(ScriptOptions options) => options;
-        class IdentifiersWalker : VisualBasicSyntaxWalker
+        class IdentifiersWalker : CSharpSyntaxWalker
         {
             private readonly HashSet<string> _identifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             public SemanticModel SemanticModel { get; }

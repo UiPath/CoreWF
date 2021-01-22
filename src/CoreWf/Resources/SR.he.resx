@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' הוא הפניה למשתנה רב-משמעי. מזהי VisualBasic אינם תלויי רישיות.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' הוא הפניה למשתנה רב-משמעי.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>ביטול טעינה של AppDomain. AppDomain.FriendlyName {0}‎‏, ‎ProcessName {1}‎‏, ‎ProcessId {2}‎‏.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>מפת העדכון אינה תואמת להגדרה של זרימת העבודה. ודא שזוהי המפה הנכונה עבור הגדרה זו, ושהמפה שנערכה בסידרה לא שונתה ידנית.]D;]A;    ]D;]A;פרטים לפתרון בעיות: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>המאפיין 'הגדרות' מכיל ערך לא חוקי. הגדר את המאפיין 'הגדרות' למחרוזת ריקה או למחרוזת 'הפניות הרכבה ומרחבי שמות מיובאים הערוכים בסדרה כמרחבי שמות XML'.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>סוג המשתנה '{0}' אינו תואם לסוג המיקום '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree נכשל בקבלת עץ ביטויים מאחר שטקסט הביטוי של VisualBasic או ה- LocationReferenceEnvironment הגלוי לו השתנו לאחר שהוא אוחסן במטמון.  הודעת השגיאה של ההידור היא: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree נכשל בקבלת עץ ביטויים מאחר שטקסט הביטוי של או ה- LocationReferenceEnvironment הגלוי לו השתנו לאחר שהוא אוחסן במטמון.  הודעת השגיאה של ההידור היא: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle יכול לכלול לכל היותר פעולת WaitForEvents או BeginWaitForEvents אחת במעקב שמתבצעת ברגע נתון. בוצע ניסיון לבצע פעולה שנייה. קרא ל- WaitForEvents / BeginWaitForEvents רק לאחר שהפעולה הקודמת הושלמה.</value>

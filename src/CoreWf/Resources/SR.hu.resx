@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>A(z) „{0}” nem egyértelmű változó hivatkozás. A VisualBasic-azonosítók megkülönböztetik egymástól a kis- és a nagybetűket.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>A(z) „{0}” nem egyértelmű változó hivatkozás.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Folyamatban van az AppDomain memóriából való eltávolítása. AppDomain.FriendlyName: {0}, ProcessName: {1}, ProcessId: {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>A frissítési leképezés nem felel meg a munkafolyamat-definíciónak. Győződjön meg arról, hogy ez az ehhez a definícióhoz tartozó helyes leképezés, és hogy a szerializált leképezést nem módosították kézzel.]D;]A; ]D;]A;Hibaelhárítási részletek: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>A Settings tulajdonság értéke érvénytelen. A Settings tulajdonságot vagy egy üres karakterláncra, vagy a következő karakterláncra állítsa be: „Assembly references and imported namespaces serialized as XML namespaces” (Szerelvényhivatkozások és XML-névtérként szerializált importált névterek).</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>A(z) „{0}” változótípus nem felel meg a(z) „{1}” helytípusnak.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>A GetExpressionTree metódus nem tudott beolvasni egy kifejezésfát, mert a VisualBasic kifejezésszöveget vagy a metódus számára látható LocationReferenceEnvironment objektumot módosították a gyorsítótárazása óta. A fordítási hibaüzenet: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>A GetExpressionTree metódus nem tudott beolvasni egy kifejezésfát, mert a kifejezésszöveget vagy a metódus számára látható LocationReferenceEnvironment objektumot módosították a gyorsítótárazása óta. A fordítási hibaüzenet: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Egy InstanceHandle objektumhoz egyszerre legfeljebb egy befejezetlen, folyamatban levő WaitForEvents vagy BeginWaitForEvents művelet tartozhat. Megkísérelték egy második művelet végrehajtását. Csak az előző művelet befejeződése után hívja a WaitForEvents/BeginWaitForEvents műveletet.</value>

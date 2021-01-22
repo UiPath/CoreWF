@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' é uma referência de variável ambígua. Os identificadores de VisualBasic não são sensíveis a maiúsculas e minúsculas.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' é uma referência de variável ambígua.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>A descarregar AppDomain. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>O mapa de atualização não corresponde à definição de fluxo de trabalho. Certifique-se de que este é o mapa correto para esta definição e de que o mapa serializado não foi alterado manualmente.]D;]A;    ]D;]A;Detalhes de resolução de problemas: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>A propriedade Settings tem um valor inválido. Defina a propriedade Settings para uma cadeia vazia ou para a cadeia "Referências de assemblagem e espaços de nomes importados serializados como espaços de nomes XML".</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>O tipo Variable '{0}' não corresponde ao tipo Location '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Falha de GetExpressionTree ao obter uma árvore de expressões por o texto da expressão do VisualBasic ou o LocationReferenceEnvironment visível ter sido alterado desde que foi colocado em cache. A mensagem de erro da compilação é: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Falha de GetExpressionTree ao obter uma árvore de expressões por o texto da expressão do ou o LocationReferenceEnvironment visível ter sido alterado desde que foi colocado em cache. A mensagem de erro da compilação é: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Um InstanceHandle pode ter no máximo uma operação WaitForEvents ou BeginWaitForEvents pendente em curso de cada vez. Foi tentada uma segunda operação. Chame WaitForEvents / BeginWaitForEvents apenas quando a operação anterior tiver sido concluída.</value>

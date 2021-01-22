@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}'은(는) 모호한 변수 참조입니다. VisualBasic 식별자는 대/소문자를 구분하지 않습니다.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}'은(는) 모호한 변수 참조입니다.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain을 언로드합니다. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>업데이트 맵이 워크플로 정의와 일치하지 않습니다. 이 정의에 대한 올바른 맵인지, 그리고 직렬화된 맵이 수동으로 변경되지 않았는지 확인하십시오.]D;]A;    ]D;]A;문제 해결 세부 정보: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Settings 속성의 값이 잘못되었습니다. Settings 속성을 빈 문자열 또는 "XML 네임스페이스로 serialization된 가져온 네임스페이스 및 어셈블리 참조" 문자열로 설정하십시오.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>변수 형식 '{0}'이(가) Location 형식 '{1}'과(와) 일치하지 않습니다.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>VisualBasic 식 텍스트 또는 이 텍스트에 표시된 LocationReferenceEnvironment가 캐시된 이후에 변경되어 GetExpressionTree에서 식 트리를 가져오지 못했습니다. 컴파일 오류 메시지: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>식 텍스트 또는 이 텍스트에 표시된 LocationReferenceEnvironment가 캐시된 이후에 변경되어 GetExpressionTree에서 식 트리를 가져오지 못했습니다. 컴파일 오류 메시지: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle에 한번에 처리되지 않은 WaitForEvents 또는 BeginWaitForEvents 작업이 하나 이상 진행 중일 수 있습니다. 두 번째 작업이 시도되었습니다. 이전 작업이 완료되면 WaitForEvents/BeginWaitForEvents를 호출하십시오.</value>

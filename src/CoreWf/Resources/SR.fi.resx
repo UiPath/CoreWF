@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>{0} on moniselitteinen muuttujaviittaus. VisualBasic-tunnisteiden nimissä ei huomioida kirjainkokoa.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>{0} on moniselitteinen muuttujaviittaus.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain poistetaan. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Päivityskartta ei vastaa työnkulun määritystä. Varmista, että tämä on oikea kartta tälle määritykselle ja että sarjoitettua karttaa ei ole muutettu manuaalisesti.]D;]A;    ]D;]A;Vianmääritystiedot: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Settings-ominaisuudella on virheellinen arvo. Määritä Settings-ominaisuudeksi joko tyhjä merkkijono tai merkkijono Assembly references and imported namespaces serialized as XML namespaces.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Muuttujan tyyppi {0} ei vastaa sijaintityyppiä {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree ei saanut lausekepuuta, koska sille näkyvää VisualBasic-lauseketekstiä tai LocationReferenceEnvironment-kohdetta on muutettu sen välimuistiin tallentamisen jälkeen. Kääntämisen virhesanoma: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree ei saanut lausekepuuta, koska sille näkyvää lauseketekstiä tai LocationReferenceEnvironment-kohdetta on muutettu sen välimuistiin tallentamisen jälkeen. Kääntämisen virhesanoma: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle-kohteella voi olla enintään yksi odottava WaitForEvents- tai BeginWaitForEvents-toiminto käynnissä samanaikaisesti. Yritettiin toista toimintoa. Kutsu WaitForEvents- tai BeginWaitForEvents-toimintoa vasta, kun edellinen toiminto on valmis.</value>

@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' est une référence de variable ambiguë. Les identificateurs VisualBasic ne respectent pas la casse.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' est une référence de variable ambiguë.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Déchargement AppDomain. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>La table de mise à jour ne correspond pas à la définition de workflow. Assurez-vous qu'il s'agit de la bonne table et que la table sérialisée n'a pas été modifiée manuellement.]D;]A;    ]D;]A;Détails de résolution : {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>La valeur de la propriété Settings n'est pas valide. Affectez à la propriété Settings une chaîne vide ou la chaîne « Références d'assembly et espaces de noms importés sérialisés en tant qu'espaces de noms XML ».</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Le type de variable '{0}' ne correspond pas au type d'emplacement '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree n'a pas pu obtenir une arborescence d'expression car le texte de l'expression VisualBasic ou le LocationReferenceEnvironment visible a été modifié depuis la dernière mise en cache. Le message d'erreur de compilation est : {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree n'a pas pu obtenir une arborescence d'expression car le texte de l'expression ou le LocationReferenceEnvironment visible a été modifié depuis la dernière mise en cache. Le message d'erreur de compilation est : {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle ne peut prendre en charge qu'une seule opération WaitForEvents ou BeginWaitForEvents en attente exécutée à la fois. Une seconde opération a été tentée. Vous devez attendre la fin de l'opération précédente avant d'appeler WaitForEvents / BeginWaitForEvents.</value>

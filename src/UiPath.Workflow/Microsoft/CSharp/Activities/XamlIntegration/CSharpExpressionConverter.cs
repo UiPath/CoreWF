@@ -1,8 +1,11 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Microsoft.VisualBasic.Activities.XamlIntegration
+namespace Microsoft.CSharp.Activities.XamlIntegration
 {
+    using Microsoft.CSharp.Activities;
+    using Microsoft.VisualBasic.Activities;
+    using Microsoft.VisualBasic.Activities.XamlIntegration;
     using System;
     using System.Activities.Runtime;
     using System.Collections.Generic;
@@ -15,7 +18,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
     using System.Xaml;
     using System.Xml.Linq;
 
-    static class VisualBasicExpressionConverter
+    static class CSharpExpressionConverter
     {
         static readonly Regex assemblyQualifiedNamespaceRegex = new Regex(
             "clr-namespace:(?<namespace>[^;]*);assembly=(?<assembly>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -80,7 +83,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
 
                                     for (int i = 0; i < xsCtxReferenceAssemblies.Count; i++)
                                     {
-                                        AssemblyName xsCtxAssemblyName = VisualBasicHelper.GetFastAssemblyName(xsCtxReferenceAssemblies[i]);
+                                        AssemblyName xsCtxAssemblyName = CSharpHelper.GetFastAssemblyName(xsCtxReferenceAssemblies[i]);
                                         if (importReference.AssemblySatisfiesReference(xsCtxAssemblyName))
                                         {
                                             // bind this assembly early to the importReference
@@ -167,7 +170,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
         ///         XmlnsMappings for dynamic assemblies are not created. This is because the hosted Visual Basic compiler
         ///         does not support dynamic assembly references. Should support for dynamic assembly references be 
         ///         added to the Visual Basic compiler, we should strip away Assembly.IsDynamic checks from this class and
-        ///         update the code ensure that VisualBasicImportReference instances are removed in a timely manner.
+        ///         update the code ensure that CSharpImportReference instances are removed in a timely manner.
         ///         </description></item>
         ///     </list>
         /// </remarks>

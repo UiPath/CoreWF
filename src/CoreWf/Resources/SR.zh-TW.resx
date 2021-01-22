@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' 是不明確的變數參考。VisualBasic 識別碼不區分大小寫。</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' 是不明確的變數參考。</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>正在卸載 AppDomain。AppDomain.FriendlyName {0}、ProcessName {1}、ProcessId {2}。</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>更新對應與工作流程定義不相符。請確定對此定義而言這是正確的對應，以及並未手動變更序列化的對應。]D;]A;    ]D;]A;疑難排解詳細資料: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Settings 屬性的值無效。請將 Settings 屬性設定為空字串或「組件參考和匯入的命名空間已序列化 XML 命名空間」字串。</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>變數型別 '{0}' 不符合位置型別 '{1}'。</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree 無法取得運算式樹狀架構，因為其可見的 VisualBasic 運算式文字或 LocationReferenceEnvironment 自快取以來已經過更改。編譯錯誤訊息為 : {0}。</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree 無法取得運算式樹狀架構，因為其可見的 運算式文字或 LocationReferenceEnvironment 自快取以來已經過更改。編譯錯誤訊息為 : {0}。</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle 一次最多只能進行一個未處理的 WaitForEvents 或 BeginWaitForEvents 作業。第二個作業遭到嘗試執行。僅在上一個作業已完成時才呼叫 WaitForEvents / BeginWaitForEvents。</value>

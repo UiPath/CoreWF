@@ -79,6 +79,7 @@ namespace System.Activities
         internal static string AlreadyBoundToOwner { get { return SR.Instance["AlreadyBoundToOwner"]; } }
         internal static string AlreadySetupNoPersist { get { return SR.Instance["AlreadySetupNoPersist"]; } }
         internal static string AmbiguousVBVariableReference(object p0) { return SR.Instance["AmbiguousVBVariableReference", p0]; }
+        internal static string AmbiguousCSVariableReference(object p0) { return SR.Instance["AmbiguousCSVariableReference", p0]; }
         internal static string ArgumentAlreadyInitialized(object p0, object p1) { return SR.Instance["ArgumentAlreadyInitialized", p0, p1]; }
         internal static string ArgumentAlreadyInUse(object p0, object p1, object p2) { return SR.Instance["ArgumentAlreadyInUse", p0, p1, p2]; }
         internal static string ArgumentDirectionMismatch(object p0, object p1, object p2) { return SR.Instance["ArgumentDirectionMismatch", p0, p1, p2]; }
@@ -438,7 +439,7 @@ namespace System.Activities
         internal static string InvalidUnhandledExceptionAction { get { return SR.Instance["InvalidUnhandledExceptionAction"]; } }
         internal static string InvalidUpdatedWorkflowDefinitionForImplementationMapCreation { get { return SR.Instance["InvalidUpdatedWorkflowDefinitionForImplementationMapCreation"]; } }
         internal static string InvalidUpdateMap(object p0) { return SR.Instance["InvalidUpdateMap", p0]; }
-        internal static string InvalidVisualBasicSettingsValue { get { return SR.Instance["InvalidVisualBasicSettingsValue"]; } }
+        internal static string InvalidSettingsValue { get { return SR.Instance["InvalidSettingsValue"]; } }
         internal static string InvalidXamlMember(object p0) { return SR.Instance["InvalidXamlMember", p0]; }
         internal static string IsolationLevelValidation { get { return SR.Instance["IsolationLevelValidation"]; } }
         internal static string ITextExpressionParameterMustBeActivity { get { return SR.Instance["ITextExpressionParameterMustBeActivity"]; } }
@@ -699,7 +700,7 @@ namespace System.Activities
         internal static string VariableShouldBeOpen(object p0) { return SR.Instance["VariableShouldBeOpen", p0]; }
         internal static string VariableTypeInvalid(object p0, object p1, object p2) { return SR.Instance["VariableTypeInvalid", p0, p1, p2]; }
         internal static string VariableTypeNotMatchLocationType(object p0, object p1) { return SR.Instance["VariableTypeNotMatchLocationType", p0, p1]; }
-        internal static string VBExpressionTamperedSinceLastCompiled(object p0) { return SR.Instance["VBExpressionTamperedSinceLastCompiled", p0]; }
+        internal static string ExpressionTamperedSinceLastCompiled(object p0) { return SR.Instance["ExpressionTamperedSinceLastCompiled", p0]; }
         internal static string WaitAlreadyInProgress { get { return SR.Instance["WaitAlreadyInProgress"]; } }
         internal static string WaitForEventsTimedOut(object p0) { return SR.Instance["WaitForEventsTimedOut", p0]; }
         internal static string WDCDisposed { get { return SR.Instance["WDCDisposed"]; } }

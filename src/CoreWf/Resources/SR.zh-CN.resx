@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>“{0}”是不明确的变量引用。VisualBasic 标识符不区分大小写。</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>“{0}”是不明确的变量引用。</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain 正在卸载。AppDomain.FriendlyName {0}，ProcessName {1}，ProcessId {2}。</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>更新映射与工作流定义不匹配。请确保这是此定义的正确映射并且序列化的映射尚未经手动修改。]D;]A;    ]D;]A;疑难解答详细信息: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Settings 属性的值无效。请将 Settings 属性设置为空字符串或“Assembly references and imported namespaces serialized as XML namespaces”字符串。</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>变量类型“{0}”与 Location 类型“{1}”不匹配。</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree 未能获取表达式树，原因是 VisualBasic 表达式文本或对其可见的 LocationReferenceEnvironment 自缓存后已发生更改。编译错误消息为: {0}。</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree 未能获取表达式树，原因是 表达式文本或对其可见的 LocationReferenceEnvironment 自缓存后已发生更改。编译错误消息为: {0}。</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle 一次最多只能有一个正在进行的未处理 WaitForEvents 或 BeginWaitForEvents 操作。尝试了第二个操作。只能在上一个操作完成后调用 WaitForEvents / BeginWaitForEvents。</value>

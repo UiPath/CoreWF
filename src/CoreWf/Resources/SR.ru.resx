@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>"{0}" является неоднозначной ссылкой на переменную.  Идентификаторы VisualBasic нечувствительны к регистру.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>"{0}" является неоднозначной ссылкой на переменную.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Выгрузка домена приложения. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Указанная карта не соответствует определению рабочего процесса. Убедитесь, что эта карта подходит для этого определения, а сериализованная карта не была изменена вручную.]D;]A;    ]D;]A;Подробные сведения об устранении неполадок: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Свойство Settings имеет недействительное значение. Задайте в качестве значения свойства Settings пустую строку или строку "Ссылки на сборки и импортированные пространства имен сериализованы в качестве пространств имен XML".</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Тип переменной "{0}" не соответствует типу расположения "{1}".</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Сбой при получении дерева выражений с помощью метода GetExpressionTree, поскольку произошло изменение видимых ему текста выражения VisualBasic или среды LocationReferenceEnvironment со времени их кэширования.  Сообщение об ошибке компиляции: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Сбой при получении дерева выражений с помощью метода GetExpressionTree, поскольку произошло изменение видимых ему текста выражения или среды LocationReferenceEnvironment со времени их кэширования.  Сообщение об ошибке компиляции: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Объект InstanceHandle может иметь не более одной незавершенной операции WaitForEvents или BeginWaitForEvents в каждый момент времени. Запрошена вторая операция. Операцию WaitForEvents ил BeginWaitForEvents следует вызывать только после завершения предыдущей операции.</value>

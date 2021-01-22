@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>Το '{0}' είναι μια ασαφής αναφορά μεταβλητής. Τα αναγνωριστικά της VisualBasic φέρουν διάκριση πεζών-κεφαλαίων.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>Το '{0}' είναι μια ασαφής αναφορά μεταβλητής.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Καταργείται η φόρτωση του AppDomain. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Ο χάρτης ενημέρωσης δεν συμφωνεί με τον ορισμό ροής εργασιών. Βεβαιωθείτε ότι αυτός είναι ο σωστός χάρτης για τον ορισμό και ότι ο σειριοποιημένος χάρτης δεν έχει τροποποιηθεί με μη αυτόματο τρόπο.]D;]A;    ]D;]A;Λεπτομέρειες αντιμετώπισης προβλημάτων: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Η ιδιότητα Settings έχει μη έγκυρη τιμή. Ρυθμίστε την ιδιότητα Settings ώστε να είναι κενή συμβολοσειρά ή συμβολοσειρά "Αναφορές συγκρότησης και εισαγωγή χώρων ονομάτων σειριοποιημένα ως χώροι ονομάτων XML".</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Ο τύπος μεταβλητής '{0}' δεν συμφωνεί με τον τύπο θέσης '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Η GetExpressionTree απέτυχε να λάβει ένα δέντρο παραστάσεων επειδή το κείμενο παράστασης VisualBasic του LocationReferenceEnvironment που είναι ορατό σε αυτήν έχει τροποποιηθεί μετά την αποθήκευσή του στο cache. Το μήνυμα σφάλματος μεταγλώττισης είναι: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Η GetExpressionTree απέτυχε να λάβει ένα δέντρο παραστάσεων επειδή το κείμενο παράστασης του LocationReferenceEnvironment που είναι ορατό σε αυτήν έχει τροποποιηθεί μετά την αποθήκευσή του στο cache. Το μήνυμα σφάλματος μεταγλώττισης είναι: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Ένα InstanceHandle μπορεί να έχει το πολύ μια εκκρεμή λειτουργία WaitForEvents ή BeginWaitForEvents σε εξέλιξη κάθε φορά. Επιχειρήθηκε δεύτερη λειτουργία. Να γίνει κλήση μόνο των λειτουργιών WaitForEvents / BeginWaitForEvents αφού έχει ολοκληρωθεί η προηγούμενη λειτουργία.</value>

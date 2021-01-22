@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>{0} is een meerduidige variabeleverwijzing. VisualBasic-identificaties zijn hoofdlettergevoelig.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>{0} is een meerduidige variabeleverwijzing.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain wordt uit het geheugen verwijderd. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>De updatetoewijzing komt niet overeen met de workflowdefinitie. Verzeker u ervan dat dit de juiste toewijzing is voor deze definitie en dat de geserialiseerde toewijzing niet handmatig is gewijzigd.]D;]A;    ]D;]A;Details voor probleemoplossing: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>De eigenschap Settings heeft een ongeldige waarde. Stel de eigenschap in op een lege tekenreeks of de tekenreeks 'Assemblyverwijzingen en geïmporteerde naamruimten geserialiseerd als XML-naamruimten'.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Het variabeletype {0} komt niet overeen met het locatietype {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Door GetExpressionTree kan geen expressiestructuur worden opgehaald, omdat de tekst van de Visual Basic-expressie of LocationReferenceEnvironment is gewijzigd sinds deze in de cache is opgeslagen. Het compilatiefoutbericht is: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Door GetExpressionTree kan geen expressiestructuur worden opgehaald, omdat de tekst van de expressie of LocationReferenceEnvironment is gewijzigd sinds deze in de cache is opgeslagen. Het compilatiefoutbericht is: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Voor een InstanceHandle kan maximaal één uitstaande WaitForEvents- of BeginWaitForEvents-bewerking tegelijk worden uitgevoerd. Er is een tweede bewerking geprobeerd. Roep WaitForEvents/BeginWaitForEvents pas aan zodra de vorige bewerking is voltooid.</value>

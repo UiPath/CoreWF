@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' is an ambiguous variable reference.  VisualBasic identifiers are case-insensitive.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' is an ambiguous variable reference.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain unloading. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1746,7 +1749,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>The update map does not match the workflow definition. Please make sure that this is the correct map for this definition, and that the serialized map has not been manually altered.]D;]A;    ]D;]A;Troubleshooting details: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>The Settings property has invalid value. Set the Settings property to either an empty string or "Assembly references and imported namespaces serialized as XML namespaces" string.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3066,8 +3069,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Variable type '{0}' does not match Location type '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree failed to get an expression tree because the VisualBasic expression text or the LocationReferenceEnvironment visible to it has been altered since it was cached.  The compile error message is : {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree failed to get an expression tree because the expression text or the LocationReferenceEnvironment visible to it has been altered since it was cached.  The compile error message is : {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>An InstanceHandle can have at most one outstanding WaitForEvents or BeginWaitForEvents operation in progress at a time. A second operation was attempted. Only call WaitForEvents / BeginWaitForEvents once the previous operation has completed.</value>

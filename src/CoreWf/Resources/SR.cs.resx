@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>Odkaz na proměnnou {0} není jednoznačný. V identifikátorech jazyka VisualBasic se nerozlišují malá a velká písmena.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>Odkaz na proměnnou {0} není jednoznačný.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Probíhá uvolnění domény aplikace AppDomain. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Mapa aktualizace neodpovídá definici pracovního postupu. Ověřte, zda se jedná o správnou mapu pro tuto definici a zda nebyla serializovaná mapa ručně pozměněna.]D;]A;    ]D;]A;Informace pro odstranění potíží: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Vlastnost Settings má neplatnou hodnotu. Nastavte vlastnost Settings na prázdný řetězec nebo na řetězec „Assembly references and imported namespaces serialized as XML namespaces“.</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Typ proměnné {0} neodpovídá typu umístění {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Metodě GetExpressionTree se nepodařilo získat strom výrazů, protože od uložení do mezipaměti došlo ke změně textu výrazu jazyka Visual Basic nebo jemu viditelného prostředí LocationReferenceEnvironment. Chybová zpráva kompilace je: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Metodě GetExpressionTree se nepodařilo získat strom výrazů, protože od uložení do mezipaměti došlo ke změně textu výrazu jazyka nebo jemu viditelného prostředí LocationReferenceEnvironment. Chybová zpráva kompilace je: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>V objektu InstanceHandle může najednou probíhat nejvýše jedna operace WaitForEvents nebo BeginWaitForEvents. Pokusili jste se spustit druhou operaci. Operaci WaitForEvents nebo BeginWaitForEvents volejte pouze po dokončení předchozí operace.</value>

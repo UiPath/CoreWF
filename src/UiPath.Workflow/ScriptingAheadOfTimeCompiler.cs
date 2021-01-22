@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.VisualBasic.Scripting;
+using Microsoft.VisualBasic.Activities;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
+using System.Linq;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 
 namespace UiPath.Workflow
 {
@@ -61,7 +62,7 @@ namespace UiPath.Workflow
     {
         protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
     }
-    public class VbAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
+    public class VisualBasicAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
     {
         protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create(code, options);
     }

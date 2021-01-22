@@ -1,7 +1,7 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Microsoft.VisualBasic.Activities.XamlIntegration
+namespace Microsoft.CSharp.Activities.XamlIntegration
 {
     using System;
     using System.ComponentModel;
@@ -9,12 +9,14 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
     using System.Globalization;
     using System.Activities;
     using System.Activities.Internals;
+    using Microsoft.VisualBasic.Activities;
+    using Microsoft.VisualBasic.Activities.XamlIntegration;
 
     // this class is necessary in order for our value serializer to get called by XAML,
     // even though the functionality is a no-op
-    public sealed class VisualBasicSettingsConverter : TypeConverter
+    public sealed class CSharpSettingsConverter : TypeConverter
     {        
-        public VisualBasicSettingsConverter()
+        public CSharpSettingsConverter()
             : base()
         {
         }
@@ -72,7 +74,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
 
         VisualBasicSettings CollectXmlNamespacesAndAssemblies(ITypeDescriptorContext context)
         {
-            return VisualBasicExpressionConverter.CollectXmlNamespacesAndAssemblies(context);
+            return CSharpExpressionConverter.CollectXmlNamespacesAndAssemblies(context);
         }
 
     }

@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' er ikke en entydig variabelreference. Der skelnes mellem små og store bogstaver i VisualBasic-id'er.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' er ikke en entydig variabelreference.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain fjernes. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
@@ -1737,7 +1740,7 @@
   <data name="InvalidUpdateMap" xml:space="preserve">
     <value>Opdateringsoversigten stemmer ikke overens med arbejdsprocesdefinitionen. Kontrollér, at dette er den korrekte oversigt for definitionen, og at den serialiserede oversigt ikke er blevet ændret manuelt.]D;]A;    ]D;]A;Oplysninger til fejlfinding: {0}</value>
   </data>
-  <data name="InvalidVisualBasicSettingsValue" xml:space="preserve">
+  <data name="InvalidSettingsValue" xml:space="preserve">
     <value>Egenskaben Settings har en ugyldig værdi. Angiv egenskaben Settings til en tom streng eller til strengen "Assemblyreferencer og importerede navneområder, der er serialiseret som XML-navneområder".</value>
   </data>
   <data name="InvalidXamlMember" xml:space="preserve">
@@ -3048,8 +3051,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Variabeltypen '{0}' svarer ikke til Location-typen '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree kan ikke hente et udtrykstræ, fordi den VisualBasic-udtrykstekst eller det LocationReferenceEnvironment, som er synligt for det, er blevet ændret, siden det blev cachelageret. Kompileringsfejlmeddelelsen er: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree kan ikke hente et udtrykstræ, fordi den udtrykstekst eller det LocationReferenceEnvironment, som er synligt for det, er blevet ændret, siden det blev cachelageret. Kompileringsfejlmeddelelsen er: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>En InstanceHandle kan højst have én udestående WaitForEvents- eller BeginWaitForEvents-handling på samme tid. Der blev gjort forsøg på at udføre en anden handling. Kald kun WaitForEvents/BeginWaitForEvents, når den foregående handling er fuldført.</value>
