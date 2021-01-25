@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Activities.Expressions;
 using System.Activities.XamlIntegration;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualBasic.Activities;
+using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
@@ -168,15 +170,44 @@ namespace TestCases.Workflows
     public class JustInTimeXamlTests : XamlTestsBase
     {
         protected override bool CompileExpressions => false;
-        [Fact]
-        public void Should_infer_type()
+        [Theory]
+        [MemberData(nameof(VisualBasicInferTypeData))]
+        public void VisualBasicShould_Infer_Type(string text, Type resultType, IEnumerable<string> namespaces, IEnumerable<string> assemblies)
         {
             var empty = Array.Empty<string>();
-            var text = "\"test\"";
-            var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
-            ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
-            value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
-            ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
+            var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, namespaces, assemblies, null, out _, out _, out _);
+            ((ITextExpression)value).ExpressionText.ShouldBe(text);
+            ((ActivityWithResult)value).ResultType.ShouldBe(resultType);
+        }
+
+        [Theory]
+        [MemberData(nameof(CSharpInferTypeData))]
+        public void CSharpShould_Infer_Type(string text, Type resultType, IEnumerable<string> namespaces, IEnumerable<string> assemblies)
+        {
+            var empty = Array.Empty<string>();
+            // Missing CSharpDesignerHelper.
+            //var value = CSharpDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, namespaces, assemblies, null, out _, out _, out _);
+            //((ITextExpression)value).ExpressionText.ShouldBe(text);
+            //((ActivityWithResult)value).ResultType.ShouldBe(resultType);
+            throw new NotImplementedException("missing C# DesignerHelper");
+        }
+
+        public static IEnumerable<object[]> VisualBasicInferTypeData()
+        {
+            var empty = Enumerable.Empty<string>();
+            yield return new object[] { "\"abc\"", typeof(string), empty, empty };
+            yield return new object[] { "123", typeof(int), empty, empty };
+            yield return new object[] { "new List(Of String)", typeof(List<string>), new List<string> { "System.Collections.Generic" }, empty };
+            yield return new object[] { "new JsonArrayAttribute()", typeof(JsonArrayAttribute), new List<string> { "Newtonsoft.Json" }, new List<string> { "Newtonsoft.Json" } };
+        }
+
+        public static IEnumerable<object[]> CSharpInferTypeData()
+        {
+            var empty = Enumerable.Empty<string>();
+            yield return new object[] { "\"abc\"", typeof(string), empty, empty };
+            yield return new object[] { "123", typeof(int), empty, empty };
+            yield return new object[] { "new List<string>", typeof(List<string>), new List<string> { "System.Collections.Generic" }, empty };
+            yield return new object[] { "new JsonArrayAttribute()", typeof(JsonArrayAttribute), new List<string> { "Newtonsoft.Json" }, new List<string> { "Newtonsoft.Json" } };
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
