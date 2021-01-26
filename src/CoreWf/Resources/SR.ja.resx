@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' はあいまいな変数参照です。VisualBasic の識別子では大文字と小文字が区別されません。</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' はあいまいな変数参照です。</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain をアンロードしています。AppDomain.FriendlyName {0}、ProcessName {1}、ProcessId {2}。</value>
   </data>

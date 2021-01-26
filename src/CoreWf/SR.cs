@@ -79,6 +79,7 @@ namespace System.Activities
         internal static string AlreadyBoundToOwner { get { return SR.Instance["AlreadyBoundToOwner"]; } }
         internal static string AlreadySetupNoPersist { get { return SR.Instance["AlreadySetupNoPersist"]; } }
         internal static string AmbiguousVBVariableReference(object p0) { return SR.Instance["AmbiguousVBVariableReference", p0]; }
+        internal static string AmbiguousCSVariableReference(object p0) { return SR.Instance["AmbiguousCSVariableReference", p0]; }
         internal static string ArgumentAlreadyInitialized(object p0, object p1) { return SR.Instance["ArgumentAlreadyInitialized", p0, p1]; }
         internal static string ArgumentAlreadyInUse(object p0, object p1, object p2) { return SR.Instance["ArgumentAlreadyInUse", p0, p1, p2]; }
         internal static string ArgumentDirectionMismatch(object p0, object p1, object p2) { return SR.Instance["ArgumentDirectionMismatch", p0, p1, p2]; }

@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' 是不明確的變數參考。VisualBasic 識別碼不區分大小寫。</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' 是不明確的變數參考。</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>正在卸載 AppDomain。AppDomain.FriendlyName {0}、ProcessName {1}、ProcessId {2}。</value>
   </data>

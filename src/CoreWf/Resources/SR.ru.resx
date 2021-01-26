@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>"{0}" является неоднозначной ссылкой на переменную.  Идентификаторы VisualBasic нечувствительны к регистру.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>"{0}" является неоднозначной ссылкой на переменную.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Выгрузка домена приложения. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

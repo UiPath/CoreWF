@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' er ikke en entydig variabelreference. Der skelnes mellem små og store bogstaver i VisualBasic-id'er.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' er ikke en entydig variabelreference.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain fjernes. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

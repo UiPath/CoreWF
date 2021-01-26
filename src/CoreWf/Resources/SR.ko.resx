@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}'은(는) 모호한 변수 참조입니다. VisualBasic 식별자는 대/소문자를 구분하지 않습니다.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}'은(는) 모호한 변수 참조입니다.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain을 언로드합니다. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

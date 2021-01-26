@@ -1,16 +1,14 @@
-﻿using System;
-using System.Activities;
-using System.Activities.Expressions;
-using System.Activities.XamlIntegration;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using Newtonsoft.Json;
 using Shouldly;
+using System;
+using System.Activities;
+using System.Activities.Expressions;
+using System.Activities.XamlIntegration;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace TestCases.Workflows
@@ -171,43 +169,45 @@ namespace TestCases.Workflows
     {
         protected override bool CompileExpressions => false;
         [Theory]
-        [MemberData(nameof(VisualBasicInferTypeData))]
+        [ClassData(typeof(VisualBasicInferTypeData))]
         public void VisualBasicShould_Infer_Type(string text, Type resultType, IEnumerable<string> namespaces, IEnumerable<string> assemblies)
         {
-            var empty = Array.Empty<string>();
             var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, namespaces, assemblies, null, out _, out _, out _);
             ((ITextExpression)value).ExpressionText.ShouldBe(text);
             ((ActivityWithResult)value).ResultType.ShouldBe(resultType);
         }
 
         [Theory]
-        [MemberData(nameof(CSharpInferTypeData))]
+        [ClassData(typeof(CSharpInferTypeData))]
         public void CSharpShould_Infer_Type(string text, Type resultType, IEnumerable<string> namespaces, IEnumerable<string> assemblies)
         {
-            var empty = Array.Empty<string>();
-            // Missing CSharpDesignerHelper.
-            //var value = CSharpDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, namespaces, assemblies, null, out _, out _, out _);
-            //((ITextExpression)value).ExpressionText.ShouldBe(text);
-            //((ActivityWithResult)value).ResultType.ShouldBe(resultType);
-            throw new NotImplementedException("missing C# DesignerHelper");
+            var value = CSharpDesignerHelper.CreatePrecompiledCSharpValue(null, text, namespaces, assemblies, null, out _, out _, out _);
+            ((ITextExpression)value).ExpressionText.ShouldBe(text);
+            ((ActivityWithResult)value).ResultType.ShouldBe(resultType);
         }
 
-        public static IEnumerable<object[]> VisualBasicInferTypeData()
+        public class CSharpInferTypeData : TheoryData<string, Type, IEnumerable<string>, IEnumerable<string>>
         {
-            var empty = Enumerable.Empty<string>();
-            yield return new object[] { "\"abc\"", typeof(string), empty, empty };
-            yield return new object[] { "123", typeof(int), empty, empty };
-            yield return new object[] { "new List(Of String)", typeof(List<string>), new List<string> { "System.Collections.Generic" }, empty };
-            yield return new object[] { "new JsonArrayAttribute()", typeof(JsonArrayAttribute), new List<string> { "Newtonsoft.Json" }, new List<string> { "Newtonsoft.Json" } };
+            public CSharpInferTypeData()
+            {
+                var empty = Enumerable.Empty<string>();
+                Add("\"abc\"", typeof(string), empty, empty);
+                Add("123", typeof(int), empty, empty);
+                Add("new List<string>()", typeof(List<string>), new List<string> { "System.Collections.Generic" }, empty);
+                Add("new JsonArrayAttribute()", typeof(JsonArrayAttribute), new List<string> { "Newtonsoft.Json" }, new List<string> { "Newtonsoft.Json" });
+            }
         }
 
-        public static IEnumerable<object[]> CSharpInferTypeData()
+        public class VisualBasicInferTypeData : TheoryData<string, Type, IEnumerable<string>, IEnumerable<string>>
         {
-            var empty = Enumerable.Empty<string>();
-            yield return new object[] { "\"abc\"", typeof(string), empty, empty };
-            yield return new object[] { "123", typeof(int), empty, empty };
-            yield return new object[] { "new List<string>", typeof(List<string>), new List<string> { "System.Collections.Generic" }, empty };
-            yield return new object[] { "new JsonArrayAttribute()", typeof(JsonArrayAttribute), new List<string> { "Newtonsoft.Json" }, new List<string> { "Newtonsoft.Json" } };
+            public VisualBasicInferTypeData()
+            {
+                var empty = Enumerable.Empty<string>();
+                Add("\"abc\"", typeof(string), empty, empty);
+                Add("123", typeof(int), empty, empty);
+                Add("new List(Of String)", typeof(List<string>), new List<string> { "System.Collections.Generic" }, empty);
+                Add("new JsonArrayAttribute()", typeof(JsonArrayAttribute), new List<string> { "Newtonsoft.Json" }, new List<string> { "Newtonsoft.Json" });
+            }
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
@@ -231,7 +231,7 @@ namespace TestCases.Workflows
         public void CompileExpressionsDefault() => InvokeWorkflow(CSharpExpressions);
         [Fact]
         public void CompileExpressionsWithCompiler() =>
-            new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
+            new Action(() => ActivityXamlServices.Load(new StringReader(CSharpExpressions),
                 new ActivityXamlServicesSettings { CSharpCompiler = new CSharpCompiler() })).ShouldThrow<NotImplementedException>();
         [Fact]
         public void CSharpCompileError()
@@ -250,7 +250,7 @@ namespace TestCases.Workflows
                     </Sequence>
                 </Activity>";
             new Action(() => InvokeWorkflow(xaml)).ShouldThrow<InvalidOperationException>().Data.Values.Cast<string>()
-                .ShouldAllBe(error=>error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
+                .ShouldAllBe(error => error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
         }
         [Fact]
         public void CSharpInputOutput()

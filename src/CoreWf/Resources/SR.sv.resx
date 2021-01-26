@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>{0} är en tvetydig variabelreferens. VisualBasic-identifierare är skiftlägeskänsliga.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>{0} är en tvetydig variabelreferens.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain laddas ur. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

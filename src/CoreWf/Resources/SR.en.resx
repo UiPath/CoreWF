@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' is an ambiguous variable reference.  VisualBasic identifiers are case-insensitive.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' is an ambiguous variable reference.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain unloading. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

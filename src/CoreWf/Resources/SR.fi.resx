@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>{0} on moniselitteinen muuttujaviittaus. VisualBasic-tunnisteiden nimissä ei huomioida kirjainkokoa.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>{0} on moniselitteinen muuttujaviittaus.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain poistetaan. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

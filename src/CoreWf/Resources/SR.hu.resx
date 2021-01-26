@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>A(z) „{0}” nem egyértelmű változó hivatkozás. A VisualBasic-azonosítók megkülönböztetik egymástól a kis- és a nagybetűket.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>A(z) „{0}” nem egyértelmű változó hivatkozás.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Folyamatban van az AppDomain memóriából való eltávolítása. AppDomain.FriendlyName: {0}, ProcessName: {1}, ProcessId: {2}.</value>
   </data>

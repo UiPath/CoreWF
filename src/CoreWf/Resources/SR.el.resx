@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>Το '{0}' είναι μια ασαφής αναφορά μεταβλητής. Τα αναγνωριστικά της VisualBasic φέρουν διάκριση πεζών-κεφαλαίων.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>Το '{0}' είναι μια ασαφής αναφορά μεταβλητής.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Καταργείται η φόρτωση του AppDomain. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

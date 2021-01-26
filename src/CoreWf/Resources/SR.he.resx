@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>'{0}' הוא הפניה למשתנה רב-משמעי. מזהי VisualBasic אינם תלויי רישיות.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>'{0}' הוא הפניה למשתנה רב-משמעי.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>ביטול טעינה של AppDomain. AppDomain.FriendlyName {0}‎‏, ‎ProcessName {1}‎‏, ‎ProcessId {2}‎‏.</value>
   </data>

@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>Odkaz na proměnnou {0} není jednoznačný. V identifikátorech jazyka VisualBasic se nerozlišují malá a velká písmena.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>Odkaz na proměnnou {0} není jednoznačný.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>Probíhá uvolnění domény aplikace AppDomain. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>

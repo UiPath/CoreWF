@@ -294,6 +294,9 @@
   <data name="AmbiguousVBVariableReference" xml:space="preserve">
     <value>{0} is een meerduidige variabeleverwijzing. VisualBasic-identificaties zijn hoofdlettergevoelig.</value>
   </data>
+  <data name="AmbiguousCSVariableReference" xml:space="preserve">
+    <value>{0} is een meerduidige variabeleverwijzing.</value>
+  </data>
   <data name="AppDomainUnload" xml:space="preserve">
     <value>AppDomain wordt uit het geheugen verwijderd. AppDomain.FriendlyName {0}, ProcessName {1}, ProcessId {2}.</value>
   </data>
