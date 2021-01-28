@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Common;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace System.Activities.XamlIntegration

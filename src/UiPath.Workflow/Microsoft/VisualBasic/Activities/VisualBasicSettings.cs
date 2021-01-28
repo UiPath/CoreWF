@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Activities.Internals;
 using UiPath.Workflow;
 using System.Reflection;
+using Microsoft.Common;
 
 namespace Microsoft.VisualBasic.Activities
 {
@@ -68,7 +69,7 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public Func<HashSet<Assembly>, JustInTimeCompiler> CompilerFactory { get; set; } = references => new VbJustInTimeCompiler(references);
+        public Func<HashSet<Assembly>, JustInTimeCompiler> CompilerFactory { get; set; } = references => new VisualBasicJustInTimeCompiler(references);
 
         internal bool SuppressXamlSerialization 
         { 

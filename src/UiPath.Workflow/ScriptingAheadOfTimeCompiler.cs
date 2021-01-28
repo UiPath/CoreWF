@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
+using Microsoft.Common;
 
 namespace UiPath.Workflow
 {
