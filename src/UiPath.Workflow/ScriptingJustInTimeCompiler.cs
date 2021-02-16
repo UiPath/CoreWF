@@ -1,9 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.Scripting.Hosting;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
+using ReflectionMagic;
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
@@ -16,18 +18,14 @@ using System.Reflection.Metadata;
 
 namespace UiPath.Workflow
 {
-    public class VbJustInTimeCompiler : ScriptingJustInTimeCompiler
-    {
-        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
-        protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? "+code, options);
-        protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
-        protected override string CreateExpressionCode(string types, string names, string code) =>
-             $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
-    }
     public abstract class ScriptingJustInTimeCompiler : JustInTimeCompiler
     {
         protected MetadataReference[] MetadataReferences { get; set; }
         protected ScriptingJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
+        protected abstract int IdentifierKind { get; }
+        protected abstract string CreateExpressionCode(string types, string names, string code);
+        protected abstract string GetTypeName(Type type);
+        protected abstract Script<object> Create(string code, ScriptOptions options);
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
@@ -57,11 +55,8 @@ namespace UiPath.Workflow
             }
             return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
         }
-        protected abstract string CreateExpressionCode(string types, string names, string code);
-        protected abstract string GetTypeName(Type type);
-        protected abstract Script<object> Create(string code, ScriptOptions options);
-        public static IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree) =>
-            syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == (int)SyntaxKind.IdentifierName).Select(n => n.ToString()).Distinct().ToArray();
+        public IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree) =>
+            syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind).Select(n => n.ToString()).Distinct().ToArray();
     }
     static class References
     {
@@ -76,5 +71,37 @@ namespace UiPath.Workflow
             return assemblyMetadata.GetReference();
         }
         public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) => assemblies.Select(GetReference);
+    }
+    public class VbJustInTimeCompiler : ScriptingJustInTimeCompiler
+    {
+        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
+        protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? "+code, options);
+        protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
+        protected override string CreateExpressionCode(string types, string names, string code) =>
+             $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+        protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.VisualBasic.SyntaxKind.IdentifierName;
+    }
+    public class CSharpJustInTimeCompiler : ScriptingJustInTimeCompiler
+    {
+        private static readonly dynamic TypeOptions = GetTypeOptions();
+        private static readonly dynamic TypeNameFormatter = GetTypeNameFormatter();
+        public CSharpJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
+        protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
+        protected override string GetTypeName(Type type) => (string)TypeNameFormatter.FormatTypeName(type, TypeOptions);
+        protected override string CreateExpressionCode(string types, string names, string code) =>
+             $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+        protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName;
+        static object GetTypeOptions()
+        {
+            var formatterOptionsType = typeof(ObjectFormatter).Assembly.GetType("Microsoft.CodeAnalysis.Scripting.Hosting.CommonTypeNameFormatterOptions");
+            const int ArrayBoundRadix = 0;
+            const bool ShowNamespaces = true;
+            return Activator.CreateInstance(formatterOptionsType, new object[] { ArrayBoundRadix, ShowNamespaces });
+        }
+        static object GetTypeNameFormatter() =>
+            typeof(CSharpScript).Assembly.GetType("Microsoft.CodeAnalysis.CSharp.Scripting.Hosting.CSharpObjectFormatter")
+            .AsDynamicType()
+            .s_impl
+            .TypeNameFormatter;
     }
 }

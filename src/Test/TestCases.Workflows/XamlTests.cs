@@ -6,9 +6,11 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.VisualBasic.Activities;
 using Shouldly;
+using UiPath.Workflow;
 using Xunit;
 
 namespace TestCases.Workflows
@@ -165,9 +167,8 @@ namespace TestCases.Workflows
             var result = InvokeWorkflow(xamlString, inputs);
         }
     }
-    public class JustInTimeXamlTests : XamlTestsBase
+    public class JustInTimeXamlTests
     {
-        protected override bool CompileExpressions => false;
         [Fact]
         public void Should_infer_type()
         {
@@ -177,6 +178,14 @@ namespace TestCases.Workflows
             ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
             value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
             ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
+        }
+        [Fact]
+        public void Should_compile_CSharp()
+        {
+            var compiler = new CSharpJustInTimeCompiler(new[] { typeof(Expression).Assembly, typeof(Enumerable).Assembly }.ToHashSet());
+            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }) 
+                { LambdaReturnType = typeof(int), VariableTypeGetter = name => name == "source" ? typeof(List<int>) : null });
+            ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
