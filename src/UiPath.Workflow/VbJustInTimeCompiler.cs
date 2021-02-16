@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
@@ -30,7 +29,7 @@ namespace UiPath.Workflow
             var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
             var compilation = untypedExpressionScript.GetCompilation();
             var syntaxTree = compilation.SyntaxTrees.First();
-            var identifiers = IdentifiersWalker.GetIdentifiers(compilation, syntaxTree);
+            var identifiers = GetIdentifiers(syntaxTree);
             var resolvedIdentifiers =
                 identifiers
                 .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name)))
@@ -53,25 +52,8 @@ namespace UiPath.Workflow
             return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
         }
         public virtual ScriptOptions AddOptions(ScriptOptions options) => options;
-        class IdentifiersWalker : VisualBasicSyntaxWalker
-        {
-            private readonly HashSet<string> _identifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            public SemanticModel SemanticModel { get; }
-            private IdentifiersWalker(SemanticModel semanticModel) => SemanticModel = semanticModel;
-            public static string[] GetIdentifiers(Compilation compilation, SyntaxTree syntaxTree)
-            {
-                var semanticModel = compilation.GetSemanticModel(syntaxTree);
-                var root = syntaxTree.GetRoot();
-                var walker = new IdentifiersWalker(semanticModel);
-                walker.Visit(root);
-                return walker._identifiers.ToArray();
-            }
-            public override void VisitIdentifierName(IdentifierNameSyntax node)
-            {
-                _identifiers.Add(node.Identifier.Text);
-                base.VisitIdentifierName(node);
-            }
-        }
+        public static IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree) =>
+            syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == (int)SyntaxKind.IdentifierName).Select(n => n.ToString()).Distinct().ToArray();
     }
     static class References
     {
