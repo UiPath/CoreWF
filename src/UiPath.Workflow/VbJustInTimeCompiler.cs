@@ -16,17 +16,24 @@ using System.Reflection.Metadata;
 
 namespace UiPath.Workflow
 {
-    public class VbJustInTimeCompiler : JustInTimeCompiler
+    public class VbJustInTimeCompiler : ScriptingJustInTimeCompiler
+    {
+        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
+        protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? "+code, options);
+        protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
+        protected override string CreateExpressionCode(string types, string names, string code) =>
+             $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+    }
+    public abstract class ScriptingJustInTimeCompiler : JustInTimeCompiler
     {
         protected MetadataReference[] MetadataReferences { get; set; }
-        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
+        protected ScriptingJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
                 .AddReferences(MetadataReferences)
                 .AddImports(expressionToCompile.ImportedNamespaces);
-            options = AddOptions(options);
-            var untypedExpressionScript = VisualBasicScript.Create($"? {expressionToCompile.Code}", options);
+            var untypedExpressionScript = Create(expressionToCompile.Code, options);
             var compilation = untypedExpressionScript.GetCompilation();
             var syntaxTree = compilation.SyntaxTrees.First();
             var identifiers = GetIdentifiers(syntaxTree);
@@ -41,9 +48,8 @@ namespace UiPath.Workflow
                 resolvedIdentifiers
                 .Select(var => var.Type)
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
-                .Select(VisualBasicObjectFormatter.FormatTypeName));
-            var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
-                $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({expressionToCompile.Code})\nEnd Function")));
+                .Select(GetTypeName));
+            var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(CreateExpressionCode(types, names, expressionToCompile.Code))));
             var results = ScriptingAheadOfTimeCompiler.BuildAssembly(finalCompilation);
             if (results.HasErrors)
             {
@@ -51,7 +57,9 @@ namespace UiPath.Workflow
             }
             return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
         }
-        public virtual ScriptOptions AddOptions(ScriptOptions options) => options;
+        protected abstract string CreateExpressionCode(string types, string names, string code);
+        protected abstract string GetTypeName(Type type);
+        protected abstract Script<object> Create(string code, ScriptOptions options);
         public static IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree) =>
             syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == (int)SyntaxKind.IdentifierName).Select(n => n.ToString()).Distinct().ToArray();
     }
@@ -67,7 +75,6 @@ namespace UiPath.Workflow
             var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
             return assemblyMetadata.GetReference();
         }
-        public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) =>
-            assemblies.Select(GetReference);
+        public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) => assemblies.Select(GetReference);
     }
 }
