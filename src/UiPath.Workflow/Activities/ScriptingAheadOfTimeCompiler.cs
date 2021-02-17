@@ -8,7 +8,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 
-namespace UiPath.Workflow
+namespace System.Activities
 {
     public abstract class ScriptingAheadOfTimeCompiler : AheadOfTimeCompiler
     {

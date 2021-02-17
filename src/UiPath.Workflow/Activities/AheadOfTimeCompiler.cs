@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Activities.XamlIntegration;
+using System.Collections.Generic;
 using System.Reflection;
 
-namespace System.Activities.XamlIntegration
+namespace System.Activities
 {
     public abstract class AheadOfTimeCompiler
     {

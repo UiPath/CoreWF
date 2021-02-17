@@ -6,8 +6,6 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
 using ReflectionMagic;
-using System;
-using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
 using System.Collections.Generic;
@@ -16,7 +14,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
 
-namespace UiPath.Workflow
+namespace System.Activities
 {
     public abstract class ScriptingJustInTimeCompiler : JustInTimeCompiler
     {
