@@ -18,6 +18,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
     using System.Security.Permissions;
     using System.Activities.Runtime;
     using System.Threading;
+    using System.Activities;
 
     static class VisualBasicExpressionConverter
     {
@@ -84,7 +85,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
 
                                     for (int i = 0; i < xsCtxReferenceAssemblies.Count; i++)
                                     {
-                                        AssemblyName xsCtxAssemblyName = VisualBasicHelper.GetFastAssemblyName(xsCtxReferenceAssemblies[i]);
+                                        AssemblyName xsCtxAssemblyName = CompilerHelper.GetFastAssemblyName(xsCtxReferenceAssemblies[i]);
                                         if (importReference.AssemblySatisfiesReference(xsCtxAssemblyName))
                                         {
                                             // bind this assembly early to the importReference

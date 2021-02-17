@@ -2359,7 +2359,7 @@ namespace System.Activities.XamlIntegration
             List<AssemblyReference> assemblies;
             if (IsVB)
             {
-                VisualBasicHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
+                CompilerHelper.GetAllImportReferences(settings.Activity, isDesignTime: false, out _, out assemblies);
             }
             else
             {

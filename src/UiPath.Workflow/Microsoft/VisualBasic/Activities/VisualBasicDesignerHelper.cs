@@ -135,7 +135,7 @@ namespace Microsoft.VisualBasic.Activities
                 }
             }
 
-            VisualBasicHelper vbhelper = new VisualBasicHelper(expressionText, assembliesSet, namespacesSet);
+            var vbhelper = new VisualBasicHelper(expressionText, assembliesSet, namespacesSet);
             if (targetType == null)
             {
                 try
@@ -155,7 +155,7 @@ namespace Microsoft.VisualBasic.Activities
             }
             else
             {
-                MethodInfo genericCompileMethod = typeof(VisualBasicHelper).GetMethod("Compile", new Type[] { typeof(LocationReferenceEnvironment) });
+                MethodInfo genericCompileMethod = typeof(CompilerHelper).GetMethod("Compile", new Type[] { typeof(LocationReferenceEnvironment) });
                 genericCompileMethod = genericCompileMethod.MakeGenericMethod(new Type[] { targetType });
                 try
                 {
@@ -189,7 +189,7 @@ namespace Microsoft.VisualBasic.Activities
                     {
                         continue;
                     }
-                    string assemblyName = VisualBasicHelper.GetFastAssemblyName(tassembly).Name;
+                    string assemblyName = CompilerHelper.GetFastAssemblyName(tassembly).Name;
                     VisualBasicImportReference importReference = new VisualBasicImportReference { Assembly = assemblyName, Import = type.Namespace };                    
                     vbSettings.ImportReferences.Add(importReference);
                 }
@@ -238,7 +238,7 @@ namespace Microsoft.VisualBasic.Activities
                 }
             }
             
-            VisualBasicHelper vbhelper = new VisualBasicHelper(expressionText, assembliesSet, namespacesSet);
+            var vbhelper = new VisualBasicHelper(expressionText, assembliesSet, namespacesSet);
             if (targetType == null)
             {
                 try
@@ -270,7 +270,7 @@ namespace Microsoft.VisualBasic.Activities
             }
             else
             {
-                MethodInfo genericCompileMethod = typeof(VisualBasicHelper).GetMethod("Compile", new Type[] { typeof(LocationReferenceEnvironment) });
+                MethodInfo genericCompileMethod = typeof(CompilerHelper).GetMethod("Compile", new Type[] { typeof(LocationReferenceEnvironment) });
                 genericCompileMethod = genericCompileMethod.MakeGenericMethod(new Type[] { targetType });
                 try
                 {
@@ -321,7 +321,7 @@ namespace Microsoft.VisualBasic.Activities
                     {
                         continue;
                     }
-                    string assemblyName = VisualBasicHelper.GetFastAssemblyName(tassembly).Name;
+                    string assemblyName = CompilerHelper.GetFastAssemblyName(tassembly).Name;
                     VisualBasicImportReference importReference = new VisualBasicImportReference { Assembly = assemblyName, Import = type.Namespace };
                     vbSettings.ImportReferences.Add(importReference);
                 }
@@ -367,7 +367,7 @@ namespace Microsoft.VisualBasic.Activities
             }
 
             // don't add base types/interfaces if they're in the default set (or we'll get superfluous xmlns references)
-            if (isDirectReference || !VisualBasicHelper.DefaultReferencedAssemblies.Contains(type.Assembly))
+            if (isDirectReference || !CompilerHelper.DefaultReferencedAssemblies.Contains(type.Assembly))
             {
                 typeReferences.Add(type);
             }
@@ -688,7 +688,7 @@ namespace Microsoft.VisualBasic.Activities
         static void GetAllImportReferences(Activity activity, out List<string> namespaces, out List<string> assemblies)
         {
             List<AssemblyReference> referencedAssemblies;
-            VisualBasicHelper.GetAllImportReferences(activity, true, out namespaces, out referencedAssemblies);
+            CompilerHelper.GetAllImportReferences(activity, true, out namespaces, out referencedAssemblies);
 
             assemblies = new List<string>();
             foreach (AssemblyReference reference in referencedAssemblies)
