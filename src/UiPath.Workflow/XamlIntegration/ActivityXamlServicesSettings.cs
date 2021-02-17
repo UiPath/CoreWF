@@ -45,9 +45,9 @@ namespace System.Activities.XamlIntegration
             switch (language)
             {
                 case "C#":
-                    return CSharpCompiler ?? new CSharpAheadOfTimeCompiler();
+                    return CSharpCompiler ?? new CSharpAotCompiler();
                 case "VB":
-                    return VbCompiler ?? new VbAheadOfTimeCompiler();
+                    return VbCompiler ?? new VbAotCompiler();
             }
             throw new ArgumentOutOfRangeException(nameof(language), language, "Supported values: C# and VB.");
         }

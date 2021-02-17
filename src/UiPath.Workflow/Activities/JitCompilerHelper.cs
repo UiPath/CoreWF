@@ -18,32 +18,95 @@ using System.Linq;
 
 namespace System.Activities
 {
-    abstract class CompilerHelper
+    abstract class JitCompilerHelper
     {
-        protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
-
         // the following assemblies are provided to the compiler by default
         // items are public so the decompiler knows which assemblies it doesn't need to reference for interfaces
         public static readonly IReadOnlyCollection<Assembly> DefaultReferencedAssemblies = new HashSet<Assembly>
-            {
-                typeof(int).Assembly, // mscorlib
-                typeof(CodeTypeDeclaration).Assembly, // System
-                typeof(Expression).Assembly,             // System.Core
-                typeof(Microsoft.VisualBasic.CompilerServices.Conversions).Assembly, //Microsoft.VisualBasic.Core
-                typeof(Activity).Assembly  // System.Activities
-            };
-        public static AssemblyName GetFastAssemblyName(Assembly assembly)
         {
-            return AssemblyReference.GetFastAssemblyName(assembly);
-        }
+            typeof(int).Assembly, // mscorlib
+            typeof(CodeTypeDeclaration).Assembly, // System
+            typeof(Expression).Assembly,             // System.Core
+            typeof(Microsoft.VisualBasic.CompilerServices.Conversions).Assembly, //Microsoft.VisualBasic.Core
+            typeof(Activity).Assembly  // System.Activities
+        };
+        public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
+        protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
+        public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces, out List<AssemblyReference> assemblies)
+        {
+            List<string> namespaceList = new List<string>();
+            List<AssemblyReference> assemblyList = new List<AssemblyReference>();
 
+            // Start with the defaults; any settings on the Activity will be added to these
+            // The default settings are mutable, so we need to re-copy this list on every call
+            ExtractNamespacesAndReferences(VisualBasicSettings.Default, namespaceList, assemblyList);
+
+            LocationReferenceEnvironment environment = activity.GetParentEnvironment();
+            if (environment == null || environment.Root == null)
+            {
+                namespaces = namespaceList;
+                assemblies = assemblyList;
+                return;
+            }
+
+            VisualBasicSettings rootVBSettings = VisualBasic.GetSettings(environment.Root);
+            if (rootVBSettings != null)
+            {
+                // We have VBSettings
+                ExtractNamespacesAndReferences(rootVBSettings, namespaceList, assemblyList);
+            }
+            else
+            {
+                // Use TextExpression settings
+                IList<string> rootNamespaces;
+                IList<AssemblyReference> rootAssemblies;
+                if (isDesignTime)
+                {
+                    // When called via VisualBasicDesignerHelper, we don't know whether or not 
+                    // we're in an implementation, so check both.
+                    rootNamespaces = TextExpression.GetNamespacesForImplementation(environment.Root);
+                    rootAssemblies = TextExpression.GetReferencesForImplementation(environment.Root);
+                    if (rootNamespaces.Count == 0 && rootAssemblies.Count == 0)
+                    {
+                        rootNamespaces = TextExpression.GetNamespaces(environment.Root);
+                        rootAssemblies = TextExpression.GetReferences(environment.Root);
+                    }
+                }
+                else
+                {
+                    rootNamespaces = TextExpression.GetNamespacesInScope(activity);
+                    rootAssemblies = TextExpression.GetReferencesInScope(activity);
+                }
+
+                namespaceList.AddRange(rootNamespaces);
+                assemblyList.AddRange(rootAssemblies);
+            }
+
+            namespaces = namespaceList;
+            assemblies = assemblyList;
+        }
+        static void ExtractNamespacesAndReferences(VisualBasicSettings vbSettings,
+            IList<string> namespaces, IList<AssemblyReference> assemblies)
+        {
+            foreach (var importReference in vbSettings.ImportReferences)
+            {
+                namespaces.Add(importReference.Import);
+                assemblies.Add(new AssemblyReference
+                {
+                    Assembly = importReference.EarlyBoundAssembly,
+                    AssemblyName = importReference.AssemblyName
+                });
+            }
+        }
+    }
+    abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
+    {
         // cache for type's all base types, interfaces, generic arguments, element type
         // HopperCache is a psuedo-MRU cache
         const int typeReferenceCacheMaxSize = 100;
         static object typeReferenceCacheLock = new object();
         static HopperCache typeReferenceCache = new HopperCache(typeReferenceCacheMaxSize, false);
         static ulong lastTimestamp = 0;
-
         // Cache<(expressionText+ReturnType+Assemblies+Imports), LambdaExpression>
         // LambdaExpression represents raw ExpressionTrees right out of the vb hosted compiler
         // these raw trees are yet to be rewritten with appropriate Variables
@@ -133,13 +196,13 @@ namespace System.Activities
         // this is a flag to differentiate the cached short-cut Rewrite from the normal post-compilation Rewrite
         bool isShortCutRewrite = false;
 
-        public CompilerHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+        public JitCompilerHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
             : this(expressionText)
         {
             Initialize(refAssemNames, namespaceImportsNames);
         }
 
-        protected CompilerHelper(string expressionText)
+        protected JitCompilerHelper(string expressionText)
         {
             TextToCompile = expressionText;
         }
@@ -178,80 +241,11 @@ namespace System.Activities
                 }
             }
         }
-
-        public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces, out List<AssemblyReference> assemblies)
-        {
-            List<string> namespaceList = new List<string>();
-            List<AssemblyReference> assemblyList = new List<AssemblyReference>();
-
-            // Start with the defaults; any settings on the Activity will be added to these
-            // The default settings are mutable, so we need to re-copy this list on every call
-            ExtractNamespacesAndReferences(VisualBasicSettings.Default, namespaceList, assemblyList);
-
-            LocationReferenceEnvironment environment = activity.GetParentEnvironment();
-            if (environment == null || environment.Root == null)
-            {
-                namespaces = namespaceList;
-                assemblies = assemblyList;
-                return;
-            }
-
-            VisualBasicSettings rootVBSettings = VisualBasic.GetSettings(environment.Root);
-            if (rootVBSettings != null)
-            {
-                // We have VBSettings
-                ExtractNamespacesAndReferences(rootVBSettings, namespaceList, assemblyList);
-            }
-            else
-            {
-                // Use TextExpression settings
-                IList<string> rootNamespaces;
-                IList<AssemblyReference> rootAssemblies;
-                if (isDesignTime)
-                {
-                    // When called via VisualBasicDesignerHelper, we don't know whether or not 
-                    // we're in an implementation, so check both.
-                    rootNamespaces = TextExpression.GetNamespacesForImplementation(environment.Root);
-                    rootAssemblies = TextExpression.GetReferencesForImplementation(environment.Root);
-                    if (rootNamespaces.Count == 0 && rootAssemblies.Count == 0)
-                    {
-                        rootNamespaces = TextExpression.GetNamespaces(environment.Root);
-                        rootAssemblies = TextExpression.GetReferences(environment.Root);
-                    }
-                }
-                else
-                {
-                    rootNamespaces = TextExpression.GetNamespacesInScope(activity);
-                    rootAssemblies = TextExpression.GetReferencesInScope(activity);
-                }
-
-                namespaceList.AddRange(rootNamespaces);
-                assemblyList.AddRange(rootAssemblies);
-            }
-
-            namespaces = namespaceList;
-            assemblies = assemblyList;
-        }
-
-        static void ExtractNamespacesAndReferences(VisualBasicSettings vbSettings,
-            IList<string> namespaces, IList<AssemblyReference> assemblies)
-        {
-            foreach (var importReference in vbSettings.ImportReferences)
-            {
-                namespaces.Add(importReference.Import);
-                assemblies.Add(new AssemblyReference
-                {
-                    Assembly = importReference.EarlyBoundAssembly,
-                    AssemblyName = importReference.AssemblyName
-                });
-            }
-        }
-
         [Fx.Tag.SecurityNote(Critical = "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
             Safe = "Safe because we are demanding FullTrust.")]
         [SecuritySafeCritical]
         //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        public LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment)
+        public override LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment)
         {
             bool abort;
             Expression finalBody;
@@ -288,12 +282,6 @@ namespace System.Activities
             }
 
             var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
-
-            //IImportScope importScope = new VisualBasicImportScope(importList);
-            //CompilerOptions options = new CompilerOptions();
-            //options.OptionStrict = OptionStrictSetting.On;
-            //CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
-
             var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
             var compiler = compilerWrapper.Compiler;
             LambdaExpression lambda = null;
@@ -429,11 +417,6 @@ namespace System.Activities
             }
 
             var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
-
-            //IImportScope importScope = new VisualBasicImportScope(importList);
-            //CompilerOptions options = new CompilerOptions();
-            //options.OptionStrict = OptionStrictSetting.On;
-            //CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
             var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
             var compiler = compilerWrapper.Compiler;
 

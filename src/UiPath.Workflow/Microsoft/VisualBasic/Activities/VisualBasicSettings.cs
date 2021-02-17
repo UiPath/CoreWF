@@ -69,7 +69,7 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public CompilerFactory CompilerFactory { get; set; } = references => new VbJustInTimeCompiler(references);
+        public CompilerFactory CompilerFactory { get; set; } = references => new VbJitCompiler(references);
 
         internal bool SuppressXamlSerialization 
         { 

@@ -16,12 +16,33 @@ using System.Reflection.Metadata;
 
 namespace System.Activities
 {
-    public abstract class ScriptingJustInTimeCompiler : JustInTimeCompiler
+    public abstract class JustInTimeCompiler
+    {
+        public abstract LambdaExpression CompileExpression(ExpressionToCompile compilerRequest);
+    }
+    public class CompilerInput
+    {
+        public CompilerInput(string code, IReadOnlyCollection<string> importedNamespaces)
+        {
+            Code = code;
+            ImportedNamespaces = importedNamespaces;
+        }
+        public IReadOnlyCollection<string> ImportedNamespaces { get; }
+        public string Code { get; }
+        public override string ToString() => Code;
+    }
+    public class ExpressionToCompile : CompilerInput
+    {
+        public ExpressionToCompile(string code, IReadOnlyCollection<string> importedNamespaces) : base(code, importedNamespaces) { }
+        public Func<string, Type> VariableTypeGetter { get; set; }
+        public Type LambdaReturnType { get; set; }
+    }
+    public abstract class ScriptingJitCompiler : JustInTimeCompiler
     {
         protected MetadataReference[] MetadataReferences { get; set; }
-        protected ScriptingJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
+        protected ScriptingJitCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
         protected abstract int IdentifierKind { get; }
-        protected abstract string CreateExpressionCode(string types, string names, string code);
+        protected abstract string CreateExpressionCode(Type lambdaReturnType, string types, string names, string code);
         protected abstract string GetTypeName(Type type);
         protected abstract Script<object> Create(string code, ScriptOptions options);
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
@@ -45,8 +66,9 @@ namespace System.Activities
                 .Select(var => var.Type)
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
                 .Select(GetTypeName));
-            var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(CreateExpressionCode(types, names, expressionToCompile.Code))));
-            var results = ScriptingAheadOfTimeCompiler.BuildAssembly(finalCompilation);
+            var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
+                CreateExpressionCode(expressionToCompile.LambdaReturnType, types, names, expressionToCompile.Code))));
+            var results = ScriptingAotCompiler.BuildAssembly(finalCompilation);
             if (results.HasErrors)
             {
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.Code, results), results.CompilerMessages));
@@ -70,24 +92,24 @@ namespace System.Activities
         }
         public static IEnumerable<MetadataReference> GetMetadataReferences(this IEnumerable<Assembly> assemblies) => assemblies.Select(GetReference);
     }
-    public class VbJustInTimeCompiler : ScriptingJustInTimeCompiler
+    public class VbJitCompiler : ScriptingJitCompiler
     {
-        public VbJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
+        public VbJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
         protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? "+code, options);
         protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
-        protected override string CreateExpressionCode(string types, string names, string code) =>
+        protected override string CreateExpressionCode(Type returnType, string types, string names, string code) =>
              $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
         protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.VisualBasic.SyntaxKind.IdentifierName;
     }
-    public class CSharpJustInTimeCompiler : ScriptingJustInTimeCompiler
+    public class CSharpJitCompiler : ScriptingJitCompiler
     {
         private static readonly dynamic TypeOptions = GetTypeOptions();
         private static readonly dynamic TypeNameFormatter = GetTypeNameFormatter();
-        public CSharpJustInTimeCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
+        public CSharpJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
         protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
         protected override string GetTypeName(Type type) => (string)TypeNameFormatter.FormatTypeName(type, TypeOptions);
-        protected override string CreateExpressionCode(string types, string names, string code) =>
-             $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+        protected override string CreateExpressionCode(Type returnType, string types, string names, string code) =>
+             $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => ({GetTypeName(returnType)}){code};";
         protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName;
         static object GetTypeOptions()
         {

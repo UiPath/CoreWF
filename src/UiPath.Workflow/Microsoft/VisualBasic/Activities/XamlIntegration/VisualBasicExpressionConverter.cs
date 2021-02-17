@@ -85,7 +85,7 @@ namespace Microsoft.VisualBasic.Activities.XamlIntegration
 
                                     for (int i = 0; i < xsCtxReferenceAssemblies.Count; i++)
                                     {
-                                        AssemblyName xsCtxAssemblyName = CompilerHelper.GetFastAssemblyName(xsCtxReferenceAssemblies[i]);
+                                        AssemblyName xsCtxAssemblyName = AssemblyReference.GetFastAssemblyName(xsCtxReferenceAssemblies[i]);
                                         if (importReference.AssemblySatisfiesReference(xsCtxAssemblyName))
                                         {
                                             // bind this assembly early to the importReference

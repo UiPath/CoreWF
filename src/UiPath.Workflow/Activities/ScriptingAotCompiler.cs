@@ -10,7 +10,22 @@ using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 
 namespace System.Activities
 {
-    public abstract class ScriptingAheadOfTimeCompiler : AheadOfTimeCompiler
+    public abstract class AheadOfTimeCompiler
+    {
+        public abstract TextExpressionCompilerResults Compile(ClassToCompile classToCompile);
+    }
+    public class ClassToCompile : CompilerInput
+    {
+        public ClassToCompile(string className, string code, IReadOnlyCollection<Assembly> referencedAssemblies, IReadOnlyCollection<string> importedNamespaces) :
+            base(code, importedNamespaces)
+        {
+            ClassName = className;
+            ReferencedAssemblies = referencedAssemblies;
+        }
+        public string ClassName { get; }
+        public IReadOnlyCollection<Assembly> ReferencedAssemblies { get; set; }
+    }
+    public abstract class ScriptingAotCompiler : AheadOfTimeCompiler
     {
         protected abstract Script<object> Create(string code, ScriptOptions options);
         public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile)
@@ -57,11 +72,11 @@ namespace System.Activities
                 }));
         }
     }
-    public class CSharpAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
+    public class CSharpAotCompiler : ScriptingAotCompiler
     {
         protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
     }
-    public class VbAheadOfTimeCompiler : ScriptingAheadOfTimeCompiler
+    public class VbAotCompiler : ScriptingAotCompiler
     {
         protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create(code, options);
     }
