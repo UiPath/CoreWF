@@ -10,11 +10,12 @@ using System.Windows.Markup;
 using System.Xaml;
 using System.ComponentModel;
 using System.Activities.Internals;
-using UiPath.Workflow;
 using System.Reflection;
 
 namespace Microsoft.VisualBasic.Activities
 {
+    using CompilerFactory = Func<HashSet<Assembly>, JustInTimeCompiler>;
+
     [ValueSerializer(typeof(VisualBasicSettingsValueSerializer))]
     [TypeConverter(typeof(VisualBasicSettingsConverter))]
     public class VisualBasicSettings
@@ -68,7 +69,7 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public Func<HashSet<Assembly>, JustInTimeCompiler> CompilerFactory { get; set; } = references => new VbJustInTimeCompiler(references);
+        public CompilerFactory CompilerFactory { get; set; } = references => new VbJitCompiler(references);
 
         internal bool SuppressXamlSerialization 
         { 

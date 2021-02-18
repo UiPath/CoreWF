@@ -1,193 +1,37 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Microsoft.VisualBasic.Activities
+using System.Activities.ExpressionParser;
+using System.Activities.Expressions;
+using System.CodeDom;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Activities.Runtime;
+using System.Runtime.Collections;
+using System.Threading;
+using System.Collections.ObjectModel;
+using System.Security;
+using System.Activities.Internals;
+using Microsoft.VisualBasic.Activities;
+using System.Linq;
+
+namespace System.Activities
 {
-    using System;
-    using System.Activities;
-    using System.Activities.ExpressionParser;
-    using System.Activities.Expressions;
-    using System.CodeDom;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Reflection;
-    using System.Activities.Runtime;
-    using System.Runtime.Collections;
-    using System.Threading;
-    using System.Collections.ObjectModel;
-    using Microsoft.VisualBasic.CompilerServices;
-    using System.Security;
-    using System.Activities.Internals;
-
-    class VisualBasicHelper
+    abstract class JitCompilerHelper
     {
-        internal static string Language
-        {
-            get
-            {
-                return "VB";
-            }
-        }
-
         // the following assemblies are provided to the compiler by default
         // items are public so the decompiler knows which assemblies it doesn't need to reference for interfaces
         public static readonly IReadOnlyCollection<Assembly> DefaultReferencedAssemblies = new HashSet<Assembly>
-            {
-                typeof(int).Assembly, // mscorlib
-                typeof(CodeTypeDeclaration).Assembly, // System
-                typeof(Expression).Assembly,             // System.Core
-                typeof(Conversions).Assembly, //Microsoft.VisualBasic.Core
-                typeof(Activity).Assembly  // System.Activities
-            };
-
-        public static AssemblyName GetFastAssemblyName(Assembly assembly)
         {
-            return AssemblyReference.GetFastAssemblyName(assembly);
-        }
-
-        // cache for type's all base types, interfaces, generic arguments, element type
-        // HopperCache is a psuedo-MRU cache
-        const int typeReferenceCacheMaxSize = 100;
-        static object typeReferenceCacheLock = new object();
-        static HopperCache typeReferenceCache = new HopperCache(typeReferenceCacheMaxSize, false);
-        static ulong lastTimestamp = 0;
-
-        // Cache<(expressionText+ReturnType+Assemblies+Imports), LambdaExpression>
-        // LambdaExpression represents raw ExpressionTrees right out of the vb hosted compiler
-        // these raw trees are yet to be rewritten with appropriate Variables
-        const int rawTreeCacheMaxSize = 128;
-        static object rawTreeCacheLock = new object();
-        [Fx.Tag.SecurityNote(Critical = "Critical because it caches objects created under a demand for FullTrust.")]
-        [SecurityCritical]
-        static HopperCache rawTreeCache;
-
-        static HopperCache RawTreeCache
-        {
-            [Fx.Tag.SecurityNote(Critical = "Critical because it access critical member rawTreeCache.")]
-            [SecurityCritical]
-            get
-            {
-                if (rawTreeCache == null)
-                {
-                    rawTreeCache = new HopperCache(rawTreeCacheMaxSize, false);
-                }
-                return rawTreeCache;
-            }
-        }
-
-        const int HostedCompilerCacheSize = 10;
-        [Fx.Tag.SecurityNote(Critical = "Critical because it holds HostedCompilerWrappers which hold HostedCompiler instances, which require FullTrust.")]
-        [SecurityCritical]
-        static Dictionary<HashSet<Assembly>, HostedCompilerWrapper> HostedCompilerCache;
-
-        [Fx.Tag.SecurityNote(Critical = "Critical because it creates Microsoft.Compiler.VisualBasic.HostedCompiler, which is in a non-APTCA assembly, and thus has a LinkDemand.",
-            Safe = "Safe because it puts the HostedCompiler instance into the HostedCompilerCache member, which is SecurityCritical and we are demanding FullTrust.")]
-        [SecuritySafeCritical]
-        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        static HostedCompilerWrapper GetCachedHostedCompiler(HashSet<Assembly> assemblySet)
-        {            
-            if (HostedCompilerCache == null)
-            {
-                // we don't want to newup a Dictionary everytime GetCachedHostedCompiler is called only to find out the cache is already initialized.
-                Interlocked.CompareExchange(ref HostedCompilerCache,
-                    new Dictionary<HashSet<Assembly>, HostedCompilerWrapper>(HostedCompilerCacheSize, HashSet<Assembly>.CreateSetComparer()),
-                    null);
-            }            
-
-            lock (HostedCompilerCache)
-            {
-                HostedCompilerWrapper hcompilerWrapper;
-                if (HostedCompilerCache.TryGetValue(assemblySet, out hcompilerWrapper))
-                {
-                    hcompilerWrapper.Reserve(unchecked(++VisualBasicHelper.lastTimestamp));
-                    return hcompilerWrapper;
-                }
-
-                if (HostedCompilerCache.Count >= HostedCompilerCacheSize)
-                {
-                    // Find oldest used compiler to kick out
-                    ulong oldestTimestamp = ulong.MaxValue;
-                    HashSet<Assembly> oldestCompiler = null;
-                    foreach (KeyValuePair<HashSet<Assembly>, HostedCompilerWrapper> kvp in HostedCompilerCache)
-                    {
-                        if (oldestTimestamp > kvp.Value.Timestamp)
-                        {
-                            oldestCompiler = kvp.Key;
-                            oldestTimestamp = kvp.Value.Timestamp;
-                        }
-                    }
-
-                    if (oldestCompiler != null)
-                    {
-                        hcompilerWrapper = HostedCompilerCache[oldestCompiler];
-                        HostedCompilerCache.Remove(oldestCompiler);
-                        hcompilerWrapper.MarkAsKickedOut();
-                    }                    
-                }
-
-                hcompilerWrapper = new HostedCompilerWrapper(VisualBasicSettings.CreateCompiler(assemblySet));
-                HostedCompilerCache[assemblySet] = hcompilerWrapper;
-                hcompilerWrapper.Reserve(unchecked(++VisualBasicHelper.lastTimestamp));
-
-                return hcompilerWrapper;
-            }
-        }
-
-        HashSet<Assembly> referencedAssemblies;
-        IReadOnlyCollection<string> namespaceImports;
-        LocationReferenceEnvironment environment;
-        CodeActivityPublicEnvironmentAccessor? publicAccessor;
-
-        // this is a flag to differentiate the cached short-cut Rewrite from the normal post-compilation Rewrite
-        bool isShortCutRewrite = false;
-
-        public VisualBasicHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
-            : this(expressionText)
-        {
-            Initialize(refAssemNames, namespaceImportsNames);
-        }
-
-        VisualBasicHelper(string expressionText)
-        {
-            TextToCompile = expressionText;
-        }
-
-        public string TextToCompile { get; }
-
-        void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
-        {
-            namespaceImportsNames.Add("System");
-            namespaceImportsNames.Add("System.Linq.Expressions");
-            namespaceImportsNames.Remove("");
-            namespaceImportsNames.Remove(null);
-            namespaceImports = namespaceImportsNames;
-
-            foreach (AssemblyName assemblyName in refAssemNames)
-            {
-                if (referencedAssemblies == null)
-                {
-                    referencedAssemblies = new HashSet<Assembly>();
-                }
-                try
-                {
-                    Assembly loaded = AssemblyReference.GetAssembly(assemblyName);
-                    if(loaded != null)
-                    {
-                        referencedAssemblies.Add(loaded);
-                    }
-                }
-                catch(Exception e)
-                {
-                    if(Fx.IsFatal(e))
-                    {
-                        throw;
-                    }
-                    FxTrace.Exception.TraceUnhandledException(e);
-                }
-            }
-        }
-
+            typeof(int).Assembly, // mscorlib
+            typeof(CodeTypeDeclaration).Assembly, // System
+            typeof(Expression).Assembly,             // System.Core
+            typeof(Microsoft.VisualBasic.CompilerServices.Conversions).Assembly, //Microsoft.VisualBasic.Core
+            typeof(Activity).Assembly  // System.Activities
+        };
+        public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
+        protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
         public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces, out List<AssemblyReference> assemblies)
         {
             List<string> namespaceList = new List<string>();
@@ -241,11 +85,10 @@ namespace Microsoft.VisualBasic.Activities
             namespaces = namespaceList;
             assemblies = assemblyList;
         }
-
         static void ExtractNamespacesAndReferences(VisualBasicSettings vbSettings,
             IList<string> namespaces, IList<AssemblyReference> assemblies)
         {
-            foreach (VisualBasicImportReference importReference in vbSettings.ImportReferences)
+            foreach (var importReference in vbSettings.ImportReferences)
             {
                 namespaces.Add(importReference.Import);
                 assemblies.Add(new AssemblyReference
@@ -255,45 +98,154 @@ namespace Microsoft.VisualBasic.Activities
                 });
             }
         }
+    }
+    abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
+    {
+        // cache for type's all base types, interfaces, generic arguments, element type
+        // HopperCache is a psuedo-MRU cache
+        const int typeReferenceCacheMaxSize = 100;
+        static object typeReferenceCacheLock = new object();
+        static HopperCache typeReferenceCache = new HopperCache(typeReferenceCacheMaxSize, false);
+        static ulong lastTimestamp = 0;
+        // Cache<(expressionText+ReturnType+Assemblies+Imports), LambdaExpression>
+        // LambdaExpression represents raw ExpressionTrees right out of the vb hosted compiler
+        // these raw trees are yet to be rewritten with appropriate Variables
+        const int rawTreeCacheMaxSize = 128;
+        static object rawTreeCacheLock = new object();
+        [Fx.Tag.SecurityNote(Critical = "Critical because it caches objects created under a demand for FullTrust.")]
+        [SecurityCritical]
+        static HopperCache rawTreeCache;
 
-        public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
+        static HopperCache RawTreeCache
         {
-            List<string> localNamespaces;
-            List<AssemblyReference> localAssemblies;
-            GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity,
-                false, out localNamespaces, out localAssemblies);
-
-            VisualBasicHelper helper = new VisualBasicHelper(expressionText);
-            HashSet<AssemblyName> localReferenceAssemblies = new HashSet<AssemblyName>();
-            HashSet<string> localImports = new HashSet<string>(localNamespaces);
-            foreach (AssemblyReference assemblyReference in localAssemblies)
+            [Fx.Tag.SecurityNote(Critical = "Critical because it access critical member rawTreeCache.")]
+            [SecurityCritical]
+            get
             {
-                if (assemblyReference.Assembly != null)
+                if (rawTreeCache == null)
                 {
-                    // directly add the Assembly to the list
-                    // so that we don't have to go through 
-                    // the assembly resolution process
-                    if (helper.referencedAssemblies == null)
-                    {
-                        helper.referencedAssemblies = new HashSet<Assembly>();
-                    }
-                    helper.referencedAssemblies.Add(assemblyReference.Assembly);
+                    rawTreeCache = new HopperCache(rawTreeCacheMaxSize, false);
                 }
-                else if (assemblyReference.AssemblyName != null)
-                {
-                    localReferenceAssemblies.Add(assemblyReference.AssemblyName);
-                }
+                return rawTreeCache;
             }
-
-            helper.Initialize(localReferenceAssemblies, localImports);
-            return helper.Compile<T>(publicAccessor, isLocationExpression);
         }
 
+        const int HostedCompilerCacheSize = 10;
+        [Fx.Tag.SecurityNote(Critical = "Critical because it holds HostedCompilerWrappers which hold HostedCompiler instances, which require FullTrust.")]
+        [SecurityCritical]
+        static Dictionary<HashSet<Assembly>, HostedCompilerWrapper> HostedCompilerCache;
+
+        [Fx.Tag.SecurityNote(Critical = "Critical because it creates Microsoft.Compiler.VisualBasic.HostedCompiler, which is in a non-APTCA assembly, and thus has a LinkDemand.",
+            Safe = "Safe because it puts the HostedCompiler instance into the HostedCompilerCache member, which is SecurityCritical and we are demanding FullTrust.")]
+        [SecuritySafeCritical]
+        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        HostedCompilerWrapper GetCachedHostedCompiler(HashSet<Assembly> assemblySet)
+        {            
+            if (HostedCompilerCache == null)
+            {
+                // we don't want to newup a Dictionary everytime GetCachedHostedCompiler is called only to find out the cache is already initialized.
+                Interlocked.CompareExchange(ref HostedCompilerCache,
+                    new Dictionary<HashSet<Assembly>, HostedCompilerWrapper>(HostedCompilerCacheSize, HashSet<Assembly>.CreateSetComparer()),
+                    null);
+            }            
+
+            lock (HostedCompilerCache)
+            {
+                HostedCompilerWrapper hcompilerWrapper;
+                if (HostedCompilerCache.TryGetValue(assemblySet, out hcompilerWrapper))
+                {
+                    hcompilerWrapper.Reserve(unchecked(++lastTimestamp));
+                    return hcompilerWrapper;
+                }
+
+                if (HostedCompilerCache.Count >= HostedCompilerCacheSize)
+                {
+                    // Find oldest used compiler to kick out
+                    ulong oldestTimestamp = ulong.MaxValue;
+                    HashSet<Assembly> oldestCompiler = null;
+                    foreach (KeyValuePair<HashSet<Assembly>, HostedCompilerWrapper> kvp in HostedCompilerCache)
+                    {
+                        if (oldestTimestamp > kvp.Value.Timestamp)
+                        {
+                            oldestCompiler = kvp.Key;
+                            oldestTimestamp = kvp.Value.Timestamp;
+                        }
+                    }
+
+                    if (oldestCompiler != null)
+                    {
+                        hcompilerWrapper = HostedCompilerCache[oldestCompiler];
+                        HostedCompilerCache.Remove(oldestCompiler);
+                        hcompilerWrapper.MarkAsKickedOut();
+                    }                    
+                }
+
+                hcompilerWrapper = new HostedCompilerWrapper(CreateCompiler(assemblySet));
+                HostedCompilerCache[assemblySet] = hcompilerWrapper;
+                hcompilerWrapper.Reserve(unchecked(++lastTimestamp));
+
+                return hcompilerWrapper;
+            }
+        }
+
+        protected HashSet<Assembly> referencedAssemblies;
+        IReadOnlyCollection<string> namespaceImports;
+        LocationReferenceEnvironment environment;
+        CodeActivityPublicEnvironmentAccessor? publicAccessor;
+
+        // this is a flag to differentiate the cached short-cut Rewrite from the normal post-compilation Rewrite
+        bool isShortCutRewrite = false;
+
+        public JitCompilerHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+            : this(expressionText)
+        {
+            Initialize(refAssemNames, namespaceImportsNames);
+        }
+
+        protected JitCompilerHelper(string expressionText)
+        {
+            TextToCompile = expressionText;
+        }
+
+        public string TextToCompile { get; }
+
+        protected void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+        {
+            namespaceImportsNames.Add("System");
+            namespaceImportsNames.Add("System.Linq.Expressions");
+            namespaceImportsNames.Remove("");
+            namespaceImportsNames.Remove(null);
+            namespaceImports = namespaceImportsNames;
+
+            foreach (AssemblyName assemblyName in refAssemNames)
+            {
+                if (referencedAssemblies == null)
+                {
+                    referencedAssemblies = new HashSet<Assembly>();
+                }
+                try
+                {
+                    Assembly loaded = AssemblyReference.GetAssembly(assemblyName);
+                    if(loaded != null)
+                    {
+                        referencedAssemblies.Add(loaded);
+                    }
+                }
+                catch(Exception e)
+                {
+                    if(Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+                    FxTrace.Exception.TraceUnhandledException(e);
+                }
+            }
+        }
         [Fx.Tag.SecurityNote(Critical = "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
             Safe = "Safe because we are demanding FullTrust.")]
         [SecuritySafeCritical]
         //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        public LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment)
+        public override LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment)
         {
             bool abort;
             Expression finalBody;
@@ -329,13 +281,7 @@ namespace Microsoft.VisualBasic.Activities
                 // we don't want to see too many of vb expressions in this pass since we just wasted Rewrite time for no good.
             }
 
-            var scriptAndTypeScope = new VisualBasicScriptAndTypeScope(environment, referencedAssemblies.ToList());
-
-            //IImportScope importScope = new VisualBasicImportScope(importList);
-            //CompilerOptions options = new CompilerOptions();
-            //options.OptionStrict = OptionStrictSetting.On;
-            //CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
-
+            var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
             var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
             var compiler = compilerWrapper.Compiler;
             LambdaExpression lambda = null;
@@ -470,12 +416,7 @@ namespace Microsoft.VisualBasic.Activities
                 referencedAssemblies.Add(baseType.Assembly);
             }
 
-            var scriptAndTypeScope = new VisualBasicScriptAndTypeScope(environment, referencedAssemblies.ToList());
-
-            //IImportScope importScope = new VisualBasicImportScope(importList);
-            //CompilerOptions options = new CompilerOptions();
-            //options.OptionStrict = OptionStrictSetting.On;
-            //CompilerContext context = new CompilerContext(scriptAndTypeScope, scriptAndTypeScope, importScope, options);
+            var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
             var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
             var compiler = compilerWrapper.Compiler;
 
@@ -1549,12 +1490,12 @@ namespace Microsoft.VisualBasic.Activities
             }
         }
 
-        class VisualBasicScriptAndTypeScope
+        class ScriptAndTypeScope
         {
             LocationReferenceEnvironment environmentProvider;
             List<Assembly> assemblies;
 
-            public VisualBasicScriptAndTypeScope(LocationReferenceEnvironment environmentProvider, List<Assembly> assemblies)
+            public ScriptAndTypeScope(LocationReferenceEnvironment environmentProvider, List<Assembly> assemblies)
             {
                 this.environmentProvider = environmentProvider;
                 this.assemblies = assemblies;

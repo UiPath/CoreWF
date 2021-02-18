@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Activities;
+using System.Activities.ExpressionParser;
+using System.Activities.Expressions;
 using System.Activities.XamlIntegration;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Linq.Expressions;
+using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
+using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
@@ -165,18 +167,70 @@ namespace TestCases.Workflows
             var result = InvokeWorkflow(xamlString, inputs);
         }
     }
-    public class JustInTimeXamlTests : XamlTestsBase
+    public class JustInTimeXamlTests
     {
-        protected override bool CompileExpressions => false;
-        [Fact]
-        public void Should_infer_type()
+        [Theory]
+        [ClassData(typeof(VisualBasicInferTypeData))]
+        public void VisualBasicShould_Infer_Type(string text, Type resultType, string[] namespaces, string[] assemblies)
         {
-            var empty = Array.Empty<string>();
-            var text = "\"test\"";
-            var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
-            ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
-            value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, empty, empty, null, out _, out _, out _);
-            ((VisualBasicValue<string>)value).ExpressionText.ShouldBe(text);
+            VbCompile(text, resultType, namespaces, assemblies);
+            // this one is cached
+            VbCompile(text, resultType, namespaces, assemblies);
+        }
+        private static void VbCompile(string text, Type resultType, string[] namespaces, string[] assemblies)
+        {
+            var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, namespaces, assemblies, null, out var returnType, out var compileError, out _);
+            Check(text, resultType, value, returnType, compileError);
+        }
+        private static void CSharpCompile(string text, Type resultType, string[] namespaces, string[] assemblies)
+        {
+            var value = CSharpDesignerHelper.CreatePrecompiledValue(null, text, namespaces, assemblies, null, out var returnType, out var compileError, out _);
+            Check(text, resultType, value, returnType, compileError);
+        }
+        private static void Check(string text, Type resultType, Activity value, Type returnType, SourceExpressionException compileError)
+        {
+            ((ITextExpression)value).ExpressionText.ShouldBe(text);
+            ((ActivityWithResult)value).ResultType.ShouldBe(resultType);
+            returnType.ShouldBe(resultType);
+            compileError.ShouldBeNull();
+        }
+        [Theory]
+        [ClassData(typeof(CSharpInferTypeData))]
+        public void CSharpShould_Infer_Type(string text, Type resultType, string[] namespaces, string[] assemblies)
+        {
+            CSharpCompile(text, resultType, namespaces, assemblies);
+            // this one is cached
+            CSharpCompile(text, resultType, namespaces, assemblies);
+        }
+        public class CSharpInferTypeData : TheoryData<string, Type, string[], string[]>
+        {
+            public CSharpInferTypeData()
+            {
+                var empty = Array.Empty<string>();
+                Add("\"abc\"", typeof(string), empty, empty);
+                Add("123", typeof(int), empty, empty);
+                Add("new List<string>()", typeof(List<string>), new[]{ "System.Collections.Generic" }, empty);
+                Add("new JsonArrayAttribute()", typeof(JsonArrayAttribute), new[]{ "Newtonsoft.Json" }, new[]{ "Newtonsoft.Json" });
+            }
+        }
+        public class VisualBasicInferTypeData : TheoryData<string, Type, string[], string[]>
+        {
+            public VisualBasicInferTypeData()
+            {
+                var empty = Array.Empty<string>();
+                Add("\"abc\"", typeof(string), empty, empty);
+                Add("123", typeof(int), empty, empty);
+                Add("New List(Of String)()", typeof(List<string>), new[]{ "System.Collections.Generic" }, empty);
+                Add("New JsonArrayAttribute()", typeof(JsonArrayAttribute), new[]{ "Newtonsoft.Json" }, new[]{ "Newtonsoft.Json" });
+            }
+        }
+        [Fact]
+        public void Should_compile_CSharp()
+        {
+            var compiler = new CSharpJitCompiler(new[] { typeof(Expression).Assembly, typeof(Enumerable).Assembly }.ToHashSet());
+            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }) 
+                { LambdaReturnType = typeof(int), VariableTypeGetter = name => name == "source" ? typeof(List<int>) : null });
+            ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase

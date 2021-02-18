@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using UiPath.Workflow;
-
 namespace System.Activities.XamlIntegration
 {
     public class ActivityXamlServicesSettings
@@ -47,9 +45,9 @@ namespace System.Activities.XamlIntegration
             switch (language)
             {
                 case "C#":
-                    return CSharpCompiler ?? new CSharpAheadOfTimeCompiler();
+                    return CSharpCompiler ?? new CSharpAotCompiler();
                 case "VB":
-                    return VbCompiler ?? new VbAheadOfTimeCompiler();
+                    return VbCompiler ?? new VbAotCompiler();
             }
             throw new ArgumentOutOfRangeException(nameof(language), language, "Supported values: C# and VB.");
         }

@@ -114,7 +114,7 @@ namespace Microsoft.VisualBasic.Activities
                     CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
                     try
                     {                                                
-                        this.expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
+                        expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
                     }
                     catch (SourceExpressionException e)
                     {

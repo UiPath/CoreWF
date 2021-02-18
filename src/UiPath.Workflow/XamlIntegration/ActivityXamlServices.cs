@@ -17,7 +17,6 @@ namespace System.Activities.XamlIntegration
     using System.Activities.Internals;
     using System.Activities.Runtime;
     using System.Text;
-    using UiPath.Workflow;
 
     public static class ActivityXamlServices
     {
