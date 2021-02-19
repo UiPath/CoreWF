@@ -37,5 +37,8 @@ namespace Microsoft.CSharp.Activities
         public static Activity CreatePrecompiledValue(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> referencedAssemblies,
             LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings) =>
             Impl.CreatePrecompiledValue(targetType, expressionText, namespaces, referencedAssemblies, environment, out returnType, out compileError, out vbSettings);
+        public static Activity CreatePrecompiledReference(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> referencedAssemblies,
+            LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings) =>
+            Impl.CreatePrecompiledReference(targetType, expressionText, namespaces, referencedAssemblies, environment, out returnType, out compileError, out vbSettings);
     }
 }
