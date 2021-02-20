@@ -30,8 +30,52 @@ namespace System.Activities
             typeof(Microsoft.VisualBasic.CompilerServices.Conversions).Assembly, //Microsoft.VisualBasic.Core
             typeof(Activity).Assembly  // System.Activities
         };
+        // cache for type's all base types, interfaces, generic arguments, element type
+        // HopperCache is a psuedo-MRU cache
+        const int typeReferenceCacheMaxSize = 100;
+        static object typeReferenceCacheLock = new object();
+        static HopperCache typeReferenceCache = new HopperCache(typeReferenceCacheMaxSize, false);
+        protected HashSet<Assembly> referencedAssemblies;
+        protected IReadOnlyCollection<string> namespaceImports;
+        protected LocationReferenceEnvironment environment;
+        protected CodeActivityPublicEnvironmentAccessor? publicAccessor;
+        // this is a flag to differentiate the cached short-cut Rewrite from the normal post-compilation Rewrite
+        protected bool isShortCutRewrite = false;
         public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
         protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
+
+        protected void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+        {
+            namespaceImportsNames.Add("System");
+            namespaceImportsNames.Add("System.Linq.Expressions");
+            namespaceImportsNames.Remove("");
+            namespaceImportsNames.Remove(null);
+            namespaceImports = namespaceImportsNames;
+
+            foreach (AssemblyName assemblyName in refAssemNames)
+            {
+                if (referencedAssemblies == null)
+                {
+                    referencedAssemblies = new HashSet<Assembly>();
+                }
+                try
+                {
+                    Assembly loaded = AssemblyReference.GetAssembly(assemblyName);
+                    if (loaded != null)
+                    {
+                        referencedAssemblies.Add(loaded);
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (Fx.IsFatal(e))
+                    {
+                        throw;
+                    }
+                    FxTrace.Exception.TraceUnhandledException(e);
+                }
+            }
+        }
         public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces, out List<AssemblyReference> assemblies)
         {
             List<string> namespaceList = new List<string>();
@@ -98,418 +142,6 @@ namespace System.Activities
                 });
             }
         }
-    }
-    abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
-    {
-        // cache for type's all base types, interfaces, generic arguments, element type
-        // HopperCache is a psuedo-MRU cache
-        const int typeReferenceCacheMaxSize = 100;
-        static object typeReferenceCacheLock = new object();
-        static HopperCache typeReferenceCache = new HopperCache(typeReferenceCacheMaxSize, false);
-        static ulong lastTimestamp = 0;
-        // Cache<(expressionText+ReturnType+Assemblies+Imports), LambdaExpression>
-        // LambdaExpression represents raw ExpressionTrees right out of the vb hosted compiler
-        // these raw trees are yet to be rewritten with appropriate Variables
-        const int rawTreeCacheMaxSize = 128;
-        static object rawTreeCacheLock = new object();
-        [Fx.Tag.SecurityNote(Critical = "Critical because it caches objects created under a demand for FullTrust.")]
-        [SecurityCritical]
-        static HopperCache rawTreeCache;
-
-        static HopperCache RawTreeCache
-        {
-            [Fx.Tag.SecurityNote(Critical = "Critical because it access critical member rawTreeCache.")]
-            [SecurityCritical]
-            get
-            {
-                if (rawTreeCache == null)
-                {
-                    rawTreeCache = new HopperCache(rawTreeCacheMaxSize, false);
-                }
-                return rawTreeCache;
-            }
-        }
-
-        const int HostedCompilerCacheSize = 10;
-        [Fx.Tag.SecurityNote(Critical = "Critical because it holds HostedCompilerWrappers which hold HostedCompiler instances, which require FullTrust.")]
-        [SecurityCritical]
-        static Dictionary<HashSet<Assembly>, HostedCompilerWrapper> HostedCompilerCache;
-
-        [Fx.Tag.SecurityNote(Critical = "Critical because it creates Microsoft.Compiler.VisualBasic.HostedCompiler, which is in a non-APTCA assembly, and thus has a LinkDemand.",
-            Safe = "Safe because it puts the HostedCompiler instance into the HostedCompilerCache member, which is SecurityCritical and we are demanding FullTrust.")]
-        [SecuritySafeCritical]
-        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        HostedCompilerWrapper GetCachedHostedCompiler(HashSet<Assembly> assemblySet)
-        {            
-            if (HostedCompilerCache == null)
-            {
-                // we don't want to newup a Dictionary everytime GetCachedHostedCompiler is called only to find out the cache is already initialized.
-                Interlocked.CompareExchange(ref HostedCompilerCache,
-                    new Dictionary<HashSet<Assembly>, HostedCompilerWrapper>(HostedCompilerCacheSize, HashSet<Assembly>.CreateSetComparer()),
-                    null);
-            }            
-
-            lock (HostedCompilerCache)
-            {
-                HostedCompilerWrapper hcompilerWrapper;
-                if (HostedCompilerCache.TryGetValue(assemblySet, out hcompilerWrapper))
-                {
-                    hcompilerWrapper.Reserve(unchecked(++lastTimestamp));
-                    return hcompilerWrapper;
-                }
-
-                if (HostedCompilerCache.Count >= HostedCompilerCacheSize)
-                {
-                    // Find oldest used compiler to kick out
-                    ulong oldestTimestamp = ulong.MaxValue;
-                    HashSet<Assembly> oldestCompiler = null;
-                    foreach (KeyValuePair<HashSet<Assembly>, HostedCompilerWrapper> kvp in HostedCompilerCache)
-                    {
-                        if (oldestTimestamp > kvp.Value.Timestamp)
-                        {
-                            oldestCompiler = kvp.Key;
-                            oldestTimestamp = kvp.Value.Timestamp;
-                        }
-                    }
-
-                    if (oldestCompiler != null)
-                    {
-                        hcompilerWrapper = HostedCompilerCache[oldestCompiler];
-                        HostedCompilerCache.Remove(oldestCompiler);
-                        hcompilerWrapper.MarkAsKickedOut();
-                    }                    
-                }
-
-                hcompilerWrapper = new HostedCompilerWrapper(CreateCompiler(assemblySet));
-                HostedCompilerCache[assemblySet] = hcompilerWrapper;
-                hcompilerWrapper.Reserve(unchecked(++lastTimestamp));
-
-                return hcompilerWrapper;
-            }
-        }
-
-        protected HashSet<Assembly> referencedAssemblies;
-        IReadOnlyCollection<string> namespaceImports;
-        LocationReferenceEnvironment environment;
-        CodeActivityPublicEnvironmentAccessor? publicAccessor;
-
-        // this is a flag to differentiate the cached short-cut Rewrite from the normal post-compilation Rewrite
-        bool isShortCutRewrite = false;
-
-        public JitCompilerHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
-            : this(expressionText)
-        {
-            Initialize(refAssemNames, namespaceImportsNames);
-        }
-
-        protected JitCompilerHelper(string expressionText)
-        {
-            TextToCompile = expressionText;
-        }
-
-        public string TextToCompile { get; }
-
-        protected void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
-        {
-            namespaceImportsNames.Add("System");
-            namespaceImportsNames.Add("System.Linq.Expressions");
-            namespaceImportsNames.Remove("");
-            namespaceImportsNames.Remove(null);
-            namespaceImports = namespaceImportsNames;
-
-            foreach (AssemblyName assemblyName in refAssemNames)
-            {
-                if (referencedAssemblies == null)
-                {
-                    referencedAssemblies = new HashSet<Assembly>();
-                }
-                try
-                {
-                    Assembly loaded = AssemblyReference.GetAssembly(assemblyName);
-                    if(loaded != null)
-                    {
-                        referencedAssemblies.Add(loaded);
-                    }
-                }
-                catch(Exception e)
-                {
-                    if(Fx.IsFatal(e))
-                    {
-                        throw;
-                    }
-                    FxTrace.Exception.TraceUnhandledException(e);
-                }
-            }
-        }
-        [Fx.Tag.SecurityNote(Critical = "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
-            Safe = "Safe because we are demanding FullTrust.")]
-        [SecuritySafeCritical]
-        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        public override LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment)
-        {
-            bool abort;
-            Expression finalBody;
-            this.environment = environment;
-            if (referencedAssemblies == null)
-            {
-                referencedAssemblies = new HashSet<Assembly>();
-            }
-            referencedAssemblies.UnionWith(DefaultReferencedAssemblies);
-
-            RawTreeCacheKey rawTreeKey = new RawTreeCacheKey(
-                TextToCompile,
-                null,
-                referencedAssemblies,
-                namespaceImports);
-
-            RawTreeCacheValueWrapper rawTreeHolder = RawTreeCache.GetValue(rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
-            if (rawTreeHolder != null)
-            {
-                // try short-cut
-                // if variable resolution fails at Rewrite, rewind and perform normal compile steps
-                LambdaExpression rawTree = rawTreeHolder.Value;
-                isShortCutRewrite = true;
-                finalBody = Rewrite(rawTree.Body, null, false, out abort);
-                isShortCutRewrite = false;
-
-                if (!abort)
-                {
-                    return Expression.Lambda(rawTree.Type, finalBody, rawTree.Parameters);
-                }
-
-                // if we are here, then that means the shortcut Rewrite failed.
-                // we don't want to see too many of vb expressions in this pass since we just wasted Rewrite time for no good.
-            }
-
-            var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
-            var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
-            var compiler = compilerWrapper.Compiler;
-            LambdaExpression lambda = null;
-            try
-            {
-                lock (compiler)
-                {
-                    try
-                    {
-                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, typeof(object)));
-                    }
-                    catch(Exception e)
-                    {
-                        if(Fx.IsFatal(e))
-                        {
-                            throw;
-                        }
-                        FxTrace.Exception.TraceUnhandledException(e);
-                        throw;
-                    }
-                }
-            }
-            finally
-            {
-                compilerWrapper.Release();
-            }                                    
-
-            if (scriptAndTypeScope.ErrorMessage != null)
-            {
-                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(TextToCompile, scriptAndTypeScope.ErrorMessage)));
-            }
-
-            // replace the field references with variable references to our dummy variables
-            // and rewrite lambda.body.Type to equal the lambda return type T            
-            if (lambda == null)
-            {
-                // ExpressionText was either an empty string or Null
-                // we return null which eventually evaluates to default(TResult) at execution time.
-                return null;
-            }
-            // add the pre-rewrite lambda to RawTreeCache
-            var typedLambda = Expression.Lambda(((UnaryExpression)lambda.Body).Operand, lambda.Parameters);
-            AddToRawTreeCache(rawTreeKey, rawTreeHolder, typedLambda);
-
-            finalBody = Rewrite(typedLambda.Body, null, false, out abort);
-            Fx.Assert(abort == false, "this non-shortcut Rewrite must always return abort == false");
-
-            return Expression.Lambda(finalBody, lambda.Parameters);
-        }
-
-        ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType) => 
-            new ExpressionToCompile(TextToCompile, namespaceImports)
-            {
-                VariableTypeGetter = variableTypeGetter,
-                LambdaReturnType = lambdaReturnType,
-            };
-
-        public Expression<Func<ActivityContext, T>> Compile<T>(CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationReference = false)
-        {
-            this.publicAccessor = publicAccessor;
-
-            return Compile<T>(publicAccessor.ActivityMetadata.Environment, isLocationReference);
-        }
-
-        // Soft-Link: This method is called through reflection by VisualBasicDesignerHelper.
-        public Expression<Func<ActivityContext, T>> Compile<T>(LocationReferenceEnvironment environment)
-        {
-            Fx.Assert(publicAccessor == null, "No public accessor so the value for isLocationReference doesn't matter");
-            return Compile<T>(environment, false);
-        }
-
-        [Fx.Tag.SecurityNote(Critical = "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
-            Safe = "Safe because we are demanding FullTrust.")]
-        [SecuritySafeCritical]
-        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        public Expression<Func<ActivityContext, T>> Compile<T>(LocationReferenceEnvironment environment, bool isLocationReference)
-        {
-            bool abort;
-            Expression finalBody;
-            Type lambdaReturnType = typeof(T);
-
-            this.environment = environment;
-            if (referencedAssemblies == null)
-            {
-                referencedAssemblies = new HashSet<Assembly>();
-            }
-            referencedAssemblies.UnionWith(DefaultReferencedAssemblies);
-
-            RawTreeCacheKey rawTreeKey = new RawTreeCacheKey(
-                TextToCompile,
-                lambdaReturnType,
-                referencedAssemblies,
-                namespaceImports);
-
-            RawTreeCacheValueWrapper rawTreeHolder = RawTreeCache.GetValue(rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
-            if (rawTreeHolder != null)
-            {
-                // try short-cut
-                // if variable resolution fails at Rewrite, rewind and perform normal compile steps
-                LambdaExpression rawTree = rawTreeHolder.Value;
-                isShortCutRewrite = true;
-                finalBody = Rewrite(rawTree.Body, null, isLocationReference, out abort);
-                isShortCutRewrite = false;
-
-                if (!abort)
-                {
-                    Fx.Assert(finalBody.Type == lambdaReturnType, "Compiler generated ExpressionTree return type doesn't match the target return type");
-                    // convert it into the our expected lambda format (context => ...)
-                    return Expression.Lambda<Func<ActivityContext, T>>(finalBody,
-                        FindParameter(finalBody) ?? ExpressionUtilities.RuntimeContextParameter);
-                }
-
-                // if we are here, then that means the shortcut Rewrite failed.
-                // we don't want to see too many of vb expressions in this pass since we just wasted Rewrite time for no good.
-
-                if (publicAccessor != null)
-                {
-                    // from the preceding shortcut rewrite, we probably have generated tempAutoGeneratedArguments
-                    // they are not valid anymore since we just aborted the shortcut rewrite.
-                    // clean up, and start again.
-
-                    publicAccessor.Value.ActivityMetadata.CurrentActivity.ResetTempAutoGeneratedArguments();
-                }
-            }
-
-            // ensure the return type's assembly is added to ref assembly list
-            HashSet<Type> allBaseTypes = null;
-            EnsureTypeReferenced(lambdaReturnType, ref allBaseTypes);
-            foreach (Type baseType in allBaseTypes)
-            {
-                // allBaseTypes list always contains lambdaReturnType
-                referencedAssemblies.Add(baseType.Assembly);
-            }
-
-            var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
-            var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
-            var compiler = compilerWrapper.Compiler;
-
-            if (TD.CompileVbExpressionStartIsEnabled())
-            {
-                TD.CompileVbExpressionStart(TextToCompile);
-            }
-            LambdaExpression lambda = null;
-            try
-            {
-                lock (compiler)
-                {
-                    try
-                    {
-                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, lambdaReturnType));
-                    }
-                    catch(Exception e)
-                    {
-                        if (Fx.IsFatal(e))
-                        {
-                            throw;
-                        }
-                        // We never want to end up here, Compiler bugs needs to be fixed.
-                        FxTrace.Exception.TraceUnhandledException(e);
-                        throw;
-                    }
-                }
-            }
-            finally
-            {
-                compilerWrapper.Release();
-            }                                    
-            
-            if (TD.CompileVbExpressionStopIsEnabled())
-            {
-                TD.CompileVbExpressionStop();
-            }
-
-            if (scriptAndTypeScope.ErrorMessage != null)
-            {
-                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(TextToCompile, scriptAndTypeScope.ErrorMessage)));
-            }
-
-            // replace the field references with variable references to our dummy variables
-            // and rewrite lambda.body.Type to equal the lambda return type T            
-            if (lambda == null)
-            {
-                // ExpressionText was either an empty string or Null
-                // we return null which eventually evaluates to default(TResult) at execution time.
-                return null;
-            }
-
-            // add the pre-rewrite lambda to RawTreeCache
-            AddToRawTreeCache(rawTreeKey, rawTreeHolder, lambda);
-
-            finalBody = Rewrite(lambda.Body, null, isLocationReference, out abort);
-            Fx.Assert(abort == false, "this non-shortcut Rewrite must always return abort == false");
-            Fx.Assert(finalBody.Type == lambdaReturnType, "Compiler generated ExpressionTree return type doesn't match the target return type");
-
-            // convert it into the our expected lambda format (context => ...)
-            return Expression.Lambda<Func<ActivityContext, T>>(finalBody,
-                FindParameter(finalBody) ?? ExpressionUtilities.RuntimeContextParameter);
-        }
-
-        [Fx.Tag.SecurityNote(Critical = "Critical because it access SecurityCritical member RawTreeCache, thus requiring FullTrust.",
-            Safe = "Safe because we are demanding FullTrust.")]
-        [SecuritySafeCritical]
-        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-        static void AddToRawTreeCache(RawTreeCacheKey rawTreeKey, RawTreeCacheValueWrapper rawTreeHolder, LambdaExpression lambda)
-        {
-            if (rawTreeHolder != null)
-            {
-                // this indicates that the key had been found in RawTreeCache,
-                // but the value Expression Tree failed the short-cut Rewrite.
-                // ---- is really not an issue here, because
-                // any one of possibly many raw Expression Trees that are all 
-                // represented by the same key can be written here.
-                rawTreeHolder.Value = lambda;
-            }
-            else
-            {
-                // we never hit RawTreeCache with the given key
-                lock (rawTreeCacheLock)
-                {
-                    // ensure we don't add the same key with two differnt RawTreeValueWrappers
-                    if (RawTreeCache.GetValue(rawTreeCacheLock, rawTreeKey) == null)
-                    {
-                        // do we need defense against alternating miss of the shortcut Rewrite?
-                        RawTreeCache.Add(rawTreeKey, new RawTreeCacheValueWrapper() { Value = lambda });
-                    }
-                }
-            }
-        }
 
         delegate bool FindMatch(LocationReference reference, string targetName, Type targetType, out bool terminateSearch);
         static FindMatch delegateFindLocationReferenceMatchShortcut = new FindMatch(FindLocationReferenceMatchShortcut);
@@ -555,12 +187,12 @@ namespace System.Activities
 
         // Returning null indicates the cached LambdaExpression used here doesn't coincide with current LocationReferenceEnvironment.
         // Null return value causes the process to rewind and start from HostedCompiler.CompileExpression().
-        Expression Rewrite(Expression expression, ReadOnlyCollection<ParameterExpression> lambdaParameters, out bool abort)
+        protected Expression Rewrite(Expression expression, ReadOnlyCollection<ParameterExpression> lambdaParameters, out bool abort)
         {
             return Rewrite(expression, lambdaParameters, false, out abort);
         }
 
-        Expression Rewrite(Expression expression, ReadOnlyCollection<ParameterExpression> lambdaParameters, bool isLocationExpression, out bool abort)
+        protected Expression Rewrite(Expression expression, ReadOnlyCollection<ParameterExpression> lambdaParameters, bool isLocationExpression, out bool abort)
         {
             int i;
             int j;
@@ -1110,7 +742,7 @@ namespace System.Activities
             }
         }
 
-        static ParameterExpression FindParameter(Expression expression)
+        protected static ParameterExpression FindParameter(Expression expression)
         {
             if (expression == null)
             {
@@ -1304,7 +936,7 @@ namespace System.Activities
             return null;
         }
 
-        static void EnsureTypeReferenced(Type type, ref HashSet<Type> typeReferences)
+        protected static void EnsureTypeReferenced(Type type, ref HashSet<Type> typeReferences)
         {
             // lookup cache 
             // underlying assumption is that type's inheritance(or interface) hierarchy 
@@ -1395,7 +1027,7 @@ namespace System.Activities
         }
 
         static LocationReference FindLocationReferencesFromEnvironment(LocationReferenceEnvironment environment, FindMatch findMatch, string targetName, Type targetType, out bool foundMultiple)
-        {            
+        {
             LocationReferenceEnvironment currentEnvironment = environment;
             foundMultiple = false;
             while (currentEnvironment != null)
@@ -1429,16 +1061,14 @@ namespace System.Activities
 
             return null;
         }
-
         // this is a place holder for LambdaExpression(raw Expression Tree) that is to be stored in the cache
         // this wrapper is necessary because HopperCache requires that once you already have a key along with its associated value in the cache
         // you cannot add the same key with a different value.
-        class RawTreeCacheValueWrapper
+        protected class RawTreeCacheValueWrapper
         {
             public LambdaExpression Value { get; set; }
         }
-
-        class RawTreeCacheKey
+        protected class RawTreeCacheKey
         {
             static IEqualityComparer<HashSet<Assembly>> AssemblySetEqualityComparer = HashSet<Assembly>.CreateSetComparer();
             static IEqualityComparer<HashSet<string>> NamespaceSetEqualityComparer = HashSet<string>.CreateSetComparer();
@@ -1490,7 +1120,7 @@ namespace System.Activities
             }
         }
 
-        class ScriptAndTypeScope
+        protected class ScriptAndTypeScope
         {
             LocationReferenceEnvironment environmentProvider;
             List<Assembly> assemblies;
@@ -1539,7 +1169,7 @@ namespace System.Activities
 
         [Fx.Tag.SecurityNote(Critical = "Critical because it holds a HostedCompiler instance, which requires FullTrust.")]
         [SecurityCritical]
-        class HostedCompilerWrapper
+        protected class HostedCompilerWrapper
         {
             object wrapperLock;
             bool isCached;
@@ -1605,6 +1235,373 @@ namespace System.Activities
                     }
                 }
                 compilerToDispose?.Dispose();
+            }
+        }
+    }
+    abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
+    {
+        static ulong lastTimestamp = 0;
+        // Cache<(expressionText+ReturnType+Assemblies+Imports), LambdaExpression>
+        // LambdaExpression represents raw ExpressionTrees right out of the vb hosted compiler
+        // these raw trees are yet to be rewritten with appropriate Variables
+        const int rawTreeCacheMaxSize = 128;
+        static object rawTreeCacheLock = new object();
+        [Fx.Tag.SecurityNote(Critical = "Critical because it caches objects created under a demand for FullTrust.")]
+        [SecurityCritical]
+        static HopperCache rawTreeCache;
+
+        static HopperCache RawTreeCache
+        {
+            [Fx.Tag.SecurityNote(Critical = "Critical because it access critical member rawTreeCache.")]
+            [SecurityCritical]
+            get
+            {
+                if (rawTreeCache == null)
+                {
+                    rawTreeCache = new HopperCache(rawTreeCacheMaxSize, false);
+                }
+                return rawTreeCache;
+            }
+        }
+
+        const int HostedCompilerCacheSize = 10;
+        [Fx.Tag.SecurityNote(Critical = "Critical because it holds HostedCompilerWrappers which hold HostedCompiler instances, which require FullTrust.")]
+        [SecurityCritical]
+        static Dictionary<HashSet<Assembly>, HostedCompilerWrapper> HostedCompilerCache;
+
+        [Fx.Tag.SecurityNote(Critical = "Critical because it creates Microsoft.Compiler.VisualBasic.HostedCompiler, which is in a non-APTCA assembly, and thus has a LinkDemand.",
+            Safe = "Safe because it puts the HostedCompiler instance into the HostedCompilerCache member, which is SecurityCritical and we are demanding FullTrust.")]
+        [SecuritySafeCritical]
+        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        HostedCompilerWrapper GetCachedHostedCompiler(HashSet<Assembly> assemblySet)
+        {            
+            if (HostedCompilerCache == null)
+            {
+                // we don't want to newup a Dictionary everytime GetCachedHostedCompiler is called only to find out the cache is already initialized.
+                Interlocked.CompareExchange(ref HostedCompilerCache,
+                    new Dictionary<HashSet<Assembly>, HostedCompilerWrapper>(HostedCompilerCacheSize, HashSet<Assembly>.CreateSetComparer()),
+                    null);
+            }            
+
+            lock (HostedCompilerCache)
+            {
+                HostedCompilerWrapper hcompilerWrapper;
+                if (HostedCompilerCache.TryGetValue(assemblySet, out hcompilerWrapper))
+                {
+                    hcompilerWrapper.Reserve(unchecked(++lastTimestamp));
+                    return hcompilerWrapper;
+                }
+
+                if (HostedCompilerCache.Count >= HostedCompilerCacheSize)
+                {
+                    // Find oldest used compiler to kick out
+                    ulong oldestTimestamp = ulong.MaxValue;
+                    HashSet<Assembly> oldestCompiler = null;
+                    foreach (KeyValuePair<HashSet<Assembly>, HostedCompilerWrapper> kvp in HostedCompilerCache)
+                    {
+                        if (oldestTimestamp > kvp.Value.Timestamp)
+                        {
+                            oldestCompiler = kvp.Key;
+                            oldestTimestamp = kvp.Value.Timestamp;
+                        }
+                    }
+
+                    if (oldestCompiler != null)
+                    {
+                        hcompilerWrapper = HostedCompilerCache[oldestCompiler];
+                        HostedCompilerCache.Remove(oldestCompiler);
+                        hcompilerWrapper.MarkAsKickedOut();
+                    }                    
+                }
+
+                hcompilerWrapper = new HostedCompilerWrapper(CreateCompiler(assemblySet));
+                HostedCompilerCache[assemblySet] = hcompilerWrapper;
+                hcompilerWrapper.Reserve(unchecked(++lastTimestamp));
+
+                return hcompilerWrapper;
+            }
+        }
+
+        public JitCompilerHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+            : this(expressionText)
+        {
+            Initialize(refAssemNames, namespaceImportsNames);
+        }
+
+        protected JitCompilerHelper(string expressionText)
+        {
+            TextToCompile = expressionText;
+        }
+
+        public string TextToCompile { get; }
+
+        [Fx.Tag.SecurityNote(Critical = "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
+            Safe = "Safe because we are demanding FullTrust.")]
+        [SecuritySafeCritical]
+        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        public override LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment)
+        {
+            bool abort;
+            Expression finalBody;
+            this.environment = environment;
+            if (referencedAssemblies == null)
+            {
+                referencedAssemblies = new HashSet<Assembly>();
+            }
+            referencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+
+            RawTreeCacheKey rawTreeKey = new RawTreeCacheKey(
+                TextToCompile,
+                null,
+                referencedAssemblies,
+                namespaceImports);
+
+            RawTreeCacheValueWrapper rawTreeHolder = RawTreeCache.GetValue(rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
+            if (rawTreeHolder != null)
+            {
+                // try short-cut
+                // if variable resolution fails at Rewrite, rewind and perform normal compile steps
+                LambdaExpression rawTree = rawTreeHolder.Value;
+                isShortCutRewrite = true;
+                finalBody = Rewrite(rawTree.Body, null, false, out abort);
+                isShortCutRewrite = false;
+
+                if (!abort)
+                {
+                    return Expression.Lambda(rawTree.Type, finalBody, rawTree.Parameters);
+                }
+
+                // if we are here, then that means the shortcut Rewrite failed.
+                // we don't want to see too many of vb expressions in this pass since we just wasted Rewrite time for no good.
+            }
+
+            var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
+            var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
+            var compiler = compilerWrapper.Compiler;
+            LambdaExpression lambda = null;
+            try
+            {
+                lock (compiler)
+                {
+                    try
+                    {
+                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, typeof(object)));
+                    }
+                    catch(Exception e)
+                    {
+                        if(Fx.IsFatal(e))
+                        {
+                            throw;
+                        }
+                        FxTrace.Exception.TraceUnhandledException(e);
+                        throw;
+                    }
+                }
+            }
+            finally
+            {
+                compilerWrapper.Release();
+            }                                    
+
+            if (scriptAndTypeScope.ErrorMessage != null)
+            {
+                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(TextToCompile, scriptAndTypeScope.ErrorMessage)));
+            }
+
+            // replace the field references with variable references to our dummy variables
+            // and rewrite lambda.body.Type to equal the lambda return type T            
+            if (lambda == null)
+            {
+                // ExpressionText was either an empty string or Null
+                // we return null which eventually evaluates to default(TResult) at execution time.
+                return null;
+            }
+            // add the pre-rewrite lambda to RawTreeCache
+            var typedLambda = Expression.Lambda(((UnaryExpression)lambda.Body).Operand, lambda.Parameters);
+            AddToRawTreeCache(rawTreeKey, rawTreeHolder, typedLambda);
+
+            finalBody = Rewrite(typedLambda.Body, null, false, out abort);
+            Fx.Assert(abort == false, "this non-shortcut Rewrite must always return abort == false");
+
+            return Expression.Lambda(finalBody, lambda.Parameters);
+        }
+
+        ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType) => 
+            new ExpressionToCompile(TextToCompile, namespaceImports)
+            {
+                VariableTypeGetter = variableTypeGetter,
+                LambdaReturnType = lambdaReturnType,
+            };
+
+        public Expression<Func<ActivityContext, T>> Compile<T>(CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationReference = false)
+        {
+            this.publicAccessor = publicAccessor;
+
+            return Compile<T>(publicAccessor.ActivityMetadata.Environment, isLocationReference);
+        }
+
+        // Soft-Link: This method is called through reflection by VisualBasicDesignerHelper.
+        public Expression<Func<ActivityContext, T>> Compile<T>(LocationReferenceEnvironment environment)
+        {
+            Fx.Assert(publicAccessor == null, "No public accessor so the value for isLocationReference doesn't matter");
+            return Compile<T>(environment, false);
+        }
+
+        [Fx.Tag.SecurityNote(Critical = "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
+            Safe = "Safe because we are demanding FullTrust.")]
+        [SecuritySafeCritical]
+        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        public Expression<Func<ActivityContext, T>> Compile<T>(LocationReferenceEnvironment environment, bool isLocationReference)
+        {
+            bool abort;
+            Expression finalBody;
+            Type lambdaReturnType = typeof(T);
+
+            this.environment = environment;
+            if (referencedAssemblies == null)
+            {
+                referencedAssemblies = new HashSet<Assembly>();
+            }
+            referencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+
+            RawTreeCacheKey rawTreeKey = new RawTreeCacheKey(
+                TextToCompile,
+                lambdaReturnType,
+                referencedAssemblies,
+                namespaceImports);
+
+            RawTreeCacheValueWrapper rawTreeHolder = RawTreeCache.GetValue(rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
+            if (rawTreeHolder != null)
+            {
+                // try short-cut
+                // if variable resolution fails at Rewrite, rewind and perform normal compile steps
+                LambdaExpression rawTree = rawTreeHolder.Value;
+                isShortCutRewrite = true;
+                finalBody = Rewrite(rawTree.Body, null, isLocationReference, out abort);
+                isShortCutRewrite = false;
+
+                if (!abort)
+                {
+                    Fx.Assert(finalBody.Type == lambdaReturnType, "Compiler generated ExpressionTree return type doesn't match the target return type");
+                    // convert it into the our expected lambda format (context => ...)
+                    return Expression.Lambda<Func<ActivityContext, T>>(finalBody,
+                        FindParameter(finalBody) ?? ExpressionUtilities.RuntimeContextParameter);
+                }
+
+                // if we are here, then that means the shortcut Rewrite failed.
+                // we don't want to see too many of vb expressions in this pass since we just wasted Rewrite time for no good.
+
+                if (publicAccessor != null)
+                {
+                    // from the preceding shortcut rewrite, we probably have generated tempAutoGeneratedArguments
+                    // they are not valid anymore since we just aborted the shortcut rewrite.
+                    // clean up, and start again.
+
+                    publicAccessor.Value.ActivityMetadata.CurrentActivity.ResetTempAutoGeneratedArguments();
+                }
+            }
+
+            // ensure the return type's assembly is added to ref assembly list
+            HashSet<Type> allBaseTypes = null;
+            EnsureTypeReferenced(lambdaReturnType, ref allBaseTypes);
+            foreach (Type baseType in allBaseTypes)
+            {
+                // allBaseTypes list always contains lambdaReturnType
+                referencedAssemblies.Add(baseType.Assembly);
+            }
+
+            var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
+            var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
+            var compiler = compilerWrapper.Compiler;
+
+            if (TD.CompileVbExpressionStartIsEnabled())
+            {
+                TD.CompileVbExpressionStart(TextToCompile);
+            }
+            LambdaExpression lambda = null;
+            try
+            {
+                lock (compiler)
+                {
+                    try
+                    {
+                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, lambdaReturnType));
+                    }
+                    catch(Exception e)
+                    {
+                        if (Fx.IsFatal(e))
+                        {
+                            throw;
+                        }
+                        // We never want to end up here, Compiler bugs needs to be fixed.
+                        FxTrace.Exception.TraceUnhandledException(e);
+                        throw;
+                    }
+                }
+            }
+            finally
+            {
+                compilerWrapper.Release();
+            }                                    
+            
+            if (TD.CompileVbExpressionStopIsEnabled())
+            {
+                TD.CompileVbExpressionStop();
+            }
+
+            if (scriptAndTypeScope.ErrorMessage != null)
+            {
+                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(TextToCompile, scriptAndTypeScope.ErrorMessage)));
+            }
+
+            // replace the field references with variable references to our dummy variables
+            // and rewrite lambda.body.Type to equal the lambda return type T            
+            if (lambda == null)
+            {
+                // ExpressionText was either an empty string or Null
+                // we return null which eventually evaluates to default(TResult) at execution time.
+                return null;
+            }
+
+            // add the pre-rewrite lambda to RawTreeCache
+            AddToRawTreeCache(rawTreeKey, rawTreeHolder, lambda);
+
+            finalBody = Rewrite(lambda.Body, null, isLocationReference, out abort);
+            Fx.Assert(abort == false, "this non-shortcut Rewrite must always return abort == false");
+            Fx.Assert(finalBody.Type == lambdaReturnType, "Compiler generated ExpressionTree return type doesn't match the target return type");
+
+            // convert it into the our expected lambda format (context => ...)
+            return Expression.Lambda<Func<ActivityContext, T>>(finalBody,
+                FindParameter(finalBody) ?? ExpressionUtilities.RuntimeContextParameter);
+        }
+
+        [Fx.Tag.SecurityNote(Critical = "Critical because it access SecurityCritical member RawTreeCache, thus requiring FullTrust.",
+            Safe = "Safe because we are demanding FullTrust.")]
+        [SecuritySafeCritical]
+        //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+        static void AddToRawTreeCache(RawTreeCacheKey rawTreeKey, RawTreeCacheValueWrapper rawTreeHolder, LambdaExpression lambda)
+        {
+            if (rawTreeHolder != null)
+            {
+                // this indicates that the key had been found in RawTreeCache,
+                // but the value Expression Tree failed the short-cut Rewrite.
+                // ---- is really not an issue here, because
+                // any one of possibly many raw Expression Trees that are all 
+                // represented by the same key can be written here.
+                rawTreeHolder.Value = lambda;
+            }
+            else
+            {
+                // we never hit RawTreeCache with the given key
+                lock (rawTreeCacheLock)
+                {
+                    // ensure we don't add the same key with two differnt RawTreeValueWrappers
+                    if (RawTreeCache.GetValue(rawTreeCacheLock, rawTreeKey) == null)
+                    {
+                        // do we need defense against alternating miss of the shortcut Rewrite?
+                        RawTreeCache.Add(rawTreeKey, new RawTreeCacheValueWrapper() { Value = lambda });
+                    }
+                }
             }
         }
     }
