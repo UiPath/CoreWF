@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>变量类型“{0}”与 Location 类型“{1}”不匹配。</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree 未能获取表达式树，原因是 VisualBasic 表达式文本或对其可见的 LocationReferenceEnvironment 自缓存后已发生更改。编译错误消息为: {0}。</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree 未能获取表达式树，原因是 表达式文本或对其可见的 LocationReferenceEnvironment 自缓存后已发生更改。编译错误消息为: {0}。</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle 一次最多只能有一个正在进行的未处理 WaitForEvents 或 BeginWaitForEvents 操作。尝试了第二个操作。只能在上一个操作完成后调用 WaitForEvents / BeginWaitForEvents。</value>

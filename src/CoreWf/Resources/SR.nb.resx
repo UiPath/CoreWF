@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Variabeltypen {0} samsvarer ikke med plasseringstypen {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree kan ikke hente et uttrykkstre fordi VisualBasic-uttrykksteksten eller LocationReferenceEnvironment som er synlig for teksten, er endret siden den ble bufret. Feilmelding for kompilering: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree kan ikke hente et uttrykkstre fordi uttrykksteksten eller LocationReferenceEnvironment som er synlig for teksten, er endret siden den ble bufret. Feilmelding for kompilering: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Et InstanceHandle kan bare ha én utestående WaitForEvents- eller BeginWaitForEvents-operasjon som pågår samtidig. En sekundær operasjon ble forsøkt. Du kan bare kalle opp WaitForEvents/BeginWaitForEvents når den forrige operasjonen er fullført.</value>

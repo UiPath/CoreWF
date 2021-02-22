@@ -699,7 +699,7 @@ namespace System.Activities
         internal static string VariableShouldBeOpen(object p0) { return SR.Instance["VariableShouldBeOpen", p0]; }
         internal static string VariableTypeInvalid(object p0, object p1, object p2) { return SR.Instance["VariableTypeInvalid", p0, p1, p2]; }
         internal static string VariableTypeNotMatchLocationType(object p0, object p1) { return SR.Instance["VariableTypeNotMatchLocationType", p0, p1]; }
-        internal static string VBExpressionTamperedSinceLastCompiled(object p0) { return SR.Instance["VBExpressionTamperedSinceLastCompiled", p0]; }
+        internal static string ExpressionTamperedSinceLastCompiled(object p0) { return SR.Instance["ExpressionTamperedSinceLastCompiled", p0]; }
         internal static string WaitAlreadyInProgress { get { return SR.Instance["WaitAlreadyInProgress"]; } }
         internal static string WaitForEventsTimedOut(object p0) { return SR.Instance["WaitForEventsTimedOut", p0]; }
         internal static string WDCDisposed { get { return SR.Instance["WDCDisposed"]; } }

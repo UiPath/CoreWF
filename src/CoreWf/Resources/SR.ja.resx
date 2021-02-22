@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>変数の型 '{0}' は Location 型 '{1}' に一致しません。</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>VisualBasic 式テキストまたはその LocationReferenceEnvironment 変数がキャッシュ後に変更されたため、GetExpressionTree は式ツリーを取得できませんでした。コンパイラ エラー メッセージ: {0}。</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>式テキストまたはその LocationReferenceEnvironment 変数がキャッシュ後に変更されたため、GetExpressionTree は式ツリーを取得できませんでした。コンパイラ エラー メッセージ: {0}。</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle が処理できる WaitForEvents または BeginWaitForEvents 操作は 1 度に 1 つまでです。別の操作が試行されました。前の操作が完了してからのみ、WaitForEvents/BeginWaitForEvents を呼び出してください。</value>

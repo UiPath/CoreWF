@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>變數型別 '{0}' 不符合位置型別 '{1}'。</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree 無法取得運算式樹狀架構，因為其可見的 VisualBasic 運算式文字或 LocationReferenceEnvironment 自快取以來已經過更改。編譯錯誤訊息為 : {0}。</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree 無法取得運算式樹狀架構，因為其可見的 運算式文字或 LocationReferenceEnvironment 自快取以來已經過更改。編譯錯誤訊息為 : {0}。</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle 一次最多只能進行一個未處理的 WaitForEvents 或 BeginWaitForEvents 作業。第二個作業遭到嘗試執行。僅在上一個作業已完成時才呼叫 WaitForEvents / BeginWaitForEvents。</value>

@@ -118,7 +118,7 @@ namespace Microsoft.VisualBasic.Activities
 
                         if (validationError != null)
                         {
-                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VBExpressionTamperedSinceLastCompiled(validationError)));
+                            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(validationError)));
                         }            
                     }
                     finally

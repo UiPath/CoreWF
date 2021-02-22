@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>O tipo de variável '{0}' não corresponde ao tipo Location '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Falha do GetExpressionTree ao obter uma árvore de expressões porque o texto da expressão do VisualBasic ou o LocationReferenceEnvironment visível para ele foi alterado desde que foi armazenado em cache. Mensagem de erro de compilação: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Falha do GetExpressionTree ao obter uma árvore de expressões porque o texto da expressão do ou o LocationReferenceEnvironment visível para ele foi alterado desde que foi armazenado em cache. Mensagem de erro de compilação: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Um InstanceHandle pode ter no máximo uma operação WaitForEvents ou BeginWaitForEvents pendente em andamento por vez. Foi feita uma tentativa de uma segunda operação. Chame apenas WaitForEvents / BeginWaitForEvents assim que a operação anterior tiver sido concluída.</value>
