@@ -22,3 +22,4 @@ using System.Windows.Markup;
 
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "System.Activities.Debugger.Symbol")]
 [assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "sads")]
+[assembly: InternalsVisibleTo("TestCases.Workflows")]

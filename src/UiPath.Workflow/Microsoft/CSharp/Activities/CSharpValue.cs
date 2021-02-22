@@ -3,79 +3,33 @@
 
 namespace Microsoft.CSharp.Activities
 {
+    using Microsoft.Common;
     using System;
     using System.Activities;
-    using System.Activities.Expressions;
-    using System.Activities.Validation;
-    using System.Activities.XamlIntegration;
-    using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Diagnostics;
     using System.Linq.Expressions;
-    using System.Reflection;
-    using System.Activities.Runtime;
     using System.Windows.Markup;
-    using System.Activities.Internals;
 
-    [DebuggerStepThrough]
+    [System.Diagnostics.DebuggerStepThrough]
     [ContentProperty("ExpressionText")]
-    public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
+    public class CSharpValue<TResult> : Value<TResult>
     {
-        CompiledExpressionInvoker invoker;
-          
         public CSharpValue()
         {
             this.UseOldFastPath = true;
         }
 
-        public CSharpValue(string expressionText) :
-            this()
-        {
-            this.ExpressionText = expressionText;
-        }
+        public CSharpValue(string expressionText) : base(expressionText) { }
 
-        public string ExpressionText
-        {
-            get;
-            set;
-        }
+        protected override Expression<Func<ActivityContext, T>> Compile<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
+            => CSharpHelper.Compile<T>(expressionText, publicAccessor, isLocationExpression);
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string Language
+        public override string Language
         {
             get
             {
-                return "C#";
-            }
-        }
-
-        public bool RequiresCompilation
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            this.invoker = new CompiledExpressionInvoker(this, false, metadata);
-        }
-
-        protected override TResult Execute(CodeActivityContext context)
-        {
-            return (TResult)this.invoker.InvokeExpression(context);
-        }
-
-        public Expression GetExpressionTree()
-        {
-            if (this.IsMetadataCached)
-            {
-                return this.invoker.GetExpressionTree();
-            }
-            else
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+                return CSharpHelper.Language;
             }
         }
     }

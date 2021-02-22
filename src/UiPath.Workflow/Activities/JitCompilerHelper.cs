@@ -1,20 +1,21 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Microsoft.CSharp.Activities;
+using Microsoft.VisualBasic.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
+using System.Activities.Internals;
+using System.Activities.Runtime;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Activities.Runtime;
 using System.Runtime.Collections;
-using System.Threading;
-using System.Collections.ObjectModel;
 using System.Security;
-using System.Activities.Internals;
-using Microsoft.VisualBasic.Activities;
-using System.Linq;
+using System.Threading;
 
 namespace System.Activities
 {
@@ -1385,7 +1386,7 @@ namespace System.Activities
                 {
                     try
                     {
-                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, typeof(object)));
+                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, typeof(object), true));
                     }
                     catch(Exception e)
                     {
@@ -1426,8 +1427,8 @@ namespace System.Activities
             return Expression.Lambda(finalBody, lambda.Parameters);
         }
 
-        ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType) => 
-            new ExpressionToCompile(TextToCompile, namespaceImports)
+        ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType, bool useConversion) => 
+            new ExpressionToCompile(TextToCompile, namespaceImports, useConversion)
             {
                 VariableTypeGetter = variableTypeGetter,
                 LambdaReturnType = lambdaReturnType,
@@ -1525,7 +1526,7 @@ namespace System.Activities
                 {
                     try
                     {
-                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, lambdaReturnType));
+                        lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable, lambdaReturnType, false));
                     }
                     catch(Exception e)
                     {

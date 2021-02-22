@@ -33,16 +33,20 @@ namespace System.Activities
     }
     public class ExpressionToCompile : CompilerInput
     {
-        public ExpressionToCompile(string code, IReadOnlyCollection<string> importedNamespaces) : base(code, importedNamespaces) { }
+        public ExpressionToCompile(string code, IReadOnlyCollection<string> importedNamespaces, bool useConversion) : base(code, importedNamespaces)
+        {
+            UseConversion = useConversion;
+        }
         public Func<string, Type> VariableTypeGetter { get; set; }
         public Type LambdaReturnType { get; set; }
+        public bool UseConversion { get; }
     }
     public abstract class ScriptingJitCompiler : JustInTimeCompiler
     {
         protected MetadataReference[] MetadataReferences { get; set; }
         protected ScriptingJitCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
         protected abstract int IdentifierKind { get; }
-        protected abstract string CreateExpressionCode(Type lambdaReturnType, string types, string names, string code);
+        protected abstract string CreateExpressionCode(Type lambdaReturnType, string types, string names, string code, bool useConversion);
         protected abstract string GetTypeName(Type type);
         protected abstract Script<object> Create(string code, ScriptOptions options);
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
@@ -67,7 +71,7 @@ namespace System.Activities
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
                 .Select(GetTypeName));
             var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
-                CreateExpressionCode(expressionToCompile.LambdaReturnType, types, names, expressionToCompile.Code))));
+                CreateExpressionCode(expressionToCompile.LambdaReturnType, types, names, expressionToCompile.Code, expressionToCompile.UseConversion))));
             var results = ScriptingAotCompiler.BuildAssembly(finalCompilation);
             if (results.HasErrors)
             {
@@ -94,22 +98,29 @@ namespace System.Activities
     }
     public class VbJitCompiler : ScriptingJitCompiler
     {
+        private const string _simpleTemplate = "Public Shared Function CreateExpression() As Expression(Of Func(Of {0}))\nReturn Function({1}) ({2})\nEnd Function";
+        private const string _conversionTemplate = "Public Shared Function CreateExpression() As Expression(Of Func(Of {0}))\nReturn Function({1}) (CType({2}, {3}))\nEnd Function";
+
         public VbJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
-        protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? "+code, options);
+        protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? " + code, options);
         protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
-        protected override string CreateExpressionCode(Type returnType, string types, string names, string code) =>
-             $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+        protected override string CreateExpressionCode(Type returnType, string types, string names, string code, bool useConversion) => useConversion
+            ? string.Format(_conversionTemplate, types, names, code, GetTypeName(returnType))
+            : string.Format(_simpleTemplate, types, names, code);
         protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.VisualBasic.SyntaxKind.IdentifierName;
     }
     public class CSharpJitCompiler : ScriptingJitCompiler
     {
+        private const string _simpleTemplate = "public static Expression<Func<{0}>> CreateExpression() => ({1}) => {2};";
+        private const string _conversionTemplate = "public static Expression<Func<{0}>> CreateExpression() => ({1}) => ({3}){2};";
         private static readonly dynamic TypeOptions = GetTypeOptions();
         private static readonly dynamic TypeNameFormatter = GetTypeNameFormatter();
         public CSharpJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
         protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
         protected override string GetTypeName(Type type) => (string)TypeNameFormatter.FormatTypeName(type, TypeOptions);
-        protected override string CreateExpressionCode(Type returnType, string types, string names, string code) =>
-             $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => ({GetTypeName(returnType)}){code};";
+        protected override string CreateExpressionCode(Type returnType, string types, string names, string code, bool useConversion) => useConversion
+            ? string.Format(_conversionTemplate, types, names, code, GetTypeName(returnType))
+            : string.Format(_simpleTemplate, types, names, code);
         protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName;
         static object GetTypeOptions()
         {

@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Microsoft.CSharp.Activities;
+using Microsoft.VisualBasic.Activities;
+using Newtonsoft.Json;
+using Shouldly;
+using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
@@ -7,10 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.CSharp.Activities;
-using Microsoft.VisualBasic.Activities;
-using Newtonsoft.Json;
-using Shouldly;
+using System.Reflection;
 using Xunit;
 
 namespace TestCases.Workflows
@@ -202,6 +203,69 @@ namespace TestCases.Workflows
             // this one is cached
             CSharpCompile(text, resultType, namespaces, assemblies);
         }
+
+        [Theory]
+        [ClassData(typeof(LocationCompileTestData))]
+        public void CSharp_CompileLocationReference_Works(string variableText, string expected, bool createVariable)
+        {
+            var helper = new CSharpHelper(variableText, new HashSet<AssemblyName>(), new HashSet<string>());
+            var locationReferences = new List<LocationReference>();
+            if (createVariable)
+            {
+                locationReferences.Add(new Variable<string>(variableText));
+            }
+
+            var env = new TestLocationReferenceEnvironment(locationReferences);
+            var compilationResult = helper.Compile<string>(env, true);
+            compilationResult.ToString().ShouldBe(expected);
+        }
+
+        [Theory]
+        [ClassData(typeof(LocationCompileTestData))]
+        public void VisualBasic_CompilationResultIsAsExpected(string variableText, string expected, bool createVariable)
+        {
+            var helper = new VisualBasicHelper(variableText, new HashSet<AssemblyName>(), new HashSet<string>());
+            var locationReferences = new List<LocationReference>();
+            if (createVariable)
+            {
+                locationReferences.Add(new Variable<string>(variableText));
+            }
+
+            var env = new TestLocationReferenceEnvironment(locationReferences);
+            var compilationResult = helper.Compile<string>(env, true);
+            compilationResult.ToString().ShouldBe(expected);
+        }
+
+        public class LocationCompileTestData : TheoryData<string, string, bool>
+        {
+            public LocationCompileTestData()
+            {
+                Add("variable1", "context => context.GetValue(value(System.Activities.Variable`1[System.String]))", true);
+                Add("\"test\"", "context => \"test\"", false);
+            }
+        }
+
+        class TestLocationReferenceEnvironment : LocationReferenceEnvironment
+        {
+            private readonly IEnumerable<LocationReference> _locationReferences;
+
+            public TestLocationReferenceEnvironment(IEnumerable<LocationReference> locationReferences)
+            {
+                _locationReferences = locationReferences;
+            }
+            public override Activity Root => throw new NotImplementedException();
+
+            public override IEnumerable<LocationReference> GetLocationReferences() => _locationReferences;
+
+            public override bool IsVisible(LocationReference locationReference) => true;
+
+            public override bool TryGetLocationReference(string name, out LocationReference result)
+            {
+                result = _locationReferences.FirstOrDefault(l => l.Name == name);
+                return result != null;
+            }
+        }
+
         public class CSharpInferTypeData : TheoryData<string, Type, string[], string[]>
         {
             public CSharpInferTypeData()
@@ -209,8 +273,8 @@ namespace TestCases.Workflows
                 var empty = Array.Empty<string>();
                 Add("\"abc\"", typeof(string), empty, empty);
                 Add("123", typeof(int), empty, empty);
-                Add("new List<string>()", typeof(List<string>), new[]{ "System.Collections.Generic" }, empty);
-                Add("new JsonArrayAttribute()", typeof(JsonArrayAttribute), new[]{ "Newtonsoft.Json" }, new[]{ "Newtonsoft.Json" });
+                Add("new List<string>()", typeof(List<string>), new[] { "System.Collections.Generic" }, empty);
+                Add("new JsonArrayAttribute()", typeof(JsonArrayAttribute), new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" });
             }
         }
         public class VisualBasicInferTypeData : TheoryData<string, Type, string[], string[]>
@@ -220,16 +284,16 @@ namespace TestCases.Workflows
                 var empty = Array.Empty<string>();
                 Add("\"abc\"", typeof(string), empty, empty);
                 Add("123", typeof(int), empty, empty);
-                Add("New List(Of String)()", typeof(List<string>), new[]{ "System.Collections.Generic" }, empty);
-                Add("New JsonArrayAttribute()", typeof(JsonArrayAttribute), new[]{ "Newtonsoft.Json" }, new[]{ "Newtonsoft.Json" });
+                Add("New List(Of String)()", typeof(List<string>), new[] { "System.Collections.Generic" }, empty);
+                Add("New JsonArrayAttribute()", typeof(JsonArrayAttribute), new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" });
             }
         }
         [Fact]
-        public void Should_compile_CSharp()
+        public void Should_Compile_CSharp()
         {
             var compiler = new CSharpJitCompiler(new[] { typeof(Expression).Assembly, typeof(Enumerable).Assembly }.ToHashSet());
-            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }) 
-                { LambdaReturnType = typeof(int), VariableTypeGetter = name => name == "source" ? typeof(List<int>) : null });
+            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }, false)
+            { LambdaReturnType = typeof(int), VariableTypeGetter = name => name == "source" ? typeof(List<int>) : null });
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
     }
@@ -254,7 +318,7 @@ namespace TestCases.Workflows
         public void CompileExpressionsDefault() => InvokeWorkflow(CSharpExpressions);
         [Fact]
         public void CompileExpressionsWithCompiler() =>
-            new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
+            new Action(() => ActivityXamlServices.Load(new StringReader(CSharpExpressions),
                 new ActivityXamlServicesSettings { CSharpCompiler = new CSharpCompiler() })).ShouldThrow<NotImplementedException>();
         [Fact]
         public void CSharpCompileError()
@@ -273,7 +337,7 @@ namespace TestCases.Workflows
                     </Sequence>
                 </Activity>";
             new Action(() => InvokeWorkflow(xaml)).ShouldThrow<InvalidOperationException>().Data.Values.Cast<string>()
-                .ShouldAllBe(error=>error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
+                .ShouldAllBe(error => error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
         }
         [Fact]
         public void CSharpInputOutput()

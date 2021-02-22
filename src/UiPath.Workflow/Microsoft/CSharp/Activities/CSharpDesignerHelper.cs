@@ -5,16 +5,52 @@ using Microsoft.VisualBasic.Activities;
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
+using System.Activities.Expressions;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Microsoft.CSharp.Activities
 {
     internal class CSharpHelper : JitCompilerHelper<CSharpHelper>
     {
+        public CSharpHelper(string expressionText) : base(expressionText) { }
         public CSharpHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames) : base(expressionText, refAssemNames, namespaceImportsNames) { }
+
         protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => new CSharpJitCompiler(references);
+
+        public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
+        {
+            List<string> localNamespaces;
+            List<AssemblyReference> localAssemblies;
+            GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out localNamespaces, out localAssemblies);
+            var helper = new CSharpHelper(expressionText);
+            HashSet<AssemblyName> localReferenceAssemblies = new HashSet<AssemblyName>();
+            HashSet<string> localImports = new HashSet<string>(localNamespaces);
+            foreach (AssemblyReference assemblyReference in localAssemblies)
+            {
+                if (assemblyReference.Assembly != null)
+                {
+                    // directly add the Assembly to the list
+                    // so that we don't have to go through 
+                    // the assembly resolution process
+                    if (helper.referencedAssemblies == null)
+                    {
+                        helper.referencedAssemblies = new HashSet<Assembly>();
+                    }
+                    helper.referencedAssemblies.Add(assemblyReference.Assembly);
+                }
+                else if (assemblyReference.AssemblyName != null)
+                {
+                    localReferenceAssemblies.Add(assemblyReference.AssemblyName);
+                }
+            }
+            helper.Initialize(localReferenceAssemblies, localImports);
+            return helper.Compile<T>(publicAccessor, isLocationExpression);
+        }
+        internal static string Language => "C#";
     }
+
     class CSharpExpressionFactory<T> : ExpressionFactory
     {
         public override Activity CreateReference(string expressionText) => new CSharpReference<T>(expressionText);
@@ -23,7 +59,7 @@ namespace Microsoft.CSharp.Activities
     class CSharpDesignerHelperImpl : DesignerHelperImpl
     {
         public override Type ExpressionFactoryType => typeof(CSharpExpressionFactory<>);
-        public override string Language => "C#";
+        public override string Language => CSharpHelper.Language;
         public override JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyName> references, HashSet<string> namespaces) =>
             new CSharpHelper(expressionText, references, namespaces);
     }
