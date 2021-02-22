@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Typ zmiennej {0} jest niezgodny z typem lokalizacji {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Metoda GetExpressionTree nie może pobrać drzewa wyrażeń, ponieważ tekst wyrażenia języka VisualBasic lub widoczna dla niego zmienna LocationReferenceEnvironment została zmieniona po umieszczeniu go w pamięci podręcznej. Komunikat o błędzie kompilacji: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Metoda GetExpressionTree nie może pobrać drzewa wyrażeń, ponieważ tekst wyrażenia języka lub widoczna dla niego zmienna LocationReferenceEnvironment została zmieniona po umieszczeniu go w pamięci podręcznej. Komunikat o błędzie kompilacji: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>W danej chwili dla obiektu InstanceHandle może trwać tylko jedna oczekująca operacja WaitForEvents lub BeginWaitForEvents. Podjęto próbę wykonania drugiej operacji. Operację WaitForEvents/BeginWaitForEvents można wywołać tylko po ukończeniu poprzedniej operacji.</value>

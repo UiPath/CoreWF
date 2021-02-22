@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Het variabeletype {0} komt niet overeen met het locatietype {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Door GetExpressionTree kan geen expressiestructuur worden opgehaald, omdat de tekst van de Visual Basic-expressie of LocationReferenceEnvironment is gewijzigd sinds deze in de cache is opgeslagen. Het compilatiefoutbericht is: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Door GetExpressionTree kan geen expressiestructuur worden opgehaald, omdat de tekst van de expressie of LocationReferenceEnvironment is gewijzigd sinds deze in de cache is opgeslagen. Het compilatiefoutbericht is: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Voor een InstanceHandle kan maximaal één uitstaande WaitForEvents- of BeginWaitForEvents-bewerking tegelijk worden uitgevoerd. Er is een tweede bewerking geprobeerd. Roep WaitForEvents/BeginWaitForEvents pas aan zodra de vorige bewerking is voltooid.</value>

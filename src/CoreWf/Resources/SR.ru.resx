@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Тип переменной "{0}" не соответствует типу расположения "{1}".</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Сбой при получении дерева выражений с помощью метода GetExpressionTree, поскольку произошло изменение видимых ему текста выражения VisualBasic или среды LocationReferenceEnvironment со времени их кэширования.  Сообщение об ошибке компиляции: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Сбой при получении дерева выражений с помощью метода GetExpressionTree, поскольку произошло изменение видимых ему текста выражения или среды LocationReferenceEnvironment со времени их кэширования.  Сообщение об ошибке компиляции: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Объект InstanceHandle может иметь не более одной незавершенной операции WaitForEvents или BeginWaitForEvents в каждый момент времени. Запрошена вторая операция. Операцию WaitForEvents ил BeginWaitForEvents следует вызывать только после завершения предыдущей операции.</value>

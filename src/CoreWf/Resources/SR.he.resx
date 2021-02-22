@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>סוג המשתנה '{0}' אינו תואם לסוג המיקום '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree נכשל בקבלת עץ ביטויים מאחר שטקסט הביטוי של VisualBasic או ה- LocationReferenceEnvironment הגלוי לו השתנו לאחר שהוא אוחסן במטמון.  הודעת השגיאה של ההידור היא: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree נכשל בקבלת עץ ביטויים מאחר שטקסט הביטוי של או ה- LocationReferenceEnvironment הגלוי לו השתנו לאחר שהוא אוחסן במטמון.  הודעת השגיאה של ההידור היא: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle יכול לכלול לכל היותר פעולת WaitForEvents או BeginWaitForEvents אחת במעקב שמתבצעת ברגע נתון. בוצע ניסיון לבצע פעולה שנייה. קרא ל- WaitForEvents / BeginWaitForEvents רק לאחר שהפעולה הקודמת הושלמה.</value>

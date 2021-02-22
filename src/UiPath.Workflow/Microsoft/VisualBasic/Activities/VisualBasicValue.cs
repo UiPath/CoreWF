@@ -118,7 +118,7 @@ namespace Microsoft.VisualBasic.Activities
                     }
                     catch (SourceExpressionException e)
                     {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.VBExpressionTamperedSinceLastCompiled(e.Message))); 
+                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message))); 
                     }
                     finally
                     {

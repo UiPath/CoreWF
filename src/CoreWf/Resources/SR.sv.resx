@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Variabeltyp {0} matchar inte platstyp {1}.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>GetExpressionTree kunde inte hämta ett uttrycksträd på grund av att VisualBasic-uttryckstexten, eller den LocationReferenceEnvironment som visas för den, har ändrats sedan den cachelagrades. Kompileringsfelmeddelande: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>GetExpressionTree kunde inte hämta ett uttrycksträd på grund av att uttryckstexten, eller den LocationReferenceEnvironment som visas för den, har ändrats sedan den cachelagrades. Kompileringsfelmeddelande: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Maximalt en WaitForEvents- eller BeginWaitForEvents-åtgärd i taget kan bearbetas av InstanceHandle. Ett försök att påbörja en andra åtgärd gjordes. Anropa WaitForEvents eller BeginWaitForEvents först när föregående åtgärd har slutförts.</value>

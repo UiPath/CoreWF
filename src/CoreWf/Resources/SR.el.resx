@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>Ο τύπος μεταβλητής '{0}' δεν συμφωνεί με τον τύπο θέσης '{1}'.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>Η GetExpressionTree απέτυχε να λάβει ένα δέντρο παραστάσεων επειδή το κείμενο παράστασης VisualBasic του LocationReferenceEnvironment που είναι ορατό σε αυτήν έχει τροποποιηθεί μετά την αποθήκευσή του στο cache. Το μήνυμα σφάλματος μεταγλώττισης είναι: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>Η GetExpressionTree απέτυχε να λάβει ένα δέντρο παραστάσεων επειδή το κείμενο παράστασης του LocationReferenceEnvironment που είναι ορατό σε αυτήν έχει τροποποιηθεί μετά την αποθήκευσή του στο cache. Το μήνυμα σφάλματος μεταγλώττισης είναι: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>Ένα InstanceHandle μπορεί να έχει το πολύ μια εκκρεμή λειτουργία WaitForEvents ή BeginWaitForEvents σε εξέλιξη κάθε φορά. Επιχειρήθηκε δεύτερη λειτουργία. Να γίνει κλήση μόνο των λειτουργιών WaitForEvents / BeginWaitForEvents αφού έχει ολοκληρωθεί η προηγούμενη λειτουργία.</value>

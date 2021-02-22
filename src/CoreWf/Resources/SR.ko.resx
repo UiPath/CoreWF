@@ -3048,8 +3048,8 @@
   <data name="VariableTypeNotMatchLocationType" xml:space="preserve">
     <value>변수 형식 '{0}'이(가) Location 형식 '{1}'과(와) 일치하지 않습니다.</value>
   </data>
-  <data name="VBExpressionTamperedSinceLastCompiled" xml:space="preserve">
-    <value>VisualBasic 식 텍스트 또는 이 텍스트에 표시된 LocationReferenceEnvironment가 캐시된 이후에 변경되어 GetExpressionTree에서 식 트리를 가져오지 못했습니다. 컴파일 오류 메시지: {0}.</value>
+  <data name="ExpressionTamperedSinceLastCompiled" xml:space="preserve">
+    <value>식 텍스트 또는 이 텍스트에 표시된 LocationReferenceEnvironment가 캐시된 이후에 변경되어 GetExpressionTree에서 식 트리를 가져오지 못했습니다. 컴파일 오류 메시지: {0}.</value>
   </data>
   <data name="WaitAlreadyInProgress" xml:space="preserve">
     <value>InstanceHandle에 한번에 처리되지 않은 WaitForEvents 또는 BeginWaitForEvents 작업이 하나 이상 진행 중일 수 있습니다. 두 번째 작업이 시도되었습니다. 이전 작업이 완료되면 WaitForEvents/BeginWaitForEvents를 호출하십시오.</value>
