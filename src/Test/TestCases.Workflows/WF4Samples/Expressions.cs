@@ -1,10 +1,12 @@
-﻿using Shouldly;
+﻿using Microsoft.CSharp.Activities;
+using Shouldly;
 using System;
 using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xaml;
 using Xunit;
 
@@ -67,8 +69,10 @@ Iterate ArrayList
             var activity = GetActivityFromXamlResource(TestXamls.CSharpCalculation);
             var inputs = new StringDictionary { ["XX"] = 16, ["YY"] = 16 };
             TestHelper.InvokeWorkflow(activity, inputs).ShouldBe("Result == XX^2"+Environment.NewLine);
+            CSharpDesignerHelper.CreatePrecompiledReference(typeof(int), "Result", Array.Empty<string>(), Array.Empty<string>(), activity.ImplementationEnvironment, 
+                out var type, out var expressionException, out var _);
+            expressionException.ShouldBeNull();
         }
-
         [Fact]
         public void Code()
         {
