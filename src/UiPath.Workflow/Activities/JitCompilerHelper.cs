@@ -1417,7 +1417,7 @@ namespace System.Activities
                 return null;
             }
             // add the pre-rewrite lambda to RawTreeCache
-            var typedLambda = Expression.Lambda(((UnaryExpression)lambda.Body).Operand, lambda.Parameters);
+            var typedLambda = Expression.Lambda(lambda.Body is UnaryExpression cast ? cast.Operand : lambda.Body, lambda.Parameters);
             AddToRawTreeCache(rawTreeKey, rawTreeHolder, typedLambda);
 
             finalBody = Rewrite(typedLambda.Body, null, false, out abort);

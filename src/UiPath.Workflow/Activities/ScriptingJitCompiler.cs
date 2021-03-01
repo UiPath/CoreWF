@@ -42,7 +42,7 @@ namespace System.Activities
         protected MetadataReference[] MetadataReferences { get; set; }
         protected ScriptingJitCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
         protected abstract int IdentifierKind { get; }
-        protected abstract string CreateExpressionCode(Type lambdaReturnType, string types, string names, string code);
+        protected abstract string CreateExpressionCode(string types, string names, string code);
         protected abstract string GetTypeName(Type type);
         protected abstract Script<object> Create(string code, ScriptOptions options);
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
@@ -67,7 +67,7 @@ namespace System.Activities
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
                 .Select(GetTypeName));
             var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
-                CreateExpressionCode(expressionToCompile.LambdaReturnType, types, names, expressionToCompile.Code))));
+                CreateExpressionCode(types, names, expressionToCompile.Code))));
             var results = ScriptingAotCompiler.BuildAssembly(finalCompilation);
             if (results.HasErrors)
             {
@@ -97,7 +97,7 @@ namespace System.Activities
         public VbJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
         protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? "+code, options);
         protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
-        protected override string CreateExpressionCode(Type returnType, string types, string names, string code) =>
+        protected override string CreateExpressionCode(string types, string names, string code) =>
              $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
         protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.VisualBasic.SyntaxKind.IdentifierName;
     }
@@ -108,8 +108,8 @@ namespace System.Activities
         public CSharpJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
         protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
         protected override string GetTypeName(Type type) => (string)TypeNameFormatter.FormatTypeName(type, TypeOptions);
-        protected override string CreateExpressionCode(Type returnType, string types, string names, string code) =>
-             $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => ({GetTypeName(returnType)}){code};";
+        protected override string CreateExpressionCode(string types, string names, string code) =>
+             $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
         protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName;
         static object GetTypeOptions()
         {
