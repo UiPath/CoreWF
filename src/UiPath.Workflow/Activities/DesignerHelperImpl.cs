@@ -169,6 +169,16 @@ namespace System.Activities
 
             return expressionFactory.CreateValue(expressionText);
         }
+        internal Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent, out Type returnType, out SourceExpressionException compileError)
+        {
+            GetAllImportReferences(parent, out var namespaces, out var assemblies);
+            return CreatePrecompiledReference(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment, out returnType, out compileError, out _);
+        }
+        internal Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent, out Type returnType, out SourceExpressionException compileError)
+        {
+            GetAllImportReferences(parent, out var namespaces, out var assemblies);
+            return CreatePrecompiledValue(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment, out returnType, out compileError, out _);
+        }
         public Activity CreatePrecompiledReference(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> referencedAssemblies,
             LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
         {

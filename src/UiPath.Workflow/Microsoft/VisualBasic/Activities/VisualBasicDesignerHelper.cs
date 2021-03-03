@@ -83,6 +83,10 @@ namespace Microsoft.VisualBasic.Activities
         public static Activity CreatePrecompiledVisualBasicReference(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> referencedAssemblies,
             LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings) =>
             Impl.CreatePrecompiledReference(targetType, expressionText, namespaces, referencedAssemblies, environment, out returnType, out compileError, out vbSettings);
+        public static Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent, out Type returnType, out SourceExpressionException compileError) =>
+            Impl.CreatePrecompiledValue(targetType, expressionText, parent, out returnType, out compileError);
+        public static Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent, out Type returnType, out SourceExpressionException compileError) =>
+            Impl.CreatePrecompiledReference(targetType, expressionText, parent, out returnType, out compileError);
     }
     class VisualBasicExpressionFactory<T> : ExpressionFactory
     {
