@@ -26,25 +26,13 @@ namespace System.Activities
                 current = currentChild.Parent;
                 if (current is Sequence sequence)
                 {
-                    AddOutArguments(sequence);
+                    reachableArguments.AddRange(sequence.Activities.TakeWhile(child => child != currentChild).SelectMany(child =>
+                            child.RuntimeArguments.Where(arg => arg.Direction != ArgumentDirection.In && arg.BoundArgument.Expression == null).AssignableTo(type)
+                            .Select(arg => new ReachableArgument(arg, child, sequence))));
                 }
                 currentChild = current;
             }
             return new Locations(locals, reachableArguments);
-            void AddOutArguments(Sequence sequence)
-            {
-                foreach (var sequenceChild in sequence.Activities)
-                {
-                    if (sequenceChild == currentChild)
-                    {
-                        continue;
-                    }
-                    reachableArguments.AddRange(sequenceChild.RuntimeArguments
-                        .Where(a => a.Direction != ArgumentDirection.In && a.BoundArgument.Expression == null)
-                        .AssignableTo(type)
-                        .Select(a => new ReachableArgument(a, sequenceChild, sequence)));
-                }
-            }
         }
         static IEnumerable<LocationReference> AssignableTo(this IEnumerable<LocationReference> locations, Type type) => locations.Where(l => type.IsAssignableFrom(l.Type));
     }
