@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-namespace TestCases.Workflows.WF4Samples
+namespace TestCases.Workflows
 {
     using StringDictionary = Dictionary<string, object>;
 
@@ -21,7 +21,7 @@ namespace TestCases.Workflows.WF4Samples
             return consoleOutputWriter.ToString();
         }
 
-        internal static Activity GetActivityFromXamlResource(TestXamls xamlName, bool compileExpressions)
+        internal static Activity GetActivityFromXamlResource(TestXamls xamlName, bool compileExpressions = false)
         {
             var asm = typeof(TestHelper).Assembly;
             var xamlStream = asm.GetManifestResourceStream($"{asm.GetName().Name}.TestXamls.{xamlName}.xaml");
@@ -34,5 +34,8 @@ namespace TestCases.Workflows.WF4Samples
         NonGenericForEach,
         SalaryCalculation,
         CSharpCalculation,
+        SimpleWorkflowWithArgsAndVar,
+        IfThenElseBranchWithVars,
+        NestedSequencesWithVars,
     }
 }
