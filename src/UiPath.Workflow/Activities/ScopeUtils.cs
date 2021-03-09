@@ -12,7 +12,7 @@ namespace System.Activities
     }
     public static class ScopeUtils
     {
-        public static Locations GetCompatibleLocations(this Activity anchor, Type type)
+        public static Locations GetCompatibleLocations(Activity anchor, Type type)
         {
             var locals = new List<LocationReference>();
             var environment = anchor.PublicEnvironment;
