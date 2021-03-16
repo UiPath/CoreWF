@@ -12,7 +12,7 @@ namespace System.Activities
     }
     public static class ScopeUtils
     {
-        public static Locations GetCompatibleLocations(Activity anchor, Type type)
+        public static Locations GetCompatibleLocations(Activity anchor, Func<LocationReference, bool> isCompatible)
         {
             var locals = new List<LocationReference>();
             var environment = anchor.PublicEnvironment;
@@ -21,19 +21,18 @@ namespace System.Activities
             var currentChild = anchor;
             while (environment != null)
             {
-                locals.AddRange(environment.GetLocationReferences().AssignableTo(type));
+                locals.AddRange(environment.GetLocationReferences().Where(isCompatible));
                 environment = environment.Parent;
                 current = currentChild.Parent;
                 if (current is Sequence sequence)
                 {
                     reachableArguments.AddRange(sequence.Activities.TakeWhile(child => child != currentChild).SelectMany(child =>
-                            child.RuntimeArguments.Where(arg => arg.Direction != ArgumentDirection.In && arg.BoundArgument.Expression == null).AssignableTo(type)
+                            child.RuntimeArguments.Where(arg => arg.Direction != ArgumentDirection.In && arg.BoundArgument.Expression == null).Where(isCompatible)
                             .Select(arg => new ReachableArgument(arg, child, sequence))));
                 }
                 currentChild = current;
             }
             return new Locations(locals, reachableArguments);
         }
-        static IEnumerable<LocationReference> AssignableTo(this IEnumerable<LocationReference> locations, Type type) => locations.Where(l => type.IsAssignableFrom(l.Type));
     }
 }
