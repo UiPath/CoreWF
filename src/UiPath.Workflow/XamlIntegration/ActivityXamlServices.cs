@@ -278,18 +278,13 @@ namespace System.Activities.XamlIntegration
             if (results.HasErrors)
             {
                 var messages = new StringBuilder();
-                messages.Append("\r\n");
-                messages.Append("\r\n");
-
                 foreach (TextExpressionCompilerError message in results.CompilerMessages)
                 {
-                    messages.Append("\n");
+                    messages.Append("\r\n");
                     messages.Append(string.Concat(" ", SR.ActivityXamlServiceLineString, " ", message.SourceLineNumber, ": "));
                     messages.Append(message.Message);
 
                 }
-
-                messages.Append("\r\n");
                 messages.Append("\r\n");
 
                 InvalidOperationException exception = new InvalidOperationException(SR.ActivityXamlServicesCompilationFailed(messages.ToString()));
