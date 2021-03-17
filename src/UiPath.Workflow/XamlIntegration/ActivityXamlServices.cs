@@ -283,7 +283,7 @@ namespace System.Activities.XamlIntegration
 
                 foreach (TextExpressionCompilerError message in results.CompilerMessages)
                 {
-                    messages.Append("\t");
+                    messages.Append("\n");
                     messages.Append(string.Concat(" ", SR.ActivityXamlServiceLineString, " ", message.SourceLineNumber, ": "));
                     messages.Append(message.Message);
 
