@@ -1427,11 +1427,7 @@ namespace System.Activities
         }
 
         ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType) => 
-            new ExpressionToCompile(TextToCompile, namespaceImports)
-            {
-                VariableTypeGetter = variableTypeGetter,
-                LambdaReturnType = lambdaReturnType,
-            };
+            new ExpressionToCompile(TextToCompile, namespaceImports, variableTypeGetter,lambdaReturnType);
 
         public Expression<Func<ActivityContext, T>> Compile<T>(CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationReference = false)
         {

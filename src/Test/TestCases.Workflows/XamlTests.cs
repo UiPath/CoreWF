@@ -228,8 +228,8 @@ namespace TestCases.Workflows
         public void Should_compile_CSharp()
         {
             var compiler = new CSharpJitCompiler(new[] { typeof(Expression).Assembly, typeof(Enumerable).Assembly }.ToHashSet());
-            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }) 
-                { LambdaReturnType = typeof(int), VariableTypeGetter = name => name == "source" ? typeof(List<int>) : null });
+            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }, 
+                name => name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
     }

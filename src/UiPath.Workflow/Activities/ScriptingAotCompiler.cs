@@ -14,16 +14,10 @@ namespace System.Activities
     {
         public abstract TextExpressionCompilerResults Compile(ClassToCompile classToCompile);
     }
-    public class ClassToCompile : CompilerInput
+    public record ClassToCompile(string ClassName, string Code, IReadOnlyCollection<Assembly> ReferencedAssemblies, IReadOnlyCollection<string> ImportedNamespaces) 
+        : CompilerInput(Code, ImportedNamespaces)
     {
-        public ClassToCompile(string className, string code, IReadOnlyCollection<Assembly> referencedAssemblies, IReadOnlyCollection<string> importedNamespaces) :
-            base(code, importedNamespaces)
-        {
-            ClassName = className;
-            ReferencedAssemblies = referencedAssemblies;
-        }
-        public string ClassName { get; }
-        public IReadOnlyCollection<Assembly> ReferencedAssemblies { get; set; }
+        public IReadOnlyCollection<Assembly> ReferencedAssemblies { get; set; } = ReferencedAssemblies;
     }
     public abstract class ScriptingAotCompiler : AheadOfTimeCompiler
     {

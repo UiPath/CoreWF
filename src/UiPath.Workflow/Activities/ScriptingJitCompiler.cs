@@ -20,22 +20,12 @@ namespace System.Activities
     {
         public abstract LambdaExpression CompileExpression(ExpressionToCompile compilerRequest);
     }
-    public class CompilerInput
+    public record CompilerInput(string Code, IReadOnlyCollection<string> ImportedNamespaces)
     {
-        public CompilerInput(string code, IReadOnlyCollection<string> importedNamespaces)
-        {
-            Code = code;
-            ImportedNamespaces = importedNamespaces;
-        }
-        public IReadOnlyCollection<string> ImportedNamespaces { get; }
-        public string Code { get; }
-        public override string ToString() => Code;
     }
-    public class ExpressionToCompile : CompilerInput
+    public record ExpressionToCompile(string Code, IReadOnlyCollection<string> ImportedNamespaces, Func<string, Type> VariableTypeGetter, Type LambdaReturnType) 
+        : CompilerInput(Code, ImportedNamespaces)
     {
-        public ExpressionToCompile(string code, IReadOnlyCollection<string> importedNamespaces) : base(code, importedNamespaces) { }
-        public Func<string, Type> VariableTypeGetter { get; set; }
-        public Type LambdaReturnType { get; set; }
     }
     public abstract class ScriptingJitCompiler : JustInTimeCompiler
     {
