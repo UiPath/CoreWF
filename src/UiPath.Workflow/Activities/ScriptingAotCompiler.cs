@@ -17,7 +17,6 @@ namespace System.Activities
     public record ClassToCompile(string ClassName, string Code, IReadOnlyCollection<Assembly> ReferencedAssemblies, IReadOnlyCollection<string> ImportedNamespaces) 
         : CompilerInput(Code, ImportedNamespaces)
     {
-        public IReadOnlyCollection<Assembly> ReferencedAssemblies { get; set; } = ReferencedAssemblies;
     }
     public abstract class ScriptingAotCompiler : AheadOfTimeCompiler
     {
