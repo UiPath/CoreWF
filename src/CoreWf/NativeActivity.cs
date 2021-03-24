@@ -38,7 +38,7 @@ using System.Activities.DynamicUpdate;
 
         [IgnoreDataMember]
         [Fx.Tag.KnownXamlExternal]
-        public sealed override Func<Activity> Implementation
+        protected sealed override Func<Activity> Implementation
         {
             get
             {
@@ -230,7 +230,7 @@ using System.Activities.DynamicUpdate;
 
         [IgnoreDataMember]
         [Fx.Tag.KnownXamlExternal]
-        public sealed override Func<Activity> Implementation
+        protected sealed override Func<Activity> Implementation
         {
             get
             {

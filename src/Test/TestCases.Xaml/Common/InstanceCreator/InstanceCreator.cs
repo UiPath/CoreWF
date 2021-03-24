@@ -1,6 +1,7 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using ReflectionMagic;
 using System;
 using System.Activities;
 using System.Activities.Statements;
@@ -171,7 +172,7 @@ namespace TestCases.Xaml.Common.InstanceCreator
                 var result = POCOInstanceCreator.CreateInstanceOf(type, rndGen);
                 if (result is Activity activity)
                 {
-                    activity.Implementation = null;//orelse for example
+                    activity.AsDynamic().Implementation = null;//orelse for example
                 }
                 return result;
             }

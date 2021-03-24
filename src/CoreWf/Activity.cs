@@ -80,7 +80,7 @@ namespace System.Activities
         [Browsable(false)]
         [Ambient]
         [IgnoreDataMember]
-        public virtual Func<Activity> Implementation
+        protected virtual Func<Activity> Implementation
         {
             get;
             set;
