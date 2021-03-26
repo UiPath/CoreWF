@@ -12,7 +12,7 @@ namespace System.Activities
     }
     public static class ScopeUtils
     {
-        public static Locations GetCompatibleLocations(Activity anchor, Func<LocationReference, bool> isCompatible)
+        public static Locations GetCompatibleLocations(Activity anchor, Func<LocationReference, bool> isCompatible, Func<RuntimeArgument, bool> argumentsFilter)
         {
             var locals = new List<LocationReference>();
             var environment = anchor.PublicEnvironment;
@@ -27,7 +27,7 @@ namespace System.Activities
                 if (current is Sequence sequence)
                 {
                     reachableArguments.AddRange(sequence.Activities.TakeWhile(child => child != currentChild).SelectMany(child =>
-                            child.RuntimeArguments.Where(arg => arg.Direction != ArgumentDirection.In && arg.BoundArgument.Expression == null).Where(isCompatible)
+                            child.RuntimeArguments.Where(a => argumentsFilter(a) && isCompatible(a))
                             .Select(arg => new ReachableArgument(arg, child, sequence))));
                 }
                 currentChild = current;
