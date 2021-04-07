@@ -27,12 +27,6 @@ namespace System.Activities.Expressions
         private CodeActivityMetadata metadata;
         private CodeActivityPublicEnvironmentAccessor accessor; 
 
-        public bool IsStaticallyCompiled
-        {
-            get;
-            private set;
-        }
-
         public CompiledExpressionInvoker(ITextExpression expression, bool isReference, CodeActivityMetadata metadata)
         {
             this.expressionId = -1;
@@ -247,8 +241,10 @@ namespace System.Activities.Expressions
 
             if (foundCompiledExpressionRoot)
             {
-                this.IsStaticallyCompiled = true;
-
+                foreach (var environment in environments)
+                {
+                    environment.CompileExpressions = true;
+                }
                 // For compiled C# expressions we create temp auto generated arguments
                 // for all locations whether they are used in the expressions or not.
                 // The TryGetReferenceToPublicLocation method call above also generates

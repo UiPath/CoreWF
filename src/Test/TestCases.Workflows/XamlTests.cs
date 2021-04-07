@@ -2,6 +2,7 @@
 using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
+using System.Activities.Statements;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
@@ -276,6 +277,26 @@ namespace TestCases.Workflows
                 .ShouldAllBe(error=>error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
         }
         [Fact]
+        public void SetCompiledExpressionRootForImplementation()
+        {
+            var xaml = @"
+                <Activity x:Class='WFTemplate'
+                          xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                          xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                          xmlns:mca='clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities'>
+                    <Sequence>
+                        <WriteLine>
+                          <InArgument x:TypeArguments='x:String'>
+                            <mca:VisualBasicValue x:TypeArguments='x:String'>[constant]</mca:VisualBasicValue>
+                          </InArgument>
+                        </WriteLine>
+                    </Sequence>
+                </Activity>";
+            var root = ActivityXamlServices.Load(new StringReader(xaml));
+            CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(root, new Expressions());
+            WorkflowInvoker.Invoke(root);
+        }
+        [Fact]
         public void CSharpInputOutput()
         {
             var xamlString = @"
@@ -314,6 +335,28 @@ namespace TestCases.Workflows
         class CSharpCompiler : AheadOfTimeCompiler
         {
             public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile) => throw new NotImplementedException();
+        }
+    }
+    internal class Expressions : ICompiledExpressionRoot
+    {
+        public bool CanExecuteExpression(string expressionText, bool isReference, IList<LocationReference> locations, out int expressionId)
+        {
+            expressionId = 1;
+            return true;
+        }
+        public Expression GetExpressionTreeForExpression(int expressionId, IList<LocationReference> locationReferences)
+        {
+            throw new NotImplementedException();
+        }
+        public string GetLanguage()
+        {
+            throw new NotImplementedException();
+        }
+        public IList<string> GetRequiredLocations(int expressionId) => Array.Empty<string>();
+        public object InvokeExpression(int expressionId, IList<LocationReference> locations, ActivityContext activityContext) => "";
+        public object InvokeExpression(int expressionId, IList<Location> locations)
+        {
+            throw new NotImplementedException();
         }
     }
 }
