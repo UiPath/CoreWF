@@ -279,22 +279,9 @@ namespace TestCases.Workflows
         [Fact]
         public void SetCompiledExpressionRootForImplementation()
         {
-            var xaml = @"
-                <Activity x:Class='WFTemplate'
-                          xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
-                          xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-                          xmlns:mca='clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities'>
-                    <Sequence>
-                        <WriteLine>
-                          <InArgument x:TypeArguments='x:String'>
-                            <mca:VisualBasicValue x:TypeArguments='x:String'>[constant]</mca:VisualBasicValue>
-                          </InArgument>
-                        </WriteLine>
-                    </Sequence>
-                </Activity>";
-            var root = ActivityXamlServices.Load(new StringReader(xaml));
-            CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(root, new Expressions());
-            WorkflowInvoker.Invoke(root);
+            var writeLine = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("[s]")) };
+            CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(writeLine, new Expressions());
+            WorkflowInvoker.Invoke(writeLine);
         }
         [Fact]
         public void CSharpInputOutput()
