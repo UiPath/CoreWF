@@ -12,6 +12,17 @@ namespace System.Activities
     }
     public static class ScopeUtils
     {
+        public static List<LocationReference> GetLocals(this Activity activity)
+        {
+            var variables = new List<LocationReference>();
+            var environment = activity.PublicEnvironment;
+            while (environment != null)
+            {
+                variables.AddRange(environment.GetLocationReferences());
+                environment = environment.Parent;
+            }
+            return variables;
+        }
         public static Locations GetCompatibleLocations(Activity anchor, Func<LocationReference, bool> isCompatible, Func<RuntimeArgument, bool> argumentsFilter)
         {
             var locals = new List<LocationReference>();
