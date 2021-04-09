@@ -5,6 +5,7 @@ namespace System.Activities.Validation
 {
     using System.Activities.Runtime;
     using System.Globalization;
+    using System.Text.Json.Serialization;
 
     [Fx.Tag.XamlVisible(false)]
     public class ValidationError
@@ -79,7 +80,7 @@ namespace System.Activities.Validation
             get;
             set;
         }
-
+        [JsonIgnore]
         public Activity Source
         {
             get
@@ -95,7 +96,7 @@ namespace System.Activities.Validation
                 }
             }
         }
-
+        [JsonIgnore]
         public object SourceDetail
         {
             get;
