@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using Newtonsoft.Json;
@@ -238,9 +239,12 @@ namespace TestCases.Workflows
         // VB should be Strict On, not to allow implicit conversions such as from int to string
         public void Should_Fail_VBConversion()
         {
-            var compiler = new VbJitCompiler(new[] { typeof(int).Assembly, typeof(Expression).Assembly }.ToHashSet());
-            Assert.Throws<SourceExpressionException>(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" },
+            var compiler = new VbJitCompiler(new[] { typeof(int).Assembly, typeof(Expression).Assembly, Assembly.Load("Microsoft.VisualBasic.Core") }.ToHashSet());
+            var exception = Record.Exception(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" },
                 _ => typeof(int), typeof(string))));
+
+            exception.ShouldBeOfType<SourceExpressionException>();
+            exception.Message.ShouldContain("BC30512: Option Strict On disallows implicit conversions");
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
