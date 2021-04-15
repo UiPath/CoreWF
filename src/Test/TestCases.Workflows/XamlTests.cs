@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
+using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
@@ -232,6 +233,13 @@ namespace TestCases.Workflows
             var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }, 
                 name => name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
+        }
+        [Fact]
+        public void Should_Fail_VBConversion()
+        {
+            var compiler = new VbJitCompiler(new[] { typeof(int).Assembly, typeof(Expression).Assembly, typeof(Conversions).Assembly }.ToHashSet());
+            new Action(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" }, _ => typeof(int), typeof(string))))
+                .ShouldThrow<SourceExpressionException>().Message.ShouldContain("BC30512: Option Strict On disallows implicit conversions");
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase

@@ -82,7 +82,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
                     scriptClassName:=submissionTypeName,
                     globalImports:=globalImports,
                     rootNamespace:="",
-                    optionStrict:=OptionStrict.Off,
+                    optionStrict:=OptionStrict.On,
                     optionInfer:=True,
                     optionExplicit:=True,
                     optionCompareText:=False,
