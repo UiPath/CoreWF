@@ -233,6 +233,15 @@ namespace TestCases.Workflows
                 name => name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
+
+        [Fact]
+        // VB should be Strict On, not to allow implicit conversions such as from int to string
+        public void Should_Fail_VBConversion()
+        {
+            var compiler = new VbJitCompiler(new[] { typeof(int).Assembly, typeof(Expression).Assembly }.ToHashSet());
+            Assert.Throws<SourceExpressionException>(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" },
+                _ => typeof(int), typeof(string))));
+        }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
     {
