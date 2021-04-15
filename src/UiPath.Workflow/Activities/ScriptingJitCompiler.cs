@@ -88,7 +88,7 @@ namespace System.Activities
         protected override Script<object> Create(string code, ScriptOptions options) => VisualBasicScript.Create("? "+code, options);
         protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
         protected override string CreateExpressionCode(string types, string names, string code) =>
-             $"Option Strict On\nPublic Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+             $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
         protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.VisualBasic.SyntaxKind.IdentifierName;
     }
     public class CSharpJitCompiler : ScriptingJitCompiler
