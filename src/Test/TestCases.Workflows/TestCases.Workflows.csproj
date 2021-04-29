@@ -6,4 +6,51 @@
     <Page Remove="**\*.xaml" />
     <EmbeddedResource Include="TestXamls\*.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="TestXamls\Data\Google.Apis.Auth.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Auth.PlatformServices.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Calendar.v3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Core.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Docs.v1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Drive.v3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Gmail.v1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.PeopleService.v1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Script.v1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\Google.Apis.Sheets.v4.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\UiPath.GSuite.Activities.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\UiPath.GSuite.Activities.Package.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\UiPath.GSuite.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestXamls\Data\UiPath.Orchestrator.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

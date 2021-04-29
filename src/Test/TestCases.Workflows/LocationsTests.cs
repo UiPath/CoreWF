@@ -3,7 +3,9 @@ using System;
 using System.Activities;
 using System.Activities.Statements;
 using System.Activities.Validation;
+using System.IO;
 using System.Linq;
+using System.Runtime.Loader;
 using Xunit;
 
 namespace TestCases.Workflows
@@ -77,5 +79,32 @@ namespace TestCases.Workflows
             locations.Locals.ShouldBe(if1.Else.RuntimeVariables);
             locations.ReachableArguments.ShouldBe(new[] { new ReachableArgument(to7, to7.Owner, if1.Else), new ReachableArgument(to5, to5.Owner, root) });
         }
+
+        [Fact]
+        public void GSuiteSendMailGetLocations()
+        {
+            LoadCustomAssemblies();
+            var root = Load(TestXamls.GSuiteSendMail);
+            var gScope = root.Activities[0] as dynamic;
+            var sendEmail = gScope.Body.Handler.Activities[0];
+
+            var ex = Record.Exception(() =>
+                ScopeUtils.GetCompatibleLocations(sendEmail as Activity, x => true, arg => arg.Direction != ArgumentDirection.In));
+
+            Assert.Null(ex);
+        }
+
+        private static void LoadCustomAssemblies()
+        {
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+
+            var files = Directory.GetFiles(Path.Combine(basePath, "TestXamls\\Data\\"));
+
+            foreach (var file in files)
+            {
+                AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.Combine(basePath, file));
+            }
+        }
+
     }
 }

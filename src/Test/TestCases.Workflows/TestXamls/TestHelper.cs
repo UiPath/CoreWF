@@ -37,5 +37,6 @@ namespace TestCases.Workflows
         SimpleWorkflowWithArgsAndVar,
         IfThenElseBranchWithVars,
         NestedSequencesWithVars,
+        GSuiteSendMail,
     }
 }
