@@ -34,7 +34,7 @@ namespace System.Activities
             {
                 locals.AddRange(environment.GetLocationReferences().Where(isCompatible));
                 environment = environment.Parent;
-                current = currentChild.Parent;
+                current = currentChild?.Parent;
                 if (current is Sequence sequence)
                 {
                     reachableArguments.AddRange(sequence.Activities.TakeWhile(child => child != currentChild).SelectMany(child =>
