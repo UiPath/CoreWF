@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace System.Activities
 {
-    public abstract class AsyncTaskCodeActivity : AsyncCodeActivity
+    public abstract class AsyncTaskCodeActivity : AsyncCodeActivity, IAsyncTaskCodeActivity
     {
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
@@ -12,14 +12,8 @@ namespace System.Activities
 
             var task = ExecuteAsync(context, cts.Token);
 
-#if NET5_0_OR_GREATER
-            // Generic TaskCompletionSource is available starting in .NET 5
-            var tcs = new TaskCompletionSource(state);
-
-#else
             // VoidResult allows us to simulate a void return type.
-            var tcs = new TaskCompletionSource<VoidResult>(state)
-#endif
+            var tcs = new TaskCompletionSource<VoidResult>(state);
 
             task.ContinueWith(t =>
             {
@@ -33,11 +27,7 @@ namespace System.Activities
                 }
                 else
                 {
-#if NET5_0_OR_GREATER
-                    tcs.TrySetResult();
-#else
-                    tcs.TrySetResult(default);
-#endif
+                    _ = tcs.TrySetResult(VoidResult.Value);
                 }
 
                 callback?.Invoke(tcs.Task);
@@ -83,37 +73,37 @@ namespace System.Activities
             cts.Cancel();
         }
 
-        protected abstract Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        public abstract Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
     }
 
-    public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
+    public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult>, IAsyncTaskCodeActivity<TResult>
     {
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
             var cts = new CancellationTokenSource();
             context.UserState = cts;
             var task = ExecuteAsync(context, cts.Token);
-            var completionSource = new TaskCompletionSource<TResult>(state);
+            var tcs = new TaskCompletionSource<TResult>(state);
 
             task.ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
-                    completionSource.TrySetException(t.Exception!.InnerExceptions); // If it's faulted, there was an exception.
+                    tcs.TrySetException(t.Exception!.InnerExceptions); // If it's faulted, there was an exception.
                 }
                 else if (t.IsCanceled)
                 {
-                    completionSource.TrySetCanceled();
+                    tcs.TrySetCanceled();
                 }
                 else
                 {
-                    completionSource.TrySetResult(t.Result);
+                    tcs.TrySetResult(t.Result);
                 }
 
-                callback?.Invoke(completionSource.Task);
+                callback?.Invoke(tcs.Task);
             }, cts.Token);
 
-            return completionSource.Task;
+            return tcs.Task;
         }
 
         protected sealed override TResult EndExecute(AsyncCodeActivityContext context, IAsyncResult result)
@@ -121,6 +111,10 @@ namespace System.Activities
             var task = (Task<TResult>) result;
             try
             {
+                if (!task.IsCompleted)
+                {
+                    task.Wait();
+                }
                 return task.Result;
             }
             catch (OperationCanceledException)
@@ -155,6 +149,6 @@ namespace System.Activities
             cts.Cancel();
         }
 
-        protected abstract Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        public abstract Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
     }
 }
