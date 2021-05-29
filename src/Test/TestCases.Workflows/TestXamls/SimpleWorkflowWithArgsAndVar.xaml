@@ -2,6 +2,7 @@
           xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
           xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+          xmlns:test="clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows"
           xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
           xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
           xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
@@ -53,6 +54,7 @@
       </Assign.Value>
     </Assign>
     <Assign x:TypeArguments="x:String" sap:VirtualizedContainerService.HintSize="262,62" sap2010:WorkflowViewState.IdRef="Assign_2" />
+    <test:ScopeActivity/>
     <WriteLine DisplayName="Write Line" sap:VirtualizedContainerService.HintSize="262,62.6666666666667" sap2010:WorkflowViewState.IdRef="WriteLine_1" />
   </Sequence>
 </Activity>
