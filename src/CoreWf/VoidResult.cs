@@ -18,7 +18,7 @@ namespace System.Activities
         /// <summary>
         /// Returns a task which wraps <see cref="Value"/>.
         /// </summary>
-        public static Task<VoidResult> VoidTask { get; } = Task.FromResult(value);
+        public static Task<VoidResult> Task { get; } = System.Threading.Tasks.Task.FromResult(value);
 
         /// <inheritdoc />
         public int CompareTo(VoidResult other) => 0;
