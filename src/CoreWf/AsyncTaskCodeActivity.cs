@@ -12,7 +12,6 @@ namespace System.Activities
 
             var task = ExecuteAsync(context, cts.Token);
 
-            // VoidResult allows us to simulate a void return type.
             var tcs = new TaskCompletionSource<object>(state);
 
             task.ContinueWith(t =>
