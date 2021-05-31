@@ -1,4 +1,9 @@
-﻿using System.Activities;
+﻿using System;
+using System.Activities;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TestObjects.CustomActivities;
 using Xunit;
@@ -7,11 +12,11 @@ namespace TestCases.Activities
 {
     public sealed class AsyncTaskCodeActivityTests
     {
-        private static readonly AsyncTaskActivity<object> genericActivity = new(Task.FromResult<object>(null));
-
         [Fact]
         public void ShouldReturnVoidResult()
         {
+            var genericActivity = new AsyncTaskActivity<object>(Task.FromResult<object>(null));
+
             object vr1 = null;
             object vr2 = WorkflowInvoker.Invoke<object>(genericActivity);
 
@@ -37,6 +42,27 @@ namespace TestCases.Activities
             var result = WorkflowInvoker.Invoke(activity);
 
             Assert.Equal(10, result);
+        }
+
+        [Fact]
+        public void ShouldWriteCorrectString()
+        {
+            const string stringToWrite = "Hello, World!";
+
+            using var memory = new MemoryStream();
+
+            var activity = new AsyncTaskActivity(() =>
+            {
+                using var writer = new StreamWriter(memory);
+                writer.Write(stringToWrite);
+                writer.Flush();
+            });
+
+            _ = WorkflowInvoker.Invoke(activity);
+
+            byte[] buffer = memory.ToArray();
+            
+            Assert.Equal(stringToWrite, Encoding.UTF8.GetString(buffer, 0, buffer.Length));
         }
     }
 }
