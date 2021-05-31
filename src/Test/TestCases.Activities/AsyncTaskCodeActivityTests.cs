@@ -46,7 +46,7 @@ namespace TestCases.Activities
 
             using var memory = new MemoryStream();
 
-            var activity = new AsyncTaskActivity(() =>
+            Activity activity = new AsyncTaskActivity(() =>
             {
                 using var writer = new StreamWriter(memory);
                 writer.Write(stringToWrite);

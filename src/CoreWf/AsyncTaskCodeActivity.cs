@@ -1,87 +1,35 @@
-﻿using System.Threading;
+﻿using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace System.Activities
 {
-    public abstract class AsyncTaskCodeActivity : AsyncCodeActivity
+    public abstract class AsyncTaskCodeActivity : TaskCodeActivity<object>
     {
-        protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
-        {
-            var cts = new CancellationTokenSource();
-            context.UserState = cts;
-
-            var task = ExecuteAsync(context, cts.Token);
-
-            var tcs = new TaskCompletionSource<object>(state);
-
-            task.ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                {
-                    tcs.TrySetException(t.Exception!.InnerExceptions); // If it's faulted, there was an exception.
-                }
-                else if (t.IsCanceled)
-                {
-                    tcs.TrySetCanceled();
-                }
-                else
-                {
-                    _ = tcs.TrySetResult(null);
-                }
-
-                callback?.Invoke(tcs.Task);
-            }, cts.Token);
-
-            return tcs.Task;
-        }
-
-        protected sealed override void EndExecute(AsyncCodeActivityContext context, IAsyncResult result)
-        {
-            var task = (Task) result;
-            try
-            {
-                task.Wait();
-            }
-            catch (TaskCanceledException)
-            {
-                if (context.IsCancellationRequested)
-                {
-                    context.MarkCanceled();
-                }
-
-                throw;
-            }
-            catch (AggregateException aex)
-            {
-                foreach (var ex in aex.Flatten().InnerExceptions)
-                {
-                    if (ex is not TaskCanceledException)
-                        return;
-
-                    if (context.IsCancellationRequested)
-                        context.MarkCanceled();
-                }
-
-                throw;
-            }
-        }
-
-        protected sealed override void Cancel(AsyncCodeActivityContext context)
-        {
-            var cts = (CancellationTokenSource)context.UserState;
-            cts.Cancel();
-        }
-
         public abstract Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        internal sealed override async Task<object> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken)
+        {
+            await ExecuteAsync(context, cancellationToken);
+            return null;
+        }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [Browsable(false)]
+        public new OutArgument<object> Result { get; }
+    }
+    public abstract class AsyncTaskCodeActivity<TResult> : TaskCodeActivity<TResult>
+    {
+        public abstract Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        internal sealed override Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken) =>
+            ExecuteAsync(context, cancellationToken);
     }
 
-    public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
+    public abstract class TaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
     {
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
             var cts = new CancellationTokenSource();
             context.UserState = cts;
-            var task = ExecuteAsync(context, cts.Token);
+            var task = ExecuteAsyncCore(context, cts.Token);
             var tcs = new TaskCompletionSource<TResult>(state);
 
             task.ContinueWith(t =>
@@ -147,7 +95,7 @@ namespace System.Activities
             var cts = (CancellationTokenSource) context.UserState;
             cts.Cancel();
         }
-
-        public abstract Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        
+        internal abstract Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken);
     }
 }
