@@ -30,7 +30,7 @@ namespace TestObjects.CustomActivities
             _task = task;
         }
 
-        public AsyncTaskActivity(Func<TResult> func) : this(Task.Run(func))
+        public AsyncTaskActivity(Func<Task<TResult>> func) : this(func())
         {
         }
 

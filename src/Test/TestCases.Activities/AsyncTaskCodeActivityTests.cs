@@ -29,19 +29,14 @@ namespace TestCases.Activities
         [InlineData(3)]
         public void ShouldReturnConstantResult(int value)
         {
-            var activity = new AsyncTaskActivity<int>(Task.FromResult(value));
+            var activity = new AsyncTaskActivity<int>(async()=>
+            {
+                await Task.Yield();
+                return value;
+            });
             var result = WorkflowInvoker.Invoke(activity);
 
             Assert.Equal(value, result);
-        }
-
-        [Fact]
-        public void ShouldReturnCalculatedValue()
-        {
-            var activity = new AsyncTaskActivity<int>(() => 5 + 5);
-            var result = WorkflowInvoker.Invoke(activity);
-
-            Assert.Equal(10, result);
         }
 
         [Fact]
