@@ -208,7 +208,7 @@ namespace TestCases.Activities
 
         private class MyTracking : TrackingParticipant
         {
-            protected internal override void Track(TrackingRecord record, TimeSpan timeout)
+            protected override void Track(TrackingRecord record, TimeSpan timeout)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
 

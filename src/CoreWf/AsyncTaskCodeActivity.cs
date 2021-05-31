@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace System.Activities
 {
-    public abstract class AsyncTaskCodeActivity : AsyncCodeActivity, IAsyncTaskCodeActivity
+    public abstract class AsyncTaskCodeActivity : AsyncCodeActivity
     {
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
@@ -13,7 +13,7 @@ namespace System.Activities
             var task = ExecuteAsync(context, cts.Token);
 
             // VoidResult allows us to simulate a void return type.
-            var tcs = new TaskCompletionSource<VoidResult>(state);
+            var tcs = new TaskCompletionSource<object>(state);
 
             task.ContinueWith(t =>
             {
@@ -27,7 +27,7 @@ namespace System.Activities
                 }
                 else
                 {
-                    _ = tcs.TrySetResult(VoidResult.Value);
+                    _ = tcs.TrySetResult(null);
                 }
 
                 callback?.Invoke(tcs.Task);
@@ -76,7 +76,7 @@ namespace System.Activities
         public abstract Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
     }
 
-    public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult>, IAsyncTaskCodeActivity<TResult>
+    public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
     {
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
