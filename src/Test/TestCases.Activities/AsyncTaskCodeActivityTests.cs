@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Activities;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TestObjects.CustomActivities;
 using Xunit;
 
 namespace TestCases.Activities
@@ -59,5 +57,37 @@ namespace TestCases.Activities
             
             Assert.Equal(stringToWrite, Encoding.UTF8.GetString(buffer, 0, buffer.Length));
         }
+    }
+    public class AsyncTaskActivity : AsyncTaskCodeActivity
+    {
+        private readonly Task _task;
+
+        public AsyncTaskActivity(Task task)
+        {
+            _task = task;
+        }
+
+        public AsyncTaskActivity(Action action) : this(Task.Run(action))
+        {
+        }
+
+        public override Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken)
+            => _task;
+    }
+
+    public class AsyncTaskActivity<TResult> : AsyncTaskCodeActivity<TResult>
+    {
+        private readonly Task<TResult> _task;
+        public AsyncTaskActivity(Task<TResult> task)
+        {
+            _task = task;
+        }
+
+        public AsyncTaskActivity(Func<Task<TResult>> func) : this(func())
+        {
+        }
+
+        public override Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken)
+            => _task;
     }
 }
