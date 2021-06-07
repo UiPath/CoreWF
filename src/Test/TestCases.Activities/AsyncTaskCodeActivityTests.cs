@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shouldly;
+using System;
 using System.Activities;
 using System.IO;
 using System.Text;
@@ -19,6 +20,13 @@ namespace TestCases.Activities
             object vr2 = WorkflowInvoker.Invoke<object>(genericActivity);
 
             Assert.Equal(vr1, vr2);
+        }
+
+        [Fact]
+        public void ShouldThrow()
+        {
+            Activity activity = new AsyncTaskActivity(()=>Task.FromException(new InvalidOperationException("@")));
+            new Action(() => WorkflowInvoker.Invoke(activity)).ShouldThrow<InvalidOperationException>().Message.ShouldBe("@");
         }
 
         [Theory]
@@ -44,7 +52,7 @@ namespace TestCases.Activities
 
             using var memory = new MemoryStream();
 
-            Activity activity = new AsyncTaskActivity(() =>
+            Activity activity = new AsyncTaskActivity(async() =>
             {
                 using var writer = new StreamWriter(memory);
                 writer.Write(stringToWrite);
@@ -67,7 +75,7 @@ namespace TestCases.Activities
             _task = task;
         }
 
-        public AsyncTaskActivity(Action action) : this(Task.Run(action))
+        public AsyncTaskActivity(Func<Task> action) : this(action())
         {
         }
 
