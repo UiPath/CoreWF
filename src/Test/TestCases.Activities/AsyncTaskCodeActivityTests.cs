@@ -66,11 +66,12 @@ namespace TestCases.Activities
 
             using var memory = new MemoryStream();
 
-            Activity activity = new AsyncTaskActivity(async _ =>
+            Activity activity = new AsyncTaskActivity(_ =>
             {
                 using var writer = new StreamWriter(memory);
                 writer.Write(stringToWrite);
                 writer.Flush();
+                return Task.CompletedTask;
             });
 
             _ = WorkflowInvoker.Invoke(activity);

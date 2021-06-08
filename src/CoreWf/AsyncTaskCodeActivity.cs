@@ -12,9 +12,8 @@ namespace System.Activities
             await ExecuteAsync(context, cancellationToken);
             return null;
         }
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [Browsable(false)]
-        public new OutArgument<object> Result { get; }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new object Result { get; }
     }
     public abstract class AsyncTaskCodeActivity<TResult> : TaskCodeActivity<TResult>
     {
