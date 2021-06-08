@@ -6,8 +6,8 @@ namespace System.Activities
 {
     public abstract class AsyncTaskCodeActivity : TaskCodeActivity<object>
     {
-        public abstract Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
-        internal sealed override async Task<object> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken)
+        protected abstract Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        private protected sealed override async Task<object> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken)
         {
             await ExecuteAsync(context, cancellationToken);
             return null;
@@ -17,8 +17,8 @@ namespace System.Activities
     }
     public abstract class AsyncTaskCodeActivity<TResult> : TaskCodeActivity<TResult>
     {
-        public abstract Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
-        internal sealed override Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken) =>
+        protected abstract Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        private protected sealed override Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken) =>
             ExecuteAsync(context, cancellationToken);
     }
     public abstract class TaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
@@ -40,6 +40,6 @@ namespace System.Activities
             }
         }
         protected sealed override void Cancel(AsyncCodeActivityContext context) => ((CancellationTokenSource)context.UserState).Cancel();
-        internal abstract Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken);
+        private protected abstract Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken);
     }
 }

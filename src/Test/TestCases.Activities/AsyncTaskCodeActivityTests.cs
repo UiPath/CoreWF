@@ -85,12 +85,12 @@ namespace TestCases.Activities
     {
         private readonly Func<CancellationToken, Task> _action;
         public AsyncTaskActivity(Func<CancellationToken, Task> action) => _action = action;
-        public override Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken) => _action(cancellationToken);
+        protected override Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken) => _action(cancellationToken);
     }
     public class AsyncTaskActivity<TResult> : AsyncTaskCodeActivity<TResult>
     {
         private readonly Func<CancellationToken, Task<TResult>> _action;
         public AsyncTaskActivity(Func<CancellationToken, Task<TResult>> action) => _action = action;
-        public override Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken) => _action(cancellationToken);
+        protected override Task<TResult> ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken) => _action(cancellationToken);
     }
 }
