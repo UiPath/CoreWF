@@ -13,7 +13,7 @@ namespace System.Activities
             return null;
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public new object Result { get; }
+        public new object Result { get; set; }
     }
     public abstract class AsyncTaskCodeActivity<TResult> : TaskCodeActivity<TResult>
     {
