@@ -38,8 +38,8 @@ namespace System.Activities
         public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
         {
             var options = ScriptOptions.Default
-                .AddReferences(MetadataReferences)
-                .AddImports(expressionToCompile.ImportedNamespaces);
+                .WithReferences(MetadataReferences)
+                .WithImports(expressionToCompile.ImportedNamespaces);
             var untypedExpressionScript = Create(expressionToCompile.Code, options);
             var compilation = untypedExpressionScript.GetCompilation();
             var syntaxTree = compilation.SyntaxTrees.First();
