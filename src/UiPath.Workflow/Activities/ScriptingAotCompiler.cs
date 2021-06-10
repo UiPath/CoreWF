@@ -42,18 +42,14 @@ namespace System.Activities
             {
                 return results;
             }
-            byte[] scriptAssemblyBytes;
-            using (var stream = new MemoryStream())
+            using var stream = new MemoryStream();
+            var emitResult = compilation.Emit(stream);
+            AddDiagnostics(emitResult.Diagnostics);
+            if (!emitResult.Success)
             {
-                var emitResult = compilation.Emit(stream);
-                AddDiagnostics(emitResult.Diagnostics);
-                if (!emitResult.Success)
-                {
-                    return results;
-                }
-                scriptAssemblyBytes = stream.ToArray();
+                return results;
             }
-            results.ResultType = Assembly.Load(scriptAssemblyBytes).GetType(compilation.ScriptClass.Name);
+            results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(compilation.ScriptClass.Name);
             return results;
             void AddDiagnostics(IEnumerable<Diagnostic> diagnosticsToAdd) =>
                 results.AddMessages(diagnosticsToAdd.Select(diagnostic => new TextExpressionCompilerError
