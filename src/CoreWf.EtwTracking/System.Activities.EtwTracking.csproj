@@ -7,7 +7,6 @@
     <Copyright>Copyright © .NET Foundation and Contributors</Copyright> 
     <PackageTags>.NET Core workflow</PackageTags>
     <PackageProjectUrl>https://github.com/uipath-open/corewf</PackageProjectUrl>
-    <Version>1.2.0</Version>
     <RootNamespace>System.Activities.EtwTracking</RootNamespace>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
