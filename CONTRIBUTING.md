@@ -5,8 +5,6 @@ For more information see the [.NET Foundation Code of Conduct](https://dotnetfou
 ## Ways to contribute
 While features and fixes are greatly appreciated, there are other ways to contribute to this project. If you find a bug, create a test that reveals the bug. If you find a performance issue, create an issue with a PerfView profile, memory dump, or even a [BenchmarkDotNet](https://benchmarkdotnet.org/) benchmark.
 
-Check out the [documentation site](https://uipath-open.github.io/corewf) to see the roadmap and differences between CoreWF and Windows Workflow Foundation. 
-
 ## Developing with .NET Core SDK
 CoreWF requires .NET Core SDK 3.1 or higher. Download and install from [here](https://dotnet.microsoft.com/download).
 
