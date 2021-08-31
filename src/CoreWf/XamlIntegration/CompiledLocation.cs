@@ -121,7 +121,7 @@ namespace System.Activities.XamlIntegration
         }
 
         [DataMember(EmitDefaultValue = false)]
-        public IList<Tuple<string, Type>> locationReferenceCache
+        public IList<Tuple<string, string>> locationReferenceCache
         {
             get
             {
@@ -130,11 +130,11 @@ namespace System.Activities.XamlIntegration
                     return null;
                 }
 
-                List<Tuple<string, Type>> durableCache = new List<Tuple<string, Type>>(this.locationReferences.Count);
+                List<Tuple<string, string>> durableCache = new List<Tuple<string, string>>(this.locationReferences.Count);
 
                 foreach (LocationReference reference in locationReferences)
                 {
-                    durableCache.Add(new Tuple<string, Type>(reference.Name, reference.Type));
+                    durableCache.Add(new Tuple<string, string>(reference.Name, reference.Type.AssemblyQualifiedName));
                 }
 
                 return durableCache;
@@ -148,9 +148,9 @@ namespace System.Activities.XamlIntegration
                 }
 
                 this.locationReferences = new List<LocationReference>(value.Count);
-                foreach (Tuple<string, Type> reference in value)
+                foreach (Tuple<string, string> reference in value)
                 {
-                    this.locationReferences.Add(new CompiledLocationReference(reference.Item1, reference.Item2));
+                    this.locationReferences.Add(new CompiledLocationReference(reference.Item1, Type.GetType(reference.Item2, throwOnError: true)));
                 }
             }
         }
