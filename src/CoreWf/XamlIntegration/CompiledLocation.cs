@@ -216,7 +216,7 @@ namespace System.Activities.XamlIntegration
                     {
                         //
                         // Revalidate to make sure we didn't hit an ID shift
-                        if (compiledExpressionRoot.CanExecuteExpression(this.expressionText, true /* this is always a reference */, this.locationReferences, out this.expressionId))
+                        if (compiledExpressionRoot.CanExecuteExpression(this.expressionText, null, true /* this is always a reference */, this.locationReferences, out this.expressionId))
                         {
                             return compiledExpressionRoot;
                         }
@@ -237,7 +237,7 @@ namespace System.Activities.XamlIntegration
         {
             if (CompiledExpressionInvoker.TryGetCompiledExpressionRoot(activity, this.forImplementation, out compiledExpressionRoot))
             {
-                if (compiledExpressionRoot.CanExecuteExpression(this.expressionText, true /* this is always a reference */, this.locationReferences, out this.expressionId))
+                if (compiledExpressionRoot.CanExecuteExpression(this.expressionText, null, true /* this is always a reference */, this.locationReferences, out this.expressionId))
                 {
                     return true;
                 }

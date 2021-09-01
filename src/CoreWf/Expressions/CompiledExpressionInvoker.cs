@@ -197,7 +197,7 @@ namespace System.Activities.Expressions
 
         private bool CanExecuteExpression(ICompiledExpressionRoot compiledExpressionRoot, out int expressionId)
         {
-            if (compiledExpressionRoot.CanExecuteExpression(this.textExpression.ExpressionText, this.isReference, locationReferences, out expressionId))
+            if (compiledExpressionRoot.CanExecuteExpression(this.textExpression.ExpressionText, null, this.isReference, locationReferences, out expressionId))
             {
                 return true;
             }

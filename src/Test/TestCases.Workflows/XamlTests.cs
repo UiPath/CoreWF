@@ -334,7 +334,7 @@ namespace TestCases.Workflows
     }
     internal class Expressions : ICompiledExpressionRoot
     {
-        public bool CanExecuteExpression(string expressionText, bool isReference, IList<LocationReference> locations, out int expressionId)
+        public bool CanExecuteExpression(string expressionText, string typeFullName, bool isReference, IList<LocationReference> locations, out int expressionId)
         {
             expressionId = 1;
             return true;

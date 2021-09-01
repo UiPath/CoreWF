@@ -81,6 +81,40 @@ Iterate ArrayList
         }
 
         [Fact]
+        public void MyCode()
+        {
+            string expressionString = "1+2";
+            const string resultName = "__evalResult";
+            var workflow = new DynamicActivity
+            {
+                Name = "__evalWorkflow",
+                Implementation = () => new Assign
+                {
+                    To = OutArgument<object>.FromExpression(new CSharpReference<object>(resultName)),
+                    Value = InArgument<object>.FromExpression(new CSharpValue<object>(expressionString)),
+                }
+            };
+            workflow.Properties.Add(new DynamicActivityProperty { Name = resultName, Type = typeof(OutArgument<object>) });
+            var workflowArguments = new Dictionary<string, object>();
+            TextExpression.SetReferencesForImplementation(workflow, new AssemblyReference[] {
+                new AssemblyReference { AssemblyName = typeof(Activity).Assembly.GetName() }
+            });
+            var includedNamespaces = new List<string>
+            {
+                "System.Activities",
+                "System.Activities.Statements",
+                "System.Activities.Expressions",
+                "System.Activities.Validation",
+                "System.Activities.XamlIntegration",
+                "Microsoft.VisualBasic",
+                "Microsoft.VisualBasic.Activities"
+            };
+            TextExpression.SetNamespacesForImplementation(workflow, includedNamespaces);
+
+            TestHelper.InvokeWorkflow(workflow).ShouldBe(CorrectOutput);
+        }
+
+        [Fact]
         public void CodeToXaml()
         {
             var activity = CreateXamlSerializableCodeWorkflow();

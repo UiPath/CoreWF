@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
     <NoWarn>$(NoWarn);NU5105</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Version>6.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoreWf\System.Activities.csproj" />

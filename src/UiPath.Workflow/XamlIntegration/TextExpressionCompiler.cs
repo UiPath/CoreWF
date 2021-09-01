@@ -1265,6 +1265,7 @@ namespace System.Activities.XamlIntegration
             isValidMethod.ImplementationTypes.Add(new CodeTypeReference(typeof(ICompiledExpressionRoot)));
 
             isValidMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "expressionText"));
+            isValidMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "typeFullName"));
             isValidMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(bool)), "isReference"));
             isValidMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(IList<LocationReference>)), "locations"));
 
@@ -1293,6 +1294,11 @@ namespace System.Activities.XamlIntegration
                     CodeBinaryOperatorType.ValueEquality,
                     new CodePrimitiveExpression(descriptor.ExpressionText));
 
+                CodeBinaryOperatorExpression checkTypeExpression = new CodeBinaryOperatorExpression(
+                    new CodeVariableReferenceExpression("typeFullName"),
+                    CodeBinaryOperatorType.ValueEquality,
+                    new CodePrimitiveExpression(descriptor.ResultType?.FullName));
+
                 CodeMethodInvokeExpression invokeValidateExpression = new CodeMethodInvokeExpression(
                     new CodeMethodReferenceExpression(
                         new CodeTypeReferenceExpression(descriptor.TypeName),
@@ -1311,10 +1317,15 @@ namespace System.Activities.XamlIntegration
                     CodeBinaryOperatorType.BooleanAnd,
                     checkValidateExpression);
 
+                CodeBinaryOperatorExpression checkTextAndTypeAndValidateExpression = new CodeBinaryOperatorExpression(
+                    checkTypeExpression,
+                    CodeBinaryOperatorType.BooleanAnd,
+                    checkTextAndValidateExpression);
+
                 CodeBinaryOperatorExpression checkIsReferenceAndTextAndValidateExpression = new CodeBinaryOperatorExpression(
                     checkIsReferenceExpression,
                     CodeBinaryOperatorType.BooleanAnd,
-                    checkTextAndValidateExpression);
+                    checkTextAndTypeAndValidateExpression);
                 
                 CodeAssignStatement assignId = new CodeAssignStatement(
                     new CodeVariableReferenceExpression("expressionId"),
