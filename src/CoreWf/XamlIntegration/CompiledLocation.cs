@@ -101,7 +101,7 @@ namespace System.Activities.XamlIntegration
                 this.compiledRootActivityQualifiedId = value;
             }
         }
-        
+
         [DataMember(EmitDefaultValue = false)]
         public byte[] ExpressionActivityQualifiedId
         {
@@ -121,36 +121,32 @@ namespace System.Activities.XamlIntegration
         }
 
         [DataMember(EmitDefaultValue = false)]
-        public IList<Tuple<string, string>> locationReferenceCache
+        public List<(string Name, string TypeName)> LocationReferenceCache
         {
             get
             {
-                if (this.locationReferences == null || this.locationReferences.Count == 0)
+                if (locationReferences == null || locationReferences.Count == 0)
                 {
                     return null;
                 }
-
-                List<Tuple<string, string>> durableCache = new List<Tuple<string, string>>(this.locationReferences.Count);
-
+                var durableCache = new List<(string, string)>(locationReferences.Count);
                 foreach (LocationReference reference in locationReferences)
                 {
-                    durableCache.Add(new Tuple<string, string>(reference.Name, reference.Type.AssemblyQualifiedName));
+                    durableCache.Add((reference.Name, reference.Type.AssemblyQualifiedName));
                 }
-
                 return durableCache;
             }
             set
             {
                 if (value == null || value.Count == 0)
                 {
-                    this.locationReferences = new List<LocationReference>();
+                    locationReferences = new List<LocationReference>();
                     return;
                 }
-
-                this.locationReferences = new List<LocationReference>(value.Count);
-                foreach (Tuple<string, string> reference in value)
+                locationReferences = new List<LocationReference>(value.Count);
+                foreach (var (Name, TypeName) in value)
                 {
-                    this.locationReferences.Add(new CompiledLocationReference(reference.Item1, Type.GetType(reference.Item2, throwOnError: true)));
+                    locationReferences.Add(new CompiledLocationReference(Name, Type.GetType(TypeName, throwOnError: true)));
                 }
             }
         }
@@ -268,7 +264,7 @@ namespace System.Activities.XamlIntegration
 
             protected override string NameCore
             {
-                get 
+                get
                 {
                     return name;
                 }
@@ -276,7 +272,7 @@ namespace System.Activities.XamlIntegration
 
             protected override Type TypeCore
             {
-                get 
+                get
                 {
                     return type;
                 }
