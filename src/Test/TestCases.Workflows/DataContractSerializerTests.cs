@@ -32,10 +32,7 @@ namespace TestCases.Workflows
             stream.Position = 0;
             compiledLocation = (CompiledLocation<string>)dataContractSerializer.ReadObject(stream);
             //assert
-            compiledLocation.LocationReferenceCache.Count.ShouldBe(1);
-            (string name, string typeName) = compiledLocation.LocationReferenceCache[0];
-            name.ShouldBe("name");
-            typeName.ShouldBe(typeof(string).AssemblyQualifiedName);
+            compiledLocation.LocationReferenceCache.ShouldBe(new[]{("name", typeof(string).AssemblyQualifiedName)});
         }
     }
 }
