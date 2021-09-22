@@ -130,7 +130,7 @@ namespace System.Activities.XamlIntegration
                     return null;
                 }
                 var durableCache = new List<(string, string)>(locationReferences.Count);
-                foreach (LocationReference reference in locationReferences)
+                foreach (var reference in locationReferences)
                 {
                     durableCache.Add((reference.Name, reference.Type.AssemblyQualifiedName));
                 }

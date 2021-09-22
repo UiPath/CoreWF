@@ -14,17 +14,11 @@ namespace TestCases.Workflows
         public void VerifyCompiledLocationSerialized()
         {
             //arrange
-            var activityContext = new ActivityContext();
-            var activity = new Sequence();
-            activity.InitializeAsRoot(null);
-            activityContext.Reinitialize(new ActivityInstance(activity), null, activity, 0);
-            var compiledLocation = new CompiledLocation<string>(getMethod: null,
-                setMethod: null,
-                locationReferences: new List<LocationReference>() { new RuntimeArgument("name", typeof(string), ArgumentDirection.Out) },
-                locations: null,
-                expressionId: 0,
-                compiledRootActivity: activity,
-                currentActivityContext: activityContext);
+            var rootActivity = new Sequence();
+            rootActivity.InitializeAsRoot(null);
+            var activityContext = new ActivityContext(new ActivityInstance(rootActivity), null);
+            var compiledLocation = new CompiledLocation<string>(null, null, new List<LocationReference>() { new Variable<string>("name") }, null, 0, 
+                rootActivity, activityContext);
             var dataContractSerializer = new DataContractSerializer(typeof(CompiledLocation<string>));
             using var stream = new MemoryStream();
             //act
