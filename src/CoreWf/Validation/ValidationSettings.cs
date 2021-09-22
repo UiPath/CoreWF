@@ -68,6 +68,8 @@ namespace System.Activities.Validation
 
                 return this.additionalConstraints;
             }
-        }        
+        }
+
+        public bool SkipExpressionCompilation { get; set; }
     }
 }

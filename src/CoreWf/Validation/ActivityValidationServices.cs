@@ -464,6 +464,11 @@ namespace System.Activities.Validation
                 this.settings = settings;
                 this.rootToValidate = toValidate;
                 this.environment = settings.Environment;
+                if (settings.SkipExpressionCompilation)
+                {
+                    environment ??= new ActivityLocationReferenceEnvironment();
+                    environment.CompileExpressions = true;
+                }
             }
 
             internal ValidationResults InternalValidate()
