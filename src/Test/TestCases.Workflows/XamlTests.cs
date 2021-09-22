@@ -3,6 +3,7 @@ using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Statements;
+using System.Activities.Validation;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
@@ -290,6 +291,13 @@ namespace TestCases.Workflows
             var writeLine = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("[s]")) };
             CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(writeLine, new Expressions());
             WorkflowInvoker.Invoke(writeLine);
+        }
+        [Fact]
+        public void ValidateSkipCompilation()
+        {
+            var writeLine = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("[s]")) };
+            var results = ActivityValidationServices.Validate(writeLine, new(){ SkipExpressionCompilation = true });
+            results.Errors.ShouldBeEmpty();
         }
         [Fact]
         public void CSharpInputOutput()
