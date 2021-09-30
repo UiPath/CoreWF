@@ -170,8 +170,9 @@ namespace TestCases.Workflows
             var result = InvokeWorkflow(xamlString, inputs);
         }
     }
-    public class JustInTimeXamlTests
+    public class JustInTimeXamlTests : XamlTestsBase
     {
+        protected override bool CompileExpressions => false;
         [Theory]
         [ClassData(typeof(VisualBasicInferTypeData))]
         public void VisualBasicShould_Infer_Type(string text, Type resultType, string[] namespaces, string[] assemblies)
