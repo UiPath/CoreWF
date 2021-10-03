@@ -22,6 +22,7 @@ namespace System.Activities
         private protected sealed override Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context, CancellationToken cancellationToken) =>
             ExecuteAsync(context, cancellationToken);
     }
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public abstract class TaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
     {
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
