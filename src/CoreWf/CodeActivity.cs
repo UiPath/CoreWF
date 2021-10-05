@@ -219,4 +219,21 @@ using System.Activities.DynamicUpdate;
             SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
         }
     }
+    public class FuncActivity<TResult> : CodeActivity<TResult>
+    {
+        private readonly Func<ActivityContext, TResult> _func;
+        public FuncActivity(Func<ActivityContext, TResult> func) => _func = func ?? throw new ArgumentNullException(nameof(func));
+        protected override TResult Execute(CodeActivityContext context)
+        {
+            try
+            {
+                context.AllowChainedEnvironmentAccess = true;
+                return _func(context);
+            }
+            finally
+            {
+                context.AllowChainedEnvironmentAccess = false;
+            }
+        }
+    }
 }
