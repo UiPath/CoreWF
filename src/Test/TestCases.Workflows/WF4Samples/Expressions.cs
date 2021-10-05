@@ -151,9 +151,9 @@ Iterate ArrayList
 
         private static Activity FuncCodeOnlyWorkflow()
         {
-            Variable<Employee> e1 = new("Employee1") { Default = new FuncActivity<Employee>(ctx => new Employee("John", "Doe", 55000.0)) };
-            Variable<Employee> e2 = new("Employee2") { Default = new FuncActivity<Employee>(ctx => new Employee("Frank", "Kimono", 89000.0))};
-            Variable<SalaryStats> stats = new("SalaryStats") { Default = new FuncActivity<SalaryStats>(ctx => new SalaryStats()) };
+            Variable<Employee> e1 = new("Employee1") { Default = new FuncValue<Employee>(ctx => new Employee("John", "Doe", 55000.0)) };
+            Variable<Employee> e2 = new("Employee2") { Default = new FuncValue<Employee>(ctx => new Employee("Frank", "Kimono", 89000.0))};
+            Variable<SalaryStats> stats = new("SalaryStats") { Default = new FuncValue<SalaryStats>(ctx => new SalaryStats()) };
             Variable<double> v1 = new();
             Sequence workflow = new()
             {
@@ -165,30 +165,30 @@ Iterate ArrayList
                 {
                     new WriteLine()
                     {
-                        Text = new FuncActivity<string>(ctx => e1.Get(ctx).FirstName + " " + e1.Get(ctx).LastName + " earns " + e1.Get(ctx).Salary.ToString("$0.00")),
+                        Text = new FuncValue<string>(ctx => e1.Get(ctx).FirstName + " " + e1.Get(ctx).LastName + " earns " + e1.Get(ctx).Salary.ToString("$0.00")),
                     },
                     new WriteLine()
                     {
-                        Text = new FuncActivity<string>(ctx => e2.Get(ctx).FirstName + " " + e2.Get(ctx).LastName + " earns " + e2.Get(ctx).Salary.ToString("$0.00")),
+                        Text = new FuncValue<string>(ctx => e2.Get(ctx).FirstName + " " + e2.Get(ctx).LastName + " earns " + e2.Get(ctx).Salary.ToString("$0.00")),
                     },
                     new Assign<double>()
                     {
                         To = new LambdaReference<double>(ctx => stats.Get(ctx).MinSalary),
-                        Value = new FuncActivity<double>(ctx => Math.Min(e1.Get(ctx).Salary, e2.Get(ctx).Salary))
+                        Value = new FuncValue<double>(ctx => Math.Min(e1.Get(ctx).Salary, e2.Get(ctx).Salary))
                     },
                     new Assign<double>()
                     {
                         To = new LambdaReference<double>(ctx => stats.Get(ctx).MaxSalary),
-                        Value = new FuncActivity<double>(ctx => Math.Max(e1.Get(ctx).Salary, e2.Get(ctx).Salary))
+                        Value = new FuncValue<double>(ctx => Math.Max(e1.Get(ctx).Salary, e2.Get(ctx).Salary))
                     },
                     new Assign<double>()
                     {
                         To = new LambdaReference<double>(ctx => stats.Get(ctx).AvgSalary),
-                        Value = new FuncActivity<double>(ctx => (e1.Get(ctx).Salary + e2.Get(ctx).Salary) / 2.0)
+                        Value = new FuncValue<double>(ctx => (e1.Get(ctx).Salary + e2.Get(ctx).Salary) / 2.0)
                     },
                     new WriteLine()
                     {
-                        Text = new FuncActivity<string>(ctx => string.Format(
+                        Text = new FuncValue<string>(ctx => string.Format(
                             "Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
                             stats.Get(ctx).MinSalary, stats.Get(ctx).MaxSalary, stats.Get(ctx).AvgSalary))
                     }

@@ -219,10 +219,10 @@ using System.Activities.DynamicUpdate;
             SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
         }
     }
-    public class FuncActivity<TResult> : CodeActivity<TResult>
+    public class FuncValue<TResult> : CodeActivity<TResult>
     {
         private readonly Func<ActivityContext, TResult> _func;
-        public FuncActivity(Func<ActivityContext, TResult> func) => _func = func ?? throw new ArgumentNullException(nameof(func));
+        public FuncValue(Func<ActivityContext, TResult> func) => _func = func ?? throw new ArgumentNullException(nameof(func));
         protected override TResult Execute(CodeActivityContext context)
         {
             try
