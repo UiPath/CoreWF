@@ -8,7 +8,7 @@ namespace System.Activities
     using System;
     using System.Runtime.Serialization;
 
-using System.Activities.DynamicUpdate;
+    using System.Activities.DynamicUpdate;
     public abstract class CodeActivity : Activity
     {
         protected CodeActivity()
@@ -78,7 +78,7 @@ using System.Activities.DynamicUpdate;
         {
             CodeActivityMetadata metadata = new CodeActivityMetadata(this, this.GetParentEnvironment(), createEmptyBindings);
             CacheMetadata(metadata);
-            metadata.Dispose(); 
+            metadata.Dispose();
             if (this.RuntimeArguments == null || this.RuntimeArguments.Count == 0)
             {
                 this.SkipArgumentResolution = true;
@@ -234,6 +234,45 @@ using System.Activities.DynamicUpdate;
             {
                 context.AllowChainedEnvironmentAccess = false;
             }
+        }
+    }
+    public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
+    {
+        private readonly LocationReference _locationReference;
+        private readonly Func<TLocation, TResult> _get;
+        private readonly Func<TLocation, TResult, TLocation> _set;
+        public FuncReference(LocationReference locationReference, Func<TLocation, TResult> get, Func<TLocation, TResult, TLocation> set)
+        {
+            _locationReference = locationReference ?? throw new ArgumentNullException(nameof(locationReference));
+            _get = get ?? throw new ArgumentNullException(nameof(get));
+            _set = set ?? throw new ArgumentNullException(nameof(set));
+        }
+        protected override Location<TResult> Execute(CodeActivityContext context)
+        {
+            Location<TLocation> location;
+            try
+            {
+                context.AllowChainedEnvironmentAccess = true;
+                location = context.GetLocation<TLocation>(_locationReference);
+            }
+            finally
+            {
+                context.AllowChainedEnvironmentAccess = false;
+            }
+            return new FuncLocation(location, _get, _set);
+        }
+        class FuncLocation : Location<TResult>
+        {
+            private readonly Location<TLocation> _location;
+            private readonly Func<TLocation, TResult> _get;
+            private readonly Func<TLocation, TResult, TLocation> _set;
+            public FuncLocation(Location<TLocation> location, Func<TLocation, TResult> get, Func<TLocation, TResult, TLocation> set)
+            {
+                _location = location;
+                _get = get;
+                _set = set;
+            }
+            public override TResult Value { get => _get(_location.Value); set => _location.Value = _set(_location.Value, value); }
         }
     }
 }
