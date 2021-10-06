@@ -74,6 +74,14 @@ Iterate ArrayList
             expressionException.ShouldBeNull();
         }
         [Fact]
+        public void CSharpCalculationGenerated()
+        {
+            var activity = TestHelper.GetActivityFromXamlResource(TestXamls.CSharpCalculation);
+            CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(activity, new Calculation_CompiledExpressionRoot(activity));
+            var inputs = new StringDictionary { ["XX"] = 16, ["YY"] = 16 };
+            TestHelper.InvokeWorkflow(activity, inputs).ShouldBe("Result == XX^2" + Environment.NewLine);
+        }
+        [Fact]
         public void Code()
         {
             var activity = CreateCodeOnlyWorkflow();
