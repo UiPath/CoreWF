@@ -109,11 +109,11 @@ Iterate ArrayList
                 {
                     new WriteLine()
                     {
-                        Text = new FuncValue<string>(ctx => e1.Get(ctx).FirstName + " " + e1.Get(ctx).LastName + " earns " + e1.Get(ctx).Salary.ToString("$0.00")),
+                        Text = new FuncValue<string>(ctx => ctx.GetValue<Employee>(e1.Name).FirstName + " " + ctx.GetValue<Employee>(e1.Name).LastName + " earns " + ctx.GetValue<Employee>(e1.Name).Salary.ToString("$0.00")),
                     },
                     new WriteLine()
                     {
-                        Text = new FuncValue<string>(ctx => e2.Get(ctx).FirstName + " " + e2.Get(ctx).LastName + " earns " + e2.Get(ctx).Salary.ToString("$0.00")),
+                        Text = new FuncValue<string>(ctx => ctx.GetValue<Employee>(e2.Name).FirstName + " " + ctx.GetValue<Employee>(e2.Name).LastName + " earns " + ctx.GetValue<Employee>(e2.Name).Salary.ToString("$0.00")),
                     },
                     new Assign<double>()
                     {
@@ -122,7 +122,7 @@ Iterate ArrayList
                             s.MinSalary = value;
                             return s;
                         }),
-                        Value = new FuncValue<double>(ctx => Math.Min(e1.Get(ctx).Salary, e2.Get(ctx).Salary))
+                        Value = new FuncValue<double>(ctx => Math.Min(ctx.GetValue<Employee>(e1.Name).Salary, ctx.GetValue<Employee>(e2.Name).Salary))
                     },
                     new Assign<double>()
                     {
@@ -131,7 +131,7 @@ Iterate ArrayList
                             s.MaxSalary = value;
                             return s;
                         }),
-                        Value = new FuncValue<double>(ctx => Math.Max(e1.Get(ctx).Salary, e2.Get(ctx).Salary))
+                        Value = new FuncValue<double>(ctx => Math.Max(ctx.GetValue<Employee>(e1.Name).Salary, ctx.GetValue<Employee>(e2.Name).Salary))
                     },
                     new Assign<double>()
                     {
@@ -140,13 +140,13 @@ Iterate ArrayList
                             s.AvgSalary = value;
                             return s;
                         }),
-                        Value = new FuncValue<double>(ctx => (e1.Get(ctx).Salary + e2.Get(ctx).Salary) / 2.0)
+                        Value = new FuncValue<double>(ctx => (ctx.GetValue<Employee>(e1.Name).Salary + ctx.GetValue<Employee>(e2.Name).Salary) / 2.0)
                     },
                     new WriteLine()
                     {
                         Text = new FuncValue<string>(ctx => string.Format(
                             "Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
-                            stats.Get(ctx).MinSalary, stats.Get(ctx).MaxSalary, stats.Get(ctx).AvgSalary))
+                            ctx.GetValue<SalaryStats>(stats.Name).MinSalary, ctx.GetValue<SalaryStats>(stats.Name).MaxSalary, ctx.GetValue<SalaryStats>(stats.Name).AvgSalary))
                     }
                 },
             };
