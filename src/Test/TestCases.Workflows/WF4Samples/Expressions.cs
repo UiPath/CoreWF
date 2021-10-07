@@ -92,65 +92,65 @@ Iterate ArrayList
         {
             var activity = FuncCodeOnlyWorkflow();
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
-        }
-        private static Activity FuncCodeOnlyWorkflow()
-        {
-            Variable<Employee> e1 = new("Employee1") { Default = new FuncValue<Employee>(ctx => new Employee("John", "Doe", 55000.0)) };
-            Variable<Employee> e2 = new("Employee2") { Default = new FuncValue<Employee>(ctx => new Employee("Frank", "Kimono", 89000.0)) };
-            Variable<SalaryStats> stats = new("SalaryStats") { Default = new FuncValue<SalaryStats>(ctx => new SalaryStats()) };
-            Variable<double> v1 = new();
-            Sequence workflow = new()
+            static Activity FuncCodeOnlyWorkflow()
             {
-                Variables =
+                Variable<Employee> e1 = new("Employee1") { Default = new FuncValue<Employee>(ctx => new Employee("John", "Doe", 55000.0)) };
+                Variable<Employee> e2 = new("Employee2") { Default = new FuncValue<Employee>(ctx => new Employee("Frank", "Kimono", 89000.0)) };
+                Variable<SalaryStats> stats = new("SalaryStats") { Default = new FuncValue<SalaryStats>(ctx => new SalaryStats()) };
+                Variable<double> v1 = new();
+                Sequence workflow = new()
                 {
-                    e1, e2, stats, v1,
-                },
-                Activities =
-                {
-                    new WriteLine()
+                    Variables =
                     {
-                        Text = new FuncValue<string>(ctx => ctx.GetValue<Employee>(e1.Name).FirstName + " " + ctx.GetValue<Employee>(e1.Name).LastName + " earns " + ctx.GetValue<Employee>(e1.Name).Salary.ToString("$0.00")),
+                        e1, e2, stats, v1,
                     },
-                    new WriteLine()
+                    Activities =
                     {
-                        Text = new FuncValue<string>(ctx => ctx.GetValue<Employee>(e2.Name).FirstName + " " + ctx.GetValue<Employee>(e2.Name).LastName + " earns " + ctx.GetValue<Employee>(e2.Name).Salary.ToString("$0.00")),
-                    },
-                    new Assign<double>()
-                    {
-                        To = new FuncReference<SalaryStats, double>(stats.Name, s => s.MinSalary, (s, value)=>
+                        new WriteLine()
                         {
-                            s.MinSalary = value;
-                            return s;
-                        }),
-                        Value = new FuncValue<double>(ctx => Math.Min(ctx.GetValue<Employee>(e1.Name).Salary, ctx.GetValue<Employee>(e2.Name).Salary))
-                    },
-                    new Assign<double>()
-                    {
-                        To = new FuncReference<SalaryStats, double>(stats.Name, s => s.MaxSalary, (s, value)=>
+                            Text = new FuncValue<string>(ctx => ctx.GetValue<Employee>(e1.Name).FirstName + " " + ctx.GetValue<Employee>(e1.Name).LastName + " earns " + ctx.GetValue<Employee>(e1.Name).Salary.ToString("$0.00")),
+                        },
+                        new WriteLine()
                         {
-                            s.MaxSalary = value;
-                            return s;
-                        }),
-                        Value = new FuncValue<double>(ctx => Math.Max(ctx.GetValue<Employee>(e1.Name).Salary, ctx.GetValue<Employee>(e2.Name).Salary))
-                    },
-                    new Assign<double>()
-                    {
-                        To = new FuncReference<SalaryStats, double>(stats.Name, s => s.AvgSalary, (s, value)=>
+                            Text = new FuncValue<string>(ctx => ctx.GetValue<Employee>(e2.Name).FirstName + " " + ctx.GetValue<Employee>(e2.Name).LastName + " earns " + ctx.GetValue<Employee>(e2.Name).Salary.ToString("$0.00")),
+                        },
+                        new Assign<double>()
                         {
-                            s.AvgSalary = value;
-                            return s;
-                        }),
-                        Value = new FuncValue<double>(ctx => (ctx.GetValue<Employee>(e1.Name).Salary + ctx.GetValue<Employee>(e2.Name).Salary) / 2.0)
+                            To = new FuncReference<SalaryStats, double>(stats.Name, s => s.MinSalary, (s, value)=>
+                            {
+                                s.MinSalary = value;
+                                return s;
+                            }),
+                            Value = new FuncValue<double>(ctx => Math.Min(ctx.GetValue<Employee>(e1.Name).Salary, ctx.GetValue<Employee>(e2.Name).Salary))
+                        },
+                        new Assign<double>()
+                        {
+                            To = new FuncReference<SalaryStats, double>(stats.Name, s => s.MaxSalary, (s, value)=>
+                            {
+                                s.MaxSalary = value;
+                                return s;
+                            }),
+                            Value = new FuncValue<double>(ctx => Math.Max(ctx.GetValue<Employee>(e1.Name).Salary, ctx.GetValue<Employee>(e2.Name).Salary))
+                        },
+                        new Assign<double>()
+                        {
+                            To = new FuncReference<SalaryStats, double>(stats.Name, s => s.AvgSalary, (s, value)=>
+                            {
+                                s.AvgSalary = value;
+                                return s;
+                            }),
+                            Value = new FuncValue<double>(ctx => (ctx.GetValue<Employee>(e1.Name).Salary + ctx.GetValue<Employee>(e2.Name).Salary) / 2.0)
+                        },
+                        new WriteLine()
+                        {
+                            Text = new FuncValue<string>(ctx => string.Format(
+                                "Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
+                                ctx.GetValue<SalaryStats>(stats.Name).MinSalary, ctx.GetValue<SalaryStats>(stats.Name).MaxSalary, ctx.GetValue<SalaryStats>(stats.Name).AvgSalary))
+                        }
                     },
-                    new WriteLine()
-                    {
-                        Text = new FuncValue<string>(ctx => string.Format(
-                            "Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
-                            ctx.GetValue<SalaryStats>(stats.Name).MinSalary, ctx.GetValue<SalaryStats>(stats.Name).MaxSalary, ctx.GetValue<SalaryStats>(stats.Name).AvgSalary))
-                    }
-                },
-            };
-            return workflow;
+                };
+                return workflow;
+            }
         }
         [Fact]
         public void CodeToXaml()

@@ -170,7 +170,7 @@ namespace System.Activities
             var environment = Activity.GetParentEnvironment();
             if (!environment.TryGetLocationReference(locationReferenceName, out var locationReference))
             {
-                throw new ArgumentOutOfRangeException(nameof(locationReferenceName));
+                throw new ArgumentOutOfRangeException(nameof(locationReferenceName), SR.LocationExpressionCouldNotBeResolved(locationReferenceName));
             }
             return GetLocation<T>(locationReference);
         }
