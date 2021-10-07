@@ -6,4 +6,7 @@
     <Page Remove="**\*.xaml" />
     <EmbeddedResource Include="TestXamls\*.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AgileObjects.ReadableExpressions" Version="2.6.0" />
+  </ItemGroup>
 </Project>

@@ -163,7 +163,7 @@ namespace System.Activities
             }
         }
 
-        internal T GetValue<T>(string locationReferenceName) => GetLocation<T>(locationReferenceName).Value;
+        public T GetValue<T>(string locationReferenceName) => GetLocation<T>(locationReferenceName).Value;
 
         internal Location<T> GetLocation<T>(string locationReferenceName)
         {

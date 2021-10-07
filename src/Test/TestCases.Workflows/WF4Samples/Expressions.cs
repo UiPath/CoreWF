@@ -52,6 +52,13 @@ Iterate ArrayList
     public class JustInTimeExpressions : ExpressionsBase
     {
         protected override bool CompileExpressions => false;
+        [Fact]
+        public void CompileSalaryCalculation()
+        {
+            var activity = GetActivityFromXamlResource(TestXamls.SalaryCalculation);
+            Compiler.Run(activity);
+            TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
+        }
     }
 
     /// <summary>
