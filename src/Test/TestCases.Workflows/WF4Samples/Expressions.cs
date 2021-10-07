@@ -117,7 +117,7 @@ Iterate ArrayList
                     },
                     new Assign<double>()
                     {
-                        To = new FuncReference<SalaryStats, double>(stats, s => s.MinSalary, (s, value)=>
+                        To = new FuncReference<SalaryStats, double>(stats.Name, s => s.MinSalary, (s, value)=>
                         {
                             s.MinSalary = value;
                             return s;
@@ -126,7 +126,7 @@ Iterate ArrayList
                     },
                     new Assign<double>()
                     {
-                        To = new FuncReference<SalaryStats, double>(stats, s => s.MaxSalary, (s, value)=>
+                        To = new FuncReference<SalaryStats, double>(stats.Name, s => s.MaxSalary, (s, value)=>
                         {
                             s.MaxSalary = value;
                             return s;
@@ -135,7 +135,7 @@ Iterate ArrayList
                     },
                     new Assign<double>()
                     {
-                        To = new FuncReference<SalaryStats, double>(stats, s => s.AvgSalary, (s, value)=>
+                        To = new FuncReference<SalaryStats, double>(stats.Name, s => s.AvgSalary, (s, value)=>
                         {
                             s.AvgSalary = value;
                             return s;

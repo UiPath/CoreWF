@@ -238,12 +238,12 @@ namespace System.Activities
     }
     public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
     {
-        private readonly LocationReference _locationReference;
+        private readonly string _locationName;
         private readonly Func<TLocation, TResult> _get;
         private readonly Func<TLocation, TResult, TLocation> _set;
-        public FuncReference(LocationReference locationReference, Func<TLocation, TResult> get, Func<TLocation, TResult, TLocation> set)
+        public FuncReference(string locationName, Func<TLocation, TResult> get, Func<TLocation, TResult, TLocation> set)
         {
-            _locationReference = locationReference ?? throw new ArgumentNullException(nameof(locationReference));
+            _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
             _get = get ?? throw new ArgumentNullException(nameof(get));
             _set = set ?? throw new ArgumentNullException(nameof(set));
         }
@@ -253,7 +253,7 @@ namespace System.Activities
             try
             {
                 context.AllowChainedEnvironmentAccess = true;
-                location = context.GetLocation<TLocation>(_locationReference);
+                location = context.GetLocation<TLocation>(_locationName);
             }
             finally
             {
