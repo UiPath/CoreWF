@@ -147,7 +147,5 @@ namespace TestCases.Workflows
             new[] { root }.Concat(WorkflowInspectionServices.GetActivities(root).SelectMany(a => a.GetChildren()));
 
         static readonly MethodInfo ActivityContextGetValue = typeof(ActivityContext).GetMethod(nameof(ActivityContext.GetValue), new Type[] { typeof(string) });
-
-        public static object ValidationServices { get; private set; }
     }
 }
