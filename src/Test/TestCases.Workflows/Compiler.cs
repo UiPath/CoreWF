@@ -51,6 +51,7 @@ namespace TestCases.Workflows
             if (isValue)
             {
                 var newExpressionTree = (LambdaExpression)new ValueVisitor().Visit(expressionTree);
+                newExpressionTree.Trace();
                 activityType = typeof(FuncValue<>);
                 arguments = new[] { newExpressionTree.Compile() };
                 genericArguments = new[] { resultType };
@@ -70,8 +71,10 @@ namespace TestCases.Workflows
                 else
                 {
                     var get = Lambda(coreExpression, locationParameter);
+                    get.Trace();
                     var valueParameter = Parameter(coreExpression.Type, "value");
                     var set = Lambda(Block(Assign(coreExpression, valueParameter), locationParameter), new[] { locationParameter, valueParameter });
+                    set.Trace();
                     arguments = new object[] { locationName, get.Compile(), set.Compile() };
                     activityType = typeof(FuncReference<,>);
                     genericArguments = new[] { locationParameter.Type, resultType };
@@ -80,6 +83,8 @@ namespace TestCases.Workflows
             var funcType = activityType.MakeGenericType(genericArguments);
             return (ActivityWithResult)Activator.CreateInstance(funcType, arguments);
         }
+
+        static void Trace(this Expression expression) => System.Diagnostics.Trace.WriteLine(expression.ToReadableString());
 
         class ReferenceVisitor : ExpressionVisitor
         {
