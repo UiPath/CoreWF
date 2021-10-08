@@ -23,8 +23,22 @@ namespace TestCases.Workflows
                 {
                     Translate(argument.BoundArgument);
                 }
+                foreach (var variable in activity.RuntimeVariables)
+                {
+                    Translate(variable);
+                }
             }
             WorkflowInspectionServices.CacheMetadata(root);
+        }
+
+        private static void Translate(Variable variable)
+        {
+            var expression = variable.Default;
+            if (expression == null)
+            {
+                return;
+            }
+            variable.Default = Translate(expression, true);
         }
 
         private static void Translate(Argument boundArgument)
