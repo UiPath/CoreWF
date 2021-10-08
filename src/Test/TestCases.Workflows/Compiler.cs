@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
 namespace TestCases.Workflows
 {
     using static ExpressionUtilities;
@@ -30,7 +29,6 @@ namespace TestCases.Workflows
             }
             WorkflowInspectionServices.CacheMetadata(root);
         }
-
         private static void Translate(Variable variable)
         {
             var expression = variable.Default;
@@ -40,7 +38,6 @@ namespace TestCases.Workflows
             }
             variable.Default = Translate(expression, true);
         }
-
         private static void Translate(Argument boundArgument)
         {
             var expression = boundArgument.Expression;
@@ -50,7 +47,6 @@ namespace TestCases.Workflows
             }
             boundArgument.Expression = Translate(expression, boundArgument.Direction == ArgumentDirection.In);
         }
-
         private static ActivityWithResult Translate(object expression, bool isValue)
         {
             if (expression is not ITextExpression textExpression)
@@ -58,49 +54,49 @@ namespace TestCases.Workflows
                 return (ActivityWithResult)expression;
             }
             var expressionTree = (LambdaExpression)textExpression.GetExpressionTree();
-            var resultType = textExpression.GetType().GenericTypeArguments[0];
+            return isValue ? CreateFuncValue(expressionTree) : CreateFuncReference(expressionTree);
+        }
+        private static ActivityWithResult CreateFuncReference(LambdaExpression expressionTree)
+        {
             object[] arguments;
             Type activityType;
             Type[] genericArguments;
-            if (isValue)
+            var visitor = new ReferenceVisitor();
+            var coreExpression = visitor.Visit(expressionTree.Body);
+            var locationName = visitor.LocationName;
+            var locationParameter = visitor.Parameter;
+            if (coreExpression == locationParameter)
             {
-                var newExpressionTree = (LambdaExpression)new ValueVisitor().Visit(expressionTree);
-                newExpressionTree.Trace();
-                activityType = typeof(FuncValue<>);
-                arguments = new[] { newExpressionTree.Compile() };
-                genericArguments = new[] { resultType };
+                arguments = new[] { locationName };
+                activityType = typeof(FuncReference<>);
+                genericArguments = new[] { expressionTree.ReturnType };
+                System.Diagnostics.Trace.WriteLine(locationName);
             }
             else
             {
-                var visitor = new ReferenceVisitor();
-                var coreExpression = visitor.Visit(expressionTree.Body);
-                var locationName = visitor.LocationName;
-                var locationParameter = visitor.Parameter;
-                if (coreExpression == locationParameter)
-                {
-                    arguments = new[] { locationName };
-                    activityType = typeof(FuncReference<>);
-                    genericArguments = new[] { resultType };
-                    System.Diagnostics.Trace.WriteLine(locationName);
-                }
-                else
-                {
-                    var get = Lambda(coreExpression, locationParameter);
-                    get.Trace();
-                    var valueParameter = Parameter(coreExpression.Type, "value");
-                    var set = Lambda(Block(Assign(coreExpression, valueParameter), locationParameter), new[] { locationParameter, valueParameter });
-                    set.Trace();
-                    arguments = new object[] { locationName, get.Compile(), set.Compile() };
-                    activityType = typeof(FuncReference<,>);
-                    genericArguments = new[] { locationParameter.Type, resultType };
-                }
+                var get = Lambda(coreExpression, locationParameter);
+                get.Trace();
+                var valueParameter = Parameter(coreExpression.Type, "value");
+                var set = Lambda(Block(Assign(coreExpression, valueParameter), locationParameter), new[] { locationParameter, valueParameter });
+                set.Trace();
+                arguments = new object[] { locationName, get.Compile(), set.Compile() };
+                activityType = typeof(FuncReference<,>);
+                genericArguments = new[] { locationParameter.Type, expressionTree.ReturnType };
             }
+            return CreateFunc(activityType, genericArguments, arguments);
+        }
+        private static ActivityWithResult CreateFuncValue(LambdaExpression expressionTree)
+        {
+            var newExpressionTree = (LambdaExpression)new ValueVisitor().Visit(expressionTree);
+            newExpressionTree.Trace();
+            return CreateFunc(typeof(FuncValue<>), new[] { expressionTree.ReturnType }, new[] { newExpressionTree.Compile() });
+        }
+        private static ActivityWithResult CreateFunc(Type activityType, Type[] genericArguments, object[] arguments)
+        {
             var funcType = activityType.MakeGenericType(genericArguments);
             return (ActivityWithResult)Activator.CreateInstance(funcType, arguments);
         }
-
         static void Trace(this Expression expression) => System.Diagnostics.Trace.WriteLine(expression.ToReadableString());
-
         class ReferenceVisitor : ExpressionVisitor
         {
             public ParameterExpression Parameter { get; private set; }
@@ -116,7 +112,6 @@ namespace TestCases.Workflows
                 return base.VisitMethodCall(node);
             }
         }
-
         class ValueVisitor : ExpressionVisitor
         {
             protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -129,7 +124,6 @@ namespace TestCases.Workflows
                 return base.VisitMethodCall(node);
             }
         }
-
         private static bool LocationType(this MethodCallExpression node, out Type locationType)
         {
             var method = node.Method;
@@ -141,12 +135,9 @@ namespace TestCases.Workflows
             locationType = null;
             return false;
         }
-
         private static string LocationName(this MethodCallExpression node) => ((LocationReference)((ConstantExpression)node.Arguments[0]).Value).Name;
-
         static IEnumerable<Activity> GetChildren(this Activity root) => 
             new[] { root }.Concat(WorkflowInspectionServices.GetActivities(root).SelectMany(a => a.GetChildren()));
-
         static readonly MethodInfo ActivityContextGetValue = typeof(ActivityContext).GetMethod(nameof(ActivityContext.GetValue), new Type[] { typeof(string) });
     }
 }
