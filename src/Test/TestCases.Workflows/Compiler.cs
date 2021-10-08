@@ -62,26 +62,26 @@ namespace TestCases.Workflows
             Type activityType;
             Type[] genericArguments;
             var visitor = new ReferenceVisitor();
-            var coreExpression = visitor.Visit(expressionTree.Body);
+            var fullLocationExpression = visitor.Visit(expressionTree.Body);
             var locationName = visitor.LocationName;
             var locationParameter = visitor.Parameter;
-            if (coreExpression == locationParameter)
+            if (fullLocationExpression == locationParameter)
             {
                 arguments = new[] { locationName };
                 activityType = typeof(FuncReference<>);
-                genericArguments = new[] { expressionTree.ReturnType };
+                genericArguments = new[] { fullLocationExpression.Type };
                 System.Diagnostics.Trace.WriteLine(locationName);
             }
             else
             {
-                var get = Lambda(coreExpression, locationParameter);
+                var get = Lambda(fullLocationExpression, locationParameter);
                 get.Trace();
-                var valueParameter = Parameter(coreExpression.Type, "value");
-                var set = Lambda(Block(Assign(coreExpression, valueParameter), locationParameter), new[] { locationParameter, valueParameter });
+                var valueParameter = Parameter(fullLocationExpression.Type, "value");
+                var set = Lambda(Block(Assign(fullLocationExpression, valueParameter), locationParameter), new[] { locationParameter, valueParameter });
                 set.Trace();
                 arguments = new object[] { locationName, get.Compile(), set.Compile() };
                 activityType = typeof(FuncReference<,>);
-                genericArguments = new[] { locationParameter.Type, expressionTree.ReturnType };
+                genericArguments = new[] { locationParameter.Type, fullLocationExpression.Type };
             }
             return CreateFunc(activityType, genericArguments, arguments);
         }
