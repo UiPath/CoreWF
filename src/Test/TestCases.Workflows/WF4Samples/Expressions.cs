@@ -26,13 +26,13 @@ Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, ave
 ";
 
         [Fact]
-        public void ActivityXamlServicesLoad()
+        public void SalaryCalculation()
         {
             var activity = GetActivityFromXamlResource(TestXamls.SalaryCalculation);
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
 
-        private const string ForEachCorrectOutput = @"Iterate Array
+        protected const string ForEachCorrectOutput = @"Iterate Array
 ...bill
 ...steve
 ...ray
@@ -52,12 +52,23 @@ Iterate ArrayList
     public class JustInTimeExpressions : ExpressionsBase
     {
         protected override bool CompileExpressions => false;
+        Activity Compile(TestXamls xamlName)
+        {
+            var activity = GetActivityFromXamlResource(xamlName);
+            Compiler.Run(activity);
+            return activity;
+        }
         [Fact]
         public void CompileSalaryCalculation()
         {
-            var activity = GetActivityFromXamlResource(TestXamls.SalaryCalculation);
-            Compiler.Run(activity);
+            var activity = Compile(TestXamls.SalaryCalculation);
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
+        }
+        [Fact]
+        public void CompileNonGenericForEach()
+        {
+            var activity = Compile(TestXamls.NonGenericForEach);
+            TestHelper.InvokeWorkflow(activity).ShouldBe(ForEachCorrectOutput);
         }
     }
 
