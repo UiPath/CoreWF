@@ -81,6 +81,7 @@ namespace TestCases.Workflows
                     arguments = new[] { locationName };
                     activityType = typeof(FuncReference<>);
                     genericArguments = new[] { resultType };
+                    System.Diagnostics.Trace.WriteLine(locationName);
                 }
                 else
                 {

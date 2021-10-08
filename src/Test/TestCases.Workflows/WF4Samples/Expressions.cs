@@ -18,8 +18,12 @@ namespace TestCases.Workflows.WF4Samples
     {
         protected abstract bool CompileExpressions { get; }
         protected Activity GetActivityFromXamlResource(TestXamls xamlName) => TestHelper.GetActivityFromXamlResource(xamlName, CompileExpressions);
-
-
+        protected Activity Compile(TestXamls xamlName)
+        {
+            var activity = GetActivityFromXamlResource(xamlName);
+            Compiler.Run(activity);
+            return activity;
+        }
         protected const string CorrectOutput = @"John Doe earns $55000.00
 Frank Kimono earns $89000.00
 Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, average salary is $72000.00
@@ -52,12 +56,6 @@ Iterate ArrayList
     public class JustInTimeExpressions : ExpressionsBase
     {
         protected override bool CompileExpressions => false;
-        Activity Compile(TestXamls xamlName)
-        {
-            var activity = GetActivityFromXamlResource(xamlName);
-            Compiler.Run(activity);
-            return activity;
-        }
         [Fact]
         public void CompileSalaryCalculation()
         {
@@ -80,15 +78,24 @@ Iterate ArrayList
     public class AheadOfTimeExpressions : ExpressionsBase
     {
         protected override bool CompileExpressions => true;
+        static readonly string CSharpCalculationResult = "Result == XX^2" + Environment.NewLine;
+        static readonly StringDictionary CSharpCalculationInputs = new() { ["XX"] = 16, ["YY"] = 16 };
 
+        [Fact]
+        public void CompileCSharpCalculation()
+        {
+            var activity = Compile(TestXamls.CSharpCalculation);
+            TestHelper.InvokeWorkflow(activity, CSharpCalculationInputs).ShouldBe(CSharpCalculationResult);
+        }
         [Fact]
         public void CSharpCalculation()
         {
             var activity = GetActivityFromXamlResource(TestXamls.CSharpCalculation);
-            var inputs = new StringDictionary { ["XX"] = 16, ["YY"] = 16 };
-            TestHelper.InvokeWorkflow(activity, inputs).ShouldBe("Result == XX^2"+Environment.NewLine);
+            TestHelper.InvokeWorkflow(activity, CSharpCalculationInputs).ShouldBe(CSharpCalculationResult);
+
             CSharpDesignerHelper.CreatePrecompiledReference(typeof(int), "Result", Array.Empty<string>(), Array.Empty<string>(), activity.ImplementationEnvironment, 
                 out var type, out var expressionException, out var _);
+            type.ShouldBe(typeof(int));
             expressionException.ShouldBeNull();
         }
         [Fact]
