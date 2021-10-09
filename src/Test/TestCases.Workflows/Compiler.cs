@@ -127,13 +127,9 @@ namespace TestCases.Workflows
         private static bool LocationType(this MethodCallExpression node, out Type locationType)
         {
             var method = node.Method;
-            if (method.IsGenericMethod && method.GetGenericMethodDefinition() == ActivityContextGetValueGenericMethod)
-            {
-                locationType = node.Method.GetGenericArguments()[0];
-                return true;
-            }
-            locationType = null;
-            return false;
+            var isLocation = method.IsGenericMethod && method.GetGenericMethodDefinition() == ActivityContextGetValueGenericMethod;
+            locationType = isLocation ? method.GetGenericArguments()[0] : null;
+            return isLocation;
         }
         private static string LocationName(this MethodCallExpression node) => ((LocationReference)((ConstantExpression)node.Arguments[0]).Value).Name;
         static IEnumerable<Activity> GetChildren(this Activity root) => 
