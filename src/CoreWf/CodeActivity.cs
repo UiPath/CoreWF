@@ -236,10 +236,10 @@ namespace System.Activities
             }
         }
     }
-    public class FuncReference<TLocation> : CodeActivity<Location<TLocation>>
+    public class Reference<TLocation> : CodeActivity<Location<TLocation>>
     {
         private readonly string _locationName;
-        public FuncReference(string locationName) => _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
+        public Reference(string locationName) => _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
         protected override Location<TLocation> Execute(CodeActivityContext context)
         {
             try

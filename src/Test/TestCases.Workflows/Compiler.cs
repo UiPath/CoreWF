@@ -68,7 +68,7 @@ namespace TestCases.Workflows
             if (fullLocationExpression == locationParameter)
             {
                 arguments = new[] { locationName };
-                activityType = typeof(FuncReference<>);
+                activityType = typeof(Reference<>);
                 genericArguments = new[] { fullLocationExpression.Type };
                 System.Diagnostics.Trace.WriteLine(locationName);
             }

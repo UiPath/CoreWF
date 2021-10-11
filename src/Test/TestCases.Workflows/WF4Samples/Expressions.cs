@@ -122,12 +122,12 @@ Iterate ArrayList
                 Variable<Employee> e1 = new("Employee1") { Default = new FuncValue<Employee>(ctx => new Employee("John", "Doe", 55000.0)) };
                 Variable<Employee> e2 = new("Employee2") { Default = new FuncValue<Employee>(ctx => new Employee("Frank", "Kimono", 89000.0)) };
                 Variable<SalaryStats> stats = new("SalaryStats") { Default = new FuncValue<SalaryStats>(ctx => new SalaryStats()) };
-                Variable<double> v1 = new();
+                Variable<double> average = new("average");
                 Sequence workflow = new()
                 {
                     Variables =
                     {
-                        e1, e2, stats, v1,
+                        e1, e2, stats, average,
                     },
                     Activities =
                     {
@@ -165,6 +165,11 @@ Iterate ArrayList
                                 return s;
                             }),
                             Value = new FuncValue<double>(ctx => (ctx.GetValue<Employee>(e1.Name).Salary + ctx.GetValue<Employee>(e2.Name).Salary) / 2.0)
+                        },
+                        new Assign<double>()
+                        {
+                            To = new Reference<double>(average.Name),
+                            Value = new FuncValue<double>(ctx => ctx.GetValue<SalaryStats>(stats.Name).AvgSalary)
                         },
                         new WriteLine()
                         {
