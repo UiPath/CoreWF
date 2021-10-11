@@ -98,7 +98,7 @@ Iterate ArrayList
             var activity = GetActivityFromXamlResource(TestXamls.CSharpCalculation);
             TestHelper.InvokeWorkflow(activity, CSharpCalculationInputs).ShouldBe(CSharpCalculationResult);
 
-            CSharpDesignerHelper.CreatePrecompiledReference(typeof(int), "Result", Array.Empty<string>(), Array.Empty<string>(), activity.ImplementationEnvironment, 
+            CSharpDesignerHelper.CreatePrecompiledReference(typeof(int), "Result", Array.Empty<string>(), Array.Empty<string>(), activity.ImplementationEnvironment,
                 out var type, out var expressionException, out var _);
             type.ShouldBe(typeof(int));
             expressionException.ShouldBeNull();
@@ -122,40 +122,33 @@ Iterate ArrayList
         {
             var activity = FuncCodeOnlyWorkflow();
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
-            static Activity FuncCodeOnlyWorkflow()
-            {
-                var e1 = CreateVariable(name: "Employee1", @default: ctx => new Employee("John", "Doe", 55000.0));
-                var e2 = CreateVariable(name: "Employee2", @default: ctx => new Employee("Frank", "Kimono", 89000.0));
-                var stats = CreateVariable(name: "SalaryStats", @default: ctx => new SalaryStats());
-                var average = CreateVariable<double>(name: "average");
-
-                var wl1 = CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee1").FirstName + " " + ctx.GetValue<Employee>("Employee1").LastName + " earns " + ctx.GetValue<Employee>("Employee1").Salary.ToString("$0.00"));
-                var wl2 = CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee2").FirstName + " " + ctx.GetValue<Employee>("Employee2").LastName + " earns " + ctx.GetValue<Employee>("Employee2").Salary.ToString("$0.00"));
-                var to1 = new FuncReference<SalaryStats, double>("SalaryStats", s => s.MinSalary, (s, value) =>
-                {
-                    s.MinSalary = value;
-                    return s;
-                });
-                var assign1 = CreateAssign(to: to1, value: ctx => Math.Min(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary));
-                var to2 = new FuncReference<SalaryStats, double>("SalaryStats", s => s.MaxSalary, (s, value) =>
-                {
-                    s.MaxSalary = value;
-                    return s;
-                });
-                var assign2 = CreateAssign(to: to2, value: ctx => Math.Max(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary));
-                var to3 = new FuncReference<SalaryStats, double>("SalaryStats", s => s.AvgSalary, (s, value) =>
-                {
-                    s.AvgSalary = value;
-                    return s;
-                });
-                var assign3 = CreateAssign(to: to3, value: ctx => (ctx.GetValue<Employee>("Employee1").Salary + ctx.GetValue<Employee>("Employee2").Salary) / 2.0);
-                var assign4 = CreateAssign(to: "average", ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary);
-                var wl3 = CreateWriteLine(text: ctx => string.Format(
-                                "Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
-                                ctx.GetValue<SalaryStats>("SalaryStats").MinSalary, ctx.GetValue<SalaryStats>("SalaryStats").MaxSalary, ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary));
-                return CreateSequence(variables: new Variable[]{ e1, e2, stats, average }, 
-                    activities: new Activity[]{ wl1, wl2, assign1, assign2, assign3, assign4, wl3 });
-            }
+            static Activity FuncCodeOnlyWorkflow() => CreateSequence(
+                variables: new Variable[]{
+                    CreateVariable(name: "Employee1", @default: ctx => new Employee("John", "Doe", 55000.0)),
+                    CreateVariable(name: "Employee2", @default: ctx => new Employee("Frank", "Kimono", 89000.0)),
+                    CreateVariable(name: "SalaryStats", @default: ctx => new SalaryStats()),
+                        CreateVariable<double>(name: "average")},
+                activities: new Activity[]{
+                    CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee1").FirstName + " " + ctx.GetValue<Employee>("Employee1").LastName + " earns " + ctx.GetValue<Employee>("Employee1").Salary.ToString("$0.00")),
+                    CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee2").FirstName + " " + ctx.GetValue<Employee>("Employee2").LastName + " earns " + ctx.GetValue<Employee>("Employee2").Salary.ToString("$0.00")),
+                    CreateAssign(to: new FuncReference<SalaryStats, double>("SalaryStats", s => s.MinSalary, (s, value) =>
+                    {
+                        s.MinSalary = value;
+                        return s;
+                    }), value: ctx => Math.Min(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary)),
+                    CreateAssign(to: new FuncReference<SalaryStats, double>("SalaryStats", s => s.MaxSalary, (s, value) =>
+                    {
+                        s.MaxSalary = value;
+                        return s;
+                    }), value: ctx => Math.Max(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary)),
+                    CreateAssign(to: new FuncReference<SalaryStats, double>("SalaryStats", s => s.AvgSalary, (s, value) =>
+                    {
+                        s.AvgSalary = value;
+                        return s;
+                    }), value: ctx => (ctx.GetValue<Employee>("Employee1").Salary + ctx.GetValue<Employee>("Employee2").Salary) / 2.0),
+                    CreateAssign(to: "average", ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary),
+                    CreateWriteLine(text: ctx => string.Format("Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
+                        ctx.GetValue<SalaryStats>("SalaryStats").MinSalary, ctx.GetValue<SalaryStats>("SalaryStats").MaxSalary, ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary))});
             static Variable<T> CreateVariable<T>(string name = null, Func<ActivityContext, T> @default = null)
             {
                 var variable = new Variable<T>();
@@ -178,17 +171,11 @@ Iterate ArrayList
                 }
                 if (variables != null)
                 {
-                    foreach (var variable in variables)
-                    {
-                        sequence.Variables.Add(variable);
-                    }
+                    sequence.Variables.AddRange(variables);
                 }
                 if (activities != null)
                 {
-                    foreach (var activity in activities)
-                    {
-                        sequence.Activities.Add(activity);
-                    }
+                    sequence.Activities.AddRange(activities);
                 }
                 return sequence;
             }
@@ -425,5 +412,15 @@ Iterate ArrayList
         /// </summary>
         public OutArgument<int> Z { get; set; }
 
+    }
+    static class Helpers
+    {
+        public static void AddRange<T>(this Collection<T> collection, T[] itemsToAdd)
+        {
+            foreach (var item in itemsToAdd)
+            {
+                collection.Add(item);
+            }
+        }
     }
 }
