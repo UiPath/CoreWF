@@ -161,7 +161,7 @@ Iterate ArrayList
                         s.AvgSalary = value;
                         return s;
                     }), value: ctx => (ctx.GetValue<Employee>("Employee1").Salary + ctx.GetValue<Employee>("Employee2").Salary) / 2.0),
-                    CreateAssign(to: "average", ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary),
+                    CreateAssign(to: "average", value: ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary),
                     CreateWriteLine(text: ctx => string.Format("Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
                         ctx.GetValue<SalaryStats>("SalaryStats").MinSalary, ctx.GetValue<SalaryStats>("SalaryStats").MaxSalary, ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary))});
             static Variable<T> CreateVariable<T>(string name = null, Func<ActivityContext, T> @default = null)
