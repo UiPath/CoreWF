@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xaml;
+using System.Xml;
 using Xunit;
 
 namespace TestCases.Workflows.WF4Samples
@@ -72,6 +73,20 @@ Iterate ArrayList
         [Fact]
         public void LoadXaml()
         {
+            using var stream = TestHelper.GetXamlStream(TestXamls.SalaryCalculation);
+            var xmlReader = new XmlTextReader(stream);
+            using var xamlReader = new XamlXmlReader(xmlReader);
+            while (xamlReader.Read())
+            {
+                if (xamlReader.Member != null)
+                {
+                    Console.WriteLine("Member : "+ xamlReader.Member);
+                }
+                if (xamlReader.Value != null)
+                {
+                    Console.WriteLine("Value : " + xamlReader.Value);
+                }
+            }
         }
     }
 
