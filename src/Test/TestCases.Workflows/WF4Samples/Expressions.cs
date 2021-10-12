@@ -142,7 +142,7 @@ Iterate ArrayList
                     CreateVariable(name: "Employee1", @default: ctx => new Employee("John", "Doe", 55000.0)),
                     CreateVariable(name: "Employee2", @default: ctx => new Employee("Frank", "Kimono", 89000.0)),
                     CreateVariable(name: "SalaryStats", @default: ctx => new SalaryStats()),
-                        CreateVariable<double>(name: "average")},
+                    CreateVariable<double>(name: "average")},
                 activities: new Activity[]{
                     CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee1").FirstName + " " + ctx.GetValue<Employee>("Employee1").LastName + " earns " + ctx.GetValue<Employee>("Employee1").Salary.ToString("$0.00")),
                     CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee2").FirstName + " " + ctx.GetValue<Employee>("Employee2").LastName + " earns " + ctx.GetValue<Employee>("Employee2").Salary.ToString("$0.00")),
