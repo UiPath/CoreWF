@@ -199,7 +199,7 @@ Iterate ArrayList
                 var writeLine = new WriteLine();
                 if (text != null)
                 {
-                    writeLine.Text = new FuncValue<string>(text);
+                    writeLine.Text = CreateInArgument(text);
                 }
                 if (displayName != null)
                 {
@@ -213,11 +213,11 @@ Iterate ArrayList
             var assign = new Assign<T>();
             if (to != null)
             {
-                assign.To = new Reference<T>(to);
+                assign.To = CreateOutArgument<T>(to);
             }
             if (value != null)
             {
-                assign.Value = new FuncValue<T>(value);
+                assign.Value = CreateInArgument(value);
             }
             return assign;
         }
@@ -230,10 +230,12 @@ Iterate ArrayList
             }
             if (value != null)
             {
-                assign.Value = new FuncValue<TResult>(value);
+                assign.Value = CreateInArgument(value);
             }
             return assign;
         }
+        static InArgument<T> CreateInArgument<T>(Func<ActivityContext, T> value) => new(new FuncValue<T>(value));
+        static OutArgument<T> CreateOutArgument<T>(string locationName) => new(new Reference<T>(locationName));
         [Fact]
         public void CodeToXaml()
         {
