@@ -9,12 +9,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using Microsoft.CodeAnalysis;
 using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
+using Location = System.Activities.Location;
 
 namespace TestCases.Workflows
 {
@@ -243,6 +246,18 @@ namespace TestCases.Workflows
             new Action(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" }, _ => typeof(int), typeof(string))))
                 .ShouldThrow<SourceExpressionException>().Message.ShouldContain("BC30512: Option Strict On disallows implicit conversions");
         }
+        [Fact]
+        public void Should_Be_Able_To_Override_Expression_Build()
+        {
+            var referencedAssemblies = new[] { typeof(int).Assembly, typeof(Expression).Assembly, typeof(Conversions).Assembly }.ToHashSet();
+            var expressionToCompile = new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" }, _ => typeof(int), typeof(int));
+            new VbJitCompiler(referencedAssemblies)
+                .CompileExpression(expressionToCompile)
+                .Body.ShouldBeOfType<ConstantExpression>();
+            new VbJitNoBuildCompiler(referencedAssemblies)
+                .CompileExpression(expressionToCompile)
+                .Body.ShouldBeOfType<DefaultExpression>();
+        }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
     {
@@ -361,6 +376,20 @@ namespace TestCases.Workflows
         public object InvokeExpression(int expressionId, IList<Location> locations)
         {
             throw new NotImplementedException();
+        }
+    }
+    internal class VbJitNoBuildCompiler : VbJitCompiler
+    {
+        public VbJitNoBuildCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies)
+        {
+        }
+        protected override (LambdaExpression, TextExpressionCompilerResults) Build(Type lambdaReturnType, Compilation finalCompilation)
+        {
+            var results = new TextExpressionCompilerResults();
+            var diagnostics = finalCompilation.GetDiagnostics();
+            results.AddMessages(diagnostics.Select(TextExpressionCompilerError.Create));
+            var lambdaExpression = Expression.Lambda(Expression.Default(lambdaReturnType));
+            return (lambdaExpression, results);
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
 using ReflectionMagic;
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -58,12 +59,17 @@ namespace System.Activities
                 .Select(GetTypeName));
             var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
                 CreateExpressionCode(types, names, expressionToCompile.Code))));
-            var results = ScriptingAotCompiler.BuildAssembly(finalCompilation);
+            var (lambdaExpression, results) = Build(expressionToCompile.LambdaReturnType, finalCompilation);
             if (results.HasErrors)
             {
                 throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerErrorSpecificExpression(expressionToCompile.Code, results), results.CompilerMessages));
             }
-            return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
+            return lambdaExpression ?? (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
+        }
+        protected virtual (LambdaExpression, TextExpressionCompilerResults) Build(Type lambdaReturnType, Compilation finalCompilation)
+        {
+            var results = ScriptingAotCompiler.BuildAssembly(finalCompilation);
+            return (null, results);
         }
         public IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree) =>
             syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind).Select(n => n.ToString()).Distinct().ToArray();

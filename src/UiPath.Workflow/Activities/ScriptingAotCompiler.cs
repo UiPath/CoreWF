@@ -52,13 +52,7 @@ namespace System.Activities
             results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(compilation.ScriptClass.Name);
             return results;
             void AddDiagnostics(IEnumerable<Diagnostic> diagnosticsToAdd) =>
-                results.AddMessages(diagnosticsToAdd.Select(diagnostic => new TextExpressionCompilerError
-                {
-                    SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
-                    Number = diagnostic.Id,
-                    Message = diagnostic.ToString(),
-                    IsWarning = diagnostic.Severity < DiagnosticSeverity.Error,
-                }));
+                results.AddMessages(diagnosticsToAdd.Select(TextExpressionCompilerError.Create));
         }
     }
     public class CSharpAotCompiler : ScriptingAotCompiler
