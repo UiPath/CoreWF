@@ -35,30 +35,35 @@ namespace System.Activities
         }
         internal static TextExpressionCompilerResults BuildAssembly(Compilation compilation)
         {
-            var results = new TextExpressionCompilerResults();
-            var diagnostics = compilation.GetDiagnostics();
-            AddDiagnostics(diagnostics);
+            var results = GetCompilerResults(compilation);
             if (results.HasErrors)
             {
                 return results;
             }
             using var stream = new MemoryStream();
             var emitResult = compilation.Emit(stream);
-            AddDiagnostics(emitResult.Diagnostics);
+            AddDiagnostics(results, emitResult.Diagnostics);
             if (!emitResult.Success)
             {
                 return results;
             }
             results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(compilation.ScriptClass.Name);
             return results;
-            void AddDiagnostics(IEnumerable<Diagnostic> diagnosticsToAdd) =>
-                results.AddMessages(diagnosticsToAdd.Select(diagnostic => new TextExpressionCompilerError
-                {
-                    SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
-                    Number = diagnostic.Id,
-                    Message = diagnostic.ToString(),
-                    IsWarning = diagnostic.Severity < DiagnosticSeverity.Error,
-                }));
+        }
+        static void AddDiagnostics(TextExpressionCompilerResults results, IEnumerable<Diagnostic> diagnosticsToAdd) =>
+            results.AddMessages(diagnosticsToAdd.Select(diagnostic => new TextExpressionCompilerError
+            {
+                SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
+                Number = diagnostic.Id,
+                Message = diagnostic.ToString(),
+                IsWarning = diagnostic.Severity < DiagnosticSeverity.Error,
+            }));
+        public static TextExpressionCompilerResults GetCompilerResults(Compilation compilation)
+        {
+            var results = new TextExpressionCompilerResults();
+            var diagnostics = compilation.GetDiagnostics();
+            AddDiagnostics(results, diagnostics);
+            return results;
         }
     }
     public class CSharpAotCompiler : ScriptingAotCompiler
