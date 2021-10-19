@@ -38,7 +38,7 @@ namespace System.Activities
         private static readonly Type delegateArgumentType = typeof(DelegateArgument);
 
         // MethodInfos cached for use in TryRewriteLambdaExpression
-        private static MethodInfo activityContextGetValueGenericMethod = typeof(ActivityContext).GetMethod("GetValue", new Type[] { typeof(LocationReference) });
+        public static MethodInfo ActivityContextGetValueGenericMethod = typeof(ActivityContext).GetMethod("GetValue", new Type[] { typeof(LocationReference) });
         private static MethodInfo activityContextGetLocationGenericMethod = typeof(ActivityContext).GetMethod("GetLocation", new Type[] { typeof(LocationReference) });
         private static readonly MethodInfo locationReferenceGetLocationMethod = typeof(LocationReference).GetMethod("GetLocation", new Type[] { typeof(ActivityContext) });
         private static readonly MethodInfo argumentGetLocationMethod = typeof(Argument).GetMethod("GetLocation", new Type[] { typeof(ActivityContext) });
@@ -60,7 +60,7 @@ namespace System.Activities
 
         public static Expression CreateIdentifierExpression(LocationReference locationReference)
         {
-            return Expression.Call(RuntimeContextParameter, activityContextGetValueGenericMethod.MakeGenericMethod(locationReference.Type), Expression.Constant(locationReference, typeof(LocationReference)));
+            return Expression.Call(RuntimeContextParameter, ActivityContextGetValueGenericMethod.MakeGenericMethod(locationReference.Type), Expression.Constant(locationReference, typeof(LocationReference)));
         }
 
         // If we ever expand the depth to which we'll look through an expression for a location,
@@ -1438,7 +1438,7 @@ namespace System.Activities
                 {
                     if (TryGetInlinedArgumentReference(originalExpression, originalExpression.Object, out LocationReference inlinedReference, publicAccessor, isLocationExpression))
                     {
-                        newExpression = Expression.Call(contextExpression, activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                        newExpression = Expression.Call(contextExpression, ActivityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                         return true;
                     }
                 }
@@ -1496,7 +1496,7 @@ namespace System.Activities
                 {
                     if (TryGetInlinedLocationReference(originalExpression, originalExpression.Object, out LocationReference inlinedReference, publicAccessor, isLocationExpression))
                     {
-                        newExpression = Expression.Call(contextExpression, activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                        newExpression = Expression.Call(contextExpression, ActivityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                         return true;
                     }
                 }
@@ -1673,7 +1673,7 @@ namespace System.Activities
 
             if (inlinedReference != null)
             {
-                newExpression = Expression.Call(originalExpression.Object, activityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
+                newExpression = Expression.Call(originalExpression.Object, ActivityContextGetValueGenericMethod.MakeGenericMethod(returnType), Expression.Constant(inlinedReference, typeof(LocationReference)));
                 return true;
             }
 

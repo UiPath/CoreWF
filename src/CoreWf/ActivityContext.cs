@@ -163,6 +163,18 @@ namespace System.Activities
             }
         }
 
+        public T GetValue<T>(string locationReferenceName) => GetLocation<T>(locationReferenceName).Value;
+
+        internal Location<T> GetLocation<T>(string locationReferenceName)
+        {
+            var environment = Activity.GetParentEnvironment();
+            if (!environment.TryGetLocationReference(locationReferenceName, out var locationReference))
+            {
+                throw new ArgumentOutOfRangeException(nameof(locationReferenceName), SR.LocationExpressionCouldNotBeResolved(locationReferenceName));
+            }
+            return GetLocation<T>(locationReference);
+        }
+
         // Soft-Link: This method is referenced through reflection by
         // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
         // file if the signature changes.

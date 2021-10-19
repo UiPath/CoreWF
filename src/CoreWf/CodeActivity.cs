@@ -8,7 +8,7 @@ namespace System.Activities
     using System;
     using System.Runtime.Serialization;
 
-using System.Activities.DynamicUpdate;
+    using System.Activities.DynamicUpdate;
     public abstract class CodeActivity : Activity
     {
         protected CodeActivity()
@@ -78,7 +78,7 @@ using System.Activities.DynamicUpdate;
         {
             CodeActivityMetadata metadata = new CodeActivityMetadata(this, this.GetParentEnvironment(), createEmptyBindings);
             CacheMetadata(metadata);
-            metadata.Dispose(); 
+            metadata.Dispose();
             if (this.RuntimeArguments == null || this.RuntimeArguments.Count == 0)
             {
                 this.SkipArgumentResolution = true;
@@ -217,6 +217,79 @@ using System.Activities.DynamicUpdate;
         {
             // We bypass the metadata call to avoid the null checks
             SetArgumentsCollection(ReflectedInformation.GetArguments(this), metadata.CreateEmptyBindings);
+        }
+    }
+    public class FuncValue<TResult> : CodeActivity<TResult>
+    {
+        private readonly Func<ActivityContext, TResult> _func;
+        public FuncValue(Func<ActivityContext, TResult> func) => _func = func ?? throw new ArgumentNullException(nameof(func));
+        protected override TResult Execute(CodeActivityContext context)
+        {
+            try
+            {
+                context.AllowChainedEnvironmentAccess = true;
+                return _func(context);
+            }
+            finally
+            {
+                context.AllowChainedEnvironmentAccess = false;
+            }
+        }
+    }
+    public class Reference<TLocation> : CodeActivity<Location<TLocation>>
+    {
+        private readonly string _locationName;
+        public Reference(string locationName) => _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
+        protected override Location<TLocation> Execute(CodeActivityContext context)
+        {
+            try
+            {
+                context.AllowChainedEnvironmentAccess = true;
+                return context.GetLocation<TLocation>(_locationName);
+            }
+            finally
+            {
+                context.AllowChainedEnvironmentAccess = false;
+            }
+        }
+    }
+    public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
+    {
+        private readonly string _locationName;
+        private readonly Func<TLocation, TResult> _get;
+        private readonly Func<TLocation, TResult, TLocation> _set;
+        public FuncReference(string locationName, Func<TLocation, TResult> get, Func<TLocation, TResult, TLocation> set)
+        {
+            _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
+            _get = get ?? throw new ArgumentNullException(nameof(get));
+            _set = set ?? throw new ArgumentNullException(nameof(set));
+        }
+        protected override Location<TResult> Execute(CodeActivityContext context)
+        {
+            Location<TLocation> location;
+            try
+            {
+                context.AllowChainedEnvironmentAccess = true;
+                location = context.GetLocation<TLocation>(_locationName);
+            }
+            finally
+            {
+                context.AllowChainedEnvironmentAccess = false;
+            }
+            return new FuncLocation(location, _get, _set);
+        }
+        class FuncLocation : Location<TResult>
+        {
+            private readonly Location<TLocation> _location;
+            private readonly Func<TLocation, TResult> _get;
+            private readonly Func<TLocation, TResult, TLocation> _set;
+            public FuncLocation(Location<TLocation> location, Func<TLocation, TResult> get, Func<TLocation, TResult, TLocation> set)
+            {
+                _location = location;
+                _get = get;
+                _set = set;
+            }
+            public override TResult Value { get => _get(_location.Value); set => _location.Value = _set(_location.Value, value); }
         }
     }
 }

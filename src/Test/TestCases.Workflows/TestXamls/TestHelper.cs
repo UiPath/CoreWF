@@ -23,9 +23,14 @@ namespace TestCases.Workflows
 
         internal static Activity GetActivityFromXamlResource(TestXamls xamlName, bool compileExpressions = false)
         {
-            var asm = typeof(TestHelper).Assembly;
-            var xamlStream = asm.GetManifestResourceStream($"{asm.GetName().Name}.TestXamls.{xamlName}.xaml");
+            var xamlStream = GetXamlStream(xamlName);
             return ActivityXamlServices.Load(xamlStream, new ActivityXamlServicesSettings { CompileExpressions = compileExpressions });
+        }
+
+        public static Stream GetXamlStream(TestXamls xamlName)
+        {
+            var asm = typeof(TestHelper).Assembly;
+            return asm.GetManifestResourceStream($"{asm.GetName().Name}.TestXamls.{xamlName}.xaml");
         }
     }
 
