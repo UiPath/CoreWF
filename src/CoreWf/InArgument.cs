@@ -156,6 +156,11 @@ namespace System.Activities
             return FromExpression(expression);
         }
 
+        public static implicit operator InArgument<T>(Func<ActivityContext, T> expression)
+        {
+            return FromExpression(new FuncValue<T>(expression));
+        }
+
         public static implicit operator InArgument<T>(T constValue)
         {
             return FromValue(constValue);

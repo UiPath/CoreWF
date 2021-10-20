@@ -161,7 +161,7 @@ Iterate ArrayList
                         s.AvgSalary = value;
                         return s;
                     }), value: ctx => (ctx.GetValue<Employee>("Employee1").Salary + ctx.GetValue<Employee>("Employee2").Salary) / 2.0),
-                    CreateAssign(to: "average", value: ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary),
+                    CreateAssign(to: new Reference<double>("average"), value: ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary),
                     CreateWriteLine(text: ctx => string.Format("Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
                         ctx.GetValue<SalaryStats>("SalaryStats").MinSalary, ctx.GetValue<SalaryStats>("SalaryStats").MaxSalary, ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary))});
             static Variable<T> CreateVariable<T>(string name = null, Func<ActivityContext, T> @default = null)
@@ -199,7 +199,7 @@ Iterate ArrayList
                 var writeLine = new WriteLine();
                 if (text != null)
                 {
-                    writeLine.Text = CreateInArgument(text);
+                    writeLine.Text = text;
                 }
                 if (displayName != null)
                 {
@@ -208,34 +208,19 @@ Iterate ArrayList
                 return writeLine;
             }
         }
-        static Assign<T> CreateAssign<T>(string to = null, Func<ActivityContext, T> value = null)
+        static Assign<T> CreateAssign<T>(Activity<Location<T>> to = null, Func<ActivityContext, T> value = null)
         {
             var assign = new Assign<T>();
-            if (to != null)
-            {
-                assign.To = CreateOutArgument<T>(to);
-            }
-            if (value != null)
-            {
-                assign.Value = CreateInArgument(value);
-            }
-            return assign;
-        }
-        static Assign<TResult> CreateAssign<TLocation, TResult>(FuncReference<TLocation, TResult> to = null, Func<ActivityContext, TResult> value = null)
-        {
-            var assign = new Assign<TResult>();
             if (to != null)
             {
                 assign.To = to;
             }
             if (value != null)
             {
-                assign.Value = CreateInArgument(value);
+                assign.Value = value;
             }
             return assign;
         }
-        static InArgument<T> CreateInArgument<T>(Func<ActivityContext, T> value) => new(new FuncValue<T>(value));
-        static OutArgument<T> CreateOutArgument<T>(string locationName) => new(new Reference<T>(locationName));
         [Fact]
         public void CodeToXaml()
         {
