@@ -53,6 +53,7 @@ namespace System.Activities
             // Note that we explicitly pass Out since we want an OutArgument created
             return (OutArgument)ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, ArgumentDirection.Out, referencedArgumentName);
         }
+        public static implicit operator OutArgument(Activity<Location<object>> expression) => (OutArgument<object>)expression;
     }
 
     [ContentProperty("Expression")]

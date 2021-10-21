@@ -221,6 +221,19 @@ Iterate ArrayList
             }
             return assign;
         }
+        static Assign CreateAssig(Activity<Location<object>> to = null, Func<ActivityContext, object> value = null)
+        {
+            var assign = new Assign();
+            if (to != null)
+            {
+                assign.To = to;
+            }
+            if (value != null)
+            {
+                assign.Value = value;
+            }
+            return assign;
+        }
         [Fact]
         public void CodeToXaml()
         {
