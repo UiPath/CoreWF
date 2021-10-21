@@ -173,7 +173,7 @@ Iterate ArrayList
                 }
                 if (@default != null)
                 {
-                    variable.Default = new FuncValue<T>(@default);
+                    variable.Default = @default;
                 }
                 return variable;
             }

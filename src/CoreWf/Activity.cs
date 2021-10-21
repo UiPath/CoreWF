@@ -1839,6 +1839,8 @@ namespace System.Activities
             return FromValue(constValue);
         }
 
+        public static implicit operator Activity<TResult>(Func<ActivityContext, TResult> func) => new FuncValue<TResult>(func);
+
         public static implicit operator Activity<TResult>(Variable variable)
         {
             return FromVariable(variable);
