@@ -4,12 +4,12 @@ using System;
 using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xaml;
-using System.Xml;
 using Xunit;
 
 namespace TestCases.Workflows.WF4Samples
@@ -70,24 +70,6 @@ Iterate ArrayList
             var activity = Compile(TestXamls.NonGenericForEach);
             TestHelper.InvokeWorkflow(activity).ShouldBe(ForEachCorrectOutput);
         }
-        [Fact]
-        public void LoadXaml()
-        {
-            using var stream = TestHelper.GetXamlStream(TestXamls.SalaryCalculation);
-            var xmlReader = new XmlTextReader(stream);
-            using var xamlReader = new XamlXmlReader(xmlReader);
-            while (xamlReader.Read())
-            {
-                if (xamlReader.Member != null)
-                {
-                    Console.WriteLine("Member : "+ xamlReader.Member);
-                }
-                if (xamlReader.Value != null)
-                {
-                    Console.WriteLine("Value : " + xamlReader.Value);
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -131,6 +113,25 @@ Iterate ArrayList
         {
             var activity = CreateCodeOnlyWorkflow();
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
+        }
+        [Fact]
+        public void LoadActivityBuilder()
+        {
+            using var stream = TestHelper.GetXamlStream(TestXamls.SalaryCalculation);
+            var xamlSettings = new XamlObjectWriterSettings();
+            var members = new HashSet<XamlMember>();
+            xamlSettings.XamlSetValueHandler += (sender, args) => members.Add(args.Member);
+            var root = ActivityXamlServices.LoadActivityBuilder(stream, xamlSettings);
+            members.Select(s => s.ToString()).ShouldBe(new[]{
+                "System.Activities.ActivityBuilder.Name",
+                "Microsoft.VisualBasic.Activities.VisualBasic.Settings",
+                "System.Activities.Variable(TestCases.Workflows.WF4Samples.Employee).Default",
+                "System.Activities.Variable.Name",
+                "System.Activities.Variable(TestCases.Workflows.WF4Samples.SalaryStats).Default",
+                "System.Activities.Statements.WriteLine.Text",
+                "System.Activities.Statements.Assign.To",
+                "System.Activities.Statements.Assign.Value",
+                "System.Activities.ActivityBuilder.Implementation"});
         }
         [Fact]
         public void FuncCode()
