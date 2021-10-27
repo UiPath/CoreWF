@@ -27,7 +27,7 @@
       <BuildOutputInPackage Include="$(OutputPath)Microsoft.CodeAnalysis.VisualBasic.Scripting.*" />
     </ItemGroup>
   </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration)=='Release'">
     <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)" />
   </Target>
 </Project>
