@@ -29,7 +29,7 @@ namespace Microsoft.VisualBasic.Activities
             new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = "System.Runtime" },
             //"system"
             new VisualBasicImportReference { Import = "System.ComponentModel", Assembly = typeof(BrowsableAttribute).Assembly.FullName },
-            new VisualBasicImportReference { Import = "System.Linq.Expresssions", Assembly = typeof(System.Linq.Expressions.Expression).Assembly.FullName },
+            new VisualBasicImportReference { Import = "System.Linq.Expressions", Assembly = typeof(System.Linq.Expressions.Expression).Assembly.FullName },
             new VisualBasicImportReference { Import = "System", Assembly = "system" },
             new VisualBasicImportReference { Import = "System.Collections.Generic", Assembly = typeof(HashSet<>).Assembly.FullName },
             //"System.Activities"
