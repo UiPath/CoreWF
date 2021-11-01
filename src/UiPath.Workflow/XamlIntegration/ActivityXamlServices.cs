@@ -22,16 +22,6 @@ namespace System.Activities.XamlIntegration
     {
         private static readonly XamlSchemaContext dynamicActivityReaderSchemaContext = new DynamicActivityReaderSchemaContext();
 
-        public static ActivityBuilder LoadActivityBuilder(Stream stream, XamlObjectWriterSettings xamlObjectWriterSettings = null)
-        {
-            // System.Activities must be loaded before the XamlSchemaContext constructor
-            typeof(Activity).GetHashCode();
-            var xamlReader = CreateBuilderReader(new XamlXmlReader(stream));
-            XamlObjectWriter objectWriter = new(xamlReader.SchemaContext, xamlObjectWriterSettings);
-            XamlServices.Transform(xamlReader, objectWriter);
-            return (ActivityBuilder)objectWriter.Result;
-        }
-
         public static Activity Load(Stream stream)
         {
             if (stream == null)

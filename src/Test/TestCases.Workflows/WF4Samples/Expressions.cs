@@ -115,25 +115,6 @@ Iterate ArrayList
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
         [Fact]
-        public void LoadActivityBuilder()
-        {
-            using var stream = TestHelper.GetXamlStream(TestXamls.SalaryCalculation);
-            var xamlSettings = new XamlObjectWriterSettings();
-            var members = new HashSet<XamlMember>();
-            xamlSettings.XamlSetValueHandler += (sender, args) => members.Add(args.Member);
-            var root = ActivityXamlServices.LoadActivityBuilder(stream, xamlSettings);
-            members.Select(s => s.ToString()).ShouldBe(new[]{
-                "System.Activities.ActivityBuilder.Name",
-                "Microsoft.VisualBasic.Activities.VisualBasic.Settings",
-                "System.Activities.Variable(TestCases.Workflows.WF4Samples.Employee).Default",
-                "System.Activities.Variable.Name",
-                "System.Activities.Variable(TestCases.Workflows.WF4Samples.SalaryStats).Default",
-                "System.Activities.Statements.WriteLine.Text",
-                "System.Activities.Statements.Assign.To",
-                "System.Activities.Statements.Assign.Value",
-                "System.Activities.ActivityBuilder.Implementation"});
-        }
-        [Fact]
         public void FuncCode()
         {
             var activity = FuncCodeOnlyWorkflow();
