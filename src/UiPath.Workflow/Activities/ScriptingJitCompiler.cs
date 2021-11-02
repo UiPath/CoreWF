@@ -68,9 +68,9 @@ namespace System.Activities
         public IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree) =>
             syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind).Select(n => n.ToString()).Distinct().ToArray();
     }
-    static class References
+    public static class References
     {
-        unsafe static MetadataReference GetReference(Assembly assembly)
+        public unsafe static MetadataReference GetReference(Assembly assembly)
         {
             if (!assembly.TryGetRawMetadata(out var blob, out var length))
             {
