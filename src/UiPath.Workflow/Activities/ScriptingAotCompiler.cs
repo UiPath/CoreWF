@@ -49,7 +49,7 @@ namespace System.Activities
             {
                 return results;
             }
-            results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(typeName);
+            results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(typeName, throwOnError: true);
             return results;
         }
         static void AddDiagnostics(TextExpressionCompilerResults results, IEnumerable<Diagnostic> diagnosticsToAdd) =>
