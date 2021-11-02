@@ -33,7 +33,9 @@ namespace System.Activities
             results.ResultType = results.ResultType.GetNestedType(classToCompile.ClassName);
             return results;
         }
-        internal static TextExpressionCompilerResults BuildAssembly(Compilation compilation)
+        public static TextExpressionCompilerResults BuildAssembly(Compilation compilation) =>
+            BuildAssembly(compilation, compilation.ScriptClass.Name);
+        public static TextExpressionCompilerResults BuildAssembly(Compilation compilation, string typeName)
         {
             var results = GetCompilerResults(compilation);
             if (results.HasErrors)
@@ -47,7 +49,7 @@ namespace System.Activities
             {
                 return results;
             }
-            results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(compilation.ScriptClass.Name);
+            results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(typeName);
             return results;
         }
         static void AddDiagnostics(TextExpressionCompilerResults results, IEnumerable<Diagnostic> diagnosticsToAdd) =>
