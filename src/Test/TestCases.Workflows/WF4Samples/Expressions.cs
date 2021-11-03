@@ -190,20 +190,20 @@ Iterate ArrayList
                 return writeLine;
             }
         }
-        static Assign<T> CreateAssign<T>(Activity<Location<T>> to = null, Func<ActivityContext, T> value = null)
-        {
-            var assign = new Assign<T>();
-            if (to != null)
-            {
-                assign.To = to;
-            }
-            if (value != null)
-            {
-                assign.Value = value;
-            }
-            return assign;
-        }
-        static Assign CreateAssig(Activity<Location<object>> to = null, Func<ActivityContext, object> value = null)
+        //static Assign<T> CreateAssign<T>(Activity<Location<T>> to = null, Func<ActivityContext, T> value = null)
+        //{
+        //    var assign = new Assign<T>();
+        //    if (to != null)
+        //    {
+        //        assign.To = to;
+        //    }
+        //    if (value != null)
+        //    {
+        //        assign.Value = value;
+        //    }
+        //    return assign;
+        //}
+        static Assign CreateAssign(Activity<Location<object>> to = null, Func<ActivityContext, object> value = null)
         {
             var assign = new Assign();
             if (to != null)
