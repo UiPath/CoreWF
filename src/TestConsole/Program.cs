@@ -9,7 +9,7 @@ namespace TestConsole
         static void Main()
         {
             Trace.Listeners.Add(new ConsoleTraceListener());
-            new AheadOfTimeExpressions().FuncCode();
+            new JustInTimeExpressions().FuncToArgument();
         }
     }
 }

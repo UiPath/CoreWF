@@ -71,10 +71,7 @@ Iterate ArrayList
             TestHelper.InvokeWorkflow(activity).ShouldBe(ForEachCorrectOutput);
         }
         [Fact]
-        public void FuncToArgument()
-        {
-            var args = new Argument[] { (Argument)(_=>"") };
-        }
+        public void FuncToArgument() => ((Argument)(_=>"")).ShouldBeOfType<InArgument<object>>();
     }
 
     /// <summary>

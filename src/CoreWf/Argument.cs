@@ -173,7 +173,7 @@ namespace System.Activities
             return ActivityWithResultValueSerializer.ConvertToStringWrapper(this.Expression, context);
         }
 
-        public static implicit operator Argument(Func<ActivityContext, object> expression) => expression;
+        public static implicit operator Argument(Func<ActivityContext, object> expression) => (InArgument)expression;
 
         internal static void Bind(Argument binding, RuntimeArgument argument)
         {
