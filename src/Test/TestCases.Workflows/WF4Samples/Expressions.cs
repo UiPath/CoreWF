@@ -70,6 +70,11 @@ Iterate ArrayList
             var activity = Compile(TestXamls.NonGenericForEach);
             TestHelper.InvokeWorkflow(activity).ShouldBe(ForEachCorrectOutput);
         }
+        [Fact]
+        public void FuncToArgument()
+        {
+            var args = new Argument[] { (Argument)(_=>"") };
+        }
     }
 
     /// <summary>
