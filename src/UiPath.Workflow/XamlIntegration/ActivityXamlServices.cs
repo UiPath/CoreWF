@@ -264,7 +264,7 @@ namespace System.Activities.XamlIntegration
             return FuncFactory.CreateFunc<T>(reader);
         }
 
-        private static void Compile(IDynamicActivity dynamicActivity, ActivityXamlServicesSettings settings)
+        public static void Compile(IDynamicActivity dynamicActivity, ActivityXamlServicesSettings settings)
         {
             string language = null;
             if (!RequiresCompilation(dynamicActivity, settings.LocationReferenceEnvironment, out language))
