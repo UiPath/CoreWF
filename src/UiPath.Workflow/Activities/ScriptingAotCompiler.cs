@@ -35,7 +35,7 @@ namespace System.Activities
         }
         public static TextExpressionCompilerResults BuildAssembly(Compilation compilation) =>
             BuildAssembly(compilation, compilation.ScriptClass.Name);
-        public static TextExpressionCompilerResults BuildAssembly(Compilation compilation, string typeName)
+        public static TextExpressionCompilerResults BuildAssembly(Compilation compilation, string typeName, Stream copy = null)
         {
             var results = GetCompilerResults(compilation);
             if (results.HasErrors)
@@ -50,6 +50,11 @@ namespace System.Activities
                 return results;
             }
             results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(typeName, throwOnError: true);
+            if (copy != null)
+            {
+                stream.Position = 0;
+                stream.CopyTo(copy);
+            }
             return results;
         }
         static void AddDiagnostics(TextExpressionCompilerResults results, IEnumerable<Diagnostic> diagnosticsToAdd) =>

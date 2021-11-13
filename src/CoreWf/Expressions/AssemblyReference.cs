@@ -44,6 +44,11 @@ namespace System.Activities.Expressions
         {
         }
 
+        public AssemblyReference(string assemblyName)
+        {
+            this.assemblyName = new AssemblyName(assemblyName);
+        }
+
         // This immutable ctor is for the default references, so they can be shared freely
         internal AssemblyReference(Assembly assembly, AssemblyName assemblyName)
         {
