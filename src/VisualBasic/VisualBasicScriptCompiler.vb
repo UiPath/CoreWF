@@ -9,12 +9,14 @@ Imports Microsoft.CodeAnalysis.Scripting
 Imports Microsoft.CodeAnalysis.Text
 Imports Microsoft.CodeAnalysis.VisualBasic
 Imports Microsoft.CodeAnalysis.PooledObjects
+Imports System.Runtime.InteropServices
 
 Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
 
     Friend NotInheritable Class VisualBasicScriptCompiler
         Inherits ScriptCompiler
 
+        Public Shared ReadOnly InBrowser As Boolean = RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER"))
         Public Shared ReadOnly Instance As ScriptCompiler = New VisualBasicScriptCompiler()
 
         Private Shared ReadOnly s_defaultOptions As VisualBasicParseOptions = New VisualBasicParseOptions(kind:=SourceCodeKind.Script, languageVersion:=LanguageVersion.Latest)
@@ -92,7 +94,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
                     xmlReferenceResolver:=Nothing, ' don't support XML file references in interactive (permissions & doc comment includes)
                     sourceReferenceResolver:=SourceFileResolver.Default,
                     metadataReferenceResolver:=script.Options.MetadataResolver,
-                    concurrentBuild:=False,
+                    concurrentBuild:=Not InBrowser,
                     assemblyIdentityComparer:=DesktopAssemblyIdentityComparer.Default).
                     WithIgnoreCorLibraryDuplicatedTypes(True),
                 previousSubmission,
