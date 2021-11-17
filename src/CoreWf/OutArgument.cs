@@ -144,6 +144,8 @@ namespace System.Activities
             return FromDelegateArgument(delegateArgument);
         }
 
+        public static explicit operator OutArgument<T>(string locationReferenceName) => FromExpression(new Reference<T>(locationReferenceName));
+        
         public static implicit operator OutArgument<T>(Activity<Location<T>> expression)
         {
             return FromExpression(expression);

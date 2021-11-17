@@ -121,6 +121,8 @@ namespace System.Activities
             return FromVariable(variable);
         }
 
+        public static explicit operator InOutArgument<T>(string locationReferenceName) => FromExpression(new Reference<T>(locationReferenceName));
+
         public static implicit operator InOutArgument<T>(Activity<Location<T>> expression)
         {
             return FromExpression(expression);
