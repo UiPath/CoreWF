@@ -108,6 +108,10 @@ namespace Microsoft.VisualBasic.Activities
             {
                 if (this.expressionTree == null)
                 {
+                    if (invoker != null)
+                    {
+                        return invoker.GetExpressionTree();
+                    }
                     // it's safe to create this CodeActivityMetadata here,
                     // because we know we are using it only as lookup purpose.
                     CodeActivityMetadata metadata = new CodeActivityMetadata(this, this.GetParentEnvironment(), false);
