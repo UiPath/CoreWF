@@ -13,7 +13,7 @@ namespace System.Activities.Expressions
 
     [DebuggerStepThrough]
     [ContentProperty("Value")]
-    public sealed class Literal<T> : CodeActivity<T>, IExpressionContainer, IValueSerializableExpression
+    public sealed class Literal<T> : CodeActivity<T>, ILiteral, IExpressionContainer, IValueSerializableExpression
     {
         private static Regex ExpressionEscapeRegex = new Regex(@"^(%*\[)");
 
@@ -33,6 +33,7 @@ namespace System.Activities.Expressions
             get;
             set;
         }
+        object ILiteral.Value => Value;
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
@@ -170,5 +171,9 @@ namespace System.Activities.Expressions
         {
             return !object.Equals(this.Value, default(T));
         }
+    }
+    public interface ILiteral
+    {
+        public object Value { get; }
     }
 }
