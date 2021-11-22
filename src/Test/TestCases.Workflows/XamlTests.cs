@@ -26,9 +26,11 @@ namespace TestCases.Workflows
         protected abstract bool CompileExpressions { get; }
         protected IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
         {
-            var activity = ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = CompileExpressions });
+            var activity = Load(xamlString);
             return WorkflowInvoker.Invoke(activity, inputs ?? new StringDictionary());
         }
+        protected Activity Load(string xamlString) =>
+            ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = CompileExpressions });
         public static IEnumerable<object[]> XamlNoInputs { get; } = new[]
         {
             new object[] { @"
@@ -301,6 +303,17 @@ namespace TestCases.Workflows
             results.Errors.ShouldBeEmpty();
         }
         [Fact]
+        public void DuplicateVariable()
+        {
+            var xaml = @"<Activity xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+xmlns:hw='clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows'>
+                    <hw:WithMyVar />
+                </Activity>";
+            var root = Load(xaml);
+            var withMyVar = (WithMyVar) WorkflowInspectionServices.Resolve(root, "1.1");
+            ((ITextExpression)((Sequence)withMyVar.Body.Handler).Activities[0]).GetExpressionTree();
+        }
+        [Fact]
         public void CSharpInputOutput()
         {
             var xamlString = @"
@@ -362,5 +375,21 @@ namespace TestCases.Workflows
         {
             throw new NotImplementedException();
         }
+    }
+    public class WithMyVar : NativeActivity
+    {
+        public Variable<float> MyVar { get; } = new("MyVar");
+        public ActivityAction<DateTime> Body { get; set; } = new()
+        {
+            Argument = new("MyVar"),
+            Handler = new Sequence { Activities = { new VisualBasicValue<DateTime>("MyVar.AddDays(1)") } }
+        };
+        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        {
+            AddVariable(MyVar);
+            AddDelegate(Body);
+            base.CacheMetadata(metadata);
+        }
+        protected override void Execute(NativeActivityContext context) => context.ScheduleAction(Body, DateTime.Now);
     }
 }

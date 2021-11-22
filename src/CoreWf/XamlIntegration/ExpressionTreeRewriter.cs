@@ -59,7 +59,7 @@ namespace System.Activities.XamlIntegration
             {
                 foreach (LocationReference locationReference in this.locationReferences)
                 {
-                    if (node.Member.Name == locationReference.Name)
+                    if (node.Member.Name == locationReference.Name && node.Type == locationReference.Type)
                     {
                         if (locationReference is ILocationReferenceWrapper)
                         {
