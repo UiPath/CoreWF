@@ -70,8 +70,6 @@ Iterate ArrayList
             var activity = Compile(TestXamls.NonGenericForEach);
             TestHelper.InvokeWorkflow(activity).ShouldBe(ForEachCorrectOutput);
         }
-        [Fact]
-        public void FuncToArgument() => ((Argument)(_=>"")).ShouldBeOfType<InArgument<object>>();
     }
 
     /// <summary>
@@ -130,22 +128,23 @@ Iterate ArrayList
                 activities: new Activity[]{
                     CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee1").FirstName + " " + ctx.GetValue<Employee>("Employee1").LastName + " earns " + ctx.GetValue<Employee>("Employee1").Salary.ToString("$0.00")),
                     CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee2").FirstName + " " + ctx.GetValue<Employee>("Employee2").LastName + " earns " + ctx.GetValue<Employee>("Employee2").Salary.ToString("$0.00")),
-                    CreateAssign(to: new FuncReference<SalaryStats, double>("SalaryStats", s => s.MinSalary, (s, value) =>
+                    CreateAssign(to: (OutArgument<double>)new FuncReference<SalaryStats, double>("SalaryStats", s => s.MinSalary, (s, value) =>
                     {
                         s.MinSalary = value;
                         return s;
-                    }), value: ctx => Math.Min(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary)),
-                    CreateAssign(to: new FuncReference<SalaryStats, double>("SalaryStats", s => s.MaxSalary, (s, value) =>
+                    }), value: (InArgument<double>)(Func<ActivityContext, double>)(ctx => Math.Min(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary))),
+                    CreateAssign(to: (OutArgument<double>)new FuncReference<SalaryStats, double>("SalaryStats", s => s.MaxSalary, (s, value) =>
                     {
                         s.MaxSalary = value;
                         return s;
-                    }), value: ctx => Math.Max(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary)),
-                    CreateAssign(to: new FuncReference<SalaryStats, double>("SalaryStats", s => s.AvgSalary, (s, value) =>
+                    }), value:  (InArgument<double>)(Func<ActivityContext, double>)(ctx => Math.Max(ctx.GetValue<Employee>("Employee1").Salary, ctx.GetValue<Employee>("Employee2").Salary))),
+                    CreateAssign(to: (OutArgument<double>)new FuncReference<SalaryStats, double>("SalaryStats", s => s.AvgSalary, (s, value) =>
                     {
                         s.AvgSalary = value;
                         return s;
-                    }), value: ctx => (ctx.GetValue<Employee>("Employee1").Salary + ctx.GetValue<Employee>("Employee2").Salary) / 2.0),
-                    CreateAssign(to: new Reference<double>("average"), value: ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary),
+                    }), value:  (InArgument<double>)(Func<ActivityContext, double>)(ctx => (ctx.GetValue<Employee>("Employee1").Salary + ctx.GetValue<Employee>("Employee2").Salary) / 2.0)),
+                    CreateAssign(to: (OutArgument<double>)new Reference<double>("average"), value:  (InArgument<double>)(Func<ActivityContext, double>)
+                        (ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary)),
                     CreateWriteLine(text: ctx => string.Format("Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
                         ctx.GetValue<SalaryStats>("SalaryStats").MinSalary, ctx.GetValue<SalaryStats>("SalaryStats").MaxSalary, ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary))});
             static Variable<T> CreateVariable<T>(string name = null, Func<ActivityContext, T> @default = null)
@@ -205,7 +204,7 @@ Iterate ArrayList
         //    }
         //    return assign;
         //}
-        static Assign CreateAssign(Activity<Location<object>> to = null, Func<ActivityContext, object> value = null)
+        static Assign CreateAssign(OutArgument to = null, InArgument value = null)
         {
             var assign = new Assign();
             if (to != null)

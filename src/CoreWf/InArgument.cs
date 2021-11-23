@@ -54,7 +54,6 @@ namespace System.Activities
             // Note that we explicitly pass In since we want an InArgument created
             return (InArgument)ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, ArgumentDirection.In, referencedArgumentName);
         }
-        public static implicit operator InArgument(Func<ActivityContext, object> expression) => (InArgument<object>)new FuncValue<object>(expression);
     }
 
     [ContentProperty("Expression")]

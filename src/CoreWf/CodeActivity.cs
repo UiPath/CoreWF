@@ -252,8 +252,6 @@ namespace System.Activities
                 context.AllowChainedEnvironmentAccess = false;
             }
         }
-        public static implicit operator CodeActivity<Location<object>>(Reference<TLocation> reference) => 
-            new FuncReference<TLocation, object>(reference._locationName, location => location, (location, _) => location);
     }
     public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
     {
@@ -293,8 +291,5 @@ namespace System.Activities
             }
             public override TResult Value { get => _get(_location.Value); set => _location.Value = _set(_location.Value, value); }
         }
-        public static implicit operator CodeActivity<Location<object>>(FuncReference<TLocation, TResult> reference) =>
-            new FuncReference<TLocation, object>(reference._locationName, location=>reference._get(location), 
-                (location, result)=>reference._set(location, (TResult)result));
     }
 }
