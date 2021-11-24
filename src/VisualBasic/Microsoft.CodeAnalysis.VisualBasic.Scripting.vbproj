@@ -24,8 +24,8 @@
     <PublicAPI Include="PublicAPI.Unshipped.txt" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="4.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting.Common" Version="3.8.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="3.8.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="VBScriptingResources.Designer.vb">

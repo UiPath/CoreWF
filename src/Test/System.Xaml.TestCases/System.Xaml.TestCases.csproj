@@ -20,15 +20,10 @@
 		<None Include="XmlFiles\*.*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="NUnit" Version="3.13.2" />
-	  <PackageReference Include="NUnit3TestAdapter" Version="4.1.0">
+	  <PackageReference Include="NUnit" Version="3.12.0" />
+	  <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-	  <PackageReference Update="Newtonsoft.Json" Version="13.0.1" />
-	  <PackageReference Update="Shouldly" Version="4.0.3" />
 	</ItemGroup>
 </Project>
