@@ -1,1 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Update="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Update="Shouldly" Version="4.0.3" />
+  </ItemGroup>
+</Project>
