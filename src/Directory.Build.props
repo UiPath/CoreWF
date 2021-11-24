@@ -1,10 +1,10 @@
 <Project>
   <PropertyGroup>
-    <Version>5.0.0</Version>
+    <Version>6.0.0</Version>
     <WarningsAsErrors>true</WarningsAsErrors>
-    <UseWPF Condition="$(TargetFramework) == 'net5.0-windows'">true</UseWPF>
+    <UseWPF Condition="$(TargetFramework) == 'net6.0-windows'">true</UseWPF>
   </PropertyGroup>
-  <ItemGroup Condition="$(AssemblyName) != 'System.Xaml' AND $(TargetFramework) != 'net5.0-windows'">
+  <ItemGroup Condition="$(AssemblyName) != 'System.Xaml' AND $(TargetFramework) != 'net6.0-windows'">
     <ProjectReference Include="$(SolutionDir)\System.Xaml\System.Xaml.csproj" PrivateAssets="All" />
   </ItemGroup>
 </Project>
