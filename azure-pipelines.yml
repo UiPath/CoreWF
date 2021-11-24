@@ -1,0 +1,93 @@
+trigger:
+  branches:
+    include:
+    - master
+name: $(Date:yyyyMMdd)$(Rev:-rr)
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: master
+pool:
+  vmImage: windows-latest
+stages:
+- stage: Build
+  jobs:
+  - job: Job_1
+    displayName: Build and test
+    steps:
+    - checkout: self
+    - task: PowerShell@2
+      displayName: Get Version from Directory.Build.props
+      inputs:
+        targetType: inline
+        script: >-
+          $xml = [Xml] (Get-Content .\src\Directory.Build.props)
+
+          $version = [String] $xml.Project.PropertyGroup.Version
+
+          $version = $version.Trim()
+
+          Write-Host "##vso[task.setvariable variable=Version;]$version"
+    - task: UseDotNet@2
+      displayName: Use .NET Core 5.0.x
+      inputs:
+        version: 5.0.x
+    - task: DotNetCoreCLI@2
+      displayName: Build System.Activities.sln
+      inputs:
+        projects: src/System.Activities.sln
+        arguments: --configuration $(BuildConfiguration) -p:Version="$(Version)-$(Build.BuildNumber)"
+    - task: DotNetCoreCLI@2
+      displayName: Run unit tests
+      inputs:
+        command: test
+        projects: src
+        arguments: --no-build --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings
+    - task: CopyFiles@2
+      displayName: Copy nupkgs to ArtifactStagingDirectory
+      inputs:
+        SourceFolder: src
+        Contents: >-
+          CoreWf\bin\$(BuildConfiguration)\*.*nupkg
+
+          UiPath.Workflow\bin\$(BuildConfiguration)\*.*nupkg
+        TargetFolder: $(Build.ArtifactStagingDirectory)
+        CleanTargetFolder: true
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifacts
+      inputs:
+        ArtifactName: Artifacts
+- stage: Deploy
+  dependsOn: Build
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  jobs:
+  - job: Approval
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      displayName: Wait for approval
+      inputs:
+        notifyUsers: 'lucian.bargaoanu@uipath.com'
+        instructions: 'Publish System.Activities to Myget workflow'
+  - job: Deploy_Myget
+    dependsOn: Approval
+    displayName: Deploy to Myget workflow
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'Artifacts'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: NuGetToolInstaller@1
+      displayName: Use Nuget 5.x
+      inputs:
+        versionSpec: '5.x'
+    - task: NuGetCommand@2
+      displayName: Push to Myget workflow
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/Artifacts/**/*.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'MyGet Workflow'
