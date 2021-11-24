@@ -98,7 +98,7 @@ namespace System.Activities.Statements
             {
                 if (TD.FlowchartSwitchCaseIsEnabled())
                 {
-                    TD.FlowchartSwitchCase(this.Owner.DisplayName, newValue.ToString());
+                    TD.FlowchartSwitchCase(this.Owner.DisplayName, newValue?.ToString());
                 }
                 return result;
             }
