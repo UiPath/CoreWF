@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.1" />
     <PackageReference Include="System.CodeDom" Version="6.0.0" />
+    <PackageReference Include="Nito.AsyncEx.Tasks" Version="5.1.2" />
   </ItemGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
