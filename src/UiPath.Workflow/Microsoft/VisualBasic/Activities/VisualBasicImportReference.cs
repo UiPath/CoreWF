@@ -24,7 +24,7 @@ namespace Microsoft.VisualBasic.Activities
 
         public string Assembly
         {
-            get { return this.assemblyNameString; }
+            get => this.assemblyNameString;
 
             set
             {
@@ -45,10 +45,7 @@ namespace Microsoft.VisualBasic.Activities
 
         public string Import
         {
-            get
-            {
-                return this.import;
-            }
+            get => this.import;
             set
             {
                 if (value != null)

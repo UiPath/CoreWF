@@ -1,87 +1,53 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Tracking
+using System.Collections.ObjectModel;
+
+namespace System.Activities.Tracking;
+
+public class ActivityStateQuery : TrackingQuery
 {
-    using System.Collections.ObjectModel;
+    private Collection<string> _arguments;
+    private Collection<string> _states;
+    private Collection<string> _variables;
 
-    public class ActivityStateQuery : TrackingQuery
+    public ActivityStateQuery()
     {
-        private Collection<string> arguments;
-        private Collection<string> states;
-        private Collection<string> variables;        
-        
-        public ActivityStateQuery()
-        {
-            this.ActivityName = "*";
-        }
-
-        public string ActivityName
-        {
-            get;
-            set;
-        }
-
-        public Collection<string> Arguments
-        {
-            get
-            {
-                if (this.arguments == null)
-                {
-                    this.arguments = new Collection<string>();
-                }
-
-                return this.arguments;
-            }
-        }
-
-        public Collection<string> Variables
-        {
-            get
-            {
-                if (this.variables == null)
-                {
-                    this.variables = new Collection<string>();
-                }
-
-                return this.variables;
-            }
-        }        
-
-        public Collection<string> States
-        {
-            get
-            {
-                if (this.states == null)
-                {
-                    this.states = new Collection<string>();
-                }
-                return this.states;
-            }
-        }
-
-        internal bool HasStates
-        {
-            get
-            {
-                return this.states != null && this.states.Count > 0;
-            }
-        }
-
-        internal bool HasArguments
-        {
-            get
-            {
-                return this.arguments != null && this.arguments.Count > 0;
-            }
-        }
-
-        internal bool HasVariables
-        {
-            get
-            {
-                return this.variables != null && this.variables.Count > 0;
-            }
-        }        
+        ActivityName = "*";
     }
+
+    public string ActivityName { get; set; }
+
+    public Collection<string> Arguments
+    {
+        get
+        {
+            _arguments ??= new Collection<string>();
+            return _arguments;
+        }
+    }
+
+    public Collection<string> Variables
+    {
+        get
+        {
+            _variables ??= new Collection<string>();
+            return _variables;
+        }
+    }
+
+    public Collection<string> States
+    {
+        get
+        {
+            _states ??= new Collection<string>();
+            return _states;
+        }
+    }
+
+    internal bool HasStates => _states != null && _states.Count > 0;
+
+    internal bool HasArguments => _arguments != null && _arguments.Count > 0;
+
+    internal bool HasVariables => _variables != null && _variables.Count > 0;
 }

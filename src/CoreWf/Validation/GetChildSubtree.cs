@@ -1,37 +1,22 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Validation
+using System.Activities.Runtime;
+
+namespace System.Activities.Validation;
+
+public sealed class GetChildSubtree : CodeActivity<IEnumerable<Activity>>
 {
-    using System.Activities.Runtime;
-    using System.Collections.Generic;
+    public GetChildSubtree()
+        : base() { }
 
-    public sealed class GetChildSubtree : CodeActivity<IEnumerable<Activity>> 
+    public InArgument<ValidationContext> ValidationContext { get; set; }
+
+    protected override IEnumerable<Activity> Execute(CodeActivityContext context)
     {
-        public GetChildSubtree()
-            : base()
-        {
-        }
+        Fx.Assert(ValidationContext != null, "ValidationContext must not be null");
 
-        public InArgument<ValidationContext> ValidationContext
-        {
-            get;
-            set;
-        }
-        
-        protected override IEnumerable<Activity> Execute(CodeActivityContext context)
-        {
-            Fx.Assert(this.ValidationContext != null, "ValidationContext must not be null");
-
-            ValidationContext currentContext = this.ValidationContext.Get(context);
-            if (currentContext != null)
-            {
-                return currentContext.GetChildren();
-            }
-            else
-            {
-                return ActivityValidationServices.EmptyChildren;
-            }
-        }
+        ValidationContext currentContext = ValidationContext.Get(context);
+        return currentContext != null ? currentContext.GetChildren() : ActivityValidationServices.EmptyChildren;
     }
 }

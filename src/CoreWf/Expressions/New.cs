@@ -1,116 +1,109 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+using System.Activities.Runtime.Collections;
+using System.Collections.ObjectModel;
+using System.Reflection;
+using System.Threading;
+using System.Windows.Markup;
+
+namespace System.Activities.Expressions;
+
+//[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords,
+//    Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [New])")]
+//[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,
+//    Justification = "Optimizing for XAML naming.")]
+[ContentProperty("Arguments")]
+public sealed class New<TResult> : CodeActivity<TResult>
 {
-    using System.Activities;
-    using System.Collections.ObjectModel;
-    using System.Reflection;
-    using System.Activities.Runtime.Collections;
-    using System.Windows.Markup;
-    using System.Threading;
-    using System;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private Collection<Argument> _arguments;
+    private Func<object[], TResult> _function;
+    private ConstructorInfo _constructorInfo;
+    private static readonly MruCache<ConstructorInfo, Func<object[], TResult>> funcCache =
+        new(MethodCallExpressionHelper.FuncCacheCapacity);
+    private static readonly ReaderWriterLockSlim locker = new();
 
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords,
-    //    Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [New])")]
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix,
+    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.PropertyNamesShouldNotMatchGetMethods,
     //    Justification = "Optimizing for XAML naming.")]
-    [ContentProperty("Arguments")]
-    public sealed class New<TResult> : CodeActivity<TResult> 
+    public Collection<Argument> Arguments
     {
-        private Collection<Argument> arguments;
-        private Func<object[], TResult> function;
-        private ConstructorInfo constructorInfo;
-        private static readonly MruCache<ConstructorInfo, Func<object[], TResult>> funcCache = 
-            new MruCache<ConstructorInfo, Func<object[], TResult>>(MethodCallExpressionHelper.FuncCacheCapacity);
-        private static readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
-
-        //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.PropertyNamesShouldNotMatchGetMethods,
-        //    Justification = "Optimizing for XAML naming.")]
-        public Collection<Argument> Arguments
+        get
         {
-            get
+            _arguments ??= new ValidatingCollection<Argument>
             {
-                if (this.arguments == null)
+                // disallow null values
+                OnAddValidationCallback = item =>
                 {
-                    this.arguments = new ValidatingCollection<Argument>
+                    if (item == null)
                     {
-                        // disallow null values
-                        OnAddValidationCallback = item =>
-                        {
-                            if (item == null)
-                            {
-                                throw FxTrace.Exception.ArgumentNull(nameof(item));
-                            }
-                        }
-                    };
+                        throw FxTrace.Exception.ArgumentNull(nameof(item));
+                    }
                 }
-                return this.arguments;
-            }
+            };
+            return _arguments;
         }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            bool foundError = false;
-            ConstructorInfo oldConstructorInfo = this.constructorInfo;
-
-            // Loop through each argument, validate it, and if validation
-            // passed expose it to the metadata
-            Type[] types = new Type[this.Arguments.Count];
-            for (int i = 0; i < this.Arguments.Count; i++)
-            {
-                Argument argument = this.Arguments[i];
-                if (argument == null || argument.Expression == null)
-                {
-                    metadata.AddValidationError(SR.ArgumentRequired("Arguments", typeof(New<TResult>)));
-                    foundError = true;
-                }
-                else
-                {
-                    RuntimeArgument runtimeArgument = new RuntimeArgument("Argument" + i, this.arguments[i].ArgumentType, this.arguments[i].Direction, true);
-                    metadata.Bind(this.arguments[i], runtimeArgument);
-                    metadata.AddArgument(runtimeArgument);
-                    types[i] = this.Arguments[i].Direction == ArgumentDirection.In ? this.Arguments[i].ArgumentType : this.Arguments[i].ArgumentType.MakeByRefType();
-                }
-            }
-
-            // If we didn't find any errors in the arguments then
-            // we can look for an appropriate constructor.
-            if (!foundError)
-            {
-                constructorInfo = typeof(TResult).GetConstructor(types);
-                if (constructorInfo == null && (!typeof(TResult).IsValueType || types.Length > 0))
-                {
-                    metadata.AddValidationError(SR.ConstructorInfoNotFound(typeof(TResult).Name));
-                }
-                else if ((this.constructorInfo != oldConstructorInfo) || (this.function == null))
-                {
-                    this.function = MethodCallExpressionHelper.GetFunc<TResult>(metadata, constructorInfo, funcCache, locker);
-                }
-            }
-        } 
-
-        protected override TResult Execute(CodeActivityContext context)
-        {
-            object[] objects = new object[this.Arguments.Count];
-            for (int i = 0; i < this.Arguments.Count; i++)
-            {
-                objects[i] = this.Arguments[i].Get(context);
-            }
-            TResult result = this.function(objects);
-            
-            for (int i = 0; i < this.Arguments.Count; i++)
-            {
-                Argument argument = this.Arguments[i];
-                if (argument.Direction == ArgumentDirection.InOut || argument.Direction == ArgumentDirection.Out)
-                {
-                    argument.Set(context, objects[i]);
-                }
-            }
-            return result;
-        }
-
     }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        bool foundError = false;
+        ConstructorInfo oldConstructorInfo = _constructorInfo;
+
+        // Loop through each argument, validate it, and if validation
+        // passed expose it to the metadata
+        Type[] types = new Type[Arguments.Count];
+        for (int i = 0; i < Arguments.Count; i++)
+        {
+            Argument argument = Arguments[i];
+            if (argument == null || argument.Expression == null)
+            {
+                metadata.AddValidationError(SR.ArgumentRequired("Arguments", typeof(New<TResult>)));
+                foundError = true;
+            }
+            else
+            {
+                RuntimeArgument runtimeArgument = new("Argument" + i, _arguments[i].ArgumentType, _arguments[i].Direction, true);
+                metadata.Bind(_arguments[i], runtimeArgument);
+                metadata.AddArgument(runtimeArgument);
+                types[i] = Arguments[i].Direction == ArgumentDirection.In ? Arguments[i].ArgumentType : Arguments[i].ArgumentType.MakeByRefType();
+            }
+        }
+
+        // If we didn't find any errors in the arguments then
+        // we can look for an appropriate constructor.
+        if (!foundError)
+        {
+            _constructorInfo = typeof(TResult).GetConstructor(types);
+            if (_constructorInfo == null && (!typeof(TResult).IsValueType || types.Length > 0))
+            {
+                metadata.AddValidationError(SR.ConstructorInfoNotFound(typeof(TResult).Name));
+            }
+            else if ((_constructorInfo != oldConstructorInfo) || (_function == null))
+            {
+                _function = MethodCallExpressionHelper.GetFunc<TResult>(metadata, _constructorInfo, funcCache, locker);
+            }
+        }
+    }
+
+    protected override TResult Execute(CodeActivityContext context)
+    {
+        object[] objects = new object[Arguments.Count];
+        for (int i = 0; i < Arguments.Count; i++)
+        {
+            objects[i] = Arguments[i].Get(context);
+        }
+        TResult result = _function(objects);
+
+        for (int i = 0; i < Arguments.Count; i++)
+        {
+            Argument argument = Arguments[i];
+            if (argument.Direction == ArgumentDirection.InOut || argument.Direction == ArgumentDirection.Out)
+            {
+                argument.Set(context, objects[i]);
+            }
+        }
+        return result;
+    }
+
 }

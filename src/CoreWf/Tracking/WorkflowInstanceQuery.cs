@@ -1,37 +1,24 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Tracking
+using System.Collections.ObjectModel;
+
+namespace System.Activities.Tracking;
+
+public class WorkflowInstanceQuery : TrackingQuery
 {
-    using System.Collections.ObjectModel;
+    private Collection<string> _states;
 
-    public class WorkflowInstanceQuery : TrackingQuery
+    public WorkflowInstanceQuery() { }
+
+    public Collection<string> States
     {
-        private Collection<string> states;
-
-        public WorkflowInstanceQuery()
+        get
         {
+            _states ??= new Collection<string>();
+            return _states;
         }
-
-        public Collection<string> States
-        {
-            get
-            {
-                if (this.states == null)
-                {
-                    this.states = new Collection<string>();
-                }
-                return this.states;
-            }
-        }
-
-        internal bool HasStates
-        {
-            get
-            {
-                return this.states != null && this.states.Count > 0;
-            }
-        }
-
     }
+
+    internal bool HasStates => _states != null && _states.Count > 0;
 }

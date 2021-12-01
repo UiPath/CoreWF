@@ -1,82 +1,73 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
-{
-    using System.Activities;
-    using System.Activities.Statements;
-    using System.ComponentModel;
+using System.Activities.Statements;
 
+#if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
-
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [AndAlso])")]
-    public sealed class AndAlso : Activity<bool>
-    {
-        public AndAlso()
-            : base()
-        {
-           this.Implementation =
-               () => 
-               {
-                   if (this.Left != null && this.Right != null)
-                   {
-                       return new If
-                       {
-                           Condition = this.Left,
-                           Then = new Assign<bool>
-                           {
-                               To = new OutArgument<bool>(context => this.Result.Get(context)),
-                               Value = new InArgument<bool>(this.Right)
-                           },
-                           Else = new Assign<bool>
-                           {
-                               To = new OutArgument<bool>(context => this.Result.Get(context)),
-                               Value = false,
-                           }
-                       };
-                   }
-                   else
-                   {
-                       return null;
-                   }
-               };
-        }
-
-        [DefaultValue(null)]
-        public Activity<bool> Left
-        {
-            get;
-            set;
-        }
-
-        [DefaultValue(null)]
-        public Activity<bool> Right
-        {
-            get;
-            set;
-        }
-
-#if NET45
-        protected override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
-        {
-            metadata.AllowUpdateInsideThisActivity();
-        } 
 #endif
 
-        protected override void CacheMetadata(ActivityMetadata metadata)
+namespace System.Activities.Expressions;
+
+//[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotMatchKeywords, Justification = "Optimizing for XAML naming. VB imperative users will [] qualify (e.g. New [AndAlso])")]
+public sealed class AndAlso : Activity<bool>
+{
+    public AndAlso()
+        : base()
+    {
+        Implementation =
+            () =>
+            {
+                if (Left != null && Right != null)
+                {
+                    return new If
+                    {
+                        Condition = Left,
+                        Then = new Assign<bool>
+                        {
+                            To = new OutArgument<bool>(context => Result.Get(context)),
+                            Value = new InArgument<bool>(Right)
+                        },
+                        Else = new Assign<bool>
+                        {
+                            To = new OutArgument<bool>(context => Result.Get(context)),
+                            Value = false,
+                        }
+                    };
+                }
+                else
+                {
+                    return null;
+                }
+            };
+    }
+
+    [DefaultValue(null)]
+    public Activity<bool> Left { get; set; }
+
+    [DefaultValue(null)]
+    public Activity<bool> Right { get; set; }
+
+#if NET45
+    protected override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
+    {
+        metadata.AllowUpdateInsideThisActivity();
+    } 
+#endif
+
+    protected override void CacheMetadata(ActivityMetadata metadata)
+    {
+        metadata.AddImportedChild(Left);
+        metadata.AddImportedChild(Right);
+
+        if (Left == null)
         {
-            metadata.AddImportedChild(this.Left);
-            metadata.AddImportedChild(this.Right);
+            metadata.AddValidationError(SR.BinaryExpressionActivityRequiresArgument("Left", "AndAlso", DisplayName));
+        }
 
-            if (this.Left == null)
-            {
-                metadata.AddValidationError(SR.BinaryExpressionActivityRequiresArgument("Left", "AndAlso", this.DisplayName));
-            }
-
-            if (this.Right == null)
-            {
-                metadata.AddValidationError(SR.BinaryExpressionActivityRequiresArgument("Right", "AndAlso", this.DisplayName));
-            }
+        if (Right == null)
+        {
+            metadata.AddValidationError(SR.BinaryExpressionActivityRequiresArgument("Right", "AndAlso", DisplayName));
         }
     }
 }

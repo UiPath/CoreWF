@@ -1,424 +1,355 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Tracking
+using System.Activities.Runtime;
+using System.Collections;
+
+namespace System.Activities.Tracking;
+
+internal class TrackingProvider
 {
-    using System;
-    using System.Activities;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Activities.Runtime;
+    private List<TrackingParticipant> _trackingParticipants;
+    private Dictionary<TrackingParticipant, RuntimeTrackingProfile> _profileSubscriptions;
+    private IList<TrackingRecord> _pendingTrackingRecords;
+    private readonly Activity _definition;
+    private bool _filterValuesSetExplicitly;
+    private Hashtable _activitySubscriptions;
+    private long _nextTrackingRecordNumber;
 
-    internal class TrackingProvider
+    public TrackingProvider(Activity definition)
     {
-        private List<TrackingParticipant> trackingParticipants;
-        private Dictionary<TrackingParticipant, RuntimeTrackingProfile> profileSubscriptions;
-        private IList<TrackingRecord> pendingTrackingRecords;
-        private readonly Activity definition;
-        private bool filterValuesSetExplicitly;
-        private Hashtable activitySubscriptions;
-        private long nextTrackingRecordNumber;
+        _definition = definition;
+        ShouldTrack = true;
+        ShouldTrackActivityStateRecords = true;
+        ShouldTrackActivityStateRecordsExecutingState = true;
+        ShouldTrackActivityStateRecordsClosedState = true;
+        ShouldTrackBookmarkResumptionRecords = true;
+        ShouldTrackActivityScheduledRecords = true;
+        ShouldTrackCancelRequestedRecords = true;
+        ShouldTrackFaultPropagationRecords = true;
+        ShouldTrackWorkflowInstanceRecords = true;
+    }
 
-        public TrackingProvider(Activity definition)
+    public bool HasPendingRecords => (_pendingTrackingRecords != null && _pendingTrackingRecords.Count > 0)
+                || !_filterValuesSetExplicitly;
+
+    public long NextTrackingRecordNumber => _nextTrackingRecordNumber;
+
+    public bool ShouldTrack { get; private set; }
+
+    public bool ShouldTrackWorkflowInstanceRecords { get; private set; }
+
+    public bool ShouldTrackBookmarkResumptionRecords { get; private set; }
+
+    public bool ShouldTrackActivityScheduledRecords { get; private set; }
+
+    public bool ShouldTrackActivityStateRecords { get; private set; }
+
+    public bool ShouldTrackActivityStateRecordsExecutingState { get; private set; }
+
+    public bool ShouldTrackActivityStateRecordsClosedState { get; private set; }
+
+    public bool ShouldTrackCancelRequestedRecords { get; private set; }
+
+    public bool ShouldTrackFaultPropagationRecords { get; private set; }
+
+    /// <remarks>
+    /// We blindly do this.  On the off chance that a workflow causes it to loop back
+    /// around it shouldn't cause the workflow to fail and the tracking information
+    /// will still be salvagable.
+    /// </remarks>
+    private long GetNextRecordNumber() => _nextTrackingRecordNumber++;
+
+    public void OnDeserialized(long nextTrackingRecordNumber) => _nextTrackingRecordNumber = nextTrackingRecordNumber;
+
+    public void AddRecord(TrackingRecord record)
+    {
+        _pendingTrackingRecords ??= new List<TrackingRecord>();
+        record.RecordNumber = GetNextRecordNumber();
+        _pendingTrackingRecords.Add(record);
+    }
+
+    public void AddParticipant(TrackingParticipant participant)
+    {
+        if (_trackingParticipants == null)
         {
-            this.definition = definition;
-            this.ShouldTrack = true;
-            this.ShouldTrackActivityStateRecords = true;
-            this.ShouldTrackActivityStateRecordsExecutingState = true;
-            this.ShouldTrackActivityStateRecordsClosedState = true;
-            this.ShouldTrackBookmarkResumptionRecords = true;
-            this.ShouldTrackActivityScheduledRecords = true;
-            this.ShouldTrackCancelRequestedRecords = true;
-            this.ShouldTrackFaultPropagationRecords = true;
-            this.ShouldTrackWorkflowInstanceRecords = true;
+            _trackingParticipants = new List<TrackingParticipant>();
+            _profileSubscriptions = new Dictionary<TrackingParticipant, RuntimeTrackingProfile>();
         }
+        _trackingParticipants.Add(participant);
+    }
 
-        public bool HasPendingRecords
+    public void ClearParticipants()
+    {
+        _trackingParticipants = null;
+        _profileSubscriptions = null;
+    }
+
+    public void FlushPendingRecords(TimeSpan timeout)
+    {
+        try
         {
-            get
+            if (!HasPendingRecords)
             {
-                return (this.pendingTrackingRecords != null && this.pendingTrackingRecords.Count > 0)
-                    || !this.filterValuesSetExplicitly;
-            }
-        }
-
-        public long NextTrackingRecordNumber
-        {
-            get
-            {
-                return this.nextTrackingRecordNumber;
-            }
-        }
-
-        public bool ShouldTrack
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackWorkflowInstanceRecords
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackBookmarkResumptionRecords
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackActivityScheduledRecords
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackActivityStateRecords
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackActivityStateRecordsExecutingState
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackActivityStateRecordsClosedState
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackCancelRequestedRecords
-        {
-            get;
-            private set;
-        }
-
-        public bool ShouldTrackFaultPropagationRecords
-        {
-            get;
-            private set;
-        }
-
-        private long GetNextRecordNumber()
-        {
-            // We blindly do this.  On the off chance that a workflow causes it to loop back
-            // around it shouldn't cause the workflow to fail and the tracking information
-            // will still be salvagable.
-            return this.nextTrackingRecordNumber++;
-        }
-
-        public void OnDeserialized(long nextTrackingRecordNumber)
-        {
-            this.nextTrackingRecordNumber = nextTrackingRecordNumber;
-        }
-
-        public void AddRecord(TrackingRecord record)
-        {
-            if (this.pendingTrackingRecords == null)
-            {
-                this.pendingTrackingRecords = new List<TrackingRecord>();
+                return;
             }
 
-            record.RecordNumber = GetNextRecordNumber();
-            this.pendingTrackingRecords.Add(record);
-        }
-
-        public void AddParticipant(TrackingParticipant participant)
-        {
-            if (this.trackingParticipants == null)
+            TimeoutHelper helper = new TimeoutHelper(timeout);
+            for (int i = 0; i < _trackingParticipants.Count; i++)
             {
-                this.trackingParticipants = new List<TrackingParticipant>();
-                this.profileSubscriptions = new Dictionary<TrackingParticipant, RuntimeTrackingProfile>();
-            }
-            this.trackingParticipants.Add(participant);
-        }
+                TrackingParticipant participant = _trackingParticipants[i];
+                RuntimeTrackingProfile runtimeProfile = GetRuntimeTrackingProfile(participant);
 
-        public void ClearParticipants()
-        {
-            this.trackingParticipants = null;
-            this.profileSubscriptions = null;
-        }
-
-        public void FlushPendingRecords(TimeSpan timeout)
-        {
-            try
-            {
-                if (this.HasPendingRecords)
+                // HasPendingRecords can be true for the sole purpose of populating our initial profiles, so check again here
+                if (_pendingTrackingRecords == null)
                 {
-                    TimeoutHelper helper = new TimeoutHelper(timeout);
-                    for (int i = 0; i < this.trackingParticipants.Count; i++)
-                    {
-                        TrackingParticipant participant = this.trackingParticipants[i];
-                        RuntimeTrackingProfile runtimeProfile = GetRuntimeTrackingProfile(participant);
-
-                        // HasPendingRecords can be true for the sole purpose of populating our initial profiles, so check again here
-                        if (this.pendingTrackingRecords != null)
-                        {
-                            for (int j = 0; j < this.pendingTrackingRecords.Count; j++)
-                            {
-                                TrackingRecord currentRecord = this.pendingTrackingRecords[j];
-                                Fx.Assert(currentRecord != null, "We should never come across a null context.");
-
-                                TrackingRecord preparedRecord = null;
-                                bool shouldClone = this.trackingParticipants.Count > 1;
-                                if (runtimeProfile == null)
-                                {
-                                    preparedRecord = shouldClone ? currentRecord.Clone() : currentRecord;
-                                }
-                                else
-                                {
-                                    preparedRecord = runtimeProfile.Match(currentRecord, shouldClone);
-                                }
-
-                                if (preparedRecord != null)
-                                {
-                                    participant.Track(preparedRecord, helper.RemainingTime());
-                                    if (TD.TrackingRecordRaisedIsEnabled())
-                                    {
-                                        TD.TrackingRecordRaised(preparedRecord.ToString(), participant.GetType().ToString());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                // Note that if we fail to track yet the workflow manages to recover
-                // we will attempt to track those records again.
-                ClearPendingRecords();
-            }
-        }
-
-        public IAsyncResult BeginFlushPendingRecords(TimeSpan timeout, AsyncCallback callback, object state)
-        {
-            return new FlushPendingRecordsAsyncResult(this, timeout, callback, state);
-        }
-
-        public void EndFlushPendingRecords(IAsyncResult result)
-        {
-            FlushPendingRecordsAsyncResult.End(result);
-        }
-
-        public bool ShouldTrackActivity(string name)
-        {
-            return this.activitySubscriptions == null || this.activitySubscriptions.ContainsKey(name) || this.activitySubscriptions.ContainsKey("*");
-        }
-
-        private void ClearPendingRecords()
-        {
-            if (this.pendingTrackingRecords != null)
-            {
-                //since the number of records is small, it is faster to remove from end than to call List.Clear
-                for (int i = this.pendingTrackingRecords.Count - 1; i >= 0; i--)
-                {
-                    this.pendingTrackingRecords.RemoveAt(i);
-                }
-            }
-        }
-
-        private RuntimeTrackingProfile GetRuntimeTrackingProfile(TrackingParticipant participant)
-        {
-            TrackingProfile profile;
-
-            if (!this.profileSubscriptions.TryGetValue(participant, out RuntimeTrackingProfile runtimeProfile))
-            {
-                profile = participant.TrackingProfile;
-
-                if (profile != null)
-                {
-                    runtimeProfile = RuntimeTrackingProfile.GetRuntimeTrackingProfile(profile, this.definition);
-                    Merge(runtimeProfile.Filter);
-
-                    //Add the names to the list of activities that have subscriptions.  This provides a quick lookup
-                    //for the runtime to check if a TrackingRecord has to be created. 
-                    IEnumerable<string> activityNames = runtimeProfile.GetSubscribedActivityNames();
-                    if (activityNames != null)
-                    {
-                        if (this.activitySubscriptions == null)
-                        {
-                            this.activitySubscriptions = new Hashtable();
-                        }
-                        foreach (string name in activityNames)
-                        {
-                            if (this.activitySubscriptions[name] == null)
-                            {
-                                this.activitySubscriptions[name] = name;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    //for null profiles, set all the filter flags. 
-                    Merge(new TrackingRecordPreFilter(true));
+                    continue;
                 }
 
-                this.profileSubscriptions.Add(participant, runtimeProfile);
-            }
-            return runtimeProfile;
-        }
-
-        private void Merge(TrackingRecordPreFilter filter)
-        {
-            if (!this.filterValuesSetExplicitly)
-            {
-                // This it the first filter we are merging
-                this.filterValuesSetExplicitly = true;
-
-                this.ShouldTrackActivityStateRecordsExecutingState = filter.TrackActivityStateRecordsExecutingState;
-                this.ShouldTrackActivityScheduledRecords = filter.TrackActivityScheduledRecords;
-                this.ShouldTrackActivityStateRecords = filter.TrackActivityStateRecords;
-                this.ShouldTrackActivityStateRecordsClosedState = filter.TrackActivityStateRecordsClosedState;
-                this.ShouldTrackBookmarkResumptionRecords = filter.TrackBookmarkResumptionRecords;
-                this.ShouldTrackCancelRequestedRecords = filter.TrackCancelRequestedRecords;
-                this.ShouldTrackFaultPropagationRecords = filter.TrackFaultPropagationRecords;
-                this.ShouldTrackWorkflowInstanceRecords = filter.TrackWorkflowInstanceRecords;
-            }
-            else
-            {
-                this.ShouldTrackActivityStateRecordsExecutingState |= filter.TrackActivityStateRecordsExecutingState;
-                this.ShouldTrackActivityScheduledRecords |= filter.TrackActivityScheduledRecords;
-                this.ShouldTrackActivityStateRecords |= filter.TrackActivityStateRecords;
-                this.ShouldTrackActivityStateRecordsClosedState |= filter.TrackActivityStateRecordsClosedState;
-                this.ShouldTrackBookmarkResumptionRecords |= filter.TrackBookmarkResumptionRecords;
-                this.ShouldTrackCancelRequestedRecords |= filter.TrackCancelRequestedRecords;
-                this.ShouldTrackFaultPropagationRecords |= filter.TrackFaultPropagationRecords;
-                this.ShouldTrackWorkflowInstanceRecords |= filter.TrackWorkflowInstanceRecords;
-            }
-        }
-
-        private class FlushPendingRecordsAsyncResult : AsyncResult
-        {
-            private static readonly AsyncCompletion trackingCompleteCallback = new AsyncCompletion(OnTrackingComplete);
-            private int currentRecord;
-            private int currentParticipant;
-            private TrackingProvider provider;
-            private TimeoutHelper timeoutHelper;
-
-            public FlushPendingRecordsAsyncResult(TrackingProvider provider, TimeSpan timeout, AsyncCallback callback, object state)
-                : base(callback, state)
-            {
-                this.provider = provider;
-                this.timeoutHelper = new TimeoutHelper(timeout);
-
-                if (RunLoop())
+                for (int j = 0; j < _pendingTrackingRecords.Count; j++)
                 {
-                    Complete(true);
-                }
-            }
+                    TrackingRecord currentRecord = _pendingTrackingRecords[j];
+                    Fx.Assert(currentRecord != null, "We should never come across a null context.");
+                    bool shouldClone = _trackingParticipants.Count > 1;
 
-            private bool RunLoop()
-            {
-                if (this.provider.HasPendingRecords)
-                {
-                    while (this.currentParticipant < this.provider.trackingParticipants.Count)
-                    {
-                        TrackingParticipant participant = this.provider.trackingParticipants[this.currentParticipant];
-                        RuntimeTrackingProfile runtimeProfile = this.provider.GetRuntimeTrackingProfile(participant);
-
-                        if (this.provider.pendingTrackingRecords != null)
-                        {
-                            while (this.currentRecord < this.provider.pendingTrackingRecords.Count)
-                            {
-                                bool completedSynchronously = PostTrackingRecord(participant, runtimeProfile);
-                                if (!completedSynchronously)
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-
-                        this.currentRecord = 0;
-                        this.currentParticipant++;
-                    }
-                }
-
-                // We've now tracked all of the records.
-                this.provider.ClearPendingRecords();
-                return true;
-            }
-
-            private static bool OnTrackingComplete(IAsyncResult result)
-            {
-                Fx.Assert(!result.CompletedSynchronously, "TrackingAsyncResult.OnTrackingComplete should not get called with a result that is CompletedSynchronously");
-
-                FlushPendingRecordsAsyncResult thisPtr = (FlushPendingRecordsAsyncResult)result.AsyncState;
-                TrackingParticipant participant = thisPtr.provider.trackingParticipants[thisPtr.currentParticipant];
-                bool isSuccessful = false;
-                try
-                {
-                    participant.EndTrack(result);
-                    isSuccessful = true;
-                }
-                finally
-                {
-                    if (!isSuccessful)
-                    {
-                        thisPtr.provider.ClearPendingRecords();
-                    }
-                }
-                return thisPtr.RunLoop();
-            }
-
-            private bool PostTrackingRecord(TrackingParticipant participant, RuntimeTrackingProfile runtimeProfile)
-            {
-                TrackingRecord originalRecord = this.provider.pendingTrackingRecords[this.currentRecord];
-                this.currentRecord++;
-                bool isSuccessful = false;
-
-                try
-                {
-                    TrackingRecord preparedRecord = null;
-                    bool shouldClone = this.provider.trackingParticipants.Count > 1;
+                    TrackingRecord preparedRecord;
                     if (runtimeProfile == null)
                     {
-                        preparedRecord = shouldClone ? originalRecord.Clone() : originalRecord;
+                        preparedRecord = shouldClone ? currentRecord.Clone() : currentRecord;
                     }
                     else
                     {
-                        preparedRecord = runtimeProfile.Match(originalRecord, shouldClone);
+                        preparedRecord = runtimeProfile.Match(currentRecord, shouldClone);
                     }
 
                     if (preparedRecord != null)
                     {
-                        IAsyncResult result = participant.BeginTrack(preparedRecord, this.timeoutHelper.RemainingTime(), PrepareAsyncCompletion(trackingCompleteCallback), this);
+                        participant.Track(preparedRecord, helper.RemainingTime());
                         if (TD.TrackingRecordRaisedIsEnabled())
                         {
                             TD.TrackingRecordRaised(preparedRecord.ToString(), participant.GetType().ToString());
                         }
-                        if (result.CompletedSynchronously)
-                        {
-                            participant.EndTrack(result);
-                        }
-                        else
-                        {
-                            isSuccessful = true;
-                            return false;
-                        }
-                    }
-                    isSuccessful = true;
-                }
-                finally
-                {
-                    if (!isSuccessful)
-                    {
-                        this.provider.ClearPendingRecords();
                     }
                 }
-                return true;
-            }
-
-            public static void End(IAsyncResult result)
-            {
-                AsyncResult.End<FlushPendingRecordsAsyncResult>(result);
             }
         }
+        finally
+        {
+            // Note that if we fail to track yet the workflow manages to recover
+            // we will attempt to track those records again.
+            ClearPendingRecords();
+        }
+    }
+
+    public IAsyncResult BeginFlushPendingRecords(TimeSpan timeout, AsyncCallback callback, object state)
+        => new FlushPendingRecordsAsyncResult(this, timeout, callback, state);
+
+    public static void EndFlushPendingRecords(IAsyncResult result) => FlushPendingRecordsAsyncResult.End(result);
+
+    public bool ShouldTrackActivity(string name)
+        => _activitySubscriptions == null || _activitySubscriptions.ContainsKey(name) || _activitySubscriptions.ContainsKey("*");
+
+    private void ClearPendingRecords()
+    {
+        if (_pendingTrackingRecords != null)
+        {
+            //since the number of records is small, it is faster to remove from end than to call List.Clear
+            for (int i = _pendingTrackingRecords.Count - 1; i >= 0; i--)
+            {
+                _pendingTrackingRecords.RemoveAt(i);
+            }
+        }
+    }
+
+    private RuntimeTrackingProfile GetRuntimeTrackingProfile(TrackingParticipant participant)
+    {
+        TrackingProfile profile;
+
+        if (!_profileSubscriptions.TryGetValue(participant, out RuntimeTrackingProfile runtimeProfile))
+        {
+            profile = participant.TrackingProfile;
+
+            if (profile != null)
+            {
+                runtimeProfile = RuntimeTrackingProfile.GetRuntimeTrackingProfile(profile, _definition);
+                Merge(runtimeProfile.Filter);
+
+                //Add the names to the list of activities that have subscriptions.  This provides a quick lookup
+                //for the runtime to check if a TrackingRecord has to be created. 
+                IEnumerable<string> activityNames = runtimeProfile.GetSubscribedActivityNames();
+                if (activityNames != null)
+                {
+                    _activitySubscriptions ??= new Hashtable();
+                    foreach (string name in activityNames)
+                    {
+                        if (_activitySubscriptions[name] == null)
+                        {
+                            _activitySubscriptions[name] = name;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //for null profiles, set all the filter flags. 
+                Merge(new TrackingRecordPreFilter(true));
+            }
+
+            _profileSubscriptions.Add(participant, runtimeProfile);
+        }
+        return runtimeProfile;
+    }
+
+    private void Merge(TrackingRecordPreFilter filter)
+    {
+        if (!_filterValuesSetExplicitly)
+        {
+            // This it the first filter we are merging
+            _filterValuesSetExplicitly = true;
+
+            ShouldTrackActivityStateRecordsExecutingState = filter.TrackActivityStateRecordsExecutingState;
+            ShouldTrackActivityScheduledRecords = filter.TrackActivityScheduledRecords;
+            ShouldTrackActivityStateRecords = filter.TrackActivityStateRecords;
+            ShouldTrackActivityStateRecordsClosedState = filter.TrackActivityStateRecordsClosedState;
+            ShouldTrackBookmarkResumptionRecords = filter.TrackBookmarkResumptionRecords;
+            ShouldTrackCancelRequestedRecords = filter.TrackCancelRequestedRecords;
+            ShouldTrackFaultPropagationRecords = filter.TrackFaultPropagationRecords;
+            ShouldTrackWorkflowInstanceRecords = filter.TrackWorkflowInstanceRecords;
+        }
+        else
+        {
+            ShouldTrackActivityStateRecordsExecutingState |= filter.TrackActivityStateRecordsExecutingState;
+            ShouldTrackActivityScheduledRecords |= filter.TrackActivityScheduledRecords;
+            ShouldTrackActivityStateRecords |= filter.TrackActivityStateRecords;
+            ShouldTrackActivityStateRecordsClosedState |= filter.TrackActivityStateRecordsClosedState;
+            ShouldTrackBookmarkResumptionRecords |= filter.TrackBookmarkResumptionRecords;
+            ShouldTrackCancelRequestedRecords |= filter.TrackCancelRequestedRecords;
+            ShouldTrackFaultPropagationRecords |= filter.TrackFaultPropagationRecords;
+            ShouldTrackWorkflowInstanceRecords |= filter.TrackWorkflowInstanceRecords;
+        }
+    }
+
+    private class FlushPendingRecordsAsyncResult : AsyncResult
+    {
+        private static readonly AsyncCompletion trackingCompleteCallback = new(OnTrackingComplete);
+        private int _currentRecord;
+        private int _currentParticipant;
+        private TrackingProvider _provider;
+        private TimeoutHelper _timeoutHelper;
+
+        public FlushPendingRecordsAsyncResult(TrackingProvider provider, TimeSpan timeout, AsyncCallback callback, object state)
+            : base(callback, state)
+        {
+            _provider = provider;
+            _timeoutHelper = new TimeoutHelper(timeout);
+
+            if (RunLoop())
+            {
+                Complete(true);
+            }
+        }
+
+        private bool RunLoop()
+        {
+            if (_provider.HasPendingRecords)
+            {
+                while (_currentParticipant < _provider._trackingParticipants.Count)
+                {
+                    TrackingParticipant participant = _provider._trackingParticipants[_currentParticipant];
+                    RuntimeTrackingProfile runtimeProfile = _provider.GetRuntimeTrackingProfile(participant);
+
+                    if (_provider._pendingTrackingRecords != null)
+                    {
+                        while (_currentRecord < _provider._pendingTrackingRecords.Count)
+                        {
+                            bool completedSynchronously = PostTrackingRecord(participant, runtimeProfile);
+                            if (!completedSynchronously)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    _currentRecord = 0;
+                    _currentParticipant++;
+                }
+            }
+
+            // We've now tracked all of the records.
+            _provider.ClearPendingRecords();
+            return true;
+        }
+
+        private static bool OnTrackingComplete(IAsyncResult result)
+        {
+            Fx.Assert(!result.CompletedSynchronously, "TrackingAsyncResult.OnTrackingComplete should not get called with a result that is CompletedSynchronously");
+
+            FlushPendingRecordsAsyncResult thisPtr = (FlushPendingRecordsAsyncResult)result.AsyncState;
+            TrackingParticipant participant = thisPtr._provider._trackingParticipants[thisPtr._currentParticipant];
+            bool isSuccessful = false;
+            try
+            {
+                participant.EndTrack(result);
+                isSuccessful = true;
+            }
+            finally
+            {
+                if (!isSuccessful)
+                {
+                    thisPtr._provider.ClearPendingRecords();
+                }
+            }
+            return thisPtr.RunLoop();
+        }
+
+        private bool PostTrackingRecord(TrackingParticipant participant, RuntimeTrackingProfile runtimeProfile)
+        {
+            TrackingRecord originalRecord = _provider._pendingTrackingRecords[_currentRecord];
+            _currentRecord++;
+            bool isSuccessful = false;
+
+            try
+            {
+                TrackingRecord preparedRecord = null;
+                bool shouldClone = _provider._trackingParticipants.Count > 1;
+                if (runtimeProfile == null)
+                {
+                    preparedRecord = shouldClone ? originalRecord.Clone() : originalRecord;
+                }
+                else
+                {
+                    preparedRecord = runtimeProfile.Match(originalRecord, shouldClone);
+                }
+
+                if (preparedRecord != null)
+                {
+                    IAsyncResult result = participant.BeginTrack(preparedRecord, _timeoutHelper.RemainingTime(), PrepareAsyncCompletion(trackingCompleteCallback), this);
+                    if (TD.TrackingRecordRaisedIsEnabled())
+                    {
+                        TD.TrackingRecordRaised(preparedRecord.ToString(), participant.GetType().ToString());
+                    }
+                    if (result.CompletedSynchronously)
+                    {
+                        participant.EndTrack(result);
+                    }
+                    else
+                    {
+                        isSuccessful = true;
+                        return false;
+                    }
+                }
+                isSuccessful = true;
+            }
+            finally
+            {
+                if (!isSuccessful)
+                {
+                    _provider.ClearPendingRecords();
+                }
+            }
+            return true;
+        }
+
+        public static void End(IAsyncResult result) => End<FlushPendingRecordsAsyncResult>(result);
     }
 }

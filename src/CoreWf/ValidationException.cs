@@ -1,31 +1,27 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+
+[Serializable]
+public class ValidationException : SystemException
 {
-    using System;
-    using System.Runtime.Serialization;
-
-    [Serializable]
-    public class ValidationException : SystemException
+    public ValidationException()
     {
-        public ValidationException()
-        {
-        }
+    }
 
-        public ValidationException(string message)
-            : base(message)
-        {
-        }
+    public ValidationException(string message)
+        : base(message)
+    {
+    }
 
-        public ValidationException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public ValidationException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
-        protected ValidationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected ValidationException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

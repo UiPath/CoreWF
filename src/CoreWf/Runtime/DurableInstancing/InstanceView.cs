@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Xml.Linq;
@@ -114,7 +112,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             get
             {
-                return _data ?? InstanceView.s_emptyProperties;
+                return _data ?? s_emptyProperties;
             }
             internal set
             {
@@ -130,7 +128,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 IDictionary<XName, InstanceValue> pendingWrites = _accumulatedMetadataWrites;
                 _accumulatedMetadataWrites = null;
-                _metadata = pendingWrites.ReadOnlyMergeInto(_metadata ?? InstanceView.s_emptyProperties, true);
+                _metadata = pendingWrites.ReadOnlyMergeInto(_metadata ?? s_emptyProperties, true);
                 return _metadata;
             }
             internal set
@@ -159,7 +157,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 IDictionary<XName, InstanceValue> pendingWrites = _accumulatedOwnerMetadataWrites;
                 _accumulatedOwnerMetadataWrites = null;
-                _ownerMetadata = pendingWrites.ReadOnlyMergeInto(_ownerMetadata ?? InstanceView.s_emptyProperties, true);
+                _ownerMetadata = pendingWrites.ReadOnlyMergeInto(_ownerMetadata ?? s_emptyProperties, true);
                 return _ownerMetadata;
             }
             internal set
@@ -186,7 +184,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             get
             {
-                return _keys ?? InstanceView.s_emptyKeys;
+                return _keys ?? s_emptyKeys;
             }
             internal set
             {

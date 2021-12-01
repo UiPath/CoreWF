@@ -1,93 +1,85 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Validation
+using System.Activities.Runtime;
+
+namespace System.Activities.Validation;
+
+[Fx.Tag.XamlVisible(false)]
+public sealed class ValidationContext
 {
-    using System.Activities.Runtime;
-    using System.Collections.Generic;
+    private ActivityUtilities.ChildActivity _owner;
+    private readonly ActivityUtilities.ActivityCallStack _parentChain;
+    private readonly LocationReferenceEnvironment _environment;
+    private IList<ValidationError> _getChildrenErrors;
+    private readonly ProcessActivityTreeOptions _options;
 
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class ValidationContext
+    internal ValidationContext(ActivityUtilities.ChildActivity owner, ActivityUtilities.ActivityCallStack parentChain, ProcessActivityTreeOptions options, LocationReferenceEnvironment environment)
     {
-        private ActivityUtilities.ChildActivity owner;
-        private ActivityUtilities.ActivityCallStack parentChain;
-        private readonly LocationReferenceEnvironment environment;
-        private IList<ValidationError> getChildrenErrors;
-        private readonly ProcessActivityTreeOptions options;
+        _owner = owner;
+        _parentChain = parentChain;
+        _options = options;
+        _environment = environment;
+    }
 
-        internal ValidationContext(ActivityUtilities.ChildActivity owner, ActivityUtilities.ActivityCallStack parentChain, ProcessActivityTreeOptions options, LocationReferenceEnvironment environment)
+    internal LocationReferenceEnvironment Environment => _environment;
+
+    internal IEnumerable<Activity> GetParents()
+    {
+        List<Activity> parentsList = new();
+
+        for (int i = 0; i < _parentChain.Count; i++)
         {
-            this.owner = owner;
-            this.parentChain = parentChain;
-            this.options = options;
-            this.environment = environment;
+            parentsList.Add(_parentChain[i].Activity);
         }
 
-        internal LocationReferenceEnvironment Environment
+        return parentsList;
+    }
+
+    internal IEnumerable<Activity> GetWorkflowTree()
+    {
+        // It is okay to just walk the declared parent chain here
+        Activity currentNode = _owner.Activity;
+        if (currentNode != null)
         {
-            get { return this.environment; }
+            while (currentNode.Parent != null)
+            {
+                currentNode = currentNode.Parent;
+            }
+            List<Activity> nodes = ActivityValidationServices.GetChildren(new ActivityUtilities.ChildActivity(currentNode, true), new ActivityUtilities.ActivityCallStack(), _options);
+            nodes.Add(currentNode);
+            return nodes;
         }
-
-        internal IEnumerable<Activity> GetParents()
+        else
         {
-            List<Activity> parentsList = new List<Activity>();
-
-            for (int i = 0; i < parentChain.Count; i++)
-            {
-                parentsList.Add(parentChain[i].Activity);
-            }
-
-            return parentsList;
+            return ActivityValidationServices.EmptyChildren;
         }
+    }
 
-        internal IEnumerable<Activity> GetWorkflowTree()
+    internal IEnumerable<Activity> GetChildren()
+    {
+        if (!_owner.Equals(ActivityUtilities.ChildActivity.Empty))
         {
-            // It is okay to just walk the declared parent chain here
-            Activity currentNode = this.owner.Activity;
-            if (currentNode != null)
-            {
-                while (currentNode.Parent != null)
-                {
-                    currentNode = currentNode.Parent;
-                }
-                List<Activity> nodes = ActivityValidationServices.GetChildren(new ActivityUtilities.ChildActivity(currentNode, true), new ActivityUtilities.ActivityCallStack(), this.options);
-                nodes.Add(currentNode);
-                return nodes;
-            }
-            else
-            {
-                return ActivityValidationServices.EmptyChildren;
-            }            
+            return ActivityValidationServices.GetChildren(_owner, _parentChain, _options);
         }
-
-        internal IEnumerable<Activity> GetChildren()
+        else
         {
-            if (!this.owner.Equals(ActivityUtilities.ChildActivity.Empty))
-            {
-                return ActivityValidationServices.GetChildren(this.owner, this.parentChain, this.options);
-            }
-            else
-            {
-                return ActivityValidationServices.EmptyChildren;
-            }
+            return ActivityValidationServices.EmptyChildren;
         }
+    }
 
-        internal void AddGetChildrenErrors(ref IList<ValidationError> validationErrors)
+    internal void AddGetChildrenErrors(ref IList<ValidationError> validationErrors)
+    {
+        if (_getChildrenErrors != null && _getChildrenErrors.Count > 0)
         {
-            if (this.getChildrenErrors != null && this.getChildrenErrors.Count > 0)
+            validationErrors ??= new List<ValidationError>();
+
+            for (int i = 0; i < _getChildrenErrors.Count; i++)
             {
-                if (validationErrors == null)
-                {
-                    validationErrors = new List<ValidationError>();
-                }
-
-                for (int i = 0; i < this.getChildrenErrors.Count; i++)
-                {
-                    validationErrors.Add(this.getChildrenErrors[i]);
-                }
-
-                this.getChildrenErrors = null;
+                validationErrors.Add(_getChildrenErrors[i]);
             }
+
+            _getChildrenErrors = null;
         }
     }
 }

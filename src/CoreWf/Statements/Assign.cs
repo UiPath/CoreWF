@@ -1,126 +1,96 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Activities.Runtime;
+using System.Collections.ObjectModel;
+
+namespace System.Activities.Statements;
+
+public sealed class Assign : CodeActivity
 {
-    using System.Activities;
-    using System.Activities.Runtime;
-    using System;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
+    public Assign()
+        : base() { }
 
-    public sealed class Assign : CodeActivity
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public OutArgument To { get; set; }
+
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument Value { get; set; }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        public Assign()
-            : base()
+        Collection<RuntimeArgument> arguments = new();
+
+        Type valueType = TypeHelper.ObjectType;
+
+        if (Value != null)
         {
+            valueType = Value.ArgumentType;
         }
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public OutArgument To
+        RuntimeArgument valueArgument = new("Value", valueType, ArgumentDirection.In, true);
+        metadata.Bind(Value, valueArgument);
+
+        Type toType = TypeHelper.ObjectType;
+
+        if (To != null)
         {
-            get;
-            set;
+            toType = To.ArgumentType;
         }
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument Value
-        {
-            get;
-            set;
-        }
+        RuntimeArgument toArgument = new("To", toType, ArgumentDirection.Out, true);
+        metadata.Bind(To, toArgument);
 
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            Collection<RuntimeArgument> arguments = new Collection<RuntimeArgument>();
-            
-            Type valueType = TypeHelper.ObjectType;
+        arguments.Add(valueArgument);
+        arguments.Add(toArgument);
 
-            if (this.Value != null)
+        metadata.SetArgumentsCollection(arguments);
+
+        if (Value != null && To != null)
+        {
+            if (!TypeHelper.AreTypesCompatible(Value.ArgumentType, To.ArgumentType))
             {
-                valueType = this.Value.ArgumentType;
+                metadata.AddValidationError(SR.TypeMismatchForAssign(
+                            Value.ArgumentType,
+                            To.ArgumentType,
+                            DisplayName));
             }
-
-            RuntimeArgument valueArgument = new RuntimeArgument("Value", valueType, ArgumentDirection.In, true);
-            metadata.Bind(this.Value, valueArgument);
-
-            Type toType = TypeHelper.ObjectType;
-
-            if (this.To != null)
-            {
-                toType = this.To.ArgumentType;
-            }
-
-            RuntimeArgument toArgument = new RuntimeArgument("To", toType, ArgumentDirection.Out, true);
-            metadata.Bind(this.To, toArgument);
-
-            arguments.Add(valueArgument);
-            arguments.Add(toArgument);
-
-            metadata.SetArgumentsCollection(arguments);
-
-            if (this.Value != null && this.To != null)
-            {
-                if (!TypeHelper.AreTypesCompatible(this.Value.ArgumentType, this.To.ArgumentType))
-                {
-                    metadata.AddValidationError(SR.TypeMismatchForAssign(
-                                this.Value.ArgumentType,
-                                this.To.ArgumentType,
-                                this.DisplayName));
-                }
-            }
-        }
-
-        protected override void Execute(CodeActivityContext context)
-        {
-            this.To.Set(context, this.Value.Get(context));
         }
     }
 
-    public sealed class Assign<T> : CodeActivity
+    protected override void Execute(CodeActivityContext context) => To.Set(context, Value.Get(context));
+}
+
+public sealed class Assign<T> : CodeActivity
+{
+    public Assign()
+        : base() { }
+
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public OutArgument<T> To { get; set; }
+
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument<T> Value { get; set; }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        public Assign()
-            : base()
-        {
-        }
+        Collection<RuntimeArgument> arguments = new();
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public OutArgument<T> To
-        {
-            get;
-            set;
-        }
+        RuntimeArgument valueArgument = new("Value", typeof(T), ArgumentDirection.In, true);
+        metadata.Bind(Value, valueArgument);
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument<T> Value
-        {
-            get;
-            set;
-        }
+        RuntimeArgument toArgument = new("To", typeof(T), ArgumentDirection.Out, true);
+        metadata.Bind(To, toArgument);
 
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            Collection<RuntimeArgument> arguments = new Collection<RuntimeArgument>();
+        arguments.Add(valueArgument);
+        arguments.Add(toArgument);
 
-            RuntimeArgument valueArgument = new RuntimeArgument("Value", typeof(T), ArgumentDirection.In, true);
-            metadata.Bind(this.Value, valueArgument);
-
-            RuntimeArgument toArgument = new RuntimeArgument("To", typeof(T), ArgumentDirection.Out, true);
-            metadata.Bind(this.To, toArgument);
-
-            arguments.Add(valueArgument);
-            arguments.Add(toArgument);
-
-            metadata.SetArgumentsCollection(arguments);
-        }
-
-        protected override void Execute(CodeActivityContext context)
-        {
-            context.SetValue(this.To, this.Value.Get(context));
-        }
+        metadata.SetArgumentsCollection(arguments);
     }
+
+    protected override void Execute(CodeActivityContext context) => context.SetValue(To, Value.Get(context));
 }

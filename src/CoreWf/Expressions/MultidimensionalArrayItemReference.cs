@@ -1,136 +1,118 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+using System.Activities.Runtime.Collections;
+using System.Collections.ObjectModel;
+using System.Windows.Markup;
+
+namespace System.Activities.Expressions;
+
+[ContentProperty("Indices")]
+public sealed class MultidimensionalArrayItemReference<TItem> : CodeActivity<Location<TItem>>
 {
-    using System;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Runtime.Serialization;
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
-    using System.Activities.Runtime.Collections;
-    using System.Windows.Markup;
+    private Collection<InArgument<int>> _indices;
 
-    [ContentProperty("Indices")]
-    public sealed class MultidimensionalArrayItemReference<TItem> : CodeActivity<Location<TItem>>
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument<Array> Array { get; set; }
+
+    [DefaultValue(null)]
+    public Collection<InArgument<int>> Indices
     {
-        private Collection<InArgument<int>> indices;
-
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument<Array> Array
+        get
         {
-            get;
-            set;
-        }
-
-        [DefaultValue(null)]
-        public Collection<InArgument<int>> Indices
-        {
-            get
+            _indices ??= new ValidatingCollection<InArgument<int>>
             {
-                if (this.indices == null)
+                // disallow null values
+                OnAddValidationCallback = item =>
                 {
-                    this.indices = new ValidatingCollection<InArgument<int>>
-                    {   
-                        // disallow null values
-                        OnAddValidationCallback = item =>
-                        {
-                            if (item == null)
-                            {
-                                throw FxTrace.Exception.ArgumentNull(nameof(item));
-                            }
-                        },
-                    };
-                }
-                return this.indices;
-            }
+                    if (item == null)
+                    {
+                        throw FxTrace.Exception.ArgumentNull(nameof(item));
+                    }
+                },
+            };
+            return _indices;
+        }
+    }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        if (Indices.Count == 0)
+        {
+            metadata.AddValidationError(SR.IndicesAreNeeded(GetType().Name, DisplayName));
         }
 
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
+        RuntimeArgument arrayArgument = new("Array", typeof(Array), ArgumentDirection.In, true);
+        metadata.Bind(Array, arrayArgument);
+        metadata.AddArgument(arrayArgument);
+
+        for (int i = 0; i < Indices.Count; i++)
         {
-            if (this.Indices.Count == 0)
-            {
-                metadata.AddValidationError(SR.IndicesAreNeeded(this.GetType().Name, this.DisplayName));
-            }
-
-            RuntimeArgument arrayArgument = new RuntimeArgument("Array", typeof(Array), ArgumentDirection.In, true);
-            metadata.Bind(this.Array, arrayArgument);
-            metadata.AddArgument(arrayArgument);
-
-            for (int i = 0; i < this.Indices.Count; i++)
-            {
-                RuntimeArgument indexArgument = new RuntimeArgument("Index_" + i, typeof(int), ArgumentDirection.In, true);
-                metadata.Bind(this.Indices[i], indexArgument);
-                metadata.AddArgument(indexArgument);
-            }
-
-            RuntimeArgument resultArgument = new RuntimeArgument("Result", typeof(Location<TItem>), ArgumentDirection.Out);
-            metadata.Bind(this.Result, resultArgument);
-            metadata.AddArgument(resultArgument);
+            RuntimeArgument indexArgument = new("Index_" + i, typeof(int), ArgumentDirection.In, true);
+            metadata.Bind(Indices[i], indexArgument);
+            metadata.AddArgument(indexArgument);
         }
 
-        protected override Location<TItem> Execute(CodeActivityContext context)
-        {
-            Array items = this.Array.Get(context);
-            
-            if (items == null)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Array", this.GetType().Name, this.DisplayName)));
-            }
+        RuntimeArgument resultArgument = new("Result", typeof(Location<TItem>), ArgumentDirection.Out);
+        metadata.Bind(Result, resultArgument);
+        metadata.AddArgument(resultArgument);
+    }
 
-            Type realItemType = items.GetType().GetElementType();
-            if (!TypeHelper.AreTypesCompatible(typeof(TItem), realItemType))
-            {
-                throw FxTrace.Exception.AsError(new InvalidCastException(SR.IncompatibleTypeForMultidimensionalArrayItemReference(typeof(TItem).Name, realItemType.Name)));
-            }
-            int[] itemIndex = new int[this.Indices.Count];
-            for (int i = 0; i < this.Indices.Count; i++)
-            {
-                itemIndex[i] = this.Indices[i].Get(context);
-            }
-            return new MultidimensionArrayLocation(items, itemIndex);
+    protected override Location<TItem> Execute(CodeActivityContext context)
+    {
+        Array items = Array.Get(context);
+
+        if (items == null)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Array", GetType().Name, DisplayName)));
         }
 
-        [DataContract]
-        internal class MultidimensionArrayLocation : Location<TItem>
+        Type realItemType = items.GetType().GetElementType();
+        if (!TypeHelper.AreTypesCompatible(typeof(TItem), realItemType))
         {
-            private Array array;
-            private int[] indices;
+            throw FxTrace.Exception.AsError(new InvalidCastException(SR.IncompatibleTypeForMultidimensionalArrayItemReference(typeof(TItem).Name, realItemType.Name)));
+        }
+        int[] itemIndex = new int[Indices.Count];
+        for (int i = 0; i < Indices.Count; i++)
+        {
+            itemIndex[i] = Indices[i].Get(context);
+        }
+        return new MultidimensionArrayLocation(items, itemIndex);
+    }
 
-            public MultidimensionArrayLocation(Array array, int[] indices)
-                : base()
-            {
-                this.array = array;
-                this.indices = indices;
-            }
+    [DataContract]
+    internal class MultidimensionArrayLocation : Location<TItem>
+    {
+        private Array _array;
+        private int[] _indices;
 
-            public override TItem Value
-            {
-                get
-                {
-                    return (TItem)this.array.GetValue(indices);
-                }
-                set
-                {
-                    this.array.SetValue(value, indices);
-                }
-            }
+        public MultidimensionArrayLocation(Array array, int[] indices)
+            : base()
+        {
+            _array = array;
+            _indices = indices;
+        }
 
-            [DataMember(Name = "array")]
-            internal Array Serializedarray
-            {
-                get { return this.array; }
-                set { this.array = value; }
-            }
+        public override TItem Value
+        {
+            get => (TItem)_array.GetValue(_indices);
+            set => _array.SetValue(value, _indices);
+        }
 
-            [DataMember(EmitDefaultValue = false, Name = "indices")]
-            internal int[] SerializedIndices
-            {
-                get { return this.indices; }
-                set { this.indices = value; }
-            }
+        [DataMember(Name = "array")]
+        internal Array Serializedarray
+        {
+            get => _array;
+            set => _array = value;
+        }
+
+        [DataMember(EmitDefaultValue = false, Name = "indices")]
+        internal int[] SerializedIndices
+        {
+            get => _indices;
+            set => _indices = value;
         }
     }
 }

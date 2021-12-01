@@ -1,557 +1,464 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Collections.ObjectModel;
+using System.Security;
+
+namespace System.Activities;
+using Internals;
+using Runtime;
+using Validation;
+
+[Fx.Tag.XamlVisible(false)]
+public sealed class RuntimeArgument : LocationReference
 {
-    using System;
-    using System.Activities.Runtime;
-    using System.Activities.Validation;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Security;
-    using System.Activities.Internals;
+    private static InternalEvaluationOrderComparer evaluationOrderComparer;
+    private Argument _boundArgument;
+    private readonly PropertyDescriptor _bindingProperty;
+    private readonly object _bindingPropertyOwner;
+    private List<string> _overloadGroupNames;
+    private int _cacheId;
+    private readonly string _name;
+    private uint _nameHash;
+    private bool _isNameHashSet;
+    private readonly Type _type;
 
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class RuntimeArgument : LocationReference
+    public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction)
+        : this(name, argumentType, direction, false) { }
+
+    public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, List<string> overloadGroupNames)
+        : this(name, argumentType, direction, false, overloadGroupNames) { }
+
+    public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired)
+        : this(name, argumentType, direction, isRequired, null) { }
+
+    public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroupNames)
     {
-        private static InternalEvaluationOrderComparer evaluationOrderComparer;
-        private Argument boundArgument;
-        private readonly PropertyDescriptor bindingProperty;
-        private readonly object bindingPropertyOwner;
-        private List<string> overloadGroupNames;
-        private int cacheId;
-        private readonly string name;
-        private UInt32 nameHash;
-        private bool isNameHashSet;
-        private readonly Type type;
-
-        public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction)
-            : this(name, argumentType, direction, false)
+        if (string.IsNullOrEmpty(name))
         {
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
         }
 
-        public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, List<string> overloadGroupNames)
-            : this(name, argumentType, direction, false, overloadGroupNames)
-        {
-        }        
+        ArgumentDirectionHelper.Validate(direction, "direction");
 
-        public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired)
-            : this(name, argumentType, direction, isRequired, null)
-        {
-        }       
+        _name = name;
+        _type = argumentType ?? throw FxTrace.Exception.ArgumentNull(nameof(argumentType));
+        Direction = direction;
+        IsRequired = isRequired;
+        _overloadGroupNames = overloadGroupNames;
+    }
 
-        public RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroupNames)
+    internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, PropertyDescriptor bindingProperty, object propertyOwner)
+        : this(name, argumentType, direction, isRequired, overloadGroups)
+    {
+        _bindingProperty = bindingProperty;
+        _bindingPropertyOwner = propertyOwner;
+    }
+
+    internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, Argument argument)
+        : this(name, argumentType, direction, isRequired, overloadGroups)
+    {
+        Fx.Assert(argument != null, "This ctor is only for arguments discovered via reflection in an IDictionary and therefore cannot be null.");
+
+        // Bind straightway since we're not dealing with a property and empty binding isn't an issue.
+        Argument.Bind(argument, this);
+    }
+
+    internal static IComparer<RuntimeArgument> EvaluationOrderComparer
+    {
+        get
         {
-            if (string.IsNullOrEmpty(name))
+            evaluationOrderComparer ??= new InternalEvaluationOrderComparer();
+            return evaluationOrderComparer;
+        }
+    }
+
+    protected override string NameCore => _name;
+
+    protected override Type TypeCore => _type;
+
+    public ArgumentDirection Direction { get; private set; }
+
+    public bool IsRequired { get; private set; }
+
+    public ReadOnlyCollection<string> OverloadGroupNames
+    {
+        get
+        {
+            _overloadGroupNames ??= new List<string>(0);
+            return new ReadOnlyCollection<string>(_overloadGroupNames);
+        }
+    }
+
+    internal Activity Owner { get; private set; }
+
+    internal bool IsInTree => Owner != null;
+
+    internal bool IsBound => _boundArgument != null;
+
+    internal bool IsEvaluationOrderSpecified => IsBound && BoundArgument.EvaluationOrder != Argument.UnspecifiedEvaluationOrder;
+
+    internal Argument BoundArgument
+    {
+        get => _boundArgument;
+        // We allow this to be set an unlimited number of times.  We also allow it
+        // to be set back to null.  
+        set => _boundArgument = value;
+    }
+
+    // returns true if this is the "Result" argument of an Activity<T>
+    internal bool IsResult
+    {
+        get
+        {
+            Fx.Assert(Owner != null, "should only be called when argument is bound");
+            return Owner.IsResultArgument(this);
+        }
+    }
+
+    internal void SetupBinding(Activity owningElement, bool createEmptyBinding)
+    {
+        if (_bindingProperty != null)
+        {
+            Argument argument = (Argument)_bindingProperty.GetValue(_bindingPropertyOwner);
+
+            if (argument == null)
             {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
+                Fx.Assert(_bindingProperty.PropertyType.IsGenericType, "We only support arguments that are generic types in our reflection walk.");
+
+                argument = (Argument)Activator.CreateInstance(_bindingProperty.PropertyType);
+                argument.WasDesignTimeNull = true;
+
+                if (createEmptyBinding && !_bindingProperty.IsReadOnly)
+                {
+                    _bindingProperty.SetValue(_bindingPropertyOwner, argument);
+                }
             }
 
-            ArgumentDirectionHelper.Validate(direction, "direction");
-
-            this.name = name;
-            this.type = argumentType ?? throw FxTrace.Exception.ArgumentNull(nameof(argumentType));
-            this.Direction = direction;
-            this.IsRequired = isRequired;            
-            this.overloadGroupNames = overloadGroupNames;
-        }
-
-        internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, PropertyDescriptor bindingProperty, object propertyOwner)
-            : this(name, argumentType, direction, isRequired, overloadGroups)
-        {
-            this.bindingProperty = bindingProperty;
-            this.bindingPropertyOwner = propertyOwner;
-        }
-
-        internal RuntimeArgument(string name, Type argumentType, ArgumentDirection direction, bool isRequired, List<string> overloadGroups, Argument argument)
-            : this(name, argumentType, direction, isRequired, overloadGroups)
-        {
-            Fx.Assert(argument != null, "This ctor is only for arguments discovered via reflection in an IDictionary and therefore cannot be null.");
-
-            // Bind straightway since we're not dealing with a property and empty binding isn't an issue.
             Argument.Bind(argument, this);
         }
-
-        internal static IComparer<RuntimeArgument> EvaluationOrderComparer
+        else if (!IsBound)
         {
-            get
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(owningElement);
+
+            PropertyDescriptor targetProperty = null;
+
+            for (int i = 0; i < properties.Count; i++)
             {
-                if (RuntimeArgument.evaluationOrderComparer == null)
+                PropertyDescriptor property = properties[i];
+
+                // We only support auto-setting the property
+                // for generic types.  Otherwise we have no
+                // guarantee that the argument returned by the
+                // property still matches the runtime argument's
+                // type.
+                if (property.Name == Name && property.PropertyType.IsGenericType)
                 {
-                    RuntimeArgument.evaluationOrderComparer = new InternalEvaluationOrderComparer();
-                }
-                return RuntimeArgument.evaluationOrderComparer;
-            }
-        }
-
-        protected override string NameCore
-        {
-            get
-            {
-                return this.name;
-            }
-        }
-
-        protected override Type TypeCore
-        {
-            get
-            {
-                return this.type;
-            }
-        }
-
-        public ArgumentDirection Direction
-        {
-            get;
-            private set;
-        }
-
-        public bool IsRequired
-        {
-            get;
-            private set;
-        }
-
-        public ReadOnlyCollection<string> OverloadGroupNames
-        {
-            get
-            {
-                if (this.overloadGroupNames == null)
-                {
-                    this.overloadGroupNames = new List<string>(0);
-                }
-
-                return new ReadOnlyCollection<string>(this.overloadGroupNames);
-            }
-        }       
-
-        internal Activity Owner
-        {
-            get;
-            private set;
-        }
-
-        internal bool IsInTree
-        {
-            get
-            {
-                return this.Owner != null;
-            }
-        }
-
-        internal bool IsBound
-        {
-            get
-            {
-                return this.boundArgument != null;
-            }
-        }
-
-        internal bool IsEvaluationOrderSpecified
-        {
-            get
-            {
-                return this.IsBound && this.BoundArgument.EvaluationOrder != Argument.UnspecifiedEvaluationOrder;
-            }
-        }
-
-        internal Argument BoundArgument
-        {
-            get
-            {
-                return this.boundArgument;
-            }
-            set
-            {
-                // We allow this to be set an unlimited number of times.  We also allow it
-                // to be set back to null.                
-                this.boundArgument = value;
-            }
-        }
-
-        // returns true if this is the "Result" argument of an Activity<T>
-        internal bool IsResult
-        {
-            get
-            {
-                Fx.Assert(this.Owner != null, "should only be called when argument is bound");
-                return this.Owner.IsResultArgument(this);
-            }
-        }
-
-        internal void SetupBinding(Activity owningElement, bool createEmptyBinding)
-        {
-            if (this.bindingProperty != null)
-            {
-                Argument argument = (Argument)this.bindingProperty.GetValue(this.bindingPropertyOwner);
-
-                if (argument == null)
-                {
-                    Fx.Assert(this.bindingProperty.PropertyType.IsGenericType, "We only support arguments that are generic types in our reflection walk.");
-
-                    argument = (Argument) Activator.CreateInstance(this.bindingProperty.PropertyType);
-                    argument.WasDesignTimeNull = true;
-
-                    if (createEmptyBinding && !this.bindingProperty.IsReadOnly)
+                    if (ActivityUtilities.TryGetArgumentDirectionAndType(property.PropertyType, out ArgumentDirection direction, out Type argumentType))
                     {
-                        this.bindingProperty.SetValue(this.bindingPropertyOwner, argument);
-                    }
-                }
-
-                Argument.Bind(argument, this);
-            }
-            else if (!this.IsBound)
-            {
-                PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(owningElement);
-
-                PropertyDescriptor targetProperty = null;
-
-                for (int i = 0; i < properties.Count; i++)
-                {
-                    PropertyDescriptor property = properties[i];
-
-                    // We only support auto-setting the property
-                    // for generic types.  Otherwise we have no
-                    // guarantee that the argument returned by the
-                    // property still matches the runtime argument's
-                    // type.
-                    if (property.Name == this.Name && property.PropertyType.IsGenericType)
-                    {
-                        if (ActivityUtilities.TryGetArgumentDirectionAndType(property.PropertyType, out ArgumentDirection direction, out Type argumentType))
+                        if (Type == argumentType && Direction == direction)
                         {
-                            if (this.Type == argumentType && this.Direction == direction)
-                            {
-                                targetProperty = property;
-                                break;
-                            }
+                            targetProperty = property;
+                            break;
                         }
                     }
                 }
+            }
 
-                Argument argument = null;
+            Argument argument = null;
 
+            if (targetProperty != null)
+            {
+                argument = (Argument)targetProperty.GetValue(owningElement);
+            }
+
+            if (argument == null)
+            {
                 if (targetProperty != null)
                 {
-                    argument = (Argument)targetProperty.GetValue(owningElement);
-                }
-
-                if (argument == null)
-                {
-                    if (targetProperty != null)
+                    if (targetProperty.PropertyType.IsGenericType)
                     {
-                        if (targetProperty.PropertyType.IsGenericType)
-                        {
-                            argument = (Argument)Activator.CreateInstance(targetProperty.PropertyType);
-                        }
-                        else
-                        {
-                            argument = ActivityUtilities.CreateArgument(this.Type, this.Direction);
-                        }
-
+                        argument = (Argument)Activator.CreateInstance(targetProperty.PropertyType);
                     }
                     else
                     {
-                        argument = ActivityUtilities.CreateArgument(this.Type, this.Direction);
+                        argument = ActivityUtilities.CreateArgument(Type, Direction);
                     }
 
-                    argument.WasDesignTimeNull = true;
-
-                    if (targetProperty != null && createEmptyBinding && !targetProperty.IsReadOnly)
-                    {
-                        targetProperty.SetValue(owningElement, argument);
-                    }
+                }
+                else
+                {
+                    argument = ActivityUtilities.CreateArgument(Type, Direction);
                 }
 
-                Argument.Bind(argument, this);
+                argument.WasDesignTimeNull = true;
+
+                if (targetProperty != null && createEmptyBinding && !targetProperty.IsReadOnly)
+                {
+                    targetProperty.SetValue(owningElement, argument);
+                }
             }
 
-            Fx.Assert(this.IsBound, "We should always be bound when exiting this method.");
+            Argument.Bind(argument, this);
         }
 
-        internal bool InitializeRelationship(Activity parent, ref IList<ValidationError> validationErrors)
+        Fx.Assert(IsBound, "We should always be bound when exiting this method.");
+    }
+
+    internal bool InitializeRelationship(Activity parent, ref IList<ValidationError> validationErrors)
+    {
+        if (_cacheId == parent.CacheId)
         {
-            if (this.cacheId == parent.CacheId)
+            // We're part of the same tree walk
+            if (Owner == parent)
             {
-                // We're part of the same tree walk
-                if (this.Owner == parent)
-                {
-                    ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.ArgumentIsAddedMoreThanOnce(this.Name, this.Owner.DisplayName)));
-
-                    // Get out early since we've already initialized this argument.
-                    return false;
-                }
-
-                Fx.Assert(this.Owner != null, "We must have already assigned an owner.");
-
-                ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.ArgumentAlreadyInUse(this.Name, this.Owner.DisplayName, parent.DisplayName)));
+                ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.ArgumentIsAddedMoreThanOnce(Name, Owner.DisplayName)));
 
                 // Get out early since we've already initialized this argument.
                 return false;
             }
 
-            if (this.boundArgument != null && this.boundArgument.RuntimeArgument != this)
+            Fx.Assert(Owner != null, "We must have already assigned an owner.");
+
+            ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.ArgumentAlreadyInUse(Name, Owner.DisplayName, parent.DisplayName)));
+
+            // Get out early since we've already initialized this argument.
+            return false;
+        }
+
+        if (_boundArgument != null && _boundArgument.RuntimeArgument != this)
+        {
+            ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.RuntimeArgumentBindingInvalid(Name, _boundArgument.RuntimeArgument.Name)));
+
+            return false;
+        }
+
+        Owner = parent;
+        _cacheId = parent.CacheId;
+
+        if (_boundArgument != null)
+        {
+            _boundArgument.Validate(parent, ref validationErrors);
+
+            if (!BoundArgument.IsEmpty)
             {
-                ActivityUtilities.Add(ref validationErrors, ProcessViolation(parent, SR.RuntimeArgumentBindingInvalid(this.Name, this.boundArgument.RuntimeArgument.Name)));
-
-                return false;
+                return BoundArgument.Expression.InitializeRelationship(this, ref validationErrors);
             }
+        }
 
-            this.Owner = parent;
-            this.cacheId = parent.CacheId;
+        return true;
+    }
 
-            if (this.boundArgument != null)
-            {
-                this.boundArgument.Validate(parent, ref validationErrors);
+    internal bool TryPopulateValue(LocationEnvironment targetEnvironment, ActivityInstance targetActivityInstance, ActivityExecutor executor, object argumentValueOverride, Location resultLocation, bool skipFastPath)
+    {
+        // We populate values in the following order:
+        //   Override
+        //   Binding
+        //   Default
 
-                if (!this.BoundArgument.IsEmpty)
-                {
-                    return this.BoundArgument.Expression.InitializeRelationship(this, ref validationErrors);
-                }
-            }
+        Fx.Assert(IsBound, "We should ALWAYS be bound at runtime.");
+        if (argumentValueOverride != null)
+        {
+            Fx.Assert(
+                resultLocation == null,
+                "We should never have both an override and a result location unless some day " +
+                "we decide to allow overrides for argument expressions.  If that day comes, we " +
+                "need to deal with potential issues around someone providing and override for " +
+                "a result - with the current code it wouldn't end up in the resultLocation.");
 
+            Location location = _boundArgument.CreateDefaultLocation();
+            targetEnvironment.Declare(this, location, targetActivityInstance);
+            location.Value = argumentValueOverride;
             return true;
         }
-
-        internal bool TryPopulateValue(LocationEnvironment targetEnvironment, ActivityInstance targetActivityInstance, ActivityExecutor executor, object argumentValueOverride, Location resultLocation, bool skipFastPath)
+        else if (!_boundArgument.IsEmpty)
         {
-            // We populate values in the following order:
-            //   Override
-            //   Binding
-            //   Default
-
-            Fx.Assert(this.IsBound, "We should ALWAYS be bound at runtime.");
-            if (argumentValueOverride != null)
+            if (skipFastPath)
             {
-                Fx.Assert(
-                    resultLocation == null,
-                    "We should never have both an override and a result location unless some day " +
-                    "we decide to allow overrides for argument expressions.  If that day comes, we " +
-                    "need to deal with potential issues around someone providing and override for " +
-                    "a result - with the current code it wouldn't end up in the resultLocation.");
-
-                Location location = this.boundArgument.CreateDefaultLocation();
-                targetEnvironment.Declare(this, location, targetActivityInstance);
-                location.Value = argumentValueOverride;
-                return true;
-            }
-            else if (!this.boundArgument.IsEmpty)
-            {
-                if (skipFastPath)
-                {
-                    this.BoundArgument.Declare(targetEnvironment, targetActivityInstance);
-                    return false;
-                }
-                else
-                {
-                    return this.boundArgument.TryPopulateValue(targetEnvironment, targetActivityInstance, executor);
-                }
-            }
-            else if (resultLocation != null && this.IsResult)
-            {
-                targetEnvironment.Declare(this, resultLocation, targetActivityInstance);
-                return true;
+                BoundArgument.Declare(targetEnvironment, targetActivityInstance);
+                return false;
             }
             else
             {
-                Location location = this.boundArgument.CreateDefaultLocation();
-                targetEnvironment.Declare(this, location, targetActivityInstance);
-                return true;
+                return _boundArgument.TryPopulateValue(targetEnvironment, targetActivityInstance, executor);
             }
         }
-
-        public override Location GetLocation(ActivityContext context)
+        else if (resultLocation != null && IsResult)
         {
-            if (context == null)
+            targetEnvironment.Declare(this, resultLocation, targetActivityInstance);
+            return true;
+        }
+        else
+        {
+            Location location = _boundArgument.CreateDefaultLocation();
+            targetEnvironment.Declare(this, location, targetActivityInstance);
+            return true;
+        }
+    }
+
+    public override Location GetLocation(ActivityContext context)
+    {
+        if (context == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(context));
+        }
+
+        // No need to call context.ThrowIfDisposed explicitly since all
+        // the methods/properties on the context will perform that check.
+
+        ThrowIfNotInTree();
+
+        Location location;
+        if (!context.AllowChainedEnvironmentAccess)
+        {
+            if (!ReferenceEquals(Owner, context.Activity))
             {
-                throw FxTrace.Exception.ArgumentNull(nameof(context));
+                throw FxTrace.Exception.AsError(
+                    new InvalidOperationException(SR.CanOnlyGetOwnedArguments(
+                        context.Activity.DisplayName,
+                        Name,
+                        Owner.DisplayName)));
+
             }
 
-            // No need to call context.ThrowIfDisposed explicitly since all
-            // the methods/properties on the context will perform that check.
-
-            ThrowIfNotInTree();
-
-            Location location;
-            if (!context.AllowChainedEnvironmentAccess)
+            if (ReferenceEquals(context.Environment.Definition, context.Activity))
             {
-                if (!object.ReferenceEquals(this.Owner, context.Activity))
+                if (!context.Environment.TryGetLocation(Id, out location))
                 {
-                    throw FxTrace.Exception.AsError(
-                        new InvalidOperationException(SR.CanOnlyGetOwnedArguments(
-                            context.Activity.DisplayName,
-                            this.Name,
-                            this.Owner.DisplayName)));
-
-                }
-
-                if (object.ReferenceEquals(context.Environment.Definition, context.Activity))
-                {
-                    if (!context.Environment.TryGetLocation(this.Id, out location))
-                    {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
-                    }
-                }
-                else
-                {
-                    Fx.Assert(this.Owner.IsFastPath, "If an activity defines an argument, then it should define an environment, unless it's SkipArgumentResolution");
-                    Fx.Assert(this.IsResult, "The only user-accessible argument that a SkipArgumentResolution activity can have is its result");
-                    // We need to give the activity access to its result argument because, if it has
-                    // no other arguments, it might have been implicitly opted into SkipArgumentResolution
-                    location = context.GetIgnorableResultLocation(this);
+                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(Name)));
                 }
             }
             else
             {
-                Fx.Assert(object.ReferenceEquals(this.Owner, context.Activity) || object.ReferenceEquals(this.Owner, context.Activity.MemberOf.Owner),
-                    "This should have been validated by the activity which set AllowChainedEnvironmentAccess.");
+                Fx.Assert(Owner.IsFastPath, "If an activity defines an argument, then it should define an environment, unless it's SkipArgumentResolution");
+                Fx.Assert(IsResult, "The only user-accessible argument that a SkipArgumentResolution activity can have is its result");
+                // We need to give the activity access to its result argument because, if it has
+                // no other arguments, it might have been implicitly opted into SkipArgumentResolution
+                location = context.GetIgnorableResultLocation(this);
+            }
+        }
+        else
+        {
+            Fx.Assert(ReferenceEquals(Owner, context.Activity) || ReferenceEquals(Owner, context.Activity.MemberOf.Owner),
+                "This should have been validated by the activity which set AllowChainedEnvironmentAccess.");
 
-                if (!context.Environment.TryGetLocation(this.Id, this.Owner, out location))
+            if (!context.Environment.TryGetLocation(Id, Owner, out location))
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(Name)));
+            }
+        }
+
+        return location;
+    }
+
+    // Soft-Link: This method is referenced through reflection by
+    // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
+    // file if the signature changes.
+    public object Get(ActivityContext context) => context.GetValue<object>(this);
+
+    // Soft-Link: This method is referenced through reflection by
+    // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
+    // file if the signature changes.
+    public T Get<T>(ActivityContext context) => context.GetValue<T>(this);
+
+    public void Set(ActivityContext context, object value) => context.SetValue(this, value);
+
+    // This method exists for the Debugger
+    internal Location InternalGetLocation(LocationEnvironment environment)
+    {
+        Fx.Assert(IsInTree, "Argument must be opened");
+
+        if (!environment.TryGetLocation(Id, Owner, out Location location))
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(Name)));
+        }
+        return location;
+    }
+
+    private ValidationError ProcessViolation(Activity owner, string errorMessage)
+    {
+        return new ValidationError(errorMessage, false, Name)
+        {
+            Source = owner,
+            Id = owner.Id
+        };
+    }
+
+    internal void ThrowIfNotInTree()
+    {
+        if (!IsInTree)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeArgumentNotOpen(Name)));
+        }
+    }
+
+    private void EnsureHash()
+    {
+        if (!_isNameHashSet)
+        {
+            _nameHash = CRCHashCode.Calculate(Name);
+            _isNameHashSet = true;
+        }
+    }
+
+    // This class implements iSCSI CRC-32 check outlined in IETF RFC 3720.
+    // it's marked internal so that DataModel CIT can access it
+    internal static class CRCHashCode
+    {
+        // Reflected value for iSCSI CRC-32 polynomial 0x1edc6f41
+        private const uint Polynomial = 0x82f63b78;
+
+        [Fx.Tag.SecurityNote(Critical = "Critical because it is marked unsafe.",
+            Safe = "Safe because we aren't leaking anything. We are just using pointers to get into the string.")]
+        [SecuritySafeCritical]
+        public unsafe static uint Calculate(string s)
+        {
+            uint result = 0xffffffff;
+            int byteLength = s.Length * sizeof(char);
+
+            fixed (char* pString = s)
+            {
+                byte* pbString = (byte*)pString;
+                for (int i = 0; i < byteLength; i++)
                 {
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
+                    result ^= pbString[i];
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
+                    result = ((result & 1) * Polynomial) ^ (result >> 1);
                 }
             }
-
-            return location;
+            return ~result;
         }
 
-        // Soft-Link: This method is referenced through reflection by
-        // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
-        // file if the signature changes.
-        public object Get(ActivityContext context)
-        {
-            return context.GetValue<object>(this);
-        }
+    }
 
-        // Soft-Link: This method is referenced through reflection by
-        // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
-        // file if the signature changes.
-        public T Get<T>(ActivityContext context)
+    private class InternalEvaluationOrderComparer : IComparer<RuntimeArgument>
+    {
+        public int Compare(RuntimeArgument x, RuntimeArgument y)
         {
-            return context.GetValue<T>(this);
-        }
-
-        public void Set(ActivityContext context, object value)
-        {
-            context.SetValue(this, value);
-        }
-
-        // This method exists for the Debugger
-        internal Location InternalGetLocation(LocationEnvironment environment)
-        {
-            Fx.Assert(this.IsInTree, "Argument must be opened");
-
-            if (!environment.TryGetLocation(this.Id, this.Owner, out Location location))
+            if (!x.IsEvaluationOrderSpecified)
             {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentDoesNotExistInEnvironment(this.Name)));
+                return y.IsEvaluationOrderSpecified ? -1 : CompareNameHashes(x, y);
             }
-            return location;
-        }
-
-        private ValidationError ProcessViolation(Activity owner, string errorMessage)
-        {
-            return new ValidationError(errorMessage, false, this.Name)
+            else
             {
-                Source = owner,
-                Id = owner.Id
-            };
-        }
-
-        internal void ThrowIfNotInTree()
-        {
-            if (!this.IsInTree)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.RuntimeArgumentNotOpen(this.Name)));
+                return y.IsEvaluationOrderSpecified ? x.BoundArgument.EvaluationOrder.CompareTo(y.BoundArgument.EvaluationOrder) : 1;
             }
         }
 
-        private void EnsureHash()
+        private static int CompareNameHashes(RuntimeArgument x, RuntimeArgument y)
         {
-            if (!this.isNameHashSet)
-            {
-                this.nameHash = CRCHashCode.Calculate(this.Name);
-                this.isNameHashSet = true;
-            }
-        }
+            x.EnsureHash();
+            y.EnsureHash();
 
-        // This class implements iSCSI CRC-32 check outlined in IETF RFC 3720.
-        // it's marked internal so that DataModel CIT can access it
-        internal static class CRCHashCode
-        {
-            // Reflected value for iSCSI CRC-32 polynomial 0x1edc6f41
-            private const UInt32 polynomial = 0x82f63b78;
-
-            [Fx.Tag.SecurityNote(Critical = "Critical because it is marked unsafe.",
-                Safe = "Safe because we aren't leaking anything. We are just using pointers to get into the string.")]
-            [SecuritySafeCritical]
-            public unsafe static UInt32 Calculate(string s)
-            {
-                UInt32 result = 0xffffffff;
-                int byteLength = s.Length * sizeof(char);
-
-                fixed (char* pString = s)
-                {
-                    byte* pbString = (byte*)pString;
-                    for (int i = 0; i < byteLength; i++)
-                    {
-                        result ^= pbString[i];
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                        result = ((result & 1) * polynomial) ^ (result >> 1);
-                    }
-                }
-                return ~result;
-            }
-
-        }
-
-        private class InternalEvaluationOrderComparer : IComparer<RuntimeArgument>
-        {
-            public int Compare(RuntimeArgument x, RuntimeArgument y)
-            {
-                if (!x.IsEvaluationOrderSpecified)
-                {
-                    if (y.IsEvaluationOrderSpecified)
-                    {
-                        return -1;
-                    }
-                    else
-                    {
-                        return CompareNameHashes(x, y);
-                    }
-                }
-                else
-                {
-                    if (y.IsEvaluationOrderSpecified)
-                    {
-                        return x.BoundArgument.EvaluationOrder.CompareTo(y.BoundArgument.EvaluationOrder);
-                    }
-                    else
-                    {
-                        return 1;
-                    }
-                }
-            }
-
-            private int CompareNameHashes(RuntimeArgument x, RuntimeArgument y)
-            {
-                x.EnsureHash();
-                y.EnsureHash();
-
-                if (x.nameHash != y.nameHash)
-                {
-                    return x.nameHash.CompareTo(y.nameHash);
-                }
-                else
-                {
-                    return string.Compare(x.Name, y.Name, StringComparison.CurrentCulture);
-                }
-            }
+            return x._nameHash != y._nameHash
+                ? x._nameHash.CompareTo(y._nameHash)
+                : string.Compare(x.Name, y.Name, StringComparison.CurrentCulture);
         }
     }
 }

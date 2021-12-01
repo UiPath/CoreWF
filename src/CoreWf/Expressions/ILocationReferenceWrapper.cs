@@ -1,12 +1,11 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-namespace System.Activities.Expressions
+namespace System.Activities.Expressions;
+
+internal interface ILocationReferenceWrapper
 {
-    internal interface ILocationReferenceWrapper
+    LocationReference LocationReference
     {
-        LocationReference LocationReference
-        {
-            get;
-        }
+        get;
     }
 }

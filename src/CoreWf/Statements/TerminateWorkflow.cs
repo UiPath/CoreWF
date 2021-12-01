@@ -1,64 +1,60 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Collections.ObjectModel;
+
+namespace System.Activities.Statements;
+
+public sealed class TerminateWorkflow : NativeActivity
 {
-    using System;
-    using System.Activities;
-    using System.ComponentModel;
-    using System.Collections.ObjectModel;
+    public TerminateWorkflow() { }
 
-    public sealed class TerminateWorkflow : NativeActivity
+    [DefaultValue(null)]
+    public InArgument<string> Reason { get; set; }
+
+    [DefaultValue(null)]
+    public InArgument<Exception> Exception { get; set; }
+
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
-        public TerminateWorkflow() { }
+        Collection<RuntimeArgument> arguments = new();
 
-        [DefaultValue(null)]
-        public InArgument<string> Reason { get; set; }
+        RuntimeArgument reasonArgument = new("Reason", typeof(string), ArgumentDirection.In, false);
+        metadata.Bind(Reason, reasonArgument);
 
-        [DefaultValue(null)]
-        public InArgument<Exception> Exception { get; set; }
+        RuntimeArgument exceptionArgument = new("Exception", typeof(Exception), ArgumentDirection.In, false);
+        metadata.Bind(Exception, exceptionArgument);
 
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        arguments.Add(reasonArgument);
+        arguments.Add(exceptionArgument);
+
+        metadata.SetArgumentsCollection(arguments);
+
+        if ((Reason == null || Reason.IsEmpty) &&
+            (Exception == null || Exception.IsEmpty))
         {
-            Collection<RuntimeArgument> arguments = new Collection<RuntimeArgument>();
-
-            RuntimeArgument reasonArgument = new RuntimeArgument("Reason", typeof(string), ArgumentDirection.In, false);
-            metadata.Bind(this.Reason, reasonArgument);
-
-            RuntimeArgument exceptionArgument = new RuntimeArgument("Exception", typeof(Exception), ArgumentDirection.In, false);
-            metadata.Bind(this.Exception, exceptionArgument);
-
-            arguments.Add(reasonArgument);
-            arguments.Add(exceptionArgument);
-
-            metadata.SetArgumentsCollection(arguments);
-
-            if ((this.Reason == null || this.Reason.IsEmpty) &&
-                (this.Exception == null || this.Exception.IsEmpty))
-            {
-                metadata.AddValidationError(SR.OneOfTwoPropertiesMustBeSet("Reason", "Exception", "TerminateWorkflow", this.DisplayName));
-            }
+            metadata.AddValidationError(SR.OneOfTwoPropertiesMustBeSet("Reason", "Exception", "TerminateWorkflow", DisplayName));
         }
+    }
 
-        protected override void Execute(NativeActivityContext context)
+    protected override void Execute(NativeActivityContext context)
+    {
+        // If Reason is provided, we'll create a WorkflowApplicationTerminatedException from
+        // it, wrapping Exception if it is also provided. Otherwise just use Exception.
+        // If neither is provided just throw a new WorkflowTerminatedException.
+        string reason = Reason.Get(context);
+        Exception exception = Exception.Get(context);
+        if (!string.IsNullOrEmpty(reason))
         {
-            // If Reason is provided, we'll create a WorkflowApplicationTerminatedException from
-            // it, wrapping Exception if it is also provided. Otherwise just use Exception.
-            // If neither is provided just throw a new WorkflowTerminatedException.
-            string reason = Reason.Get(context);
-            Exception exception = Exception.Get(context);
-            if (!string.IsNullOrEmpty(reason))
-            {
-                context.Terminate(new WorkflowTerminatedException(reason, exception));
-            }
-            else if (exception != null)
-            {
-                context.Terminate(exception);
-            }
-            else
-            {
-                context.Terminate(new WorkflowTerminatedException());
-            }
+            context.Terminate(new WorkflowTerminatedException(reason, exception));
+        }
+        else if (exception != null)
+        {
+            context.Terminate(exception);
+        }
+        else
+        {
+            context.Terminate(new WorkflowTerminatedException());
         }
     }
 }

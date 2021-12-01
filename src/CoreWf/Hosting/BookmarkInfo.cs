@@ -1,82 +1,62 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Hosting
+using System.Activities.Runtime;
+
+namespace System.Activities.Hosting;
+
+[DataContract]
+[Fx.Tag.XamlVisible(false)]
+public sealed class BookmarkInfo
 {
-    using System.Runtime.Serialization;
-    using System.Activities.Runtime;
+    private string _bookmarkName;
+    private BookmarkScopeInfo _scopeInfo;
+    private string _ownerDisplayName;
 
-    [DataContract]
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class BookmarkInfo
+    internal BookmarkInfo() { }
+    internal BookmarkInfo(string bookmarkName, string ownerDisplayName, BookmarkScopeInfo scopeInfo)
     {
-        private string bookmarkName;
-        private BookmarkScopeInfo scopeInfo;
-        private string ownerDisplayName;
+        BookmarkName = bookmarkName;
+        OwnerDisplayName = ownerDisplayName;
+        ScopeInfo = scopeInfo;
+    }
 
-        internal BookmarkInfo() { }
-        internal BookmarkInfo(string bookmarkName, string ownerDisplayName, BookmarkScopeInfo scopeInfo)
-        {
-            this.BookmarkName = bookmarkName;
-            this.OwnerDisplayName = ownerDisplayName;
-            this.ScopeInfo = scopeInfo;
-        }
-        
-        public string BookmarkName
-        {
-            get
-            {
-                return this.bookmarkName;
-            }
-            private set
-            {
-                this.bookmarkName = value;
-            }
-        }
-        
-        public string OwnerDisplayName
-        {
-            get
-            {
-                return this.ownerDisplayName;
-            }
-            private set
-            {
-                this.ownerDisplayName = value;
-            }
-        }
-        
-        public BookmarkScopeInfo ScopeInfo
-        {
-            get
-            {
-                return this.scopeInfo;
-            }
-            private set
-            {
-                this.scopeInfo = value;
-            }
-        }
+    public string BookmarkName
+    {
+        get => _bookmarkName;
+        private set => _bookmarkName = value;
+    }
 
-        [DataMember(Name = "BookmarkName")]
-        internal string SerializedBookmarkName
-        {
-            get { return this.BookmarkName; }
-            set { this.BookmarkName = value; }
-        }
+    public string OwnerDisplayName
+    {
+        get => _ownerDisplayName;
+        private set => _ownerDisplayName = value;
+    }
 
-        [DataMember(EmitDefaultValue = false, Name = "OwnerDisplayName")]
-        internal string SerializedOwnerDisplayName
-        {
-            get { return this.OwnerDisplayName; }
-            set { this.OwnerDisplayName = value; }
-        }
+    public BookmarkScopeInfo ScopeInfo
+    {
+        get => _scopeInfo;
+        private set => _scopeInfo = value;
+    }
 
-        [DataMember(EmitDefaultValue = false, Name = "ScopeInfo")]
-        internal BookmarkScopeInfo SerializedScopeInfo
-        {
-            get { return this.ScopeInfo; }
-            set { this.ScopeInfo = value; }
-        }
+    [DataMember(Name = "BookmarkName")]
+    internal string SerializedBookmarkName
+    {
+        get => BookmarkName;
+        set => BookmarkName = value;
+    }
+
+    [DataMember(EmitDefaultValue = false, Name = "OwnerDisplayName")]
+    internal string SerializedOwnerDisplayName
+    {
+        get => OwnerDisplayName;
+        set => OwnerDisplayName = value;
+    }
+
+    [DataMember(EmitDefaultValue = false, Name = "ScopeInfo")]
+    internal BookmarkScopeInfo SerializedScopeInfo
+    {
+        get => ScopeInfo;
+        set => ScopeInfo = value;
     }
 }

@@ -1,217 +1,205 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+using System.Activities.Runtime.Collections;
+using System.Collections.ObjectModel;
+using System.Reflection;
+using System.Threading;
+using System.Windows.Markup;
+
+namespace System.Activities.Expressions;
+
+[ContentProperty("Indices")]
+public sealed class IndexerReference<TOperand, TItem> : CodeActivity<Location<TItem>>
 {
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Reflection;
-    using System.Activities.Runtime.Collections;
-    using System.Runtime.Serialization;
-    using System.Windows.Markup;
-    using System.Threading;
-    using System;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private Collection<InArgument> _indices;
+    private MethodInfo _getMethod;
+    private MethodInfo _setMethod;
+    private Func<object, object[], object> _getFunc;
+    private Func<object, object[], object> _setFunc;
+    private static readonly MruCache<MethodInfo, Func<object, object[], object>> funcCache =
+        new(MethodCallExpressionHelper.FuncCacheCapacity);
+    private static readonly ReaderWriterLockSlim locker = new();
 
-    [ContentProperty("Indices")]
-    public sealed class IndexerReference<TOperand, TItem> : CodeActivity<Location<TItem>>
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument<TOperand> Operand { get; set; }
+
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public Collection<InArgument> Indices
     {
-        private Collection<InArgument> indices;
-        private MethodInfo getMethod;
-        private MethodInfo setMethod;
-        private Func<object, object[], object> getFunc;
-        private Func<object, object[], object> setFunc;
-        private static readonly MruCache<MethodInfo, Func<object, object[], object>> funcCache =
-            new MruCache<MethodInfo, Func<object, object[], object>>(MethodCallExpressionHelper.FuncCacheCapacity);
-        private static readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
-
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument<TOperand> Operand
+        get
         {
-            get;
-            set;
+            _indices ??= new ValidatingCollection<InArgument>
+            {
+                // disallow null values
+                OnAddValidationCallback = item =>
+                {
+                    if (item == null)
+                    {
+                        throw FxTrace.Exception.ArgumentNull(nameof(item));
+                    }
+                },
+            };
+            return _indices;
+        }
+    }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        MethodInfo oldGetMethod = _getMethod;
+        MethodInfo oldSetMethod = _setMethod;
+
+        if (typeof(TOperand).IsValueType)
+        {
+            metadata.AddValidationError(SR.TargetTypeIsValueType(GetType().Name, DisplayName));
+        }
+        if (Indices.Count == 0)
+        {
+            metadata.AddValidationError(SR.IndicesAreNeeded(GetType().Name, DisplayName));
+        }
+        else
+        {
+            IndexerHelper.CacheMethod<TOperand, TItem>(Indices, ref _getMethod, ref _setMethod);
+            if (_setMethod == null)
+            {
+                metadata.AddValidationError(SR.SpecialMethodNotFound("set_Item", typeof(TOperand).Name));
+            }
         }
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public Collection<InArgument> Indices
+        RuntimeArgument operandArgument = new("Operand", typeof(TOperand), ArgumentDirection.In, true);
+        metadata.Bind(Operand, operandArgument);
+        metadata.AddArgument(operandArgument);
+
+        IndexerHelper.OnGetArguments(Indices, Result, metadata);
+        if (MethodCallExpressionHelper.NeedRetrieve(_getMethod, oldGetMethod, _getFunc))
+        {
+            _getFunc = MethodCallExpressionHelper.GetFunc(metadata, _getMethod, funcCache, locker);
+        }
+        if (MethodCallExpressionHelper.NeedRetrieve(_setMethod, oldSetMethod, _setFunc))
+        {
+            _setFunc = MethodCallExpressionHelper.GetFunc(metadata, _setMethod, funcCache, locker);
+        }
+    }
+
+    protected override Location<TItem> Execute(CodeActivityContext context)
+    {
+        object[] indicesValue = new object[Indices.Count];
+
+        for (int i = 0; i < Indices.Count; i++)
+        {
+            indicesValue[i] = Indices[i].Get(context);
+        }
+
+        TOperand operandValue = Operand.Get(context);
+        if (operandValue == null)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", GetType().Name, DisplayName)));
+        }
+
+        return new IndexerLocation(operandValue, indicesValue, _getMethod, _setMethod, _getFunc, _setFunc);
+    }
+
+
+    [DataContract]
+    internal class IndexerLocation : Location<TItem>
+    {
+        private TOperand _operand;
+        private object[] _indices;
+        private object[] _parameters;
+        private MethodInfo _getMethod;
+        private MethodInfo _setMethod;
+        private readonly Func<object, object[], object> _getFunc;
+        private readonly Func<object, object[], object> _setFunc;
+
+        public IndexerLocation(TOperand operand, object[] indices, MethodInfo getMethod, MethodInfo setMethod,
+            Func<object, object[], object> getFunc, Func<object, object[], object> setFunc)
+            : base()
+        {
+            _operand = operand;
+            _indices = indices;
+            _getMethod = getMethod;
+            _setMethod = setMethod;
+            _getFunc = getFunc;
+            _setFunc = setFunc;
+        }
+
+        public override TItem Value
         {
             get
             {
-                if (this.indices == null)
+                Fx.Assert(_operand != null, "operand must not be null");
+                Fx.Assert(_indices != null, "indices must not be null");
+                if (_getFunc != null)
                 {
-                    this.indices = new ValidatingCollection<InArgument>
-                    {   
-                        // disallow null values
-                        OnAddValidationCallback = item =>
-                        {
-                            if (item == null)
-                            {
-                                throw FxTrace.Exception.ArgumentNull(nameof(item));
-                            }
-                        },
-                    };
+                    return (TItem)_getFunc(_operand, _indices);
                 }
-                return this.indices;
+                else if (_getMethod != null)
+                {
+                    return (TItem)_getMethod.Invoke(_operand, _indices);
+                }
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SpecialMethodNotFound("get_Item", typeof(TOperand).Name)));
+            }
+            set
+            {
+                Fx.Assert(_setMethod != null, "setMethod must not be null");
+                Fx.Assert(_operand != null, "operand must not be null");
+                Fx.Assert(_indices != null, "indices must not be null");
+                if (_parameters == null)
+                {
+                    _parameters = new object[_indices.Length + 1];
+                    for (int i = 0; i < _indices.Length; i++)
+                    {
+                        _parameters[i] = _indices[i];
+                    }
+                    _parameters[^1] = value;
+                }
+                if (_setFunc != null)
+                {
+                    _setFunc(_operand, _parameters);
+                }
+                else
+                {
+                    _setMethod.Invoke(_operand, _parameters);
+                }
             }
         }
 
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
+        [DataMember(EmitDefaultValue = false, Name = "operand")]
+        internal TOperand SerializedOperand
         {
-            MethodInfo oldGetMethod = this.getMethod;
-            MethodInfo oldSetMethod = this.setMethod;
-
-            if (typeof(TOperand).IsValueType)
-            {
-                metadata.AddValidationError(SR.TargetTypeIsValueType(this.GetType().Name, this.DisplayName));
-            }
-            if (this.Indices.Count == 0)
-            {
-                metadata.AddValidationError(SR.IndicesAreNeeded(this.GetType().Name, this.DisplayName));
-            }
-            else
-            {
-                IndexerHelper.CacheMethod<TOperand, TItem>(this.Indices, ref this.getMethod, ref this.setMethod);
-                if (this.setMethod == null)
-                {
-                    metadata.AddValidationError(SR.SpecialMethodNotFound("set_Item", typeof(TOperand).Name));
-                }
-            }
-           
-            RuntimeArgument operandArgument = new RuntimeArgument("Operand", typeof(TOperand), ArgumentDirection.In, true);
-            metadata.Bind(this.Operand, operandArgument);
-            metadata.AddArgument(operandArgument);
-            
-            IndexerHelper.OnGetArguments<TItem>(this.Indices, this.Result, metadata);
-             if (MethodCallExpressionHelper.NeedRetrieve(this.getMethod, oldGetMethod, this.getFunc))
-            {
-                this.getFunc = MethodCallExpressionHelper.GetFunc(metadata, this.getMethod, funcCache, locker);
-            }
-            if (MethodCallExpressionHelper.NeedRetrieve(this.setMethod, oldSetMethod, this.setFunc))
-            {
-                this.setFunc = MethodCallExpressionHelper.GetFunc(metadata, this.setMethod, funcCache, locker);
-            }
+            get => _operand;
+            set => _operand = value;
         }
 
-        protected override Location<TItem> Execute(CodeActivityContext context)
+        [DataMember(EmitDefaultValue = false, Name = "indices")]
+        internal object[] SerializedIndices
         {
-            object[] indicesValue = new object[this.Indices.Count];
-
-            for (int i = 0; i < this.Indices.Count; i++)
-            {
-                indicesValue[i] = this.Indices[i].Get(context);
-            }
-
-            TOperand operandValue = this.Operand.Get(context);
-            if (operandValue == null)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
-            }
-
-            return new IndexerLocation(operandValue, indicesValue, this.getMethod, this.setMethod, this.getFunc, this.setFunc);
+            get => _indices;
+            set => _indices = value;
         }
 
-        
-        [DataContract]
-        internal class IndexerLocation : Location<TItem>
+        [DataMember(EmitDefaultValue = false, Name = "parameters")]
+        internal object[] SerializedParameters
         {
-            private TOperand operand;
-            private object[] indices;
-            private object[] parameters;
-            private MethodInfo getMethod;
-            private MethodInfo setMethod;
-            private readonly Func<object, object[], object> getFunc;
-            private readonly Func<object, object[], object> setFunc;
+            get => _parameters;
+            set => _parameters = value;
+        }
 
-            public IndexerLocation(TOperand operand, object[] indices, MethodInfo getMethod, MethodInfo setMethod, 
-                Func<object, object[], object> getFunc, Func<object, object[], object> setFunc)
-                : base()
-            {
-                this.operand = operand;
-                this.indices = indices;
-                this.getMethod = getMethod;
-                this.setMethod = setMethod;
-                this.getFunc = getFunc;
-                this.setFunc = setFunc;
-            }
+        [DataMember(EmitDefaultValue = false, Name = "getMethod")]
+        internal MethodInfo SerializedGetMethod
+        {
+            get => _getMethod;
+            set => _getMethod = value;
+        }
 
-            public override TItem Value
-            {
-                get
-                {
-                    Fx.Assert(this.operand != null, "operand must not be null");
-                    Fx.Assert(this.indices != null, "indices must not be null");
-                    if (this.getFunc != null)
-                    {
-                        return (TItem)this.getFunc(this.operand, indices);
-                    }
-                    else if (this.getMethod != null)
-                    {
-                        return (TItem)this.getMethod.Invoke(this.operand, indices);
-                    }
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SpecialMethodNotFound("get_Item", typeof(TOperand).Name)));
-                }
-                set
-                {
-                    Fx.Assert(this.setMethod != null, "setMethod must not be null");
-                    Fx.Assert(this.operand != null, "operand must not be null");
-                    Fx.Assert(this.indices != null, "indices must not be null");
-                    if (this.parameters == null)
-                    {
-                        this.parameters = new object[this.indices.Length + 1];
-                        for (int i = 0; i < this.indices.Length; i++)
-                        {
-                            parameters[i] = this.indices[i];
-                        }
-                        parameters[parameters.Length - 1] = value;
-                    }
-                    if (this.setFunc != null)
-                    {
-                        this.setFunc(operand, parameters);
-                    }
-                    else
-                    {
-                        this.setMethod.Invoke(operand, parameters);
-                    }
-                }
-            }
-
-            [DataMember(EmitDefaultValue = false, Name = "operand")]
-            internal TOperand SerializedOperand
-            {
-                get { return this.operand; }
-                set { this.operand = value; }
-            }
-
-            [DataMember(EmitDefaultValue = false, Name = "indices")]
-            internal object[] SerializedIndices
-            {
-                get { return this.indices; }
-                set { this.indices = value; }
-            }
-
-            [DataMember(EmitDefaultValue = false, Name = "parameters")]
-            internal object[] SerializedParameters
-            {
-                get { return this.parameters; }
-                set { this.parameters = value; }
-            }
-
-            [DataMember(EmitDefaultValue = false, Name = "getMethod")]
-            internal MethodInfo SerializedGetMethod
-            {
-                get { return this.getMethod; }
-                set { this.getMethod = value; }
-            }
-
-            [DataMember(EmitDefaultValue = false, Name = "setMethod")]
-            internal MethodInfo SerializedSetMethod
-            {
-                get { return this.setMethod; }
-                set { this.setMethod = value; }
-            }
+        [DataMember(EmitDefaultValue = false, Name = "setMethod")]
+        internal MethodInfo SerializedSetMethod
+        {
+            get => _setMethod;
+            set => _setMethod = value;
         }
     }
 }

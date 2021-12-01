@@ -1,33 +1,26 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+
+[DataContract]
+public class NoPersistHandle : Handle
 {
-    using System.Runtime.Serialization;
+    public NoPersistHandle() { }
 
-    [DataContract]
-    public class NoPersistHandle : Handle
+    public void Enter(NativeActivityContext context)
     {
-        public NoPersistHandle()
-        {
-        }
+        context.ThrowIfDisposed();
+        ThrowIfUninitialized();
 
-        public void Enter(NativeActivityContext context)
-        {
-            context.ThrowIfDisposed();
-            ThrowIfUninitialized();
+        context.EnterNoPersist(this);
+    }
 
-            context.EnterNoPersist(this);
-        }
+    public void Exit(NativeActivityContext context)
+    {
+        context.ThrowIfDisposed();
+        ThrowIfUninitialized();
 
-        public void Exit(NativeActivityContext context)
-        {
-            context.ThrowIfDisposed();
-            ThrowIfUninitialized();
-
-            context.ExitNoPersist(this);
-        }
+        context.ExitNoPersist(this);
     }
 }
-
-

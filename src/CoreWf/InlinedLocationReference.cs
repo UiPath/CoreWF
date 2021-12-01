@@ -1,119 +1,97 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Expressions;
+using Internals;
+
+internal class InlinedLocationReference : LocationReference, ILocationReferenceWrapper
 {
-    using System;
-    using System.Activities.Expressions;
-    using System.Activities.Internals;
+    private readonly LocationReference _innerReference;
+    private readonly Activity _validAccessor;
+    private readonly bool _allowReads;
+    private readonly bool _allowWrites;
+    private readonly bool _allowGetLocation;
 
-    internal class InlinedLocationReference : LocationReference, ILocationReferenceWrapper
+    public InlinedLocationReference(LocationReference innerReference, Activity validAccessor, ArgumentDirection accessDirection)
     {
-        private readonly LocationReference innerReference;
-        private readonly Activity validAccessor;
-        private readonly bool allowReads;
-        private readonly bool allowWrites;
-        private readonly bool allowGetLocation;
+        _innerReference = innerReference;
+        _validAccessor = validAccessor;
+        _allowReads = accessDirection != ArgumentDirection.Out;
+        _allowWrites = accessDirection != ArgumentDirection.In;
+    }
 
-        public InlinedLocationReference(LocationReference innerReference, Activity validAccessor, ArgumentDirection accessDirection)
+    public InlinedLocationReference(LocationReference innerReference, Activity validAccessor)
+    {
+        _innerReference = innerReference;
+        _validAccessor = validAccessor;
+        _allowReads = true;
+        _allowWrites = true;
+        _allowGetLocation = true;
+    }
+
+    protected override string NameCore => _innerReference.Name;
+
+    protected override Type TypeCore => _innerReference.Type;
+
+    public override Location GetLocation(ActivityContext context)
+    {
+        if (context == null)
         {
-            this.innerReference = innerReference;
-            this.validAccessor = validAccessor;
-            this.allowReads = accessDirection != ArgumentDirection.Out;
-            this.allowWrites = accessDirection != ArgumentDirection.In;
+            throw FxTrace.Exception.ArgumentNull(nameof(context));
         }
-
-        public InlinedLocationReference(LocationReference innerReference, Activity validAccessor)
+        ValidateAccessor(context);
+        if (!_allowGetLocation)
         {
-            this.innerReference = innerReference;
-            this.validAccessor = validAccessor;
-            this.allowReads = true;
-            this.allowWrites = true;
-            this.allowGetLocation = true;
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.GetLocationOnPublicAccessReference(context.Activity)));
         }
+        return GetLocationCore(context);
+    }
 
-        protected override string NameCore
+    internal override Location GetLocationForRead(ActivityContext context)
+    {
+        ValidateAccessor(context);
+        if (!_allowReads)
         {
-            get
-            {
-                return this.innerReference.Name;
-            }
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadAccessToWriteOnlyPublicReference(context.Activity)));
         }
-        
-        protected override Type TypeCore
+        return GetLocationCore(context);
+    }
+
+    internal override Location GetLocationForWrite(ActivityContext context)
+    {
+        ValidateAccessor(context);
+        if (!_allowWrites)
         {
-            get
-            {
-                return this.innerReference.Type;
-            }
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteAccessToReadOnlyPublicReference(context.Activity)));
         }
+        return GetLocationCore(context);
+    }
 
-        public override Location GetLocation(ActivityContext context)
+    private void ValidateAccessor(ActivityContext context)
+    {
+        // We need to call ThrowIfDisposed explicitly since
+        // context.Activity does not check isDisposed
+        context.ThrowIfDisposed();
+
+        if (!ReferenceEquals(context.Activity, _validAccessor))
         {
-            if (context == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(context));
-            }
-            ValidateAccessor(context);
-            if (!this.allowGetLocation)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.GetLocationOnPublicAccessReference(context.Activity)));
-            }
-            return GetLocationCore(context);
-        }
-
-        internal override Location GetLocationForRead(ActivityContext context)
-        {
-            ValidateAccessor(context);
-            if (!this.allowReads)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ReadAccessToWriteOnlyPublicReference(context.Activity)));
-            }
-            return GetLocationCore(context);
-        }
-
-
-        internal override Location GetLocationForWrite(ActivityContext context)
-        {
-            ValidateAccessor(context);
-            if (!this.allowWrites)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WriteAccessToReadOnlyPublicReference(context.Activity)));
-            }
-            return GetLocationCore(context);
-        }
-
-        private void ValidateAccessor(ActivityContext context)
-        {
-            // We need to call ThrowIfDisposed explicitly since
-            // context.Activity does not check isDisposed
-            context.ThrowIfDisposed();
-
-            if (!object.ReferenceEquals(context.Activity, this.validAccessor))
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InlinedLocationReferenceOnlyAccessibleByOwner(context.Activity, this.validAccessor)));
-            }
-        }
-
-        private Location GetLocationCore(ActivityContext context)
-        {
-            try
-            {
-                context.AllowChainedEnvironmentAccess = true;
-                return this.innerReference.GetLocation(context);
-            }
-            finally
-            {
-                context.AllowChainedEnvironmentAccess = false;
-            }
-        }
-
-        LocationReference ILocationReferenceWrapper.LocationReference
-        {
-            get
-            {
-                return this.innerReference;
-            }
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InlinedLocationReferenceOnlyAccessibleByOwner(context.Activity, _validAccessor)));
         }
     }
+
+    private Location GetLocationCore(ActivityContext context)
+    {
+        try
+        {
+            context.AllowChainedEnvironmentAccess = true;
+            return _innerReference.GetLocation(context);
+        }
+        finally
+        {
+            context.AllowChainedEnvironmentAccess = false;
+        }
+    }
+
+    LocationReference ILocationReferenceWrapper.LocationReference => _innerReference;
 }

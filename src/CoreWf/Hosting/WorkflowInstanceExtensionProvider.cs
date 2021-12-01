@@ -1,76 +1,50 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Hosting
+using System.Activities.Runtime;
+
+namespace System.Activities.Hosting;
+
+internal abstract class WorkflowInstanceExtensionProvider
 {
-    using System;
-    using System.Activities.Runtime;
+    protected WorkflowInstanceExtensionProvider() { }
 
-    internal abstract class WorkflowInstanceExtensionProvider
+    public Type Type { get; protected set; }
+
+    protected bool GeneratedTypeMatchesDeclaredType { get; set; }
+
+    public abstract object ProvideValue();
+
+    public bool IsMatch<TTarget>(object value)
+        where TTarget : class
     {
-        protected WorkflowInstanceExtensionProvider()
-        {
-        }
+        Fx.Assert(value != null, "extension providers never return a null extension");
+        return value is TTarget && (GeneratedTypeMatchesDeclaredType || TypeHelper.AreReferenceTypesCompatible(Type, typeof(TTarget)));
+    }
+}
 
-        public Type Type
-        {
-            get;
-            protected set;
-        }
+internal class WorkflowInstanceExtensionProvider<T> : WorkflowInstanceExtensionProvider
+    where T : class
+{
+    private readonly Func<T> _providerFunction;
+    private bool _hasGeneratedValue;
 
-        protected bool GeneratedTypeMatchesDeclaredType
-        {
-            get;
-            set;
-        }
-
-        public abstract object ProvideValue();
-
-        public bool IsMatch<TTarget>(object value)
-            where TTarget : class
-        {
-            Fx.Assert(value != null, "extension providers never return a null extension");
-            if (value is TTarget)
-            {
-                if (this.GeneratedTypeMatchesDeclaredType)
-                {
-                    return true;
-                }
-                else
-                {
-                    return TypeHelper.AreReferenceTypesCompatible(this.Type, typeof(TTarget));
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
+    public WorkflowInstanceExtensionProvider(Func<T> providerFunction)
+        : base()
+    {
+        _providerFunction = providerFunction;
+        Type = typeof(T);
     }
 
-    internal class WorkflowInstanceExtensionProvider<T> : WorkflowInstanceExtensionProvider
-        where T : class
+    public override object ProvideValue()
     {
-        private readonly Func<T> providerFunction;
-        private bool hasGeneratedValue;
-
-        public WorkflowInstanceExtensionProvider(Func<T> providerFunction)
-            : base()
+        T value = _providerFunction();
+        if (!_hasGeneratedValue)
         {
-            this.providerFunction = providerFunction;
-            base.Type = typeof(T);
+            GeneratedTypeMatchesDeclaredType = ReferenceEquals(value.GetType(), Type);
+            _hasGeneratedValue = true;
         }
 
-        public override object ProvideValue()
-        {
-            T value = this.providerFunction();
-            if (!this.hasGeneratedValue)
-            {
-                base.GeneratedTypeMatchesDeclaredType = object.ReferenceEquals(value.GetType(), this.Type);
-                this.hasGeneratedValue = true;
-            }
-
-            return value;
-        }
+        return value;
     }
 }

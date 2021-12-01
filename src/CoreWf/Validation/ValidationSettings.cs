@@ -1,75 +1,75 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Validation
+using System.Activities.Runtime;
+using System.Threading;
+
+namespace System.Activities.Validation;
+
+/// <summary>
+/// Represents a collection of settings that customize the behavior that <see cref="ActivityValidationServices.Validate(Activity)"/>
+/// will exhibit. It also enables the activity user to apply policy constraints to the workflow.
+/// </summary>
+[Fx.Tag.XamlVisible(false)]
+public class ValidationSettings
 {
-    using System.Activities.Runtime;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
+    private IDictionary<Type, IList<Constraint>> _additionalConstraints;
 
-    [Fx.Tag.XamlVisible(false)]
-    public class ValidationSettings
+    /// <summary>
+    /// Gets or sets the cancellation token used to notify should the activity be cancelled.
+    /// </summary>
+    public CancellationToken CancellationToken { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the supplied activity and all the children
+    /// and sub-children of the supplied activity are validated, or if the validator should 
+    /// validate only to the supplied activity.
+    /// </summary>
+    public bool SingleLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the root configuration is not subject for 
+    /// validation.
+    /// </summary>
+    public bool SkipValidatingRootConfiguration { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the additional validation constraints are 
+    /// to be used exclusively to validate the workflow. If set to true, all the validation 
+    /// contained inside the activity itself will be ignored.
+    /// </summary>
+    public bool OnlyUseAdditionalConstraints { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether this instance is prepared for runtime.
+    /// </summary>
+    public bool PrepareForRuntime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the environment of variables and arguments associated with this 
+    /// validation settings.
+    /// </summary>
+    public LocationReferenceEnvironment Environment { get; set; }
+
+    internal bool HasAdditionalConstraints => _additionalConstraints != null && _additionalConstraints.Count > 0;
+
+    /// <summary>
+    /// Gets a dictionary of type-constraint pairs. Each additional constraint added to the 
+    /// dictionary will be applied to every activity of the specified type in the workflow to 
+    /// validate.
+    /// </summary>
+    public IDictionary<Type, IList<Constraint>> AdditionalConstraints
     {
-        private IDictionary<Type, IList<Constraint>> additionalConstraints;
-
-        public CancellationToken CancellationToken
+        get
         {
-            get;
-            set;
+            _additionalConstraints ??= new Dictionary<Type, IList<Constraint>>();
+            return _additionalConstraints;
         }
-
-        public bool SingleLevel
-        {
-            get;
-            set;
-        }
-
-        public bool SkipValidatingRootConfiguration
-        {
-            get;
-            set;
-        }
-
-        public bool OnlyUseAdditionalConstraints
-        {
-            get;
-            set;
-        }
-
-        public bool PrepareForRuntime
-        {
-            get;
-            set;
-        }
-
-        public LocationReferenceEnvironment Environment
-        {
-            get;
-            set;
-        }
-
-        internal bool HasAdditionalConstraints
-        {
-            get
-            {
-                return this.additionalConstraints != null && this.additionalConstraints.Count > 0;
-            }
-        }
-        
-        public IDictionary<Type, IList<Constraint>> AdditionalConstraints
-        {
-            get
-            {
-                if (this.additionalConstraints == null)
-                {
-                    this.additionalConstraints = new Dictionary<Type, IList<Constraint>>(); 
-                }
-
-                return this.additionalConstraints;
-            }
-        }
-
-        public bool SkipExpressionCompilation { get; set; }
     }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the compilation of VB expressions is
+    /// skipped during validation. C# expressions are always skipped.
+    /// </summary>
+    public bool SkipExpressionCompilation { get; set; }
 }

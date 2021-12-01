@@ -2,8 +2,6 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Runtime.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Xml.Linq;
@@ -881,7 +879,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
                 OnCompleting = new Action<AsyncResult, Exception>(SimpleCleanup);
 
-                IAsyncResult result = _initialInstanceHandle.BeginAcquireExecutionContext(_timeoutHelper.RemainingTime(), PrepareAsyncCompletion(ExecuteAsyncResult.s_onAcquireContext), this);
+                IAsyncResult result = _initialInstanceHandle.BeginAcquireExecutionContext(_timeoutHelper.RemainingTime(), PrepareAsyncCompletion(s_onAcquireContext), this);
                 if (result.CompletedSynchronously)
                 {
                     // After this stage, must complete explicitly in order to get Cleanup to run correctly.
@@ -1038,7 +1036,7 @@ namespace System.Activities.Runtime.DurableInstancing
             [Fx.Tag.Blocking(CancelMethod = "NotifyHandleFree", CancelDeclaringType = typeof(InstancePersistenceContext), Conditional = "!result.IsCOmpleted")]
             public static InstanceView End(IAsyncResult result)
             {
-                ExecuteAsyncResult thisPtr = AsyncResult.End<ExecuteAsyncResult>(result);
+                ExecuteAsyncResult thisPtr = End<ExecuteAsyncResult>(result);
                 Fx.Assert((thisPtr._finalState == null) == (thisPtr._initialInstanceHandle == null), "Should have thrown an exception if this is null on the outer result.");
                 return thisPtr._finalState;
             }
@@ -1145,7 +1143,7 @@ namespace System.Activities.Runtime.DurableInstancing
                             IAsyncResult result;
                             try
                             {
-                                result = _context.InstanceHandle.Store.BeginTryCommand(_context, CurrentCommand, _timeoutHelper.RemainingTime(), PrepareAsyncCompletion(ExecuteAsyncResult.s_onTryCommand), this);
+                                result = _context.InstanceHandle.Store.BeginTryCommand(_context, CurrentCommand, _timeoutHelper.RemainingTime(), PrepareAsyncCompletion(s_onTryCommand), this);
                             }
                             catch (BindReclaimedLockException exception)
                             {
@@ -1156,7 +1154,7 @@ namespace System.Activities.Runtime.DurableInstancing
                             if (result == null)
                             {
                                 AfterCommand(true);
-                                if (!bindReclaimedLockException.MarkerWaitHandle.WaitAsync(ExecuteAsyncResult.s_onBindReclaimed, this, _timeoutHelper.RemainingTime()))
+                                if (!bindReclaimedLockException.MarkerWaitHandle.WaitAsync(s_onBindReclaimed, this, _timeoutHelper.RemainingTime()))
                                 {
                                     return false;
                                 }
@@ -1224,7 +1222,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 AfterCommand(commandProcessed);
                 if (bindReclaimedLockException != null)
                 {
-                    if (!bindReclaimedLockException.MarkerWaitHandle.WaitAsync(ExecuteAsyncResult.s_onBindReclaimed, this, _timeoutHelper.RemainingTime()))
+                    if (!bindReclaimedLockException.MarkerWaitHandle.WaitAsync(s_onBindReclaimed, this, _timeoutHelper.RemainingTime()))
                     {
                         return false;
                     }
@@ -1235,7 +1233,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
             private void AfterCommand(bool commandProcessed)
             {
-                if (!object.ReferenceEquals(_context.LastAsyncResult, this))
+                if (!ReferenceEquals(_context.LastAsyncResult, this))
                 {
                     throw Fx.Exception.AsError(new InvalidOperationException(SR.ExecuteMustBeNested));
                 }
@@ -1368,7 +1366,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 _context = context;
 
-                if (wait.WaitAsync(BindReclaimedLockAsyncResult.s_waitComplete, this, timeout))
+                if (wait.WaitAsync(s_waitComplete, this, timeout))
                 {
                     _context.ConcludeBindReclaimedLockHelper();
                     Complete(true);
@@ -1401,7 +1399,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
             public static void End(IAsyncResult result)
             {
-                AsyncResult.End<BindReclaimedLockAsyncResult>(result);
+                End<BindReclaimedLockAsyncResult>(result);
             }
         }
 

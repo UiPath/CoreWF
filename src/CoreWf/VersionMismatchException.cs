@@ -1,98 +1,81 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Security;
+
+namespace System.Activities;
+using Runtime;
+
+[Serializable]
+public class VersionMismatchException : Exception
 {
-    using System;
-    using System.Runtime.Serialization;
-    using System.Security;
-    using System.Activities.Runtime;
+    public VersionMismatchException()
+        : base() { }
 
-    [Serializable]
-    public class VersionMismatchException : Exception
+    public VersionMismatchException(string message)
+        : base(message) { }
+
+    public VersionMismatchException(string message, Exception innerException)
+        : base(message, innerException) { }
+
+    public VersionMismatchException(WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion)
+        : base(GetMessage(expectedVersion, actualVersion))
     {
-        public VersionMismatchException()
-            : base()
-        {
-        }
+        ExpectedVersion = expectedVersion;
+        ActualVersion = actualVersion;
+    }
 
-        public VersionMismatchException(string message)
-            : base(message)
-        {
-        }
+    public VersionMismatchException(string message, WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion)
+        : base(message)
+    {
+        ExpectedVersion = expectedVersion;
+        ActualVersion = actualVersion;
+    }
 
-        public VersionMismatchException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public VersionMismatchException(string message, WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion, Exception innerException)
+        : base(message, innerException)
+    {
+        ExpectedVersion = expectedVersion;
+        ActualVersion = actualVersion;
+    }
 
-        public VersionMismatchException(WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion)
-            : base(GetMessage(expectedVersion, actualVersion))
-        {
-            this.ExpectedVersion = expectedVersion;
-            this.ActualVersion = actualVersion;
-        }
+    protected VersionMismatchException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+        ExpectedVersion = (WorkflowIdentity)info.GetValue("expectedVersion", typeof(WorkflowIdentity));
+        ActualVersion = (WorkflowIdentity)info.GetValue("actualVersion", typeof(WorkflowIdentity));
+    }
 
-        public VersionMismatchException(string message, WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion)
-            : base(message)
-        {
-            this.ExpectedVersion = expectedVersion;
-            this.ActualVersion = actualVersion;
-        }
+    public WorkflowIdentity ExpectedVersion { get; private set; }
 
-        public VersionMismatchException(string message, WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion, Exception innerException)
-            : base(message, innerException)
-        {
-            this.ExpectedVersion = expectedVersion;
-            this.ActualVersion = actualVersion;
-        }
+    public WorkflowIdentity ActualVersion { get; private set; }
 
-        protected VersionMismatchException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            this.ExpectedVersion = (WorkflowIdentity)info.GetValue("expectedVersion", typeof(WorkflowIdentity));
-            this.ActualVersion = (WorkflowIdentity)info.GetValue("actualVersion", typeof(WorkflowIdentity));
-        }
+    [Fx.Tag.SecurityNote(Critical = "Critical because we are overriding a critical method in the base class.")]
+    [SecurityCritical]
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        base.GetObjectData(info, context);
+        info.AddValue("expectedVersion", ExpectedVersion);
+        info.AddValue("actualVersion", ActualVersion);
+    }
 
-        public WorkflowIdentity ExpectedVersion
+    private static string GetMessage(WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion)
+    {
+        if (actualVersion == null && expectedVersion != null)
         {
-            get;
-            private set;
+            return SR.WorkflowIdentityNullStateId(expectedVersion);
         }
-
-        public WorkflowIdentity ActualVersion
+        else if (actualVersion != null && expectedVersion == null)
         {
-            get;
-            private set;
+            return SR.WorkflowIdentityNullHostId(actualVersion);
         }
-
-        [Fx.Tag.SecurityNote(Critical = "Critical because we are overriding a critical method in the base class.")]
-        [SecurityCritical]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        else if (!Equals(expectedVersion, actualVersion))
         {
-            base.GetObjectData(info, context);
-            info.AddValue("expectedVersion", this.ExpectedVersion);
-            info.AddValue("actualVersion", this.ActualVersion);
+            return SR.WorkflowIdentityStateIdHostIdMismatch(actualVersion, expectedVersion);
         }
-
-        private static string GetMessage(WorkflowIdentity expectedVersion, WorkflowIdentity actualVersion)
+        else
         {
-            if (actualVersion == null && expectedVersion != null)
-            {
-                return SR.WorkflowIdentityNullStateId(expectedVersion);
-            }
-            else if (actualVersion != null && expectedVersion == null)
-            {
-                return SR.WorkflowIdentityNullHostId(actualVersion);
-            }
-            else if (!object.Equals(expectedVersion, actualVersion))
-            {
-                return SR.WorkflowIdentityStateIdHostIdMismatch(actualVersion, expectedVersion);
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
-    }    
+    }
 }

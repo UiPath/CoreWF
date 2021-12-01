@@ -1,80 +1,59 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+using System.Activities.XamlIntegration;
+using System.Linq.Expressions;
+using System.Windows.Markup;
+
+namespace System.Activities.Expressions;
+
+// consciously not XAML-friendly since Linq Expressions aren't create-set-use
+[Fx.Tag.XamlVisible(false)]
+[Diagnostics.DebuggerStepThrough]
+public sealed class LambdaValue<TResult> : CodeActivity<TResult>, IExpressionContainer, IValueSerializableExpression
 {
-    using System;
-    using System.Activities.XamlIntegration;
-    using System.Linq.Expressions;
-    using System.Windows.Markup;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private Func<ActivityContext, TResult> _compiledLambdaValue;
+    private readonly Expression<Func<ActivityContext, TResult>> _lambdaValue;
+    private Expression<Func<ActivityContext, TResult>> _rewrittenTree;
 
-#if NET45
-    using System.Activities.ExpressionParser; 
-#endif
-
-    // consciously not XAML-friendly since Linq Expressions aren't create-set-use
-    [Fx.Tag.XamlVisible(false)]
-    [System.Diagnostics.DebuggerStepThrough]
-    public sealed class LambdaValue<TResult> : CodeActivity<TResult>, IExpressionContainer, IValueSerializableExpression
+    public LambdaValue(Expression<Func<ActivityContext, TResult>> lambdaValue)
     {
-        private Func<ActivityContext, TResult> compiledLambdaValue;
-        private readonly Expression<Func<ActivityContext, TResult>> lambdaValue;
-        private Expression<Func<ActivityContext, TResult>> rewrittenTree;
+        _lambdaValue = lambdaValue ?? throw FxTrace.Exception.ArgumentNull(nameof(lambdaValue));
+        UseOldFastPath = true;
+    }
 
-        public LambdaValue(Expression<Func<ActivityContext, TResult>> lambdaValue)
+    // this is called via reflection from Microsoft.CDF.Test.ExpressionUtilities.Activities.ActivityUtilities.ReplaceLambdaValuesInActivityTree
+    internal Expression LambdaExpression => _lambdaValue;
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+
+        // We need to rewrite the tree.
+        if (ExpressionUtilities.TryRewriteLambdaExpression(_lambdaValue, out Expression newTree, publicAccessor))
         {
-            this.lambdaValue = lambdaValue ?? throw FxTrace.Exception.ArgumentNull(nameof(lambdaValue));
-            this.UseOldFastPath = true;
+            _rewrittenTree = (Expression<Func<ActivityContext, TResult>>)newTree;
         }
-
-        // this is called via reflection from Microsoft.CDF.Test.ExpressionUtilities.Activities.ActivityUtilities.ReplaceLambdaValuesInActivityTree
-        internal Expression LambdaExpression
+        else
         {
-            get
-            {
-                return this.lambdaValue;
-            }
-        }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-
-            // We need to rewrite the tree.
-            if (ExpressionUtilities.TryRewriteLambdaExpression(this.lambdaValue, out Expression newTree, publicAccessor))
-            {
-                this.rewrittenTree = (Expression<Func<ActivityContext, TResult>>)newTree;
-            }
-            else
-            {
-                this.rewrittenTree = this.lambdaValue;
-            }
-        }
-
-        protected override TResult Execute(CodeActivityContext context)
-        {
-            if (this.compiledLambdaValue == null)
-            {
-                this.compiledLambdaValue = this.rewrittenTree.Compile();
-            }
-            return this.compiledLambdaValue(context);
-        }
-
-        public bool CanConvertToString(IValueSerializerContext context)
-        {
-            return true;
-        }
-
-        public string ConvertToString(IValueSerializerContext context)
-        {
-            // This workflow contains lambda expressions specified in code. 
-            // These expressions are not XAML serializable. 
-            // In order to make your workflow XAML-serializable, 
-            // use either VisualBasicValue/Reference or ExpressionServices.Convert 
-            // This will convert your lambda expressions into expression activities.
-            throw FxTrace.Exception.AsError(new LambdaSerializationException());
+            _rewrittenTree = _lambdaValue;
         }
     }
+
+    protected override TResult Execute(CodeActivityContext context)
+    {
+        _compiledLambdaValue ??= _rewrittenTree.Compile();
+        return _compiledLambdaValue(context);
+    }
+
+    public bool CanConvertToString(IValueSerializerContext context) => true;
+
+    public string ConvertToString(IValueSerializerContext context) =>
+        // This workflow contains lambda expressions specified in code. 
+        // These expressions are not XAML serializable. 
+        // In order to make your workflow XAML-serializable, 
+        // use either VisualBasicValue/Reference or ExpressionServices.Convert 
+        // This will convert your lambda expressions into expression activities.
+        throw FxTrace.Exception.AsError(new LambdaSerializationException());
 }
