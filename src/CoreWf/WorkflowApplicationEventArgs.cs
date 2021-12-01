@@ -1,38 +1,18 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+public class WorkflowApplicationEventArgs : EventArgs
 {
-    using System.Activities.Runtime;
-    using System;
-    using System.Collections.Generic;
+    internal WorkflowApplicationEventArgs(WorkflowApplication application) => Owner = application;
 
-    [Fx.Tag.XamlVisible(false)]
-    public class WorkflowApplicationEventArgs : EventArgs
-    {
-        internal WorkflowApplicationEventArgs(WorkflowApplication application)
-        {
-            this.Owner = application;
-        }
+    internal WorkflowApplication Owner { get; private set; }
 
-        internal WorkflowApplication Owner
-        {
-            get;
-            private set;
-        }
+    public Guid InstanceId => Owner.Id;
 
-        public Guid InstanceId
-        {
-            get
-            {
-                return this.Owner.Id;
-            }
-        }
-
-        public IEnumerable<T> GetInstanceExtensions<T>()
-            where T : class
-        {
-            return this.Owner.InternalGetExtensions<T>();
-        }
-    }
+    public IEnumerable<T> GetInstanceExtensions<T>()
+        where T : class => Owner.InternalGetExtensions<T>();
 }

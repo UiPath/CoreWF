@@ -1,114 +1,104 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Validation
+using System.Activities.Runtime;
+using System.Collections.ObjectModel;
+
+namespace System.Activities.Validation;
+
+[Fx.Tag.XamlVisible(false)]
+public class ValidationResults
 {
-    using System.Collections.ObjectModel;
-    using System.Collections.Generic;
-    using System.Activities.Runtime;
+    private readonly ReadOnlyCollection<ValidationError> _allValidationErrors;
+    private ReadOnlyCollection<ValidationError> _errors;
+    private ReadOnlyCollection<ValidationError> _warnings;
+    private bool _processedAllValidationErrors;
 
-    [Fx.Tag.XamlVisible(false)]
-    public class ValidationResults
+    public ValidationResults(IList<ValidationError> allValidationErrors)
     {
-        private readonly ReadOnlyCollection<ValidationError> allValidationErrors;
-        private ReadOnlyCollection<ValidationError> errors;
-        private ReadOnlyCollection<ValidationError> warnings;
-        private bool processedAllValidationErrors;
-
-        public ValidationResults(IList<ValidationError> allValidationErrors)
+        if (allValidationErrors == null)
         {
-            if (allValidationErrors == null)
-            {
-                this.allValidationErrors = ActivityValidationServices.EmptyValidationErrors;
-            }
-            else
-            {
-                this.allValidationErrors = new ReadOnlyCollection<ValidationError>(allValidationErrors);
-            }
+            _allValidationErrors = ActivityValidationServices.EmptyValidationErrors;
         }
-
-        public ReadOnlyCollection<ValidationError> Errors
+        else
         {
-            get
-            {
-                if (!this.processedAllValidationErrors)
-                {
-                    ProcessAllValidationErrors();
-                }
-
-                return this.errors;
-            }
+            _allValidationErrors = new ReadOnlyCollection<ValidationError>(allValidationErrors);
         }
+    }
 
-        public ReadOnlyCollection<ValidationError> Warnings
+    public ReadOnlyCollection<ValidationError> Errors
+    {
+        get
         {
-            get
+            if (!_processedAllValidationErrors)
             {
-                if (!this.processedAllValidationErrors)
-                {
-                    ProcessAllValidationErrors();
-                }
-
-                return this.warnings;
+                ProcessAllValidationErrors();
             }
+
+            return _errors;
         }
+    }
 
-        private void ProcessAllValidationErrors()
+    public ReadOnlyCollection<ValidationError> Warnings
+    {
+        get
         {
-            if (this.allValidationErrors.Count == 0)
+            if (!_processedAllValidationErrors)
             {
-                this.errors = ActivityValidationServices.EmptyValidationErrors;
-                this.warnings = ActivityValidationServices.EmptyValidationErrors;
+                ProcessAllValidationErrors();
             }
-            else
+
+            return _warnings;
+        }
+    }
+
+    private void ProcessAllValidationErrors()
+    {
+        if (_allValidationErrors.Count == 0)
+        {
+            _errors = ActivityValidationServices.EmptyValidationErrors;
+            _warnings = ActivityValidationServices.EmptyValidationErrors;
+        }
+        else
+        {
+            IList<ValidationError> warningsList = null;
+            IList<ValidationError> errorsList = null;
+
+            for (int i = 0; i < _allValidationErrors.Count; i++)
             {
-                IList<ValidationError> warningsList = null;
-                IList<ValidationError> errorsList = null;
+                ValidationError violation = _allValidationErrors[i];
 
-                for (int i = 0; i < this.allValidationErrors.Count; i++)
+                if (violation.IsWarning)
                 {
-                    ValidationError violation = this.allValidationErrors[i];
-
-                    if (violation.IsWarning)
-                    {
-                        if (warningsList == null)
-                        {
-                            warningsList = new Collection<ValidationError>();
-                        }
-
-                        warningsList.Add(violation);
-                    }
-                    else
-                    {
-                        if (errorsList == null)
-                        {
-                            errorsList = new Collection<ValidationError>();
-                        }
-
-                        errorsList.Add(violation);
-                    }
-                }
-
-                if (warningsList == null)
-                {
-                    this.warnings = ActivityValidationServices.EmptyValidationErrors;
+                    warningsList ??= new Collection<ValidationError>();
+                    warningsList.Add(violation);
                 }
                 else
                 {
-                    this.warnings = new ReadOnlyCollection<ValidationError>(warningsList);
-                }
-
-                if (errorsList == null)
-                {
-                    this.errors = ActivityValidationServices.EmptyValidationErrors;
-                }
-                else
-                {
-                    this.errors = new ReadOnlyCollection<ValidationError>(errorsList);
+                    errorsList ??= new Collection<ValidationError>();
+                    errorsList.Add(violation);
                 }
             }
 
-            this.processedAllValidationErrors = true;
+            if (warningsList == null)
+            {
+                _warnings = ActivityValidationServices.EmptyValidationErrors;
+            }
+            else
+            {
+                _warnings = new ReadOnlyCollection<ValidationError>(warningsList);
+            }
+
+            if (errorsList == null)
+            {
+                _errors = ActivityValidationServices.EmptyValidationErrors;
+            }
+            else
+            {
+                _errors = new ReadOnlyCollection<ValidationError>(errorsList);
+            }
         }
+
+        _processedAllValidationErrors = true;
     }
 }

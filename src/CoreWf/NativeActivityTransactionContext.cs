@@ -1,35 +1,34 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Transactions;
+
+namespace System.Activities;
+using Internals;
+using Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+public sealed class NativeActivityTransactionContext : NativeActivityContext
 {
-    using System.Activities.Runtime;
-    using System.Transactions;
-    using System.Activities.Internals;
+    private readonly ActivityExecutor _executor;
+    private readonly RuntimeTransactionHandle _transactionHandle;
 
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class NativeActivityTransactionContext : NativeActivityContext
+    internal NativeActivityTransactionContext(ActivityInstance instance, ActivityExecutor executor, BookmarkManager bookmarks, RuntimeTransactionHandle handle)
+        : base(instance, executor, bookmarks)
     {
-        private readonly ActivityExecutor executor;
-        private RuntimeTransactionHandle transactionHandle;
+        _executor = executor;
+        _transactionHandle = handle;
+    }
 
-        internal NativeActivityTransactionContext(ActivityInstance instance, ActivityExecutor executor, BookmarkManager bookmarks, RuntimeTransactionHandle handle)
-            : base(instance, executor, bookmarks)
+    public void SetRuntimeTransaction(Transaction transaction)
+    {
+        ThrowIfDisposed();
+
+        if (transaction == null)
         {
-            this.executor = executor;
-            this.transactionHandle = handle;
+            throw FxTrace.Exception.ArgumentNull(nameof(transaction));
         }
 
-        public void SetRuntimeTransaction(Transaction transaction)
-        {
-            ThrowIfDisposed();
-
-            if (transaction == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(transaction));
-            }
-
-            this.executor.SetTransaction(this.transactionHandle, transaction, transactionHandle.Owner, this.CurrentInstance);
-        }
+        _executor.SetTransaction(_transactionHandle, transaction, _transactionHandle.Owner, CurrentInstance);
     }
 }

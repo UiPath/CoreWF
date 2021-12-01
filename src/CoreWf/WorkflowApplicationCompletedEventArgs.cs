@@ -1,54 +1,35 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+public class WorkflowApplicationCompletedEventArgs : WorkflowApplicationEventArgs
 {
-    using System.Activities.Runtime;
-    using System;
-    using System.Collections.Generic;
+    private readonly ActivityInstanceState _completionState;
+    private readonly Exception _terminationException;
+    private IDictionary<string, object> _outputs;
 
-    [Fx.Tag.XamlVisible(false)]
-    public class WorkflowApplicationCompletedEventArgs : WorkflowApplicationEventArgs
+    internal WorkflowApplicationCompletedEventArgs(WorkflowApplication application, Exception terminationException, ActivityInstanceState completionState, IDictionary<string, object> outputs)
+        : base(application)
     {
-        private readonly ActivityInstanceState completionState;
-        private readonly Exception terminationException;
-        private IDictionary<string, object> outputs;
+        Fx.Assert(ActivityUtilities.IsCompletedState(completionState), "event should only fire for completed activities");
+        _terminationException = terminationException;
+        _completionState = completionState;
+        _outputs = outputs;
+    }
 
-        internal WorkflowApplicationCompletedEventArgs(WorkflowApplication application, Exception terminationException, ActivityInstanceState completionState, IDictionary<string, object> outputs)
-            : base(application)
-        {
-            Fx.Assert(ActivityUtilities.IsCompletedState(completionState), "event should only fire for completed activities");
-            this.terminationException = terminationException;
-            this.completionState = completionState;
-            this.outputs = outputs;
-        }
+    public ActivityInstanceState CompletionState => _completionState;
 
-        public ActivityInstanceState CompletionState
+    public IDictionary<string, object> Outputs
+    {
+        get
         {
-            get
-            {
-                return this.completionState;
-            }
-        }
-
-        public IDictionary<string, object> Outputs
-        {
-            get
-            {
-                if (this.outputs == null)               
-                {
-                    this.outputs = ActivityUtilities.EmptyParameters;
-                }
-                return this.outputs;
-            }
-        }
-
-        public Exception TerminationException
-        {
-            get
-            {
-                return this.terminationException;
-            }
+            _outputs ??= ActivityUtilities.EmptyParameters;
+            return _outputs;
         }
     }
+
+    public Exception TerminationException => _terminationException;
 }

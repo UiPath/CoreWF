@@ -1,204 +1,198 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Runtime;
+
+// A mostly output-restricted double-ended queue. You can add an item to both ends
+// and it is optimized for removing from the front.  The list can be scanned and
+// items can be removed from any location at the cost of performance.
+internal class Quack<T>
 {
-    using System.Activities.Runtime;
-    using System;
+    private T[] _items;
 
-    // A mostly output-restricted double-ended queue. You can add an item to both ends
-    // and it is optimized for removing from the front.  The list can be scanned and
-    // items can be removed from any location at the cost of performance.
-    internal class Quack<T>
+    // First element when items is not empty
+    private int _head;
+
+    // Next vacancy when items are not full
+    private int _tail;
+
+    // Number of elements.
+    private int _count;
+
+    public Quack()
     {
-        private T[] items;
+        _items = new T[4];
+    }
 
-        // First element when items is not empty
-        private int head;
+    public Quack(T[] items)
+    {
+        Fx.Assert(items != null, "This shouldn't get called with null");
+        Fx.Assert(items.Length > 0, "This shouldn't be called with a zero length array.");
 
-        // Next vacancy when items are not full
-        private int tail;
+        _items = items;
 
-        // Number of elements.
-        private int count;
+        // The default value of 0 is correct for both
+        // head and tail.
 
-        public Quack()
+        _count = _items.Length;
+    }
+
+    public int Count => _count;
+
+    public T this[int index]
+    {
+        get
         {
-            this.items = new T[4];
+            Fx.Assert(index < _count, "Index out of range.");
+
+            int realIndex = (_head + index) % _items.Length;
+
+            return _items[realIndex];
+        }
+    }
+
+    public T[] ToArray()
+    {
+        Fx.Assert(_count > 0, "We should only call this when we have items.");
+
+        T[] compressedItems = new T[_count];
+
+        for (int i = 0; i < _count; i++)
+        {
+            compressedItems[i] = _items[(_head + i) % _items.Length];
         }
 
-        public Quack(T[] items)
+        return compressedItems;
+    }
+
+    public void PushFront(T item)
+    {
+        if (_count == _items.Length)
         {
-            Fx.Assert(items != null, "This shouldn't get called with null");
-            Fx.Assert(items.Length > 0, "This shouldn't be called with a zero length array.");
-
-            this.items = items;
-
-            // The default value of 0 is correct for both
-            // head and tail.
-
-            this.count = this.items.Length;
+            Enlarge();
         }
 
-        public int Count
+        if (--_head == -1)
         {
-            get { return this.count; }
+            _head = _items.Length - 1;
+        }
+        _items[_head] = item;
+
+        ++_count;
+    }
+
+    public void Enqueue(T item)
+    {
+        if (_count == _items.Length)
+        {
+            Enlarge();
         }
 
-        public T this[int index]
+        _items[_tail] = item;
+        if (++_tail == _items.Length)
         {
-            get
+            _tail = 0;
+        }
+
+        ++_count;
+    }
+
+    public T Dequeue()
+    {
+        Fx.Assert(_count > 0, "Quack is empty");
+
+        T removed = _items[_head];
+        _items[_head] = default;
+        if (++_head == _items.Length)
+        {
+            _head = 0;
+        }
+
+        --_count;
+
+        return removed;
+    }
+
+    public bool Remove(T item)
+    {
+        int found = -1;
+
+        for (int i = 0; i < _count; i++)
+        {
+            int realIndex = (_head + i) % _items.Length;
+            if (object.Equals(_items[realIndex], item))
             {
-                Fx.Assert(index < this.count, "Index out of range.");
-
-                int realIndex = (this.head + index) % this.items.Length;
-
-                return this.items[realIndex];
+                found = i;
+                break;
             }
         }
 
-        public T[] ToArray()
+        if (found == -1)
         {
-            Fx.Assert(this.count > 0, "We should only call this when we have items.");
+            return false;
+        }
+        else
+        {
+            Remove(found);
+            return true;
+        }
+    }
 
-            T[] compressedItems = new T[this.count];
+    public void Remove(int index)
+    {
+        Fx.Assert(index < _count, "Index out of range");
 
-            for (int i = 0; i < this.count; i++)
+        for (int i = index - 1; i >= 0; i--)
+        {
+            int sourceIndex = (_head + i) % _items.Length;
+            int targetIndex = sourceIndex + 1;
+
+            if (targetIndex == _items.Length)
             {
-                compressedItems[i] = this.items[(this.head + i) % this.items.Length];
+                targetIndex = 0;
             }
 
-            return compressedItems;
+            _items[targetIndex] = _items[sourceIndex];
         }
 
-        public void PushFront(T item)
+        --_count;
+        ++_head;
+
+        if (_head == _items.Length)
         {
-            if (this.count == this.items.Length)
-            {
-                Enlarge();
-            }
-
-            if (--this.head == -1)
-            {
-                this.head = this.items.Length - 1;
-            }
-            this.items[this.head] = item;
-
-            ++this.count;
+            _head = 0;
         }
+    }
 
-        public void Enqueue(T item)
+    private void Enlarge()
+    {
+        Fx.Assert(_items.Length > 0, "Quack is empty");
+
+        int capacity = _items.Length * 2;
+        SetCapacity(capacity);
+    }
+
+    private void SetCapacity(int capacity)
+    {
+        Fx.Assert(capacity >= _count, "Capacity is set to a smaller value");
+
+        T[] newArray = new T[capacity];
+        if (_count > 0)
         {
-            if (this.count == this.items.Length)
+            if (_head < _tail)
             {
-                Enlarge();
-            }
-
-            this.items[this.tail] = item;
-            if (++this.tail == this.items.Length)
-            {
-                this.tail = 0;
-            }
-
-            ++this.count;
-        }
-
-        public T Dequeue()
-        {
-            Fx.Assert(this.count > 0, "Quack is empty");
-
-            T removed = this.items[this.head];
-            this.items[this.head] = default(T);
-            if (++this.head == this.items.Length)
-            {
-                this.head = 0;
-            }
-
-            --this.count;
-
-            return removed;
-        }
-
-        public bool Remove(T item)
-        {
-            int found = -1;
-
-            for (int i = 0; i < this.count; i++)
-            {
-                int realIndex = (this.head + i) % this.items.Length;
-                if (object.Equals(this.items[realIndex], item))
-                {
-                    found = i;
-                    break;
-                }
-            }
-
-            if (found == -1)
-            {
-                return false;
+                Array.Copy(_items, _head, newArray, 0, _count);
             }
             else
             {
-                Remove(found);
-                return true;
+                Array.Copy(_items, _head, newArray, 0, _items.Length - _head);
+                Array.Copy(_items, 0, newArray, _items.Length - _head, _tail);
             }
         }
 
-        public void Remove(int index)
-        {
-            Fx.Assert(index < this.count, "Index out of range");
-
-            for (int i = index - 1; i >= 0; i--)
-            {
-                int sourceIndex = (this.head + i) % this.items.Length;
-                int targetIndex = sourceIndex + 1;
-
-                if (targetIndex == this.items.Length)
-                {
-                    targetIndex = 0;
-                }
-
-                this.items[targetIndex] = this.items[sourceIndex];
-            }
-
-            --this.count;
-            ++this.head;
-
-            if (this.head == this.items.Length)
-            {
-                this.head = 0;
-            }
-        }
-
-        private void Enlarge()
-        {
-            Fx.Assert(this.items.Length > 0, "Quack is empty");
-
-            int capacity = this.items.Length * 2;
-            this.SetCapacity(capacity);
-        }
-
-        private void SetCapacity(int capacity)
-        {
-            Fx.Assert(capacity >= this.count, "Capacity is set to a smaller value");
-
-            T[] newArray = new T[capacity];
-            if (this.count > 0)
-            {
-                if (this.head < this.tail)
-                {
-                    Array.Copy(this.items, this.head, newArray, 0, this.count);
-                }
-                else
-                {
-                    Array.Copy(this.items, this.head, newArray, 0, this.items.Length - this.head);
-                    Array.Copy(this.items, 0, newArray, this.items.Length - this.head, this.tail);
-                }
-            }
-
-            this.items = newArray;
-            this.head = 0;
-            this.tail = (this.count == capacity) ? 0 : this.count;
-        }
+        _items = newArray;
+        _head = 0;
+        _tail = (_count == capacity) ? 0 : _count;
     }
 }

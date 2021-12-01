@@ -1,227 +1,185 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Runtime;
+using Internals;
+
+internal class AsyncOperationContext
 {
-    using System;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private static AsyncCallback onResumeAsyncCodeActivityBookmark;
+    private readonly ActivityExecutor _executor;
+    private readonly ActivityInstance _owningActivityInstance;
+    private bool _hasCanceled;
+    private bool _hasCompleted;
 
-    internal class AsyncOperationContext
+    internal AsyncOperationContext(ActivityExecutor executor, ActivityInstance owningActivityInstance)
     {
-        private static AsyncCallback onResumeAsyncCodeActivityBookmark;
-        private ActivityExecutor executor;
-        private ActivityInstance owningActivityInstance;
-        private bool hasCanceled;
-        private bool hasCompleted;
+        _executor = executor;
+        _owningActivityInstance = owningActivityInstance;
+    }
 
-        internal AsyncOperationContext(ActivityExecutor executor, ActivityInstance owningActivityInstance)
+    internal bool IsStillActive => !_hasCanceled && !_hasCompleted;
+
+    public object UserState { get; set; }
+
+    public bool HasCalledAsyncCodeActivityCancel { get; set; }
+
+    public bool IsAborting { get; set; }
+
+    private bool ShouldCancel() => IsStillActive;
+
+    private bool ShouldComplete()
+    {
+        if (_hasCanceled)
         {
-            this.executor = executor;
-            this.owningActivityInstance = owningActivityInstance;
+            return false;
         }
 
-        internal bool IsStillActive
+        if (_hasCompleted)
         {
-            get
-            {
-                return !this.hasCanceled && !this.hasCompleted;
-            }
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OperationAlreadyCompleted));
         }
 
-        public object UserState
+        return true;
+    }
+
+    internal void CancelOperation()
+    {
+        if (ShouldCancel())
         {
-            get;
-            set;
+            _executor.CompleteOperation(_owningActivityInstance);
         }
 
-        public bool HasCalledAsyncCodeActivityCancel
+        _hasCanceled = true;
+    }
+
+    public void CompleteOperation()
+    {
+        if (ShouldComplete())
         {
-            get;
-            set;
+            _executor.CompleteOperation(_owningActivityInstance);
+
+            _hasCompleted = true;
+        }
+    }
+
+    // used by AsyncCodeActivity to efficiently complete a "true" async operation
+    internal void CompleteAsyncCodeActivity(CompleteData completeData)
+    {
+        Fx.Assert(completeData != null, "caller must validate this is not null");
+
+        if (!ShouldComplete())
+        {
+            // nothing to do here
+            return;
         }
 
-        public bool IsAborting
+        if (onResumeAsyncCodeActivityBookmark == null)
         {
-            get;
-            set;
+            onResumeAsyncCodeActivityBookmark = Fx.ThunkCallback(new AsyncCallback(OnResumeAsyncCodeActivityBookmark));
         }
 
-        private bool ShouldCancel()
+        try
         {
-            return this.IsStillActive;
-        }
-
-        private bool ShouldComplete()
-        {
-            if (this.hasCanceled)
-            {
-                return false;
-            }
-
-            if (this.hasCompleted)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OperationAlreadyCompleted));
-            }
-
-            return true;
-        }
-
-        internal void CancelOperation()
-        {
-            if (ShouldCancel())
-            {
-                this.executor.CompleteOperation(this.owningActivityInstance);
-            }
-
-            this.hasCanceled = true;
-        }
-
-        public void CompleteOperation()
-        {
-            if (ShouldComplete())
-            {
-                this.executor.CompleteOperation(this.owningActivityInstance);
-
-                this.hasCompleted = true;
-            }
-        }
-
-        // used by AsyncCodeActivity to efficiently complete a "true" async operation
-        internal void CompleteAsyncCodeActivity(CompleteData completeData)
-        {
-            Fx.Assert(completeData != null, "caller must validate this is not null");
-
-            if (!this.ShouldComplete())
-            {
-                // nothing to do here
-                return;
-            }
-
-            if (onResumeAsyncCodeActivityBookmark == null)
-            {
-                onResumeAsyncCodeActivityBookmark = Fx.ThunkCallback(new AsyncCallback(OnResumeAsyncCodeActivityBookmark));
-            }
-
-            try
-            {
-                IAsyncResult result = this.executor.BeginResumeBookmark(Bookmark.AsyncOperationCompletionBookmark,
-                    completeData, TimeSpan.MaxValue, onResumeAsyncCodeActivityBookmark, this.executor);
-                if (result.CompletedSynchronously)
-                {
-                    this.executor.EndResumeBookmark(result);
-                }
-            }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
-
-                this.executor.AbortWorkflowInstance(e);
-            }
-        }
-
-        private static void OnResumeAsyncCodeActivityBookmark(IAsyncResult result)
-        {
+            IAsyncResult result = _executor.BeginResumeBookmark(Bookmark.AsyncOperationCompletionBookmark,
+                completeData, TimeSpan.MaxValue, onResumeAsyncCodeActivityBookmark, _executor);
             if (result.CompletedSynchronously)
             {
-                return;
-            }
-
-            ActivityExecutor executor = (ActivityExecutor)result.AsyncState;
-
-            try
-            {
-                executor.EndResumeBookmark(result);
-            }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
-
-                executor.AbortWorkflowInstance(e);
+                _executor.EndResumeBookmark(result);
             }
         }
-
-        internal abstract class CompleteData
+        catch (Exception e)
         {
-            private readonly AsyncOperationContext context;
-            private readonly bool isCancel;
-
-            protected CompleteData(AsyncOperationContext context, bool isCancel)
+            if (Fx.IsFatal(e))
             {
-                Fx.Assert(context != null, "Cannot have a null context.");
-                this.context = context;
-                this.isCancel = isCancel;
+                throw;
             }
 
-            protected ActivityExecutor Executor
-            {
-                get
-                {
-                    return this.context.executor;
-                }
-            }
-
-            public ActivityInstance Instance
-            {
-                get
-                {
-                    return this.context.owningActivityInstance;
-                }
-            }
-
-            protected AsyncOperationContext AsyncContext
-            {
-                get
-                {
-                    return this.context;
-                }
-            }
-
-            // This method will throw if the complete/cancel is now invalid, it will return
-            // true if the complete/cancel should proceed, and return false if the complete/cancel
-            // should be ignored.
-            private bool ShouldCallExecutor()
-            {
-                if (this.isCancel)
-                {
-                    return this.context.ShouldCancel();
-                }
-                else
-                {
-                    return this.context.ShouldComplete();
-                }
-            }
-
-            // This must be called from a workflow thread
-            public void CompleteOperation()
-            {
-                if (ShouldCallExecutor())
-                {
-                    OnCallExecutor();
-
-                    // We only update hasCompleted if we just did the completion work.
-                    // Calling Cancel followed by Complete does not mean you've completed.
-                    if (!this.isCancel)
-                    {
-                        this.context.hasCompleted = true;
-                    }
-                }
-
-                // We update hasCanceled even if we skipped the actual work.
-                // Calling Complete followed by Cancel does imply that you have canceled.
-                if (this.isCancel)
-                {
-                    this.context.hasCanceled = true;
-                }
-            }
-
-            protected abstract void OnCallExecutor();
+            _executor.AbortWorkflowInstance(e);
         }
+    }
+
+    private static void OnResumeAsyncCodeActivityBookmark(IAsyncResult result)
+    {
+        if (result.CompletedSynchronously)
+        {
+            return;
+        }
+
+        ActivityExecutor executor = (ActivityExecutor)result.AsyncState;
+
+        try
+        {
+            executor.EndResumeBookmark(result);
+        }
+        catch (Exception e)
+        {
+            if (Fx.IsFatal(e))
+            {
+                throw;
+            }
+
+            executor.AbortWorkflowInstance(e);
+        }
+    }
+
+    internal abstract class CompleteData
+    {
+        private readonly AsyncOperationContext _context;
+        private readonly bool _isCancel;
+
+        protected CompleteData(AsyncOperationContext context, bool isCancel)
+        {
+            Fx.Assert(context != null, "Cannot have a null context.");
+            _context = context;
+            _isCancel = isCancel;
+        }
+
+        protected ActivityExecutor Executor => _context._executor;
+
+        public ActivityInstance Instance => _context._owningActivityInstance;
+
+        protected AsyncOperationContext AsyncContext => _context;
+
+        // This method will throw if the complete/cancel is now invalid, it will return
+        // true if the complete/cancel should proceed, and return false if the complete/cancel
+        // should be ignored.
+        private bool ShouldCallExecutor()
+        {
+            if (_isCancel)
+            {
+                return _context.ShouldCancel();
+            }
+            else
+            {
+                return _context.ShouldComplete();
+            }
+        }
+
+        // This must be called from a workflow thread
+        public void CompleteOperation()
+        {
+            if (ShouldCallExecutor())
+            {
+                OnCallExecutor();
+
+                // We only update hasCompleted if we just did the completion work.
+                // Calling Cancel followed by Complete does not mean you've completed.
+                if (!_isCancel)
+                {
+                    _context._hasCompleted = true;
+                }
+            }
+
+            // We update hasCanceled even if we skipped the actual work.
+            // Calling Complete followed by Cancel does imply that you have canceled.
+            if (_isCancel)
+            {
+                _context._hasCanceled = true;
+            }
+        }
+
+        protected abstract void OnCallExecutor();
     }
 }

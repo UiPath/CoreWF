@@ -4,60 +4,35 @@
 using System.Activities.Runtime;
 using System.Diagnostics.Tracing;
 
-namespace System.Activities.Internals
+namespace System.Activities.Internals;
+
+internal static partial class FxTrace
 {
-    internal static partial class FxTrace
+    private const string BaseEventSourceName = "TRACESOURCE_NAME";
+    private const string EventSourceVersion = "4.0.0.0";
+    private static string s_eventSourceName;
+    private static ExceptionTrace s_exceptionTrace;
+
+    public static bool ShouldTraceInformation => WfEventSource.Instance.IsEnabled(EventLevel.Informational, EventKeywords.All);
+
+    public static bool ShouldTraceVerboseToTraceSource => WfEventSource.Instance.IsEnabled(EventLevel.Verbose, EventKeywords.All);
+
+    public static ExceptionTrace Exception
     {
-        private const string baseEventSourceName = "TRACESOURCE_NAME";
-        private const string EventSourceVersion = "4.0.0.0";
-        private static string s_eventSourceName;
-        private static ExceptionTrace s_exceptionTrace;
-
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode,
-        //    Justification = "This template is shared across all assemblies, some of which use this accessor.")]
-        public static bool ShouldTraceInformation
+        get
         {
-            get
-            {
-                return WfEventSource.Instance.IsEnabled(EventLevel.Informational, EventKeywords.All);
-            }
+            // don't need a lock here since a true singleton is not required
+            s_exceptionTrace ??= new ExceptionTrace(EventSourceName);
+            return s_exceptionTrace;
         }
+    }
 
-        //[SuppressMessage(FxCop.Category.Performance, FxCop.Rule.AvoidUncalledPrivateCode,
-        //    Justification = "This template is shared across all assemblies, some of which use this accessor.")]
-        public static bool ShouldTraceVerboseToTraceSource
+    private static string EventSourceName
+    {
+        get
         {
-            get
-            {
-                return WfEventSource.Instance.IsEnabled(EventLevel.Verbose, EventKeywords.All);
-            }
-        }
-
-        public static ExceptionTrace Exception
-        {
-            get
-            {
-                if (s_exceptionTrace == null)
-                {
-                    // don't need a lock here since a true singleton is not required
-                    s_exceptionTrace = new ExceptionTrace(EventSourceName);
-                }
-
-                return s_exceptionTrace;
-            }
-        }
-
-        private static string EventSourceName
-        {
-            get
-            {
-                if (s_eventSourceName == null)
-                {
-                    s_eventSourceName = string.Concat(baseEventSourceName, " ", EventSourceVersion);
-                }
-
-                return s_eventSourceName;
-            }
+            s_eventSourceName ??= string.Concat(BaseEventSourceName, " ", EventSourceVersion);
+            return s_eventSourceName;
         }
     }
 }

@@ -3,123 +3,88 @@
 
 using System.Xml.Linq;
 
-namespace System.Activities.Runtime
+namespace System.Activities.Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+internal static class WorkflowNamespace
 {
-    [Fx.Tag.XamlVisible(false)]
-    internal static class WorkflowNamespace
+    private const string baseNamespace = "urn:schemas-microsoft-com:System.Activities/4.0/properties";
+    private static readonly XNamespace s_workflowNamespace = XNamespace.Get(baseNamespace);
+    private static readonly XNamespace s_variablesNamespace = XNamespace.Get(baseNamespace + "/variables");
+    private static readonly XNamespace s_outputNamespace = XNamespace.Get(baseNamespace + "/output");
+
+    private static XName s_workflowHostType;
+    private static XName s_status;
+    private static XName s_bookmarks;
+    private static XName s_lastUpdate;
+    private static XName s_exception;
+    private static XName s_workflow;
+    private static XName s_keyProvider;
+
+    public static XNamespace VariablesPath => s_variablesNamespace;
+
+    public static XNamespace OutputPath => s_outputNamespace;
+
+    public static XName WorkflowHostType
     {
-        private const string baseNamespace = "urn:schemas-microsoft-com:System.Activities/4.0/properties";
-        private static readonly XNamespace s_workflowNamespace = XNamespace.Get(baseNamespace);
-        private static readonly XNamespace s_variablesNamespace = XNamespace.Get(baseNamespace + "/variables");
-        private static readonly XNamespace s_outputNamespace = XNamespace.Get(baseNamespace + "/output");
-
-        private static XName s_workflowHostType;
-        private static XName s_status;
-        private static XName s_bookmarks;
-        private static XName s_lastUpdate;
-        private static XName s_exception;
-        private static XName s_workflow;
-        private static XName s_keyProvider;
-
-        public static XNamespace VariablesPath
+        get
         {
-            get
-            {
-                return s_variablesNamespace;
-            }
+            s_workflowHostType ??= s_workflowNamespace.GetName("WorkflowHostType");
+            return s_workflowHostType;
         }
+    }
 
-        public static XNamespace OutputPath
+    public static XName Status
+    {
+        get
         {
-            get
-            {
-                return s_outputNamespace;
-            }
+            s_status ??= s_workflowNamespace.GetName("Status");
+            return s_status;
         }
+    }
 
-        public static XName WorkflowHostType
+    public static XName Bookmarks
+    {
+        get
         {
-            get
-            {
-                if (s_workflowHostType == null)
-                {
-                    s_workflowHostType = s_workflowNamespace.GetName("WorkflowHostType");
-                }
-
-                return s_workflowHostType;
-            }
+            s_bookmarks ??= s_workflowNamespace.GetName("Bookmarks");
+            return s_bookmarks;
         }
+    }
 
-        public static XName Status
+    public static XName LastUpdate
+    {
+        get
         {
-            get
-            {
-                if (s_status == null)
-                {
-                    s_status = s_workflowNamespace.GetName("Status");
-                }
-                return s_status;
-            }
+            s_lastUpdate ??= s_workflowNamespace.GetName("LastUpdate");
+            return s_lastUpdate;
         }
+    }
 
-        public static XName Bookmarks
+    public static XName Exception
+    {
+        get
         {
-            get
-            {
-                if (s_bookmarks == null)
-                {
-                    s_bookmarks = s_workflowNamespace.GetName("Bookmarks");
-                }
-                return s_bookmarks;
-            }
+            s_exception ??= s_workflowNamespace.GetName("Exception");
+            return s_exception;
         }
+    }
 
-        public static XName LastUpdate
+    public static XName Workflow
+    {
+        get
         {
-            get
-            {
-                if (s_lastUpdate == null)
-                {
-                    s_lastUpdate = s_workflowNamespace.GetName("LastUpdate");
-                }
-                return s_lastUpdate;
-            }
+            s_workflow ??= s_workflowNamespace.GetName("Workflow");
+            return s_workflow;
         }
+    }
 
-        public static XName Exception
+    public static XName KeyProvider
+    {
+        get
         {
-            get
-            {
-                if (s_exception == null)
-                {
-                    s_exception = s_workflowNamespace.GetName("Exception");
-                }
-                return s_exception;
-            }
-        }
-
-        public static XName Workflow
-        {
-            get
-            {
-                if (s_workflow == null)
-                {
-                    s_workflow = s_workflowNamespace.GetName("Workflow");
-                }
-                return s_workflow;
-            }
-        }
-
-        public static XName KeyProvider
-        {
-            get
-            {
-                if (s_keyProvider == null)
-                {
-                    s_keyProvider = s_workflowNamespace.GetName("KeyProvider");
-                }
-                return s_keyProvider;
-            }
+            s_keyProvider ??= s_workflowNamespace.GetName("KeyProvider");
+            return s_keyProvider;
         }
     }
 }

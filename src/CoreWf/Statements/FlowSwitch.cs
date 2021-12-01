@@ -1,134 +1,99 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Activities.Runtime;
+using System.Activities.Runtime.Collections;
+using System.Windows.Markup;
+
+namespace System.Activities.Statements;
+
+[ContentProperty("Cases")]
+public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
 {
-    using System.Activities;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Activities.Runtime.Collections;
-    using System.Windows.Markup;
-    using System.Activities.Runtime;
+    private const string DefaultDisplayName = "Switch";
+    internal IDictionary<T, FlowNode> _cases;
+    private CompletionCallback<T> _onSwitchCompleted;
 
-    [ContentProperty("Cases")]
-    public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
+    public FlowSwitch()
     {
-        private const string DefaultDisplayName = "Switch";
-        internal IDictionary<T, FlowNode> cases;
-        private CompletionCallback<T> onSwitchCompleted;
-        private string displayName;
+        _cases = new NullableKeyDictionary<T, FlowNode>();
+        DisplayName = DefaultDisplayName;
+    }
 
-        public FlowSwitch()
+    [DefaultValue(null)]
+    public Activity<T> Expression { get; set; }
+
+    [DefaultValue(null)]
+    public FlowNode Default { get; set; }
+
+    [Fx.Tag.KnownXamlExternal]
+    public IDictionary<T, FlowNode> Cases => _cases;
+
+    [DefaultValue(DefaultDisplayName)]
+    public string DisplayName { get; set; }
+
+    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
+    {
+        if (Expression == null)
         {
-            this.cases = new NullableKeyDictionary<T, FlowNode>();
-            this.displayName = FlowSwitch<T>.DefaultDisplayName;
+            metadata.AddValidationError(SR.FlowSwitchRequiresExpression(owner.DisplayName));
         }
+    }
 
-        [DefaultValue(null)]
-        public Activity<T> Expression
+    internal override void GetConnectedNodes(IList<FlowNode> connections)
+    {
+        foreach (KeyValuePair<T, FlowNode> item in Cases)
         {
-            get;
-            set;
+            connections.Add(item.Value);
         }
-
-        [DefaultValue(null)]
-        public FlowNode Default
+        if (Default != null)
         {
-            get;
-            set;
+            connections.Add(Default);
         }
+    }
 
-        [Fx.Tag.KnownXamlExternal]
-        public IDictionary<T, FlowNode> Cases
+    internal override Activity ChildActivity => Expression;
+
+    bool IFlowSwitch.Execute(NativeActivityContext context, Flowchart parent)
+    {
+        context.ScheduleActivity(Expression, GetSwitchCompletedCallback(parent));
+        return false;
+    }
+
+    FlowNode IFlowSwitch.GetNextNode(object value)
+    {
+        T newValue = (T)value;
+        if (Cases.TryGetValue(newValue, out FlowNode result))
         {
-            get
+            if (TD.FlowchartSwitchCaseIsEnabled())
             {
-                return this.cases;
+                TD.FlowchartSwitchCase(Owner.DisplayName, newValue?.ToString());
             }
+            return result;
         }
-
-        [DefaultValue(FlowSwitch<T>.DefaultDisplayName)]
-        public string DisplayName
+        else
         {
-            get
+            if (Default != null)
             {
-                return this.displayName;
-            }
-            set
-            {
-                this.displayName = value;
-            }
-        }
-
-        internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
-        {
-            if (this.Expression == null)
-            {
-                metadata.AddValidationError(SR.FlowSwitchRequiresExpression(owner.DisplayName));
-            }
-        }
-
-        internal override void GetConnectedNodes(IList<FlowNode> connections)
-        {
-            foreach (KeyValuePair<T, FlowNode> item in this.Cases)
-            {
-                connections.Add(item.Value);
-            }
-            if (this.Default != null)
-            {
-                connections.Add(this.Default);
-            }
-        }
-
-        internal override Activity ChildActivity
-        {
-            get { return Expression; }
-        }
-
-        bool IFlowSwitch.Execute(NativeActivityContext context, Flowchart parent)
-        {
-            context.ScheduleActivity(Expression, this.GetSwitchCompletedCallback(parent));
-            return false;
-        }
-
-        FlowNode IFlowSwitch.GetNextNode(object value)
-        {
-            T newValue = (T)value;
-            if (Cases.TryGetValue(newValue, out FlowNode result))
-            {
-                if (TD.FlowchartSwitchCaseIsEnabled())
+                if (TD.FlowchartSwitchDefaultIsEnabled())
                 {
-                    TD.FlowchartSwitchCase(this.Owner.DisplayName, newValue.ToString());
+                    TD.FlowchartSwitchDefault(Owner.DisplayName);
                 }
-                return result;
             }
             else
             {
-                if (this.Default != null)
+                if (TD.FlowchartSwitchCaseNotFoundIsEnabled())
                 {
-                    if (TD.FlowchartSwitchDefaultIsEnabled())
-                    {
-                        TD.FlowchartSwitchDefault(this.Owner.DisplayName);
-                    }
+                    TD.FlowchartSwitchCaseNotFound(Owner.DisplayName);
                 }
-                else
-                {
-                    if (TD.FlowchartSwitchCaseNotFoundIsEnabled())
-                    {
-                        TD.FlowchartSwitchCaseNotFound(this.Owner.DisplayName);
-                    }
-                }
-                return this.Default;
             }
+            return Default;
         }
+    }
 
-        private CompletionCallback<T> GetSwitchCompletedCallback(Flowchart parent)
-        {
-            if (onSwitchCompleted == null)
-            {
-                onSwitchCompleted = new CompletionCallback<T>(parent.OnSwitchCompleted<T>);
-            }
-            return onSwitchCompleted;
-        }
+    private CompletionCallback<T> GetSwitchCompletedCallback(Flowchart parent)
+    {
+        _onSwitchCompleted ??= new CompletionCallback<T>(parent.OnSwitchCompleted);
+        return _onSwitchCompleted;
     }
 }

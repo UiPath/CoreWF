@@ -3,172 +3,132 @@
 
 using System.Activities.Runtime;
 using System.Activities.Runtime.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Tracing;
 using System.Globalization;
-using System.Runtime.Serialization;
 
-namespace System.Activities.Tracking
+namespace System.Activities.Tracking;
+
+[Fx.Tag.XamlVisible(false)]
+[DataContract]
+public abstract class TrackingRecord
 {
-    [Fx.Tag.XamlVisible(false)]
-    [DataContract]
-    public abstract class TrackingRecord
+    private IDictionary<string, string> _annotations;
+    private DateTime _eventTime;
+    private EventLevel _level;
+    private EventTraceActivity _eventTraceActivity;
+
+    private static ReadOnlyDictionary<string, string> s_readonlyEmptyAnnotations;
+
+    protected TrackingRecord(Guid instanceId)
     {
-        private IDictionary<string, string> _annotations;
-        private DateTime _eventTime;
-        private EventLevel _level;
-        private EventTraceActivity _eventTraceActivity;
+        InstanceId = instanceId;
+        EventTime = DateTime.UtcNow;
+        Level = EventLevel.Informational;
+        _eventTraceActivity = new EventTraceActivity(instanceId);
+    }
 
-        private static ReadOnlyDictionary<string, string> s_readonlyEmptyAnnotations;
+    protected TrackingRecord(Guid instanceId, long recordNumber)
+        : this(instanceId)
+    {
+        RecordNumber = recordNumber;
+    }
 
-        protected TrackingRecord(Guid instanceId)
+    protected TrackingRecord(TrackingRecord record)
+    {
+        InstanceId = record.InstanceId;
+        RecordNumber = record.RecordNumber;
+        EventTime = record.EventTime;
+        Level = record.Level;
+        if (record.HasAnnotations)
         {
-            this.InstanceId = instanceId;
-            this.EventTime = DateTime.UtcNow;
-            this.Level = EventLevel.Informational;
-            _eventTraceActivity = new EventTraceActivity(instanceId);
+            Dictionary<string, string> copy = new Dictionary<string, string>(record._annotations);
+            _annotations = new ReadOnlyDictionary<string, string>(copy);
         }
+    }
 
-        protected TrackingRecord(Guid instanceId, long recordNumber)
-            : this(instanceId)
+
+    [DataMember]
+    public Guid InstanceId { get; internal set; }
+
+    [DataMember]
+    public long RecordNumber { get; internal set; }
+
+    public DateTime EventTime
+    {
+        get => _eventTime;
+        private set => _eventTime = value;
+    }
+
+    public EventLevel Level
+    {
+        get => _level;
+        protected set => _level = value;
+    }
+
+    public IDictionary<string, string> Annotations
+    {
+        get
         {
-            this.RecordNumber = recordNumber;
+            _annotations ??= ReadOnlyEmptyAnnotations;
+            return _annotations;
         }
-
-        protected TrackingRecord(TrackingRecord record)
+        internal set
         {
-            this.InstanceId = record.InstanceId;
-            this.RecordNumber = record.RecordNumber;
-            this.EventTime = record.EventTime;
-            this.Level = record.Level;
-            if (record.HasAnnotations)
-            {
-                Dictionary<string, string> copy = new Dictionary<string, string>(record._annotations);
-                _annotations = new ReadOnlyDictionary<string, string>(copy);
-            }
+            Fx.Assert(value.IsReadOnly, "only readonly dictionary can be set for annotations");
+            _annotations = value;
         }
+    }
 
+    [DataMember(EmitDefaultValue = false, Name = "annotations")]
+    internal IDictionary<string, string> SerializedAnnotations
+    {
+        get => _annotations;
+        set => _annotations = value;
+    }
 
-        [DataMember]
-        public Guid InstanceId
+    [DataMember(Name = "EventTime")]
+    internal DateTime SerializedEventTime
+    {
+        get => EventTime;
+        set => EventTime = value;
+    }
+
+    [DataMember(Name = "Level")]
+    internal EventLevel SerializedLevel
+    {
+        get => Level;
+        set => Level = value;
+    }
+
+    internal EventTraceActivity EventTraceActivity
+    {
+        get
         {
-            get;
-            internal set;
+            _eventTraceActivity ??= new EventTraceActivity(InstanceId);
+            return _eventTraceActivity;
         }
+    }
 
-        [DataMember]
-        public long RecordNumber
+    private static ReadOnlyDictionary<string, string> ReadOnlyEmptyAnnotations
+    {
+        get
         {
-            get;
-            internal set;
+            s_readonlyEmptyAnnotations ??= new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
+            return s_readonlyEmptyAnnotations;
         }
+    }
 
-        public DateTime EventTime
-        {
-            get
-            {
-                return _eventTime;
-            }
-            private set
-            {
-                _eventTime = value;
-            }
-        }
+    public bool HasAnnotations => (_annotations != null && _annotations.Count > 0);
 
-        public EventLevel Level
-        {
-            get
-            {
-                return _level;
-            }
-            protected set
-            {
-                _level = value;
-            }
-        }
+    protected abstract internal TrackingRecord Clone();
 
-        public IDictionary<string, string> Annotations
-        {
-            get
-            {
-                if (_annotations == null)
-                {
-                    _annotations = ReadOnlyEmptyAnnotations;
-                }
-                return _annotations;
-            }
-            internal set
-            {
-                Fx.Assert(value.IsReadOnly, "only readonly dictionary can be set for annotations");
-                _annotations = value;
-            }
-        }
-
-        [DataMember(EmitDefaultValue = false, Name = "annotations")]
-        internal IDictionary<string, string> SerializedAnnotations
-        {
-            get { return _annotations; }
-            set { _annotations = value; }
-        }
-
-        [DataMember(Name = "EventTime")]
-        internal DateTime SerializedEventTime
-        {
-            get { return this.EventTime; }
-            set { this.EventTime = value; }
-        }
-
-        [DataMember(Name = "Level")]
-        internal EventLevel SerializedLevel
-        {
-            get { return this.Level; }
-            set { this.Level = value; }
-        }
-
-        internal EventTraceActivity EventTraceActivity
-        {
-            get
-            {
-                if (_eventTraceActivity == null)
-                {
-                    _eventTraceActivity = new EventTraceActivity(this.InstanceId);
-                }
-
-                return _eventTraceActivity;
-            }
-        }
-
-        private static ReadOnlyDictionary<string, string> ReadOnlyEmptyAnnotations
-        {
-            get
-            {
-                if (s_readonlyEmptyAnnotations == null)
-                {
-                    s_readonlyEmptyAnnotations = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
-                }
-                return s_readonlyEmptyAnnotations;
-            }
-        }
-
-        public bool HasAnnotations
-        {
-            get
-            {
-                return (_annotations != null && _annotations.Count > 0);
-            }
-        }
-
-        protected abstract internal TrackingRecord Clone();
-
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.CurrentCulture,
-                "InstanceId = {0}, RecordNumber = {1}, EventTime = {2}",
-                this.InstanceId,
-                this.RecordNumber,
-                this.EventTime);
-        }
+    public override string ToString()
+    {
+        return string.Format(CultureInfo.CurrentCulture,
+            "InstanceId = {0}, RecordNumber = {1}, EventTime = {2}",
+            InstanceId,
+            RecordNumber,
+            EventTime);
     }
 }

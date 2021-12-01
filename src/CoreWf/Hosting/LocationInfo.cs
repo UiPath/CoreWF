@@ -1,81 +1,61 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Hosting
+using System.Activities.Runtime;
+
+namespace System.Activities.Hosting;
+
+[DataContract]
+[Fx.Tag.XamlVisible(false)]
+public sealed class LocationInfo
 {
-    using System.Runtime.Serialization;
-    using System.Activities.Runtime;
+    private string _name;
+    private string _ownerDisplayName;
+    private object _value;
 
-    [DataContract]
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class LocationInfo
+    internal LocationInfo(string name, string ownerDisplayName, object value)
     {
-        private string name;
-        private string ownerDisplayName;
-        private object value;
+        Name = name;
+        OwnerDisplayName = ownerDisplayName;
+        Value = value;
+    }        
 
-        internal LocationInfo(string name, string ownerDisplayName, object value)
-        {
-            this.Name = name;
-            this.OwnerDisplayName = ownerDisplayName;
-            this.Value = value;
-        }        
+    public string Name
+    {
+        get => _name;
+        private set => _name = value;
+    }
 
-        public string Name
-        {
-            get
-            {
-                return this.name;
-            }
-            private set
-            {
-                this.name = value;
-            }
-        }
-        
-        public string OwnerDisplayName
-        {
-            get
-            {
-                return this.ownerDisplayName;
-            }
-            private set
-            {
-                this.ownerDisplayName = value;
-            }
-        }
-        
-        public object Value
-        {
-            get
-            {
-                return this.value;
-            }
-            private set
-            {
-                this.value = value;
-            }
-        }
+    public string OwnerDisplayName
+    {
+        get => _ownerDisplayName;
+        private set => _ownerDisplayName = value;
+    }
 
-        [DataMember(Name = "Name")]
-        internal string SerializedName
-        {
-            get { return this.Name; }
-            set { this.Name = value; }
-        }
+    public object Value
+    {
+        get => _value;
+        private set => _value = value;
+    }
 
-        [DataMember(EmitDefaultValue = false, Name = "OwnerDisplayName")]
-        internal string SerializedOwnerDisplayName
-        {
-            get { return this.OwnerDisplayName; }
-            set { this.OwnerDisplayName = value; }
-        }
+    [DataMember(Name = "Name")]
+    internal string SerializedName
+    {
+        get => Name;
+        set => Name = value;
+    }
 
-        [DataMember(EmitDefaultValue = false, Name = "Value")]
-        internal object SerializedValue
-        {
-            get { return this.Value; }
-            set { this.Value = value; }
-        }
+    [DataMember(EmitDefaultValue = false, Name = "OwnerDisplayName")]
+    internal string SerializedOwnerDisplayName
+    {
+        get => OwnerDisplayName;
+        set => OwnerDisplayName = value;
+    }
+
+    [DataMember(EmitDefaultValue = false, Name = "Value")]
+    internal object SerializedValue
+    {
+        get => Value;
+        set => Value = value;
     }
 }

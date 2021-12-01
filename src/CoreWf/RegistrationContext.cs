@@ -1,40 +1,29 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Internals;
+using Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+public sealed class RegistrationContext
 {
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private readonly ExecutionPropertyManager _properties;
+    private readonly IdSpace _currentIdSpace;
 
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class RegistrationContext
+    internal RegistrationContext(ExecutionPropertyManager properties, IdSpace currentIdSpace)
     {
-        private readonly ExecutionPropertyManager properties;
-        private readonly IdSpace currentIdSpace;
+        _properties = properties;
+        _currentIdSpace = currentIdSpace;
+    }
 
-        internal RegistrationContext(ExecutionPropertyManager properties, IdSpace currentIdSpace)
+    public object FindProperty(string name)
+    {
+        if (string.IsNullOrEmpty(name))
         {
-            this.properties = properties;
-            this.currentIdSpace = currentIdSpace;
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
         }
 
-        public object FindProperty(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
-            }
-
-            if (this.properties == null)
-            {
-                return null;
-            }
-            else
-            {
-                return this.properties.GetProperty(name, this.currentIdSpace);
-            }
-        }
+        return _properties?.GetProperty(name, _currentIdSpace);
     }
 }
-
-

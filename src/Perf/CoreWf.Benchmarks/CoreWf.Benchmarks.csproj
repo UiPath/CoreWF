@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ExpressionsCSharp.xaml" />
+    <None Remove="ExpressionsVB.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ExpressionsCSharp.xaml">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExpressionsVB.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
+    <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
+  </ItemGroup>
+
+</Project>

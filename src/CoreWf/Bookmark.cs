@@ -1,229 +1,156 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Globalization;
+
+namespace System.Activities;
+using Hosting;
+using Internals;
+using Runtime;
+
+public delegate void BookmarkCallback(NativeActivityContext context, Bookmark bookmark, object value);
+
+[DataContract]
+[Fx.Tag.XamlVisible(false)]
+[TypeConverter(typeof(BookmarkConverter))]
+public class Bookmark : IEquatable<Bookmark>
 {
-    using System;
-    using System.Activities.Hosting;
-    using System.Activities.Runtime;
-    using System.Collections.Generic;
-    using System.Runtime.Serialization;
-    using System.Globalization;
-    using System.Activities.Internals;
-    using System.ComponentModel;
+    private static readonly Bookmark asyncOperationCompletionBookmark = new(-1);
+    private static IEqualityComparer<Bookmark> comparer;
+
+    //Used only when exclusive scopes are involved
+    private ExclusiveHandleList _exclusiveHandlesThatReferenceThis;
+    private long _id;
+    private string _externalName;
+
+    internal Bookmark() { }
+
+    private Bookmark(long id)
+    {
+        Fx.Assert(id != 0, "id should not be zero");
+        _id = id;
+    }
+
+    public Bookmark(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
+        }
+
+        _externalName = name;
+    }
+
+    internal static Bookmark AsyncOperationCompletionBookmark => asyncOperationCompletionBookmark;
+
+    internal static IEqualityComparer<Bookmark> Comparer
+    {
+        get
+        {
+            comparer ??= new BookmarkComparer();
+            return comparer;
+        }
+    }
+
+    [DataMember(EmitDefaultValue = false, Name = "exclusiveHandlesThatReferenceThis", Order = 2)]
+    internal ExclusiveHandleList SerializedExclusiveHandlesThatReferenceThis
+    {
+        get => _exclusiveHandlesThatReferenceThis;
+        set => _exclusiveHandlesThatReferenceThis = value;
+    }
+
+    [DataMember(EmitDefaultValue = false, Name = "id", Order = 0)]
+    internal long SerializedId
+    {
+        get => _id;
+        set => _id = value;
+    }
+
+    [DataMember(EmitDefaultValue = false, Name = "externalName", Order = 1)]
+    internal string SerializedExternalName
+    {
+        get => _externalName;
+        set => _externalName = value;
+    }
+
+    [DataMember(EmitDefaultValue = false)]
+    internal BookmarkScope Scope { get; set; }
+
+    internal bool IsNamed => _id == 0;
+
+    public string Name => IsNamed ? _externalName : string.Empty;
+
+    internal long Id
+    {
+        get
+        {
+            Fx.Assert(!IsNamed, "We should only get the id for unnamed bookmarks.");
+
+            return _id;
+        }
+    }
+
+    internal ExclusiveHandleList ExclusiveHandles
+    {
+        get => _exclusiveHandlesThatReferenceThis;
+        set => _exclusiveHandlesThatReferenceThis = value;
+    }
+
+
+    internal static Bookmark Create(long id) => new(id);
+
+    internal BookmarkInfo GenerateBookmarkInfo(BookmarkCallbackWrapper bookmarkCallback)
+    {
+        Fx.Assert(IsNamed, "Can only generate BookmarkInfo for external bookmarks");
+
+        BookmarkScopeInfo scopeInfo = null;
+
+        if (Scope != null)
+        {
+            scopeInfo = Scope.GenerateScopeInfo();
+        }
+
+        return new BookmarkInfo(_externalName, bookmarkCallback.ActivityInstance.Activity.DisplayName, scopeInfo);
+    }
+
+    public bool Equals(Bookmark other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (IsNamed)
+        {
+            return other.IsNamed && _externalName == other._externalName;
+        }
+        else
+        {
+            return _id == other._id;
+        }
+    }
+
+    public override bool Equals(object obj) => Equals(obj as Bookmark);
+
+    public override int GetHashCode() => IsNamed ? _externalName.GetHashCode() : _id.GetHashCode();
+
+    public override string ToString() => IsNamed ? Name : Id.ToString(CultureInfo.InvariantCulture);
 
     [DataContract]
-    [Fx.Tag.XamlVisible(false)]
-    [TypeConverter(typeof(BookmarkConverter))]
-    public class Bookmark : IEquatable<Bookmark>
+    internal class BookmarkComparer : IEqualityComparer<Bookmark>
     {
-        private static readonly Bookmark asyncOperationCompletionBookmark = new Bookmark(-1);
-        private static IEqualityComparer<Bookmark> comparer;
+        public BookmarkComparer() { }
 
-        //Used only when exclusive scopes are involved
-        private ExclusiveHandleList exclusiveHandlesThatReferenceThis;
-        private long id;
-        private string externalName;
-
-        internal Bookmark() { }
-
-        private Bookmark(long id)
+        public bool Equals(Bookmark x, Bookmark y)
         {
-            Fx.Assert(id != 0, "id should not be zero");
-            this.id = id;
-        }
-
-        public Bookmark(string name)
-        {
-            if (string.IsNullOrEmpty(name))
+            if (x is null)
             {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
+                return y is null;
             }
 
-            this.externalName = name;
+            return x.Equals(y);
         }
 
-        internal static Bookmark AsyncOperationCompletionBookmark
-        {
-            get
-            {
-                return asyncOperationCompletionBookmark;
-            }
-        }
-
-        internal static IEqualityComparer<Bookmark> Comparer
-        {
-            get
-            {
-                if (comparer == null)
-                {
-                    comparer = new BookmarkComparer();
-                }
-
-                return comparer;
-            }
-        }
-
-        [DataMember(EmitDefaultValue = false, Name = "exclusiveHandlesThatReferenceThis", Order = 2)]
-        internal ExclusiveHandleList SerializedExclusiveHandlesThatReferenceThis
-        {
-            get { return this.exclusiveHandlesThatReferenceThis; }
-            set { this.exclusiveHandlesThatReferenceThis = value; }
-        }
-
-        [DataMember(EmitDefaultValue = false, Name = "id", Order = 0)]
-        internal long SerializedId
-        {
-            get { return this.id; }
-            set { this.id = value; }
-        }
-
-        [DataMember(EmitDefaultValue = false, Name = "externalName", Order = 1)]
-        internal string SerializedExternalName
-        {
-            get { return this.externalName; }
-            set { this.externalName = value; }
-        }
-
-        [DataMember(EmitDefaultValue = false)]
-        internal BookmarkScope Scope
-        {
-            get;
-            set;
-        }
-
-        internal bool IsNamed
-        {
-            get
-            {
-                return this.id == 0;
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                if (this.IsNamed)
-                {
-                    return this.externalName;
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-        }
-
-        internal long Id
-        {
-            get
-            {
-                Fx.Assert(!this.IsNamed, "We should only get the id for unnamed bookmarks.");
-
-                return this.id;
-            }
-        }
-
-        internal ExclusiveHandleList ExclusiveHandles
-        {
-            get
-            {
-                return this.exclusiveHandlesThatReferenceThis;
-            }
-            set
-            {
-                this.exclusiveHandlesThatReferenceThis = value;
-            }
-        }
-
-
-        internal static Bookmark Create(long id)
-        {
-            return new Bookmark(id);
-        }
-
-        internal BookmarkInfo GenerateBookmarkInfo(BookmarkCallbackWrapper bookmarkCallback)
-        {
-            Fx.Assert(this.IsNamed, "Can only generate BookmarkInfo for external bookmarks");
-
-            BookmarkScopeInfo scopeInfo = null;
-
-            if (this.Scope != null)
-            {
-                scopeInfo = this.Scope.GenerateScopeInfo();
-            }
-
-            return new BookmarkInfo(this.externalName, bookmarkCallback.ActivityInstance.Activity.DisplayName, scopeInfo);
-        }
-
-        public bool Equals(Bookmark other)
-        {
-            if (object.ReferenceEquals(other, null))
-            {
-                return false;
-            }
-
-            if (this.IsNamed)
-            {
-                return other.IsNamed && this.externalName == other.externalName;
-            }
-            else
-            {
-                return this.id == other.id;
-            }
-        }
-
-        public override bool Equals(object obj)
-        {
-            return this.Equals(obj as Bookmark);
-        }
-
-        public override int GetHashCode()
-        {
-            if (this.IsNamed)
-            {
-                return this.externalName.GetHashCode();
-            }
-            else
-            {
-                return this.id.GetHashCode();
-            }
-        }
-
-        public override string ToString()
-        {
-            if (this.IsNamed)
-            {
-                return this.Name;
-            }
-            else
-            {
-                return this.Id.ToString(CultureInfo.InvariantCulture);
-            }
-        }
-
-        [DataContract]
-        internal class BookmarkComparer : IEqualityComparer<Bookmark>
-        {
-            public BookmarkComparer()
-            {
-            }
-
-            public bool Equals(Bookmark x, Bookmark y)
-            {
-                if (object.ReferenceEquals(x, null))
-                {
-                    return object.ReferenceEquals(y, null);
-                }
-
-                return x.Equals(y);
-            }
-
-            public int GetHashCode(Bookmark obj)
-            {
-                return obj.GetHashCode();
-            }
-        }
+        public int GetHashCode(Bookmark obj) => obj.GetHashCode();
     }
 }

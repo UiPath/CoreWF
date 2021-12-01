@@ -1,91 +1,77 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+using System.Activities.Validation;
+using System.Reflection;
+
+namespace System.Activities.Expressions;
+
+public sealed class PropertyValue<TOperand, TResult> : CodeActivity<TResult>
 {
-    using System.Activities;
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
-    using System.Activities.Validation;
-    using System;
-    using System.ComponentModel;
-    using System.Reflection;
+    private Func<TOperand, TResult> _operationFunction;
+    private bool _isOperationFunctionStatic;
 
-    public sealed class PropertyValue<TOperand, TResult> : CodeActivity<TResult>
+    public InArgument<TOperand> Operand { get; set; }
+
+    [DefaultValue(null)]
+    public string PropertyName { get; set; }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        private Func<TOperand, TResult> operationFunction;
-        private bool isOperationFunctionStatic;
-
-        public InArgument<TOperand> Operand
+        bool isRequired = false;
+        if (typeof(TOperand).IsEnum)
         {
-            get;
-            set;
+            metadata.AddValidationError(SR.TargetTypeCannotBeEnum(GetType().Name, DisplayName));
         }
 
-        [DefaultValue(null)]
-        public string PropertyName
+        if (string.IsNullOrEmpty(PropertyName))
         {
-            get;
-            set;
+            metadata.AddValidationError(SR.ActivityPropertyMustBeSet("PropertyName", DisplayName));
         }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
+        else
         {
-            bool isRequired = false;
-            if (typeof(TOperand).IsEnum)
-            {
-                metadata.AddValidationError(SR.TargetTypeCannotBeEnum(this.GetType().Name, this.DisplayName));
-            }
+            Type operandType = typeof(TOperand);
+            PropertyInfo propertyInfo = operandType.GetProperty(PropertyName);
 
-            if (string.IsNullOrEmpty(this.PropertyName))
+            if (propertyInfo == null)
             {
-                metadata.AddValidationError(SR.ActivityPropertyMustBeSet("PropertyName", this.DisplayName));
+                metadata.AddValidationError(SR.MemberNotFound(PropertyName, typeof(TOperand).Name));
             }
             else
             {
-                PropertyInfo propertyInfo = null;
-                Type operandType = typeof(TOperand);
-                propertyInfo = operandType.GetProperty(this.PropertyName);
+                Fx.Assert(propertyInfo.GetAccessors().Length > 0, "Property should have at least 1 accessor.");
 
-                if (propertyInfo == null)
+                _isOperationFunctionStatic = propertyInfo.GetAccessors()[0].IsStatic;
+                isRequired = !_isOperationFunctionStatic;
+
+                if (!MemberExpressionHelper.TryGenerateLinqDelegate(PropertyName, false, _isOperationFunctionStatic, out _operationFunction, out ValidationError validationError))
                 {
-                    metadata.AddValidationError(SR.MemberNotFound(this.PropertyName, typeof(TOperand).Name));
+                    metadata.AddValidationError(validationError);
                 }
-                else
+
+                MethodInfo getMethod = propertyInfo.GetGetMethod();
+                MethodInfo setMethod = propertyInfo.GetSetMethod();
+
+                if ((getMethod != null && !getMethod.IsStatic) || (setMethod != null && !setMethod.IsStatic))
                 {
-                    Fx.Assert(propertyInfo.GetAccessors().Length > 0, "Property should have at least 1 accessor.");
-
-                    this.isOperationFunctionStatic = propertyInfo.GetAccessors()[0].IsStatic;
-                    isRequired = !this.isOperationFunctionStatic;
-
-                    if (!MemberExpressionHelper.TryGenerateLinqDelegate(this.PropertyName, false, this.isOperationFunctionStatic, out this.operationFunction, out ValidationError validationError))
-                    {
-                        metadata.AddValidationError(validationError);
-                    }
-
-                    MethodInfo getMethod = propertyInfo.GetGetMethod();
-                    MethodInfo setMethod = propertyInfo.GetSetMethod();
-
-                    if ((getMethod != null && !getMethod.IsStatic) || (setMethod != null && !setMethod.IsStatic))
-                    {
-                        isRequired = true;
-                    }
+                    isRequired = true;
                 }
             }
-            MemberExpressionHelper.AddOperandArgument(metadata, this.Operand, isRequired);
         }
+        MemberExpressionHelper.AddOperandArgument(metadata, Operand, isRequired);
+    }
 
-        protected override TResult Execute(CodeActivityContext context)
+    protected override TResult Execute(CodeActivityContext context)
+    {
+        TOperand operandValue = Operand.Get(context);
+
+        if (!_isOperationFunctionStatic && operandValue == null)
         {
-            TOperand operandValue = this.Operand.Get(context);
-
-            if (!this.isOperationFunctionStatic && operandValue == null)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
-            }
-
-            TResult result = this.operationFunction(operandValue);
-            return result;
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", GetType().Name, DisplayName)));
         }
+
+        TResult result = _operationFunction(operandValue);
+        return result;
     }
 }

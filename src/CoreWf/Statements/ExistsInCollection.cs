@@ -1,62 +1,49 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Collections.ObjectModel;
+using System.Windows.Markup;
+
+namespace System.Activities.Statements;
+
+//[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix, Justification = "Optimizing for XAML naming.")]
+[ContentProperty("Collection")]
+public sealed class ExistsInCollection<T> : CodeActivity<bool>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Windows.Markup;
-    using System.Activities.Internals;
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument<ICollection<T>> Collection { get; set; }
 
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.IdentifiersShouldNotHaveIncorrectSuffix, Justification = "Optimizing for XAML naming.")]
-    [ContentProperty("Collection")]
-    public sealed class ExistsInCollection<T> : CodeActivity<bool>
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument<T> Item { get; set; }
+
+    //override to no-op because of performance
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument<ICollection<T>> Collection
-        {
-            get;
-            set;
-        }
+        RuntimeArgument collectionArgument = new RuntimeArgument("Collection", typeof(ICollection<T>), ArgumentDirection.In, true);
+        metadata.Bind(Collection, collectionArgument);
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument<T> Item
-        {
-            get;
-            set;
-        }
+        RuntimeArgument itemArgument = new RuntimeArgument("Item", typeof(T), ArgumentDirection.In, true);
+        metadata.Bind(Item, itemArgument);
 
-        //override to no-op because of performance
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            RuntimeArgument collectionArgument = new RuntimeArgument("Collection", typeof(ICollection<T>), ArgumentDirection.In, true);
-            metadata.Bind(this.Collection, collectionArgument);
-
-            RuntimeArgument itemArgument = new RuntimeArgument("Item", typeof(T), ArgumentDirection.In, true);
-            metadata.Bind(this.Item, itemArgument);
-
-            metadata.SetArgumentsCollection(
-                new Collection<RuntimeArgument>
-                {
-                    collectionArgument,
-                    itemArgument,
-                });
-        }
-
-        protected override bool Execute(CodeActivityContext context)
-        {
-            ICollection<T> collection = this.Collection.Get(context);
-            if (collection == null)
+        metadata.SetArgumentsCollection(
+            new Collection<RuntimeArgument>
             {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CollectionActivityRequiresCollection(this.DisplayName)));
-            }
-            T item = this.Item.Get(context);
-            
-            return collection.Contains(item);
+                collectionArgument,
+                itemArgument,
+            });
+    }
+
+    protected override bool Execute(CodeActivityContext context)
+    {
+        ICollection<T> collection = Collection.Get(context);
+        if (collection == null)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CollectionActivityRequiresCollection(DisplayName)));
         }
+        T item = Item.Get(context);
+            
+        return collection.Contains(item);
     }
 }

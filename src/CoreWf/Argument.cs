@@ -1,344 +1,294 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Windows.Markup;
+
+namespace System.Activities;
+using Internals;
+using Runtime;
+using Validation;
+using XamlIntegration;
+
+public abstract class Argument
 {
-    using System;
-    using System.Activities.Runtime;
-    using System.Activities.Validation;
-    using System.Activities.XamlIntegration;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Runtime.Serialization;
-    using System.Windows.Markup;
-    using System.Activities.Internals;
+    public static readonly int UnspecifiedEvaluationOrder = -1;
 
-    public abstract class Argument
+    public const string ResultValue = "Result";
+    private ArgumentDirection _direction;
+    private RuntimeArgument _runtimeArgument;
+    private int _evaluationOrder;
+
+    internal Argument()
     {
-        public static readonly int UnspecifiedEvaluationOrder = -1;
+        _evaluationOrder = UnspecifiedEvaluationOrder;
+    }
 
-        public const string ResultValue = "Result";
-        private ArgumentDirection direction;
-        private RuntimeArgument runtimeArgument;
-        private int evaluationOrder;
+    public Type ArgumentType { get; internal set; }
 
-        internal Argument()
+    public ArgumentDirection Direction
+    {
+        get => _direction;
+        internal set
         {
-            this.evaluationOrder = Argument.UnspecifiedEvaluationOrder;
+            ArgumentDirectionHelper.Validate(value, "value");
+            _direction = value;
+        }
+    }
+
+    [DefaultValue(-1)]
+    public int EvaluationOrder
+    {
+        get => _evaluationOrder;
+        set
+        {
+            if (value < 0 && value != UnspecifiedEvaluationOrder)
+            {
+                throw FxTrace.Exception.ArgumentOutOfRange("EvaluationOrder", value, SR.InvalidEvaluationOrderValue);
+            }
+            _evaluationOrder = value;
+        }
+    }
+
+    [IgnoreDataMember] // this member is repeated by all subclasses, which we control
+    [DefaultValue(null)]
+    public ActivityWithResult Expression
+    {
+        get => ExpressionCore;
+        set => ExpressionCore = value;
+    }
+
+    internal abstract ActivityWithResult ExpressionCore { get; set; }
+
+    internal RuntimeArgument RuntimeArgument
+    {
+        get => _runtimeArgument;
+        set => _runtimeArgument = value;
+    }
+
+    internal bool IsInTree => _runtimeArgument != null && _runtimeArgument.IsInTree;
+
+    internal bool WasDesignTimeNull { get; set; }
+
+    internal int Id
+    {
+        get
+        {
+            Fx.Assert(_runtimeArgument != null, "We shouldn't call Id unless we have a runtime argument.");
+            return _runtimeArgument.Id;
+        }
+    }
+
+    internal bool IsEmpty => Expression == null;
+
+    public static Argument CreateReference(Argument argumentToReference, string referencedArgumentName)
+    {
+        if (argumentToReference == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
         }
 
-        public Type ArgumentType
+        if (string.IsNullOrEmpty(referencedArgumentName))
         {
-            get;
-            internal set;
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
         }
 
-        public ArgumentDirection Direction
+        return ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, argumentToReference.Direction, referencedArgumentName);
+    }
+
+    // for ArgumentValueSerializer
+    internal bool CanConvertToString(IValueSerializerContext context)
+    {
+        if (WasDesignTimeNull)
         {
-            get
-            {
-                return this.direction;
-            }
-            internal set
-            {
-                ArgumentDirectionHelper.Validate(value, "value");
-                this.direction = value;
-            }
-        }
-
-        [DefaultValue(-1)]
-        public int EvaluationOrder
+            return true;
+        }            
+        else
         {
-            get
+            if (EvaluationOrder == UnspecifiedEvaluationOrder)
             {
-                return this.evaluationOrder;
+                return ActivityWithResultValueSerializer.CanConvertToStringWrapper(Expression, context);
             }
-            set
-            {
-                if (value < 0 && value != Argument.UnspecifiedEvaluationOrder)
-                {
-                    throw FxTrace.Exception.ArgumentOutOfRange("EvaluationOrder", value, SR.InvalidEvaluationOrderValue);
-                }
-                this.evaluationOrder = value;
-            }
-        }
-
-        [IgnoreDataMember] // this member is repeated by all subclasses, which we control
-        [DefaultValue(null)]
-        public ActivityWithResult Expression
-        {
-            get
-            {
-                return this.ExpressionCore;
-            }
-            set
-            {
-                this.ExpressionCore = value;
-            }
-        }        
-
-        internal abstract ActivityWithResult ExpressionCore
-        {
-            get;
-            set;
-        }
-
-        internal RuntimeArgument RuntimeArgument
-        {
-            get
-            {
-                return this.runtimeArgument;
-            }
-            set
-            {
-                this.runtimeArgument = value;
-            }
-        }
-
-        internal bool IsInTree
-        {
-            get
-            {
-                return (this.runtimeArgument != null && this.runtimeArgument.IsInTree);
-            }
-        }
-
-        internal bool WasDesignTimeNull
-        {
-            get;
-            set;
-        }
-
-        internal int Id
-        {
-            get
-            {
-                Fx.Assert(this.runtimeArgument != null, "We shouldn't call Id unless we have a runtime argument.");
-                return this.runtimeArgument.Id;
-            }
-        }
-
-        internal bool IsEmpty
-        {
-            get
-            {
-                return this.Expression == null;
-            }
-        }
-
-        public static Argument CreateReference(Argument argumentToReference, string referencedArgumentName)
-        {
-            if (argumentToReference == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(argumentToReference));
-            }
-
-            if (string.IsNullOrEmpty(referencedArgumentName))
-            {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(referencedArgumentName));
-            }
-
-            return ActivityUtilities.CreateReferenceArgument(argumentToReference.ArgumentType, argumentToReference.Direction, referencedArgumentName);
-        }
-
-        // for ArgumentValueSerializer
-        internal bool CanConvertToString(IValueSerializerContext context)
-        {
-            if (this.WasDesignTimeNull)
-            {
-                return true;
-            }            
             else
             {
-                if (this.EvaluationOrder == Argument.UnspecifiedEvaluationOrder)
-                {
-                    return ActivityWithResultValueSerializer.CanConvertToStringWrapper(this.Expression, context);
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
         }
+    }
 
-        internal string ConvertToString(IValueSerializerContext context)
+    internal string ConvertToString(IValueSerializerContext context)
+    {
+        if (WasDesignTimeNull)
         {
-            if (this.WasDesignTimeNull)
+            // this argument instance was artificially created by the runtime
+            // to Xaml, this should appear as {x:Null}
+            return null;
+        }
+
+        return ActivityWithResultValueSerializer.ConvertToStringWrapper(Expression, context);
+    }
+
+    public static implicit operator Argument(Func<ActivityContext, object> expression) => expression;
+
+    internal static void Bind(Argument binding, RuntimeArgument argument)
+    {
+        if (binding != null)
+        {
+            Fx.Assert(binding.Direction == argument.Direction, "The directions must match.");
+            Fx.Assert(binding.ArgumentType == argument.Type, "The types must match.");
+
+            binding.RuntimeArgument = argument;
+        }
+
+        argument.BoundArgument = binding;
+    }
+
+    internal static void TryBind(Argument binding, RuntimeArgument argument, Activity violationOwner)
+    {
+        if (argument == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(argument));
+        }
+
+        bool passedValidations = true;
+
+        if (binding != null)
+        {
+            if (binding.Direction != argument.Direction)
             {
-                // this argument instance was artificially created by the runtime
-                // to Xaml, this should appear as {x:Null}
-                return null;
+                violationOwner.AddTempValidationError(new ValidationError(SR.ArgumentDirectionMismatch(argument.Name, argument.Direction, binding.Direction)));
+                passedValidations = false;
             }
 
-            return ActivityWithResultValueSerializer.ConvertToStringWrapper(this.Expression, context);
-        }
-
-        public static implicit operator Argument(Func<ActivityContext, object> expression) => (InArgument)expression;
-
-        internal static void Bind(Argument binding, RuntimeArgument argument)
-        {
-            if (binding != null)
+            if (binding.ArgumentType != argument.Type)
             {
-                Fx.Assert(binding.Direction == argument.Direction, "The directions must match.");
-                Fx.Assert(binding.ArgumentType == argument.Type, "The types must match.");
-
-                binding.RuntimeArgument = argument;
+                violationOwner.AddTempValidationError(new ValidationError(SR.ArgumentTypeMismatch(argument.Name, argument.Type, binding.ArgumentType)));
+                passedValidations = false;
             }
-
-            argument.BoundArgument = binding;
         }
 
-        internal static void TryBind(Argument binding, RuntimeArgument argument, Activity violationOwner)
+        if (passedValidations)
         {
-            if (argument == null)
+            Bind(binding, argument);
+        }
+    }
+
+    public static Argument Create(Type type, ArgumentDirection direction)
+    {
+        return ActivityUtilities.CreateArgument(type, direction);
+    }
+
+    internal abstract Location CreateDefaultLocation();
+
+    internal abstract void Declare(LocationEnvironment targetEnvironment, ActivityInstance activityInstance);
+
+    // Soft-Link: This method is referenced through reflection by
+    // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
+    // file if the signature changes.
+    public object Get(ActivityContext context) => Get<object>(context);
+
+    // Soft-Link: This method is referenced through reflection by
+    // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
+    // file if the signature changes.
+    public T Get<T>(ActivityContext context)
+    {
+        if (context == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(context));
+        }
+
+        ThrowIfNotInTree();
+
+        return context.GetValue<T>(RuntimeArgument);
+    }
+
+    public void Set(ActivityContext context, object value)
+    {
+        if (context == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(context));
+        }
+
+        ThrowIfNotInTree();
+
+        context.SetValue(RuntimeArgument, value);
+    }
+
+    internal void Validate(Activity owner, ref IList<ValidationError> validationErrors)
+    {
+        if (Expression != null)
+        {
+            if (Expression.Result != null && !Expression.Result.IsEmpty)
             {
-                throw FxTrace.Exception.ArgumentNull(nameof(argument));
+                ValidationError validationError = new(SR.ResultCannotBeSetOnArgumentExpressions, false, RuntimeArgument.Name, owner);
+                ActivityUtilities.Add(ref validationErrors, validationError);
             }
 
-            bool passedValidations = true;
+            ActivityWithResult actualExpression = Expression;
 
-            if (binding != null)
+            if (actualExpression is IExpressionWrapper wrapper)
             {
-                if (binding.Direction != argument.Direction)
-                {
-                    violationOwner.AddTempValidationError(new ValidationError(SR.ArgumentDirectionMismatch(argument.Name, argument.Direction, binding.Direction)));
-                    passedValidations = false;
-                }
-
-                if (binding.ArgumentType != argument.Type)
-                {
-                    violationOwner.AddTempValidationError(new ValidationError(SR.ArgumentTypeMismatch(argument.Name, argument.Type, binding.ArgumentType)));
-                    passedValidations = false;
-                }
+                actualExpression = wrapper.InnerExpression;
             }
 
-            if (passedValidations)
+            switch (Direction)
             {
-                Bind(binding, argument);
+                case ArgumentDirection.In:
+                    if (actualExpression.ResultType != ArgumentType)
+                    {
+                        ActivityUtilities.Add(
+                            ref validationErrors,
+                            new ValidationError(SR.ArgumentValueExpressionTypeMismatch(ArgumentType, actualExpression.ResultType), false, RuntimeArgument.Name, owner));
+                    }
+                    break;
+                case ArgumentDirection.InOut:
+                case ArgumentDirection.Out:
+                    Type locationType;
+                    if (!ActivityUtilities.IsLocationGenericType(actualExpression.ResultType, out locationType) ||
+                        locationType != ArgumentType)
+                    {
+                        Type expectedType = ActivityUtilities.CreateActivityWithResult(ActivityUtilities.CreateLocation(ArgumentType));
+                        ActivityUtilities.Add(
+                            ref validationErrors,
+                            new ValidationError(SR.ArgumentLocationExpressionTypeMismatch(expectedType.FullName, actualExpression.GetType().FullName), false, RuntimeArgument.Name, owner));
+                    }
+                    break;
             }
         }
+    }
 
-        public static Argument Create(Type type, ArgumentDirection direction)
+    // optional "fast-path" for arguments that can be resolved synchronously
+    internal abstract bool TryPopulateValue(LocationEnvironment targetEnvironment, ActivityInstance targetActivityInstance, ActivityExecutor executor);
+
+    // Soft-Link: This method is referenced through reflection by
+    // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
+    // file if the signature changes.
+    public Location GetLocation(ActivityContext context)
+    {
+        if (context == null)
         {
-            return ActivityUtilities.CreateArgument(type, direction);
+            throw FxTrace.Exception.ArgumentNull(nameof(context));
         }
 
-        internal abstract Location CreateDefaultLocation();
+        ThrowIfNotInTree();
 
-        internal abstract void Declare(LocationEnvironment targetEnvironment, ActivityInstance activityInstance);
+        return _runtimeArgument.GetLocation(context);
+    }
 
-        // Soft-Link: This method is referenced through reflection by
-        // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
-        // file if the signature changes.
-        public object Get(ActivityContext context)
+    internal void ThrowIfNotInTree()
+    {
+        if (!IsInTree)
         {
-            return Get<object>(context);
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentNotInTree(ArgumentType)));
         }
+    }
 
-        // Soft-Link: This method is referenced through reflection by
-        // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
-        // file if the signature changes.
-        public T Get<T>(ActivityContext context)
-        {
-            if (context == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(context));
-            }
+    internal static Location<T> CreateLocation<T>()
+    {
+        return new Location<T>();
+    }
 
-            ThrowIfNotInTree();
-
-            return context.GetValue<T>(this.RuntimeArgument);
-        }
-
-        public void Set(ActivityContext context, object value)
-        {
-            if (context == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(context));
-            }
-
-            ThrowIfNotInTree();
-
-            context.SetValue(this.RuntimeArgument, value);
-        }
-
-        internal void Validate(Activity owner, ref IList<ValidationError> validationErrors)
-        {
-            if (this.Expression != null)
-            {
-                if (this.Expression.Result != null && !this.Expression.Result.IsEmpty)
-                {
-                    ValidationError validationError = new ValidationError(SR.ResultCannotBeSetOnArgumentExpressions, false, this.RuntimeArgument.Name, owner);
-                    ActivityUtilities.Add(ref validationErrors, validationError);
-                }
-
-                ActivityWithResult actualExpression = this.Expression;
-
-                if (actualExpression is IExpressionWrapper)
-                {
-                    actualExpression = ((IExpressionWrapper)actualExpression).InnerExpression;
-                }
-
-                switch (this.Direction)
-                {
-                    case ArgumentDirection.In:
-                        if (actualExpression.ResultType != this.ArgumentType)
-                        {
-                            ActivityUtilities.Add(
-                                ref validationErrors,
-                                new ValidationError(SR.ArgumentValueExpressionTypeMismatch(this.ArgumentType, actualExpression.ResultType), false, this.RuntimeArgument.Name, owner));
-                        }
-                        break;
-                    case ArgumentDirection.InOut:
-                    case ArgumentDirection.Out:
-                        Type locationType;
-                        if (!ActivityUtilities.IsLocationGenericType(actualExpression.ResultType, out locationType) ||
-                            locationType != this.ArgumentType)
-                        {
-                            Type expectedType = ActivityUtilities.CreateActivityWithResult(ActivityUtilities.CreateLocation(this.ArgumentType));
-                            ActivityUtilities.Add(
-                                ref validationErrors,
-                                new ValidationError(SR.ArgumentLocationExpressionTypeMismatch(expectedType.FullName, actualExpression.GetType().FullName), false, this.RuntimeArgument.Name, owner));
-                        }
-                        break;
-                }
-            }
-        }
-
-        // optional "fast-path" for arguments that can be resolved synchronously
-        internal abstract bool TryPopulateValue(LocationEnvironment targetEnvironment, ActivityInstance targetActivityInstance, ActivityExecutor executor);
-
-        // Soft-Link: This method is referenced through reflection by
-        // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
-        // file if the signature changes.
-        public Location GetLocation(ActivityContext context)
-        {
-            if (context == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(context));
-            }
-
-            ThrowIfNotInTree();
-
-            return this.runtimeArgument.GetLocation(context);
-        }
-
-        internal void ThrowIfNotInTree()
-        {
-            if (!this.IsInTree)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ArgumentNotInTree(this.ArgumentType)));
-            }
-        }
-
-        internal static Location<T> CreateLocation<T>()
-        {
-            return new Location<T>();
-        }
-
-        public interface IExpressionWrapper
-        {
-            ActivityWithResult InnerExpression { get; }
-        }
+    public interface IExpressionWrapper
+    {
+        ActivityWithResult InnerExpression { get; }
     }
 }

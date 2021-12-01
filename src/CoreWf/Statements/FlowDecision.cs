@@ -1,110 +1,83 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Activities.Expressions;
+using System.Linq.Expressions;
+using System.Windows.Markup;
+
+namespace System.Activities.Statements;
+
+public sealed class FlowDecision : FlowNode
 {
-    using System;
-    using System.Activities;
-    using System.Activities.Expressions;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Linq.Expressions;
-    using System.Windows.Markup;
-    using System.Activities.Internals;
+    private const string DefaultDisplayName = "Decision";
+    private string _displayName;
 
-    public sealed class FlowDecision : FlowNode
+    public FlowDecision()
     {
-        private const string DefaultDisplayName = "Decision";
-        private string displayName;
+        _displayName = DefaultDisplayName;
+    }
 
-        public FlowDecision()
+    public FlowDecision(Expression<Func<ActivityContext, bool>> condition)
+        : this()
+    {
+        if (condition == null)
         {
-            this.displayName = FlowDecision.DefaultDisplayName;
+            throw FxTrace.Exception.ArgumentNull(nameof(condition));
         }
 
-        public FlowDecision(Expression<Func<ActivityContext, bool>> condition)
-            : this()
-        {
-            if (condition == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(condition));
-            }
+        Condition = new LambdaValue<bool>(condition);
+    }
 
-            this.Condition = new LambdaValue<bool>(condition);
+    public FlowDecision(Activity<bool> condition)
+        : this()
+    {
+        Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
+    }
+
+    [DefaultValue(null)]
+    public Activity<bool> Condition { get; set; }
+
+    [DefaultValue(null)]
+    [DependsOn("Condition")]
+    public FlowNode True { get; set; }
+
+    [DefaultValue(null)]
+    [DependsOn("True")]
+    public FlowNode False { get; set; }
+
+    [DefaultValue(DefaultDisplayName)]
+    public string DisplayName
+    {
+        get => _displayName;
+        set => _displayName = value;
+    }
+
+    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
+    {
+        if (Condition == null)
+        {
+            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName));
+        }
+    }
+
+    internal override void GetConnectedNodes(IList<FlowNode> connections)
+    {
+        if (True != null)
+        {
+            connections.Add(True);
         }
 
-        public FlowDecision(Activity<bool> condition)
-            : this()
+        if (False != null)
         {
-            this.Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
+            connections.Add(False);
         }
+    }
 
-        [DefaultValue(null)]
-        public Activity<bool> Condition
-        {
-            get;
-            set;
-        }
+    internal override Activity ChildActivity => Condition;
 
-        [DefaultValue(null)]
-        [DependsOn("Condition")]
-        public FlowNode True
-        {
-            get;
-            set;
-        }
-
-        [DefaultValue(null)]
-        [DependsOn("True")]
-        public FlowNode False
-        {
-            get;
-            set;
-        }
-
-        [DefaultValue(FlowDecision.DefaultDisplayName)]
-        public string DisplayName
-        {
-            get
-            {
-                return this.displayName;
-            }
-            set
-            {
-                this.displayName = value;
-            }
-        }
-
-        internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
-        {
-            if (this.Condition == null)
-            {
-                metadata.AddValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName));
-            }
-        }
-
-        internal override void GetConnectedNodes(IList<FlowNode> connections)
-        {
-            if (True != null)
-            {
-                connections.Add(True);
-            }
-
-            if (False != null)
-            {
-                connections.Add(False);
-            }
-        }
-
-        internal override Activity ChildActivity
-        {
-            get { return Condition; }
-        }
-
-        internal bool Execute(NativeActivityContext context, CompletionCallback<bool> onConditionCompleted)
-        {
-            context.ScheduleActivity(Condition, onConditionCompleted);
-            return false;
-        }
+    internal bool Execute(NativeActivityContext context, CompletionCallback<bool> onConditionCompleted)
+    {
+        context.ScheduleActivity(Condition, onConditionCompleted);
+        return false;
     }
 }

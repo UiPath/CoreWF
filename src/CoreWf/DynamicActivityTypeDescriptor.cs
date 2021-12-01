@@ -1,312 +1,236 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Collections;
+using System.Collections.ObjectModel;
+
+namespace System.Activities;
+using Internals;
+
+internal class DynamicActivityTypeDescriptor : ICustomTypeDescriptor
 {
-    using System.Activities.Internals;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
+    private PropertyDescriptorCollection _cachedProperties;
+    private readonly Activity _owner;
 
-    internal class DynamicActivityTypeDescriptor : ICustomTypeDescriptor
+    public DynamicActivityTypeDescriptor(Activity owner)
     {
-        private PropertyDescriptorCollection cachedProperties;
-        private readonly Activity owner;
+        _owner = owner;
+        Properties = new ActivityPropertyCollection(this);
+    }
 
-        public DynamicActivityTypeDescriptor(Activity owner)
+    public string Name { get; set; }
+
+    public KeyedCollection<string, DynamicActivityProperty> Properties { get; private set; }
+
+    public AttributeCollection GetAttributes() => TypeDescriptor.GetAttributes(_owner, true);
+
+    public string GetClassName()
+    {
+        if (Name != null)
         {
-            this.owner = owner;
-            this.Properties = new ActivityPropertyCollection(this);
+            return Name;
         }
 
-        public string Name
+        return TypeDescriptor.GetClassName(_owner, true);
+    }
+
+    public string GetComponentName() => TypeDescriptor.GetComponentName(_owner, true);
+
+    public TypeConverter GetConverter() => TypeDescriptor.GetConverter(_owner, true);
+
+    public EventDescriptor GetDefaultEvent() => TypeDescriptor.GetDefaultEvent(_owner, true);
+
+    public PropertyDescriptor GetDefaultProperty() => TypeDescriptor.GetDefaultProperty(_owner, true);
+
+    public object GetEditor(Type editorBaseType) => TypeDescriptor.GetEditor(_owner, editorBaseType, true);
+
+    public EventDescriptorCollection GetEvents(Attribute[] attributes) => TypeDescriptor.GetEvents(_owner, attributes, true);
+
+    public EventDescriptorCollection GetEvents() => TypeDescriptor.GetEvents(_owner, true);
+
+    public PropertyDescriptorCollection GetProperties() => GetProperties(null);
+
+    public PropertyDescriptorCollection GetProperties(Attribute[] attributes = null)
+    {
+        PropertyDescriptorCollection result = _cachedProperties;
+        if (result != null)
         {
-            get;
-            set;
-        }
-
-        public KeyedCollection<string, DynamicActivityProperty> Properties
-        {
-            get;
-            private set;
-        }
-
-        public AttributeCollection GetAttributes()
-        {
-            return TypeDescriptor.GetAttributes(this.owner, true);
-        }
-
-        public string GetClassName()
-        {
-            if (this.Name != null)
-            {
-                return this.Name;
-            }
-
-            return TypeDescriptor.GetClassName(this.owner, true);
-        }
-
-        public string GetComponentName()
-        {
-            return TypeDescriptor.GetComponentName(this.owner, true);
-        }
-
-        public TypeConverter GetConverter()
-        {
-            return TypeDescriptor.GetConverter(this.owner, true);
-        }
-
-        public EventDescriptor GetDefaultEvent()
-        {
-            return TypeDescriptor.GetDefaultEvent(this.owner, true);
-        }
-
-        public PropertyDescriptor GetDefaultProperty()
-        {
-            return TypeDescriptor.GetDefaultProperty(this.owner, true);
-        }
-
-        public object GetEditor(Type editorBaseType)
-        {
-            return TypeDescriptor.GetEditor(this.owner, editorBaseType, true);
-        }
-
-        public EventDescriptorCollection GetEvents(Attribute[] attributes)
-        {
-            return TypeDescriptor.GetEvents(this.owner, attributes, true);
-        }
-
-        public EventDescriptorCollection GetEvents()
-        {
-            return TypeDescriptor.GetEvents(this.owner, true);
-        }
-
-        public PropertyDescriptorCollection GetProperties()
-        {
-            return GetProperties(null);
-        }
-
-        public PropertyDescriptorCollection GetProperties(Attribute[] attributes)
-        {
-            PropertyDescriptorCollection result = this.cachedProperties;
-            if (result != null)
-            {
-                return result;
-            }
-
-            PropertyDescriptorCollection dynamicProperties;
-            if (attributes != null)
-            {
-                dynamicProperties = TypeDescriptor.GetProperties(this.owner, attributes, true);
-            }
-            else
-            {
-                dynamicProperties = TypeDescriptor.GetProperties(this.owner, true);
-            }
-
-            // initial capacity is Properties + Name + Body 
-            List<PropertyDescriptor> propertyDescriptors = new List<PropertyDescriptor>(this.Properties.Count + 2);
-            for (int i = 0; i < dynamicProperties.Count; i++)
-            {
-                PropertyDescriptor dynamicProperty = dynamicProperties[i];
-                if (dynamicProperty.IsBrowsable)
-                {
-                    propertyDescriptors.Add(dynamicProperty);
-                }
-            }
-
-            foreach (DynamicActivityProperty property in Properties)
-            {
-                if (string.IsNullOrEmpty(property.Name)) 
-                {
-                    throw FxTrace.Exception.AsError(new ValidationException(SR.ActivityPropertyRequiresName(this.owner.DisplayName)));
-                }            
-                if (property.Type == null)
-                {                
-                    throw FxTrace.Exception.AsError(new ValidationException(SR.ActivityPropertyRequiresType(this.owner.DisplayName)));
-                }
-                propertyDescriptors.Add(new DynamicActivityPropertyDescriptor(property, this.owner.GetType()));
-            }
-
-            result = new PropertyDescriptorCollection(propertyDescriptors.ToArray());
-            this.cachedProperties = result;
             return result;
         }
 
-        public object GetPropertyOwner(PropertyDescriptor pd)
+        PropertyDescriptorCollection dynamicProperties;
+        if (attributes != null)
         {
-            return this.owner;
+            dynamicProperties = TypeDescriptor.GetProperties(_owner, attributes, true);
+        }
+        else
+        {
+            dynamicProperties = TypeDescriptor.GetProperties(_owner, true);
         }
 
-        private class DynamicActivityPropertyDescriptor : PropertyDescriptor
+        // initial capacity is Properties + Name + Body 
+        List<PropertyDescriptor> propertyDescriptors = new(Properties.Count + 2);
+        for (int i = 0; i < dynamicProperties.Count; i++)
         {
-            private AttributeCollection attributes;
-            private readonly DynamicActivityProperty activityProperty;
-            private readonly Type componentType;
-
-            public DynamicActivityPropertyDescriptor(DynamicActivityProperty activityProperty, Type componentType)
-                : base(activityProperty.Name, null)
+            PropertyDescriptor dynamicProperty = dynamicProperties[i];
+            if (dynamicProperty.IsBrowsable)
             {
-                this.activityProperty = activityProperty;
-                this.componentType = componentType;
-            }
-
-            public override Type ComponentType
-            {
-                get
-                {
-                    return this.componentType;
-                }
-            }
-
-            public override AttributeCollection Attributes
-            {
-                get
-                {
-                    if (this.attributes == null)
-                    {
-                        AttributeCollection inheritedAttributes = base.Attributes;
-                        Collection<Attribute> propertyAttributes = this.activityProperty.Attributes;
-                        Attribute[] totalAttributes = new Attribute[inheritedAttributes.Count + propertyAttributes.Count + 1];
-                        inheritedAttributes.CopyTo(totalAttributes, 0);
-                        propertyAttributes.CopyTo(totalAttributes, inheritedAttributes.Count);
-                        totalAttributes[inheritedAttributes.Count + propertyAttributes.Count] = new DesignerSerializationVisibilityAttribute(DesignerSerializationVisibility.Hidden);
-                        this.attributes = new AttributeCollection(totalAttributes);
-                    }
-                    return this.attributes;
-                }
-            }
-
-            public override bool IsReadOnly
-            {
-                get
-                {
-                    return false;
-                }
-            }
-
-            public override Type PropertyType
-            {
-                get
-                {
-                    return this.activityProperty.Type;
-                }
-            }
-
-            public override object GetValue(object component)
-            {
-                if (!(component is IDynamicActivity owner) || !owner.Properties.Contains(this.activityProperty))
-                {
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidDynamicActivityProperty(this.Name)));
-                }
-
-                return this.activityProperty.Value;                    
-            }
-
-            public override void SetValue(object component, object value)
-            {
-                if (!(component is IDynamicActivity owner) || !owner.Properties.Contains(this.activityProperty))
-                {
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidDynamicActivityProperty(this.Name)));
-                }
-
-                this.activityProperty.Value = value;
-            }
-
-            public override bool CanResetValue(object component)
-            {
-                return false;
-            }
-
-            public override void ResetValue(object component)
-            {
-            }
-
-            public override bool ShouldSerializeValue(object component)
-            {
-                return false;
-            }
-
-            protected override void FillAttributes(IList attributeList)
-            {
-                if (attributeList == null)
-                {
-                    throw FxTrace.Exception.ArgumentNull(nameof(attributeList));
-                }
-
-                attributeList.Add(new DesignerSerializationVisibilityAttribute(DesignerSerializationVisibility.Hidden));
+                propertyDescriptors.Add(dynamicProperty);
             }
         }
 
-        private class ActivityPropertyCollection : KeyedCollection<string, DynamicActivityProperty>
+        foreach (DynamicActivityProperty property in Properties)
         {
-            private readonly DynamicActivityTypeDescriptor parent;
-
-            public ActivityPropertyCollection(DynamicActivityTypeDescriptor parent)
-                : base()
+            if (string.IsNullOrEmpty(property.Name)) 
             {
-                this.parent = parent;
+                throw FxTrace.Exception.AsError(new ValidationException(SR.ActivityPropertyRequiresName(_owner.DisplayName)));
+            }            
+            if (property.Type == null)
+            {                
+                throw FxTrace.Exception.AsError(new ValidationException(SR.ActivityPropertyRequiresType(_owner.DisplayName)));
             }
+            propertyDescriptors.Add(new DynamicActivityPropertyDescriptor(property, _owner.GetType()));
+        }
 
-            protected override void InsertItem(int index, DynamicActivityProperty item)
+        result = new PropertyDescriptorCollection(propertyDescriptors.ToArray());
+        _cachedProperties = result;
+        return result;
+    }
+
+    public object GetPropertyOwner(PropertyDescriptor pd) => _owner;
+
+    private class DynamicActivityPropertyDescriptor : PropertyDescriptor
+    {
+        private AttributeCollection _attributes;
+        private readonly DynamicActivityProperty _activityProperty;
+        private readonly Type _componentType;
+
+        public DynamicActivityPropertyDescriptor(DynamicActivityProperty activityProperty, Type componentType)
+            : base(activityProperty.Name, null)
+        {
+            _activityProperty = activityProperty;
+            _componentType = componentType;
+        }
+
+        public override Type ComponentType => _componentType;
+
+        public override AttributeCollection Attributes
+        {
+            get
             {
-                if (item == null)
+                if (_attributes == null)
                 {
-                    throw FxTrace.Exception.ArgumentNull(nameof(item));
+                    AttributeCollection inheritedAttributes = base.Attributes;
+                    Collection<Attribute> propertyAttributes = _activityProperty.Attributes;
+                    Attribute[] totalAttributes = new Attribute[inheritedAttributes.Count + propertyAttributes.Count + 1];
+                    inheritedAttributes.CopyTo(totalAttributes, 0);
+                    propertyAttributes.CopyTo(totalAttributes, inheritedAttributes.Count);
+                    totalAttributes[inheritedAttributes.Count + propertyAttributes.Count] = new DesignerSerializationVisibilityAttribute(DesignerSerializationVisibility.Hidden);
+                    _attributes = new AttributeCollection(totalAttributes);
                 }
-
-                if (this.Contains(item.Name))
-                {
-                    throw FxTrace.Exception.AsError(new ArgumentException(SR.DynamicActivityDuplicatePropertyDetected(item.Name), nameof(item)));
-                }
-
-                InvalidateCache();
-                base.InsertItem(index, item);                
+                return _attributes;
             }
+        }
 
-            protected override void SetItem(int index, DynamicActivityProperty item)
+        public override bool IsReadOnly => false;
+
+        public override Type PropertyType => _activityProperty.Type;
+
+        public override object GetValue(object component)
+        {
+            if (component is not IDynamicActivity owner || !owner.Properties.Contains(_activityProperty))
             {
-                if (item == null)
-                {
-                    throw FxTrace.Exception.ArgumentNull(nameof(item));
-                }
-
-                // We don't want self-assignment to throw. Note that if this[index] has the same
-                // name as item, no other element in the collection can.
-                if (!this[index].Name.Equals(item.Name) && this.Contains(item.Name))
-                {
-                    throw FxTrace.Exception.AsError(new ArgumentException(SR.DynamicActivityDuplicatePropertyDetected(item.Name), nameof(item)));
-                }
-
-                InvalidateCache();
-                base.SetItem(index, item);                
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidDynamicActivityProperty(Name)));
             }
 
-            protected override void RemoveItem(int index)
+            return _activityProperty.Value;                    
+        }
+
+        public override void SetValue(object component, object value)
+        {
+            if (component is not IDynamicActivity owner || !owner.Properties.Contains(_activityProperty))
             {
-                InvalidateCache();
-                base.RemoveItem(index);
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidDynamicActivityProperty(Name)));
             }
 
-            protected override void ClearItems()
+            _activityProperty.Value = value;
+        }
+
+        public override bool CanResetValue(object component) => false;
+
+        public override void ResetValue(object component) { }
+
+        public override bool ShouldSerializeValue(object component) => false;
+
+        protected override void FillAttributes(IList attributeList)
+        {
+            if (attributeList == null)
             {
-                InvalidateCache();
-                base.ClearItems();
+                throw FxTrace.Exception.ArgumentNull(nameof(attributeList));
             }
 
-            protected override string GetKeyForItem(DynamicActivityProperty item)
-            {
-                return item.Name;
-            }
-
-            private void InvalidateCache()
-            {
-                this.parent.cachedProperties = null;
-            }
+            attributeList.Add(new DesignerSerializationVisibilityAttribute(DesignerSerializationVisibility.Hidden));
         }
     }
+
+    private class ActivityPropertyCollection : KeyedCollection<string, DynamicActivityProperty>
+    {
+        private readonly DynamicActivityTypeDescriptor _parent;
+
+        public ActivityPropertyCollection(DynamicActivityTypeDescriptor parent)
+            : base()
+        {
+            _parent = parent;
+        }
+
+        protected override void InsertItem(int index, DynamicActivityProperty item)
+        {
+            if (item == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(item));
+            }
+
+            if (Contains(item.Name))
+            {
+                throw FxTrace.Exception.AsError(new ArgumentException(SR.DynamicActivityDuplicatePropertyDetected(item.Name), nameof(item)));
+            }
+
+            InvalidateCache();
+            base.InsertItem(index, item);                
+        }
+
+        protected override void SetItem(int index, DynamicActivityProperty item)
+        {
+            if (item == null)
+            {
+                throw FxTrace.Exception.ArgumentNull(nameof(item));
+            }
+
+            // We don't want self-assignment to throw. Note that if this[index] has the same
+            // name as item, no other element in the collection can.
+            if (!this[index].Name.Equals(item.Name) && Contains(item.Name))
+            {
+                throw FxTrace.Exception.AsError(new ArgumentException(SR.DynamicActivityDuplicatePropertyDetected(item.Name), nameof(item)));
+            }
+
+            InvalidateCache();
+            base.SetItem(index, item);                
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            InvalidateCache();
+            base.RemoveItem(index);
+        }
+
+        protected override void ClearItems()
+        {
+            InvalidateCache();
+            base.ClearItems();
+        }
+
+        protected override string GetKeyForItem(DynamicActivityProperty item) => item.Name;
+
+        private void InvalidateCache() => _parent._cachedProperties = null;
+    }
 }
-
-

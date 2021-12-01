@@ -1,178 +1,162 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Activities.Runtime;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+
+namespace System.Activities.Statements;
+
+// Inverted Template Method pattern. MethodExecutor is the base class for executing a method; created by MethodResolver.
+// Private concrete implementations are created by MethodResolver, but this is the "public" API used by InvokeMethod.
+internal abstract class MethodExecutor
 {
-    using System;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Reflection;
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
+    // Used for creating tracing messages w/ DisplayName
+    protected Activity _invokingActivity;
 
-    // Inverted Template Method pattern. MethodExecutor is the base class for executing a method; created by MethodResolver.
-    // Private concrete implementations are created by MethodResolver, but this is the "public" API used by InvokeMethod.
-    internal abstract class MethodExecutor
+    // We may still need to know targetType if we're autocreating targets during ExecuteMethod
+    private readonly InArgument _targetObject;
+    private readonly Collection<Argument> _parameters;
+    private readonly RuntimeArgument _returnObject;
+
+    public MethodExecutor(Activity invokingActivity, Type targetType, InArgument targetObject,
+        Collection<Argument> parameters, RuntimeArgument returnObject)
     {
-        // Used for creating tracing messages w/ DisplayName
-        protected Activity invokingActivity;
+        Fx.Assert(invokingActivity != null, "Must provide invokingActivity");
+        Fx.Assert(targetType != null || (targetObject != null), "Must provide targetType or targetObject");
+        Fx.Assert(parameters != null, "Must provide parameters");
 
-        // We may still need to know targetType if we're autocreating targets during ExecuteMethod
-        private readonly Type targetType;
-        private readonly InArgument targetObject;
-        private Collection<Argument> parameters;
-        private readonly RuntimeArgument returnObject;
+        _invokingActivity = invokingActivity;
+        _targetObject = targetObject;
+        _parameters = parameters;
+        _returnObject = returnObject;
+    }
 
-        public MethodExecutor(Activity invokingActivity, Type targetType, InArgument targetObject,
-            Collection<Argument> parameters, RuntimeArgument returnObject)
+    public abstract bool MethodIsStatic { get; }
+
+    protected abstract IAsyncResult BeginMakeMethodCall(AsyncCodeActivityContext context, object target, AsyncCallback callback, object state);
+    protected abstract void EndMakeMethodCall(AsyncCodeActivityContext context, IAsyncResult result);
+
+    private static bool HaveParameterArray(ParameterInfo[] parameters)
+    {
+        if (parameters.Length > 0)
         {
-            Fx.Assert(invokingActivity != null, "Must provide invokingActivity");
-            Fx.Assert(targetType != null || (targetObject != null), "Must provide targetType or targetObject");
-            Fx.Assert(parameters != null, "Must provide parameters");
-            // returnObject is optional 
+            ParameterInfo last = parameters[^1];
+            return last.GetCustomAttributes(typeof(ParamArrayAttribute), true).GetLength(0) > 0;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-            this.invokingActivity = invokingActivity;
-            this.targetType = targetType;
-            this.targetObject = targetObject;
-            this.parameters = parameters;
-            this.returnObject = returnObject;
+    protected object[] EvaluateAndPackParameters(CodeActivityContext context, MethodInfo method,
+        bool usingAsyncPattern)
+    {
+        ParameterInfo[] formalParameters = method.GetParameters();
+        int formalParamCount = formalParameters.Length;
+        object[] actualParameters = new object[formalParamCount];
+
+        if (usingAsyncPattern)
+        {
+            formalParamCount -= 2;
         }
 
-        public abstract bool MethodIsStatic { get; }
-
-        protected abstract IAsyncResult BeginMakeMethodCall(AsyncCodeActivityContext context, object target, AsyncCallback callback, object state);
-        protected abstract void EndMakeMethodCall(AsyncCodeActivityContext context, IAsyncResult result);
-
-        private static bool HaveParameterArray(ParameterInfo[] parameters)
+        bool haveParameterArray = HaveParameterArray(formalParameters);
+        for (int i = 0; i < formalParamCount; i++)
         {
-            if (parameters.Length > 0)
+            if (i == formalParamCount - 1 && !usingAsyncPattern && haveParameterArray)
             {
-                ParameterInfo last = parameters[parameters.Length - 1];
-                return last.GetCustomAttributes(typeof(ParamArrayAttribute), true).GetLength(0) > 0;
-            }
-            else
-            {
-                return false;
-            }
-        }
+                int paramArrayCount = _parameters.Count - formalParamCount + 1;
 
-        protected object[] EvaluateAndPackParameters(CodeActivityContext context, MethodInfo method,
-            bool usingAsyncPattern)
-        {
-            ParameterInfo[] formalParameters = method.GetParameters();
-            int formalParamCount = formalParameters.Length;
-            object[] actualParameters = new object[formalParamCount];
-
-            if (usingAsyncPattern)
-            {
-                formalParamCount -= 2;
-            }
-
-            bool haveParameterArray = HaveParameterArray(formalParameters);
-            for (int i = 0; i < formalParamCount; i++)
-            {
-                if (i == formalParamCount - 1 && !usingAsyncPattern && haveParameterArray)
+                // If params are given explicitly, that's okay.
+                if (paramArrayCount == 1 && TypeHelper.AreTypesCompatible(_parameters[i].ArgumentType,
+                    formalParameters[i].ParameterType))
                 {
-                    int paramArrayCount = this.parameters.Count - formalParamCount + 1;
-
-                    // If params are given explicitly, that's okay.
-                    if (paramArrayCount == 1 && TypeHelper.AreTypesCompatible(this.parameters[i].ArgumentType,
-                        formalParameters[i].ParameterType))
+                    actualParameters[i] = _parameters[i].Get<object>(context);
+                }
+                else
+                {
+                    // Otherwise, pack them into an array for the reflection call.
+                    actualParameters[i] =
+                        Activator.CreateInstance(formalParameters[i].ParameterType, paramArrayCount);
+                    for (int j = 0; j < paramArrayCount; j++)
                     {
-                        actualParameters[i] = this.parameters[i].Get<object>(context);
+                        ((object[])actualParameters[i])[j] = _parameters[i + j].Get<object>(context);
                     }
-                    else
-                    {
-                        // Otherwise, pack them into an array for the reflection call.
-                        actualParameters[i] =
-                            Activator.CreateInstance(formalParameters[i].ParameterType, paramArrayCount);
-                        for (int j = 0; j < paramArrayCount; j++)
-                        {
-                            ((object[])actualParameters[i])[j] = this.parameters[i + j].Get<object>(context);
-                        }
-                    }
-                    continue;
                 }
-                actualParameters[i] = parameters[i].Get<object>(context);
+                continue;
             }
-
-            return actualParameters;
+            actualParameters[i] = _parameters[i].Get<object>(context);
         }
 
-        //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.InstantiateArgumentExceptionsCorrectly, Justification = "TargetObject is a parameter to InvokeMethod, rather than this specific method.")]
-        public IAsyncResult BeginExecuteMethod(AsyncCodeActivityContext context, AsyncCallback callback, object state)
+        return actualParameters;
+    }
+
+    //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.InstantiateArgumentExceptionsCorrectly, Justification = "TargetObject is a parameter to InvokeMethod, rather than this specific method.")]
+    public IAsyncResult BeginExecuteMethod(AsyncCodeActivityContext context, AsyncCallback callback, object state)
+    {
+        object targetInstance = null;
+
+        if (!MethodIsStatic)
         {
-            object targetInstance = null;
-
-            if (!this.MethodIsStatic)
+            targetInstance = _targetObject.Get(context);
+            if (targetInstance == null)
             {
-                targetInstance = this.targetObject.Get(context);
-                if (targetInstance == null)
-                {
-                    throw FxTrace.Exception.ArgumentNull("TargetObject");
-                }
+                throw FxTrace.Exception.ArgumentNull("TargetObject");
             }
-
-            return BeginMakeMethodCall(context, targetInstance, callback, state); // defer to concrete instance for sync/async variations
         }
 
-        public void EndExecuteMethod(AsyncCodeActivityContext context, IAsyncResult result)
+        return BeginMakeMethodCall(context, targetInstance, callback, state); // defer to concrete instance for sync/async variations
+    }
+
+    public void EndExecuteMethod(AsyncCodeActivityContext context, IAsyncResult result) => EndMakeMethodCall(context, result); // defer to concrete instance for sync/async variations
+
+    internal object InvokeAndUnwrapExceptions(Func<object, object[], object> func, object targetInstance, object[] actualParameters)
+    {
+        try
         {
-            EndMakeMethodCall(context, result); // defer to concrete instance for sync/async variations
+            return func(targetInstance, actualParameters);
         }
-
-        [SuppressMessage("Reliability", "Reliability108:IsFatalRule",
-            Justification = "We need throw out all exceptions from method invocation.")]
-        internal object InvokeAndUnwrapExceptions(Func<object, object[], object> func, object targetInstance, object[] actualParameters)
+        catch (Exception e)
         {
-            try
+            if (TD.InvokedMethodThrewExceptionIsEnabled())
             {
-                return func(targetInstance, actualParameters);
+                TD.InvokedMethodThrewException(_invokingActivity.DisplayName, e.ToString());
             }
-            catch (Exception e)
-            {
-                if (TD.InvokedMethodThrewExceptionIsEnabled())
-                {
-                    TD.InvokedMethodThrewException(this.invokingActivity.DisplayName, e.ToString());
-                }
-                throw FxTrace.Exception.AsError(e);
-            }
+            throw FxTrace.Exception.AsError(e);
         }
+    }
 
-        public void SetOutArgumentAndReturnValue(ActivityContext context, object state, object[] actualParameters)
+    public void SetOutArgumentAndReturnValue(ActivityContext context, object state, object[] actualParameters)
+    {
+        for (int index = 0; index < _parameters.Count; index++)
         {
-            for (int index = 0; index < parameters.Count; index++)
+            if (_parameters[index].Direction != ArgumentDirection.In)
             {
-                if (parameters[index].Direction != ArgumentDirection.In)
-                {
-                    parameters[index].Set(context, actualParameters[index]);
-                }
-            }
-
-            if (this.returnObject != null)
-            {
-                this.returnObject.Set(context, state);
+                _parameters[index].Set(context, actualParameters[index]);
             }
         }
 
-        public void Trace(Activity parent)
+        _returnObject?.Set(context, state);
+    }
+
+    public void Trace(Activity parent)
+    {
+        if (MethodIsStatic)
         {
-            if (this.MethodIsStatic)
+            if (TD.InvokeMethodIsStaticIsEnabled())
             {
-                if (TD.InvokeMethodIsStaticIsEnabled())
-                {
-                    TD.InvokeMethodIsStatic(parent.DisplayName);
-                }
-            }
-            else
-            {
-                if (TD.InvokeMethodIsNotStaticIsEnabled())
-                {
-                    TD.InvokeMethodIsNotStatic(parent.DisplayName);
-                }
+                TD.InvokeMethodIsStatic(parent.DisplayName);
             }
         }
-
-
+        else
+        {
+            if (TD.InvokeMethodIsNotStaticIsEnabled())
+            {
+                TD.InvokeMethodIsNotStatic(parent.DisplayName);
+            }
+        }
     }
 }

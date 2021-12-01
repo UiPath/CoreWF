@@ -1,55 +1,40 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Internals;
+
+//[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefineAccessorsForAttributeArguments,
+//Justification = "The setter is needed to enable XAML serialization of the attribute object.")]
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+public sealed class OverloadGroupAttribute : Attribute
 {
-    using System.Activities.Internals;
-    using System;
+    private string _groupName;
 
-    //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DefineAccessorsForAttributeArguments,
-    //Justification = "The setter is needed to enable XAML serialization of the attribute object.")]
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-    public sealed class OverloadGroupAttribute : Attribute
+    public OverloadGroupAttribute() { }
+
+    public OverloadGroupAttribute(string groupName)
     {
-        private string groupName;
-
-        public OverloadGroupAttribute()
+        if (string.IsNullOrEmpty(groupName))
         {
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(groupName));
         }
 
-        public OverloadGroupAttribute(string groupName)
+        _groupName = groupName;
+    }
+
+    public string GroupName
+    {
+        get => _groupName;
+        set
         {
-            if (string.IsNullOrEmpty(groupName))
+            if (string.IsNullOrEmpty(value))
             {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(groupName));
+                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(value));
             }
-
-            this.groupName = groupName;
-        }
-
-        public string GroupName
-        {
-            get 
-            { 
-                return this.groupName; 
-            }
-
-            set 
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(value));
-                }
-                this.groupName = value;
-            }
-        }
-
-        public override object TypeId
-        {
-            get
-            {
-                return this;
-            }
+            _groupName = value;
         }
     }
+
+    public override object TypeId => this;
 }

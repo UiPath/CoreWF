@@ -1,49 +1,41 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Runtime
+namespace System.Activities.Runtime;
+
+[DataContract]
+internal class BookmarkList : HybridCollection<Bookmark>
 {
-    using System.Runtime.Serialization;
-    using System.Collections.Generic;
+    public BookmarkList()
+        : base() { }
 
-    [DataContract]
-    internal class BookmarkList : HybridCollection<Bookmark>
+    internal bool Contains(Bookmark bookmark)
     {
-        public BookmarkList()
-            : base()
+        if (SingleItem != null)
         {
-        }
-
-        internal bool Contains(Bookmark bookmark)
-        {
-            if (this.SingleItem != null)
+            if (SingleItem.Equals(bookmark))
             {
-                if (this.SingleItem.Equals(bookmark))
+                return true;
+            }
+        }
+        else if (MultipleItems != null)
+        {
+            for (int i = 0; i < MultipleItems.Count; i++)
+            {
+                if (bookmark.Equals(MultipleItems[i]))
                 {
                     return true;
                 }
             }
-            else if (this.MultipleItems != null)
-            {
-                for (int i = 0; i < this.MultipleItems.Count; i++)
-                {
-                    if (bookmark.Equals(this.MultipleItems[i]))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
-        internal void TransferBookmarks(out Bookmark singleItem, out IList<Bookmark> multipleItems)
-        {
-            singleItem = base.SingleItem;
-            multipleItems = base.MultipleItems;
-        }
+        return false;
+    }
 
+    internal void TransferBookmarks(out Bookmark singleItem, out IList<Bookmark> multipleItems)
+    {
+        singleItem = SingleItem;
+        multipleItems = MultipleItems;
     }
 
 }
-

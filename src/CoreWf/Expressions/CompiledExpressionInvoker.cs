@@ -1,341 +1,325 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.XamlIntegration;
+using System.Linq.Expressions;
+using System.Xaml;
+
+namespace System.Activities.Expressions;
+
+public class CompiledExpressionInvoker
 {
-    using System;
-    using System.Activities.XamlIntegration;
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using System.Xaml;
-    using System.Activities.Internals;
+    private static readonly AttachableMemberIdentifier compiledExpressionRootProperty =
+        new(typeof(CompiledExpressionInvoker), "CompiledExpressionRoot");
+    private static readonly AttachableMemberIdentifier compiledExpressionRootForImplementationProperty =
+        new(typeof(CompiledExpressionInvoker), "CompiledExpressionRootForImplementation");
+    private int _expressionId;
+    private readonly Activity _expressionActivity;
+    private readonly bool _isReference;
+    private readonly ITextExpression _textExpression;
+    private readonly Activity _metadataRoot;
+    private ICompiledExpressionRoot _compiledRoot;
+    private readonly IList<LocationReference> _locationReferences;
+    private CodeActivityMetadata _metadata;
+    private CodeActivityPublicEnvironmentAccessor _accessor;
 
-    public class CompiledExpressionInvoker
+    public CompiledExpressionInvoker(ITextExpression expression, bool isReference, CodeActivityMetadata metadata)
     {
-        private static readonly AttachableMemberIdentifier compiledExpressionRootProperty =
-            new AttachableMemberIdentifier(typeof(CompiledExpressionInvoker), "CompiledExpressionRoot");
+        _expressionId = -1;
+        _textExpression = expression ?? throw FxTrace.Exception.ArgumentNull(nameof(expression));
+        _expressionActivity = expression as Activity;
+        _isReference = isReference;
+        _locationReferences = new List<LocationReference>();
+        _metadata = metadata;
+        _accessor = CodeActivityPublicEnvironmentAccessor.Create(_metadata);
 
-        private static readonly AttachableMemberIdentifier compiledExpressionRootForImplementationProperty =
-            new AttachableMemberIdentifier(typeof(CompiledExpressionInvoker), "CompiledExpressionRootForImplementation");
-        private int expressionId;
-        private readonly Activity expressionActivity;
-        private readonly bool isReference;
-        private readonly ITextExpression textExpression;
-        private readonly Activity metadataRoot;
-        private ICompiledExpressionRoot compiledRoot;
-        private readonly IList<LocationReference> locationReferences;
-        private CodeActivityMetadata metadata;
-        private CodeActivityPublicEnvironmentAccessor accessor; 
-
-        public CompiledExpressionInvoker(ITextExpression expression, bool isReference, CodeActivityMetadata metadata)
+        if (_expressionActivity == null)
         {
-            this.expressionId = -1;
-            this.textExpression = expression ?? throw FxTrace.Exception.ArgumentNull(nameof(expression));
-            this.expressionActivity = expression as Activity;
-            this.isReference = isReference;
-            this.locationReferences = new List<LocationReference>();
-            this.metadata = metadata;
-            this.accessor = CodeActivityPublicEnvironmentAccessor.Create(this.metadata);
-
-            if (this.expressionActivity == null)
-            {
-                throw FxTrace.Exception.Argument(nameof(expression), SR.ITextExpressionParameterMustBeActivity);
-            }
-
-            ActivityWithResult resultActivity = this.expressionActivity as ActivityWithResult;
-
-            this.metadataRoot = metadata.Environment.Root;
-
-            this.ProcessLocationReferences();
+            throw FxTrace.Exception.Argument(nameof(expression), SR.ITextExpressionParameterMustBeActivity);
         }
 
-        public object InvokeExpression(ActivityContext activityContext)
-        {
-            if (activityContext == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(activityContext));
-            }
+        _metadataRoot = metadata.Environment.Root;
 
-            if (this.compiledRoot == null || this.expressionId < 0)
+        ProcessLocationReferences();
+    }
+
+    public object InvokeExpression(ActivityContext activityContext)
+    {
+        if (activityContext == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(activityContext));
+        }
+
+        if (_compiledRoot == null || _expressionId < 0)
+        {
+            if (!TryGetCompiledExpressionRoot(_expressionActivity, _metadataRoot, out _compiledRoot) ||
+                !CanExecuteExpression(_compiledRoot, out _expressionId))
             {
-                if (!TryGetCompiledExpressionRoot(this.expressionActivity, this.metadataRoot, out this.compiledRoot) ||
-                    !CanExecuteExpression(this.compiledRoot, out expressionId))
+                if (!TryGetCurrentCompiledExpressionRoot(activityContext, out _compiledRoot, out _expressionId))
                 {
-                    if (!TryGetCurrentCompiledExpressionRoot(activityContext, out this.compiledRoot, out this.expressionId))
-                    {
-                        throw FxTrace.Exception.AsError(new NotSupportedException(SR.TextExpressionMetadataRequiresCompilation(this.expressionActivity.GetType().Name)));
-                    }
+                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.TextExpressionMetadataRequiresCompilation(_expressionActivity.GetType().Name)));
                 }
             }
-
-            return this.compiledRoot.InvokeExpression(this.expressionId, this.locationReferences, activityContext);
-        }
-        //
-        // Attached property setter for the compiled expression root for the public surface area of an activity
-        public static void SetCompiledExpressionRoot(object target, ICompiledExpressionRoot compiledExpressionRoot)
-        {
-            if (compiledExpressionRoot == null)
-            {
-                AttachablePropertyServices.RemoveProperty(target, compiledExpressionRootProperty);
-            }
-            else
-            {
-                AttachablePropertyServices.SetProperty(target, compiledExpressionRootProperty, compiledExpressionRoot);
-            }
         }
 
-        //
-        // Attached property getter for the compiled expression root for the public surface area of an activity
-        public static object GetCompiledExpressionRoot(object target)
+        return _compiledRoot.InvokeExpression(_expressionId, _locationReferences, activityContext);
+    }
+    //
+    // Attached property setter for the compiled expression root for the public surface area of an activity
+    public static void SetCompiledExpressionRoot(object target, ICompiledExpressionRoot compiledExpressionRoot)
+    {
+        if (compiledExpressionRoot == null)
         {
-            AttachablePropertyServices.TryGetProperty(target, compiledExpressionRootProperty, out object value);
-            return value;
+            AttachablePropertyServices.RemoveProperty(target, compiledExpressionRootProperty);
         }
-
-        //
-        // Attached property setter for the compiled expression root for the implementation surface area of an activity
-        public static void SetCompiledExpressionRootForImplementation(object target, ICompiledExpressionRoot compiledExpressionRoot)
+        else
         {
-            if (compiledExpressionRoot == null)
-            {
-                AttachablePropertyServices.RemoveProperty(target, compiledExpressionRootForImplementationProperty);
-            }
-            else
-            {
-                AttachablePropertyServices.SetProperty(target, compiledExpressionRootForImplementationProperty, compiledExpressionRoot);
-            }
+            AttachablePropertyServices.SetProperty(target, compiledExpressionRootProperty, compiledExpressionRoot);
         }
+    }
 
-        //
-        // Attached property getter for the compiled expression root for the implementation surface area of an activity
-        public static object GetCompiledExpressionRootForImplementation(object target)
+    //
+    // Attached property getter for the compiled expression root for the public surface area of an activity
+    public static object GetCompiledExpressionRoot(object target)
+    {
+        AttachablePropertyServices.TryGetProperty(target, compiledExpressionRootProperty, out object value);
+        return value;
+    }
+
+    //
+    // Attached property setter for the compiled expression root for the implementation surface area of an activity
+    public static void SetCompiledExpressionRootForImplementation(object target, ICompiledExpressionRoot compiledExpressionRoot)
+    {
+        if (compiledExpressionRoot == null)
         {
-            AttachablePropertyServices.TryGetProperty(target, compiledExpressionRootForImplementationProperty, out object value);
-            return value;
+            AttachablePropertyServices.RemoveProperty(target, compiledExpressionRootForImplementationProperty);
         }
-
-        //
-        // Internal helper to find the correct ICER for a given expression.
-        internal static bool TryGetCompiledExpressionRoot(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot)
+        else
         {
-            bool forImplementation = expression.MemberOf != expression.RootActivity.MemberOf;
-
-            return TryGetCompiledExpressionRoot(target, forImplementation, out compiledExpressionRoot);
+            AttachablePropertyServices.SetProperty(target, compiledExpressionRootForImplementationProperty, compiledExpressionRoot);
         }
+    }
 
-        //
-        // Helper to find the correct ICER for a given expression.
-        // This is separate from the above because within this class we switch forImplementation for the same target Activity
-        // to matched the ICER model of using one ICER for all expressions in the implementation and root argument defaults.
-        internal static bool TryGetCompiledExpressionRoot(Activity target, bool forImplementation, out ICompiledExpressionRoot compiledExpressionRoot)
+    //
+    // Attached property getter for the compiled expression root for the implementation surface area of an activity
+    public static object GetCompiledExpressionRootForImplementation(object target)
+    {
+        AttachablePropertyServices.TryGetProperty(target, compiledExpressionRootForImplementationProperty, out object value);
+        return value;
+    }
+
+    //
+    // Internal helper to find the correct ICER for a given expression.
+    internal static bool TryGetCompiledExpressionRoot(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot)
+    {
+        bool forImplementation = expression.MemberOf != expression.RootActivity.MemberOf;
+
+        return TryGetCompiledExpressionRoot(target, forImplementation, out compiledExpressionRoot);
+    }
+
+    //
+    // Helper to find the correct ICER for a given expression.
+    // This is separate from the above because within this class we switch forImplementation for the same target Activity
+    // to matched the ICER model of using one ICER for all expressions in the implementation and root argument defaults.
+    internal static bool TryGetCompiledExpressionRoot(Activity target, bool forImplementation, out ICompiledExpressionRoot compiledExpressionRoot)
+    {
+        if (!forImplementation)
         {
-            if (!forImplementation)
-            {
-                compiledExpressionRoot = GetCompiledExpressionRoot(target) as ICompiledExpressionRoot;
-                if (compiledExpressionRoot != null)
-                {
-                    return true;
-                }
-                //
-                // Default expressions for Arguments show up in the public surface area
-                // If we didn't find an ICER for the public surface area continue
-                // and try to use the implementation ICER
-            }
-
-            if (target is ICompiledExpressionRoot)
-            {
-                compiledExpressionRoot = (ICompiledExpressionRoot)target;
-                return true;
-            }
-
-            compiledExpressionRoot = GetCompiledExpressionRootForImplementation(target) as ICompiledExpressionRoot;
+            compiledExpressionRoot = GetCompiledExpressionRoot(target) as ICompiledExpressionRoot;
             if (compiledExpressionRoot != null)
             {
                 return true;
             }
-
-            compiledExpressionRoot = null;
-            return false;
-        }
-
-        internal Expression GetExpressionTree()
-        {
-            if (this.compiledRoot == null || this.expressionId < 0)
-            {
-                if (!TryGetCompiledExpressionRootAtDesignTime(this.expressionActivity, this.metadataRoot, out this.compiledRoot, out this.expressionId))
-                {
-                    return null;
-                }                
-            }
-
-            return this.compiledRoot.GetExpressionTreeForExpression(this.expressionId, this.locationReferences);
-        }
-
-        private bool TryGetCurrentCompiledExpressionRoot(ActivityContext activityContext, out ICompiledExpressionRoot compiledExpressionRoot, out int expressionId)
-        {
-            ActivityInstance current = activityContext.CurrentInstance;
-
-            while (current != null && current.Activity != this.metadataRoot)
-            {
-
-                if (CompiledExpressionInvoker.TryGetCompiledExpressionRoot(current.Activity, true, out ICompiledExpressionRoot currentCompiledExpressionRoot))
-                {
-                    if (CanExecuteExpression(currentCompiledExpressionRoot, out expressionId))
-                    {
-                        compiledExpressionRoot = currentCompiledExpressionRoot;
-                        return true;
-                    }
-                }
-                current = current.Parent;
-            }
-
-            compiledExpressionRoot = null;
-            expressionId = -1;
-
-            return false;
-        }
-
-        private bool CanExecuteExpression(ICompiledExpressionRoot compiledExpressionRoot, out int expressionId)
-        {
-            if (compiledExpressionRoot.CanExecuteExpression(this.textExpression.ExpressionText, this.isReference, locationReferences, out expressionId))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void ProcessLocationReferences()
-        {
-            Stack<LocationReferenceEnvironment> environments = new Stack<LocationReferenceEnvironment>();            
             //
-            // Build list of location by enumerating environments
-            // in top down order to match the traversal pattern of TextExpressionCompiler
-            LocationReferenceEnvironment current = this.accessor.ActivityMetadata.Environment;
-            while (current != null)
-            {
-                environments.Push(current);
-                current = current.Parent;
-            }
-
-            foreach (LocationReferenceEnvironment environment in environments)
-            {
-                foreach (LocationReference reference in environment.GetLocationReferences())
-                {
-                    if (this.textExpression.RequiresCompilation)
-                    {
-                        this.accessor.CreateLocationArgument(reference, false);
-                    }
-
-                    this.locationReferences.Add(new InlinedLocationReference(reference, this.metadata.CurrentActivity));
-                }
-            }
-
-            // Scenarios like VBV/R needs to know if they should run their own compiler
-            // during CacheMetadata.  If we find a compiled expression root, means we're  
-            // already compiled. So set the IsStaticallyCompiled flag to true
-            bool foundCompiledExpressionRoot = this.TryGetCompiledExpressionRootAtDesignTime(this.expressionActivity,
-               this.metadataRoot,
-               out this.compiledRoot,
-               out this.expressionId);
-
-            if (foundCompiledExpressionRoot)
-            {
-                foreach (var environment in environments)
-                {
-                    environment.CompileExpressions = true;
-                }
-                // For compiled C# expressions we create temp auto generated arguments
-                // for all locations whether they are used in the expressions or not.
-                // The TryGetReferenceToPublicLocation method call above also generates
-                // temp arguments for all locations. 
-                // However for VB expressions, this leads to inconsistency between build
-                // time and run time as during build time VB only generates temp arguments
-                // for locations that are referenced in the expressions. To maintain 
-                // consistency the we call the CreateRequiredArguments method seperately to
-                // generates auto arguments only for locations that are referenced.
-                if (textExpression.Language == "VB")
-                {
-                    IList<string> requiredLocationNames = this.compiledRoot.GetRequiredLocations(this.expressionId);
-                    this.CreateRequiredArguments(requiredLocationNames);
-                }
-            }
+            // Default expressions for Arguments show up in the public surface area
+            // If we didn't find an ICER for the public surface area continue
+            // and try to use the implementation ICER
         }
 
-        private bool TryGetCompiledExpressionRootAtDesignTime(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot, out int exprId)
+        if (target is ICompiledExpressionRoot root)
         {
-            exprId = -1;
-            compiledExpressionRoot = null;
-            if (!CompiledExpressionInvoker.TryGetCompiledExpressionRoot(expression, target, out compiledExpressionRoot) ||
-                !CanExecuteExpression(compiledExpressionRoot, out exprId))
-            {
-                return FindCompiledExpressionRoot(out exprId, out compiledExpressionRoot);
-            }
-
+            compiledExpressionRoot = root;
             return true;
         }
 
-        private bool FindCompiledExpressionRoot(out int exprId, out ICompiledExpressionRoot compiledExpressionRoot)
+        compiledExpressionRoot = GetCompiledExpressionRootForImplementation(target) as ICompiledExpressionRoot;
+        if (compiledExpressionRoot != null)
         {
-            Activity root = this.metadata.CurrentActivity.Parent;
+            return true;
+        }
 
-            while (root != null)
+        compiledExpressionRoot = null;
+        return false;
+    }
+
+    internal Expression GetExpressionTree()
+    {
+        if (_compiledRoot == null || _expressionId < 0)
+        {
+            if (!TryGetCompiledExpressionRootAtDesignTime(_expressionActivity, _metadataRoot, out _compiledRoot, out _expressionId))
             {
-                if (CompiledExpressionInvoker.TryGetCompiledExpressionRoot(metadata.CurrentActivity, root, out ICompiledExpressionRoot currentCompiledExpressionRoot))
+                return null;
+            }                
+        }
+
+        return _compiledRoot.GetExpressionTreeForExpression(_expressionId, _locationReferences);
+    }
+
+    private bool TryGetCurrentCompiledExpressionRoot(ActivityContext activityContext, out ICompiledExpressionRoot compiledExpressionRoot, out int expressionId)
+    {
+        ActivityInstance current = activityContext.CurrentInstance;
+
+        while (current != null && current.Activity != _metadataRoot)
+        {
+
+            if (TryGetCompiledExpressionRoot(current.Activity, true, out ICompiledExpressionRoot currentCompiledExpressionRoot))
+            {
+                if (CanExecuteExpression(currentCompiledExpressionRoot, out expressionId))
                 {
-                    if (CanExecuteExpression(currentCompiledExpressionRoot, out exprId))
+                    compiledExpressionRoot = currentCompiledExpressionRoot;
+                    return true;
+                }
+            }
+            current = current.Parent;
+        }
+
+        compiledExpressionRoot = null;
+        expressionId = -1;
+
+        return false;
+    }
+
+    private bool CanExecuteExpression(ICompiledExpressionRoot compiledExpressionRoot, out int expressionId)
+        => compiledExpressionRoot.CanExecuteExpression(_textExpression.ExpressionText, _isReference, _locationReferences, out expressionId);
+
+    private void ProcessLocationReferences()
+    {
+        Stack<LocationReferenceEnvironment> environments = new();            
+        //
+        // Build list of location by enumerating environments
+        // in top down order to match the traversal pattern of TextExpressionCompiler
+        LocationReferenceEnvironment current = _accessor.ActivityMetadata.Environment;
+        while (current != null)
+        {
+            environments.Push(current);
+            current = current.Parent;
+        }
+
+        foreach (LocationReferenceEnvironment environment in environments)
+        {
+            foreach (LocationReference reference in environment.GetLocationReferences())
+            {
+                if (_textExpression.RequiresCompilation)
+                {
+                    _accessor.CreateLocationArgument(reference, false);
+                }
+
+                _locationReferences.Add(new InlinedLocationReference(reference, _metadata.CurrentActivity));
+            }
+        }
+
+        // Scenarios like VBV/R needs to know if they should run their own compiler
+        // during CacheMetadata.  If we find a compiled expression root, means we're  
+        // already compiled. So set the IsStaticallyCompiled flag to true
+        bool foundCompiledExpressionRoot = TryGetCompiledExpressionRootAtDesignTime(_expressionActivity,
+            _metadataRoot,
+            out _compiledRoot,
+            out _expressionId);
+
+        if (foundCompiledExpressionRoot)
+        {
+            foreach (var environment in environments)
+            {
+                environment.CompileExpressions = true;
+            }
+            // For compiled C# expressions we create temp auto generated arguments
+            // for all locations whether they are used in the expressions or not.
+            // The TryGetReferenceToPublicLocation method call above also generates
+            // temp arguments for all locations. 
+            // However for VB expressions, this leads to inconsistency between build
+            // time and run time as during build time VB only generates temp arguments
+            // for locations that are referenced in the expressions. To maintain 
+            // consistency the we call the CreateRequiredArguments method seperately to
+            // generates auto arguments only for locations that are referenced.
+            if (_textExpression.Language == "VB")
+            {
+                IList<string> requiredLocationNames = _compiledRoot.GetRequiredLocations(_expressionId);
+                CreateRequiredArguments(requiredLocationNames);
+            }
+        }
+    }
+
+    private bool TryGetCompiledExpressionRootAtDesignTime(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot, out int exprId)
+    {
+        if (!TryGetCompiledExpressionRoot(expression, target, out compiledExpressionRoot) ||
+            !CanExecuteExpression(compiledExpressionRoot, out exprId))
+        {
+            return FindCompiledExpressionRoot(out exprId, out compiledExpressionRoot);
+        }
+
+        return true;
+    }
+
+    private bool FindCompiledExpressionRoot(out int exprId, out ICompiledExpressionRoot compiledExpressionRoot)
+    {
+        Activity root = _metadata.CurrentActivity.Parent;
+
+        while (root != null)
+        {
+            if (TryGetCompiledExpressionRoot(_metadata.CurrentActivity, root, out ICompiledExpressionRoot currentCompiledExpressionRoot))
+            {
+                if (CanExecuteExpression(currentCompiledExpressionRoot, out exprId))
+                {
+                    compiledExpressionRoot = currentCompiledExpressionRoot;
+                    return true;
+                }
+            }
+            root = root.Parent;
+        }
+
+        exprId = -1;
+        compiledExpressionRoot = null;
+
+        return false;
+    }
+
+    private void CreateRequiredArguments(IList<string> requiredLocationNames)
+    {
+        LocationReference reference;
+        if (requiredLocationNames != null && requiredLocationNames.Count > 0)
+        {
+            foreach (string name in requiredLocationNames)
+            {
+                reference = FindLocationReference(name);
+                if (reference != null)
+                {
+                    if (_isReference)
                     {
-                        compiledExpressionRoot = currentCompiledExpressionRoot;
-                        return true;
+                        _accessor.CreateLocationArgument(reference, true);
+                    }
+                    else
+                    {
+                        _accessor.CreateArgument(reference, ArgumentDirection.In, true);
                     }
                 }
-                root = root.Parent;
             }
-
-            exprId = -1;
-            compiledExpressionRoot = null;
-
-            return false;
         }
+    }
 
-        private void CreateRequiredArguments(IList<string> requiredLocationNames)
+    private LocationReference FindLocationReference(string name)
+    {
+        LocationReference returnValue = null;
+
+        LocationReferenceEnvironment current = _accessor.ActivityMetadata.Environment;
+        while (current != null)
         {
-            LocationReference reference;
-            if (requiredLocationNames != null && requiredLocationNames.Count > 0)
+            if (current.TryGetLocationReference(name, out returnValue))
             {
-                foreach (string name in requiredLocationNames)
-                {
-                    reference = FindLocationReference(name);
-                    if (reference != null)
-                    {
-                        if (this.isReference)
-                        {
-                            this.accessor.CreateLocationArgument(reference, true);
-                        }
-                        else
-                        {
-                            this.accessor.CreateArgument(reference, ArgumentDirection.In, true);
-                        }
-                    }
-                }
+                return returnValue;
             }
+            current = current.Parent;
         }
 
-        private LocationReference FindLocationReference(string name)
-        {
-            LocationReference returnValue = null;
-
-            LocationReferenceEnvironment current = this.accessor.ActivityMetadata.Environment;
-            while (current != null)
-            {
-                if (current.TryGetLocationReference(name, out returnValue))
-                {
-                    return returnValue;
-                }
-                current = current.Parent;
-            }
-
-            return returnValue;
-        }
+        return returnValue;
     }
 }

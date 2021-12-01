@@ -1,118 +1,75 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Internals;
+using Runtime;
+
+internal class IdSpace
 {
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
-    using System;
-    using System.Collections.Generic;
+    private int _lastId;
+    private IList<Activity> _members;
 
-    internal class IdSpace
+    public IdSpace() { }
+
+    public IdSpace(IdSpace parent, int parentId)
     {
-        private int lastId;
-        private IList<Activity> members;
+        Parent = parent;
+        ParentId = parentId;
+    }
 
-        public IdSpace()
-        {
-        }
+    public IdSpace Parent { get; private set; }
 
-        public IdSpace(IdSpace parent, int parentId)
-        {
-            this.Parent = parent;
-            this.ParentId = parentId;
-        }
+    public int ParentId { get; private set; }
 
-        public IdSpace Parent
-        {
-            get;
-            private set;
-        }
+    public int MemberCount => _members == null ? 0 : _members.Count;
 
-        public int ParentId
-        {
-            get;
-            private set;
-        }
+    public Activity Owner => Parent?[ParentId];
 
-        public int MemberCount
+    public Activity this[int id]
+    {
+        get
         {
-            get
+            int lookupId = id - 1;
+            if (_members == null || lookupId < 0 || lookupId >= _members.Count)
             {
-                if (this.members == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return this.members.Count;
-                }
-            }
-        }
-
-        public Activity Owner
-        {
-            get
-            {
-                if (this.Parent != null)
-                {
-                    return this.Parent[this.ParentId];
-                }
-
                 return null;
             }
-        }
-
-        public Activity this[int id]
-        {
-            get
+            else
             {
-                int lookupId = id - 1;
-                if (this.members == null || lookupId < 0 || lookupId >= this.members.Count)
-                {
-                    return null;
-                }
-                else
-                {
-                    return this.members[lookupId];
-                }
+                return _members[lookupId];
             }
-        }
-
-        public void AddMember(Activity element)
-        {
-            if (this.members == null)
-            {
-                this.members = new List<Activity>();
-            }
-
-            if (lastId == int.MaxValue)
-            {
-                throw FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfIdSpaceIds));
-            }
-
-            lastId++;
-            
-            // ID info is cleared inside InternalId.
-            element.InternalId = lastId;
-            Fx.Assert(element.MemberOf == this, "We should have already set this.");
-            Fx.Assert(this.members.Count == element.InternalId - 1, "We should always be adding the next element");
-
-            this.members.Add(element);
-        }
-        
-        public void Dispose()
-        {
-            if (this.members != null)
-            {
-                this.members.Clear();
-            }
-
-            this.lastId = 0;
-            this.Parent = null;
-            this.ParentId = 0;
         }
     }
+
+    public void AddMember(Activity element)
+    {
+        _members ??= new List<Activity>();
+
+        if (_lastId == int.MaxValue)
+        {
+            throw FxTrace.Exception.AsError(new NotSupportedException(SR.OutOfIdSpaceIds));
+        }
+
+        _lastId++;
+            
+        // ID info is cleared inside InternalId.
+        element.InternalId = _lastId;
+        Fx.Assert(element.MemberOf == this, "We should have already set ");
+        Fx.Assert(_members.Count == element.InternalId - 1, "We should always be adding the next element");
+
+        _members.Add(element);
+    }
+        
+    public void Dispose()
+    {
+        if (_members != null)
+        {
+            _members.Clear();
+        }
+
+        _lastId = 0;
+        Parent = null;
+        ParentId = 0;
+    }
 }
-
-

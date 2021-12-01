@@ -1,255 +1,235 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Collections;
+using System.Collections.ObjectModel;
+
+namespace System.Activities;
+using Internals;
+using Runtime;
+
+internal class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    where TKey : class
+    where TValue : class
 {
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
+    private TKey _singleItemKey;
+    private TValue _singleItemValue;
+    private IDictionary<TKey, TValue> _dictionary;
 
-    internal class HybridDictionary<TKey, TValue> : IDictionary<TKey, TValue>
-        where TKey : class
-        where TValue : class
+    public int Count
     {
-        private TKey singleItemKey;
-        private TValue singleItemValue;
-        private IDictionary<TKey, TValue> dictionary;
-
-        public int Count
+        get 
         {
-            get 
+            if (_singleItemKey != null)
             {
-                if (this.singleItemKey != null)
-                {
-                    return 1;
-                }
-                else if (this.dictionary != null)
-                {
-                    return this.dictionary.Count;
-                }
-
-                return 0;
+                return 1;
             }
-        }
-
-        public bool IsReadOnly
-        {
-            get
+            else if (_dictionary != null)
             {
-                return false;
-            }
-        }
-
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                if (this.singleItemKey != null)
-                {
-                    return new ReadOnlyCollection<TValue>(new List<TValue>() { this.singleItemValue });
-                }
-                else if (this.dictionary != null)
-                {
-                    return new ReadOnlyCollection<TValue>(new List<TValue>(this.dictionary.Values));
-                }
-
-                return null;
-            }
-        }
-
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                if (this.singleItemKey != null)
-                {
-                    return new ReadOnlyCollection<TKey>(new List<TKey>() { this.singleItemKey });
-                }
-                else if (this.dictionary != null)
-                {
-                    return new ReadOnlyCollection<TKey>(new List<TKey>(this.dictionary.Keys));
-                }
-
-                return null;
-            }
-        }
-
-        public TValue this[TKey key]
-        {
-            get
-            {
-                if (this.singleItemKey == key)
-                {
-                    return this.singleItemValue;
-                }
-                else if (this.dictionary != null)
-                {
-                    return this.dictionary[key];
-                }
-
-                return null;
+                return _dictionary.Count;
             }
 
-            set
-            {
-                this.Add(key, value);
-            }
-        }
-
-        public void Add(TKey key, TValue value)
-        {
-            if (key == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(key));
-            }
-
-            if (this.singleItemKey == null && this.singleItemValue == null && this.dictionary == null)
-            {
-                this.singleItemKey = key;
-                this.singleItemValue = value;
-            }
-            else if (this.singleItemKey != null)
-            {
-                this.dictionary = new Dictionary<TKey, TValue>();
-
-                this.dictionary.Add(this.singleItemKey, this.singleItemValue);
-
-                this.singleItemKey = null;
-                this.singleItemValue = null;
-
-                this.dictionary.Add(key, value);
-                return;
-            }
-            else
-            {
-                Fx.Assert(this.dictionary != null, "We should always have a dictionary at this point");
-
-                this.dictionary.Add(key, value);
-            }
-        }
-
-        public bool ContainsKey(TKey key)
-        {
-            if (key == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(key));
-            }
-
-            if (this.singleItemKey != null)
-            {
-                return this.singleItemKey == key;
-            }
-            else if (this.dictionary != null)
-            {
-                return this.dictionary.ContainsKey(key);
-            }
-
-            return false;
-        }
-
-        public bool Remove(TKey key)
-        {
-            if (this.singleItemKey == key)
-            {
-                this.singleItemKey = null;
-                this.singleItemValue = null;
-
-                return true;
-            }
-            else if (this.dictionary != null)
-            {
-                bool ret = this.dictionary.Remove(key);
-
-                if (this.dictionary.Count == 0)
-                {
-                    this.dictionary = null;
-                }
-
-                return ret;
-            }
-
-            return false;
-        }
-
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            if (this.singleItemKey == key)
-            {
-                value = this.singleItemValue;
-                return true;
-            }
-            else if (this.dictionary != null)
-            {
-                return this.dictionary.TryGetValue(key, out value);
-            }
-
-            value = null;
-            return false;
-        }
-
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            this.Add(item.Key, item.Value);
-        }
-
-        public void Clear()
-        {
-            this.singleItemKey = null;
-            this.singleItemValue = null;
-            this.dictionary = null;
-        }
-
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            if (this.singleItemKey != null)
-            {
-                return this.singleItemKey == item.Key && this.singleItemValue == item.Value;
-            }
-            else if (this.dictionary != null)
-            {
-                return this.dictionary.Contains(item);
-            }
-
-            return false;
-        }
-
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-            if (this.singleItemKey != null)
-            {
-                array[arrayIndex] = new KeyValuePair<TKey, TValue>(this.singleItemKey, this.singleItemValue);
-            }
-            else if (this.dictionary != null)
-            {
-                this.dictionary.CopyTo(array, arrayIndex);
-            }
-        }
-
-        public bool Remove(KeyValuePair<TKey, TValue> item)
-        {
-            return this.Remove(item.Key);
-        }
-
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            if (this.singleItemKey != null)
-            {
-                yield return new KeyValuePair<TKey, TValue>(this.singleItemKey, this.singleItemValue);
-            }
-            else if (this.dictionary != null)
-            {
-                foreach (KeyValuePair<TKey, TValue> kvp in this.dictionary)
-                {
-                    yield return kvp;
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
+            return 0;
         }
     }
+
+    public bool IsReadOnly => false;
+
+    public ICollection<TValue> Values
+    {
+        get
+        {
+            if (_singleItemKey != null)
+            {
+                return new ReadOnlyCollection<TValue>(new List<TValue>() { _singleItemValue });
+            }
+            else if (_dictionary != null)
+            {
+                return new ReadOnlyCollection<TValue>(new List<TValue>(_dictionary.Values));
+            }
+
+            return null;
+        }
+    }
+
+    public ICollection<TKey> Keys
+    {
+        get
+        {
+            if (_singleItemKey != null)
+            {
+                return new ReadOnlyCollection<TKey>(new List<TKey>() { _singleItemKey });
+            }
+            else if (_dictionary != null)
+            {
+                return new ReadOnlyCollection<TKey>(new List<TKey>(_dictionary.Keys));
+            }
+
+            return null;
+        }
+    }
+
+    public TValue this[TKey key]
+    {
+        get
+        {
+            if (_singleItemKey == key)
+            {
+                return _singleItemValue;
+            }
+            else if (_dictionary != null)
+            {
+                return _dictionary[key];
+            }
+
+            return null;
+        }
+        set => Add(key, value);
+    }
+
+    public void Add(TKey key, TValue value)
+    {
+        if (key == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(key));
+        }
+
+        if (_singleItemKey == null && _singleItemValue == null && _dictionary == null)
+        {
+            _singleItemKey = key;
+            _singleItemValue = value;
+        }
+        else if (_singleItemKey != null)
+        {
+            _dictionary = new Dictionary<TKey, TValue>
+            {
+                { _singleItemKey, _singleItemValue }
+            };
+
+            _singleItemKey = null;
+            _singleItemValue = null;
+
+            _dictionary.Add(key, value);
+            return;
+        }
+        else
+        {
+            Fx.Assert(_dictionary != null, "We should always have a dictionary at this point");
+
+            _dictionary.Add(key, value);
+        }
+    }
+
+    public bool ContainsKey(TKey key)
+    {
+        if (key == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(key));
+        }
+
+        if (_singleItemKey != null)
+        {
+            return _singleItemKey == key;
+        }
+        else if (_dictionary != null)
+        {
+            return _dictionary.ContainsKey(key);
+        }
+
+        return false;
+    }
+
+    public bool Remove(TKey key)
+    {
+        if (_singleItemKey == key)
+        {
+            _singleItemKey = null;
+            _singleItemValue = null;
+
+            return true;
+        }
+        else if (_dictionary != null)
+        {
+            bool ret = _dictionary.Remove(key);
+
+            if (_dictionary.Count == 0)
+            {
+                _dictionary = null;
+            }
+
+            return ret;
+        }
+
+        return false;
+    }
+
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        if (_singleItemKey == key)
+        {
+            value = _singleItemValue;
+            return true;
+        }
+        else if (_dictionary != null)
+        {
+            return _dictionary.TryGetValue(key, out value);
+        }
+
+        value = null;
+        return false;
+    }
+
+    public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
+
+    public void Clear()
+    {
+        _singleItemKey = null;
+        _singleItemValue = null;
+        _dictionary = null;
+    }
+
+    public bool Contains(KeyValuePair<TKey, TValue> item)
+    {
+        if (_singleItemKey != null)
+        {
+            return _singleItemKey == item.Key && _singleItemValue == item.Value;
+        }
+        else if (_dictionary != null)
+        {
+            return _dictionary.Contains(item);
+        }
+
+        return false;
+    }
+
+    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+    {
+        if (_singleItemKey != null)
+        {
+            array[arrayIndex] = new KeyValuePair<TKey, TValue>(_singleItemKey, _singleItemValue);
+        }
+        else if (_dictionary != null)
+        {
+            _dictionary.CopyTo(array, arrayIndex);
+        }
+    }
+
+    public bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key);
+
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+    {
+        if (_singleItemKey != null)
+        {
+            yield return new KeyValuePair<TKey, TValue>(_singleItemKey, _singleItemValue);
+        }
+        else if (_dictionary != null)
+        {
+            foreach (KeyValuePair<TKey, TValue> kvp in _dictionary)
+            {
+                yield return kvp;
+            }
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

@@ -1,95 +1,75 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.DurableInstancing
+using System.Activities.Internals;
+using System.Activities.Runtime;
+using System.Activities.Runtime.DurableInstancing;
+using System.Xml.Linq;
+
+namespace System.Activities.DurableInstancing;
+
+[Fx.Tag.XamlVisible(false)]
+public sealed class LoadWorkflowByInstanceKeyCommand : InstancePersistenceCommand
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Activities.Runtime;
-    using System.Activities.Runtime.DurableInstancing;
-    using System.Activities.Internals;
-    using System.Xml.Linq;
+    private Dictionary<Guid, IDictionary<XName, InstanceValue>> keysToAssociate;
 
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class LoadWorkflowByInstanceKeyCommand : InstancePersistenceCommand
+    public LoadWorkflowByInstanceKeyCommand()
+        : base(InstancePersistence.ActivitiesCommandNamespace.GetName("LoadWorkflowByInstanceKey")) { }
+
+    public bool AcceptUninitializedInstance { get; set; }
+
+    public Guid LookupInstanceKey { get; set; }
+    public Guid AssociateInstanceKeyToInstanceId { get; set; }
+
+    public IDictionary<Guid, IDictionary<XName, InstanceValue>> InstanceKeysToAssociate
     {
-        private Dictionary<Guid, IDictionary<XName, InstanceValue>> keysToAssociate;
-
-        public LoadWorkflowByInstanceKeyCommand()
-            : base(InstancePersistence.ActivitiesCommandNamespace.GetName("LoadWorkflowByInstanceKey"))
+        get
         {
+            keysToAssociate ??= new Dictionary<Guid, IDictionary<XName, InstanceValue>>();
+            return keysToAssociate;
+        }
+    }
+
+    protected internal override bool IsTransactionEnlistmentOptional => (keysToAssociate == null || keysToAssociate.Count == 0) && AssociateInstanceKeyToInstanceId == Guid.Empty;
+
+    protected internal override bool AutomaticallyAcquiringLock => true;
+
+    protected internal override void Validate(InstanceView view)
+    {
+        if (!view.IsBoundToInstanceOwner)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OwnerRequired));
+        }
+        if (view.IsBoundToInstance)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.AlreadyBoundToInstance));
         }
 
-        public bool AcceptUninitializedInstance { get; set; }
-
-        public Guid LookupInstanceKey { get; set; }
-        public Guid AssociateInstanceKeyToInstanceId { get; set; }
-
-        public IDictionary<Guid, IDictionary<XName, InstanceValue>> InstanceKeysToAssociate
+        if (LookupInstanceKey == Guid.Empty)
         {
-            get
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpKeyMustBeValid));
+        }
+
+        if (AssociateInstanceKeyToInstanceId == Guid.Empty)
+        {
+            if (InstanceKeysToAssociate.ContainsKey(LookupInstanceKey))
             {
-                if (this.keysToAssociate == null)
-                {
-                    this.keysToAssociate = new Dictionary<Guid, IDictionary<XName, InstanceValue>>();
-                }
-                return this.keysToAssociate;
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpAssociateKeysCannotContainLookupKey));
+            }
+        }
+        else
+        {
+            if (!AcceptUninitializedInstance)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpFreeKeyRequiresAcceptUninitialized));
             }
         }
 
-        protected internal override bool IsTransactionEnlistmentOptional
+        if (keysToAssociate != null)
         {
-            get
+            foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> key in keysToAssociate)
             {
-                return (this.keysToAssociate == null || this.keysToAssociate.Count == 0) && AssociateInstanceKeyToInstanceId == Guid.Empty;
-            }
-        }
-
-        protected internal override bool AutomaticallyAcquiringLock
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        protected internal override void Validate(InstanceView view)
-        {
-            if (!view.IsBoundToInstanceOwner)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.OwnerRequired));
-            }
-            if (view.IsBoundToInstance)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.AlreadyBoundToInstance));
-            }
-
-            if (LookupInstanceKey == Guid.Empty)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpKeyMustBeValid));
-            }
-
-            if (AssociateInstanceKeyToInstanceId == Guid.Empty)
-            {
-                if (InstanceKeysToAssociate.ContainsKey(LookupInstanceKey))
-                {
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpAssociateKeysCannotContainLookupKey));
-                }
-            }
-            else
-            {
-                if (!AcceptUninitializedInstance)
-                {
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.LoadOpFreeKeyRequiresAcceptUninitialized));
-                }
-            }
-
-            if (this.keysToAssociate != null)
-            {
-                foreach (KeyValuePair<Guid, IDictionary<XName, InstanceValue>> key in this.keysToAssociate)
-                {
-                    InstancePersistence.ValidatePropertyBag(key.Value);
-                }
+                InstancePersistence.ValidatePropertyBag(key.Value);
             }
         }
     }

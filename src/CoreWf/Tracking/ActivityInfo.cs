@@ -1,159 +1,147 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Tracking
+using System.Activities.Runtime;
+using System.Globalization;
+
+namespace System.Activities.Tracking;
+
+[Fx.Tag.XamlVisible(false)]
+[DataContract]
+public sealed class ActivityInfo
 {
-    using System;
-    using System.Runtime.Serialization;
-    using System.Globalization;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private string _name;
+    private string _id;
+    private string _instanceId;
+    private readonly long _instanceIdInternal;
+    private string _typeName;
 
-    [Fx.Tag.XamlVisible(false)]
-    [DataContract]
-    public sealed class ActivityInfo
+    public ActivityInfo(string name, string id, string instanceId, string typeName)
     {
-        private string name;
-        private string id;
-        private string instanceId;
-        private readonly long instanceIdInternal;
-        private string typeName;
-
-        public ActivityInfo(string name, string id, string instanceId, string typeName)
+        if (string.IsNullOrEmpty(name))
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
-            }
-            if (string.IsNullOrEmpty(id))
-            {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(id));
-            }
-            if (string.IsNullOrEmpty(instanceId))
-            {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(instanceId));
-            }
-            if (string.IsNullOrEmpty(typeName))
-            {
-                throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(typeName));
-            }
-            this.Name = name;
-            this.Id = id;
-            this.InstanceId = instanceId;
-            this.TypeName = typeName;
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(name));
         }
-
-        internal ActivityInfo(ActivityInstance instance)
-            : this(instance.Activity, instance.InternalId)
+        if (string.IsNullOrEmpty(id))
         {
-            this.Instance = instance;
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(id));
         }
-
-        internal ActivityInfo(Activity activity, long instanceId)
+        if (string.IsNullOrEmpty(instanceId))
         {
-            this.Activity = activity;
-            this.instanceIdInternal = instanceId;
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(instanceId));
         }
-
-        internal ActivityInstance Instance
+        if (string.IsNullOrEmpty(typeName))
         {
-            get;
-            private set;
+            throw FxTrace.Exception.ArgumentNullOrEmpty(nameof(typeName));
         }
+        Name = name;
+        Id = id;
+        InstanceId = instanceId;
+        TypeName = typeName;
+    }
 
-        [DataMember]
-        public string Name
+    internal ActivityInfo(ActivityInstance instance)
+        : this(instance.Activity, instance.InternalId)
+    {
+        Instance = instance;
+    }
+
+    internal ActivityInfo(Activity activity, long instanceId)
+    {
+        Activity = activity;
+        _instanceIdInternal = instanceId;
+    }
+
+    internal ActivityInstance Instance { get; private set; }
+
+    [DataMember]
+    public string Name
+    {
+        get
         {
-            get
+            if (string.IsNullOrEmpty(_name))
             {
-                if (string.IsNullOrEmpty(this.name))
-                {
-                    Fx.Assert(this.Activity != null, "Activity not set");
-                    this.name = this.Activity.DisplayName;
-                }
-                return this.name;
+                Fx.Assert(Activity != null, "Activity not set");
+                _name = Activity.DisplayName;
             }
-            // Internal visibility for partial trust serialization purposes only.
-            internal set
-            {
-                Fx.Assert(!string.IsNullOrEmpty(value), "Name cannot be null or empty");
-                this.name = value;
-            }
+            return _name;
         }
-
-        [DataMember]
-        public string Id
+        // Internal visibility for partial trust serialization purposes only.
+        internal set
         {
-            get
-            {
-                if (String.IsNullOrEmpty(this.id))
-                {
-                    Fx.Assert(this.Activity != null, "Activity not set");
-                    this.id = this.Activity.Id;
-                }
-                return this.id;
-            }
-            // Internal visibility for partial trust serialization purposes only.
-            internal set
-            {
-                Fx.Assert(!string.IsNullOrEmpty(value), "Id cannot be null or empty");
-                this.id = value;
-            }
-        }
-
-        [DataMember]
-        public string InstanceId
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this.instanceId))
-                {
-                    this.instanceId = this.instanceIdInternal.ToString(CultureInfo.InvariantCulture);
-                }
-                return this.instanceId;
-            }
-            // Internal visibility for partial trust serialization purposes only.
-            internal set
-            {
-                Fx.Assert(!string.IsNullOrEmpty(value), "InstanceId cannot be null or empty");
-                this.instanceId = value;
-            }
-        }
-
-        [DataMember]
-        public string TypeName
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this.typeName))
-                {
-                    Fx.Assert(this.Activity != null, "Activity not set");
-                    this.typeName = this.Activity.GetType().FullName;
-                }
-                return this.typeName;
-            }
-            // Internal visibility for partial trust serialization purposes only.
-            internal set
-            {
-                Fx.Assert(!string.IsNullOrEmpty(value), "TypeName cannot be null or empty");
-                this.typeName = value;
-            }
-        }
-
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.CurrentCulture,
-                "Name={0}, ActivityId = {1}, ActivityInstanceId = {2}, TypeName={3}",                
-                this.Name,
-                this.Id,
-                this.InstanceId,
-                this.TypeName);
-        }
-
-        internal Activity Activity
-        {
-            get; 
-            private set;
+            Fx.Assert(!string.IsNullOrEmpty(value), "Name cannot be null or empty");
+            _name = value;
         }
     }
+
+    [DataMember]
+    public string Id
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_id))
+            {
+                Fx.Assert(Activity != null, "Activity not set");
+                _id = Activity.Id;
+            }
+            return _id;
+        }
+        // Internal visibility for partial trust serialization purposes only.
+        internal set
+        {
+            Fx.Assert(!string.IsNullOrEmpty(value), "Id cannot be null or empty");
+            _id = value;
+        }
+    }
+
+    [DataMember]
+    public string InstanceId
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_instanceId))
+            {
+                _instanceId = _instanceIdInternal.ToString(CultureInfo.InvariantCulture);
+            }
+            return _instanceId;
+        }
+        // Internal visibility for partial trust serialization purposes only.
+        internal set
+        {
+            Fx.Assert(!string.IsNullOrEmpty(value), "InstanceId cannot be null or empty");
+            _instanceId = value;
+        }
+    }
+
+    [DataMember]
+    public string TypeName
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_typeName))
+            {
+                Fx.Assert(Activity != null, "Activity not set");
+                _typeName = Activity.GetType().FullName;
+            }
+            return _typeName;
+        }
+        // Internal visibility for partial trust serialization purposes only.
+        internal set
+        {
+            Fx.Assert(!string.IsNullOrEmpty(value), "TypeName cannot be null or empty");
+            _typeName = value;
+        }
+    }
+
+    public override string ToString()
+    {
+        return string.Format(CultureInfo.CurrentCulture,
+            "Name={0}, ActivityId = {1}, ActivityInstanceId = {2}, TypeName={3}",                
+            Name,
+            Id,
+            InstanceId,
+            TypeName);
+    }
+
+    internal Activity Activity { get; private set; }
 }
