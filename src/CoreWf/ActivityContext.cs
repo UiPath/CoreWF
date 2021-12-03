@@ -163,6 +163,19 @@ namespace System.Activities
             }
         }
 
+        public object UnsafeGetValue(LocationReference locationReference)
+        {
+            try
+            {
+                AllowChainedEnvironmentAccess = true;
+                return locationReference.GetLocation(this).Value;
+            }
+            finally
+            {
+                AllowChainedEnvironmentAccess = false;
+            }
+        }
+
         public T GetValue<T>(string locationReferenceName) => GetLocation<T>(locationReferenceName).Value;
 
         internal Location<T> GetLocation<T>(string locationReferenceName)

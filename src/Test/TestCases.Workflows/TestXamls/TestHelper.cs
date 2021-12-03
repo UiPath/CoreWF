@@ -12,7 +12,7 @@ namespace TestCases.Workflows
 
     internal static class TestHelper
     {
-        internal static string InvokeWorkflow(Activity activity, IDictionary<string, object> inputs = null)
+        internal static string InvokeWorkflow(this Activity activity, IDictionary<string, object> inputs = null)
         {
             var consoleOutputWriter = new StringWriter();
             var invoker = new WorkflowInvoker(activity);
