@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using Nito.AsyncEx.Interop;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
