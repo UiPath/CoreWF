@@ -140,11 +140,11 @@ namespace System.Activities.Debugger.Symbol
         {
             if (LocalAppContextSwitches.UseMD5ForWFDebugger)
             {
-                return new MD5CryptoServiceProvider();
+                return MD5.Create();
             }
             else
             {
-                return new SHA1CryptoServiceProvider();
+                return SHA1.Create();
             }
         }
     }
