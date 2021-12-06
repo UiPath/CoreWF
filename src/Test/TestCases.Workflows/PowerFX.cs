@@ -16,12 +16,21 @@ namespace TestCases.Workflows
         internal static readonly RecalcEngine Engine = new();
         public static ActivityWithResult CreateValue(Activity parent, string expressionText, Type targetType = null)
         {
-            var locals = parent.GetLocals(local => local.Type.IsValueType ? Activator.CreateInstance(local.Type) : null);
+            var locals = parent.GetLocals(GetDefault);
             var checkResult = Engine.Check(expressionText, locals.Type);
             checkResult.ThrowOnErrors();
             var expressionType = targetType ?? checkResult.ReturnType.DotnetType();
             var activityType = typeof(PowerFxValue<>).MakeGenericType(expressionType);
             return (ActivityWithResult)Activator.CreateInstance(activityType, expressionText);
+            static object GetDefault(LocationReference local)
+            {
+                var type = local.Type;
+                if (type == typeof(string))
+                {
+                    return string.Empty;
+                }
+                return Activator.CreateInstance(type);
+            }
         }
         internal static RecordValue GetLocals(this Activity parent, Func<LocationReference, object> getValue)
         {
@@ -108,6 +117,15 @@ namespace TestCases.Workflows
                     Activities = { new WriteLine { Text = new PowerFxValue<string>("Len(20*(one+two*three))") } }
                 }}}}
         }.InvokeWorkflow().ShouldBe("3\r\n");
+        [Fact]
+        public void CreateValueFromVariable()
+        {
+            var sequence = new Sequence { Variables = { new Variable<string>("str") } };
+            WorkflowInspectionServices.CacheMetadata(sequence);
+            var expression = "str";
+            var value = (PowerFxValue<string>)PowerFxHelper.CreateValue(sequence, expression);
+            value.Expression.ShouldBe(expression);
+        }
         [Fact]
         public void EvaluateMembers() => new Sequence
         {
