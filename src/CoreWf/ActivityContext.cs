@@ -163,7 +163,7 @@ namespace System.Activities
             }
         }
 
-        public object UnsafeGetValue(LocationReference locationReference)
+        internal object UnsafeGetValue(LocationReference locationReference)
         {
             try
             {
