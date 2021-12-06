@@ -5,6 +5,7 @@ using System;
 using System.Activities;
 using System.Collections.Generic;
 using System.Linq;
+using TestCases.Workflows;
 using TestCases.Workflows.WF4Samples;
 
 namespace TestConsole
@@ -13,6 +14,8 @@ namespace TestConsole
     {
         static void Main()
         {
+            new PowerFxTests().EvaluateMembers();
+            return;
             var engine = new RecalcEngine();
             var defaultValue = FormulaValue.New(null, typeof(string));
             var record = FormulaValue.RecordFromFields(new NamedValue("x", defaultValue));

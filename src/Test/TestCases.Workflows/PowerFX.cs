@@ -59,7 +59,7 @@ namespace TestCases.Workflows
         public string Expression { get; }
         protected override T Execute(CodeActivityContext context)
         {
-            var locals = Parent.GetLocals(local => context.UnsafeGetValue(local));
+            var locals = this.GetLocals(local => context.UnsafeGetValue(local));
             var result = PowerFxHelper.Engine.Eval(Expression, locals).ToObject();
             return (T)Convert.ChangeType(result, typeof(T));
         }
@@ -108,5 +108,12 @@ namespace TestCases.Workflows
                     Activities = { new WriteLine { Text = new PowerFxValue<string>("Len(20*(one+two*three))") } }
                 }}}}
         }.InvokeWorkflow().ShouldBe("3\r\n");
+        [Fact]
+        public void EvaluateMembers() => new Sequence
+        {
+            Variables = { new Variable<Name>("assembly", _=>new Name("codeBase", "en-US")) },
+            Activities = { new WriteLine { Text = new PowerFxValue<string>("Concatenate(assembly.CodeBase, assembly.CultureName)") } }
+        }.InvokeWorkflow().ShouldBe("codeBaseen-US\r\n");
+        public record Name(string CodeBase, string CultureName) { }
     }
 }
