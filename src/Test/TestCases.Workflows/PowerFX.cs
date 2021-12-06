@@ -127,6 +127,15 @@ namespace TestCases.Workflows
             value.Expression.ShouldBe(expression);
         }
         [Fact]
+        public void CreateValueFromExpression()
+        {
+            var sequence = new Sequence { Variables = { new Variable<string>("str"), new Variable<int>("int") } };
+            WorkflowInspectionServices.CacheMetadata(sequence);
+            var expression = "int+Len(str)";
+            var value = (PowerFxValue<double>)PowerFxHelper.CreateValue(sequence, expression);
+            value.Expression.ShouldBe(expression);
+        }
+        [Fact]
         public void EvaluateMembers() => new Sequence
         {
             Variables = { new Variable<Name>("assembly", _=>new Name("codeBase", "en-US")) },
