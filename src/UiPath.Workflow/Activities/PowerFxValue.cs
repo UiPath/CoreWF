@@ -3,6 +3,8 @@ using Microsoft.PowerFx.Core.Public.Types;
 using Microsoft.PowerFx.Core.Public.Values;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+
 namespace System.Activities
 {
     public class PowerFxValue<T> : CodeActivity<T>
@@ -34,7 +36,11 @@ namespace System.Activities
                 {
                     return string.Empty;
                 }
-                return Activator.CreateInstance(type);
+                if (type.IsAbstract)
+                {
+                    return null;
+                }
+                return RuntimeHelpers.GetUninitializedObject(type);
             }
         }
         internal static RecordValue GetLocals(this Activity parent, Func<LocationReference, object> getValue)

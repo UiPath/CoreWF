@@ -1,4 +1,5 @@
 ﻿using Shouldly;
+using System;
 using System.Activities;
 using System.Activities.Statements;
 using Xunit;
@@ -63,6 +64,16 @@ namespace TestCases.Workflows
             var sequence = new Sequence { Variables = { new Variable<string>("str"), new Variable<int>("int") } };
             WorkflowInspectionServices.CacheMetadata(sequence);
             var expression = "int+Len(str)";
+            var value = (PowerFxValue<double>)PowerFxHelper.CreateValue(sequence, expression);
+            value.Expression.ShouldBe(expression);
+        }
+        [Fact]
+        public void CreateValueFromTypes()
+        {
+            var sequence = new Sequence { Variables = { new Variable<IDisposable>("interface"), new Variable<Type>("abstract"), 
+                new Variable<TimeZoneInfo>("noCtor")} };
+            WorkflowInspectionServices.CacheMetadata(sequence);
+            var expression = "1";
             var value = (PowerFxValue<double>)PowerFxHelper.CreateValue(sequence, expression);
             value.Expression.ShouldBe(expression);
         }
