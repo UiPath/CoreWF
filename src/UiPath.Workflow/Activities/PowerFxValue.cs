@@ -36,7 +36,7 @@ namespace System.Activities
                 {
                     return string.Empty;
                 }
-                if (type.IsAbstract)
+                if (type.IsAbstract || type.IsArray)
                 {
                     return null;
                 }

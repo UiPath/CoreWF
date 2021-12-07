@@ -71,7 +71,7 @@ namespace TestCases.Workflows
         public void CreateValueFromTypes()
         {
             var sequence = new Sequence { Variables = { new Variable<IDisposable>("interface"), new Variable<Type>("abstract"), 
-                new Variable<TimeZoneInfo>("noCtor")} };
+                new Variable<TimeZoneInfo>("noCtor"), new Variable<int[]>("array")} };
             WorkflowInspectionServices.CacheMetadata(sequence);
             var expression = "1";
             var value = (PowerFxValue<double>)PowerFxHelper.CreateValue(sequence, expression);
