@@ -131,17 +131,17 @@ public class ActivityContext
         }
     }
 
-    internal object UnsafeGetValue(LocationReference locationReference)
+    internal InheritVariablesHelper InheritVariables() => new(this);
+
+    public readonly struct InheritVariablesHelper : IDisposable
     {
-        try
+        private readonly ActivityContext _context;
+        public InheritVariablesHelper(ActivityContext context)
         {
-            AllowChainedEnvironmentAccess = true;
-            return locationReference.GetLocation(this).Value;
+            context.AllowChainedEnvironmentAccess = true;
+            _context = context;
         }
-        finally
-        {
-            AllowChainedEnvironmentAccess = false;
-        }
+        public void Dispose() => _context.AllowChainedEnvironmentAccess = false;
     }
 
     public T GetValue<T>(string locationReferenceName) => GetLocation<T>(locationReferenceName).Value;

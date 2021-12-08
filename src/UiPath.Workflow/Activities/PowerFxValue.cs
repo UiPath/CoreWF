@@ -13,7 +13,11 @@ namespace System.Activities
         public string Expression { get; }
         protected override T Execute(CodeActivityContext context)
         {
-            var locals = Parent.GetLocals(local => context.UnsafeGetValue(local));
+            RecordValue locals;
+            using (context.InheritVariables())
+            {
+                locals = Parent.GetLocals(local => local.GetLocation(context).Value);
+            }
             var result = PowerFxHelper.Engine.Eval(Expression, locals).ToObject();
             return (T)Convert.ChangeType(result, typeof(T));
         }
