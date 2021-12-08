@@ -1,81 +1,67 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Validation;
+using System.Reflection;
+
+namespace System.Activities.Expressions;
+
+public sealed class FieldValue<TOperand, TResult> : CodeActivity<TResult>
 {
-    using System.Activities;
-    using System.Activities.Internals;
-    using System.Activities.Validation;
-    using System;
-    using System.ComponentModel;
-    using System.Reflection;
+    private Func<TOperand, TResult> _operationFunction;
+    private bool _isOperationFunctionStatic;
 
-    public sealed class FieldValue<TOperand, TResult> : CodeActivity<TResult>
+    [DefaultValue(null)]
+    public string FieldName { get; set; }
+
+    [DefaultValue(null)]
+    public InArgument<TOperand> Operand { get; set; }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        private Func<TOperand, TResult> operationFunction;
-        private bool isOperationFunctionStatic;
+        bool isRequired = false;
 
-        [DefaultValue(null)]
-        public string FieldName
+        if (typeof(TOperand).IsEnum)
         {
-            get;
-            set;
+            metadata.AddValidationError(SR.TargetTypeCannotBeEnum(GetType().Name, DisplayName));
         }
 
-        [DefaultValue(null)]
-        public InArgument<TOperand> Operand
+        if (string.IsNullOrEmpty(FieldName))
         {
-            get;
-            set;
+            metadata.AddValidationError(SR.ActivityPropertyMustBeSet("FieldName", DisplayName));
         }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
+        else
         {
-            bool isRequired = false;
+            Type operandType = typeof(TOperand);
+            FieldInfo fieldInfo = operandType.GetField(FieldName);
 
-            if (typeof(TOperand).IsEnum)
+            if (fieldInfo == null)
             {
-                metadata.AddValidationError(SR.TargetTypeCannotBeEnum(this.GetType().Name, this.DisplayName));
-            }
-
-            if (string.IsNullOrEmpty(this.FieldName))
-            {
-                metadata.AddValidationError(SR.ActivityPropertyMustBeSet("FieldName", this.DisplayName));
+                metadata.AddValidationError(SR.MemberNotFound(FieldName, typeof(TOperand).Name));
             }
             else
             {
-                FieldInfo fieldInfo = null;
-                Type operandType = typeof(TOperand);
-                fieldInfo = operandType.GetField(this.FieldName);
+                _isOperationFunctionStatic = fieldInfo.IsStatic;
+                isRequired = !_isOperationFunctionStatic;
 
-                if (fieldInfo == null)
+                if (!MemberExpressionHelper.TryGenerateLinqDelegate(FieldName, true, _isOperationFunctionStatic, out _operationFunction, out ValidationError validationError))
                 {
-                    metadata.AddValidationError(SR.MemberNotFound(this.FieldName, typeof(TOperand).Name));
-                }
-                else
-                {
-                    this.isOperationFunctionStatic = fieldInfo.IsStatic;
-                    isRequired = !this.isOperationFunctionStatic;
-
-                    if (!MemberExpressionHelper.TryGenerateLinqDelegate(this.FieldName, true, this.isOperationFunctionStatic, out this.operationFunction, out ValidationError validationError))
-                    {
-                        metadata.AddValidationError(validationError);
-                    }
+                    metadata.AddValidationError(validationError);
                 }
             }
-            MemberExpressionHelper.AddOperandArgument(metadata, this.Operand, isRequired);
         }
+        MemberExpressionHelper.AddOperandArgument(metadata, Operand, isRequired);
+    }
 
-        protected override TResult Execute(CodeActivityContext context)
+    protected override TResult Execute(CodeActivityContext context)
+    {
+        TOperand operandValue = Operand.Get(context);
+
+        if (!_isOperationFunctionStatic && operandValue == null)
         {
-            TOperand operandValue = this.Operand.Get(context);
-
-            if (!this.isOperationFunctionStatic && operandValue == null)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", this.GetType().Name, this.DisplayName)));
-            }
-
-            return this.operationFunction(operandValue);
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MemberCannotBeNull("Operand", GetType().Name, DisplayName)));
         }
+
+        return _operationFunction(operandValue);
     }
 }

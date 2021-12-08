@@ -1,63 +1,53 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+namespace System.Activities.Expressions;
+
+public sealed class ArgumentReference<T> : EnvironmentLocationReference<T>
 {
-    public sealed class ArgumentReference<T> : EnvironmentLocationReference<T>
+    private RuntimeArgument _targetArgument;
+
+    public ArgumentReference() { }
+
+    public ArgumentReference(string argumentName)
     {
-        private RuntimeArgument targetArgument;
+        ArgumentName = argumentName;
+    }
 
-        public ArgumentReference()
+    public string ArgumentName { get; set; }
+
+    public override LocationReference LocationReference => _targetArgument;
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        _targetArgument = null;
+
+        if (string.IsNullOrEmpty(ArgumentName))
         {
+            metadata.AddValidationError(SR.ArgumentNameRequired);
         }
-
-        public ArgumentReference(string argumentName)
+        else
         {
-            this.ArgumentName = argumentName;
-        }
+            _targetArgument = ActivityUtilities.FindArgument(ArgumentName, this);
 
-        public string ArgumentName
-        {
-            get;
-            set;
-        }
-
-        public override LocationReference LocationReference
-        {
-            get { return this.targetArgument; }
-        }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            this.targetArgument = null;
-
-            if (string.IsNullOrEmpty(this.ArgumentName))
+            if (_targetArgument == null)
             {
-                metadata.AddValidationError(SR.ArgumentNameRequired);
+                metadata.AddValidationError(SR.ArgumentNotFound(ArgumentName));
             }
-            else
+            else if (_targetArgument.Type != typeof(T))
             {
-                this.targetArgument = ActivityUtilities.FindArgument(this.ArgumentName, this);
-
-                if (this.targetArgument == null)
-                {
-                    metadata.AddValidationError(SR.ArgumentNotFound(this.ArgumentName));
-                }
-                else if (this.targetArgument.Type != typeof(T))
-                {
-                    metadata.AddValidationError(SR.ArgumentTypeMustBeCompatible(this.ArgumentName, this.targetArgument.Type, typeof(T)));
-                }
+                metadata.AddValidationError(SR.ArgumentTypeMustBeCompatible(ArgumentName, _targetArgument.Type, typeof(T)));
             }
         }
+    }
 
-        public override string ToString()
+    public override string ToString()
+    {
+        if (!string.IsNullOrEmpty(ArgumentName))
         {
-            if (!string.IsNullOrEmpty(this.ArgumentName))
-            {
-                return this.ArgumentName;
-            }
-
-            return base.ToString();
+            return ArgumentName;
         }
+
+        return base.ToString();
     }
 }

@@ -1,103 +1,85 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Activities.Runtime;
+using System.Collections.ObjectModel;
+using System.Windows.Markup;
+
+namespace System.Activities.Statements;
+
+[ContentProperty("Duration")]
+public sealed class Delay : NativeActivity
 {
-    using System;
-    using System.Activities;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Windows.Markup;
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
+    private static readonly Func<TimerExtension> getDefaultTimerExtension = new Func<TimerExtension>(GetDefaultTimerExtension);
+    private readonly Variable<Bookmark> _timerBookmark;
 
-    [ContentProperty("Duration")]
-    public sealed class Delay : NativeActivity
+    public Delay()
+        : base()
     {
-        private static readonly Func<TimerExtension> getDefaultTimerExtension = new Func<TimerExtension>(GetDefaultTimerExtension);
-        private readonly Variable<Bookmark> timerBookmark;
+        _timerBookmark = new Variable<Bookmark>();
+    }
 
-        public Delay()
-            : base()
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument<TimeSpan> Duration { get; set; }
+
+    protected override bool CanInduceIdle => true;
+
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        RuntimeArgument durationArgument = new RuntimeArgument("Duration", typeof(TimeSpan), ArgumentDirection.In, true);
+        metadata.Bind(Duration, durationArgument);
+        metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { durationArgument });
+        metadata.AddImplementationVariable(_timerBookmark);
+        metadata.AddDefaultExtensionProvider(getDefaultTimerExtension);
+    }
+
+    private static TimerExtension GetDefaultTimerExtension() => new DurableTimerExtension();
+
+    protected override void Execute(NativeActivityContext context)
+    {
+        TimeSpan duration = Duration.Get(context);
+        if (duration < TimeSpan.Zero)
         {
-            this.timerBookmark = new Variable<Bookmark>();
+            throw FxTrace.Exception.ArgumentOutOfRange("Duration", duration, SR.DurationIsNegative(DisplayName));
         }
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument<TimeSpan> Duration
+        if (duration == TimeSpan.Zero)
         {
-            get;
-            set;
+            return;
         }
 
-        protected override bool CanInduceIdle
-        {
-            get
-            {
-                return true;
-            }
-        }
+        TimerExtension timerExtension = GetTimerExtension(context);
+        Bookmark bookmark = context.CreateBookmark();
+        timerExtension.RegisterTimer(duration, bookmark);
+        _timerBookmark.Set(context, bookmark);
+    }
 
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
-        {
-            RuntimeArgument durationArgument = new RuntimeArgument("Duration", typeof(TimeSpan), ArgumentDirection.In, true);
-            metadata.Bind(this.Duration, durationArgument);
-            metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { durationArgument });
-            metadata.AddImplementationVariable(this.timerBookmark);
-            metadata.AddDefaultExtensionProvider(getDefaultTimerExtension);
-        }
+    protected override void Cancel(NativeActivityContext context)
+    {
+        Bookmark timerBookmark = _timerBookmark.Get(context);
+        TimerExtension timerExtension = GetTimerExtension(context);
+        timerExtension.CancelTimer(timerBookmark);
+        context.RemoveBookmark(timerBookmark);
+        context.MarkCanceled();
+    }
 
-        private static TimerExtension GetDefaultTimerExtension()
+    protected override void Abort(NativeActivityAbortContext context)
+    {
+        Bookmark timerBookmark = _timerBookmark.Get(context);
+        // The bookmark could be null in abort when user passed in a negative delay as a duration
+        if (timerBookmark != null)
         {
-            return new DurableTimerExtension();
-        }
-
-        protected override void Execute(NativeActivityContext context)
-        {
-            TimeSpan duration = this.Duration.Get(context);
-            if (duration < TimeSpan.Zero)
-            {
-                throw FxTrace.Exception.ArgumentOutOfRange("Duration", duration, SR.DurationIsNegative(this.DisplayName));
-            }
-
-            if (duration == TimeSpan.Zero)
-            {
-                return; 
-            }
-                        
-            TimerExtension timerExtension = GetTimerExtension(context);
-            Bookmark bookmark = context.CreateBookmark();
-            timerExtension.RegisterTimer(duration, bookmark);
-            this.timerBookmark.Set(context, bookmark);
-        }
-
-        protected override void Cancel(NativeActivityContext context)
-        {
-            Bookmark timerBookmark = this.timerBookmark.Get(context);
             TimerExtension timerExtension = GetTimerExtension(context);
             timerExtension.CancelTimer(timerBookmark);
-            context.RemoveBookmark(timerBookmark);
-            context.MarkCanceled();
         }
+        base.Abort(context);
+    }
 
-        protected override void Abort(NativeActivityAbortContext context)
-        {
-            Bookmark timerBookmark = this.timerBookmark.Get(context);
-            // The bookmark could be null in abort when user passed in a negative delay as a duration
-            if (timerBookmark != null)
-            {
-                TimerExtension timerExtension = GetTimerExtension(context);
-                timerExtension.CancelTimer(timerBookmark);
-            }
-            base.Abort(context);
-        }
-
-        private TimerExtension GetTimerExtension(ActivityContext context)
-        {
-            TimerExtension timerExtension = context.GetExtension<TimerExtension>();
-            Fx.Assert(timerExtension != null, "TimerExtension must exist.");
-            return timerExtension;
-        }
+    private TimerExtension GetTimerExtension(ActivityContext context)
+    {
+        TimerExtension timerExtension = context.GetExtension<TimerExtension>();
+        Fx.Assert(timerExtension != null, "TimerExtension must exist.");
+        return timerExtension;
     }
 }

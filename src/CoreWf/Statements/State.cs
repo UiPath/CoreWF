@@ -1,207 +1,148 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Activities.Runtime.Collections;
+using System.Collections.ObjectModel;
+using System.Windows.Markup;
+
+namespace System.Activities.Statements;
+
+/// <summary>
+/// This class represents a State in a StateMachine.
+/// </summary>
+public sealed class State
 {
-    using System;
-    using System.Activities;
-    using System.ComponentModel;
-    using System.Collections.ObjectModel;
-    using System.Activities.Runtime.Collections;
-    using System.Windows.Markup;
-    using System.Activities.Internals;
+    private InternalState _internalState;
+    private Collection<Transition> _transitions;
+    private NoOp _nullTrigger;
+    private Collection<Variable> _variables;
 
     /// <summary>
-    /// This class represents a State in a StateMachine.
+    /// Gets or sets DisplayName of the State.
     /// </summary>
-    public sealed class State
+    public string DisplayName { get; set; }
+
+    /// <summary>
+    /// Gets or sets entry action of the State. It is executed when the StateMachine enters the State. 
+    /// It's optional.
+    /// </summary>
+    [DefaultValue(null)]
+    public Activity Entry { get; set; }
+
+    /// <summary>
+    /// Gets or sets exit action of the State. It is executed when the StateMachine leaves the State. 
+    /// It's optional.
+    /// </summary>
+    [DependsOn("Entry")]
+    [DefaultValue(null)]
+    public Activity Exit { get; set; }
+
+
+    /// <summary>
+    /// Gets Transitions collection contains all outgoing Transitions from the State.
+    /// </summary>
+    [DependsOn("Exit")]
+    public Collection<Transition> Transitions
     {
-        private InternalState internalState;
-        private Collection<Transition> transitions;
-        private NoOp nullTrigger;
-        private Collection<Variable> variables;
-
-        /// <summary>
-        /// Gets or sets DisplayName of the State.
-        /// </summary>
-        public string DisplayName
+        get
         {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets entry action of the State. It is executed when the StateMachine enters the State. 
-        /// It's optional.
-        /// </summary>
-        [DefaultValue(null)]
-        public Activity Entry
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets exit action of the State. It is executed when the StateMachine leaves the State. 
-        /// It's optional.
-        /// </summary>
-        [DependsOn("Entry")]
-        [DefaultValue(null)]
-        public Activity Exit
-        {
-            get;
-            set;
-        }
-
-
-        /// <summary>
-        /// Gets Transitions collection contains all outgoing Transitions from the State.
-        /// </summary>
-        [DependsOn("Exit")]
-        public Collection<Transition> Transitions
-        {
-            get
+            _transitions ??= new ValidatingCollection<Transition>
             {
-                if (this.transitions == null)
+                // disallow null values
+                OnAddValidationCallback = item =>
                 {
-                    this.transitions = new ValidatingCollection<Transition>
+                    if (item == null)
                     {
-
-                        // disallow null values
-                        OnAddValidationCallback = item =>
-                        {
-                            if (item == null)
-                            {
-                                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
-                            }
-                        },
-                    };
-                }
-
-                return this.transitions;
-            }
+                        throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
+                    }
+                },
+            };
+            return _transitions;
         }
+    }
 
-        /// <summary>
-        /// Gets Variables which can be used within the scope of State and its Transitions collection.
-        /// </summary>
-        [DependsOn("Transitions")]
-        public Collection<Variable> Variables
+    /// <summary>
+    /// Gets Variables which can be used within the scope of State and its Transitions collection.
+    /// </summary>
+    [DependsOn("Transitions")]
+    public Collection<Variable> Variables
+    {
+        get
         {
-            get
+            _variables ??= new ValidatingCollection<Variable>
             {
-                if (this.variables == null)
+
+                // disallow null values
+                OnAddValidationCallback = item =>
                 {
-                    this.variables = new ValidatingCollection<Variable>
+                    if (item == null)
                     {
-
-                        // disallow null values
-                        OnAddValidationCallback = item =>
-                        {
-                            if (item == null)
-                            {
-                                throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
-                            }
-                        },
-                    };
-                }
-
-                return this.variables;
-            }
+                        throw FxTrace.Exception.AsError(new ArgumentNullException(nameof(item)));
+                    }
+                },
+            };
+            return _variables;
         }
+    }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the State is a final State.
-        /// </summary>
-        [DefaultValue(false)]
-        public bool IsFinal
+    /// <summary>
+    /// Gets or sets a value indicating whether the State is a final State.
+    /// </summary>
+    [DefaultValue(false)]
+    public bool IsFinal { get; set; }
+
+    /// <summary>
+    /// Gets Internal activity representation of state.
+    /// </summary>
+    internal InternalState InternalState
+    {
+        get
         {
-            get;
-            set;
+            _internalState ??= new InternalState(this);
+            return _internalState;
         }
+    }
 
-        /// <summary>
-        /// Gets Internal activity representation of state.
-        /// </summary>
-        internal InternalState InternalState
+    /// <summary>
+    /// Gets or sets PassNumber is used to detect re-visiting when traversing states in StateMachine. 
+    /// </summary>
+    internal uint PassNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether state can be reached via transitions.
+    /// </summary>
+    internal bool Reachable { get; set; }
+
+    /// <summary>
+    /// Gets or sets StateId is unique within a StateMachine.
+    /// </summary>
+    internal string StateId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display name of the parent state machine of the state.
+    /// Used for tracking purpose only.
+    /// </summary>
+    internal string StateMachineName { get; set; }
+
+    /// <summary>
+    /// Clear internal state. 
+    /// </summary>
+    internal void ClearInternalState() => _internalState = null;
+
+    internal NoOp NullTrigger
+    {
+        get
         {
-            get
+            _nullTrigger ??= new NoOp
             {
-                if (this.internalState == null)
-                {
-                    this.internalState = new InternalState(this);
-                }
-                return this.internalState;
-            }
+                DisplayName = "Null Trigger"
+            };
+            return _nullTrigger;
         }
+    }
 
-        /// <summary>
-        /// Gets or sets PassNumber is used to detect re-visiting when traversing states in StateMachine. 
-        /// </summary>
-        internal uint PassNumber
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether state can be reached via transitions.
-        /// </summary>
-        internal bool Reachable
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets StateId is unique within a StateMachine.
-        /// </summary>
-        internal string StateId
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the display name of the parent state machine of the state.
-        /// Used for tracking purpose only.
-        /// </summary>
-        internal string StateMachineName
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Clear internal state. 
-        /// </summary>
-        internal void ClearInternalState()
-        {
-            this.internalState = null;
-        }
-
-        internal NoOp NullTrigger
-        {
-            get
-            {
-                if (this.nullTrigger == null)
-                {
-                    this.nullTrigger = new NoOp
-                    {
-                        DisplayName = "Null Trigger"
-                    };
-                }
-
-                return this.nullTrigger;
-            }
-        }
-
-        internal sealed class NoOp : CodeActivity
-        {
-            protected override void Execute(CodeActivityContext context)
-            {
-
-            }
-        }
+    internal sealed class NoOp : CodeActivity
+    {
+        protected override void Execute(CodeActivityContext context) { }
     }
 }

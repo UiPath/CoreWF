@@ -1,7 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System;
 using System.Threading;
 using System.Xml.Linq;
 
@@ -18,7 +17,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
         public bool Equals(InstancePersistenceEvent persistenceEvent)
         {
-            return !object.ReferenceEquals(persistenceEvent, null) && persistenceEvent.Name == Name;
+            return !ReferenceEquals(persistenceEvent, null) && persistenceEvent.Name == Name;
         }
 
         public override bool Equals(object obj)
@@ -33,11 +32,11 @@ namespace System.Activities.Runtime.DurableInstancing
 
         public static bool operator ==(InstancePersistenceEvent left, InstancePersistenceEvent right)
         {
-            if (object.ReferenceEquals(left, right))
+            if (ReferenceEquals(left, right))
             {
                 return true;
             }
-            else if (object.ReferenceEquals(left, null))
+            else if (ReferenceEquals(left, null))
             {
                 return false;
             }

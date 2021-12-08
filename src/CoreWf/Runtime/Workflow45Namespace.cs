@@ -3,70 +3,53 @@
 
 using System.Xml.Linq;
 
-namespace System.Activities.Runtime
+namespace System.Activities.Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+internal static class Workflow45Namespace
 {
-    [Fx.Tag.XamlVisible(false)]
-    internal static class Workflow45Namespace
+    private const string baseNamespace = "urn:schemas-microsoft-com:System.Activities/4.5/properties";
+    private static readonly XNamespace s_workflow45Namespace = XNamespace.Get(baseNamespace);
+
+    private static XName s_definitionIdentity;
+    private static XName s_definitionIdentities;
+    private static XName s_definitionIdentityFilter;
+    private static XName s_workflowApplication;
+
+
+    public static XName DefinitionIdentity
     {
-        private const string baseNamespace = "urn:schemas-microsoft-com:System.Activities/4.5/properties";
-        private static readonly XNamespace s_workflow45Namespace = XNamespace.Get(baseNamespace);
-
-        private static XName s_definitionIdentity;
-        private static XName s_definitionIdentities;
-        private static XName s_definitionIdentityFilter;
-        private static XName s_workflowApplication;
-
-
-        public static XName DefinitionIdentity
+        get
         {
-            get
-            {
-                if (s_definitionIdentity == null)
-                {
-                    s_definitionIdentity = s_workflow45Namespace.GetName("DefinitionIdentity");
-                }
-
-                return s_definitionIdentity;
-            }
+            s_definitionIdentity ??= s_workflow45Namespace.GetName("DefinitionIdentity");
+            return s_definitionIdentity;
         }
+    }
 
-        public static XName DefinitionIdentities
+    public static XName DefinitionIdentities
+    {
+        get
         {
-            get
-            {
-                if (s_definitionIdentities == null)
-                {
-                    s_definitionIdentities = s_workflow45Namespace.GetName("DefinitionIdentities");
-                }
-
-                return s_definitionIdentities;
-            }
+            s_definitionIdentities ??= s_workflow45Namespace.GetName("DefinitionIdentities");
+            return s_definitionIdentities;
         }
+    }
 
-        public static XName DefinitionIdentityFilter
+    public static XName DefinitionIdentityFilter
+    {
+        get
         {
-            get
-            {
-                if (s_definitionIdentityFilter == null)
-                {
-                    s_definitionIdentityFilter = s_workflow45Namespace.GetName("DefinitionIdentityFilter");
-                }
-
-                return s_definitionIdentityFilter;
-            }
+            s_definitionIdentityFilter ??= s_workflow45Namespace.GetName("DefinitionIdentityFilter");
+            return s_definitionIdentityFilter;
         }
+    }
 
-        public static XName WorkflowApplication
+    public static XName WorkflowApplication
+    {
+        get
         {
-            get
-            {
-                if (s_workflowApplication == null)
-                {
-                    s_workflowApplication = s_workflow45Namespace.GetName("WorkflowApplication");
-                }
-
-                return s_workflowApplication;
-            }
+            s_workflowApplication ??= s_workflow45Namespace.GetName("WorkflowApplication");
+            return s_workflowApplication;
         }
     }
 }

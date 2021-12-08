@@ -1,102 +1,89 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-namespace System.Activities.Statements
+
+using System.Activities.Runtime;
+using System.Collections.ObjectModel;
+
+namespace System.Activities.Statements;
+
+internal sealed class InternalCompensate : NativeActivity
 {
-    using System.Collections.ObjectModel;
-    using System.Activities.Runtime;
+    public InternalCompensate()
+        : base() { }
 
-    internal sealed class InternalCompensate : NativeActivity
+    public InArgument<CompensationToken> Target { get; set; }
+
+    protected override bool CanInduceIdle => true;
+
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
-        public InternalCompensate()
-            : base()
+        RuntimeArgument targetArgument = new RuntimeArgument("Target", typeof(CompensationToken), ArgumentDirection.In);
+        metadata.Bind(Target, targetArgument);
+        metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { targetArgument });
+    }
+
+    protected override void Execute(NativeActivityContext context)
+    {
+        CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
+        Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
+
+        CompensationToken compensationToken = Target.Get(context);
+        Fx.Assert(compensationToken != null, "CompensationToken must be valid");
+
+        // The compensationToken should be a valid one at this point. Ensure its validated in Compensate activity.
+        CompensationTokenData tokenData = compensationExtension.Get(compensationToken.CompensationId);
+        Fx.Assert(tokenData != null, "The compensationToken should be a valid one at this point. Ensure its validated in Compensate activity.");
+
+        Fx.Assert(tokenData.BookmarkTable[CompensationBookmarkName.Compensated] == null, "Bookmark should not be already initialized in the bookmark table.");
+        tokenData.BookmarkTable[CompensationBookmarkName.Compensated] = context.CreateBookmark(new BookmarkCallback(OnCompensated));
+
+        tokenData.CompensationState = CompensationState.Compensating;
+        compensationExtension.NotifyMessage(context, tokenData.CompensationId, CompensationBookmarkName.OnCompensation);
+    }
+
+    // Successfully received Compensated response. 
+    private void OnCompensated(NativeActivityContext context, Bookmark bookmark, object value)
+    {
+        CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
+        Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
+
+        CompensationToken compensationToken = Target.Get(context);
+        Fx.Assert(compensationToken != null, "CompensationToken must be valid");
+
+        CompensationTokenData tokenData = compensationExtension.Get(compensationToken.CompensationId);
+        Fx.Assert(tokenData != null, "The compensationToken should be a valid one at this point. Ensure its validated in Compensate activity.");
+
+        tokenData.CompensationState = CompensationState.Compensated;
+        if (TD.CompensationStateIsEnabled())
         {
+            TD.CompensationState(tokenData.DisplayName, tokenData.CompensationState.ToString());
         }
 
-        public InArgument<CompensationToken> Target
+        // Remove the token from the parent! 
+        if (tokenData.ParentCompensationId != CompensationToken.RootCompensationId)
         {
-            get;
-            set;
+            CompensationTokenData parentToken = compensationExtension.Get(tokenData.ParentCompensationId);
+            Fx.Assert(parentToken != null, "parentToken must be valid");
+
+            parentToken.ExecutionTracker.Remove(tokenData);
+        }
+        else
+        {
+            // remove from workflow root...
+            CompensationTokenData parentToken = compensationExtension.Get(CompensationToken.RootCompensationId);
+            Fx.Assert(parentToken != null, "parentToken must be valid");
+
+            parentToken.ExecutionTracker.Remove(tokenData);
         }
 
-        protected override bool CanInduceIdle
-        {
-            get
-            {
-                return true;
-            }
-        }
+        tokenData.RemoveBookmark(context, CompensationBookmarkName.Compensated);
 
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
-        {
-            RuntimeArgument targetArgument = new RuntimeArgument("Target", typeof(CompensationToken), ArgumentDirection.In);
-            metadata.Bind(this.Target, targetArgument);
-            metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { targetArgument });
-        }
+        // Remove the token from the extension...
+        compensationExtension.Remove(compensationToken.CompensationId);
+    }
 
-        protected override void Execute(NativeActivityContext context)
-        {
-            CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
-            Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
-
-            CompensationToken compensationToken = Target.Get(context);
-            Fx.Assert(compensationToken != null, "CompensationToken must be valid");
-
-            // The compensationToken should be a valid one at this point. Ensure its validated in Compensate activity.
-            CompensationTokenData tokenData = compensationExtension.Get(compensationToken.CompensationId);
-            Fx.Assert(tokenData != null, "The compensationToken should be a valid one at this point. Ensure its validated in Compensate activity.");
-
-            Fx.Assert(tokenData.BookmarkTable[CompensationBookmarkName.Compensated] == null, "Bookmark should not be already initialized in the bookmark table.");
-            tokenData.BookmarkTable[CompensationBookmarkName.Compensated] = context.CreateBookmark(new BookmarkCallback(OnCompensated));
-
-            tokenData.CompensationState = CompensationState.Compensating;
-            compensationExtension.NotifyMessage(context, tokenData.CompensationId, CompensationBookmarkName.OnCompensation);
-        }
-
-        // Successfully received Compensated response. 
-        private void OnCompensated(NativeActivityContext context, Bookmark bookmark, object value)
-        {
-            CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
-            Fx.Assert(compensationExtension != null, "CompensationExtension must be valid");
-
-            CompensationToken compensationToken = Target.Get(context);
-            Fx.Assert(compensationToken != null, "CompensationToken must be valid");
-
-            CompensationTokenData tokenData = compensationExtension.Get(compensationToken.CompensationId);
-            Fx.Assert(tokenData != null, "The compensationToken should be a valid one at this point. Ensure its validated in Compensate activity.");
-
-            tokenData.CompensationState = CompensationState.Compensated;
-            if (TD.CompensationStateIsEnabled())
-            {
-                TD.CompensationState(tokenData.DisplayName, tokenData.CompensationState.ToString());
-            }
-
-            // Remove the token from the parent! 
-            if (tokenData.ParentCompensationId != CompensationToken.RootCompensationId)
-            {
-                CompensationTokenData parentToken = compensationExtension.Get(tokenData.ParentCompensationId);
-                Fx.Assert(parentToken != null, "parentToken must be valid");
-
-                parentToken.ExecutionTracker.Remove(tokenData);
-            }
-            else
-            {
-                // remove from workflow root...
-                CompensationTokenData parentToken = compensationExtension.Get(CompensationToken.RootCompensationId);
-                Fx.Assert(parentToken != null, "parentToken must be valid");
-
-                parentToken.ExecutionTracker.Remove(tokenData);
-            }
-
-            tokenData.RemoveBookmark(context, CompensationBookmarkName.Compensated);
-
-            // Remove the token from the extension...
-            compensationExtension.Remove(compensationToken.CompensationId);
-        }
-
-        protected override void Cancel(NativeActivityContext context)
-        {
-            // Suppress Cancel   
-        }
+    protected override void Cancel(NativeActivityContext context)
+    {
+        // Suppress Cancel   
     }
 }
-

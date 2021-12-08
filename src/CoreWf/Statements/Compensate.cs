@@ -1,229 +1,210 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-namespace System.Activities.Statements
+
+using System.Activities.Expressions;
+using System.Activities.Runtime;
+using System.Activities.Validation;
+using System.Collections.ObjectModel;
+using System.Linq;
+
+namespace System.Activities.Statements;
+
+public sealed class Compensate : NativeActivity
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Activities.Validation;
-    using System.Linq;
-    using System.Activities.Expressions;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private static readonly Constraint compensateWithNoTarget = CompensateWithNoTarget();
+    private InternalCompensate _internalCompensate;
+    private DefaultCompensation _defaultCompensation;
+    private readonly Variable<CompensationToken> _currentCompensationToken;
 
-    public sealed class Compensate : NativeActivity
+    public Compensate()
+        : base()
     {
-        private static readonly Constraint compensateWithNoTarget = Compensate.CompensateWithNoTarget();
-        private InternalCompensate internalCompensate;
-        private DefaultCompensation defaultCompensation;
-        private readonly Variable<CompensationToken> currentCompensationToken;
+        _currentCompensationToken = new Variable<CompensationToken>();
+    }
 
-        public Compensate()
-            : base()
-        {
-            this.currentCompensationToken = new Variable<CompensationToken>();
-        }
+    [DefaultValue(null)]
+    public InArgument<CompensationToken> Target { get; set; }
 
-        [DefaultValue(null)]
-        public InArgument<CompensationToken> Target
+    private DefaultCompensation DefaultCompensation
+    {
+        get
         {
-            get;
-            set;
-        }
-
-        private DefaultCompensation DefaultCompensation
-        {
-            get
+            _defaultCompensation ??= new DefaultCompensation()
             {
-                if (this.defaultCompensation == null)
-                {
-                    this.defaultCompensation = new DefaultCompensation()
-                        {
-                            Target = new InArgument<CompensationToken>(this.currentCompensationToken),
-                        };
-                }
-
-                return this.defaultCompensation;
-            }
+                Target = new InArgument<CompensationToken>(_currentCompensationToken),
+            };
+            return _defaultCompensation;
         }
+    }
 
-        private InternalCompensate InternalCompensate
+    private InternalCompensate InternalCompensate
+    {
+        get
         {
-            get
+            _internalCompensate ??= new InternalCompensate()
             {
-                if (this.internalCompensate == null)
-                {
-                    this.internalCompensate = new InternalCompensate()
-                        {
-                            Target = new InArgument<CompensationToken>(new ArgumentValue<CompensationToken> { ArgumentName = "Target" }),
-                        };
-                }
-
-                return this.internalCompensate;
-            }
+                Target = new InArgument<CompensationToken>(new ArgumentValue<CompensationToken> { ArgumentName = "Target" }),
+            };
+            return _internalCompensate;
         }
+    }
 
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
-        {
-            RuntimeArgument targetArgument = new RuntimeArgument("Target", typeof(CompensationToken), ArgumentDirection.In);
-            metadata.Bind(this.Target, targetArgument);
-            metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { targetArgument });
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        RuntimeArgument targetArgument = new("Target", typeof(CompensationToken), ArgumentDirection.In);
+        metadata.Bind(Target, targetArgument);
+        metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { targetArgument });
 
-            metadata.SetImplementationVariablesCollection(new Collection<Variable> { this.currentCompensationToken });
+        metadata.SetImplementationVariablesCollection(new Collection<Variable> { _currentCompensationToken });
 
-            Fx.Assert(DefaultCompensation != null, "DefaultCompensation must be valid");
-            Fx.Assert(InternalCompensate != null, "InternalCompensate must be valid");
-            metadata.SetImplementationChildrenCollection(
-                new Collection<Activity>
-                {
-                    DefaultCompensation,
-                    InternalCompensate
-                });
-        }
-
-        internal override IList<Constraint> InternalGetConstraints()
-        {
-            return new List<Constraint>(1) { compensateWithNoTarget };
-        }
-
-        private static Constraint CompensateWithNoTarget()
-        {
-            DelegateInArgument<Compensate> element = new DelegateInArgument<Compensate> { Name = "element" };
-            DelegateInArgument<ValidationContext> validationContext = new DelegateInArgument<ValidationContext> { Name = "validationContext" };
-            Variable<bool> assertFlag = new Variable<bool> { Name = "assertFlag" };
-            Variable<IEnumerable<Activity>> elements = new Variable<IEnumerable<Activity>>() { Name = "elements" };
-            Variable<int> index = new Variable<int>() { Name = "index" };
-
-            return new Constraint<Compensate>
+        Fx.Assert(DefaultCompensation != null, "DefaultCompensation must be valid");
+        Fx.Assert(InternalCompensate != null, "InternalCompensate must be valid");
+        metadata.SetImplementationChildrenCollection(
+            new Collection<Activity>
             {
-                Body = new ActivityAction<Compensate, ValidationContext>
+                DefaultCompensation,
+                InternalCompensate
+            });
+    }
+
+    internal override IList<Constraint> InternalGetConstraints() => new List<Constraint>(1) { compensateWithNoTarget };
+
+    private static Constraint CompensateWithNoTarget()
+    {
+        DelegateInArgument<Compensate> element = new() { Name = "element" };
+        DelegateInArgument<ValidationContext> validationContext = new() { Name = "validationContext" };
+        Variable<bool> assertFlag = new() { Name = "assertFlag" };
+        Variable<IEnumerable<Activity>> elements = new() { Name = "elements" };
+        Variable<int> index = new() { Name = "index" };
+
+        return new Constraint<Compensate>
+        {
+            Body = new ActivityAction<Compensate, ValidationContext>
+            {
+                Argument1 = element,
+                Argument2 = validationContext,
+                Handler = new Sequence
                 {
-                    Argument1 = element,
-                    Argument2 = validationContext,
-                    Handler = new Sequence
+                    Variables =
                     {
-                        Variables = 
+                        assertFlag,
+                        elements,
+                        index
+                    },
+                    Activities =
+                    {
+                        new If
                         {
-                            assertFlag,
-                            elements,
-                            index
-                        },
-                        Activities =
-                        {
-                            new If
+                            Condition = new InArgument<bool>((env) => element.Get(env).Target != null),
+                            Then = new Assign<bool>
                             {
-                                Condition = new InArgument<bool>((env) => element.Get(env).Target != null),
-                                Then = new Assign<bool>
+                                To = assertFlag,
+                                Value = true
+                            },
+                            Else = new Sequence
+                            {
+                                Activities =
                                 {
-                                    To = assertFlag,
-                                    Value = true
-                                },
-                                Else = new Sequence
-                                {
-                                    Activities = 
+                                    new Assign<IEnumerable<Activity>>
                                     {
-                                        new Assign<IEnumerable<Activity>>
+                                        To = elements,
+                                        Value = new GetParentChain
                                         {
-                                            To = elements,
-                                            Value = new GetParentChain
-                                            {
-                                                ValidationContext = validationContext,
-                                            },
+                                            ValidationContext = validationContext,
                                         },
-                                        new While(env => (assertFlag.Get(env) != true) && index.Get(env) < elements.Get(env).Count())
+                                    },
+                                    new While(env => (assertFlag.Get(env) != true) && index.Get(env) < elements.Get(env).Count())
+                                    {
+                                        Body = new Sequence
                                         {
-                                            Body = new Sequence
+                                            Activities =
                                             {
-                                                Activities = 
+                                                new If(env => (elements.Get(env).ElementAt(index.Get(env))).GetType() == typeof(CompensationParticipant))
                                                 {
-                                                    new If(env => (elements.Get(env).ElementAt(index.Get(env))).GetType() == typeof(CompensationParticipant))
+                                                    Then = new Assign<bool>
                                                     {
-                                                        Then = new Assign<bool>
-                                                        {
-                                                            To = assertFlag,
-                                                            Value = true                                                            
-                                                        },
+                                                        To = assertFlag,
+                                                        Value = true
                                                     },
-                                                    new Assign<int>
-                                                    {
-                                                        To = index,
-                                                        Value = new InArgument<int>(env => index.Get(env) + 1)
-                                                    },
-                                                }
+                                                },
+                                                new Assign<int>
+                                                {
+                                                    To = index,
+                                                    Value = new InArgument<int>(env => index.Get(env) + 1)
+                                                },
                                             }
                                         }
                                     }
-                                }                                
-                            },
-                            new AssertValidation
-                            {
-                                Assertion = new InArgument<bool>(assertFlag),
-                                Message = new InArgument<string>(SR.CompensateWithNoTargetConstraint)   
+                                }
                             }
+                        },
+                        new AssertValidation
+                        {
+                            Assertion = new InArgument<bool>(assertFlag),
+                            Message = new InArgument<string>(SR.CompensateWithNoTargetConstraint)
                         }
                     }
                 }
-            };
+            }
+        };
+    }
+
+    protected override void Execute(NativeActivityContext context)
+    {
+        CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
+        if (compensationExtension == null)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensateWithoutCompensableActivity(DisplayName)));
         }
 
-        protected override void Execute(NativeActivityContext context)
+        if (Target.IsEmpty)
         {
-            CompensationExtension compensationExtension = context.GetExtension<CompensationExtension>();
-            if (compensationExtension == null)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensateWithoutCompensableActivity(this.DisplayName)));
-            }
+            CompensationToken ambientCompensationToken = (CompensationToken)context.Properties.Find(CompensationToken.PropertyName);
+            CompensationTokenData ambientTokenData = ambientCompensationToken == null ? null : compensationExtension.Get(ambientCompensationToken.CompensationId);
 
-            if (Target.IsEmpty)
+            if (ambientTokenData != null && ambientTokenData.IsTokenValidInSecondaryRoot)
             {
-                CompensationToken ambientCompensationToken = (CompensationToken)context.Properties.Find(CompensationToken.PropertyName);
-                CompensationTokenData ambientTokenData = ambientCompensationToken == null ? null : compensationExtension.Get(ambientCompensationToken.CompensationId);
-
-                if (ambientTokenData != null && ambientTokenData.IsTokenValidInSecondaryRoot)
+                _currentCompensationToken.Set(context, ambientCompensationToken);
+                if (ambientTokenData.ExecutionTracker.Count > 0)
                 {
-                    this.currentCompensationToken.Set(context, ambientCompensationToken);
-                    if (ambientTokenData.ExecutionTracker.Count > 0)
-                    {
-                        context.ScheduleActivity(DefaultCompensation);
-                    }
-                }
-                else
-                {
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidCompensateActivityUsage(this.DisplayName)));
+                    context.ScheduleActivity(DefaultCompensation);
                 }
             }
             else
             {
-                CompensationToken compensationToken = Target.Get(context);
-                CompensationTokenData tokenData = compensationToken == null ? null : compensationExtension.Get(compensationToken.CompensationId);
-
-                if (compensationToken == null)
-                {
-                    throw FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(this.DisplayName));
-                }
-
-                if (compensationToken.CompensateCalled)
-                {
-                    // No-Op
-                    return;
-                }
-
-                if (tokenData == null || tokenData.CompensationState != CompensationState.Completed)
-                {
-                    throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
-                }
-
-                // A valid in-arg was passed...            
-                tokenData.CompensationState = CompensationState.Compensating;
-                compensationToken.CompensateCalled = true;
-                context.ScheduleActivity(InternalCompensate);
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidCompensateActivityUsage(DisplayName)));
             }
         }
-
-        protected override void Cancel(NativeActivityContext context)
+        else
         {
-            // Suppress Cancel   
+            CompensationToken compensationToken = Target.Get(context);
+            CompensationTokenData tokenData = compensationToken == null ? null : compensationExtension.Get(compensationToken.CompensationId);
+
+            if (compensationToken == null)
+            {
+                throw FxTrace.Exception.Argument("Target", SR.InvalidCompensationToken(DisplayName));
+            }
+
+            if (compensationToken.CompensateCalled)
+            {
+                // No-Op
+                return;
+            }
+
+            if (tokenData == null || tokenData.CompensationState != CompensationState.Completed)
+            {
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CompensableActivityAlreadyConfirmedOrCompensated));
+            }
+
+            // A valid in-arg was passed...            
+            tokenData.CompensationState = CompensationState.Compensating;
+            compensationToken.CompensateCalled = true;
+            context.ScheduleActivity(InternalCompensate);
         }
+    }
+
+    protected override void Cancel(NativeActivityContext context)
+    {
+        // Suppress Cancel   
     }
 }

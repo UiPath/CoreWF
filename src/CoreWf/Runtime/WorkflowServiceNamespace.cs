@@ -3,153 +3,115 @@
 
 using System.Xml.Linq;
 
-namespace System.Activities.Runtime
+namespace System.Activities.Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+internal static class WorkflowServiceNamespace
 {
-    [Fx.Tag.XamlVisible(false)]
-    internal static class WorkflowServiceNamespace
+    private const string baseNamespace = "urn:schemas-microsoft-com:System.ServiceModel.Activities/4.0/properties";
+    private static readonly XNamespace s_workflowServiceNamespace = XNamespace.Get(baseNamespace);
+    private static readonly XNamespace s_endpointsNamespace = XNamespace.Get(baseNamespace + "/endpoints");
+
+    private static XName s_controlEndpoint;
+    private static XName s_suspendException;
+    private static XName s_suspendReason;
+    private static XName s_siteName;
+    private static XName s_relativeApplicationPath;
+    private static XName s_relativeServicePath;
+    private static XName s_creationContext;
+    private static XName s_service;
+    private static XName s_requestReplyCorrelation;
+    private static XName s_messageVersionForReplies;
+
+    public static XNamespace EndpointsPath => s_endpointsNamespace;
+
+    public static XName ControlEndpoint
     {
-        private const string baseNamespace = "urn:schemas-microsoft-com:System.ServiceModel.Activities/4.0/properties";
-        private static readonly XNamespace s_workflowServiceNamespace = XNamespace.Get(baseNamespace);
-        private static readonly XNamespace s_endpointsNamespace = XNamespace.Get(baseNamespace + "/endpoints");
-
-        private static XName s_controlEndpoint;
-        private static XName s_suspendException;
-        private static XName s_suspendReason;
-        private static XName s_siteName;
-        private static XName s_relativeApplicationPath;
-        private static XName s_relativeServicePath;
-        private static XName s_creationContext;
-        private static XName s_service;
-        private static XName s_requestReplyCorrelation;
-        private static XName s_messageVersionForReplies;
-
-        public static XNamespace EndpointsPath
+        get
         {
-            get
-            {
-                return s_endpointsNamespace;
-            }
+            s_controlEndpoint ??= s_workflowServiceNamespace.GetName("ControlEndpoint");
+            return s_controlEndpoint;
         }
+    }
 
-        public static XName ControlEndpoint
+    public static XName MessageVersionForReplies
+    {
+        get
         {
-            get
-            {
-                if (s_controlEndpoint == null)
-                {
-                    s_controlEndpoint = s_workflowServiceNamespace.GetName("ControlEndpoint");
-                }
-                return s_controlEndpoint;
-            }
+            s_messageVersionForReplies ??= s_workflowServiceNamespace.GetName("MessageVersionForReplies");
+            return s_messageVersionForReplies;
         }
+    }
 
-        public static XName MessageVersionForReplies
+    public static XName RequestReplyCorrelation
+    {
+        get
         {
-            get
-            {
-                if (s_messageVersionForReplies == null)
-                {
-                    s_messageVersionForReplies = s_workflowServiceNamespace.GetName("MessageVersionForReplies");
-                }
-                return s_messageVersionForReplies;
-            }
+            s_requestReplyCorrelation ??= s_workflowServiceNamespace.GetName("RequestReplyCorrelation");
+            return s_requestReplyCorrelation;
         }
+    }
 
-        public static XName RequestReplyCorrelation
+    public static XName SuspendReason
+    {
+        get
         {
-            get
-            {
-                if (s_requestReplyCorrelation == null)
-                {
-                    s_requestReplyCorrelation = s_workflowServiceNamespace.GetName("RequestReplyCorrelation");
-                }
-                return s_requestReplyCorrelation;
-            }
+            s_suspendReason ??= s_workflowServiceNamespace.GetName("SuspendReason");
+            return s_suspendReason;
         }
+    }
 
-        public static XName SuspendReason
+    public static XName SiteName
+    {
+        get
         {
-            get
-            {
-                if (s_suspendReason == null)
-                {
-                    s_suspendReason = s_workflowServiceNamespace.GetName("SuspendReason");
-                }
-                return s_suspendReason;
-            }
+            s_siteName ??= s_workflowServiceNamespace.GetName("SiteName");
+            return s_siteName;
         }
+    }
 
-        public static XName SiteName
+    public static XName SuspendException
+    {
+        get
         {
-            get
-            {
-                if (s_siteName == null)
-                {
-                    s_siteName = s_workflowServiceNamespace.GetName("SiteName");
-                }
-                return s_siteName;
-            }
+            s_suspendException ??= s_workflowServiceNamespace.GetName("SuspendException");
+            return s_suspendException;
         }
+    }
 
-        public static XName SuspendException
+    public static XName RelativeApplicationPath
+    {
+        get
         {
-            get
-            {
-                if (s_suspendException == null)
-                {
-                    s_suspendException = s_workflowServiceNamespace.GetName("SuspendException");
-                }
-
-                return s_suspendException;
-            }
+            s_relativeApplicationPath ??= s_workflowServiceNamespace.GetName("RelativeApplicationPath");
+            return s_relativeApplicationPath;
         }
+    }
 
-        public static XName RelativeApplicationPath
+    public static XName RelativeServicePath
+    {
+        get
         {
-            get
-            {
-                if (s_relativeApplicationPath == null)
-                {
-                    s_relativeApplicationPath = s_workflowServiceNamespace.GetName("RelativeApplicationPath");
-                }
-                return s_relativeApplicationPath;
-            }
+            s_relativeServicePath ??= s_workflowServiceNamespace.GetName("RelativeServicePath");
+            return s_relativeServicePath;
         }
+    }
 
-        public static XName RelativeServicePath
+    public static XName CreationContext
+    {
+        get
         {
-            get
-            {
-                if (s_relativeServicePath == null)
-                {
-                    s_relativeServicePath = s_workflowServiceNamespace.GetName("RelativeServicePath");
-                }
-                return s_relativeServicePath;
-            }
+            s_creationContext ??= s_workflowServiceNamespace.GetName("CreationContext");
+            return s_creationContext;
         }
+    }
 
-        public static XName CreationContext
+    public static XName Service
+    {
+        get
         {
-            get
-            {
-                if (s_creationContext == null)
-                {
-                    s_creationContext = s_workflowServiceNamespace.GetName("CreationContext");
-                }
-                return s_creationContext;
-            }
-        }
-
-        public static XName Service
-        {
-            get
-            {
-                if (s_service == null)
-                {
-                    s_service = s_workflowServiceNamespace.GetName("Service");
-                }
-                return s_service;
-            }
+            s_service ??= s_workflowServiceNamespace.GetName("Service");
+            return s_service;
         }
     }
 }

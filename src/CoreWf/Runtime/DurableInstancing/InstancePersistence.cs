@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Xml.Linq;
 
@@ -17,7 +15,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             get
             {
-                return InstancePersistence.s_activitiesCommandNamespace;
+                return s_activitiesCommandNamespace;
             }
         }
 
@@ -25,7 +23,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             get
             {
-                return InstancePersistence.s_activitiesEventNamespace;
+                return s_activitiesEventNamespace;
             }
         }
 

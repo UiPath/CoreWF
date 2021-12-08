@@ -1,67 +1,57 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+
+namespace System.Activities.Expressions;
+
+public sealed class VariableValue<T> : EnvironmentLocationValue<T>
 {
-    using System.Activities.Runtime;
+    public VariableValue()
+        : base() { }
 
-    public sealed class VariableValue<T> : EnvironmentLocationValue<T>
+    public VariableValue(Variable variable)
+        : base()
     {
-        public VariableValue()
-            : base()
-        {
-        }
+        Variable = variable;
+    }
 
-        public VariableValue(Variable variable)
-            : base()
-        {
-            this.Variable = variable;
-        }
+    public Variable Variable { get; set; }
 
-        public Variable Variable
-        {
-            get;
-            set;
-        }
+    public override LocationReference LocationReference => Variable;
 
-        public override LocationReference LocationReference
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        if (Variable == null)
         {
-            get { return this.Variable; }
+            metadata.AddValidationError(SR.VariableMustBeSet);
         }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
+        else
         {
-            if (this.Variable == null)
+            if (Variable is not Variable<T> && !TypeHelper.AreTypesCompatible(Variable.Type, typeof(T)))
             {
-                metadata.AddValidationError(SR.VariableMustBeSet);
-            }
-            else
-            {
-                if (!(this.Variable is Variable<T>) && !TypeHelper.AreTypesCompatible(this.Variable.Type, typeof(T)))
-                {
-                    metadata.AddValidationError(SR.VariableTypeInvalid(this.Variable, typeof(T), this.Variable.Type));
-                }
-
-                if (!this.Variable.IsInTree)
-                {
-                    metadata.AddValidationError(SR.VariableShouldBeOpen(this.Variable.Name));
-                }
-
-                if (!metadata.Environment.IsVisible(this.Variable))
-                {
-                    metadata.AddValidationError(SR.VariableNotVisible(this.Variable.Name));
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            if (Variable != null && !string.IsNullOrEmpty(Variable.Name))
-            {
-                return Variable.Name;
+                metadata.AddValidationError(SR.VariableTypeInvalid(Variable, typeof(T), Variable.Type));
             }
 
-            return base.ToString();
+            if (!Variable.IsInTree)
+            {
+                metadata.AddValidationError(SR.VariableShouldBeOpen(Variable.Name));
+            }
+
+            if (!metadata.Environment.IsVisible(Variable))
+            {
+                metadata.AddValidationError(SR.VariableNotVisible(Variable.Name));
+            }
         }
+    }
+
+    public override string ToString()
+    {
+        if (Variable != null && !string.IsNullOrEmpty(Variable.Name))
+        {
+            return Variable.Name;
+        }
+
+        return base.ToString();
     }
 }

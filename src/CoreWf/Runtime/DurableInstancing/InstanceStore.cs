@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -72,7 +70,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 throw Fx.Exception.ArgumentNull(nameof(handle));
             }
-            if (!object.ReferenceEquals(this, handle.Store))
+            if (!ReferenceEquals(this, handle.Store))
             {
                 throw Fx.Exception.Argument(nameof(handle), SR.ContextNotFromThisStore);
             }
@@ -92,7 +90,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 throw Fx.Exception.ArgumentNull(nameof(handle));
             }
-            if (!object.ReferenceEquals(this, handle.Store))
+            if (!ReferenceEquals(this, handle.Store))
             {
                 throw Fx.Exception.Argument(nameof(handle), SR.ContextNotFromThisStore);
             }
@@ -126,7 +124,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 throw Fx.Exception.ArgumentNull(nameof(handle));
             }
-            if (!object.ReferenceEquals(this, handle.Store))
+            if (!ReferenceEquals(this, handle.Store))
             {
                 throw Fx.Exception.Argument(nameof(handle), SR.ContextNotFromThisStore);
             }
@@ -157,7 +155,7 @@ namespace System.Activities.Runtime.DurableInstancing
             InstanceHandle[] handlesToNotify = null;
             lock (ThisLock)
             {
-                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
+                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !ReferenceEquals(ownerReference.Target, owner))
                 {
                     throw Fx.Exception.Argument(nameof(owner), SR.OwnerBelongsToWrongStore);
                 }
@@ -194,7 +192,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
             lock (ThisLock)
             {
-                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
+                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !ReferenceEquals(ownerReference.Target, owner))
                 {
                     throw Fx.Exception.Argument(nameof(owner), SR.OwnerBelongsToWrongStore);
                 }
@@ -261,7 +259,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
             lock (ThisLock)
             {
-                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !object.ReferenceEquals(ownerReference.Target, owner))
+                if (!_owners.TryGetValue(owner.InstanceOwnerId, out WeakReference ownerReference) || !ReferenceEquals(ownerReference.Target, owner))
                 {
                     throw Fx.Exception.Argument(nameof(owner), SR.OwnerBelongsToWrongStore);
                 }
@@ -327,7 +325,7 @@ namespace System.Activities.Runtime.DurableInstancing
             lock (ThisLock)
             {
                 Fx.Assert(_owners.ContainsKey(owner.InstanceOwnerId), "InstanceHandle called PendHandleToEvent on wrong InstanceStore!!");
-                Fx.Assert(object.ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple of the same owner become simultaneously active?");
+                Fx.Assert(ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple of the same owner become simultaneously active?");
 
                 InstanceNormalEvent normal = GetOwnerEventHelper(persistenceEvent, owner);
                 Fx.Assert(!normal.PendingHandles.Contains(handle), "Should not have already pended the handle.");
@@ -341,7 +339,7 @@ namespace System.Activities.Runtime.DurableInstancing
             lock (ThisLock)
             {
                 Fx.Assert(_owners.ContainsKey(owner.InstanceOwnerId), "InstanceHandle called AddHandleToEvent on wrong InstanceStore!!");
-                Fx.Assert(object.ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple instances of the same owner become simultaneously active?");
+                Fx.Assert(ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple instances of the same owner become simultaneously active?");
 
                 InstanceNormalEvent normal = GetOwnerEventHelper(persistenceEvent, owner);
                 Fx.Assert(normal.PendingHandles.Contains(handle), "Should have already pended the handle.");
@@ -358,7 +356,7 @@ namespace System.Activities.Runtime.DurableInstancing
             lock (ThisLock)
             {
                 Fx.Assert(_owners.ContainsKey(owner.InstanceOwnerId), "InstanceHandle called SelectSignaledEvents on wrong InstanceStore!!");
-                Fx.Assert(object.ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple instances of the same owner become simultaneously active?");
+                Fx.Assert(ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple instances of the same owner become simultaneously active?");
 
                 // Entry must exist since it is still registered by the handle.
                 foreach (InstanceNormalEvent normal in eventNames.Select(name => owner.Events[name]))
@@ -381,7 +379,7 @@ namespace System.Activities.Runtime.DurableInstancing
             lock (ThisLock)
             {
                 Fx.Assert(_owners.ContainsKey(owner.InstanceOwnerId), "InstanceHandle called RemoveHandleFromEvents on wrong InstanceStore!!");
-                Fx.Assert(object.ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple instances of the same owner become simultaneously active in RemoveHandleFromEvents?");
+                Fx.Assert(ReferenceEquals(_owners[owner.InstanceOwnerId].Target, owner), "How did multiple instances of the same owner become simultaneously active in RemoveHandleFromEvents?");
 
                 // Entry must exist since it is still registered by the handle.
                 foreach (InstanceNormalEvent normal in eventNames.Select(name => owner.Events[name]))

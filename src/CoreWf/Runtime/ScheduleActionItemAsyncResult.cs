@@ -1,52 +1,43 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System;
+namespace System.Activities.Runtime;
 
-namespace System.Activities.Runtime
+// An AsyncResult that schedules work for later on the IOThreadScheduler
+internal abstract class ScheduleActionItemAsyncResult : AsyncResult
 {
-    // An AsyncResult that schedules work for later on the IOThreadScheduler
-    internal abstract class ScheduleActionItemAsyncResult : AsyncResult
+    private static readonly Action<object> s_doWork = new Action<object>(DoWork);
+
+    // Implement your own constructor taking in necessary parameters
+    // Constructor needs to call "Schedule()" to schedule work 
+    // Cache all parameters
+    // Implement OnDoWork to do work! 
+
+    protected ScheduleActionItemAsyncResult(AsyncCallback callback, object state) : base(callback, state) { }
+
+    protected void Schedule() => ActionItem.Schedule(s_doWork, this);
+
+    private static void DoWork(object state)
     {
-        private static readonly Action<object> s_doWork = new Action<object>(DoWork);
-
-        // Implement your own constructor taking in necessary parameters
-        // Constructor needs to call "Schedule()" to schedule work 
-        // Cache all parameters
-        // Implement OnDoWork to do work! 
-
-        protected ScheduleActionItemAsyncResult(AsyncCallback callback, object state) : base(callback, state) { }
-
-        protected void Schedule()
+        ScheduleActionItemAsyncResult thisPtr = (ScheduleActionItemAsyncResult)state;
+        Exception completionException = null;
+        try
         {
-            ActionItem.Schedule(s_doWork, this);
+            thisPtr.OnDoWork();
         }
-
-        private static void DoWork(object state)
+        catch (Exception ex)
         {
-            ScheduleActionItemAsyncResult thisPtr = (ScheduleActionItemAsyncResult)state;
-            Exception completionException = null;
-            try
+            if (Fx.IsFatal(ex))
             {
-                thisPtr.OnDoWork();
+                throw;
             }
-            catch (Exception ex)
-            {
-                if (Fx.IsFatal(ex))
-                {
-                    throw;
-                }
-                completionException = ex;
-            }
-
-            thisPtr.Complete(false, completionException);
+            completionException = ex;
         }
 
-        protected abstract void OnDoWork();
-
-        public static void End(IAsyncResult result)
-        {
-            AsyncResult.End<ScheduleActionItemAsyncResult>(result);
-        }
+        thisPtr.Complete(false, completionException);
     }
+
+    protected abstract void OnDoWork();
+
+    public static void End(IAsyncResult result) => End<ScheduleActionItemAsyncResult>(result);
 }

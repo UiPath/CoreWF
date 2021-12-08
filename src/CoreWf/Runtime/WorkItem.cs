@@ -1,366 +1,297 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Runtime
+using System.Activities.Runtime.DurableInstancing;
+
+namespace System.Activities.Runtime;
+
+[DataContract]
+internal abstract class WorkItem
 {
-    using System;
-    using System.Activities.Runtime.DurableInstancing;
-    using System.Runtime.Serialization;
-    using System.Collections.Generic;
-    using System.Activities.Internals;
+    private static AsyncCallback associateCallback;
+    private static AsyncCallback trackingCallback;
 
-    [DataContract]
-    internal abstract class WorkItem
+    // We use a protected field here because it works well with
+    // ref style Cleanup exception handling.
+    protected Exception _workflowAbortException;
+    private ActivityInstance _activityInstance;
+    private bool _isEmpty;
+    private Exception _exceptionToPropagate;
+
+    // Used by subclasses in the pooled case.
+    protected WorkItem() { }
+
+    protected WorkItem(ActivityInstance activityInstance)
     {
-        private static AsyncCallback associateCallback;
-        private static AsyncCallback trackingCallback;
+        _activityInstance = activityInstance;
+        _activityInstance.IncrementBusyCount();
+    }
 
-        // We use a protected field here because it works well with
-        // ref style Cleanup exception handling.
-        protected Exception _workflowAbortException;
-        private ActivityInstance activityInstance;
-        private bool isEmpty;
-        private Exception exceptionToPropagate;
+    public ActivityInstance ActivityInstance => _activityInstance;
 
-        // Used by subclasses in the pooled case.
-        protected WorkItem()
+    public Exception WorkflowAbortException => _workflowAbortException;
+
+    public Exception ExceptionToPropagate
+    {
+        get => _exceptionToPropagate;
+        set
         {
+            Fx.Assert(value != null, "We should never set this back to null explicitly.  Use the ExceptionPropagated method below.");
+
+            _exceptionToPropagate = value;
+        }
+    }
+
+    public abstract ActivityInstance PropertyManagerOwner { get; }
+
+    public virtual ActivityInstance OriginalExceptionSource => ActivityInstance;
+
+    public bool IsEmpty
+    {
+        get => _isEmpty;
+        protected set => _isEmpty = value;
+    }
+
+    public bool ExitNoPersistRequired { get; protected set; }
+
+    protected bool IsPooled { get; set; }
+
+    public abstract bool IsValid { get; }
+
+    [DataMember(Name = "activityInstance")]
+    internal ActivityInstance SerializedActivityInstance
+    {
+        get => _activityInstance;
+        set => _activityInstance = value;
+    }
+
+    [DataMember(EmitDefaultValue = false, Name = "IsEmpty")]
+    internal bool SerializedIsEmpty
+    {
+        get => IsEmpty;
+        set => IsEmpty = value;
+    }
+
+    public void Dispose(ActivityExecutor executor)
+    {
+        if (FxTrace.ShouldTraceVerboseToTraceSource)
+        {
+            TraceCompleted();
         }
 
-        protected WorkItem(ActivityInstance activityInstance)
+        if (IsPooled)
         {
-            this.activityInstance = activityInstance;
-            this.activityInstance.IncrementBusyCount();
+            ReleaseToPool(executor);
+        }
+    }
+
+    protected virtual void ClearForReuse()
+    {
+        _exceptionToPropagate = null;
+        _workflowAbortException = null;
+        _activityInstance = null;
+    }
+
+    protected virtual void Reinitialize(ActivityInstance activityInstance)
+    {
+        _activityInstance = activityInstance;
+        _activityInstance.IncrementBusyCount();
+    }
+
+    // this isn't just public for performance reasons. We avoid the virtual call
+    // by going through Dispose()
+    protected virtual void ReleaseToPool(ActivityExecutor executor) => Fx.Assert("This should never be called ... only overridden versions should get called.");
+
+    private static void OnAssociateComplete(IAsyncResult result)
+    {
+        if (result.CompletedSynchronously)
+        {
+            return;
         }
 
-        public ActivityInstance ActivityInstance
+        CallbackData data = (CallbackData)result.AsyncState;
+
+        try
         {
-            get
+            ActivityExecutor.EndAssociateKeys(result);
+        }
+        catch (Exception e)
+        {
+            if (Fx.IsFatal(e))
             {
-                return this.activityInstance;
-            }
-        }
-
-        public Exception WorkflowAbortException
-        {
-            get
-            {
-                return _workflowAbortException;
-            }
-        }
-
-        public Exception ExceptionToPropagate
-        {
-            get
-            {
-                return this.exceptionToPropagate;
-            }
-            set
-            {
-                Fx.Assert(value != null, "We should never set this back to null explicitly.  Use the ExceptionPropagated method below.");
-
-                this.exceptionToPropagate = value;
-            }
-        }
-
-        public abstract ActivityInstance PropertyManagerOwner
-        {
-            get;
-        }
-
-        public virtual ActivityInstance OriginalExceptionSource
-        {
-            get
-            {
-                return this.ActivityInstance;
-            }
-        }
-        
-        public bool IsEmpty
-        {
-            get
-            {
-                return this.isEmpty;
-            }
-            protected set
-            {
-                this.isEmpty = value;
-            }
-        }
-
-        public bool ExitNoPersistRequired
-        {
-            get;
-            protected set;
-        }
-
-        protected bool IsPooled
-        {
-            get;
-            set;
-        }
-
-        public abstract bool IsValid
-        {
-            get;
-        }
-
-        [DataMember(Name = "activityInstance")]
-        internal ActivityInstance SerializedActivityInstance
-        {
-            get { return this.activityInstance; }
-            set { this.activityInstance = value; }
-        }
-
-        [DataMember(EmitDefaultValue = false, Name = "IsEmpty")]
-        internal bool SerializedIsEmpty
-        {
-            get { return this.IsEmpty; }
-            set { this.IsEmpty = value; }
-        }
-
-        public void Dispose(ActivityExecutor executor)
-        {
-            if (FxTrace.ShouldTraceVerboseToTraceSource)
-            {
-                TraceCompleted();
+                throw;
             }
 
-            if (this.IsPooled)
-            {
-                this.ReleaseToPool(executor);
-            }
+            data.WorkItem._workflowAbortException = e;
         }
 
-        protected virtual void ClearForReuse()
+        data.Executor.FinishWorkItem(data.WorkItem);
+    }
+
+    private static void OnTrackingComplete(IAsyncResult result)
+    {
+        if (result.CompletedSynchronously)
         {
-            this.exceptionToPropagate = null;
-            _workflowAbortException = null;
-            this.activityInstance = null;
+            return;
         }
 
-        protected virtual void Reinitialize(ActivityInstance activityInstance)
+        CallbackData data = (CallbackData)result.AsyncState;
+
+        try
         {
-            this.activityInstance = activityInstance;
-            this.activityInstance.IncrementBusyCount();
+            data.Executor.EndTrackPendingRecords(result);
+        }
+        catch (Exception e)
+        {
+            if (Fx.IsFatal(e))
+            {
+                throw;
+            }
+
+            data.WorkItem._workflowAbortException = e;
         }
 
-        // this isn't just public for performance reasons. We avoid the virtual call
-        // by going through Dispose()
-        protected virtual void ReleaseToPool(ActivityExecutor executor)
+        data.Executor.FinishWorkItemAfterTracking(data.WorkItem);
+    }
+
+    /// <remarks>
+    /// We just null this out, but using this API helps with readability over the property setter
+    /// </remarks>
+    public void ExceptionPropagated() => _exceptionToPropagate = null;
+
+    public void Release(ActivityExecutor executor)
+    {
+        _activityInstance.DecrementBusyCount();
+
+        if (ExitNoPersistRequired)
         {
-            Fx.Assert("This should never be called ... only overridden versions should get called.");
+            executor.ExitNoPersist();
         }
+    }
 
-        private static void OnAssociateComplete(IAsyncResult result)
+    public abstract void TraceScheduled();
+
+    protected void TraceRuntimeWorkItemScheduled()
+    {
+        if (TD.ScheduleRuntimeWorkItemIsEnabled())
         {
-            if (result.CompletedSynchronously)
-            {
-                return;
-            }
-
-            CallbackData data = (CallbackData)result.AsyncState;
-
-            try
-            {
-                data.Executor.EndAssociateKeys(result);
-            }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
-
-                data.WorkItem._workflowAbortException = e;
-            }
-
-            data.Executor.FinishWorkItem(data.WorkItem);
+            TD.ScheduleRuntimeWorkItem(ActivityInstance.Activity.GetType().ToString(), ActivityInstance.Activity.DisplayName, ActivityInstance.Id);
         }
+    }
 
-        private static void OnTrackingComplete(IAsyncResult result)
+    public abstract void TraceStarting();
+
+    protected void TraceRuntimeWorkItemStarting()
+    {
+        if (TD.StartRuntimeWorkItemIsEnabled())
         {
-            if (result.CompletedSynchronously)
-            {
-                return;
-            }
-
-            CallbackData data = (CallbackData)result.AsyncState;
-
-            try
-            {
-                data.Executor.EndTrackPendingRecords(result);
-            }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
-
-                data.WorkItem._workflowAbortException = e;
-            }
-
-            data.Executor.FinishWorkItemAfterTracking(data.WorkItem);
+            TD.StartRuntimeWorkItem(ActivityInstance.Activity.GetType().ToString(), ActivityInstance.Activity.DisplayName, ActivityInstance.Id);
         }
+    }
 
-        public void ExceptionPropagated()
+    public abstract void TraceCompleted();
+
+    protected void TraceRuntimeWorkItemCompleted()
+    {
+        if (TD.CompleteRuntimeWorkItemIsEnabled())
         {
-            // We just null this out, but using this API helps with
-            // readability over the property setter
-            this.exceptionToPropagate = null;
+            TD.CompleteRuntimeWorkItem(ActivityInstance.Activity.GetType().ToString(), ActivityInstance.Activity.DisplayName, ActivityInstance.Id);
         }
+    }
 
-        public void Release(ActivityExecutor executor)
+    public abstract bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager);
+
+    public abstract void PostProcess(ActivityExecutor executor);
+
+    public bool FlushBookmarkScopeKeys(ActivityExecutor executor)
+    {
+        Fx.Assert(executor.BookmarkScopeManager.HasKeysToUpdate, "We should not have been called if we don't have pending keys.");
+
+        try
         {
-            this.activityInstance.DecrementBusyCount();
-
-            if (this.ExitNoPersistRequired)
+            // disassociation is local-only so we don't need to yield 
+            ICollection<InstanceKey> keysToDisassociate = executor.BookmarkScopeManager.GetKeysToDisassociate();
+            if (keysToDisassociate != null && keysToDisassociate.Count > 0)
             {
-                executor.ExitNoPersist();
-            }
-        }
-
-        public abstract void TraceScheduled();
-
-        protected void TraceRuntimeWorkItemScheduled()
-        {
-            if (TD.ScheduleRuntimeWorkItemIsEnabled())
-            {
-                TD.ScheduleRuntimeWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
-            }
-        }
-
-        public abstract void TraceStarting();
-
-        protected void TraceRuntimeWorkItemStarting()
-        {
-            if (TD.StartRuntimeWorkItemIsEnabled())
-            {
-                TD.StartRuntimeWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
-            }
-        }
-
-        public abstract void TraceCompleted();
-
-        protected void TraceRuntimeWorkItemCompleted()
-        {
-            if (TD.CompleteRuntimeWorkItemIsEnabled())
-            {
-                TD.CompleteRuntimeWorkItem(this.ActivityInstance.Activity.GetType().ToString(), this.ActivityInstance.Activity.DisplayName, this.ActivityInstance.Id);
-            }
-        }
-
-        public abstract bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager);
-
-        public abstract void PostProcess(ActivityExecutor executor);
-
-        public bool FlushBookmarkScopeKeys(ActivityExecutor executor)
-        {
-            Fx.Assert(executor.BookmarkScopeManager.HasKeysToUpdate, "We should not have been called if we don't have pending keys.");
-
-            try
-            {
-                // disassociation is local-only so we don't need to yield 
-                ICollection<InstanceKey> keysToDisassociate = executor.BookmarkScopeManager.GetKeysToDisassociate();
-                if (keysToDisassociate != null && keysToDisassociate.Count > 0)
-                {
-                    executor.DisassociateKeys(keysToDisassociate);
-                }
-
-                // if we have keys to associate, provide them for an asynchronous association
-                ICollection<InstanceKey> keysToAssociate = executor.BookmarkScopeManager.GetKeysToAssociate();
-
-                // It could be that we only had keys to Disassociate. We should only do BeginAssociateKeys
-                // if we have keysToAssociate.
-                if (keysToAssociate != null && keysToAssociate.Count > 0)
-                {
-                    if (associateCallback == null)
-                    {
-                        associateCallback = Fx.ThunkCallback(new AsyncCallback(OnAssociateComplete));
-                    }
-
-                    IAsyncResult result = executor.BeginAssociateKeys(keysToAssociate, associateCallback, new CallbackData(executor, this));
-                    if (result.CompletedSynchronously)
-                    {
-                        executor.EndAssociateKeys(result);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
-
-                _workflowAbortException = e;
+                executor.DisassociateKeys(keysToDisassociate);
             }
 
-            return true;
-        }
+            // if we have keys to associate, provide them for an asynchronous association
+            ICollection<InstanceKey> keysToAssociate = executor.BookmarkScopeManager.GetKeysToAssociate();
 
-        public bool FlushTracking(ActivityExecutor executor)
-        {
-            Fx.Assert(executor.HasPendingTrackingRecords, "We should not have been called if we don't have pending tracking records");
-
-            try
+            // It could be that we only had keys to Disassociate. We should only do BeginAssociateKeys
+            // if we have keysToAssociate.
+            if (keysToAssociate != null && keysToAssociate.Count > 0)
             {
-                if (trackingCallback == null)
-                {
-                    trackingCallback = Fx.ThunkCallback(new AsyncCallback(OnTrackingComplete));
-                }
-
-                IAsyncResult result = executor.BeginTrackPendingRecords(
-                    trackingCallback,
-                    new CallbackData(executor, this));
-
+                associateCallback ??= Fx.ThunkCallback(new AsyncCallback(OnAssociateComplete));
+                IAsyncResult result = executor.BeginAssociateKeys(keysToAssociate, associateCallback, new CallbackData(executor, this));
                 if (result.CompletedSynchronously)
                 {
-                    executor.EndTrackPendingRecords(result);
+                    ActivityExecutor.EndAssociateKeys(result);
                 }
                 else
                 {
-                    // Completed async so we'll return false
                     return false;
                 }
             }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
-
-                _workflowAbortException = e;
-            }
-
-            return true;
         }
-
-        private class CallbackData
+        catch (Exception e)
         {
-            public CallbackData(ActivityExecutor executor, WorkItem workItem)
+            if (Fx.IsFatal(e))
             {
-                this.Executor = executor;
-                this.WorkItem = workItem;
+                throw;
             }
 
-            public ActivityExecutor Executor
-            {
-                get;
-                private set;
-            }
+            _workflowAbortException = e;
+        }
 
-            public WorkItem WorkItem
+        return true;
+    }
+
+    public bool FlushTracking(ActivityExecutor executor)
+    {
+        Fx.Assert(executor.HasPendingTrackingRecords, "We should not have been called if we don't have pending tracking records");
+
+        try
+        {
+            trackingCallback ??= Fx.ThunkCallback(new AsyncCallback(OnTrackingComplete));
+            IAsyncResult result = executor.BeginTrackPendingRecords(
+                trackingCallback,
+                new CallbackData(executor, this));
+
+            if (result.CompletedSynchronously)
             {
-                get;
-                private set;
+                executor.EndTrackPendingRecords(result);
+            }
+            else
+            {
+                // Completed async so we'll return false
+                return false;
             }
         }
+        catch (Exception e)
+        {
+            if (Fx.IsFatal(e))
+            {
+                throw;
+            }
+
+            _workflowAbortException = e;
+        }
+
+        return true;
+    }
+
+    private class CallbackData
+    {
+        public CallbackData(ActivityExecutor executor, WorkItem workItem)
+        {
+            Executor = executor;
+            WorkItem = workItem;
+        }
+
+        public ActivityExecutor Executor { get; private set; }
+
+        public WorkItem WorkItem { get; private set; }
     }
 }

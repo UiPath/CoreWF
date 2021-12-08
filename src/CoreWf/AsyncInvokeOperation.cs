@@ -1,59 +1,47 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Threading;
+
+namespace System.Activities;
+using Runtime;
+
+internal class AsyncInvokeOperation
 {
-    using System.Threading;
-    using System.Activities.Runtime;
+    private readonly object _thisLock;
 
-    internal class AsyncInvokeOperation
+    public AsyncInvokeOperation(SynchronizationContext syncContext)
     {
-        private readonly object thisLock;
+        Fx.Assert(syncContext != null, "syncContext cannot be null");
+        SyncContext = syncContext;
+        _thisLock = new object();
+    }
 
-        public AsyncInvokeOperation(SynchronizationContext syncContext)
-        {
-            Fx.Assert(syncContext != null, "syncContext cannot be null");
-            this.SyncContext = syncContext;
-            thisLock = new object();
-        }
+    private SynchronizationContext SyncContext { get; set; }
 
-        private SynchronizationContext SyncContext
-        {
-            get;
-            set;
-        }
+    private bool Completed { get; set; }
 
-        private bool Completed
-        {
-            get;
-            set;
-        }
+    public void OperationStarted() => SyncContext.OperationStarted();
 
-        public void OperationStarted()
+    public void OperationCompleted()
+    {
+        lock (_thisLock)
         {
-            this.SyncContext.OperationStarted();
+            Fx.AssertAndThrowFatal(!Completed, "Async operation has already been completed");
+            Completed = true;
         }
+        SyncContext.OperationCompleted();
+    }
 
-        public void OperationCompleted()
+    public void PostOperationCompleted(SendOrPostCallback callback, object arg)
+    {
+        lock (_thisLock)
         {
-            lock (thisLock)
-            {
-                Fx.AssertAndThrowFatal(!this.Completed, "Async operation has already been completed");
-                this.Completed = true;
-            }
-            this.SyncContext.OperationCompleted();
+            Fx.AssertAndThrowFatal(!Completed, "Async operation has already been completed");
+            Completed = true;
         }
-
-        public void PostOperationCompleted(SendOrPostCallback callback, object arg)
-        {
-            lock (thisLock)
-            {
-                Fx.AssertAndThrowFatal(!this.Completed, "Async operation has already been completed");
-                this.Completed = true;
-            }
-            Fx.Assert(callback != null, "callback cannot be null");
-            this.SyncContext.Post(callback, arg);
-            this.SyncContext.OperationCompleted();
-        }
+        Fx.Assert(callback != null, "callback cannot be null");
+        SyncContext.Post(callback, arg);
+        SyncContext.OperationCompleted();
     }
 }

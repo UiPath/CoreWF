@@ -1,133 +1,114 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Activities.Runtime.Collections;
+using System.Collections.ObjectModel;
+using System.Linq.Expressions;
+using System.Windows.Markup;
+
+namespace System.Activities.Statements;
+
+[ContentProperty("Cases")]
+public sealed class Switch<T> : NativeActivity
 {
-    using System;
-    using System.Activities;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Linq.Expressions;
-    using System.Windows.Markup;
-    using System.Activities.Runtime.Collections;
-    using System.Activities.Internals;
+    private IDictionary<T, Activity> _cases;
 
-    [ContentProperty("Cases")]
-    public sealed class Switch<T> : NativeActivity  
+    public Switch() { }
+
+    public Switch(Expression<Func<ActivityContext, T>> expression)
+        : this()
     {
-        private IDictionary<T, Activity> cases;
-
-        public Switch()
+        if (expression == null)
         {
+            throw FxTrace.Exception.ArgumentNull(nameof(expression));
         }
 
-        public Switch(Expression<Func<ActivityContext, T>> expression)
-            : this()
-        {
-            if (expression == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(expression));
-            }
+        Expression = new InArgument<T>(expression);
+    }
 
-            this.Expression = new InArgument<T>(expression);
+    public Switch(Activity<T> expression)
+        : this()
+    {
+        if (expression == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(expression));
         }
 
-        public Switch(Activity<T> expression)
-            : this()
-        {
-            if (expression == null)
-            {
-                throw FxTrace.Exception.ArgumentNull(nameof(expression));
-            }
+        Expression = new InArgument<T>(expression);
+    }
 
-            this.Expression = new InArgument<T>(expression);
+    public Switch(InArgument<T> expression)
+        : this()
+    {
+        Expression = expression ?? throw FxTrace.Exception.ArgumentNull(nameof(expression));
+    }
+
+    [RequiredArgument]
+    [DefaultValue(null)]
+    public InArgument<T> Expression { get; set; }
+
+    public IDictionary<T, Activity> Cases
+    {
+        get
+        {
+            _cases ??= new NullableKeyDictionary<T, Activity>();
+            return _cases;
         }
+    }
 
-        public Switch(InArgument<T> expression)
-            : this()
-        {
-            this.Expression = expression ?? throw FxTrace.Exception.ArgumentNull(nameof(expression));
-        }
+    [DefaultValue(null)]
+    public Activity Default { get; set; }
 
-        [RequiredArgument]
-        [DefaultValue(null)]
-        public InArgument<T> Expression
-        {
-            get; 
-            set;
-        }
-
-        public IDictionary<T, Activity> Cases
-        {
-            get
-            {
-                if (this.cases == null)
-                {
-                    this.cases = new NullableKeyDictionary<T, Activity>();
-                }
-                return this.cases;
-            }
-        }
-
-        [DefaultValue(null)]
-        public Activity Default
-        {
-            get;
-            set;
-        }
-
-#if NET45
-        protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
-        {
-            metadata.AllowUpdateInsideThisActivity();
-        } 
+#if DYNAMICUPDATE
+    protected override void OnCreateDynamicUpdateMap(DynamicUpdate.NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
+    {
+        metadata.AllowUpdateInsideThisActivity();
+    } 
 #endif
 
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        RuntimeArgument expressionArgument = new("Expression", typeof(T), ArgumentDirection.In, true);
+        metadata.Bind(Expression, expressionArgument);
+        metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { expressionArgument });
+
+        Collection<Activity> children = new();
+
+        foreach (Activity child in Cases.Values)
         {
-            RuntimeArgument expressionArgument = new RuntimeArgument("Expression", typeof(T), ArgumentDirection.In, true);
-            metadata.Bind(Expression, expressionArgument);
-            metadata.SetArgumentsCollection(new Collection<RuntimeArgument> { expressionArgument });
-
-            Collection<Activity> children = new Collection<Activity>();
-
-            foreach (Activity child in Cases.Values)
-            {
-                children.Add(child);
-            }
-
-            if (Default != null)
-            {
-                children.Add(Default);
-            }
-
-            metadata.SetChildrenCollection(children);
+            children.Add(child);
         }
 
-        protected override void Execute(NativeActivityContext context)
+        if (Default != null)
         {
-            T result = Expression.Get(context);
+            children.Add(Default);
+        }
 
-            if (!Cases.TryGetValue(result, out Activity selection))
+        metadata.SetChildrenCollection(children);
+    }
+
+    protected override void Execute(NativeActivityContext context)
+    {
+        T result = Expression.Get(context);
+
+        if (!Cases.TryGetValue(result, out Activity selection))
+        {
+            if (Default != null)
             {
-                if (this.Default != null)
+                selection = Default;
+            }
+            else
+            {
+                if (TD.SwitchCaseNotFoundIsEnabled())
                 {
-                    selection = this.Default;
-                }
-                else
-                {
-                    if (TD.SwitchCaseNotFoundIsEnabled())
-                    {
-                        TD.SwitchCaseNotFound(this.DisplayName);
-                    }
+                    TD.SwitchCaseNotFound(DisplayName);
                 }
             }
+        }
 
-            if (selection != null)
-            {
-                context.ScheduleActivity(selection);
-            }
+        if (selection != null)
+        {
+            context.ScheduleActivity(selection);
         }
     }
 }

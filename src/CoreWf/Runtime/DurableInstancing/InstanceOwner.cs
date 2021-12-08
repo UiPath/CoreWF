@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Xml.Linq;
 
@@ -72,13 +70,13 @@ namespace System.Activities.Runtime.DurableInstancing
         // This can be called to remove a handle from the BoundHandles table.  It should be called only after no more commands are in progress or could be made on the handle.
         internal void Unbind(InstanceHandle handle)
         {
-            Fx.Assert(object.ReferenceEquals(this, handle.Owner), "Unbind called on the wrong owner for a handle.");
+            Fx.Assert(ReferenceEquals(this, handle.Owner), "Unbind called on the wrong owner for a handle.");
             Fx.Assert(handle.Id != Guid.Empty, "Unbind called on a handle not even bound to an instance.");
 
             lock (HandlesLock)
             {
                 // The handle may have already been bumped - only remove it if it's still it.
-                if (BoundHandles.TryGetValue(handle.Id, out InstanceHandle existingHandle) && object.ReferenceEquals(handle, existingHandle))
+                if (BoundHandles.TryGetValue(handle.Id, out InstanceHandle existingHandle) && ReferenceEquals(handle, existingHandle))
                 {
                     BoundHandles.Remove(handle.Id);
                 }
@@ -88,7 +86,7 @@ namespace System.Activities.Runtime.DurableInstancing
         // This doesn't check the bound handles, since one of the scenarios is to re-bind to an instance and kick out the stale handle.
         internal void StartBind(InstanceHandle handle, ref InstanceHandleReference reference)
         {
-            Fx.Assert(object.ReferenceEquals(this, handle.Owner), "StartBind called on the wrong owner for a handle.");
+            Fx.Assert(ReferenceEquals(this, handle.Owner), "StartBind called on the wrong owner for a handle.");
 
             lock (HandlesLock)
             {
@@ -105,7 +103,7 @@ namespace System.Activities.Runtime.DurableInstancing
             Fx.Assert(reference != null, "Bind wasn't registered - RegisterStartBind must be called.");
             Fx.Assert(reference.InstanceHandle != null, "Cannot cancel and complete a bind.");
             Fx.Assert(reference.InstanceHandle.Version != -1, "Handle state must be set first.");
-            Fx.Assert(object.ReferenceEquals(this, reference.InstanceHandle.Owner), "TryCompleteBind called on the wrong owner for a handle.");
+            Fx.Assert(ReferenceEquals(this, reference.InstanceHandle.Owner), "TryCompleteBind called on the wrong owner for a handle.");
             Fx.Assert(!(reference is LockResolutionMarker) || ((LockResolutionMarker)reference).NonConflicting, "How did a Version get set if we're still resolving.");
 
             handleToFree = null;
@@ -115,7 +113,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 {
                     if (BoundHandles.TryGetValue(reference.InstanceHandle.Id, out InstanceHandle existingHandle))
                     {
-                        Fx.AssertAndFailFast(!object.ReferenceEquals(existingHandle, reference.InstanceHandle), "InstanceStore lock state is not correct.");
+                        Fx.AssertAndFailFast(!ReferenceEquals(existingHandle, reference.InstanceHandle), "InstanceStore lock state is not correct.");
                         if (existingHandle.Version <= 0 || reference.InstanceHandle.Version <= 0)
                         {
                             if (existingHandle.Version != 0 || reference.InstanceHandle.Version != 0)
@@ -185,7 +183,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 {
                     if (BoundHandles.TryGetValue(reference.InstanceHandle.Id, out InstanceHandle existingHandle))
                     {
-                        Fx.AssertAndFailFast(!object.ReferenceEquals(existingHandle, reference.InstanceHandle), "InstanceStore lock state is not correct in InitiateLockResolution.");
+                        Fx.AssertAndFailFast(!ReferenceEquals(existingHandle, reference.InstanceHandle), "InstanceStore lock state is not correct in InitiateLockResolution.");
                         if (existingHandle.Version <= 0 || instanceVersion <= 0)
                         {
                             if (existingHandle.Version != 0 || instanceVersion != 0)
@@ -215,7 +213,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 }
                 finally
                 {
-                    if (!object.ReferenceEquals(markerReference, reference))
+                    if (!ReferenceEquals(markerReference, reference))
                     {
                         CancelReference(ref reference, ref handlesPendingResolution);
                         if (markerReference != null)
@@ -251,7 +249,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             Fx.Assert(reference != null, "Bind not in progress.");
             Fx.Assert(reference.InstanceHandle != null, "Reference already canceled in CancelBind.");
-            Fx.Assert(object.ReferenceEquals(this, reference.InstanceHandle.Owner), "CancelBind called on the wrong owner for a handle.");
+            Fx.Assert(ReferenceEquals(this, reference.InstanceHandle.Owner), "CancelBind called on the wrong owner for a handle.");
 
             lock (HandlesLock)
             {
@@ -263,7 +261,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             Fx.Assert(reference != null, "Bind not in progress in FaultBind.");
             Fx.Assert(reference.InstanceHandle != null, "Reference already canceled in FaultBind.");
-            Fx.Assert(object.ReferenceEquals(this, reference.InstanceHandle.Owner), "FaultBind called on the wrong owner for a handle.");
+            Fx.Assert(ReferenceEquals(this, reference.InstanceHandle.Owner), "FaultBind called on the wrong owner for a handle.");
 
             lock (HandlesLock)
             {
@@ -292,7 +290,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             Fx.Assert(reference != null, "Bind not in progress in FinishBind.");
             Fx.Assert(reference.InstanceHandle != null, "Reference already canceled in FinishBind.");
-            Fx.Assert(object.ReferenceEquals(this, reference.InstanceHandle.Owner), "FinishBind called on the wrong owner for a handle.");
+            Fx.Assert(ReferenceEquals(this, reference.InstanceHandle.Owner), "FinishBind called on the wrong owner for a handle.");
             Fx.Assert(reference is LockResolutionMarker, "Must have started reclaim in order to finish it.");
 
             lock (HandlesLock)
@@ -441,7 +439,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 if (BoundHandles.TryGetValue(marker.InstanceHandle.Id, out InstanceHandle existingHandle))
                 {
-                    Fx.AssertAndFailFast(!object.ReferenceEquals(existingHandle, marker.InstanceHandle), "InstanceStore lock state is not correct in CheckOldestReference.");
+                    Fx.AssertAndFailFast(!ReferenceEquals(existingHandle, marker.InstanceHandle), "InstanceStore lock state is not correct in CheckOldestReference.");
                     if (existingHandle.Version <= 0 || marker.InstanceVersion <= 0)
                     {
                         if (existingHandle.Version != 0 || marker.InstanceVersion != 0)

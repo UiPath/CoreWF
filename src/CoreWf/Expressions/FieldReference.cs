@@ -1,142 +1,124 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+using System.Reflection;
+
+namespace System.Activities.Expressions;
+
+public sealed class FieldReference<TOperand, TResult> : CodeActivity<Location<TResult>>
 {
-    using System.Activities.Runtime;
-    using System;
-    using System.ComponentModel;
-    using System.Reflection;
-    using System.Runtime.Serialization;
+    private FieldInfo _fieldInfo;
 
-    public sealed class FieldReference<TOperand, TResult> : CodeActivity<Location<TResult>>
+    public FieldReference()
+        : base() { }
+
+    [DefaultValue(null)]
+    public string FieldName { get; set; }
+
+    [DefaultValue(null)]
+    public InArgument<TOperand> Operand { get; set; }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        private FieldInfo fieldInfo;
-
-        public FieldReference()
-            : base()
+        bool isRequired = false;
+        if (typeof(TOperand).IsEnum)
         {
+            metadata.AddValidationError(SR.TargetTypeCannotBeEnum(GetType().Name, DisplayName));
+        }
+        else if (typeof(TOperand).IsValueType)
+        {
+            metadata.AddValidationError(SR.TargetTypeIsValueType(GetType().Name, DisplayName));
         }
 
-        [DefaultValue(null)]
-        public string FieldName
+        if (string.IsNullOrEmpty(FieldName))
         {
-            get;
-            set;
+            metadata.AddValidationError(SR.ActivityPropertyMustBeSet("FieldName", DisplayName));
         }
-
-        [DefaultValue(null)]
-        public InArgument<TOperand> Operand
+        else
         {
-            get;
-            set;
-        }
+            Type operandType = typeof(TOperand);
+            _fieldInfo = operandType.GetField(FieldName);
 
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            bool isRequired = false;
-            if (typeof(TOperand).IsEnum)
+            if (_fieldInfo == null)
             {
-                metadata.AddValidationError(SR.TargetTypeCannotBeEnum(this.GetType().Name, this.DisplayName));
-            }
-            else if (typeof(TOperand).IsValueType)
-            {
-                metadata.AddValidationError(SR.TargetTypeIsValueType(this.GetType().Name, this.DisplayName));
-            }
-
-            if (string.IsNullOrEmpty(this.FieldName))
-            {
-                metadata.AddValidationError(SR.ActivityPropertyMustBeSet("FieldName", this.DisplayName));
+                metadata.AddValidationError(SR.MemberNotFound(FieldName, typeof(TOperand).Name));
             }
             else
             {
-                Type operandType = typeof(TOperand);
-                this.fieldInfo = operandType.GetField(this.FieldName);
-
-                if (this.fieldInfo == null)
+                if (_fieldInfo.IsInitOnly)
                 {
-                    metadata.AddValidationError(SR.MemberNotFound(this.FieldName, typeof(TOperand).Name));
+                    metadata.AddValidationError(SR.MemberIsReadOnly(FieldName, typeof(TOperand).Name));
                 }
-                else
-                {
-                    if (fieldInfo.IsInitOnly)
-                    {
-                        metadata.AddValidationError(SR.MemberIsReadOnly(this.FieldName, typeof(TOperand).Name));
-                    }
-                    isRequired = !this.fieldInfo.IsStatic;
-                }
+                isRequired = !_fieldInfo.IsStatic;
             }
-            MemberExpressionHelper.AddOperandArgument(metadata, this.Operand, isRequired);
+        }
+        MemberExpressionHelper.AddOperandArgument(metadata, Operand, isRequired);
+    }
+
+    protected override Location<TResult> Execute(CodeActivityContext context)
+    {
+        Fx.Assert(_fieldInfo != null, "fieldInfo must not be null.");
+        return new FieldLocation(_fieldInfo, Operand.Get(context));
+    }
+
+    [DataContract]
+    internal class FieldLocation : Location<TResult>
+    {
+        private FieldInfo _fieldInfo;
+        private object _owner;
+
+        public FieldLocation(FieldInfo fieldInfo, object owner)
+            : base()
+        {
+            _fieldInfo = fieldInfo;
+            _owner = owner;
         }
 
-        protected override Location<TResult> Execute(CodeActivityContext context)
+        public override TResult Value
         {
-            Fx.Assert(this.fieldInfo != null, "fieldInfo must not be null.");
-            return new FieldLocation(this.fieldInfo, this.Operand.Get(context));
+            get =>
+                //if (!this.fieldInfo.IsStatic && this.owner == null)
+                //{
+                //    // The field is non-static, and obj is a null reference 
+                //    if (this.fieldInfo.DeclaringType != null)
+                //    {
+                //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
+                //    }
+                //    else
+                //    {
+                //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
+                //    }
+                //}
+                (TResult)_fieldInfo.GetValue(_owner);
+            set =>
+                //if (!this.fieldInfo.IsStatic && this.owner == null)
+                //{
+                //    if (this.fieldInfo.DeclaringType != null)
+                //    {
+                //        // The field is non-static, and obj is a null reference 
+                //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
+                //    }
+                //    else
+                //    {
+                //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
+                //    }
+                //}
+                _fieldInfo.SetValue(_owner, value);
         }
 
-        [DataContract]
-        internal class FieldLocation : Location<TResult>
+        [DataMember(Name = "fieldInfo")]
+        internal FieldInfo SerializedFieldInfo
         {
-            private FieldInfo fieldInfo;
-            private object owner;
+            get => _fieldInfo;
+            set => _fieldInfo = value;
+        }
 
-            public FieldLocation(FieldInfo fieldInfo, object owner)
-                : base()
-            {
-                this.fieldInfo = fieldInfo;
-                this.owner = owner;
-            }
-
-            public override TResult Value
-            {
-                get
-                {
-                    //if (!this.fieldInfo.IsStatic && this.owner == null)
-                    //{
-                    //    // The field is non-static, and obj is a null reference 
-                    //    if (this.fieldInfo.DeclaringType != null)
-                    //    {
-                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
-                    //    }
-                    //    else
-                    //    {
-                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
-                    //    }
-                    //}
-                    return (TResult)this.fieldInfo.GetValue(this.owner);
-                }
-                set
-                {
-                    //if (!this.fieldInfo.IsStatic && this.owner == null)
-                    //{
-                    //    if (this.fieldInfo.DeclaringType != null)
-                    //    {
-                    //        // The field is non-static, and obj is a null reference 
-                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(this.fieldInfo.DeclaringType.Name, this.fieldInfo.Name)));
-                    //    }
-                    //    else
-                    //    {
-                    //        throw FxTrace.Exception.AsError(new ValidationException(SR.NullReferencedMemberAccess(typeof(FieldInfo), "DeclaringType")));
-                    //    }
-                    //}
-                    this.fieldInfo.SetValue(this.owner, value);
-                }
-            }
-
-            [DataMember(Name = "fieldInfo")]
-            internal FieldInfo SerializedFieldInfo
-            {
-                get { return this.fieldInfo; }
-                set { this.fieldInfo = value; }
-            }
-
-            [DataMember(EmitDefaultValue = false, Name = "owner")]
-            internal object SerializedOwner
-            {
-                get { return this.owner; }
-                set { this.owner = value; }
-            }
+        [DataMember(EmitDefaultValue = false, Name = "owner")]
+        internal object SerializedOwner
+        {
+            get => _owner;
+            set => _owner = value;
         }
     }
 }

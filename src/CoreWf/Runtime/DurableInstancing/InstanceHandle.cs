@@ -1,10 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Activities.Internals;
 using System.Activities.Runtime.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -568,7 +565,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 // This is a convenience, it is not required for correctness.
                 if (handleToFree != null)
                 {
-                    Fx.Assert(!object.ReferenceEquals(handleToFree, this), "Shouldn't have been told to free ourselves.");
+                    Fx.Assert(!ReferenceEquals(handleToFree, this), "Shouldn't have been told to free ourselves.");
                     handleToFree.Free();
                 }
 
@@ -664,7 +661,7 @@ namespace System.Activities.Runtime.DurableInstancing
             lock (ThisLock)
             {
                 Fx.Assert(result != null, "Null result passed to CancelWaiting.");
-                if (!object.ReferenceEquals(_waitResult, result))
+                if (!ReferenceEquals(_waitResult, result))
                 {
                     return false;
                 }
@@ -754,7 +751,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
             public static InstancePersistenceContext End(IAsyncResult result)
             {
-                AcquireContextAsyncResult pThis = AsyncResult.End<AcquireContextAsyncResult>(result);
+                AcquireContextAsyncResult pThis = End<AcquireContextAsyncResult>(result);
                 Fx.Assert(pThis._executionContext != null, "Somehow the execution context didn't get set.");
                 return pThis._executionContext;
             }
@@ -814,7 +811,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 if (_timeout != TimeSpan.Zero && _timeout != TimeSpan.MaxValue)
                 {
                     //this.timer = new IOThreadTimer(WaitForEventsAsyncResult.timeoutCallback, this, false);
-                    _timer = new DelayTimer(WaitForEventsAsyncResult.s_timeoutCallback, this);
+                    _timer = new DelayTimer(s_timeoutCallback, this);
                 }
 
                 List<InstancePersistenceEvent> existingReadyEvents = _handle.StartWaiting(this, _timer, _timeout);
@@ -868,7 +865,7 @@ namespace System.Activities.Runtime.DurableInstancing
 
             internal static List<InstancePersistenceEvent> End(IAsyncResult result)
             {
-                return AsyncResult.End<WaitForEventsAsyncResult>(result)._readyEvents;
+                return End<WaitForEventsAsyncResult>(result)._readyEvents;
             }
         }
     }

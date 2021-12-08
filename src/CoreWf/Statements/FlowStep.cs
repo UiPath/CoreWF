@@ -1,72 +1,53 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+using System.Windows.Markup;
+
+namespace System.Activities.Statements;
+
+[ContentProperty("Action")]
+public sealed class FlowStep : FlowNode
 {
-    using System.Collections.Generic;
-    using System.Activities;
-    using System.ComponentModel;
-    using System.Windows.Markup;
+    public FlowStep() { }
 
-    [ContentProperty("Action")]
-    public sealed class FlowStep : FlowNode
+    [DefaultValue(null)]
+    public Activity Action { get; set; }
+
+    [DefaultValue(null)]
+    [DependsOn("Action")]
+    public FlowNode Next { get; set; }
+
+    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata) { }
+
+    internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
-        public FlowStep()
+        if (Next != null)
         {
+            connections.Add(Next);
         }
+    }
 
-        [DefaultValue(null)]
-        public Activity Action
-        {
-            get;
-            set;
-        }
+    internal override Activity ChildActivity => Action;
 
-        [DefaultValue(null)]
-        [DependsOn("Action")]
-        public FlowNode Next
+    internal bool Execute(NativeActivityContext context, CompletionCallback onCompleted, out FlowNode nextNode)
+    {
+        if (Next == null)
         {
-            get;
-            set;
-        }
-
-        internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
-        {
-        }
-
-        internal override void GetConnectedNodes(IList<FlowNode> connections)
-        {
-            if (Next != null)
+            if (TD.FlowchartNextNullIsEnabled())
             {
-                connections.Add(Next);
+                TD.FlowchartNextNull(Owner.DisplayName);
             }
         }
-
-        internal override Activity ChildActivity
+        if (Action == null)
         {
-            get { return Action; }
+            nextNode = Next;
+            return true;
         }
-
-        internal bool Execute(NativeActivityContext context, CompletionCallback onCompleted, out FlowNode nextNode)
+        else
         {
-            if (Next == null)
-            {
-                if (TD.FlowchartNextNullIsEnabled())
-                {
-                    TD.FlowchartNextNull(this.Owner.DisplayName);
-                }
-            }    
-            if (Action == null)
-            {
-                nextNode = Next;
-                return true;
-            }
-            else
-            {
-                context.ScheduleActivity(Action, onCompleted);
-                nextNode = null;
-                return false;
-            }
+            context.ScheduleActivity(Action, onCompleted);
+            nextNode = null;
+            return false;
         }
     }
 }

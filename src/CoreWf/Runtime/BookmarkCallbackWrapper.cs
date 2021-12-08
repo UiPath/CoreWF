@@ -1,80 +1,65 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Runtime
+using System.Security;
+
+namespace System.Activities.Runtime;
+
+[DataContract]
+internal class BookmarkCallbackWrapper : CallbackWrapper
 {
-    using System;
-    using System.Runtime.Serialization;
-    using System.Security;
+    private static readonly Type bookmarkCallbackType = typeof(BookmarkCallback);
+    private static readonly Type[] bookmarkCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(Bookmark), typeof(object) };
 
-    [DataContract]
-    internal class BookmarkCallbackWrapper : CallbackWrapper
+    internal BookmarkCallbackWrapper() { }
+
+    public BookmarkCallbackWrapper(BookmarkCallback callback, ActivityInstance owningInstance)
+        : this(callback, owningInstance, BookmarkOptions.None) { }
+
+    public BookmarkCallbackWrapper(BookmarkCallback callback, ActivityInstance owningInstance, BookmarkOptions bookmarkOptions)
+        : base(callback, owningInstance)
     {
-        private static readonly Type bookmarkCallbackType = typeof(BookmarkCallback);
-        private static readonly Type[] bookmarkCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(Bookmark), typeof(object) };
+        Fx.Assert(callback != null || bookmarkOptions == BookmarkOptions.None, "Either we have a callback or we only allow SingleFire, Blocking bookmarks.");
 
-        internal BookmarkCallbackWrapper() { }
+        Options = bookmarkOptions;
+    }
 
-        public BookmarkCallbackWrapper(BookmarkCallback callback, ActivityInstance owningInstance)
-            : this(callback, owningInstance, BookmarkOptions.None)
-        {           
-        }
+    private BookmarkOptions options;
+    public BookmarkOptions Options
+    {
+        get => options;
+        private set => options = value;
+    }
 
-        public BookmarkCallbackWrapper(BookmarkCallback callback, ActivityInstance owningInstance, BookmarkOptions bookmarkOptions)
-            : base(callback, owningInstance)
+    [DataMember(EmitDefaultValue = false)]
+    public Bookmark Bookmark { get; set; }
+
+    [DataMember(EmitDefaultValue = false, Name = "Options")]
+    internal BookmarkOptions SerializedOptions
+    {
+        get => Options;
+        set => Options = value;
+    }
+
+    [Fx.Tag.SecurityNote(Critical = "Because we are calling EnsureCallback",
+        Safe = "Safe because the method needs to be part of an Activity and we are casting to the callback type and it has a very specific signature. The author of the callback is buying into being invoked from PT.")]
+    [SecuritySafeCritical]
+    public void Invoke(NativeActivityContext context, Bookmark bookmark, object value)
+    {
+        EnsureCallback(bookmarkCallbackType, bookmarkCallbackParameters);
+        BookmarkCallback bookmarkCallback = (BookmarkCallback)Callback;
+        bookmarkCallback(context, bookmark, value);
+    }
+
+    public ActivityExecutionWorkItem CreateWorkItem(ActivityExecutor executor, bool isExternal, Bookmark bookmark, object value)
+    {
+        if (IsCallbackNull)
         {
-            Fx.Assert(callback != null || bookmarkOptions == BookmarkOptions.None, "Either we have a callback or we only allow SingleFire, Blocking bookmarks.");
-
-            this.Options = bookmarkOptions;
+            return executor.CreateEmptyWorkItem(ActivityInstance);
         }
-
-        private BookmarkOptions options;
-        public BookmarkOptions Options
+        else
         {
-            get
-            {
-                return this.options;
-            }
-            private set
-            {
-                this.options = value;
-            }
-        }
-
-        [DataMember(EmitDefaultValue = false)]
-        public Bookmark Bookmark
-        {
-            get;
-            set;
-        }
-
-        [DataMember(EmitDefaultValue = false, Name = "Options")]
-        internal BookmarkOptions SerializedOptions
-        {
-            get { return this.Options; }
-            set { this.Options = value; }
-        }
-
-        [Fx.Tag.SecurityNote(Critical = "Because we are calling EnsureCallback",
-            Safe = "Safe because the method needs to be part of an Activity and we are casting to the callback type and it has a very specific signature. The author of the callback is buying into being invoked from PT.")]
-        [SecuritySafeCritical]
-        public void Invoke(NativeActivityContext context, Bookmark bookmark, object value)
-        {
-            EnsureCallback(bookmarkCallbackType, bookmarkCallbackParameters);
-            BookmarkCallback bookmarkCallback = (BookmarkCallback)this.Callback;
-            bookmarkCallback(context, bookmark, value);
-        }
-
-        public ActivityExecutionWorkItem CreateWorkItem(ActivityExecutor executor, bool isExternal, Bookmark bookmark, object value)
-        {
-            if (this.IsCallbackNull)
-            {
-                return executor.CreateEmptyWorkItem(this.ActivityInstance);
-            }
-            else
-            {
-                return new BookmarkWorkItem(executor, isExternal, this, bookmark, value);
-            }
+            return new BookmarkWorkItem(executor, isExternal, this, bookmark, value);
         }
     }
 }

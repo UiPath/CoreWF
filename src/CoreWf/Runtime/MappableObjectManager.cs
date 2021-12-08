@@ -1,178 +1,145 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Runtime
+using System.Activities.Hosting;
+using System.Globalization;
+
+namespace System.Activities.Runtime;
+
+[DataContract]
+internal class MappableObjectManager
 {
-    using System.Activities.Hosting;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Runtime.Serialization;
+    private List<MappableLocation> _mappableLocations;
 
-    [DataContract]
-    internal class MappableObjectManager
+    public MappableObjectManager() { }
+
+    public int Count
     {
-        private List<MappableLocation> mappableLocations;
-
-        public MappableObjectManager()
+        get
         {
-        }
-
-        public int Count
-        {
-            get
+            int result = 0;
+            if (_mappableLocations != null)
             {
-                int result = 0;
-                if (this.mappableLocations != null)
-                {
-                    result += this.mappableLocations.Count;
-                }
-
-                return result;
-            }
-        }
-
-        [DataMember(EmitDefaultValue = false, Name = "mappableLocations")]
-        internal List<MappableLocation> SerializedMappableLocations
-        {
-            get { return this.mappableLocations; }
-            set { this.mappableLocations = value; }
-        }
-
-        public IDictionary<string, LocationInfo> GatherMappableVariables()
-        {
-            Dictionary<string, LocationInfo> result = null;
-            if (this.mappableLocations != null && this.mappableLocations.Count > 0)
-            {
-                result = new Dictionary<string, LocationInfo>(this.mappableLocations.Count);
-                for (int locationIndex = 0; locationIndex < this.mappableLocations.Count; locationIndex++)
-                {
-                    MappableLocation mappableLocation = this.mappableLocations[locationIndex];
-                    result.Add(mappableLocation.MappingKeyName, new LocationInfo(mappableLocation.Name, mappableLocation.OwnerDisplayName, mappableLocation.Location.Value));
-                }
+                result += _mappableLocations.Count;
             }
 
             return result;
         }
+    }
 
-        public void Register(Location location, Activity activity, LocationReference locationOwner, ActivityInstance activityInstance)
+    [DataMember(EmitDefaultValue = false, Name = "mappableLocations")]
+    internal List<MappableLocation> SerializedMappableLocations
+    {
+        get => _mappableLocations;
+        set => _mappableLocations = value;
+    }
+
+    public IDictionary<string, LocationInfo> GatherMappableVariables()
+    {
+        Dictionary<string, LocationInfo> result = null;
+        if (_mappableLocations != null && _mappableLocations.Count > 0)
         {
-            Fx.Assert(location.CanBeMapped, "should only register mappable locations");
-
-            if (this.mappableLocations == null)
+            result = new Dictionary<string, LocationInfo>(_mappableLocations.Count);
+            for (int locationIndex = 0; locationIndex < _mappableLocations.Count; locationIndex++)
             {
-                this.mappableLocations = new List<MappableLocation>();
+                MappableLocation mappableLocation = _mappableLocations[locationIndex];
+                result.Add(mappableLocation.MappingKeyName, new LocationInfo(mappableLocation.Name, mappableLocation.OwnerDisplayName, mappableLocation.Location.Value));
             }
-
-            this.mappableLocations.Add(new MappableLocation(locationOwner, activity, activityInstance, location));
         }
 
-        public void Unregister(Location location)
-        {
-            Fx.Assert(location.CanBeMapped, "should only register mappable locations");
+        return result;
+    }
 
-            int mappedLocationsCount = this.mappableLocations.Count;
-            for (int i = 0; i < mappedLocationsCount; i++)
+    public void Register(Location location, Activity activity, LocationReference locationOwner, ActivityInstance activityInstance)
+    {
+        Fx.Assert(location.CanBeMapped, "should only register mappable locations");
+
+        _mappableLocations ??= new List<MappableLocation>();
+        _mappableLocations.Add(new MappableLocation(locationOwner, activity, activityInstance, location));
+    }
+
+    public void Unregister(Location location)
+    {
+        Fx.Assert(location.CanBeMapped, "should only register mappable locations");
+
+        int mappedLocationsCount = _mappableLocations.Count;
+        for (int i = 0; i < mappedLocationsCount; i++)
+        {
+            if (ReferenceEquals(_mappableLocations[i].Location, location))
             {
-                if (object.ReferenceEquals(this.mappableLocations[i].Location, location))
-                {
-                    this.mappableLocations.RemoveAt(i);
-                    break;
-                }
+                _mappableLocations.RemoveAt(i);
+                break;
             }
-            Fx.Assert(this.mappableLocations.Count == mappedLocationsCount - 1, "can only unregister locations that have been registered");
+        }
+        Fx.Assert(_mappableLocations.Count == mappedLocationsCount - 1, "can only unregister locations that have been registered");
+    }
+
+    [DataContract]
+    internal class MappableLocation
+    {
+        private string _mappingKeyName;
+        private string _name;
+        private string _ownerDisplayName;
+        private Location _location;
+
+        public MappableLocation(LocationReference locationOwner, Activity activity, ActivityInstance activityInstance, Location location)
+        {
+            Name = locationOwner.Name;
+            OwnerDisplayName = activity.DisplayName;
+            Location = location;
+            MappingKeyName = string.Format(CultureInfo.InvariantCulture, "activity.{0}-{1}_{2}", activity.Id, locationOwner.Id, activityInstance.Id);
         }
 
-        [DataContract]
-        internal class MappableLocation
+        internal string MappingKeyName
         {
-            private string mappingKeyName;
-            private string name;
-            private string ownerDisplayName;
-            private Location location;
+            get => _mappingKeyName;
+            private set => _mappingKeyName = value;
+        }
 
-            public MappableLocation(LocationReference locationOwner, Activity activity, ActivityInstance activityInstance, Location location)
-            {
-                this.Name = locationOwner.Name;
-                this.OwnerDisplayName = activity.DisplayName;
-                this.Location = location;
-                this.MappingKeyName = string.Format(CultureInfo.InvariantCulture, "activity.{0}-{1}_{2}", activity.Id, locationOwner.Id, activityInstance.Id);
-            }
-            
-            internal string MappingKeyName
-            {
-                get
-                {
-                    return this.mappingKeyName;
-                }
-                private set
-                {
-                    this.mappingKeyName = value;
-                }
-            }
-            
-            public string Name
-            {
-                get
-                {
-                    return this.name;
-                }
-                private set
-                {
-                    this.name = value;
-                }
-            }
-                        
-            public string OwnerDisplayName
-            {
-                get
-                {
-                    return this.ownerDisplayName;
-                }
-                private set
-                {
-                    this.ownerDisplayName = value;
-                }
-            }
-            
-            internal Location Location
-            {
-                get
-                {
-                    return this.location;
-                }
-                private set
-                {
-                    this.location = value;
-                }
-            }
+        public string Name
+        {
+            get => _name;
+            private set => _name = value;
+        }
 
-            [DataMember(Name = "MappingKeyName")]
-            internal string SerializedMappingKeyName
-            {
-                get { return this.MappingKeyName; }
-                set { this.MappingKeyName = value; }
-            }
+        public string OwnerDisplayName
+        {
+            get => _ownerDisplayName;
+            private set => _ownerDisplayName = value;
+        }
 
-            [DataMember(Name = "Name")]
-            internal string SerializedName
-            {
-                get { return this.Name; }
-                set { this.Name = value; }
-            }
+        internal Location Location
+        {
+            get => _location;
+            private set => _location = value;
+        }
 
-            [DataMember(EmitDefaultValue = false, Name = "OwnerDisplayName")]
-            internal string SerializedOwnerDisplayName
-            {
-                get { return this.OwnerDisplayName; }
-                set { this.OwnerDisplayName = value; }
-            }
+        [DataMember(Name = "MappingKeyName")]
+        internal string SerializedMappingKeyName
+        {
+            get => MappingKeyName;
+            set => MappingKeyName = value;
+        }
 
-            [DataMember(Name = "Location")]
-            internal Location SerializedLocation
-            {
-                get { return this.Location; }
-                set { this.Location = value; }
-            }
+        [DataMember(Name = "Name")]
+        internal string SerializedName
+        {
+            get => Name;
+            set => Name = value;
+        }
+
+        [DataMember(EmitDefaultValue = false, Name = "OwnerDisplayName")]
+        internal string SerializedOwnerDisplayName
+        {
+            get => OwnerDisplayName;
+            set => OwnerDisplayName = value;
+        }
+
+        [DataMember(Name = "Location")]
+        internal Location SerializedLocation
+        {
+            get => Location;
+            set => Location = value;
         }
     }
 }

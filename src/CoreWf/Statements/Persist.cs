@@ -1,46 +1,29 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Statements
+namespace System.Activities.Statements;
+
+public sealed class Persist : NativeActivity
 {
-    using System;
-    using System.Activities;
-    using System.Activities.Internals;
+    private static BookmarkCallback onPersistCompleteCallback;
 
-    public sealed class Persist : NativeActivity
+    protected override void CacheMetadata(NativeActivityMetadata metadata) { }
+
+    protected override bool CanInduceIdle => true;
+
+    protected override void Execute(NativeActivityContext context)
     {
-        private static BookmarkCallback onPersistCompleteCallback;
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        if (context.IsInNoPersistScope)
         {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPersistInsideNoPersist));
         }
 
-        protected override bool CanInduceIdle
-        {
-            get
-            {
-                return true;
-            }
-        }
+        onPersistCompleteCallback ??= new BookmarkCallback(OnPersistComplete);
+        context.RequestPersist(onPersistCompleteCallback);
+    }
 
-        protected override void Execute(NativeActivityContext context)
-        {
-            if (context.IsInNoPersistScope)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotPersistInsideNoPersist));
-            }
-
-            if (onPersistCompleteCallback == null)
-            {
-                onPersistCompleteCallback = new BookmarkCallback(OnPersistComplete);
-            }
-
-            context.RequestPersist(onPersistCompleteCallback);
-        }
-
-        private static void OnPersistComplete(NativeActivityContext context, Bookmark bookmark, object value)
-        {
-            // No-op.  This is here to keep the activity from completing.
-        }
+    private static void OnPersistComplete(NativeActivityContext context, Bookmark bookmark, object value)
+    {
+        // No-op.  This is here to keep the activity from completing.
     }
 }

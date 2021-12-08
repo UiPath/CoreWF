@@ -1,79 +1,78 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Debugger
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
+namespace System.Activities.Debugger;
+
+[DebuggerDisplay("{this.ToString()}")]
+internal class BinarySearchResult
 {
-    using System.Diagnostics;
-    using System.Diagnostics.CodeAnalysis;
+    private int result;
+    private int count;
 
-    [DebuggerDisplay("{this.ToString()}")]
-    internal class BinarySearchResult
+    internal BinarySearchResult(int resultFromBinarySearch, int count)
     {
-        private int result;
-        private int count;
+        this.result = resultFromBinarySearch;
+        this.count = count;
+    }
 
-        internal BinarySearchResult(int resultFromBinarySearch, int count)
+    internal bool IsFound
+    {
+        get { return this.result >= 0; }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal int FoundIndex
+    {
+        get
         {
-            this.result = resultFromBinarySearch;
-            this.count = count;
+            UnitTestUtility.Assert(this.IsFound, "We should not call FoundIndex if we cannot find the element.");
+            return this.result;
         }
+    }
 
-        internal bool IsFound
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal int NextIndex
+    {
+        get
         {
-            get { return this.result >= 0; }
+            UnitTestUtility.Assert(!this.IsFound, "We should not call NextIndex if we found the element.");
+            UnitTestUtility.Assert(this.IsNextIndexAvailable, "We should not call NextIndex if next index is not available.");
+            return this.NextIndexValue;
         }
+    }
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal int FoundIndex
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal bool IsNextIndexAvailable
+    {
+        get
         {
-            get
-            {
-                UnitTestUtility.Assert(this.IsFound, "We should not call FoundIndex if we cannot find the element.");
-                return this.result;
-            }
+            UnitTestUtility.Assert(!this.IsFound, "We should not call IsNextIndexAvailable if we found the element.");
+            return this.NextIndexValue != this.count;
         }
+    }
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal int NextIndex
+    private int NextIndexValue
+    {
+        get { return ~this.result; }
+    }
+
+    [SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)", Justification = "Message used in debugger only.")]
+    public override string ToString()
+    {
+        if (this.IsFound)
         {
-            get
-            {
-                UnitTestUtility.Assert(!this.IsFound, "We should not call NextIndex if we found the element.");
-                UnitTestUtility.Assert(this.IsNextIndexAvailable, "We should not call NextIndex if next index is not available.");
-                return this.NextIndexValue;
-            }
+            return string.Format("Data is found at index {0}.", this.FoundIndex);
         }
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal bool IsNextIndexAvailable
+        else if (this.IsNextIndexAvailable)
         {
-            get
-            {
-                UnitTestUtility.Assert(!this.IsFound, "We should not call IsNextIndexAvailable if we found the element.");
-                return this.NextIndexValue != this.count;
-            }
+            return string.Format("Data is not found, the next index is {0}.", this.NextIndex);
         }
-
-        private int NextIndexValue
+        else
         {
-            get { return ~this.result; }
-        }
-
-        [SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)", Justification = "Message used in debugger only.")]
-        public override string ToString()
-        {
-            if (this.IsFound)
-            {
-                return string.Format("Data is found at index {0}.", this.FoundIndex);
-            }
-            else if (this.IsNextIndexAvailable)
-            {
-                return string.Format("Data is not found, the next index is {0}.", this.NextIndex);
-            }
-            else
-            {
-                return "Data is not found and there is no next index.";
-            }
+            return "Data is not found and there is no next index.";
         }
     }
 }

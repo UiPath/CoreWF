@@ -51,7 +51,7 @@ namespace System.Activities.Runtime.DurableInstancing
                     }
                 }
             }
-            else if (object.ReferenceEquals(result, this.deferredTransactionalResult))
+            else if (ReferenceEquals(result, this.deferredTransactionalResult))
             {
                 // The transactionContext may not be current if forward progress has been made via the callback. Instead,
                 // use deferredTransactionalResult to see if we are supposed to execute a post-transaction callback.
@@ -132,7 +132,7 @@ namespace System.Activities.Runtime.DurableInstancing
             {
                 if (State != TransactionSignalState.Ready)
                 {
-                    AsyncResult.ThrowInvalidAsyncResult("PrepareAsyncCompletion should only be called once per PrepareTransactionalCall.");
+                    ThrowInvalidAsyncResult("PrepareAsyncCompletion should only be called once per PrepareTransactionalCall.");
                 }
                 State = TransactionSignalState.Prepared;
             }
@@ -149,7 +149,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 }
                 else
                 {
-                    AsyncResult.ThrowInvalidAsyncResult("PrepareTransactionalCall should only be called in a using. Dispose called multiple times.");
+                    ThrowInvalidAsyncResult("PrepareTransactionalCall should only be called in a using. Dispose called multiple times.");
                 }
 
                 try
@@ -177,7 +177,7 @@ namespace System.Activities.Runtime.DurableInstancing
                 {
                     if (this.parent.deferredTransactionalResult != null)
                     {
-                        AsyncResult.ThrowInvalidAsyncResult(this.parent.deferredTransactionalResult);
+                        ThrowInvalidAsyncResult(this.parent.deferredTransactionalResult);
                     }
                     this.parent.deferredTransactionalResult = result;
                 }

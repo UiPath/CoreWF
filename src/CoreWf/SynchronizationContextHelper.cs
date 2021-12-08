@@ -1,53 +1,41 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+using System.Threading;
+
+namespace System.Activities;
+using Runtime;
+
+internal static class SynchronizationContextHelper
 {
-    using System.Activities.Runtime;
-    using System.Threading;
+    private static WFDefaultSynchronizationContext defaultContext;
 
-    internal static class SynchronizationContextHelper
+    public static SynchronizationContext GetDefaultSynchronizationContext()
     {
-        private static WFDefaultSynchronizationContext defaultContext;
+        defaultContext ??= new WFDefaultSynchronizationContext();
+        return defaultContext;
+    }
 
-        public static SynchronizationContext GetDefaultSynchronizationContext()
+    public static SynchronizationContext CloneSynchronizationContext(SynchronizationContext context)
+    {
+        Fx.Assert(context != null, "null context parameter");
+        if (context is WFDefaultSynchronizationContext wfDefaultContext)
         {
-            if (SynchronizationContextHelper.defaultContext == null)
-            {
-                SynchronizationContextHelper.defaultContext = new WFDefaultSynchronizationContext();
-            }
-            return SynchronizationContextHelper.defaultContext;
+            Fx.Assert(defaultContext != null, "We must have set the static member by now!");
+            return defaultContext;
         }
-
-        public static SynchronizationContext CloneSynchronizationContext(SynchronizationContext context)
+        else
         {
-            Fx.Assert(context != null, "null context parameter");
-            if (context is WFDefaultSynchronizationContext wfDefaultContext)
-            {
-                Fx.Assert(SynchronizationContextHelper.defaultContext != null, "We must have set the static member by now!");
-                return SynchronizationContextHelper.defaultContext;
-            }
-            else
-            {
-                return context.CreateCopy();
-            }
+            return context.CreateCopy();
         }
+    }
 
-        private class WFDefaultSynchronizationContext : SynchronizationContext
-        {
-            public WFDefaultSynchronizationContext()
-            {
-            }
+    private class WFDefaultSynchronizationContext : SynchronizationContext
+    {
+        public WFDefaultSynchronizationContext() { }
 
-            public override void Post(SendOrPostCallback d, object state)
-            {
-                ActionItem.Schedule(delegate(object s) { d(s); }, state);
-            }
+        public override void Post(SendOrPostCallback d, object state) => ActionItem.Schedule(delegate (object s) { d(s); }, state);
 
-            public override void Send(SendOrPostCallback d, object state)
-            {
-                d(state);
-            }
-        }
+        public override void Send(SendOrPostCallback d, object state) => d(state);
     }
 }

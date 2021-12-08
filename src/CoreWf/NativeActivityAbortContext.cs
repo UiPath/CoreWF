@@ -1,30 +1,27 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+public sealed class NativeActivityAbortContext : ActivityContext
 {
-    using System;
-    using System.Activities.Runtime;
+    private readonly Exception _reason;
 
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class NativeActivityAbortContext : ActivityContext
+    internal NativeActivityAbortContext(ActivityInstance instance, ActivityExecutor executor, Exception reason)
+        : base(instance, executor)
     {
-        private readonly Exception reason;
+        _reason = reason;
+    }
 
-        internal NativeActivityAbortContext(ActivityInstance instance, ActivityExecutor executor, Exception reason)
-            : base(instance, executor)
+    public Exception Reason
+    {
+        get
         {
-            this.reason = reason;
-        }
+            ThrowIfDisposed();
 
-        public Exception Reason
-        {
-            get
-            {
-                ThrowIfDisposed();
-
-                return this.reason;
-            }
+            return _reason;
         }
     }
 }

@@ -1,59 +1,47 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Runtime
+namespace System.Activities.Runtime;
+
+[DataContract]
+internal class EmptyWithCancelationCheckWorkItem : ActivityExecutionWorkItem
 {
-    using System.Runtime.Serialization;
+    private ActivityInstance _completedInstance;
 
-    [DataContract]
-    internal class EmptyWithCancelationCheckWorkItem : ActivityExecutionWorkItem
+    public EmptyWithCancelationCheckWorkItem(ActivityInstance activityInstance, ActivityInstance completedInstance)
+        : base(activityInstance)
     {
-        private ActivityInstance completedInstance;
+        _completedInstance = completedInstance;
+        IsEmpty = true;
+    }
 
-        public EmptyWithCancelationCheckWorkItem(ActivityInstance activityInstance, ActivityInstance completedInstance)
-            : base(activityInstance)
+    [DataMember(Name = "completedInstance")]
+    internal ActivityInstance SerializedCompletedInstance
+    {
+        get => _completedInstance;
+        set => _completedInstance = value;
+    }
+
+    public override void TraceCompleted() => TraceRuntimeWorkItemCompleted();
+
+    public override void TraceScheduled() => TraceRuntimeWorkItemScheduled();
+
+    public override void TraceStarting() => TraceRuntimeWorkItemStarting();
+
+    public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
+    {
+        Fx.Assert("Empty work items should never been executed.");
+
+        return true;
+    }
+
+    public override void PostProcess(ActivityExecutor executor)
+    {
+        if (_completedInstance.State != ActivityInstanceState.Closed && ActivityInstance.IsPerformingDefaultCancelation)
         {
-            this.completedInstance = completedInstance;
-            this.IsEmpty = true;
+            ActivityInstance.MarkCanceled();
         }
 
-        [DataMember(Name = "completedInstance")]
-        internal ActivityInstance SerializedCompletedInstance
-        {
-            get { return this.completedInstance; }
-            set { this.completedInstance = value; }
-        }
-
-        public override void TraceCompleted()
-        {
-            TraceRuntimeWorkItemCompleted();
-        }
-
-        public override void TraceScheduled()
-        {
-            TraceRuntimeWorkItemScheduled();
-        }
-
-        public override void TraceStarting()
-        {
-            TraceRuntimeWorkItemStarting();
-        }
-
-        public override bool Execute(ActivityExecutor executor, BookmarkManager bookmarkManager)
-        {
-            Fx.Assert("Empty work items should never been executed.");
-
-            return true;
-        }
-
-        public override void PostProcess(ActivityExecutor executor)
-        {
-            if (this.completedInstance.State != ActivityInstanceState.Closed && this.ActivityInstance.IsPerformingDefaultCancelation)
-            {
-                this.ActivityInstance.MarkCanceled();
-            }
-
-            base.PostProcess(executor);
-        }
+        base.PostProcess(executor);
     }
 }

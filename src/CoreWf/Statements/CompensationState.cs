@@ -1,37 +1,35 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-namespace System.Activities.Statements
+
+namespace System.Activities.Statements;
+
+[DataContract]
+internal enum CompensationState
 {
-    using System.Runtime.Serialization;
+    [EnumMember]
+    Creating,
 
-    [DataContract]
-    internal enum CompensationState
-    {
-        [EnumMember]
-        Creating,
+    [EnumMember]
+    Active,
 
-        [EnumMember]
-        Active,
+    [EnumMember]
+    Completed,
 
-        [EnumMember]
-        Completed,
+    [EnumMember]
+    Confirming,
 
-        [EnumMember]
-        Confirming,
+    [EnumMember]
+    Confirmed,
 
-        [EnumMember]
-        Confirmed,
+    [EnumMember]
+    Compensating,
 
-        [EnumMember]
-        Compensating,
+    [EnumMember]
+    Compensated,
 
-        [EnumMember]
-        Compensated,
+    [EnumMember]
+    Canceling,
 
-        [EnumMember]
-        Canceling,
-
-        [EnumMember]
-        Canceled,
-    }
+    [EnumMember]
+    Canceled,
 }

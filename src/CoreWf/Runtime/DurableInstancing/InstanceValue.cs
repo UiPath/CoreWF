@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Runtime.Serialization;
-
 namespace System.Activities.Runtime.DurableInstancing
 {
     [Fx.Tag.XamlVisible(false)]
@@ -35,7 +33,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             get
             {
-                return object.ReferenceEquals(this, InstanceValue.DeletedValue);
+                return ReferenceEquals(this, DeletedValue);
             }
         }
 
@@ -43,7 +41,7 @@ namespace System.Activities.Runtime.DurableInstancing
         {
             get
             {
-                return InstanceValue.s_deletedValue;
+                return s_deletedValue;
             }
         }
 

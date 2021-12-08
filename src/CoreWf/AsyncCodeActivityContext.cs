@@ -1,57 +1,54 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Internals;
+using Runtime;
+
+[Fx.Tag.XamlVisible(false)]
+public sealed class AsyncCodeActivityContext : CodeActivityContext
 {
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
-    using System;
+    private readonly AsyncOperationContext _asyncContext;
 
-    [Fx.Tag.XamlVisible(false)]
-    public sealed class AsyncCodeActivityContext : CodeActivityContext
+    internal AsyncCodeActivityContext(AsyncOperationContext asyncContext, ActivityInstance instance, ActivityExecutor executor)
+        : base(instance, executor)
     {
-        private readonly AsyncOperationContext asyncContext;
+        _asyncContext = asyncContext;
+    }
 
-        internal AsyncCodeActivityContext(AsyncOperationContext asyncContext, ActivityInstance instance, ActivityExecutor executor)
-            : base(instance, executor)
-        {
-            this.asyncContext = asyncContext;
-        }
-
-        public bool IsCancellationRequested
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return this.CurrentInstance.IsCancellationRequested;
-            }
-        }
-
-        public object UserState
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return this.asyncContext.UserState;
-            }
-            set
-            {
-                ThrowIfDisposed();
-                this.asyncContext.UserState = value;
-            }
-        }
-
-        public void MarkCanceled()
+    public bool IsCancellationRequested
+    {
+        get
         {
             ThrowIfDisposed();
-
-            // This is valid to be called while aborting or while canceling
-            if (!this.CurrentInstance.IsCancellationRequested && !this.asyncContext.IsAborting)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
-            }
-
-            this.CurrentInstance.MarkCanceled();
+            return CurrentInstance.IsCancellationRequested;
         }
+    }
+
+    public object UserState
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return _asyncContext.UserState;
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _asyncContext.UserState = value;
+        }
+    }
+
+    public void MarkCanceled()
+    {
+        ThrowIfDisposed();
+
+        // This is valid to be called while aborting or while canceling
+        if (!CurrentInstance.IsCancellationRequested && !_asyncContext.IsAborting)
+        {
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.MarkCanceledOnlyCallableIfCancelRequested));
+        }
+
+        CurrentInstance.MarkCanceled();
     }
 }

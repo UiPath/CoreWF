@@ -1,51 +1,41 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Expressions
+using System.Activities.Runtime;
+
+namespace System.Activities.Expressions;
+
+[Fx.Tag.XamlVisible(false)]
+internal sealed class LocationReferenceValue<T> : CodeActivity<T>, IExpressionContainer, ILocationReferenceWrapper, ILocationReferenceExpression
 {
-    using System.Activities.Runtime;
+    private readonly LocationReference _locationReference;
 
-    [Fx.Tag.XamlVisible(false)]
-    internal sealed class LocationReferenceValue<T> : CodeActivity<T>, IExpressionContainer, ILocationReferenceWrapper, ILocationReferenceExpression
+    internal LocationReferenceValue(LocationReference locationReference)
     {
-        private readonly LocationReference locationReference;
+        UseOldFastPath = true;
+        _locationReference = locationReference;
+    }
 
-        internal LocationReferenceValue(LocationReference locationReference)
+    LocationReference ILocationReferenceWrapper.LocationReference => _locationReference;
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        // the creator of this activity is expected to have checked visibility of LocationReference.
+        // we override the base CacheMetadata to avoid unnecessary reflection overhead.
+    }
+
+    protected override T Execute(CodeActivityContext context)
+    {
+        try
         {
-            this.UseOldFastPath = true;
-            this.locationReference = locationReference;
+            context.AllowChainedEnvironmentAccess = true;
+            return context.GetValue<T>(_locationReference);
         }
-
-        LocationReference ILocationReferenceWrapper.LocationReference
+        finally
         {
-            get
-            {
-                return this.locationReference;
-            }
-        }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            // the creator of this activity is expected to have checked visibility of LocationReference.
-            // we override the base CacheMetadata to avoid unnecessary reflection overhead.
-        }
-
-        protected override T Execute(CodeActivityContext context)
-        {
-            try
-            {
-                context.AllowChainedEnvironmentAccess = true;
-                return context.GetValue<T>(this.locationReference);
-            }
-            finally
-            {
-                context.AllowChainedEnvironmentAccess = false;
-            }
-        }
-
-        ActivityWithResult ILocationReferenceExpression.CreateNewInstance(LocationReference locationReference)
-        {
-            return new LocationReferenceValue<T>(locationReference);
+            context.AllowChainedEnvironmentAccess = false;
         }
     }
+
+    ActivityWithResult ILocationReferenceExpression.CreateNewInstance(LocationReference locationReference) => new LocationReferenceValue<T>(locationReference);
 }

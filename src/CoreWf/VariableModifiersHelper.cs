@@ -1,36 +1,24 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities
+namespace System.Activities;
+using Internals;
+
+internal static class VariableModifiersHelper
 {
-    using System.Activities.Internals;
-    using System.ComponentModel;
+    private static bool IsDefined(VariableModifiers modifiers) => modifiers == VariableModifiers.None ||
+            ((modifiers & (VariableModifiers.Mapped | VariableModifiers.ReadOnly)) == modifiers);
 
-    internal static class VariableModifiersHelper
+    public static bool IsReadOnly(VariableModifiers modifiers) => (modifiers & VariableModifiers.ReadOnly) == VariableModifiers.ReadOnly;
+
+    public static bool IsMappable(VariableModifiers modifiers) => (modifiers & VariableModifiers.Mapped) == VariableModifiers.Mapped;
+
+    public static void Validate(VariableModifiers modifiers, string argumentName)
     {
-        private static bool IsDefined(VariableModifiers modifiers)
+        if (!IsDefined(modifiers))
         {
-            return (modifiers == VariableModifiers.None ||
-                ((modifiers & (VariableModifiers.Mapped | VariableModifiers.ReadOnly)) == modifiers));
-        }
-
-        public static bool IsReadOnly(VariableModifiers modifiers)
-        {
-            return (modifiers & VariableModifiers.ReadOnly) == VariableModifiers.ReadOnly;
-        }
-
-        public static bool IsMappable(VariableModifiers modifiers)
-        {
-            return (modifiers & VariableModifiers.Mapped) == VariableModifiers.Mapped;
-        }
-
-        public static void Validate(VariableModifiers modifiers, string argumentName)
-        {
-            if (!IsDefined(modifiers))
-            {
-                throw FxTrace.Exception.AsError(
-                    new InvalidEnumArgumentException(argumentName, (int)modifiers, typeof(VariableModifiers)));
-            }
+            throw FxTrace.Exception.AsError(
+                new InvalidEnumArgumentException(argumentName, (int)modifiers, typeof(VariableModifiers)));
         }
     }
 }
