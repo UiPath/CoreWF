@@ -26,14 +26,9 @@ internal sealed class LocationReferenceValue<T> : CodeActivity<T>, IExpressionCo
 
     protected override T Execute(CodeActivityContext context)
     {
-        try
+        using (context.InheritVariables())
         {
-            context.AllowChainedEnvironmentAccess = true;
             return context.GetValue<T>(_locationReference);
-        }
-        finally
-        {
-            context.AllowChainedEnvironmentAccess = false;
         }
     }
 

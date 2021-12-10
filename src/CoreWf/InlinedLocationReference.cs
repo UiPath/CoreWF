@@ -82,14 +82,9 @@ internal class InlinedLocationReference : LocationReference, ILocationReferenceW
 
     private Location GetLocationCore(ActivityContext context)
     {
-        try
+        using (context.InheritVariables())
         {
-            context.AllowChainedEnvironmentAccess = true;
             return _innerReference.GetLocation(context);
-        }
-        finally
-        {
-            context.AllowChainedEnvironmentAccess = false;
         }
     }
 

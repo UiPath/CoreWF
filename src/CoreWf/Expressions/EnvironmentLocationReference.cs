@@ -32,14 +32,9 @@ public class EnvironmentLocationReference<T> : CodeActivity<Location<T>>, IExpre
 
     protected sealed override Location<T> Execute(CodeActivityContext context)
     {
-        try
+        using (context.InheritVariables())
         {
-            context.AllowChainedEnvironmentAccess = true;
             return context.GetLocation<T>(LocationReference);
-        }
-        finally
-        {
-            context.AllowChainedEnvironmentAccess = false;
         }
     }
 

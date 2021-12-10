@@ -13,6 +13,18 @@ public class FuncValue<TResult> : CodeActivity<TResult>
         }
     }
 }
+public class Reference<TLocation> : CodeActivity<Location<TLocation>>
+{
+    private readonly string _locationName;
+    public Reference(string locationName) => _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
+    protected override Location<TLocation> Execute(CodeActivityContext context)
+    {
+        using (context.InheritVariables())
+        {
+            return context.GetLocation<TLocation>(_locationName);
+        }
+    }
+}
 public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
 {
     private readonly string _locationName;
