@@ -15,7 +15,7 @@ public class PowerFxValue<T> : CodeActivity<T>
         RecordValue locals;
         using (context.InheritVariables())
         {
-            locals = Parent.GetLocals(local => local.GetLocation(context).Value);
+            locals = PowerFxHelper.GetLocals(Parent, local => local.GetLocation(context).Value);
         }
         var result = Engine.Eval(Expression, locals).ToObject();
         return (T)Convert.ChangeType(result, typeof(T));
@@ -23,7 +23,7 @@ public class PowerFxValue<T> : CodeActivity<T>
 }
 public static class PowerFxHelper
 {
-    public static RecordValue GetLocals(this Activity parent, Func<LocationReference, object> getValue)
+    public static RecordValue GetLocals(Activity parent, Func<LocationReference, object> getValue)
     {
         var localsValues = new Dictionary<string, FormulaValue>();
         foreach (var local in parent.GetLocals())
