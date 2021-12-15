@@ -3,10 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <StartupObject>TestConsole.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Test\TestCases.Workflows\TestCases.Workflows.csproj" />
+    <ProjectReference Include="..\TestCases.Workflows\TestCases.Workflows.csproj" />
   </ItemGroup>
 
 </Project>

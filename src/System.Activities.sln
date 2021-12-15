@@ -40,7 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Microsoft.CodeAnalysis.VisualBasic.Scripting", "VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj", "{766C237E-1920-494B-BF44-BA374EC2FCF6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{154DD961-CA7E-410A-B31F-E057A06E2A68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "Test\TestConsole\TestConsole.csproj", "{154DD961-CA7E-410A-B31F-E057A06E2A68}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Perf", "Perf", "{8E6A125F-0530-4D8E-8CD4-3429DAF57706}"
 EndProject
