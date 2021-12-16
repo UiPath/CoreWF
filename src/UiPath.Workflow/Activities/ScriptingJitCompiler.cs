@@ -42,7 +42,8 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     {
         var options = ScriptOptions.Default
             .WithReferences(MetadataReferences)
-            .WithImports(expressionToCompile.ImportedNamespaces);
+            .WithImports(expressionToCompile.ImportedNamespaces)
+            .WithOptimizationLevel(OptimizationLevel.Release);
         var untypedExpressionScript = Create(expressionToCompile.Code, options);
         var compilation = untypedExpressionScript.GetCompilation();
         var syntaxTree = compilation.SyntaxTrees.First();

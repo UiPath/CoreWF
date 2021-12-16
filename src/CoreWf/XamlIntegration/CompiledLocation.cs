@@ -208,7 +208,7 @@ internal class CompiledLocation<T> : Location<T>
                 {
                     //
                     // Revalidate to make sure we didn't hit an ID shift
-                    if (compiledExpressionRoot.CanExecuteExpression(_expressionText, true /* this is always a reference */, _locationReferences, out _expressionId))
+                    if (compiledExpressionRoot.CanExecuteExpression(typeof(T), _expressionText, true /* this is always a reference */, _locationReferences, out _expressionId))
                     {
                         return compiledExpressionRoot;
                     }
@@ -229,7 +229,7 @@ internal class CompiledLocation<T> : Location<T>
     {
         if (CompiledExpressionInvoker.TryGetCompiledExpressionRoot(activity, _forImplementation, out compiledExpressionRoot))
         {
-            if (compiledExpressionRoot.CanExecuteExpression(_expressionText, true /* this is always a reference */, _locationReferences, out _expressionId))
+            if (compiledExpressionRoot.CanExecuteExpression(typeof(T), _expressionText, true /* this is always a reference */, _locationReferences, out _expressionId))
             {
                 return true;
             }

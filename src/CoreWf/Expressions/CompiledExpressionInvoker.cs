@@ -14,7 +14,7 @@ public class CompiledExpressionInvoker
     private static readonly AttachableMemberIdentifier compiledExpressionRootForImplementationProperty =
         new(typeof(CompiledExpressionInvoker), "CompiledExpressionRootForImplementation");
     private int _expressionId;
-    private readonly Activity _expressionActivity;
+    private readonly ActivityWithResult _expressionActivity;
     private readonly bool _isReference;
     private readonly ITextExpression _textExpression;
     private readonly Activity _metadataRoot;
@@ -27,7 +27,7 @@ public class CompiledExpressionInvoker
     {
         _expressionId = -1;
         _textExpression = expression ?? throw FxTrace.Exception.ArgumentNull(nameof(expression));
-        _expressionActivity = expression as Activity;
+        _expressionActivity = expression as ActivityWithResult;
         _isReference = isReference;
         _locationReferences = new List<LocationReference>();
         _metadata = metadata;
@@ -190,7 +190,7 @@ public class CompiledExpressionInvoker
     }
 
     private bool CanExecuteExpression(ICompiledExpressionRoot compiledExpressionRoot, out int expressionId)
-        => compiledExpressionRoot.CanExecuteExpression(_textExpression.ExpressionText, _isReference, _locationReferences, out expressionId);
+        => compiledExpressionRoot.CanExecuteExpression(_expressionActivity.ResultType, _textExpression.ExpressionText, _isReference, _locationReferences, out expressionId);
 
     private void ProcessLocationReferences()
     {

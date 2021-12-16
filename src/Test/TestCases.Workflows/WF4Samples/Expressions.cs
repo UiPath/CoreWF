@@ -1,4 +1,5 @@
 ﻿using Microsoft.CSharp.Activities;
+using Microsoft.VisualBasic.Activities;
 using Shouldly;
 using System;
 using System.Activities;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Xaml;
 using Xunit;
 
@@ -82,7 +84,20 @@ Iterate ArrayList
         protected override bool CompileExpressions => true;
         static readonly string CSharpCalculationResult = "Result == XX^2" + Environment.NewLine;
         static readonly StringDictionary CSharpCalculationInputs = new() { ["XX"] = 16, ["YY"] = 16 };
-
+        [Fact]
+        public void SameTextDifferentTypes()
+        {
+            var text = new VisualBasicValue<string>("var");
+            var values = new VisualBasicValue<IEnumerable<char>>("var");
+            var root = new DynamicActivity { Implementation = () => new Sequence
+            {
+                Variables = { new Variable<string>("var") },
+                Activities = { new ForEach<char> { Values = new InArgument<IEnumerable<char>>(values) }, new WriteLine { Text = new InArgument<string>(text) } }
+            }};
+            ActivityXamlServices.Compile(root, new());
+            ((LambdaExpression)text.GetExpressionTree()).ReturnType.ShouldBe(typeof(string));
+            ((LambdaExpression)values.GetExpressionTree()).ReturnType.ShouldBe(typeof(IEnumerable<char>));
+        }
         [Fact]
         public void CompileCSharpCalculation()
         {

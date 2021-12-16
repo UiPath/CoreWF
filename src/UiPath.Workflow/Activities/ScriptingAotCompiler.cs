@@ -26,7 +26,11 @@ public abstract class ScriptingAotCompiler : AheadOfTimeCompiler
     protected abstract Script<object> Create(string code, ScriptOptions options);
     public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile)
     {
-        var scriptOptions = ScriptOptions.Default.WithReferences(classToCompile.ReferencedAssemblies.GetMetadataReferences()).WithImports(classToCompile.ImportedNamespaces);
+        //File.WriteAllText(@"AotSource.vb", classToCompile.Code);
+        var scriptOptions = ScriptOptions.Default
+            .WithReferences(classToCompile.ReferencedAssemblies.GetMetadataReferences())
+            .WithImports(classToCompile.ImportedNamespaces)
+            .WithOptimizationLevel(OptimizationLevel.Release);
         var script = Create(classToCompile.Code, scriptOptions);
         var results = BuildAssembly(script.GetCompilation());
         if (results.HasErrors)

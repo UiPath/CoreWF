@@ -4,9 +4,7 @@
 namespace System.Activities.XamlIntegration
 {
     using System;
-    using System.Text;
     using System.Activities;
-    using System.Activities.Statements;
     using System.Activities.Validation;
     using System.Reflection;
     using System.CodeDom;
@@ -14,19 +12,13 @@ namespace System.Activities.XamlIntegration
     using System.ComponentModel;
     using System.Collections.Generic;
     using Microsoft.VisualBasic.Activities;
-    using Microsoft.VisualBasic;
-    using System.Windows.Markup;
-    using System.Xaml;
     using System.IO;
     using System.Activities.Expressions;
     using System.Activities.Runtime;
-    using System.Diagnostics.CodeAnalysis;
     using System.Security;
-    using System.Security.Permissions;
     using System.Globalization;
     using System.Linq.Expressions;
     using System.Activities.Internals;
-    using System.Linq;
 
     public class TextExpressionCompiler
     {
@@ -1255,23 +1247,7 @@ namespace System.Activities.XamlIntegration
            
         void GenerateCanExecuteMethod()
         {
-            CodeMemberMethod isValidMethod = new CodeMemberMethod();
-            isValidMethod.Name = "CanExecuteExpression";
-            isValidMethod.ReturnType = new CodeTypeReference(typeof(bool));
-            isValidMethod.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-            isValidMethod.CustomAttributes.Add(GeneratedCodeAttribute);
-            isValidMethod.CustomAttributes.Add(BrowsableCodeAttribute);
-            isValidMethod.CustomAttributes.Add(EditorBrowsableCodeAttribute);
-            isValidMethod.ImplementationTypes.Add(new CodeTypeReference(typeof(ICompiledExpressionRoot)));
-
-            isValidMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "expressionText"));
-            isValidMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(bool)), "isReference"));
-            isValidMethod.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(IList<LocationReference>)), "locations"));
-
-            CodeParameterDeclarationExpression expressionIdParam = new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(int)), "expressionId");
-            expressionIdParam.Direction = FieldDirection.Out;
-            isValidMethod.Parameters.Add(expressionIdParam);
-           
+            var canExecute = CanExecuteMethod();
             //
             // if (((isReference == false)
             //              && ((expressionText == [expression text])
@@ -1288,6 +1264,11 @@ namespace System.Activities.XamlIntegration
                     CodeBinaryOperatorType.ValueEquality,
                     new CodePrimitiveExpression(descriptor.IsReference));
 
+                CodeBinaryOperatorExpression checkTypeExpression = new CodeBinaryOperatorExpression(
+                    new CodeVariableReferenceExpression("type"),
+                    CodeBinaryOperatorType.ValueEquality,
+                    new CodeTypeOfExpression(descriptor.ResultType));
+
                 CodeBinaryOperatorExpression checkTextExpression = new CodeBinaryOperatorExpression(
                     new CodeVariableReferenceExpression("expressionText"),
                     CodeBinaryOperatorType.ValueEquality,
@@ -1300,7 +1281,7 @@ namespace System.Activities.XamlIntegration
                     new CodeVariableReferenceExpression("locations"),
                     new CodePrimitiveExpression(true),
                     new CodePrimitiveExpression(0));
-                
+
                 CodeBinaryOperatorExpression checkValidateExpression = new CodeBinaryOperatorExpression(
                     invokeValidateExpression,
                     CodeBinaryOperatorType.ValueEquality,
@@ -1311,11 +1292,11 @@ namespace System.Activities.XamlIntegration
                     CodeBinaryOperatorType.BooleanAnd,
                     checkValidateExpression);
 
-                CodeBinaryOperatorExpression checkIsReferenceAndTextAndValidateExpression = new CodeBinaryOperatorExpression(
-                    checkIsReferenceExpression,
+                CodeBinaryOperatorExpression checkIsReferenceAndTextAndValidateExpression = new(
+                    descriptor.IsReference ? checkIsReferenceExpression : new CodeBinaryOperatorExpression(checkIsReferenceExpression, CodeBinaryOperatorType.BooleanAnd, checkTypeExpression),
                     CodeBinaryOperatorType.BooleanAnd,
                     checkTextAndValidateExpression);
-                
+
                 CodeAssignStatement assignId = new CodeAssignStatement(
                     new CodeVariableReferenceExpression("expressionId"),
                     new CodePrimitiveExpression(descriptor.Id));
@@ -1325,20 +1306,48 @@ namespace System.Activities.XamlIntegration
 
                 matchCondition.TrueStatements.Add(assignId);
                 matchCondition.TrueStatements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(true)));
-                
-                isValidMethod.Statements.Add(matchCondition);
+
+                canExecute.Statements.Add(matchCondition);
             }
 
-            isValidMethod.Statements.Add(
+            canExecute.Statements.Add(
                 new CodeAssignStatement(
                     new CodeVariableReferenceExpression("expressionId"),
                     new CodePrimitiveExpression(-1)));
 
-            isValidMethod.Statements.Add(
+            canExecute.Statements.Add(
                 new CodeMethodReturnStatement(
                     new CodePrimitiveExpression(false)));
 
-            classDeclaration.Members.Add(isValidMethod);
+            classDeclaration.Members.Add(canExecute);
+
+            var oldCanExecute = CanExecuteMethod();
+            const int TypeParameter = 0;
+            oldCanExecute.Parameters.RemoveAt(TypeParameter);
+            oldCanExecute.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
+            classDeclaration.Members.Add(oldCanExecute);
+            return;
+            static CodeMemberMethod CanExecuteMethod()
+            {
+                CodeMemberMethod canExecute = new CodeMemberMethod();
+                canExecute.Name = "CanExecuteExpression";
+                canExecute.ReturnType = new CodeTypeReference(typeof(bool));
+                canExecute.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+                canExecute.CustomAttributes.Add(GeneratedCodeAttribute);
+                canExecute.CustomAttributes.Add(BrowsableCodeAttribute);
+                canExecute.CustomAttributes.Add(EditorBrowsableCodeAttribute);
+                canExecute.ImplementationTypes.Add(new CodeTypeReference(typeof(ICompiledExpressionRoot)));
+
+                canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(Type)), "type"));
+                canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "expressionText"));
+                canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(bool)), "isReference"));
+                canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(IList<LocationReference>)), "locations"));
+
+                CodeParameterDeclarationExpression expressionIdParam = new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(int)), "expressionId");
+                expressionIdParam.Direction = FieldDirection.Out;
+                canExecute.Parameters.Add(expressionIdParam);
+                return canExecute;
+            }
         }
 
         CodeObjectCreateExpression GenerateDataContextCreateExpression(string typeName, bool withLocationReferences)
