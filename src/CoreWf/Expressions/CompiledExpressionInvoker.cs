@@ -190,7 +190,11 @@ public class CompiledExpressionInvoker
     }
 
     private bool CanExecuteExpression(ICompiledExpressionRoot compiledExpressionRoot, out int expressionId)
-        => compiledExpressionRoot.CanExecuteExpression(_expressionActivity.ResultType, _textExpression.ExpressionText, _isReference, _locationReferences, out expressionId);
+    {
+        var resultType = _expressionActivity.ResultType;
+        return compiledExpressionRoot.CanExecuteExpression(_isReference ? resultType.GenericTypeArguments[0] : resultType,
+            _textExpression.ExpressionText, _isReference, _locationReferences, out expressionId); ;
+    }
 
     private void ProcessLocationReferences()
     {

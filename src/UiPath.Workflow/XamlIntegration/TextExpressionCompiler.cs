@@ -1293,7 +1293,7 @@ namespace System.Activities.XamlIntegration
                     checkValidateExpression);
 
                 CodeBinaryOperatorExpression checkIsReferenceAndTextAndValidateExpression = new(
-                    descriptor.IsReference ? checkIsReferenceExpression : new CodeBinaryOperatorExpression(checkIsReferenceExpression, CodeBinaryOperatorType.BooleanAnd, checkTypeExpression),
+                    new CodeBinaryOperatorExpression(checkIsReferenceExpression, CodeBinaryOperatorType.BooleanAnd, checkTypeExpression),
                     CodeBinaryOperatorType.BooleanAnd,
                     checkTextAndValidateExpression);
 
