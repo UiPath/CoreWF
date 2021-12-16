@@ -1248,6 +1248,7 @@ namespace System.Activities.XamlIntegration
         void GenerateCanExecuteMethod()
         {
             var canExecute = CanExecuteMethod();
+            canExecute.Parameters.Insert(0, new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(Type)), "type"));
             //
             // if (((isReference == false)
             //              && ((expressionText == [expression text])
@@ -1322,8 +1323,6 @@ namespace System.Activities.XamlIntegration
             classDeclaration.Members.Add(canExecute);
 
             var oldCanExecute = CanExecuteMethod();
-            const int TypeParameter = 0;
-            oldCanExecute.Parameters.RemoveAt(TypeParameter);
             oldCanExecute.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
             classDeclaration.Members.Add(oldCanExecute);
             return;
@@ -1338,7 +1337,6 @@ namespace System.Activities.XamlIntegration
                 canExecute.CustomAttributes.Add(EditorBrowsableCodeAttribute);
                 canExecute.ImplementationTypes.Add(new CodeTypeReference(typeof(ICompiledExpressionRoot)));
 
-                canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(Type)), "type"));
                 canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(string)), "expressionText"));
                 canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(bool)), "isReference"));
                 canExecute.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(IList<LocationReference>)), "locations"));
