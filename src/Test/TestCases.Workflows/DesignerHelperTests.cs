@@ -2,57 +2,49 @@
 using Microsoft.VisualBasic.Activities;
 using Shouldly;
 using System.Activities;
+using System.Activities.Statements;
 using Xunit;
 
-namespace TestCases.Workflows
+namespace TestCases.Workflows;
+
+public class DesignerHelperTests
 {
-    public class DesignerHelperTests
+    [Fact]
+    public void VisualBasicDesigner_CreatesValueProperly()
     {
-        [Fact]
-        public void VisualBasicDesigner_CreatesValueProperly()
-        {
-            var sequence = Load(TestXamls.SalaryCalculation);
+        var result = VisualBasicDesignerHelper.CreatePrecompiledValue(typeof(string), "MyVar", NewSequence(), out _, out _);
 
-            var result = VisualBasicDesignerHelper.CreatePrecompiledValue(typeof(string), "MyVar", sequence, out _, out _);
+        ((VisualBasicValue<string>)result).ExpressionText.ShouldBe("MyVar");
+    }
 
-            ((VisualBasicValue<string>)result).ExpressionText.ShouldBe("MyVar");
-        }
+    [Fact]
+    public void VisualBasicDesigner_CreatesReferenceProperly()
+    {
+        var result = VisualBasicDesignerHelper.CreatePrecompiledReference(typeof(string), "MyVar", NewSequence(), out _, out _);
 
-        [Fact]
-        public void VisualBasicDesigner_CreatesReferenceProperly()
-        {
-            var sequence = Load(TestXamls.SalaryCalculation);
+        ((VisualBasicReference<string>)result).ExpressionText.ShouldBe("MyVar");
+    }
 
-            var result = VisualBasicDesignerHelper.CreatePrecompiledReference(typeof(string), "MyVar", sequence, out _, out _);
+    [Fact]
+    public void CSharpDesigner_CreatesValueProperly()
+    {
+        var result = CSharpDesignerHelper.CreatePrecompiledValue(typeof(string), "MyVar", NewSequence(), out _, out _);
 
-            ((VisualBasicReference<string>)result).ExpressionText.ShouldBe("MyVar");
-        }
+        ((CSharpValue<string>)result).ExpressionText.ShouldBe("MyVar");
+    }
 
-        [Fact]
-        public void CSharpDesigner_CreatesValueProperly()
-        {
-            var sequence = Load(TestXamls.SalaryCalculation);
+    [Fact]
+    public void CSharpDesigner_CreatesReferenceProperly()
+    {
+        var result = CSharpDesignerHelper.CreatePrecompiledReference(typeof(string), "MyVar", NewSequence(), out _, out _);
 
-            var result = CSharpDesignerHelper.CreatePrecompiledValue(typeof(string), "MyVar", sequence, out _, out _);
+        ((CSharpReference<string>)result).ExpressionText.ShouldBe("MyVar");
+    }
 
-            ((CSharpValue<string>)result).ExpressionText.ShouldBe("MyVar");
-        }
-
-        [Fact]
-        public void CSharpDesigner_CreatesReferenceProperly()
-        {
-            var sequence = Load(TestXamls.SalaryCalculation);
-
-            var result = CSharpDesignerHelper.CreatePrecompiledReference(typeof(string), "MyVar", sequence, out _, out _);
-
-            ((CSharpReference<string>)result).ExpressionText.ShouldBe("MyVar");
-        }
-
-        private Activity Load(TestXamls xaml)
-        {
-            var root = TestHelper.GetActivityFromXamlResource(xaml);
-            WorkflowInspectionServices.CacheMetadata(root);
-            return root.ImplementationChildren[0];
-        }
+    private Sequence NewSequence()
+    {
+        var root = new Sequence();
+        WorkflowInspectionServices.CacheMetadata(root);
+        return root;
     }
 }
