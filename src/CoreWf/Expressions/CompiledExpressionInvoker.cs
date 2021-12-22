@@ -232,10 +232,7 @@ public class CompiledExpressionInvoker
 
         if (foundCompiledExpressionRoot)
         {
-            foreach (var environment in environments)
-            {
-                environment.CompileExpressions = true;
-            }
+            _metadata.Environment.CompileExpressions = true;
             // For compiled C# expressions we create temp auto generated arguments
             // for all locations whether they are used in the expressions or not.
             // The TryGetReferenceToPublicLocation method call above also generates
