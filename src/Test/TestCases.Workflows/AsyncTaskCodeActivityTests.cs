@@ -40,6 +40,7 @@ namespace TestCases.Activities
                 taskCompletionSource.SetResult();
             };
             invoker.InvokeAsync(invoker);
+            await Task.Yield();
             invoker.CancelAsync(invoker);
             await taskCompletionSource.Task;
             args.Error.ShouldBeOfType<WorkflowApplicationAbortedException>();
