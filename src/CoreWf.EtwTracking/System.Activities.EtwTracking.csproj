@@ -6,7 +6,7 @@
     <Authors>Lucian Bargaoanu,Dustin Metzgar</Authors>
     <Copyright>Copyright © .NET Foundation and Contributors</Copyright> 
     <PackageTags>.NET Core workflow</PackageTags>
-    <PackageProjectUrl>https://github.com/uipath-open/corewf</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/UiPath/CoreWF</PackageProjectUrl>
     <RootNamespace>System.Activities.EtwTracking</RootNamespace>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
@@ -16,6 +16,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <ProjectReference Include="..\CoreWf\System.Activities.csproj" />
+    <ProjectReference Include="..\UiPath.Workflow.Runtime\UiPath.Workflow.Runtime.csproj" />
   </ItemGroup>
 </Project>
