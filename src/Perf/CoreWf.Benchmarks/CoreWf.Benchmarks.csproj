@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CoreWf\System.Activities.csproj" />
+    <ProjectReference Include="..\..\UiPath.Workflow.Runtime\UiPath.Workflow.Runtime.csproj" />
     <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
   </ItemGroup>
 
