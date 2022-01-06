@@ -5,7 +5,7 @@ using System.Diagnostics.Tracing;
 
 namespace System.Activities;
 
-[EventSource(Name = "Workflow Foundation", Guid = "c651f5f6-1c0d-492e-8ae1-b4efd7c9d503", LocalizationResources = "System.Activities.Resources.EventSourceStrings")]
+[EventSource(Name = "Workflow Foundation", Guid = "c651f5f6-1c0d-492e-8ae1-b4efd7c9d503", LocalizationResources = "UiPath.Workflow.Runtime.Resources.EventSourceStrings")]
 public sealed class WfEventSource : EventSource
 {
     private readonly static WfEventSource instance = new();

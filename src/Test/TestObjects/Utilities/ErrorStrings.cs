@@ -17,7 +17,7 @@ namespace Test.Common.TestObjects.Utilities
 
         static ErrorStrings()
         {
-            s_activitiesResourceManager = new ResourceManager("System.Activities.Resources.SR", typeof(System.Activities.Activity).GetTypeInfo().Assembly);
+            s_activitiesResourceManager = new ResourceManager("UiPath.Workflow.Runtime.Resources.SR", typeof(System.Activities.Activity).GetTypeInfo().Assembly);
         }
 
         public static string WhileRequiresCondition { get { return s_activitiesResourceManager.GetString("WhileRequiresCondition"); } }
