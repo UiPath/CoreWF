@@ -15,7 +15,7 @@ internal class SR : StringResourceBase
     {
         get
         {
-            _resourceManager ??= new ResourceManager("UiPath.Workflow.Runtime.Resources.SR", typeof(SR).Assembly);
+            _resourceManager ??= new ResourceManager("System.Activities.Resources.SR", typeof(SR).Assembly);
             return _resourceManager;
         }
     }
