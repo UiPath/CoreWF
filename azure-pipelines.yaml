@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-    - master
+    - main
     - develop
 pr:
   branches:
@@ -35,7 +35,7 @@ stages:
       type: internal
 
 - stage: ReleasePublic
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   dependsOn: BuildAndTest
   jobs:
   - template: .pipelines/release.yaml
