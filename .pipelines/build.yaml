@@ -10,7 +10,7 @@ jobs:
       targetType: inline
       script: |
         $versionSuffix = "-$(Build.BuildNumber)"
-        if ("$(Build.SourceBranch)" -eq "refs/heads/master") {
+        if ("$(Build.SourceBranch)" -eq "refs/heads/main") {
           $versionSuffix = ""
         }
 
