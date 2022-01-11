@@ -1,0 +1,41 @@
+parameters:
+- name: type
+  type: string
+  default: internal
+  values:
+  - internal
+  - public
+
+jobs:
+- job: PublishPackages
+  displayName: Publish Packages
+  pool:
+    vmImage: windows-latest
+  steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: $(ArtifactName)
+      path: $(Pipeline.Workspace)/$(ArtifactName)
+
+  - template: Signing/signing.yml@templates
+    parameters:
+      azureConnectionName: $(AzureConnectionSigning)
+      pathsToSign: $(Pipeline.Workspace)/$(ArtifactName)/*.nupkg
+      runInParallel: true
+
+  - task: NuGetAuthenticate@0
+    inputs:
+      forceReinstallCredentialProvider: true
+
+  - task: NuGetCommand@2
+    displayName: Push NuGet Packages
+    inputs:
+      command: push
+      packagesToPush: $(Pipeline.Workspace)/$(ArtifactName)/**/*.nupkg
+      ${{ if eq(parameters.type, 'public') }}:
+        nuGetFeedType: external
+        publishFeedCredentials: $(NugetFeedServiceConnection)
+      ${{ else }}:
+        nuGetFeedType: internal
+        publishVstsFeed: $(AzureFeedInternal)
+    condition: succeeded()

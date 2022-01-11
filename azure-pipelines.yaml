@@ -1,0 +1,43 @@
+trigger:
+  branches:
+    include:
+    - master
+    - develop
+pr:
+  branches:
+    include:
+    - develop
+
+name: $(Date:yyyyMMdd)$(Rev:-rr)
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: UiPath/AzurePipelinesTemplates
+      ref: refs/tags/uipath.package-signing.1.5.0
+      endpoint: UiPath
+
+variables:
+- template: .pipelines/vars.yml
+
+stages:
+- stage: BuildAndTest
+  jobs:
+  - template: .pipelines/build.yaml
+
+- stage: ReleaseInternal
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  dependsOn: BuildAndTest
+  jobs:
+  - template: .pipelines/release.yaml
+    parameters:
+      type: internal
+
+- stage: ReleasePublic
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  dependsOn: BuildAndTest
+  jobs:
+  - template: .pipelines/release.yaml
+    parameters:
+      type: public

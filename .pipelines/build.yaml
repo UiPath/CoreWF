@@ -1,0 +1,53 @@
+jobs:
+- job: BuildAndTest
+  displayName: Build and Test
+  pool:
+    vmImage: windows-2022
+  steps:
+  - task: PowerShell@2
+    displayName: Get Version from Directory.Build.props
+    inputs:
+      targetType: inline
+      script: |
+        $versionSuffix = "-$(Build.BuildNumber)"
+        if ("$(Build.SourceBranch)" -eq "refs/heads/master") {
+          $versionSuffix = ""
+        }
+
+        $xml = [Xml] (Get-Content .\src\Directory.Build.props)
+
+        $version = [String] $xml.Project.PropertyGroup.Version
+        $version = $version.Trim()
+        $fullVersion = "$version$versionSuffix"
+
+        Write-Host "##vso[task.setvariable variable=Version;]$fullVersion"
+        Write-Host "Version that will be used is $fullVersion"
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
+    inputs:
+      projects: src/UiPath.Workflow.sln
+      arguments: --configuration $(BuildConfiguration) -p:Version="$(Version)"
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: src
+      arguments: --no-build --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: Build.ArtifactStagingDirectory'
+    inputs:
+      SourceFolder: src
+      Contents: |
+        UiPath.Workflow.Runtime\bin\$(BuildConfiguration)\*.*nupkg
+        UiPath.Workflow\bin\$(BuildConfiguration)\*.*nupkg
+      TargetFolder: $(Build.ArtifactStagingDirectory)
+      CleanTargetFolder: true
+      flattenFolders: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifacts
+    inputs:
+      ArtifactName: $(ArtifactName)
