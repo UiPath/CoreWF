@@ -1,0 +1,7 @@
+variables:
+  ArtifactName: Artifacts
+  BuildConfiguration: Release
+  NuGetVersionSpec: 4.3.0
+  NugetFeedServiceConnection: NugetOfficial
+  AzureFeedInternal: "Public.Feeds/UiPath-Internal"
+  AzureConnectionSigning: AzureSigningInternalProductionEA
