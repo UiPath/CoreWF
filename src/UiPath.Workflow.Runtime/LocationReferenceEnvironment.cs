@@ -11,6 +11,11 @@ public abstract class LocationReferenceEnvironment
 
     internal bool CompileExpressions { get; set; }
 
+    /// <summary>
+    /// Indicates if this LRE is created as part of activity validation.
+    /// </summary>
+    internal bool IsValidating { get; set; }
+
     public abstract Activity Root { get; }
 
     public LocationReferenceEnvironment Parent { get; protected set; }

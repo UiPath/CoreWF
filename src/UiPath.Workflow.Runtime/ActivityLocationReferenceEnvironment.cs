@@ -20,6 +20,7 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
         if (Parent != null)
         {
             CompileExpressions = parent.CompileExpressions;
+            IsValidating = parent.IsValidating;
             InternalRoot = parent.Root;
         }
     }

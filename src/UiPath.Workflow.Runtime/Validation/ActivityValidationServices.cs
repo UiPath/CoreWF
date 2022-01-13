@@ -428,11 +428,12 @@ public static class ActivityValidationServices
         {
             _settings = settings;
             _rootToValidate = toValidate;
-            _environment = settings.Environment;
+            _environment = settings.Environment ?? new ActivityLocationReferenceEnvironment();
+            _environment.IsValidating = true;
             if (settings.SkipExpressionCompilation)
             {
-                _environment ??= new ActivityLocationReferenceEnvironment();
                 _environment.CompileExpressions = true;
+                _environment.IsValidating = false;
             }
         }
 

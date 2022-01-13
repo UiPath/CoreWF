@@ -74,19 +74,24 @@ namespace Microsoft.VisualBasic.Activities
         {
             expressionTree = null;
             invoker = new CompiledExpressionInvoker(this, false, metadata);
-            if (metadata.Environment.CompileExpressions)
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);            
+            if (metadata.Environment.IsValidating)
             {
-                return;
+                foreach (var validationError in VisualBasicHelper.Validate<TResult>(ExpressionText, publicAccessor))
+                {
+                    AddTempValidationError(validationError);
+                }
             }
-            // If ICER is not implemented that means we haven't been compiled
-            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-            try
+            else if (!metadata.Environment.CompileExpressions)
             {
-                expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
-            }
-            catch (SourceExpressionException e)
-            {
-                metadata.AddValidationError(e.Message);
+                try
+                {
+                    expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
+                }
+                catch (SourceExpressionException e)
+                {
+                    metadata.AddValidationError(e.Message);
+                }
             }
         }
 

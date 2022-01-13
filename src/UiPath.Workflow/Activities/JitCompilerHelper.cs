@@ -6,6 +6,7 @@ using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
+using System.Activities.Validation;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -1569,6 +1570,47 @@ abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         // convert it into the our expected lambda format (context => ...)
         return Expression.Lambda<Func<ActivityContext, T>>(finalBody,
             FindParameter(finalBody) ?? ExpressionUtilities.RuntimeContextParameter);
+    }
+
+    /// <summary>
+    /// Validates the expression without producing an assembly. Returns the validation errors.
+    /// </summary>
+    /// <typeparam name="T">Expression return type</typeparam>
+    /// <param name="environment">location reference environment</param>
+    /// <returns>Warning or error validation errors</returns>
+    public IEnumerable<ValidationError> Validate<T>(LocationReferenceEnvironment environment)
+    {
+        Type expressionReturnType = typeof(T);
+
+        this.environment = environment;
+        referencedAssemblies ??= new HashSet<Assembly>();
+        referencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+
+        // ensure the return type's assembly is added to ref assembly list
+        HashSet<Type> allBaseTypes = null;
+        EnsureTypeReferenced(expressionReturnType, ref allBaseTypes);
+        foreach (Type baseType in allBaseTypes)
+        {
+            // allBaseTypes list always contains lambdaReturnType
+            referencedAssemblies.Add(baseType.Assembly);
+        }
+
+        var scriptAndTypeScope = new ScriptAndTypeScope(environment, referencedAssemblies.ToList());
+        var compilerWrapper = GetCachedHostedCompiler(referencedAssemblies);
+        var compiler = compilerWrapper.Compiler;
+
+        var compilationUnit = compiler.GetExpressionValidator(ExpressionToCompile(scriptAndTypeScope.FindVariable, expressionReturnType));
+
+        var diagnostics = compilationUnit.GetDiagnostics();
+        compilerWrapper.Release();
+
+        foreach (var diagnostic in diagnostics)
+        {
+            if (diagnostic.Severity >= Microsoft.CodeAnalysis.DiagnosticSeverity.Warning)
+            {
+                yield return new ValidationError(diagnostic.GetMessage(), diagnostic.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Warning);
+            }
+        }
     }
 
     [Fx.Tag.SecurityNote(Critical = "Critical because it access SecurityCritical member RawTreeCache, thus requiring FullTrust.",
