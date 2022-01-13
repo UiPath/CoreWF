@@ -57,6 +57,10 @@ CoreWF targets .NET 6 and .NET 6 Windows. The .NET Windows target uses the **Sys
 ## Usage
 To add this library to your project, use the [MyGet package](https://www.myget.org/feed/uipath-dev/package/nuget/UiPath.Workflow).
 
+## Debug using Source Link
+
+[Preview builds setup](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/symbols?view=azure-devops#set-up-visual-studio).
+
 ## Contributing
 Check out the [contributing guide](CONTRIBUTING.md) for information on how to help CoreWF.
 
