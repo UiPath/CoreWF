@@ -21,7 +21,23 @@ jobs:
     parameters:
       azureConnectionName: $(AzureConnectionSigning)
       pathsToSign: $(Pipeline.Workspace)/$(ArtifactName)/*.nupkg
+      packagesSignAuthor: true
+      packagesSignRepo: false
       runInParallel: true
+
+  - ${{ if eq(parameters.type, 'internal') }}:
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: $(Pipeline.Workspace)/$(ArtifactName)/*.snupkg
+        destinationFolder: $(Pipeline.Workspace)/$(ArtifactName)/Symbols
+        cleanDestinationFolder: false
+        overwriteExistingFiles: true
+
+    - task: PublishSymbols@2
+      inputs:
+        symbolsFolder: $(Pipeline.Workspace)/$(ArtifactName)/Symbols
+        searchPattern: '**/*.pdb'
+        symbolServerType: teamServices
 
   - task: NuGetAuthenticate@0
     inputs:
@@ -31,11 +47,12 @@ jobs:
     displayName: Push NuGet Packages
     inputs:
       command: push
-      packagesToPush: $(Pipeline.Workspace)/$(ArtifactName)/**/*.nupkg
       ${{ if eq(parameters.type, 'public') }}:
+        packagesToPush: $(Pipeline.Workspace)/$(ArtifactName)/**/*.*nupkg
         nuGetFeedType: external
         publishFeedCredentials: $(NugetFeedServiceConnection)
       ${{ else }}:
+        packagesToPush: $(Pipeline.Workspace)/$(ArtifactName)/**/*.nupkg
         nuGetFeedType: internal
         publishVstsFeed: $(AzureFeedInternal)
     condition: succeeded()
