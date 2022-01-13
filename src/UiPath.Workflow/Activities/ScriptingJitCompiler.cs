@@ -18,6 +18,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace System.Activities;
 
@@ -50,6 +51,23 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     protected ScriptingJitCompiler(HashSet<Assembly> referencedAssemblies) => MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
     protected abstract int IdentifierKind { get; }
     protected abstract string CreateExpressionCode(string types, string names, string code);
+
+    /// <summary>
+    /// Adds some boilerplate text to hold the expression and allow parameters and return type checking during validation
+    /// </summary>
+    /// <param name="parameters">list of parameter names and types in comma-separated string</param>
+    /// <param name="returnType">return type of expression</param>
+    /// <param name="code">expression code</param>
+    /// <returns>expression wrapped in a method or function</returns>
+    protected abstract string CreateValidationCode(string parameters, string returnType, string code);
+
+    /// <summary>
+    /// Gets language-specific parameter format string
+    /// </summary>
+    /// <param name="name">parameter name</param>
+    /// <param name="type">parameter type</param>
+    /// <returns>parameter declaration</returns>
+    protected abstract string FormatParameter(string name, string type);
     protected abstract string GetTypeName(Type type);
     protected abstract Script<object> Create(string code, ScriptOptions options);
     
@@ -89,13 +107,13 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     public override Compilation GetExpressionValidator(ExpressionToCompile expressionToCompile)
     {
         Runtime.Fx.Assert(CompilationUnit != null, "CompilationUnit not initialized. Likely no language support for validating expressions.");
-        return PrepCompilation(CompilationUnit, expressionToCompile);
+        CompilationUnit = PrepValidation(CompilationUnit, expressionToCompile);
+        return CompilationUnit;
     }
 
     /// <remarks>
     /// If a <see cref="Compilation"/> object has already been created, it will have the expression as the first syntax tree in the list.
-    /// This method gets the syntax tree, makes modifications to it, and replaces it in the Compilation object. The same process is done
-    /// whether the Compilation object was manually created or is from a <see cref="Script"/> object.
+    /// This method gets the syntax tree, makes modifications to it, and replaces it in the Compilation object.
     /// </remarks>
     private Compilation PrepCompilation(Compilation compilation, ExpressionToCompile expressionToCompile)
     {
@@ -113,8 +131,29 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
             .Select(var => var.Type)
             .Concat(new[] { expressionToCompile.LambdaReturnType })
             .Select(GetTypeName));
-        return compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
-            CreateExpressionCode(types, names, expressionToCompile.Code))));
+        var newSyntaxTree = syntaxTree.WithChangedText(SourceText.From(
+            CreateExpressionCode(types, names, expressionToCompile.Code)));
+        return compilation.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
+    }
+
+    /// <remarks>
+    /// If a <see cref="Compilation"/> object has already been created, it will have the expression as the first syntax tree in the list.
+    /// This method gets the syntax tree, makes modifications to it, and replaces it in the Compilation object.
+    /// </remarks>
+    private Compilation PrepValidation(Compilation compilation, ExpressionToCompile expressionToCompile)
+    {
+        var syntaxTree = compilation.SyntaxTrees.First();
+        var identifiers = GetIdentifiers(syntaxTree);
+        var resolvedIdentifiers =
+            identifiers
+            .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name)))
+            .Where(var => var.Type != null)
+            .ToArray();
+        const string Comma = ", ";
+        var parameters = string.Join(Comma, resolvedIdentifiers.Select(var => FormatParameter(var.Name, var.Type.Name)));
+        var newSyntaxTree = syntaxTree.WithChangedText(SourceText.From(
+            CreateValidationCode(parameters, GetTypeName(expressionToCompile.LambdaReturnType), expressionToCompile.Code)));
+        return compilation.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
     }
 }
 public static class References
@@ -140,6 +179,10 @@ public class VbJitCompiler : ScriptingJitCompiler
     protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
     protected override string CreateExpressionCode(string types, string names, string code) =>
          $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+    protected override string CreateValidationCode(string parameters, string returnType, string code) =>
+         $"Function ExpressionToValidate({parameters}) As {returnType}\nReturn ({code})\nEnd Function";
+    protected override string FormatParameter(string name, string type) => $"{name} As {type}";
+
     protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.VisualBasic.SyntaxKind.IdentifierName;
     
     /// <summary>
@@ -197,6 +240,8 @@ public class CSharpJitCompiler : ScriptingJitCompiler
     protected override string GetTypeName(Type type) => (string)TypeNameFormatter.FormatTypeName(type, TypeOptions);
     protected override string CreateExpressionCode(string types, string names, string code) =>
          $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+    protected override string CreateValidationCode(string parameters, string returnType, string code) => throw new NotImplementedException();
+    protected override string FormatParameter(string name, string type) => $"{type} {name}";
     protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName;
     protected override void InitValidatorCompilationUnit()
     {

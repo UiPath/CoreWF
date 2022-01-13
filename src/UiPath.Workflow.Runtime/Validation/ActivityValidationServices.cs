@@ -429,7 +429,7 @@ public static class ActivityValidationServices
             _settings = settings;
             _rootToValidate = toValidate;
             _environment = settings.Environment ?? new ActivityLocationReferenceEnvironment();
-            _environment.IsValidating = true;
+            _environment.IsValidating = !settings.ForceExpressionCache;
             if (settings.SkipExpressionCompilation)
             {
                 _environment.CompileExpressions = true;

@@ -74,6 +74,11 @@ namespace Microsoft.VisualBasic.Activities
         {
             expressionTree = null;
             invoker = new CompiledExpressionInvoker(this, false, metadata);
+            if (metadata.Environment.CompileExpressions)
+            {
+                return;
+            }
+
             var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);            
             if (metadata.Environment.IsValidating)
             {
@@ -82,7 +87,7 @@ namespace Microsoft.VisualBasic.Activities
                     AddTempValidationError(validationError);
                 }
             }
-            else if (!metadata.Environment.CompileExpressions)
+            else
             {
                 try
                 {
