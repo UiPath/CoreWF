@@ -21,6 +21,8 @@ jobs:
     parameters:
       azureConnectionName: $(AzureConnectionSigning)
       pathsToSign: $(Pipeline.Workspace)/$(ArtifactName)/*.nupkg
+      packagesSignAuthor: true
+      packagesSignRepo: false
       runInParallel: true
 
   - ${{ if eq(parameters.type, 'internal') }}:
