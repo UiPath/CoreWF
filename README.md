@@ -1,4 +1,4 @@
-[![Build Status](https://uipath.visualstudio.com/CoreWF/_apis/build/status/UiPath.CoreWF?repoName=UiPath%2FCoreWF&branchName=develop)](https://uipath.visualstudio.com/CoreWF/_build/latest?definitionId=2249&repoName=UiPath%2FCoreWF&branchName=develop)
+[![Build Status](https://uipath.visualstudio.com/CoreWF/_apis/build/status/UiPath.CoreWF?repoName=UiPath%2FCoreWF)](https://uipath.visualstudio.com/CoreWF/_build/latest?definitionId=2249&repoName=UiPath%2FCoreWF)
 [![MyGet (dev)](https://img.shields.io/badge/CoreWf-Preview-brightgreen.svg)](https://uipath.visualstudio.com/Public.Feeds/_packaging?_a=package&feed=UiPath-Internal&view=versions&package=UiPath.Workflow&protocolType=NuGet)
 # CoreWF
 A port of the Windows Workflow Foundation (WF) runtime to .NET 6. This project is still in the experimental phase. It is [licensed](LICENSE) under the MIT License.
