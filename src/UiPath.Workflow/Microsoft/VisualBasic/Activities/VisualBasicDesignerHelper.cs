@@ -12,12 +12,23 @@ using System.Reflection;
 
 namespace Microsoft.VisualBasic.Activities
 {
+    using CompilerFactory = Func<HashSet<Assembly>, JustInTimeCompiler>;
     class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
     {
         public VisualBasicHelper(string expressionText, HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames) : base(expressionText, refAssemNames, namespaceImportsNames) { }
         VisualBasicHelper(string expressionText) : base(expressionText) { }
         protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => VisualBasicSettings.CreateCompiler(references);
         internal static string Language => "VB";
+        protected override void OnCompilerCacheCreated(Dictionary<HashSet<Assembly>, HostedCompilerWrapper> compilerCache)
+        {
+            VisualBasicSettings.Default.CompilerChanged += delegate
+            {
+                lock (compilerCache)
+                {
+                    compilerCache.Clear();
+                }
+            };
+        }
         public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
         {
             List<string> localNamespaces;

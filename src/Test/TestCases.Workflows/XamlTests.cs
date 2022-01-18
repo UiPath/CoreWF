@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using Microsoft.VisualBasic.CompilerServices;
@@ -182,6 +183,20 @@ namespace TestCases.Workflows
             VbCompile(text, resultType, namespaces, assemblies);
             // this one is cached
             VbCompile(text, resultType, namespaces, assemblies);
+        }
+        [Fact]
+        public void VisualBasic_ChangeCompiler()
+        {
+            var empty = Array.Empty<string>();
+            VbCompile("\"abc\"", typeof(string), empty, empty);
+            VisualBasicSettings.Default.CompilerFactory = _ => new ThrowingJitCompiler();
+            // this one is cached
+            new Action(()=>VbCompile("\"a\"", typeof(string), empty, empty)).ShouldThrow<NotImplementedException>();
+            VisualBasicSettings.Default.CompilerFactory = references => new VbJitCompiler(references);
+        }
+        class ThrowingJitCompiler : JustInTimeCompiler
+        {
+            public override LambdaExpression CompileExpression(ExpressionToCompile compilerRequest) => throw new NotImplementedException();
         }
         private static void VbCompile(string text, Type resultType, string[] namespaces, string[] assemblies)
         {
