@@ -18,6 +18,8 @@ using System.Threading;
 
 namespace System.Activities;
 
+using CompilerCache = Dictionary<HashSet<Assembly>, JitCompilerHelper.HostedCompilerWrapper>;
+
 abstract class JitCompilerHelper
 {
     // the following assemblies are provided to the compiler by default
@@ -43,7 +45,7 @@ abstract class JitCompilerHelper
     protected bool isShortCutRewrite = false;
     public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
     protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
-
+    protected virtual void OnCompilerCacheCreated(CompilerCache compilerCache) { }
     protected void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
     {
         namespaceImportsNames.Add("System");
@@ -1169,7 +1171,7 @@ abstract class JitCompilerHelper
 
     [Fx.Tag.SecurityNote(Critical = "Critical because it holds a HostedCompiler instance, which requires FullTrust.")]
     [SecurityCritical]
-    protected class HostedCompilerWrapper
+    internal class HostedCompilerWrapper
     {
         object wrapperLock;
         bool isCached;
@@ -1267,7 +1269,7 @@ abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
     const int HostedCompilerCacheSize = 10;
     [Fx.Tag.SecurityNote(Critical = "Critical because it holds HostedCompilerWrappers which hold HostedCompiler instances, which require FullTrust.")]
     [SecurityCritical]
-    static Dictionary<HashSet<Assembly>, HostedCompilerWrapper> HostedCompilerCache;
+    static CompilerCache HostedCompilerCache;
 
     [Fx.Tag.SecurityNote(Critical = "Critical because it creates Microsoft.Compiler.VisualBasic.HostedCompiler, which is in a non-APTCA assembly, and thus has a LinkDemand.",
         Safe = "Safe because it puts the HostedCompiler instance into the HostedCompilerCache member, which is SecurityCritical and we are demanding FullTrust.")]
@@ -1278,9 +1280,13 @@ abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         if (HostedCompilerCache == null)
         {
             // we don't want to newup a Dictionary everytime GetCachedHostedCompiler is called only to find out the cache is already initialized.
-            Interlocked.CompareExchange(ref HostedCompilerCache,
-                new Dictionary<HashSet<Assembly>, HostedCompilerWrapper>(HostedCompilerCacheSize, HashSet<Assembly>.CreateSetComparer()),
+            var oldCompilerCache = Interlocked.CompareExchange(ref HostedCompilerCache,
+                new CompilerCache(HostedCompilerCacheSize, HashSet<Assembly>.CreateSetComparer()),
                 null);
+            if (oldCompilerCache == null)
+            {
+                OnCompilerCacheCreated(HostedCompilerCache);
+            }
         }
 
         lock (HostedCompilerCache)

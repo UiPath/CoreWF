@@ -20,7 +20,7 @@ namespace Microsoft.VisualBasic.Activities
     [TypeConverter(typeof(VisualBasicSettingsConverter))]
     public class VisualBasicSettings
     {
-        
+
         static readonly HashSet<VisualBasicImportReference> defaultImportReferences = new HashSet<VisualBasicImportReference>()
         {
             //"mscorlib"
@@ -41,6 +41,7 @@ namespace Microsoft.VisualBasic.Activities
         };
 
         static VisualBasicSettings defaultSettings = new VisualBasicSettings(defaultImportReferences);
+        private CompilerFactory _compilerFactory = references => new VbJitCompiler(references);
 
         public VisualBasicSettings()
         {
@@ -69,13 +70,23 @@ namespace Microsoft.VisualBasic.Activities
             private set;
         }
 
-        public CompilerFactory CompilerFactory { get; set; } = references => new VbJitCompiler(references);
-
-        internal bool SuppressXamlSerialization 
-        { 
-            get; 
-            set; 
+        public CompilerFactory CompilerFactory
+        {
+            get => _compilerFactory;
+            set
+            {
+                _compilerFactory = value;
+                CompilerChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
+        
+        internal bool SuppressXamlSerialization
+        {
+            get;
+            set;
+        }
+
+        internal event EventHandler CompilerChanged;
 
         internal static JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => Default.CompilerFactory(references);
 
