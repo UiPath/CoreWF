@@ -164,7 +164,12 @@ public class NativeActivityContext : ActivityContext
         _executor.AbortActivityInstance(activity, reason);
     }
 
-    public void Abort(Exception reason = null)
+    public void Abort()
+    {
+        Abort(null);
+    }
+
+    public void Abort(Exception reason)
     {
         ThrowIfDisposed();
         _executor.AbortWorkflowInstance(reason);
