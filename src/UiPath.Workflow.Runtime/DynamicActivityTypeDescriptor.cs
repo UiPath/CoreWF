@@ -50,7 +50,7 @@ internal class DynamicActivityTypeDescriptor : ICustomTypeDescriptor
 
     public PropertyDescriptorCollection GetProperties() => GetProperties(null);
 
-    public PropertyDescriptorCollection GetProperties(Attribute[] attributes = null)
+    public PropertyDescriptorCollection GetProperties(Attribute[] attributes)
     {
         PropertyDescriptorCollection result = _cachedProperties;
         if (result != null)

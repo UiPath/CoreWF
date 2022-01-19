@@ -114,7 +114,12 @@ public struct ActivityMetadata
         _activity.SetImportedChildrenCollection(importedChildren);
     }
 
-    public void AddImportedChild(Activity importedChild, object origin = null)
+    public void AddImportedChild(Activity importedChild)
+    {
+        AddImportedChild(importedChild, null);
+    }
+
+    public void AddImportedChild(Activity importedChild, object origin)
     {
         ThrowIfDisposed();
         ActivityUtilities.ValidateOrigin(origin, _activity);
@@ -138,7 +143,12 @@ public struct ActivityMetadata
         _activity.SetImportedDelegatesCollection(importedDelegates);
     }
 
-    public void AddImportedDelegate(ActivityDelegate importedDelegate, object origin = null)
+    public void AddImportedDelegate(ActivityDelegate importedDelegate)
+    {
+        AddImportedDelegate(importedDelegate, null);
+    }
+
+    public void AddImportedDelegate(ActivityDelegate importedDelegate, object origin)
     {
         ThrowIfDisposed();
         ActivityUtilities.ValidateOrigin(origin, _activity);
@@ -164,7 +174,12 @@ public struct ActivityMetadata
         _activity.SetVariablesCollection(variables);
     }
 
-    public void AddVariable(Variable variable, object origin = null)
+    public void AddVariable(Variable variable)
+    {
+        AddVariable(variable, null);
+    }
+
+    public void AddVariable(Variable variable, object origin)
     {
         ThrowIfDisposed();
         ActivityUtilities.ValidateOrigin(origin, _activity);
