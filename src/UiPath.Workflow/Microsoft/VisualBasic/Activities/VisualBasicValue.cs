@@ -79,7 +79,6 @@ namespace Microsoft.VisualBasic.Activities
                 return;
             }
 
-            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);            
             if (metadata.Environment.IsValidating)
             {
                 foreach (var validationError in VbExpressionValidator.Default.Validate<TResult>(this, metadata.Environment, ExpressionText))
@@ -91,7 +90,8 @@ namespace Microsoft.VisualBasic.Activities
             {
                 try
                 {
-                    expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
+                    var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+                    expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
                 }
                 catch (SourceExpressionException e)
                 {

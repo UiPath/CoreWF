@@ -145,8 +145,8 @@ public abstract class RoslynExpressionValidator
             .ToArray();
         const string Comma = ", ";
         var parameters = string.Join(Comma, resolvedIdentifiers.Select(var => FormatParameter(var.Name, var.Type.Name)));
-        var newSyntaxTree = syntaxTree.WithChangedText(SourceText.From(
-            CreateValidationCode(parameters, GetTypeName(expressionToValidate.LambdaReturnType), expressionToValidate.Code)));
+        var sourceText = SourceText.From(CreateValidationCode(parameters, GetTypeName(expressionToValidate.LambdaReturnType), expressionToValidate.Code));
+        var newSyntaxTree = syntaxTree.WithChangedText(sourceText);
         CompilationUnit = CompilationUnit.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
     }
 

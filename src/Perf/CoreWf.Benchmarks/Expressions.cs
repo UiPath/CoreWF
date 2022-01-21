@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using System.Activities;
 using System.Activities.Statements;
@@ -13,6 +14,7 @@ public class Expressions
     private readonly Activity[] _vb100Stmts;
     private readonly Activity[] _vb400Stmts;
     private readonly Activity[] _vbSingleExpr100;
+    private readonly Activity[] _cs400Stmts;
     private int _activityIndex;
 
     public Expressions()
@@ -37,6 +39,12 @@ public class Expressions
             GenerateManyExpressionsWorkflow(800, 400),
         };
         _vbSingleExpr100 = GenerateManySingleExpressionWorkflows(500, 100);
+        _cs400Stmts = new Activity[]
+        {
+            GenerateManyExpressionsWorkflow(0, 400, "CS"),
+            GenerateManyExpressionsWorkflow(400, 400, "CS"),
+            GenerateManyExpressionsWorkflow(800, 400, "CS"),
+        };
         _activityIndex = 0;
     }
 
@@ -96,15 +104,31 @@ public class Expressions
         ActivityXamlServices.Compile(root, new());
     }
 
-    private static Activity GenerateManyExpressionsWorkflow(int startExprNum, int numExpressions)
+    [Benchmark]
+    public void CS400Stmts()
+    {
+        var activity = _cs400Stmts[_activityIndex];
+        _activityIndex = (_activityIndex + 1) % _cs400Stmts.Length;
+        _ = ActivityValidationServices.Validate(activity);
+    }
+
+    private static Activity GenerateManyExpressionsWorkflow(int startExprNum, int numExpressions, string language = "VB")
     {
         Sequence workflow = new();
         int endExprNum = startExprNum + numExpressions;
         for (int i = startExprNum; i < endExprNum; i++)
         {
-            VisualBasicValue<string> vbv = new(@$"String.Concat(""alpha "", ""beta "", {i})");
             WriteLine writeLine = new();
-            writeLine.Text = new InArgument<string>(vbv);
+            if (language == "VB")
+            {
+                VisualBasicValue<string> vbv = new(@$"String.Concat(""alpha "", ""beta "", {i})");
+                writeLine.Text = new InArgument<string>(vbv);
+            }
+            else
+            {
+                CSharpValue<string> csv = new($@"string.Join(',', ""alpha"", ""beta"", {i})");
+                writeLine.Text = new InArgument<string>(csv);
+            }
             workflow.Activities.Add(writeLine);
         }
 
