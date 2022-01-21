@@ -70,7 +70,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         return (LambdaExpression)results.ResultType.GetMethod("CreateExpression").Invoke(null, null);
     }
     public IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree) =>
-    syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind).Select(n => n.ToString()).Distinct().ToArray();
+        syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind).Select(n => n.ToString()).Distinct().ToArray();
 }
 public static class References
 {

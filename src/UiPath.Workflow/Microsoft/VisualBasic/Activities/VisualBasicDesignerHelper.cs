@@ -22,7 +22,7 @@ namespace Microsoft.VisualBasic.Activities
         {
             List<string> localNamespaces;
             List<AssemblyReference> localAssemblies;
-            GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out localNamespaces, out localAssemblies);            
+            GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out localNamespaces, out localAssemblies);
             var helper = new VisualBasicHelper(expressionText);
             HashSet<AssemblyName> localReferenceAssemblies = new HashSet<AssemblyName>();
             HashSet<string> localImports = new HashSet<string>(localNamespaces);
