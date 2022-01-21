@@ -20,33 +20,12 @@ namespace Microsoft.VisualBasic.Activities
         internal static string Language => "VB";
         public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
         {
-            var helper = InitializeHelper(expressionText, publicAccessor);
-            return helper.Compile<T>(publicAccessor, isLocationExpression);
-        }
-        
-        /// <summary>
-        /// Validates the expression to get the diagnostic errors. Does not do a full compilation.
-        /// </summary>
-        /// <typeparam name="T">Type of the value expected to return from the expression</typeparam>
-        /// <param name="expressionText">Expression text</param>
-        /// <param name="publicAccessor">Contains information on the environment where the expression is located</param>
-        /// <returns>An enumerable of all warning or error diagnostic messages</returns>
-        public static IEnumerable<ValidationError> Validate<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor)
-        {
-            var helper = InitializeHelper(expressionText, publicAccessor);
-            return helper.Validate<T>(publicAccessor.ActivityMetadata.Environment);
-        }
-
-        /// <remarks>
-        /// This code is used by both <see cref="Compile{T}(string, CodeActivityPublicEnvironmentAccessor, bool)"/> and 
-        /// <see cref="Validate{T}(string, CodeActivityPublicEnvironmentAccessor)"/>.
-        /// </remarks>
-        private static VisualBasicHelper InitializeHelper(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor)
-        {
-            GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out List<string> localNamespaces, out List<AssemblyReference> localAssemblies);
+            List<string> localNamespaces;
+            List<AssemblyReference> localAssemblies;
+            GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out localNamespaces, out localAssemblies);            
             var helper = new VisualBasicHelper(expressionText);
-            HashSet<AssemblyName> localReferenceAssemblies = new();
-            HashSet<string> localImports = new(localNamespaces);
+            HashSet<AssemblyName> localReferenceAssemblies = new HashSet<AssemblyName>();
+            HashSet<string> localImports = new HashSet<string>(localNamespaces);
             foreach (AssemblyReference assemblyReference in localAssemblies)
             {
                 if (assemblyReference.Assembly != null)
@@ -54,7 +33,10 @@ namespace Microsoft.VisualBasic.Activities
                     // directly add the Assembly to the list
                     // so that we don't have to go through 
                     // the assembly resolution process
-                    helper.referencedAssemblies ??= new HashSet<Assembly>();
+                    if (helper.referencedAssemblies == null)
+                    {
+                        helper.referencedAssemblies = new HashSet<Assembly>();
+                    }
                     helper.referencedAssemblies.Add(assemblyReference.Assembly);
                 }
                 else if (assemblyReference.AssemblyName != null)
@@ -63,7 +45,7 @@ namespace Microsoft.VisualBasic.Activities
                 }
             }
             helper.Initialize(localReferenceAssemblies, localImports);
-            return helper;
+            return helper.Compile<T>(publicAccessor, isLocationExpression);
         }
     }
     class VisualBasicDesignerHelperImpl : DesignerHelperImpl

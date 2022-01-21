@@ -82,7 +82,7 @@ namespace Microsoft.VisualBasic.Activities
             var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);            
             if (metadata.Environment.IsValidating)
             {
-                foreach (var validationError in VisualBasicHelper.Validate<TResult>(ExpressionText, publicAccessor))
+                foreach (var validationError in VbExpressionValidator.Default.Validate<TResult>(this, metadata.Environment, ExpressionText))
                 {
                     AddTempValidationError(validationError);
                 }
