@@ -938,7 +938,7 @@ abstract class JitCompilerHelper
         return null;
     }
 
-    protected static void EnsureTypeReferenced(Type type, ref HashSet<Type> typeReferences)
+    protected internal static void EnsureTypeReferenced(Type type, ref HashSet<Type> typeReferences)
     {
         // lookup cache 
         // underlying assumption is that type's inheritance(or interface) hierarchy 
@@ -1122,7 +1122,7 @@ abstract class JitCompilerHelper
         }
     }
 
-    protected class ScriptAndTypeScope
+    protected internal class ScriptAndTypeScope
     {
         LocationReferenceEnvironment environmentProvider;
         List<Assembly> assemblies;

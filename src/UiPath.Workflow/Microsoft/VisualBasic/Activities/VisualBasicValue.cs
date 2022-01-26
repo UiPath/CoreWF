@@ -78,15 +78,25 @@ namespace Microsoft.VisualBasic.Activities
             {
                 return;
             }
-            // If ICER is not implemented that means we haven't been compiled
-            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-            try
+
+            if (metadata.Environment.IsValidating)
             {
-                expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
+                foreach (var validationError in VbExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment, ExpressionText))
+                {
+                    AddTempValidationError(validationError);
+                }
             }
-            catch (SourceExpressionException e)
+            else
             {
-                metadata.AddValidationError(e.Message);
+                try
+                {
+                    var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+                    expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+                }
+                catch (SourceExpressionException e)
+                {
+                    metadata.AddValidationError(e.Message);
+                }
             }
         }
 
