@@ -59,7 +59,19 @@ namespace Microsoft.CSharp.Activities
 
         protected override void CacheMetadata(CodeActivityMetadata metadata)
         {
-            this.invoker = new CompiledExpressionInvoker(this, false, metadata);
+            invoker = new CompiledExpressionInvoker(this, false, metadata);
+            if (metadata.Environment.CompileExpressions)
+            {
+                return;
+            }
+
+            if (metadata.Environment.IsValidating)
+            {
+                foreach (var validationError in CsExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment, ExpressionText))
+                {
+                    AddTempValidationError(validationError);
+                }
+            }
         }
 
         protected override TResult Execute(CodeActivityContext context)

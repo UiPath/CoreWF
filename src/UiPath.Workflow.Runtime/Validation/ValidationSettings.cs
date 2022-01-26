@@ -72,4 +72,10 @@ public class ValidationSettings
     /// skipped during validation. C# expressions are always skipped.
     /// </summary>
     public bool SkipExpressionCompilation { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that tells expression activities to build expressions instead of 
+    /// only validating the expression for errors.
+    /// </summary>
+    public bool ForceExpressionCache { get; set; } = false;
 }

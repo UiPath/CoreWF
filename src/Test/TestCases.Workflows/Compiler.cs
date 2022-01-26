@@ -15,7 +15,7 @@ namespace TestCases.Workflows
     {
         public static void Run(Activity root)
         {
-            ActivityValidationServices.Validate(root, new() { SkipValidatingRootConfiguration = true });
+            ActivityValidationServices.Validate(root, new() { SkipValidatingRootConfiguration = true, ForceExpressionCache = true });
             foreach (var activity in root.GetChildren().ToArray())
             {
                 foreach (var argument in activity.RuntimeArguments)
