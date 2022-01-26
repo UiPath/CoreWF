@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
 using ReflectionMagic;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace System.Activities;
@@ -13,13 +14,18 @@ namespace System.Activities;
 public class CsExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<CsExpressionValidator> s_default = new();
+    private static CsExpressionValidator s_instance;
 
     private static readonly CSharpParseOptions s_csScriptParseOptions = new(kind: SourceCodeKind.Script);
 
     /// <summary>
     /// Singleton instance of the default validator.
     /// </summary>
-    public static CsExpressionValidator Default { get { return s_default.Value; } }
+    public static CsExpressionValidator Instance 
+    { 
+        get { return s_instance ?? s_default.Value; } 
+        set { s_instance = value; } 
+    }
 
     private static readonly dynamic TypeOptions = GetTypeOptions();
     private static readonly dynamic TypeNameFormatter = GetTypeNameFormatter();
@@ -44,7 +50,38 @@ public class CsExpressionValidator : RoslynExpressionValidator
     protected override string CreateValidationCode(string parameters, string returnType, string code) =>
          $"public static {returnType} ExpressionToValidate({parameters}) => ({code});";
 
-    protected override string FormatParameter(string name, string type) => $"{type} {name}";
+    protected override string FormatParameter(string name, Type type)
+    {
+        string result;
+        if (type.IsGenericType)
+        {
+            result = GetGenericTypeName(type);
+        }
+        else
+        {
+            result = type.Namespace + "." + type.Name;
+        }
+
+        result += " " + name;
+        return result;
+    }
+
+    private string GetGenericTypeName(Type type)
+    {
+        string result = type.Namespace + "." + type.Name[..type.Name.IndexOf('`')] + "<";
+        var genericTypeNames = new string[type.GenericTypeArguments.Length];
+        for (int i = 0; i < type.GenericTypeArguments.Length; i++)
+        {
+            Type genericTypeArgument = type.GenericTypeArguments[i];
+            genericTypeNames[i] = genericTypeArgument.IsGenericType
+                ? GetGenericTypeName(genericTypeArgument)
+                : genericTypeArgument.Namespace + "." + genericTypeArgument.Name;
+        }
+
+        result += string.Join(", ", genericTypeNames);
+        result += ">";
+        return result;
+    }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionToCompile expressionToValidate) => 
         CSharpSyntaxTree.ParseText(expressionToValidate.Code, s_csScriptParseOptions);

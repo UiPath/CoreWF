@@ -67,7 +67,7 @@ namespace Microsoft.CSharp.Activities
 
             if (metadata.Environment.IsValidating)
             {
-                foreach (var validationError in CsExpressionValidator.Default.Validate<TResult>(this, metadata.Environment, ExpressionText))
+                foreach (var validationError in CsExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment, ExpressionText))
                 {
                     AddTempValidationError(validationError);
                 }

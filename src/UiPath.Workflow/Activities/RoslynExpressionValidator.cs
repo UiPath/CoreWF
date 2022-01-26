@@ -41,7 +41,7 @@ public abstract class RoslynExpressionValidator
         referencedAssemblies.UnionWith(JitCompilerHelper.DefaultReferencedAssemblies);
         foreach (Assembly referencedAssembly in referencedAssemblies)
         {
-            MetadataReferenceCache.Add(referencedAssembly, References.GetReference(referencedAssembly));
+            _ = MetadataReferenceCache.TryAdd(referencedAssembly, References.GetReference(referencedAssembly));
         }
     }
 
@@ -67,7 +67,7 @@ public abstract class RoslynExpressionValidator
     /// <param name="name">parameter name</param>
     /// <param name="type">parameter type</param>
     /// <returns>parameter declaration</returns>
-    protected abstract string FormatParameter(string name, string type);
+    protected abstract string FormatParameter(string name, Type type);
 
     /// <summary>
     /// Create the initial the <see cref="Compilation"/> object for this validator.
@@ -84,9 +84,10 @@ public abstract class RoslynExpressionValidator
     /// <summary>
     /// Convert diagnostic messages from the compilation into ValidationError objects that can be added to the activity's metadata.
     /// </summary>
+    /// <param name="expressionToValidate">expression that was diagnosed</param>
     /// <param name="diagnostics">diagnostics returned from the compilation of an expression</param>
     /// <returns>ValidationError objects for the current activity</returns>
-    protected virtual IEnumerable<ValidationError> ProcessDiagnostics(IEnumerable<Diagnostic> diagnostics)
+    protected virtual IEnumerable<ValidationError> ProcessDiagnostics(ExpressionToCompile expressionToValidate, IEnumerable<Diagnostic> diagnostics)
     {
         foreach (var diagnostic in diagnostics)
         {
@@ -119,7 +120,7 @@ public abstract class RoslynExpressionValidator
         var expressionToValidate = new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, typeof(T));
 
         CreateExpressionValidator(expressionToValidate);
-        return ProcessDiagnostics(CompilationUnit.GetDiagnostics());
+        return ProcessDiagnostics(expressionToValidate, CompilationUnit.GetDiagnostics());
     }
 
     private void CreateExpressionValidator(ExpressionToCompile expressionToValidate)
@@ -144,7 +145,7 @@ public abstract class RoslynExpressionValidator
             .Where(var => var.Type != null)
             .ToArray();
         const string Comma = ", ";
-        var parameters = string.Join(Comma, resolvedIdentifiers.Select(var => FormatParameter(var.Name, var.Type.Name)));
+        var parameters = string.Join(Comma, resolvedIdentifiers.Select(var => FormatParameter(var.Name, var.Type)));
         var sourceText = SourceText.From(CreateValidationCode(parameters, GetTypeName(expressionToValidate.LambdaReturnType), expressionToValidate.Code));
         var newSyntaxTree = syntaxTree.WithChangedText(sourceText);
         CompilationUnit = CompilationUnit.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);

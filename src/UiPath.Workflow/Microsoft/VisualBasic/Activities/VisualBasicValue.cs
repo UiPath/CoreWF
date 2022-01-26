@@ -81,7 +81,7 @@ namespace Microsoft.VisualBasic.Activities
 
             if (metadata.Environment.IsValidating)
             {
-                foreach (var validationError in VbExpressionValidator.Default.Validate<TResult>(this, metadata.Environment, ExpressionText))
+                foreach (var validationError in VbExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment, ExpressionText))
                 {
                     AddTempValidationError(validationError);
                 }
