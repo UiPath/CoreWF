@@ -14,6 +14,7 @@ using Validation;
 /// </summary>
 public abstract class RoslynExpressionValidator
 {
+    private const string Comma = ", ";
     private static readonly Dictionary<Assembly, MetadataReference> MetadataReferenceCache = new();
 
     /// <summary>
@@ -58,8 +59,8 @@ public abstract class RoslynExpressionValidator
     /// <param name="parameters">list of parameter names and types in comma-separated string</param>
     /// <param name="returnType">return type of expression</param>
     /// <param name="code">expression code</param>
-    /// <returns>expression wrapped in a method or function</returns>
-    protected abstract string CreateValidationCode(string parameters, string returnType, string code);
+    /// <returns>expression wrapped in a method or function that returns a LambdaExpression</returns>
+    protected abstract string CreateValidationCode(string types, string names, string code);
 
     /// <summary>
     /// Gets language-specific-format string for passing a parameter into a method. e.g. "int num" for C# and "num As Int" for VB.
@@ -70,9 +71,11 @@ public abstract class RoslynExpressionValidator
     protected abstract string FormatParameter(string name, Type type);
 
     /// <summary>
-    /// Create the initial the <see cref="Compilation"/> object for this validator.
+    /// Gets the <see cref="Compilation"/> object for the current expression.
     /// </summary>
-    protected abstract Compilation CreateCompilationUnit();
+    /// <param name="expressionToValidate">current expression</param>
+    /// <returns>Compilation object</returns>
+    protected abstract Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate);
 
     /// <summary>
     /// Gets the <see cref="SyntaxTree"/> for the expression.
@@ -120,18 +123,18 @@ public abstract class RoslynExpressionValidator
         var expressionToValidate = new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, typeof(T));
 
         CreateExpressionValidator(expressionToValidate);
-        return ProcessDiagnostics(expressionToValidate, CompilationUnit.GetDiagnostics());
+        var diagnostics = CompilationUnit.GetDiagnostics();
+        return ProcessDiagnostics(expressionToValidate, diagnostics);
     }
 
     private void CreateExpressionValidator(ExpressionToCompile expressionToValidate)
     {
-        CompilationUnit ??= CreateCompilationUnit();
+        CompilationUnit = GetCompilationUnit(expressionToValidate);
         SyntaxTree syntaxTree = GetSyntaxTreeForExpression(expressionToValidate);
         SyntaxTree oldSyntaxTree = CompilationUnit?.SyntaxTrees.FirstOrDefault();
-        CompilationUnit = oldSyntaxTree == null 
-            ? CompilationUnit.AddSyntaxTrees(syntaxTree) 
+        CompilationUnit = oldSyntaxTree == null
+            ? CompilationUnit.AddSyntaxTrees(syntaxTree)
             : CompilationUnit.ReplaceSyntaxTree(oldSyntaxTree, syntaxTree);
-
         PrepValidation(expressionToValidate);
     }
 
@@ -144,9 +147,16 @@ public abstract class RoslynExpressionValidator
             .Select(name => (Name: name, Type: expressionToValidate.VariableTypeGetter(name)))
             .Where(var => var.Type != null)
             .ToArray();
-        const string Comma = ", ";
-        var parameters = string.Join(Comma, resolvedIdentifiers.Select(var => FormatParameter(var.Name, var.Type)));
-        var sourceText = SourceText.From(CreateValidationCode(parameters, GetTypeName(expressionToValidate.LambdaReturnType), expressionToValidate.Code));
+        
+        var names = string.Join(Comma, resolvedIdentifiers.Select(var => var.Name));
+        var types = string.Join(Comma,
+            resolvedIdentifiers
+            .Select(var => var.Type)
+            .Concat(new[] { expressionToValidate.LambdaReturnType })
+            .Select(GetTypeName));
+
+        var lambdaFuncCode = CreateValidationCode(types, names, expressionToValidate.Code);
+        var sourceText = SourceText.From(lambdaFuncCode);
         var newSyntaxTree = syntaxTree.WithChangedText(sourceText);
         CompilationUnit = CompilationUnit.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
     }
@@ -191,7 +201,6 @@ public abstract class RoslynExpressionValidator
                 MetadataReferenceCache.Add(asm, meta);
                 newReferences ??= new();
                 newReferences.Add(meta);
-
             }
         }
 

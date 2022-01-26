@@ -12,6 +12,7 @@ namespace TestCases.Workflows;
 public class ExpressionTests
 {
     private ValidationSettings _skipCompilation = new ValidationSettings() { SkipExpressionCompilation = true };
+    private ValidationSettings _forceCache = new ValidationSettings() { ForceExpressionCache = true };
 
     public static IEnumerable<object[]> ValidVbExpressions
     {
@@ -93,6 +94,7 @@ public class ExpressionTests
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow);
         validationResults.Errors.Count.ShouldBe(1);
+        validationResults.Errors[0].Message.ShouldBe("The name 'b' does not exist in the current context");
     }
 
     [Fact]
@@ -119,5 +121,24 @@ public class ExpressionTests
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _skipCompilation);
         validationResults.Errors.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public void Vb_CompareLambdas()
+    {
+        VisualBasicValue<string> vbv = new(@$"String.Concat(""alpha "", b?.Substring(0, 10), ""beta "", 1)");
+        WriteLine writeLine = new();
+        writeLine.Text = new InArgument<string>(vbv);
+        Sequence workflow = new();
+        workflow.Activities.Add(writeLine);
+        workflow.Variables.Add(new Variable<string>("b", "I'm a variable"));
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _forceCache);
+        validationResults.Errors.Count.ShouldBe(1);
+        validationResults.Errors[0].Message.ShouldContain("A null propagating operator cannot be converted into an expression tree.");
+
+        validationResults = ActivityValidationServices.Validate(workflow);
+        validationResults.Errors.Count.ShouldBe(1);
+        validationResults.Errors[0].Message.ShouldContain("A null propagating operator cannot be converted into an expression tree.");
     }
 }

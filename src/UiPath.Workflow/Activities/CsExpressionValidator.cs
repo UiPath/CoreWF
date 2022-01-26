@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
 using ReflectionMagic;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace System.Activities;
@@ -32,23 +31,34 @@ public class CsExpressionValidator : RoslynExpressionValidator
 
     protected override int IdentifierKind => (int)SyntaxKind.IdentifierName;
 
-    protected override Compilation CreateCompilationUnit()
+    protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate)
     {
-        string assemblyName = Guid.NewGuid().ToString();
-        CSharpCompilationOptions options = new(
-            OutputKind.DynamicallyLinkedLibrary,
-            mainTypeName: null,
-            optimizationLevel: OptimizationLevel.Debug,
-            checkOverflow: false,
-            xmlReferenceResolver: null,
-            sourceReferenceResolver: SourceFileResolver.Default,
-            concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")),
-            assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
-        return CSharpCompilation.Create(assemblyName, null, MetadataReferences, options);
+        if (CompilationUnit == null)
+        {
+            string assemblyName = Guid.NewGuid().ToString();
+            CSharpCompilationOptions options = new(
+                OutputKind.DynamicallyLinkedLibrary,
+                mainTypeName: null,
+                usings: expressionToValidate.ImportedNamespaces,
+                optimizationLevel: OptimizationLevel.Debug,
+                checkOverflow: false,
+                xmlReferenceResolver: null,
+                sourceReferenceResolver: SourceFileResolver.Default,
+                concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")),
+                assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
+            return CSharpCompilation.Create(assemblyName, null, MetadataReferences, options);
+        }
+        else
+        {
+            // Replace imports
+            var options = CompilationUnit.Options as CSharpCompilationOptions;
+            return CompilationUnit.WithOptions(options.WithUsings(expressionToValidate.ImportedNamespaces));
+        }
     }
 
-    protected override string CreateValidationCode(string parameters, string returnType, string code) =>
-         $"public static {returnType} ExpressionToValidate({parameters}) => ({code});";
+    protected override string CreateValidationCode(string types, string names, string code) =>
+        $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+
 
     protected override string FormatParameter(string name, Type type)
     {
