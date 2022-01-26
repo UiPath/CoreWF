@@ -62,38 +62,6 @@ public class VbExpressionValidator : RoslynExpressionValidator
     protected override string CreateValidationCode(string types, string names, string code) =>
         $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
 
-    protected override string FormatParameter(string name, Type type)
-    {
-        string result = $"{name} As ";
-        if (type.IsGenericType)
-        {
-            result += GetGenericTypeName(type);
-        }
-        else
-        {
-            result += type.Namespace + "." + type.Name;
-        }
-
-        return result;
-    }
-
-    private string GetGenericTypeName(Type type)
-    {
-        string result = type.Namespace + "." + type.Name[..type.Name.IndexOf('`')] + "(Of ";
-        var genericTypeNames = new string[type.GenericTypeArguments.Length];
-        for (int i = 0; i < type.GenericTypeArguments.Length; i++)
-        {
-            Type genericTypeArgument = type.GenericTypeArguments[i];
-            genericTypeNames[i] = genericTypeArgument.IsGenericType
-                ? GetGenericTypeName(genericTypeArgument)
-                : genericTypeArgument.Namespace + "." + genericTypeArgument.Name;
-        }
-
-        result += string.Join(", ", genericTypeNames);
-        result += ")";
-        return result;
-    }
-
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionToCompile expressionToValidate) => 
         VisualBasicSyntaxTree.ParseText(expressionToValidate.Code, s_vbScriptParseOptions);
 

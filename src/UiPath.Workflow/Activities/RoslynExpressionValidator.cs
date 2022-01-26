@@ -63,14 +63,6 @@ public abstract class RoslynExpressionValidator
     protected abstract string CreateValidationCode(string types, string names, string code);
 
     /// <summary>
-    /// Gets language-specific-format string for passing a parameter into a method. e.g. "int num" for C# and "num As Int" for VB.
-    /// </summary>
-    /// <param name="name">parameter name</param>
-    /// <param name="type">parameter type</param>
-    /// <returns>parameter declaration</returns>
-    protected abstract string FormatParameter(string name, Type type);
-
-    /// <summary>
     /// Gets the <see cref="Compilation"/> object for the current expression.
     /// </summary>
     /// <param name="expressionToValidate">current expression</param>

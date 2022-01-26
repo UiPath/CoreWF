@@ -59,40 +59,6 @@ public class CsExpressionValidator : RoslynExpressionValidator
     protected override string CreateValidationCode(string types, string names, string code) =>
         $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
 
-
-    protected override string FormatParameter(string name, Type type)
-    {
-        string result;
-        if (type.IsGenericType)
-        {
-            result = GetGenericTypeName(type);
-        }
-        else
-        {
-            result = type.Namespace + "." + type.Name;
-        }
-
-        result += " " + name;
-        return result;
-    }
-
-    private string GetGenericTypeName(Type type)
-    {
-        string result = type.Namespace + "." + type.Name[..type.Name.IndexOf('`')] + "<";
-        var genericTypeNames = new string[type.GenericTypeArguments.Length];
-        for (int i = 0; i < type.GenericTypeArguments.Length; i++)
-        {
-            Type genericTypeArgument = type.GenericTypeArguments[i];
-            genericTypeNames[i] = genericTypeArgument.IsGenericType
-                ? GetGenericTypeName(genericTypeArgument)
-                : genericTypeArgument.Namespace + "." + genericTypeArgument.Name;
-        }
-
-        result += string.Join(", ", genericTypeNames);
-        result += ">";
-        return result;
-    }
-
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionToCompile expressionToValidate) => 
         CSharpSyntaxTree.ParseText(expressionToValidate.Code, s_csScriptParseOptions);
 
