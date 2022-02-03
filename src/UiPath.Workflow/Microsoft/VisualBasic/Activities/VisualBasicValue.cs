@@ -1,151 +1,128 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Microsoft.VisualBasic.Activities
+using System;
+using System.Activities;
+using System.Activities.ExpressionParser;
+using System.Activities.Expressions;
+using System.Activities.Internals;
+using System.Activities.Runtime;
+using System.Activities.XamlIntegration;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Windows.Markup;
+using ActivityContext = System.Activities.ActivityContext;
+
+namespace Microsoft.VisualBasic.Activities;
+
+[DebuggerStepThrough]
+public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSerializableExpression,
+    IExpressionContainer, ITextExpression
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Activities;
-    using System.Activities.Expressions;
-    using System.Activities.ExpressionParser;
-    using System.Activities.XamlIntegration;
-    using System.Linq.Expressions;
-    using System.Windows.Markup;
-    using System.ComponentModel;
-    using System.Activities.Runtime;
-    using System.Activities.Internals;
+    private Func<ActivityContext, TResult> _compiledExpression;
+    private Expression<Func<ActivityContext, TResult>> _expressionTree;
+    private CompiledExpressionInvoker _invoker;
 
-    [System.Diagnostics.DebuggerStepThrough]
-    public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSerializableExpression, IExpressionContainer, ITextExpression
+    public VisualBasicValue()
     {
-        Expression<Func<ActivityContext, TResult>> expressionTree;
-        Func<ActivityContext, TResult> compiledExpression;
-        CompiledExpressionInvoker invoker; 
+        UseOldFastPath = true;
+    }
 
-        public VisualBasicValue() 
-            : base()
+    public VisualBasicValue(string expressionText)
+        : this()
+    {
+        ExpressionText = expressionText;
+    }
+
+    public string ExpressionText { get; set; }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string Language => VisualBasicHelper.Language;
+
+    public bool RequiresCompilation => true;
+
+    public Expression GetExpressionTree()
+    {
+        if (!IsMetadataCached)
         {
-            this.UseOldFastPath = true;
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
         }
 
-        public VisualBasicValue(string expressionText)
-            : this()
+        if (_expressionTree == null)
         {
-            this.ExpressionText = expressionText;
-        }
-
-        public string ExpressionText
-        {
-            get;
-            set;
-        }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string Language
-        {
-            get
+            if (_invoker != null)
             {
-                return VisualBasicHelper.Language;
+                return _invoker.GetExpressionTree();
+            }
+
+            // it's safe to create this CodeActivityMetadata here,
+            // because we know we are using it only as lookup purpose.
+            var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
+            try
+            {
+                _expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+            }
+            catch (SourceExpressionException e)
+            {
+                throw FxTrace.Exception.AsError(
+                    new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message)));
+            }
+            finally
+            {
+                metadata.Dispose();
             }
         }
 
-        public bool RequiresCompilation
+        Fx.Assert(_expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
+        return ExpressionUtilities.RewriteNonCompiledExpressionTree(_expressionTree);
+
+    }
+
+    public bool CanConvertToString(IValueSerializerContext context) => true;
+
+    public string ConvertToString(IValueSerializerContext context) => "[" + ExpressionText + "]";
+
+    protected override TResult Execute(CodeActivityContext context)
+    {
+        if (_expressionTree == null)
         {
-            get
-            {
-                return true;
-            }
+            return (TResult) _invoker.InvokeExpression(context);
         }
 
-        protected override TResult Execute(CodeActivityContext context)
+        _compiledExpression ??= _expressionTree.Compile();
+
+        return _compiledExpression(context);
+    }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        _expressionTree = null;
+        _invoker = new CompiledExpressionInvoker(this, false, metadata);
+        if (metadata.Environment.CompileExpressions)
         {
-            if (expressionTree == null)
-            {
-                return (TResult)invoker.InvokeExpression(context);
-            }
-            if (compiledExpression == null)
-            {
-                compiledExpression = expressionTree.Compile();
-            }
-            return compiledExpression(context);
+            return;
         }
 
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
+        if (metadata.Environment.IsValidating)
         {
-            expressionTree = null;
-            invoker = new CompiledExpressionInvoker(this, false, metadata);
-            if (metadata.Environment.CompileExpressions)
+            foreach (var validationError in VbExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment,
+                         ExpressionText))
             {
-                return;
-            }
-
-            if (metadata.Environment.IsValidating)
-            {
-                foreach (var validationError in VbExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment, ExpressionText))
-                {
-                    AddTempValidationError(validationError);
-                }
-            }
-            else
-            {
-                try
-                {
-                    var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-                    expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
-                }
-                catch (SourceExpressionException e)
-                {
-                    metadata.AddValidationError(e.Message);
-                }
+                AddTempValidationError(validationError);
             }
         }
-
-        public bool CanConvertToString(IValueSerializerContext context)
+        else
         {
-            // we can always convert to a string 
-            return true;
-        }
-
-        public string ConvertToString(IValueSerializerContext context)
-        {
-            // Return our bracket-escaped text
-            return "[" + this.ExpressionText + "]";
-        }
-
-        public Expression GetExpressionTree()
-        {            
-            if (this.IsMetadataCached)
+            try
             {
-                if (this.expressionTree == null)
-                {
-                    if (invoker != null)
-                    {
-                        return invoker.GetExpressionTree();
-                    }
-                    // it's safe to create this CodeActivityMetadata here,
-                    // because we know we are using it only as lookup purpose.
-                    CodeActivityMetadata metadata = new CodeActivityMetadata(this, this.GetParentEnvironment(), false);
-                    CodeActivityPublicEnvironmentAccessor publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
-                    try
-                    {                                                
-                        expressionTree = VisualBasicHelper.Compile<TResult>(this.ExpressionText, publicAccessor, false);
-                    }
-                    catch (SourceExpressionException e)
-                    {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message))); 
-                    }
-                    finally
-                    {
-                        metadata.Dispose();
-                    }                   
-                }
-
-                Fx.Assert(this.expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
-                return ExpressionUtilities.RewriteNonCompiledExpressionTree((LambdaExpression)this.expressionTree);
+                var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+                _expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
             }
-            else
+            catch (SourceExpressionException e)
             {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached)); 
+                metadata.AddValidationError(e.Message);
             }
         }
     }

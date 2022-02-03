@@ -6,7 +6,7 @@ using System.IO;
 
 namespace System.Activities.Debugger;
 
-internal partial class CharacterSpottingTextReader : TextReader
+internal class CharacterSpottingTextReader : TextReader
 {
     // These 'special characters' couple with the fact that we are working on XML.
     private const char StartAngleBracket = '<';
@@ -15,27 +15,28 @@ internal partial class CharacterSpottingTextReader : TextReader
     private const char DoubleQuote = '"';
     private const char EndLine = '\n';
     private const char CarriageReturn = '\r';
+    private readonly List<DocumentLocation> _doubleQuotes;
+    private readonly List<DocumentLocation> _endAngleBrackets;
+    private readonly List<DocumentLocation> _endLines;
+    private readonly List<DocumentLocation> _singleQuotes;
+    private readonly List<DocumentLocation> _startAngleBrackets;
 
-    private TextReader underlyingReader;
-    private int currentLine;
-    private int currentPosition;
-    private List<DocumentLocation> startAngleBrackets;
-    private List<DocumentLocation> endAngleBrackets;
-    private List<DocumentLocation> singleQuotes;
-    private List<DocumentLocation> doubleQuotes;
-    private List<DocumentLocation> endLines;
+    private readonly TextReader _underlyingReader;
+    private int _currentLine;
+    private int _currentPosition;
 
     public CharacterSpottingTextReader(TextReader underlyingReader)
     {
-        UnitTestUtility.Assert(underlyingReader != null, "underlyingReader should not be null and should be ensured by caller.");
-        this.underlyingReader = underlyingReader;
-        this.currentLine = 1;
-        this.currentPosition = 1;
-        this.startAngleBrackets = new List<DocumentLocation>();
-        this.endAngleBrackets = new List<DocumentLocation>();
-        this.singleQuotes = new List<DocumentLocation>();
-        this.doubleQuotes = new List<DocumentLocation>();
-        this.endLines = new List<DocumentLocation>();
+        UnitTestUtility.Assert(underlyingReader != null,
+            "underlyingReader should not be null and should be ensured by caller.");
+        _underlyingReader = underlyingReader;
+        _currentLine = 1;
+        _currentPosition = 1;
+        _startAngleBrackets = new List<DocumentLocation>();
+        _endAngleBrackets = new List<DocumentLocation>();
+        _singleQuotes = new List<DocumentLocation>();
+        _doubleQuotes = new List<DocumentLocation>();
+        _endLines = new List<DocumentLocation>();
     }
 
     // CurrentLocation consists of the current line number and the current position on the line.
@@ -55,31 +56,25 @@ internal partial class CharacterSpottingTextReader : TextReader
     //    |a|b|c|\r|\n
     // 
     // As we reach the end-of-line character on the line, which can be \r, \r\n or \n, we move to the next line and reset the current position to 1.
-    private DocumentLocation CurrentLocation
-    {
-        get
-        {
-            return new DocumentLocation(this.currentLine, this.currentPosition);
-        }
-    }
+    private DocumentLocation CurrentLocation => new(_currentLine, _currentPosition);
 
     public override void Close()
     {
-        this.underlyingReader.Close();
+        _underlyingReader.Close();
     }
 
     public override int Peek()
     {
         // This character is not consider read, therefore we don't need to analyze this.
-        return this.underlyingReader.Peek();
+        return _underlyingReader.Peek();
     }
 
     public override int Read()
     {
-        int result = this.underlyingReader.Read();
+        var result = _underlyingReader.Read();
         if (result != -1)
         {
-            result = this.AnalyzeReadData((char)result);
+            result = AnalyzeReadData((char) result);
         }
 
         return result;
@@ -87,89 +82,78 @@ internal partial class CharacterSpottingTextReader : TextReader
 
     internal DocumentLocation FindCharacterStrictlyAfter(char c, DocumentLocation afterLocation)
     {
-        List<DocumentLocation> locationList = this.GetLocationList(c);
+        var locationList = GetLocationList(c);
         UnitTestUtility.Assert(locationList != null, "We should always find character for special characters only");
 
         // Note that this 'nextLocation' may not represent a real document location (we could hit an end line character here so that there is no next line
         // position. This is merely used for the search algorithm below:
-        DocumentLocation nextLocation = new DocumentLocation(afterLocation.LineNumber, new OneBasedCounter(afterLocation.LinePosition.Value + 1));
-        BinarySearchResult result = locationList.MyBinarySearch(nextLocation);
+        var nextLocation = new DocumentLocation(afterLocation.LineNumber,
+            new OneBasedCounter(afterLocation.LinePosition.Value + 1));
+        var result = locationList.MyBinarySearch(nextLocation);
         if (result.IsFound)
-        {
             // It is possible that the next location is a quote itself, or
+        {
             return nextLocation;
         }
-        else if (result.IsNextIndexAvailable)
-        {
+
+        if (result.IsNextIndexAvailable)
             // Some other later position is the quote, or
+        {
             return locationList[result.NextIndex];
         }
-        else
-        {
-            // in the worst case no quote can be found.
-            return null;
-        }
+
+        return null;
     }
 
     internal DocumentLocation FindCharacterStrictlyBefore(char c, DocumentLocation documentLocation)
     {
-        List<DocumentLocation> locationList = this.GetLocationList(c);
+        var locationList = GetLocationList(c);
         UnitTestUtility.Assert(locationList != null, "We should always find character for special characters only");
 
-        BinarySearchResult result = locationList.MyBinarySearch(documentLocation);
+        var result = locationList.MyBinarySearch(documentLocation);
         if (result.IsFound)
         {
             if (result.FoundIndex > 0)
             {
                 return locationList[result.FoundIndex - 1];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
-        else if (result.IsNextIndexAvailable)
+
+        if (result.IsNextIndexAvailable)
         {
             if (result.NextIndex > 0)
             {
                 return locationList[result.NextIndex - 1];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
-        else if (locationList.Count > 0)
+
+        if (locationList.Count > 0)
         {
             return locationList[locationList.Count - 1];
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     private List<DocumentLocation> GetLocationList(char c)
     {
-        switch (c)
+        return c switch
         {
-            case StartAngleBracket:
-                return this.startAngleBrackets;
-            case EndAngleBracket:
-                return this.endAngleBrackets;
-            case SingleQuote:
-                return this.singleQuotes;
-            case DoubleQuote:
-                return this.doubleQuotes;
-            case EndLine:
-                return this.endLines;
-            default:
-                return null;
-        }
+            StartAngleBracket => _startAngleBrackets,
+            EndAngleBracket   => _endAngleBrackets,
+            SingleQuote       => _singleQuotes,
+            DoubleQuote       => _doubleQuotes,
+            EndLine           => _endLines,
+            _                 => null
+        };
     }
 
     /// <summary>
-    /// Process last character read, and canonicalize end line.
+    ///     Process last character read, and canonicalize end line.
     /// </summary>
     /// <param name="lastCharacterRead">The last character read by the underlying reader</param>
     /// <returns>The last character processed</returns>
@@ -180,32 +164,27 @@ internal partial class CharacterSpottingTextReader : TextReader
         if (lastCharacterRead == CarriageReturn)
         {
             // if reading \r and peek next char is \n, then process \n as well
-            int nextChar = this.underlyingReader.Peek();
+            var nextChar = _underlyingReader.Peek();
             if (nextChar == EndLine)
             {
-                lastCharacterRead = (char)this.underlyingReader.Read();
+                lastCharacterRead = (char) _underlyingReader.Read();
             }
         }
 
         if (lastCharacterRead == EndLine || lastCharacterRead == CarriageReturn)
         {
-            this.endLines.Add(this.CurrentLocation);
-            this.currentLine++;
-            this.currentPosition = 1;
+            _endLines.Add(CurrentLocation);
+            _currentLine++;
+            _currentPosition = 1;
 
             // according to XML spec, both \r\n and \r should be translated to \n
             return EndLine;
         }
-        else
-        {
-            List<DocumentLocation> locations = this.GetLocationList(lastCharacterRead);
-            if (locations != null)
-            {
-                locations.Add(this.CurrentLocation);
-            }
 
-            this.currentPosition++;
-            return lastCharacterRead;
-        }
+        var locations = GetLocationList(lastCharacterRead);
+        locations?.Add(CurrentLocation);
+
+        _currentPosition++;
+        return lastCharacterRead;
     }
 }

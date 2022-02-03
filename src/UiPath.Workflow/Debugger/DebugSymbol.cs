@@ -6,32 +6,19 @@ using System.Xaml;
 
 namespace System.Activities.Debugger.Symbol;
 
-[Fx.Tag.XamlVisible(false)]
+[Fx.Tag.XamlVisibleAttribute(false)]
 public static class DebugSymbol
 {
-    static Type attachingTypeName = typeof(DebugSymbol);
+    private static readonly Type s_attachingTypeName = typeof(DebugSymbol);
 
     //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.DoNotDeclareReadOnlyMutableReferenceTypes)]
-    public static readonly AttachableMemberIdentifier SymbolName = new AttachableMemberIdentifier(attachingTypeName, "Symbol");
-
-
-    [Fx.Tag.InheritThrows(From = "SetProperty", FromDeclaringType = typeof(AttachablePropertyServices))]
-    public static void SetSymbol(object instance, object value)
-    {
+    public static readonly AttachableMemberIdentifier SymbolName = new(s_attachingTypeName, "Symbol");
+    
+    [Fx.Tag.InheritThrowsAttribute(From = "SetProperty", FromDeclaringType = typeof(AttachablePropertyServices))]
+    public static void SetSymbol(object instance, object value) => 
         AttachablePropertyServices.SetProperty(instance, SymbolName, value);
-    }
 
-    [Fx.Tag.InheritThrows(From = "TryGetProperty", FromDeclaringType = typeof(AttachablePropertyServices))]
-    public static object GetSymbol(object instance)
-    {
-        string value;
-        if (AttachablePropertyServices.TryGetProperty(instance, SymbolName, out value))
-        {
-            return value;
-        }
-        else
-        {
-            return string.Empty;
-        }
-    }
+    [Fx.Tag.InheritThrowsAttribute(From = "TryGetProperty", FromDeclaringType = typeof(AttachablePropertyServices))]
+    public static object GetSymbol(object instance) => 
+        AttachablePropertyServices.TryGetProperty(instance, SymbolName, out string value) ? value : string.Empty;
 }

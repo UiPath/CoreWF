@@ -1,83 +1,82 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.XamlIntegration
+using System.Activities.Internals;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xaml;
+
+namespace System.Activities.XamlIntegration;
+
+public class SerializableFuncDeferringLoader : XamlDeferringLoader
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Xaml;
-    using System.Activities.Internals;
+    private const string XmlPrefix = "xml";
 
-    public class SerializableFuncDeferringLoader : XamlDeferringLoader
+    public override object Load(XamlReader xamlReader, IServiceProvider context)
     {
-        private const string xmlPrefix = "xml";
-
-        public override object Load(XamlReader xamlReader, IServiceProvider context)
+        var factory = FuncFactory.CreateFactory(xamlReader, context);
+        if (context.GetService(typeof(IXamlNamespaceResolver)) is IXamlNamespaceResolver nsResolver)
         {
-            FuncFactory factory = FuncFactory.CreateFactory(xamlReader, context);
-            if (context.GetService(typeof(IXamlNamespaceResolver)) is IXamlNamespaceResolver nsResolver)
-            {
-                factory.ParentNamespaces = nsResolver.GetNamespacePrefixes().ToList();
-            }
-            return factory.GetFunc();
+            factory.ParentNamespaces = nsResolver.GetNamespacePrefixes().ToList();
         }
 
-        public override XamlReader Save(object value, IServiceProvider serviceProvider)
+        return factory.GetFunc();
+    }
+
+    public override XamlReader Save(object value, IServiceProvider serviceProvider)
+    {
+        var factory = GetFactory(value as Delegate);
+        if (factory == null)
         {
-            FuncFactory factory = GetFactory(value as Delegate);
-            if (factory == null)
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SavingFuncToXamlNotSupported));
-            }
-            XamlReader result = factory.Nodes.GetReader();
-            if (factory.ParentNamespaces != null)
-            {
-                result = InsertNamespaces(result, factory.ParentNamespaces);
-            }
-            return result;
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.SavingFuncToXamlNotSupported));
         }
 
-        private static FuncFactory GetFactory(Delegate func)
+        var result = factory.Nodes.GetReader();
+        if (factory.ParentNamespaces != null)
         {
-            return (func != null) ? func.Target as FuncFactory : null;
+            result = InsertNamespaces(result, factory.ParentNamespaces);
         }
 
-        // We don't know what namespaces are actually used inside convertible values, so any namespaces
-        // that were in the parent scope on load need to be regurgitated on save, unless the prefixes were
-        // shadowed in the child scope.
-        // This can potentially cause namespace bloat, but the alternative is emitting unloadable XAML.
-        private static XamlReader InsertNamespaces(XamlReader reader, IEnumerable<NamespaceDeclaration> parentNamespaces)
+        return result;
+    }
+
+    private static FuncFactory GetFactory(Delegate func) => func?.Target as FuncFactory;
+
+    // We don't know what namespaces are actually used inside convertible values, so any namespaces
+    // that were in the parent scope on load need to be regurgitated on save, unless the prefixes were
+    // shadowed in the child scope.
+    // This can potentially cause namespace bloat, but the alternative is emitting unloadable XAML.
+    private static XamlReader InsertNamespaces(XamlReader reader, IEnumerable<NamespaceDeclaration> parentNamespaces)
+    {
+        var namespaceNodes = new XamlNodeQueue(reader.SchemaContext);
+        var childPrefixes = new HashSet<string>();
+        while (reader.Read() && reader.NodeType == XamlNodeType.NamespaceDeclaration)
         {
-            XamlNodeQueue namespaceNodes = new XamlNodeQueue(reader.SchemaContext);
-            HashSet<string> childPrefixes = new HashSet<string>();
-            while (reader.Read() && reader.NodeType == XamlNodeType.NamespaceDeclaration)
-            {
-                childPrefixes.Add(reader.Namespace.Prefix);
-                namespaceNodes.Writer.WriteNode(reader);
-            }
-            foreach (NamespaceDeclaration parentNamespace in parentNamespaces)
-            {
-                if (!childPrefixes.Contains(parentNamespace.Prefix) &&
-                    !IsXmlNamespace(parentNamespace))
-                {
-                    namespaceNodes.Writer.WriteNamespace(parentNamespace);
-                }
-            }
-            if (!reader.IsEof)
-            {
-                namespaceNodes.Writer.WriteNode(reader);
-            }
-            return new ConcatenatingXamlReader(namespaceNodes.Reader, reader);
+            childPrefixes.Add(reader.Namespace.Prefix);
+            namespaceNodes.Writer.WriteNode(reader);
         }
 
-        // We need to special-case the XML namespace because it is always in scope,
-        // but can't actually be written to XML.
-        private static bool IsXmlNamespace(NamespaceDeclaration namespaceDecl)
+        foreach (var parentNamespace in parentNamespaces)
         {
-            return namespaceDecl.Prefix == xmlPrefix && namespaceDecl.Namespace == XamlLanguage.Xml1998Namespace;
+            if (!childPrefixes.Contains(parentNamespace.Prefix) &&
+                !IsXmlNamespace(parentNamespace))
+            {
+                namespaceNodes.Writer.WriteNamespace(parentNamespace);
+            }
         }
+
+        if (!reader.IsEof)
+        {
+            namespaceNodes.Writer.WriteNode(reader);
+        }
+
+        return new ConcatenatingXamlReader(namespaceNodes.Reader, reader);
+    }
+
+    // We need to special-case the XML namespace because it is always in scope,
+    // but can't actually be written to XML.
+    private static bool IsXmlNamespace(NamespaceDeclaration namespaceDecl)
+    {
+        return namespaceDecl.Prefix == XmlPrefix && namespaceDecl.Namespace == XamlLanguage.Xml1998Namespace;
     }
 }
-
-

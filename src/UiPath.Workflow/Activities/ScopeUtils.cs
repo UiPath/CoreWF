@@ -7,12 +7,11 @@ using System.Linq;
 
 namespace System.Activities;
 
-public record Locations(IReadOnlyCollection<LocationReference> Locals, IReadOnlyCollection<ReachableArgument> ReachableArguments)
-{
-}
-public record ReachableArgument(LocationReference Location, Activity Owner, Activity ScopeOwner)
-{
-}
+public record Locations(IReadOnlyCollection<LocationReference> Locals,
+    IReadOnlyCollection<ReachableArgument> ReachableArguments) { }
+
+public record ReachableArgument(LocationReference Location, Activity Owner, Activity ScopeOwner) { }
+
 public static class ScopeUtils
 {
     public static List<LocationReference> GetLocals(this Activity activity)
@@ -24,9 +23,12 @@ public static class ScopeUtils
             variables.AddRange(environment.GetLocationReferences());
             environment = environment.Parent;
         }
+
         return variables;
     }
-    public static Locations GetCompatibleLocations(Activity anchor, Func<LocationReference, bool> isCompatible, Func<RuntimeArgument, bool> argumentsFilter)
+
+    public static Locations GetCompatibleLocations(Activity anchor, Func<LocationReference, bool> isCompatible,
+        Func<RuntimeArgument, bool> argumentsFilter)
     {
         var locals = new List<LocationReference>();
         var environment = anchor.PublicEnvironment;
@@ -40,12 +42,15 @@ public static class ScopeUtils
             current = currentChild?.Parent;
             if (current is Sequence sequence)
             {
-                reachableArguments.AddRange(sequence.Activities.TakeWhile(child => child != currentChild).SelectMany(child =>
+                reachableArguments.AddRange(sequence.Activities.TakeWhile(child => child != currentChild).SelectMany(
+                    child =>
                         child.RuntimeArguments.Where(a => argumentsFilter(a) && isCompatible(a))
-                        .Select(arg => new ReachableArgument(arg, child, sequence))));
+                             .Select(arg => new ReachableArgument(arg, child, sequence))));
             }
+
             currentChild = current;
         }
+
         return new Locations(locals, reachableArguments);
     }
 }

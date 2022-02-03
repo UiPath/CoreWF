@@ -10,7 +10,6 @@ namespace System.Activities.Debugger;
 internal class XmlWrappingReader : XmlReader, IXmlLineInfo, IXmlNamespaceResolver
 {
     private XmlReader _baseReader;
-    private IXmlLineInfo _baseReaderAsLineInfo;
     private IXmlNamespaceResolver _baseReaderAsNamespaceResolver;
 
     public override XmlReaderSettings Settings => _baseReader.Settings;
@@ -59,31 +58,42 @@ internal class XmlWrappingReader : XmlReader, IXmlLineInfo, IXmlNamespaceResolve
 
     public override XmlNameTable NameTable => _baseReader.NameTable;
 
-    public virtual int LineNumber => (_baseReaderAsLineInfo == null) ? 0 : _baseReaderAsLineInfo.LineNumber;
-
-    public virtual int LinePosition => (_baseReaderAsLineInfo == null) ? 0 : _baseReaderAsLineInfo.LinePosition;
-
     protected XmlReader BaseReader
     {
         set
         {
             _baseReader = value;
-            _baseReaderAsLineInfo = value as IXmlLineInfo;
+            BaseReaderAsLineInfo = value as IXmlLineInfo;
             _baseReaderAsNamespaceResolver = value as IXmlNamespaceResolver;
         }
     }
 
-    protected IXmlLineInfo BaseReaderAsLineInfo => _baseReaderAsLineInfo;
+    protected IXmlLineInfo BaseReaderAsLineInfo { get; private set; }
 
     public override string this[int i] => _baseReader[i];
 
     public override string this[string name] => _baseReader[name];
 
-    public override string this[string name, string namespaceURI] => _baseReader[name, namespaceURI];
+    public override string this[string name, string namespaceUri] => _baseReader[name, namespaceUri];
+
+    public virtual int LineNumber => BaseReaderAsLineInfo?.LineNumber ?? 0;
+
+    public virtual int LinePosition => BaseReaderAsLineInfo?.LinePosition ?? 0;
+
+    public virtual bool HasLineInfo() => BaseReaderAsLineInfo != null && BaseReaderAsLineInfo.HasLineInfo();
+
+    public override string LookupNamespace(string prefix) => _baseReader.LookupNamespace(prefix);
+
+    string IXmlNamespaceResolver.LookupPrefix(string namespaceName) =>
+        _baseReaderAsNamespaceResolver?.LookupPrefix(namespaceName);
+
+    IDictionary<string, string> IXmlNamespaceResolver.GetNamespacesInScope(XmlNamespaceScope scope) =>
+        _baseReaderAsNamespaceResolver?.GetNamespacesInScope(scope);
 
     public override string GetAttribute(string name) => _baseReader.GetAttribute(name);
 
-    public override string GetAttribute(string name, string namespaceURI) => _baseReader.GetAttribute(name, namespaceURI);
+    public override string GetAttribute(string name, string namespaceUri) =>
+        _baseReader.GetAttribute(name, namespaceUri);
 
     public override string GetAttribute(int i) => _baseReader.GetAttribute(i);
 
@@ -105,27 +115,16 @@ internal class XmlWrappingReader : XmlReader, IXmlLineInfo, IXmlNamespaceResolve
 
     public override void Skip() => _baseReader.Skip();
 
-    public override string LookupNamespace(string prefix) => _baseReader.LookupNamespace(prefix);
-
     public override void ResolveEntity() => _baseReader.ResolveEntity();
 
     public override bool ReadAttributeValue() => _baseReader.ReadAttributeValue();
-
-    public virtual bool HasLineInfo() => _baseReaderAsLineInfo != null && _baseReaderAsLineInfo.HasLineInfo();
-
-    string IXmlNamespaceResolver.LookupPrefix(string namespaceName) => _baseReaderAsNamespaceResolver?.LookupPrefix(namespaceName);
-
-    IDictionary<string, string> IXmlNamespaceResolver.GetNamespacesInScope(XmlNamespaceScope scope) => _baseReaderAsNamespaceResolver?.GetNamespacesInScope(scope);
 
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
         if (disposing)
         {
-            if (_baseReader != null)
-            {
-                ((IDisposable)_baseReader).Dispose();
-            }
+            ((IDisposable) _baseReader)?.Dispose();
 
             _baseReader = null;
         }

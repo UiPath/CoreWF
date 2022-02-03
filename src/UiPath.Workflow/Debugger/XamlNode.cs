@@ -24,30 +24,30 @@ internal class XamlNode
 
     public override string ToString()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendFormat("{0} {1} ", this.LineNumber, this.LinePosition);
-        switch (this.NodeType)
+        var sb = new StringBuilder();
+        sb.Append($"{LineNumber} {LinePosition} ");
+        switch (NodeType)
         {
             case XamlNodeType.StartObject:
-                sb.AppendFormat("SO {0}", this.Type);
+                sb.Append($"SO {Type}");
                 break;
             case XamlNodeType.GetObject:
-                sb.AppendFormat("GO {0}", this.Type);
+                sb.Append($"GO {Type}");
                 break;
             case XamlNodeType.EndObject:
                 sb.Append("EO ");
                 break;
             case XamlNodeType.StartMember:
-                sb.AppendFormat("SM {0}", this.Member);
+                sb.Append($"SM {Member}");
                 break;
             case XamlNodeType.EndMember:
                 sb.Append("EM ");
                 break;
             case XamlNodeType.Value:
-                sb.AppendFormat("VA {0}", this.Value);
+                sb.Append($"VA {Value}");
                 break;
             case XamlNodeType.NamespaceDeclaration:
-                sb.AppendFormat("NS {0}", this.Namespace);
+                sb.Append($"NS {Namespace}");
                 break;
         }
 
