@@ -16,13 +16,15 @@ public sealed class ActivityBuilder
 {
     // define attached properties that will identify PropertyReferenceExtension-based
     // object properties
-    private static readonly AttachableMemberIdentifier propertyReferencePropertyID = new(typeof(ActivityBuilder), "PropertyReference");
-    private static readonly AttachableMemberIdentifier propertyReferencesPropertyID = new(typeof(ActivityBuilder), "PropertyReferences");
+    private static readonly AttachableMemberIdentifier s_propertyReferencePropertyId =
+        new(typeof(ActivityBuilder), "PropertyReference");
+
+    private static readonly AttachableMemberIdentifier s_propertyReferencesPropertyId =
+        new(typeof(ActivityBuilder), "PropertyReferences");
+
     private KeyedCollection<string, DynamicActivityProperty> _properties;
     private Collection<Constraint> _constraints;
     private Collection<Attribute> _attributes;
-
-    public ActivityBuilder() { }
 
     public string Name { get; set; }
 
@@ -80,43 +82,49 @@ public sealed class ActivityBuilder
     //   the value from SetPropertyReference to also appear in the PropertyReferences collection.
 
     // <ActivityBuilder.PropertyReference>activity property name</ActivityBuilder.PropertyReference>
-    public static ActivityPropertyReference GetPropertyReference(object target) => GetPropertyReferenceCollection(target).SingleItem;
+    public static ActivityPropertyReference GetPropertyReference(object target) => 
+        GetPropertyReferenceCollection(target).SingleItem;
 
     // <ActivityBuilder.PropertyReference>activity property name</ActivityBuilder.PropertyReference>
-    public static void SetPropertyReference(object target, ActivityPropertyReference value) => GetPropertyReferenceCollection(target).SingleItem = value;
+    public static void SetPropertyReference(object target, ActivityPropertyReference value) => 
+        GetPropertyReferenceCollection(target).SingleItem = value;
 
-    public static IList<ActivityPropertyReference> GetPropertyReferences(object target) => GetPropertyReferenceCollection(target);
+    public static IList<ActivityPropertyReference> GetPropertyReferences(object target) => 
+        GetPropertyReferenceCollection(target);
 
     public static bool ShouldSerializePropertyReference(object target)
     {
-        PropertyReferenceCollection propertyReferences = GetPropertyReferenceCollection(target);
+        var propertyReferences = GetPropertyReferenceCollection(target);
         return propertyReferences.Count == 1 && propertyReferences.SingleItem != null;
     }
 
     public static bool ShouldSerializePropertyReferences(object target)
     {
-        PropertyReferenceCollection propertyReferences = GetPropertyReferenceCollection(target);
+        var propertyReferences = GetPropertyReferenceCollection(target);
         return propertyReferences.Count > 1 || propertyReferences.SingleItem == null;
     }
 
     internal static bool HasPropertyReferences(object target)
     {
-        if (AttachablePropertyServices.TryGetProperty(target, propertyReferencesPropertyID, out PropertyReferenceCollection propertyReferences))
+        if (AttachablePropertyServices.TryGetProperty(target, s_propertyReferencesPropertyId,
+                out PropertyReferenceCollection propertyReferences))
         {
             return propertyReferences.Count > 0;
         }
+
         return false;
     }
 
     private static PropertyReferenceCollection GetPropertyReferenceCollection(object target)
     {
-        if (!AttachablePropertyServices.TryGetProperty(target, propertyReferencesPropertyID, out PropertyReferenceCollection propertyReferences))
+        if (!AttachablePropertyServices.TryGetProperty(target, s_propertyReferencesPropertyId,
+                out PropertyReferenceCollection propertyReferences))
         {
             propertyReferences = new PropertyReferenceCollection(target);
-            AttachablePropertyServices.SetProperty(target, propertyReferencesPropertyID, propertyReferences);
+            AttachablePropertyServices.SetProperty(target, s_propertyReferencesPropertyId, propertyReferences);
         }
-        return propertyReferences;
 
+        return propertyReferences;
     }
 
 #if NET45
@@ -126,7 +134,8 @@ public sealed class ActivityBuilder
         }
 #endif
 
-    internal static KeyedCollection<string, DynamicActivityProperty> CreateActivityPropertyCollection() => new ActivityPropertyCollection();
+    internal static KeyedCollection<string, DynamicActivityProperty> CreateActivityPropertyCollection() => 
+        new ActivityPropertyCollection();
 
     private class ActivityPropertyCollection : KeyedCollection<string, DynamicActivityProperty>
     {
@@ -223,16 +232,16 @@ public sealed class ActivityBuilder
 
         private void UpdateAttachedProperty()
         {
-            object target = _targetObject.Target;
+            var target = _targetObject.Target;
             if (target != null)
             {
                 if (_singleItemIndex >= 0)
                 {
-                    AttachablePropertyServices.SetProperty(target, propertyReferencePropertyID, this[_singleItemIndex]);
+                    AttachablePropertyServices.SetProperty(target, s_propertyReferencePropertyId, this[_singleItemIndex]);
                 }
                 else
                 {
-                    AttachablePropertyServices.RemoveProperty(target, propertyReferencePropertyID);
+                    AttachablePropertyServices.RemoveProperty(target, s_propertyReferencePropertyId);
                 }
             }
         }
@@ -248,8 +257,6 @@ public sealed class ActivityBuilder<TResult>
     private KeyedCollection<string, DynamicActivityProperty> _properties;
     private Collection<Constraint> _constraints;
     private Collection<Attribute> _attributes;
-
-    public ActivityBuilder() { }
 
     public string Name { get; set; }
 

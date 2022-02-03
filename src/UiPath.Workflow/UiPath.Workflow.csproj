@@ -1,37 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
-    <Description>Unofficial port of the Windows Workflow Foundation (WF) to .NET 6</Description>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <GeneratePackageOnBuild Condition="$(Configuration)=='Release'">true</GeneratePackageOnBuild>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <NoWarn>$(NoWarn);NU5105</NoWarn>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\UiPath.Workflow.Runtime\UiPath.Workflow.Runtime.csproj" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="ReflectionMagic" Version="4.1.0" />
-    <ProjectReference Include="..\VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.1" />
-    <PackageReference Include="System.CodeDom" Version="6.0.0" />
-    <PackageReference Include="Nito.AsyncEx.Tasks" Version="5.1.2" />
-    <PackageReference Include="Microsoft.PowerFx.Interpreter" Version="0.2.1-preview" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="" />
-  </ItemGroup>
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
+        <Description>Unofficial port of the Windows Workflow Foundation (WF) to .NET 6</Description>
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GeneratePackageOnBuild Condition="$(Configuration)=='Release'">true</GeneratePackageOnBuild>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageProjectUrl>https://github.com/UiPath/CoreWf</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <NoWarn>$(NoWarn);NU5105</NoWarn>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
     <ItemGroup>
-      <BuildOutputInPackage Include="$(OutputPath)Microsoft.CodeAnalysis.VisualBasic.Scripting.*" />
+        <ProjectReference Include="..\UiPath.Workflow.Runtime\UiPath.Workflow.Runtime.csproj"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+        <PackageReference Include="ReflectionMagic" Version="4.1.0"/>
+        <ProjectReference Include="..\VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.0.1"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.1"/>
+        <PackageReference Include="System.CodeDom" Version="6.0.0"/>
+        <PackageReference Include="Nito.AsyncEx.Tasks" Version="5.1.2"/>
+        <PackageReference Include="Microsoft.PowerFx.Interpreter" Version="0.2.1-preview"/>
+        <None Include="..\..\README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
-  </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration)=='Release'">
-    <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)" />
-  </Target>
+    <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+        <ItemGroup>
+            <BuildOutputInPackage Include="$(OutputPath)Microsoft.CodeAnalysis.VisualBasic.Scripting.*"/>
+        </ItemGroup>
+    </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration)=='Release'">
+        <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)"/>
+    </Target>
 </Project>

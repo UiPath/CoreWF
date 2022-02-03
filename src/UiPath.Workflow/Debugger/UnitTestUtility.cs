@@ -8,29 +8,25 @@ namespace System.Activities.Debugger;
 
 internal static class UnitTestUtility
 {
-    internal static Func<string, Exception> AssertionExceptionFactory
-    {
-        get;
-        set;
-    }
+    internal static Func<string, Exception> AssertionExceptionFactory { get; set; }
 
     internal static void TestInitialize(Func<string, Exception> createAssertionException)
     {
-        UnitTestUtility.AssertionExceptionFactory = createAssertionException;
+        AssertionExceptionFactory = createAssertionException;
     }
 
     internal static void TestCleanup()
     {
-        UnitTestUtility.AssertionExceptionFactory = null;
+        AssertionExceptionFactory = null;
     }
 
     internal static void Assert(bool condition, string assertionMessage)
     {
-        if (UnitTestUtility.AssertionExceptionFactory != null)
+        if (AssertionExceptionFactory != null)
         {
             if (!condition)
             {
-                throw FxTrace.Exception.AsError(UnitTestUtility.AssertionExceptionFactory(assertionMessage));
+                throw FxTrace.Exception.AsError(AssertionExceptionFactory(assertionMessage));
             }
         }
         else

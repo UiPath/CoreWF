@@ -9,46 +9,20 @@ namespace System.Activities.Debugger;
 [DebuggerDisplay("({LineNumber.Value}:{LinePosition.Value})")]
 internal class DocumentLocation : IEquatable<DocumentLocation>, IComparable<DocumentLocation>
 {
-    private OneBasedCounter lineNumber;
-    private OneBasedCounter linePosition;
-
     internal DocumentLocation(OneBasedCounter lineNumber, OneBasedCounter linePosition)
     {
         UnitTestUtility.Assert(lineNumber != null, "lineNumber should not be null.");
         UnitTestUtility.Assert(linePosition != null, "linePosition should not be null.");
-        this.lineNumber = lineNumber;
-        this.linePosition = linePosition;
+        LineNumber = lineNumber;
+        LinePosition = linePosition;
     }
 
     internal DocumentLocation(int lineNumber, int linePosition)
-        : this(new OneBasedCounter(lineNumber), new OneBasedCounter(linePosition))
-    {
-    }
+        : this(new OneBasedCounter(lineNumber), new OneBasedCounter(linePosition)) { }
 
-    internal OneBasedCounter LineNumber
-    {
-        get { return this.lineNumber; }
-    }
+    internal OneBasedCounter LineNumber { get; }
 
-    internal OneBasedCounter LinePosition
-    {
-        get { return this.linePosition; }
-    }
-
-    public bool Equals(DocumentLocation that)
-    {
-        if (that == null)
-        {
-            return false;
-        }
-
-        return (this.lineNumber.Value == that.lineNumber.Value) && (this.linePosition.Value == that.linePosition.Value);
-    }
-
-    public override int GetHashCode()
-    {
-        return this.lineNumber.Value.GetHashCode() ^ this.linePosition.Value.GetHashCode();
-    }
+    internal OneBasedCounter LinePosition { get; }
 
     public int CompareTo(DocumentLocation that)
     {
@@ -58,15 +32,27 @@ internal class DocumentLocation : IEquatable<DocumentLocation>, IComparable<Docu
             return 1;
         }
 
-        if (this.lineNumber.Value == that.lineNumber.Value)
-        {
+        if (LineNumber.Value == that.LineNumber.Value)
             // The subtraction of two numbers >= 1 must not underflow integer.
-            return this.linePosition.Value - that.linePosition.Value;
-        }
-        else
         {
-            // The subtraction of two numbers >= 1 must not underflow integer.
-            return this.lineNumber.Value - that.lineNumber.Value;
+            return LinePosition.Value - that.LinePosition.Value;
         }
+
+        return LineNumber.Value - that.LineNumber.Value;
+    }
+
+    public bool Equals(DocumentLocation that)
+    {
+        if (that == null)
+        {
+            return false;
+        }
+
+        return LineNumber.Value == that.LineNumber.Value && LinePosition.Value == that.LinePosition.Value;
+    }
+
+    public override int GetHashCode()
+    {
+        return LineNumber.Value.GetHashCode() ^ LinePosition.Value.GetHashCode();
     }
 }

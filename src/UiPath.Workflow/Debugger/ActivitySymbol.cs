@@ -10,45 +10,58 @@ namespace System.Activities.Debugger.Symbol;
 // It defines the start/end of Activity in the Xaml file.
 public class ActivitySymbol
 {
-    public int StartLine { get; internal set; }
-    public int StartColumn { get; internal set; }
-    public int EndLine { get; internal set; }
-    public int EndColumn { get; internal set; }
+    private string _id;
+
+    // Binary deserializer.
+    internal ActivitySymbol(BinaryReader reader)
+    {
+        StartLine = SymbolHelper.ReadEncodedInt32(reader);
+        StartColumn = SymbolHelper.ReadEncodedInt32(reader);
+        EndLine = SymbolHelper.ReadEncodedInt32(reader);
+        EndColumn = SymbolHelper.ReadEncodedInt32(reader);
+        var qidLength = SymbolHelper.ReadEncodedInt32(reader);
+        if (qidLength > 0)
+        {
+            QualifiedId = reader.ReadBytes(qidLength);
+        }
+    }
+
+    internal ActivitySymbol() { }
+
+    public int StartLine { get; internal init; }
+    public int StartColumn { get; internal init; }
+    public int EndLine { get; internal init; }
+
+    public int EndColumn { get; internal init; }
+
     // Internal representation of QualifiedId.
-    internal byte[] QualifiedId { get; set; }
-    string id;
+    internal byte[] QualifiedId { get; init; }
 
     // Publicly available Id.
     public string Id
     {
         get
         {
-            if (this.id == null)
+            if (_id == null)
             {
-                if (this.QualifiedId != null)
-                {
-                    this.id = new QualifiedId(this.QualifiedId).ToString();
-                }
-                else
-                {
-                    this.id = string.Empty;
-                }
+                _id = QualifiedId != null ? new QualifiedId(QualifiedId).ToString() : string.Empty;
             }
-            return this.id;
+
+            return _id;
         }
     }
 
     // Binary serializer.
     internal void Write(BinaryWriter writer)
     {
-        SymbolHelper.WriteEncodedInt32(writer, this.StartLine);
-        SymbolHelper.WriteEncodedInt32(writer, this.StartColumn);
-        SymbolHelper.WriteEncodedInt32(writer, this.EndLine);
-        SymbolHelper.WriteEncodedInt32(writer, this.EndColumn);
-        if (this.QualifiedId != null)
+        SymbolHelper.WriteEncodedInt32(writer, StartLine);
+        SymbolHelper.WriteEncodedInt32(writer, StartColumn);
+        SymbolHelper.WriteEncodedInt32(writer, EndLine);
+        SymbolHelper.WriteEncodedInt32(writer, EndColumn);
+        if (QualifiedId != null)
         {
-            SymbolHelper.WriteEncodedInt32(writer, this.QualifiedId.Length);
-            writer.Write(this.QualifiedId, 0, this.QualifiedId.Length);
+            SymbolHelper.WriteEncodedInt32(writer, QualifiedId.Length);
+            writer.Write(QualifiedId, 0, QualifiedId.Length);
         }
         else
         {
@@ -56,26 +69,9 @@ public class ActivitySymbol
         }
     }
 
-    // Binary deserializer.
-    internal ActivitySymbol(BinaryReader reader)
-    {
-        this.StartLine = SymbolHelper.ReadEncodedInt32(reader);
-        this.StartColumn = SymbolHelper.ReadEncodedInt32(reader);
-        this.EndLine = SymbolHelper.ReadEncodedInt32(reader);
-        this.EndColumn = SymbolHelper.ReadEncodedInt32(reader);
-        int qidLength = SymbolHelper.ReadEncodedInt32(reader);
-        if (qidLength > 0)
-        {
-            this.QualifiedId = reader.ReadBytes(qidLength);
-        }
-    }
-
-    internal ActivitySymbol()
-    {
-    }
-
     public override string ToString()
     {
-        return string.Format(CultureInfo.InvariantCulture, "{0},{1},{2},{3},{4}", this.Id, this.StartLine, this.StartColumn, this.EndLine, this.EndColumn);
+        return string.Format(CultureInfo.InvariantCulture, "{0},{1},{2},{3},{4}", Id, StartLine, StartColumn, EndLine,
+            EndColumn);
     }
 }

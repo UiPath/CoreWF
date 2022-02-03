@@ -1,12 +1,11 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System;
 using System.Activities.Debugger.Symbol;
+using System.Activities.Internals;
+using System.Activities.Runtime;
 using System.Diagnostics;
 using System.Linq;
-using System.Activities.Runtime;
-using System.Activities.Internals;
 
 namespace System.Activities.Debugger;
 
@@ -20,36 +19,26 @@ namespace System.Activities.Debugger;
 // * can also span multiple lines.
 // When column info is provided, the debugger will highlight the characters starting at the start line and start column,
 // and going up to but not including the character specified by the end line and end column.
-[Fx.Tag.SecurityNote(Miscellaneous = "RequiresReview - Our partial trust mechanisms require that this class remain Immutable. Do not add code that allows an instance of this class to change after creation without strict review.")]
+[Fx.Tag.SecurityNoteAttribute(Miscellaneous =
+    "RequiresReview - Our partial trust mechanisms require that this class remain Immutable. Do not add code that allows an instance of this class to change after creation without strict review.")]
 [DebuggerNonUserCode]
 [Serializable]
-[Fx.Tag.XamlVisible(false)]
+[Fx.Tag.XamlVisibleAttribute(false)]
 public class SourceLocation
 {
-    string fileName;
-    int startLine;
-    int endLine;
-    int startColumn;
-    int endColumn;
-    byte[] checksum;
-
     // Define a source location from a filename and line-number (1-based).
     // This is a convenience constructor to specify the entire line.
     // This does not load the source file to determine column ranges.
     public SourceLocation(string fileName, int line)
-        : this(fileName, line, 1, line, int.MaxValue)
-    {
-    }
+        : this(fileName, line, 1, line, int.MaxValue) { }
 
     public SourceLocation(
-       string fileName,
-       int startLine,
-       int startColumn,
-       int endLine,
-       int endColumn)
-        : this(fileName, null, startLine, startColumn, endLine, endColumn)
-    {
-    }
+        string fileName,
+        int startLine,
+        int startColumn,
+        int endLine,
+        int endColumn)
+        : this(fileName, null, startLine, startColumn, endLine, endColumn) { }
 
     // Define a source location in a file.
     // Line/Column are 1-based.
@@ -83,93 +72,71 @@ public class SourceLocation
 
         if (startLine > endLine)
         {
-            throw FxTrace.Exception.ArgumentOutOfRange("endLine", endLine, SR.OutOfRangeSourceLocationEndLine(startLine));
+            throw FxTrace.Exception.ArgumentOutOfRange("endLine", endLine,
+                SR.OutOfRangeSourceLocationEndLine(startLine));
         }
 
-        if ((startLine == endLine) && (startColumn > endColumn))
+        if (startLine == endLine && startColumn > endColumn)
         {
-            throw FxTrace.Exception.ArgumentOutOfRange("endColumn", endColumn, SR.OutOfRangeSourceLocationEndColumn(startColumn));
+            throw FxTrace.Exception.ArgumentOutOfRange("endColumn", endColumn,
+                SR.OutOfRangeSourceLocationEndColumn(startColumn));
         }
 
-        this.fileName = (fileName != null) ? fileName.ToUpperInvariant() : null;
-        this.startLine = startLine;
-        this.endLine = endLine;
-        this.startColumn = startColumn;
-        this.endColumn = endColumn;
-        this.checksum = checksum;
+        FileName = fileName?.ToUpperInvariant();
+        StartLine = startLine;
+        EndLine = endLine;
+        StartColumn = startColumn;
+        EndColumn = endColumn;
+        Checksum = checksum;
     }
 
-    public string FileName
-    {
-        get { return this.fileName; }
-    }
+    public string FileName { get; }
 
     // Get the 1-based start line.
-    public int StartLine
-    {
-        get { return this.startLine; }
-    }
+    public int StartLine { get; }
 
     // Get the 1-based starting column.
-    public int StartColumn
-    {
-        get { return this.startColumn; }
-    }
+    public int StartColumn { get; }
 
     // Get the 1-based end line. This should be greater or equal to StartLine.
-    public int EndLine
-    {
-        get { return this.endLine; }
-    }
+    public int EndLine { get; }
 
     // Get the 1-based ending column.
-    public int EndColumn
-    {
-        get { return this.endColumn; }
-    }
+    public int EndColumn { get; }
 
     // get the checksum of the source file
-    internal byte[] Checksum
-    {
-        get { return this.checksum; }
-    }
+    internal byte[] Checksum { get; }
 
-    public bool IsSingleWholeLine
-    {
-        get
-        {
-            return this.endColumn == int.MaxValue && this.startLine == this.endLine && this.startColumn == 1;
-        }
-    }
+    public bool IsSingleWholeLine => EndColumn == int.MaxValue && StartLine == EndLine && StartColumn == 1;
 
     // Equality comparison function. This checks for strict equality and
     // not for superset or subset relationships.
     public override bool Equals(object obj)
     {
-        SourceLocation rsl = obj as SourceLocation;
-        if (rsl == null)
+        if (obj is not SourceLocation rsl)
         {
             return false;
         }
 
-        if (this.FileName != rsl.FileName)
+        if (FileName != rsl.FileName)
         {
             return false;
         }
 
-        if (this.StartLine != rsl.StartLine ||
-            this.StartColumn != rsl.StartColumn ||
-            this.EndLine != rsl.EndLine ||
-            this.EndColumn != rsl.EndColumn)
+        if (StartLine != rsl.StartLine ||
+            StartColumn != rsl.StartColumn ||
+            EndLine != rsl.EndLine ||
+            EndColumn != rsl.EndColumn)
         {
             return false;
         }
 
-        if (this.Checksum == null ^ rsl.Checksum == null)
+        if ((Checksum == null) ^ (rsl.Checksum == null))
         {
             return false;
         }
-        else if ((this.Checksum != null && rsl.Checksum != null) && !this.Checksum.SequenceEqual(rsl.Checksum))
+
+        if (Checksum != null && rsl.Checksum != null && !Checksum.SequenceEqual(rsl.Checksum))
         {
             return false;
         }
@@ -181,17 +148,16 @@ public class SourceLocation
     // Get a hash code.
     public override int GetHashCode()
     {
-        return (string.IsNullOrEmpty(this.FileName) ? 0 : this.FileName.GetHashCode()) ^
-                this.StartLine.GetHashCode() ^
-                this.StartColumn.GetHashCode() ^
-                ((this.Checksum == null) ? 0 : SymbolHelper.GetHexStringFromChecksum(this.Checksum).GetHashCode());
+        return (string.IsNullOrEmpty(FileName) ? 0 : FileName.GetHashCode()) ^
+            StartLine.GetHashCode() ^
+            StartColumn.GetHashCode() ^
+            (Checksum == null ? 0 : SymbolHelper.GetHexStringFromChecksum(Checksum).GetHashCode());
     }
 
     internal static bool IsValidRange(int startLine, int startColumn, int endLine, int endColumn)
     {
         return
-            (startLine > 0) && (startColumn > 0) && (endLine > 0) && (endColumn > 0) &&
-            ((startLine < endLine) || (startLine == endLine) && (startColumn < endColumn));
-
+            startLine > 0 && startColumn > 0 && endLine > 0 && endColumn > 0 &&
+            (startLine < endLine || startLine == endLine && startColumn < endColumn);
     }
 }

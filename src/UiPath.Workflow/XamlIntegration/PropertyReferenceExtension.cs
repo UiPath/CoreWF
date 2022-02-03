@@ -1,45 +1,34 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.XamlIntegration
+using System.Activities.Internals;
+using System.ComponentModel;
+using System.Windows.Markup;
+
+namespace System.Activities.XamlIntegration;
+
+[MarkupExtensionReturnType(typeof(object))]
+public sealed class PropertyReferenceExtension<T> : MarkupExtension
 {
-    using System;
-    using System.ComponentModel;
-    using System.Windows.Markup;
-    using System.Activities.Internals;
+    public string PropertyName { get; set; }
 
-    [MarkupExtensionReturnType(typeof(object))]
-    public sealed class PropertyReferenceExtension<T> : MarkupExtension
+    public override object ProvideValue(IServiceProvider serviceProvider)
     {
-        public PropertyReferenceExtension()
-            : base()
+        if (!string.IsNullOrEmpty(PropertyName))
         {
-        }
-
-        public string PropertyName
-        {
-            get;
-            set;
-        }
-
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            if (!string.IsNullOrEmpty(this.PropertyName))
+            var targetObject = ActivityWithResultConverter.GetRootTemplatedActivity(serviceProvider);
+            if (targetObject != null)
             {
-                object targetObject = ActivityWithResultConverter.GetRootTemplatedActivity(serviceProvider);
-                if (targetObject != null)
-                {
-                    PropertyDescriptor property = TypeDescriptor.GetProperties(targetObject)[PropertyName];
+                var property = TypeDescriptor.GetProperties(targetObject)[PropertyName];
 
-                    if (property != null)
-                    {
-                        return property.GetValue(targetObject);
-                    }
+                if (property != null)
+                {
+                    return property.GetValue(targetObject);
                 }
             }
-
-            throw FxTrace.Exception.AsError(
-                new InvalidOperationException(SR.PropertyReferenceNotFound(this.PropertyName)));
         }
+
+        throw FxTrace.Exception.AsError(
+            new InvalidOperationException(SR.PropertyReferenceNotFound(PropertyName)));
     }
 }
