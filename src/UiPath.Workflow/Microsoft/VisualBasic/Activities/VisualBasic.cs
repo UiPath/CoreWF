@@ -1,49 +1,46 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Microsoft.VisualBasic.Activities
+using System.Activities;
+using System.Xaml;
+
+namespace Microsoft.VisualBasic.Activities;
+
+//[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.TypeNamesShouldNotMatchNamespaces,
+//    Justification = "Approved name")]
+public static class VisualBasic
 {
-    using System;
-    using System.Activities;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Activities.Runtime;
-    using System.Xaml;
+    private static readonly AttachableMemberIdentifier s_settingsPropertyId = new(typeof(VisualBasic), "Settings");
 
-    //[SuppressMessage(FxCop.Category.Naming, FxCop.Rule.TypeNamesShouldNotMatchNamespaces,
-    //    Justification = "Approved name")]
-    public static class VisualBasic
+    public static void SetSettings(object target, VisualBasicSettings value)
     {
-        static AttachableMemberIdentifier settingsPropertyID = new AttachableMemberIdentifier(typeof(VisualBasic), "Settings");
+        AttachablePropertyServices.SetProperty(target, s_settingsPropertyId, value);
+    }
 
-        public static void SetSettings(object target, VisualBasicSettings value)
+    public static VisualBasicSettings GetSettings(object target)
+    {
+        return AttachablePropertyServices.TryGetProperty(target, s_settingsPropertyId, out VisualBasicSettings value) ? value : null;
+    }
+
+    public static void SetSettingsForImplementation(object target, VisualBasicSettings value)
+    {
+        if (value != null)
         {
-            AttachablePropertyServices.SetProperty(target, settingsPropertyID, value);
+            value.SuppressXamlSerialization = true;
         }
 
-        public static VisualBasicSettings GetSettings(object target)
+        SetSettings(target, value);
+    }
+
+    public static bool ShouldSerializeSettings(object target)
+    {
+        var settings = GetSettings(target);
+
+        if (settings != null && settings.SuppressXamlSerialization && target is Activity)
         {
-            VisualBasicSettings value;
-            return AttachablePropertyServices.TryGetProperty(target, settingsPropertyID, out value) ? value : null;
+            return false;
         }
 
-        public static void SetSettingsForImplementation(object target, VisualBasicSettings value)
-        {
-            if (value != null)
-            {
-                value.SuppressXamlSerialization = true;
-            }
-            SetSettings(target, value);
-        }
-
-        public static bool ShouldSerializeSettings(object target)
-        {
-            VisualBasicSettings settings = VisualBasic.GetSettings(target);
-
-            if (settings != null && settings.SuppressXamlSerialization && target is Activity)
-            {
-                return false;
-            }
-            return true;
-        }
+        return true;
     }
 }

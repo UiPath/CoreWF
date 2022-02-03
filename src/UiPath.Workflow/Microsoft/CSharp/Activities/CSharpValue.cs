@@ -1,94 +1,71 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Microsoft.CSharp.Activities
+using System;
+using System.Activities;
+using System.Activities.Expressions;
+using System.Activities.Internals;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Windows.Markup;
+
+namespace Microsoft.CSharp.Activities;
+
+[DebuggerStepThrough]
+[ContentProperty("ExpressionText")]
+public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 {
-    using System;
-    using System.Activities;
-    using System.Activities.Expressions;
-    using System.Activities.Validation;
-    using System.Activities.XamlIntegration;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Linq.Expressions;
-    using System.Reflection;
-    using System.Activities.Runtime;
-    using System.Windows.Markup;
-    using System.Activities.Internals;
+    private CompiledExpressionInvoker _invoker;
 
-    [DebuggerStepThrough]
-    [ContentProperty("ExpressionText")]
-    public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
+    public CSharpValue()
     {
-        CompiledExpressionInvoker invoker;
-          
-        public CSharpValue()
+        UseOldFastPath = true;
+    }
+
+    public CSharpValue(string expressionText) :
+        this()
+    {
+        ExpressionText = expressionText;
+    }
+
+    public string ExpressionText { get; set; }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string Language => "C#";
+
+    public bool RequiresCompilation => true;
+
+    public Expression GetExpressionTree()
+    {
+        if (IsMetadataCached)
         {
-            this.UseOldFastPath = true;
+            return _invoker.GetExpressionTree();
         }
 
-        public CSharpValue(string expressionText) :
-            this()
+        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+    }
+
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        _invoker = new CompiledExpressionInvoker(this, false, metadata);
+        if (metadata.Environment.CompileExpressions)
         {
-            this.ExpressionText = expressionText;
+            return;
         }
 
-        public string ExpressionText
+        if (metadata.Environment.IsValidating)
         {
-            get;
-            set;
-        }
-
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string Language
-        {
-            get
+            foreach (var validationError in CsExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment,
+                         ExpressionText))
             {
-                return "C#";
+                AddTempValidationError(validationError);
             }
         }
+    }
 
-        public bool RequiresCompilation
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            invoker = new CompiledExpressionInvoker(this, false, metadata);
-            if (metadata.Environment.CompileExpressions)
-            {
-                return;
-            }
-
-            if (metadata.Environment.IsValidating)
-            {
-                foreach (var validationError in CsExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment, ExpressionText))
-                {
-                    AddTempValidationError(validationError);
-                }
-            }
-        }
-
-        protected override TResult Execute(CodeActivityContext context)
-        {
-            return (TResult)this.invoker.InvokeExpression(context);
-        }
-
-        public Expression GetExpressionTree()
-        {
-            if (this.IsMetadataCached)
-            {
-                return this.invoker.GetExpressionTree();
-            }
-            else
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
-            }
-        }
+    protected override TResult Execute(CodeActivityContext context)
+    {
+        return (TResult) _invoker.InvokeExpression(context);
     }
 }

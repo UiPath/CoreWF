@@ -1,145 +1,146 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.XamlIntegration
+using System.Activities.Internals;
+using System.Activities.Runtime;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Globalization;
+using System.Xaml;
+
+namespace System.Activities.XamlIntegration;
+
+public abstract class TypeConverterBase : TypeConverter
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.ComponentModel;
-    using System.Globalization;
-    using System.Activities.Internals;
-    using System.Activities.Runtime;
-    using System.Xaml;
+    private readonly Type _baseType;
 
-    public abstract class TypeConverterBase : TypeConverter
+    private readonly TypeConverterHelper _helper;
+
+    // Give the Lazy<T> a Func<T> to create the ConcurrentDictionary<Type, TypeConverterHelper> because TypeConverterHelper is
+    // internal and we want to avoid the demand for ReflectionPermission(MemberAccess).
+    private readonly Lazy<ConcurrentDictionary<Type, TypeConverterHelper>> _helpers = new(
+        () => new ConcurrentDictionary<Type, TypeConverterHelper>()
+        );
+
+    private readonly Type _helperType;
+
+    internal TypeConverterBase(Type baseType, Type helperType)
     {
-        // Give the Lazy<T> a Func<T> to create the ConcurrentDictionary<Type, TypeConverterHelper> because TypeConverterHelper is
-        // internal and we want to avoid the demand for ReflectionPermission(MemberAccess).
-        private readonly Lazy<ConcurrentDictionary<Type, TypeConverterHelper>> helpers = new Lazy<ConcurrentDictionary<Type, TypeConverterHelper>>( delegate()
-                        {
-                            return new ConcurrentDictionary<Type, TypeConverterHelper>();
-                        }
-                    );
-        private readonly TypeConverterHelper helper;
-        private readonly Type baseType;
-        private readonly Type helperType;
+        _baseType = baseType;
+        _helperType = helperType;
+    }
 
-        internal TypeConverterBase(Type baseType, Type helperType)
+    internal TypeConverterBase(Type targetType, Type baseType, Type helperType)
+    {
+        _helper = GetTypeConverterHelper(targetType, baseType, helperType);
+    }
+
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+    {
+        if (sourceType == TypeHelper.StringType)
         {
-            this.baseType = baseType;
-            this.helperType = helperType;
+            return true;
         }
 
-        internal TypeConverterBase(Type targetType, Type baseType, Type helperType)
+        return base.CanConvertFrom(context, sourceType);
+    }
+
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+    {
+        if (destinationType == TypeHelper.StringType)
         {
-            this.helper = GetTypeConverterHelper(targetType, baseType, helperType);
+            return false;
         }
 
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        return base.CanConvertTo(context, destinationType);
+    }
+
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+    {
+        if (value is not string stringValue)
         {
-            if (sourceType == TypeHelper.StringType)
-            {
-                return true;
-            }
-
-            return base.CanConvertFrom(context, sourceType);
-        }
-
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-        {
-            if (destinationType == TypeHelper.StringType)
-            {
-                return false;
-            }
-            return base.CanConvertTo(context, destinationType);
-        }
-
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-        {
-            if (value is string stringValue)
-            {
-                TypeConverterHelper currentHelper = helper;
-                if (currentHelper == null)
-                {
-                    IDestinationTypeProvider targetService = context.GetService(typeof(IDestinationTypeProvider)) as IDestinationTypeProvider;
-                    Type targetType = targetService.GetDestinationType();
-
-                    if (!this.helpers.Value.TryGetValue(targetType, out currentHelper))
-                    {
-                        currentHelper = GetTypeConverterHelper(targetType, this.baseType, this.helperType);
-                        if (!this.helpers.Value.TryAdd(targetType, currentHelper))
-                        {
-                            if (!this.helpers.Value.TryGetValue(targetType, out currentHelper))
-                            {
-                                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.TypeConverterHelperCacheAddFailed(targetType)));
-                            }
-                        }
-                    }
-                }
-                object result = currentHelper.UntypedConvertFromString(stringValue, context);
-                return result;
-            }
-
             return base.ConvertFrom(context, culture, value);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        var currentHelper = _helper;
+        if (currentHelper == null)
         {
-            return base.ConvertTo(context, culture, value, destinationType);
-        }
+            var targetService = context.GetService(typeof(IDestinationTypeProvider)) as IDestinationTypeProvider;
+            var targetType = targetService.GetDestinationType();
 
-        private TypeConverterHelper GetTypeConverterHelper(Type targetType, Type baseType, Type helperType)
-        {
-            Type[] genericTypeArguments;
-            if (baseType.BaseType == targetType)
+            if (!_helpers.Value.TryGetValue(targetType, out currentHelper))
             {
-                // support non-generic ActivityWithResult, In/Out/InOutArgument 
-                genericTypeArguments = new Type[] { TypeHelper.ObjectType };
-            }
-            else
-            {
-                // Find baseType in the base class list of targetType
-                while (!targetType.IsGenericType ||
-                    !(targetType.GetGenericTypeDefinition() == baseType))
+                currentHelper = GetTypeConverterHelper(targetType, _baseType, _helperType);
+                if (!_helpers.Value.TryAdd(targetType, currentHelper) &&
+                    !_helpers.Value.TryGetValue(targetType, out currentHelper))
                 {
-                    if (targetType == TypeHelper.ObjectType)
-                    {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidTypeConverterUsage));
-                    }
-
-                    targetType = targetType.BaseType;
+                    throw FxTrace.Exception.AsError(
+                        new InvalidOperationException(SR.TypeConverterHelperCacheAddFailed(targetType)));
                 }
-                genericTypeArguments = targetType.GetGenericArguments();
             }
-
-            Type concreteHelperType = helperType.MakeGenericType(genericTypeArguments);
-            return (TypeConverterHelper)Activator.CreateInstance(concreteHelperType);
         }
 
-        internal abstract class TypeConverterHelper
-        {
-            public abstract object UntypedConvertFromString(string text, ITypeDescriptorContext context);
+        return currentHelper.UntypedConvertFromString(stringValue, context);
+    }
 
-            public static T GetService<T>(ITypeDescriptorContext context) where T : class
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+        Type destinationType)
+    {
+        return base.ConvertTo(context, culture, value, destinationType);
+    }
+
+    private TypeConverterHelper GetTypeConverterHelper(Type targetType, Type baseType, Type helperType)
+    {
+        Type[] genericTypeArguments;
+        if (baseType.BaseType == targetType)
+        {
+            // support non-generic ActivityWithResult, In/Out/InOutArgument 
+            genericTypeArguments = new[] {TypeHelper.ObjectType};
+        }
+        else
+        {
+            // Find baseType in the base class list of targetType
+            while (!targetType.IsGenericType ||
+                   !(targetType.GetGenericTypeDefinition() == baseType))
             {
-                T service = (T)context.GetService(typeof(T));
-                if (service == null)
+                if (targetType == TypeHelper.ObjectType)
                 {
                     throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidTypeConverterUsage));
                 }
 
-                return service;
+                targetType = targetType.BaseType;
             }
+
+            genericTypeArguments = targetType.GetGenericArguments();
         }
 
-        internal abstract class TypeConverterHelper<T> : TypeConverterHelper
-        {
-            public abstract T ConvertFromString(string text, ITypeDescriptorContext context);
+        var concreteHelperType = helperType.MakeGenericType(genericTypeArguments);
+        return (TypeConverterHelper) Activator.CreateInstance(concreteHelperType);
+    }
 
-            public sealed override object UntypedConvertFromString(string text, ITypeDescriptorContext context)
+    internal abstract class TypeConverterHelper
+    {
+        public abstract object UntypedConvertFromString(string text, ITypeDescriptorContext context);
+
+        public static T GetService<T>(ITypeDescriptorContext context) where T : class
+        {
+            var service = (T) context.GetService(typeof(T));
+            if (service == null)
             {
-                return ConvertFromString(text, context);
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidTypeConverterUsage));
             }
+
+            return service;
+        }
+    }
+
+    internal abstract class TypeConverterHelper<T> : TypeConverterHelper
+    {
+        public abstract T ConvertFromString(string text, ITypeDescriptorContext context);
+
+        public sealed override object UntypedConvertFromString(string text, ITypeDescriptorContext context)
+        {
+            return ConvertFromString(text, context);
         }
     }
 }

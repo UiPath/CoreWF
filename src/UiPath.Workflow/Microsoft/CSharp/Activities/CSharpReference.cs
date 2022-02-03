@@ -4,77 +4,57 @@
 using System;
 using System.Activities;
 using System.Activities.Expressions;
+using System.Activities.Internals;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Markup;
-using System.Activities.Internals;
 
-namespace Microsoft.CSharp.Activities
+namespace Microsoft.CSharp.Activities;
+
+[DebuggerStepThrough]
+[ContentProperty("ExpressionText")]
+public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextExpression
 {
-    [DebuggerStepThrough]
-    [ContentProperty("ExpressionText")]
-    public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextExpression
+    private CompiledExpressionInvoker _invoker;
+
+    public CSharpReference()
     {
-        CompiledExpressionInvoker invoker;
-                
-        public CSharpReference()
+        UseOldFastPath = true;
+    }
+
+    public CSharpReference(string expressionText) :
+        this()
+    {
+        ExpressionText = expressionText;
+    }
+
+    public string ExpressionText { get; set; }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string Language => "C#";
+
+    public bool RequiresCompilation => true;
+
+    public Expression GetExpressionTree()
+    {
+        if (IsMetadataCached)
         {
-            this.UseOldFastPath = true;
+            return _invoker.GetExpressionTree();
         }
 
-        public CSharpReference(string expressionText) :
-            this()
-        {
-            this.ExpressionText = expressionText;
-        }
+        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+    }
 
-        public string ExpressionText
-        {
-            get;
-            set;
-        }
+    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    {
+        _invoker = new CompiledExpressionInvoker(this, true, metadata);
+    }
 
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string Language
-        {
-            get
-            {
-                return "C#";
-            }
-        }
+    protected override Location<TResult> Execute(CodeActivityContext context)
+    {
+        var value = (Location<TResult>) _invoker.InvokeExpression(context);
 
-        public bool RequiresCompilation
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        protected override void CacheMetadata(CodeActivityMetadata metadata)
-        {
-            this.invoker = new CompiledExpressionInvoker(this, true, metadata);
-        }
-
-        protected override Location<TResult> Execute(CodeActivityContext context)
-        {
-            Location<TResult> value = (Location<TResult>)this.invoker.InvokeExpression(context);
-
-            return value;
-        }
-
-        public Expression GetExpressionTree()
-        {
-            if (this.IsMetadataCached)
-            {
-                return this.invoker.GetExpressionTree();
-            }
-            else
-            {
-                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached)); 
-            }
-        }
+        return value;
     }
 }
-

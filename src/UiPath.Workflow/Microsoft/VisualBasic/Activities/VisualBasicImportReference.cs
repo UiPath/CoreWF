@@ -1,160 +1,149 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Microsoft.VisualBasic.Activities
+using System;
+using System.Activities.Expressions;
+using System.Globalization;
+using System.Reflection;
+using System.Xaml;
+using System.Xml.Linq;
+
+namespace Microsoft.VisualBasic.Activities;
+
+public class VisualBasicImportReference : IEquatable<VisualBasicImportReference>
 {
-    using System;
-    using System.Globalization;
-    using System.Reflection;
-    using System.Activities.Expressions;
-    using System.Xaml;
-    using System.Xml.Linq;
+    private static readonly AssemblyNameEqualityComparer s_equalityComparer = new();
+    private string _assemblyNameString;
+    private int _hashCode;
+    private string _import;
 
-    public class VisualBasicImportReference : IEquatable<VisualBasicImportReference>
+    public string Assembly
     {
-        static AssemblyNameEqualityComparer equalityComparer = new AssemblyNameEqualityComparer();
-        AssemblyName assemblyName;
-        string assemblyNameString;
-        int hashCode;
-        string import;
+        get => _assemblyNameString;
 
-        public VisualBasicImportReference()
+        set
         {
-        }
-
-        public string Assembly
-        {
-            get => this.assemblyNameString;
-
-            set
+            if (value == null)
             {
-                if (value == null)
-                {
-                    this.assemblyName = null;
-                    this.assemblyNameString = null;
-                }
-                else
-                {
-                    // FileLoadException thrown from this ctor indicates invalid assembly name
-                    this.assemblyName = new AssemblyName(value);
-                    this.assemblyNameString = this.assemblyName.FullName;
-                }
-                this.EarlyBoundAssembly = null;
-            }
-        }
-
-        public string Import
-        {
-            get => this.import;
-            set
-            {
-                if (value != null)
-                {
-                    this.import = value.Trim();
-                    this.hashCode = this.import.ToUpperInvariant().GetHashCode();
-                }
-                else
-                {
-                    this.import = null;
-                    this.hashCode = 0;
-                }
-                this.EarlyBoundAssembly = null;
-            }
-        }
-
-        internal AssemblyName AssemblyName
-        {
-            get { return this.assemblyName; }
-        }
-
-        internal XNamespace Xmlns
-        {
-            get;
-            set;
-        }
-        
-        // for the short-cut assembly resolution
-        // from VBImportReference.AssemblyName ==> System.Reflection.Assembly
-        // this is an internal state that implies the context in which a VB assembly resolution is progressing
-        // once VB extracted this Assembly object to pass onto the compiler, 
-        // it must explicitly set this property back to null.
-        // Clone() will also explicitly set this property of the new to null to prevent users from inadvertently 
-        // creating a copy of VBImportReference that might not resolve to the assembly of his or her intent.
-        internal Assembly EarlyBoundAssembly
-        {
-            get;
-            set;
-        }
-
-        internal VisualBasicImportReference Clone()
-        {
-            VisualBasicImportReference toReturn = (VisualBasicImportReference)this.MemberwiseClone();
-            toReturn.EarlyBoundAssembly = null;
-            // Also make a clone of the AssemblyName.
-            toReturn.assemblyName = (AssemblyName) this.assemblyName.Clone();
-            return toReturn;
-        }
-
-        
-        public override int GetHashCode()
-        {
-            return this.hashCode;
-        }
-
-        public bool Equals(VisualBasicImportReference other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (Object.ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            if (this.EarlyBoundAssembly != other.EarlyBoundAssembly)
-            {
-                return false;
-            }
-
-            // VB does case insensitive comparisons for imports
-            if (string.Compare(this.Import, other.Import, StringComparison.OrdinalIgnoreCase) != 0)
-            {
-                return false;
-            }
-
-            // now compare the assemblies
-            if (this.AssemblyName == null && other.AssemblyName == null)
-            {
-                return true;
-            }
-            else if (this.AssemblyName == null && other.AssemblyName != null)
-            {
-                return false;
-            }
-            else if (this.AssemblyName != null && other.AssemblyName == null)
-            {
-                return false;
-            }
-
-            return equalityComparer.Equals(this.AssemblyName, other.AssemblyName);            
-        }
-
-        internal void GenerateXamlNamespace(INamespacePrefixLookup namespaceLookup)
-        {
-            // promote reference to xmlns declaration
-            string xamlNamespace = null;
-            if (this.Xmlns != null && !string.IsNullOrEmpty(this.Xmlns.NamespaceName))
-            {
-                xamlNamespace = this.Xmlns.NamespaceName;
+                AssemblyName = null;
+                _assemblyNameString = null;
             }
             else
             {
-                xamlNamespace = string.Format(CultureInfo.InvariantCulture, "clr-namespace:{0};assembly={1}", this.Import, this.Assembly);
+                // FileLoadException thrown from this ctor indicates invalid assembly name
+                AssemblyName = new AssemblyName(value);
+                _assemblyNameString = AssemblyName.FullName;
             }
-            // we don't need the return value since we just want to register the namespace/assembly pair
-            namespaceLookup.LookupPrefix(xamlNamespace);
+
+            EarlyBoundAssembly = null;
         }
+    }
+
+    public string Import
+    {
+        get => _import;
+        set
+        {
+            if (value != null)
+            {
+                _import = value.Trim();
+                _hashCode = _import.ToUpperInvariant().GetHashCode();
+            }
+            else
+            {
+                _import = null;
+                _hashCode = 0;
+            }
+
+            EarlyBoundAssembly = null;
+        }
+    }
+
+    internal AssemblyName AssemblyName { get; private set; }
+
+    internal XNamespace Xmlns { get; set; }
+
+    // for the short-cut assembly resolution
+    // from VBImportReference.AssemblyName ==> System.Reflection.Assembly
+    // this is an internal state that implies the context in which a VB assembly resolution is progressing
+    // once VB extracted this Assembly object to pass onto the compiler, 
+    // it must explicitly set this property back to null.
+    // Clone() will also explicitly set this property of the new to null to prevent users from inadvertently 
+    // creating a copy of VBImportReference that might not resolve to the assembly of his or her intent.
+    internal Assembly EarlyBoundAssembly { get; set; }
+
+    public bool Equals(VisualBasicImportReference other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        if (EarlyBoundAssembly != other.EarlyBoundAssembly)
+        {
+            return false;
+        }
+
+        // VB does case insensitive comparisons for imports
+        if (string.Compare(Import, other.Import, StringComparison.OrdinalIgnoreCase) != 0)
+        {
+            return false;
+        }
+
+        // now compare the assemblies
+        if (AssemblyName == null && other.AssemblyName == null)
+        {
+            return true;
+        }
+
+        if (AssemblyName == null && other.AssemblyName != null)
+        {
+            return false;
+        }
+
+        if (AssemblyName != null && other.AssemblyName == null)
+        {
+            return false;
+        }
+
+        return s_equalityComparer.Equals(AssemblyName, other.AssemblyName);
+    }
+
+    internal VisualBasicImportReference Clone()
+    {
+        var toReturn = (VisualBasicImportReference) MemberwiseClone();
+        toReturn.EarlyBoundAssembly = null;
+        // Also make a clone of the AssemblyName.
+        toReturn.AssemblyName = (AssemblyName) AssemblyName.Clone();
+        return toReturn;
+    }
+
+
+    public override int GetHashCode()
+    {
+        return _hashCode;
+    }
+
+    internal void GenerateXamlNamespace(INamespacePrefixLookup namespaceLookup)
+    {
+        // promote reference to xmlns declaration
+        string xamlNamespace = null;
+        if (Xmlns != null && !string.IsNullOrEmpty(Xmlns.NamespaceName))
+        {
+            xamlNamespace = Xmlns.NamespaceName;
+        }
+        else
+        {
+            xamlNamespace = string.Format(CultureInfo.InvariantCulture, "clr-namespace:{0};assembly={1}", Import,
+                Assembly);
+        }
+
+        // we don't need the return value since we just want to register the namespace/assembly pair
+        namespaceLookup.LookupPrefix(xamlNamespace);
     }
 }
