@@ -69,6 +69,7 @@ public abstract class RoslynExpressionValidator
             return References.GetReference(asm);
         }
         catch (NotSupportedException) { }
+        catch (NotImplementedException) { }
 
         try
         {
