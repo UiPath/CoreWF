@@ -15,7 +15,8 @@ namespace System.Activities;
 public abstract class RoslynExpressionValidator
 {
     private const string Comma = ", ";
-    private static readonly Dictionary<Assembly, MetadataReference> s_metadataReferenceCache = new();
+    private readonly HashSet<Assembly> _referencedAssemblies = new();
+    private readonly Lazy<Dictionary<Assembly, MetadataReference>> _metadataReferenceDictionary;
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -24,62 +25,15 @@ public abstract class RoslynExpressionValidator
     ///     Assemblies to seed the collection. Will union with
     ///     <see cref="JitCompilerHelper.DefaultReferencedAssemblies" />.
     /// </param>
-    /// <param name="metadataReferenceFunc">Function to get metadata references from assemblies.</param>
-    protected RoslynExpressionValidator(HashSet<Assembly> referencedAssemblies = null,
-        Func<Assembly, MetadataReference> metadataReferenceFunc = null)
+    protected RoslynExpressionValidator(HashSet<Assembly> referencedAssemblies = null)
     {
-        referencedAssemblies ??= new HashSet<Assembly>();
-        referencedAssemblies.UnionWith(JitCompilerHelper.DefaultReferencedAssemblies);
-        if (metadataReferenceFunc != null)
+        _metadataReferenceDictionary = new(GetInitialMetadataReferences);
+        _referencedAssemblies.UnionWith(JitCompilerHelper.DefaultReferencedAssemblies);
+        if (referencedAssemblies != null)
         {
-            MetadataReferenceFunc = metadataReferenceFunc;
-        }
-        
-        foreach (var referencedAssembly in referencedAssemblies)
-        {
-            if (s_metadataReferenceCache.ContainsKey(referencedAssembly))
-            {
-                continue;
-            }
-
-            var mr = MetadataReferenceFunc(referencedAssembly);
-            if (mr != null)
-            {
-                s_metadataReferenceCache.Add(referencedAssembly, mr);
-            }
+            _referencedAssemblies.UnionWith(referencedAssemblies);
         }
     }
-
-    /// <summary>
-    ///     Creates or gets a MetadataReference for an Assembly.
-    /// </summary>
-    /// <remarks>
-    ///     The default function in CoreWF first tries the non-CLS-compliant method
-    ///     <see cref="System.Reflection.Metadata.AssemblyExtensions.TryGetRawMetadata"/>, which may
-    ///     not work for some assemblies or in certain environments (like Blazor). On failure, the
-    ///     default function will then try
-    ///     <see cref="Microsoft.CodeAnalysis.AssemblyMetadata.CreateFromFile" />. If that also fails,
-    ///     the function returns null and will not be cached.
-    /// </remarks>
-    // ReSharper disable once MemberCanBePrivate.Global
-    protected Func<Assembly, MetadataReference> MetadataReferenceFunc { get; } = asm =>
-    {
-        try
-        {
-            return References.GetReference(asm);
-        }
-        catch (NotSupportedException) { }
-        catch (NotImplementedException) { }
-
-        try
-        {
-            return MetadataReference.CreateFromFile(asm.Location);
-        }
-        catch (IOException) { }
-        catch (NotSupportedException) { }
-
-        return null;
-    };
 
     /// <summary>
     ///     The kind of identifier to look for in the syntax tree as variables that need to be resolved for the expression.
@@ -94,7 +48,7 @@ public abstract class RoslynExpressionValidator
     /// <summary>
     ///     Gets the MetadataReference objects for all of the referenced assemblies that this compilation unit could use.
     /// </summary>
-    protected static IEnumerable<MetadataReference> MetadataReferences => s_metadataReferenceCache.Values;
+    protected IEnumerable<MetadataReference> MetadataReferences => _metadataReferenceDictionary.Value.Values;
 
     /// <summary>
     ///     Gets the type name, which can be language-specific.
@@ -174,6 +128,41 @@ public abstract class RoslynExpressionValidator
         return ProcessDiagnostics(expressionToValidate, diagnostics, currentActivity, environment);
     }
 
+    /// <summary>
+    ///     Creates or gets a MetadataReference for an Assembly.
+    /// </summary>
+    /// <param name="asm">Assembly</param>
+    /// <returns>MetadataReference or null if not found</returns>
+    /// <remarks>
+    ///     The default function in CoreWF first tries the non-CLS-compliant method
+    ///     <see cref="System.Reflection.Metadata.AssemblyExtensions.TryGetRawMetadata"/>, which may
+    ///     not work for some assemblies or in certain environments (like Blazor). On failure, the
+    ///     default function will then try
+    ///     <see cref="Microsoft.CodeAnalysis.AssemblyMetadata.CreateFromFile" />. If that also fails,
+    ///     the function returns null and will not be cached.
+    /// </remarks>
+    protected virtual MetadataReference GetMetadataReference(Assembly asm)
+    {
+        try
+        {
+            return References.GetReference(asm);
+        }
+        catch (NotSupportedException) { }
+        catch (NotImplementedException) { }
+
+        if (!string.IsNullOrWhiteSpace(asm.Location))
+        {
+            try
+            {
+                return MetadataReference.CreateFromFile(asm.Location);
+            }
+            catch (IOException) { }
+            catch (NotSupportedException) { }
+        }
+
+        return null;
+    }
+
     private void CreateExpressionValidator(ExpressionToCompile expressionToValidate)
     {
         CompilationUnit = GetCompilationUnit(expressionToValidate);
@@ -219,12 +208,12 @@ public abstract class RoslynExpressionValidator
         foreach (var baseType in allBaseTypes)
         {
             var asm = baseType.Assembly;
-            if (!s_metadataReferenceCache.ContainsKey(asm))
+            if (!_metadataReferenceDictionary.Value.ContainsKey(asm))
             {
-                var meta = MetadataReferenceFunc(asm);
+                var meta = GetMetadataReference(asm);
                 if (meta != null)
                 {
-                    s_metadataReferenceCache.Add(asm, meta);
+                    _metadataReferenceDictionary.Value.Add(asm, meta);
                     newReferences ??= new List<MetadataReference>();
                     newReferences.Add(meta);
                 }
@@ -246,12 +235,12 @@ public abstract class RoslynExpressionValidator
                 asm = assemblyRef.Assembly;
             }
 
-            if (asm != null && !s_metadataReferenceCache.ContainsKey(asm))
+            if (asm != null && !_metadataReferenceDictionary.Value.ContainsKey(asm))
             {
-                var meta = MetadataReferenceFunc(asm);
+                var meta = GetMetadataReference(asm);
                 if (meta != null)
                 {
-                    s_metadataReferenceCache.Add(asm, meta);
+                    _metadataReferenceDictionary.Value.Add(asm, meta);
                     newReferences ??= new List<MetadataReference>();
                     newReferences.Add(meta);
                 }
@@ -267,5 +256,25 @@ public abstract class RoslynExpressionValidator
         {
             CompilationUnit = CompilationUnit.AddReferences(metadataReferences);
         }
+    }
+
+    private Dictionary<Assembly, MetadataReference> GetInitialMetadataReferences()
+    {
+        var referenceCache = new Dictionary<Assembly, MetadataReference>();
+        foreach (var referencedAssembly in _referencedAssemblies)
+        {
+            if (referenceCache.ContainsKey(referencedAssembly))
+            {
+                continue;
+            }
+
+            var mr = GetMetadataReference(referencedAssembly);
+            if (mr != null)
+            {
+                referenceCache.Add(referencedAssembly, mr);
+            }
+        }
+
+        return referenceCache;
     }
 }
