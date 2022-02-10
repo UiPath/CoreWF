@@ -77,5 +77,8 @@ public class ValidationSettings
     /// Gets or sets a value that tells expression activities to build expressions instead of 
     /// only validating the expression for errors.
     /// </summary>
-    public bool ForceExpressionCache { get; set; } = false;
+    /// <remarks>
+    /// Defaulting to true until validation path is proven.
+    /// </remarks>
+    public bool ForceExpressionCache { get; set; } = true;
 }

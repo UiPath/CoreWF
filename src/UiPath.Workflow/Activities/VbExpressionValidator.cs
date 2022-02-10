@@ -1,7 +1,11 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
+using Microsoft.VisualBasic.Activities;
 
 namespace System.Activities;
 
@@ -16,6 +20,15 @@ public class VbExpressionValidator : RoslynExpressionValidator
     private static readonly VisualBasicParseOptions s_vbScriptParseOptions =
         new(kind: SourceCodeKind.Script, languageVersion: LanguageVersion.Latest);
 
+    private static readonly HashSet<Assembly> s_defaultReferencedAssemblies = new()
+    {
+        typeof(Collections.ICollection).Assembly,
+        typeof(ICollection<>).Assembly,
+        typeof(Enum).Assembly,
+        typeof(ComponentModel.BrowsableAttribute).Assembly,
+        typeof(VisualBasicValue<>).Assembly,
+    };
+
     /// <summary>
     ///     Singleton instance of the default validator.
     /// </summary>
@@ -26,6 +39,23 @@ public class VbExpressionValidator : RoslynExpressionValidator
     }
 
     protected override int IdentifierKind => (int) SyntaxKind.IdentifierName;
+
+    /// <summary>
+    ///     Initializes the MetadataReference collection.
+    /// </summary>
+    public VbExpressionValidator() : this(null) { }
+
+    /// <summary>
+    ///     Initializes the MetadataReference collection.
+    /// </summary>
+    /// <param name="referencedAssemblies">
+    ///     Assemblies to seed the collection.
+    /// </param>
+    public VbExpressionValidator(HashSet<Assembly> referencedAssemblies)
+        : base(referencedAssemblies != null 
+               ? new HashSet<Assembly>(s_defaultReferencedAssemblies.Union(referencedAssemblies)) 
+               : s_defaultReferencedAssemblies) 
+    { }
 
     protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate)
     {

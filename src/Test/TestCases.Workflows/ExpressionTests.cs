@@ -5,14 +5,16 @@ using System.Activities;
 using System.Activities.Statements;
 using System.Activities.Validation;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace TestCases.Workflows;
 
 public class ExpressionTests
 {
-    private ValidationSettings _skipCompilation = new ValidationSettings() { SkipExpressionCompilation = true };
-    private ValidationSettings _forceCache = new ValidationSettings() { ForceExpressionCache = true };
+    private readonly ValidationSettings _skipCompilation = new() { SkipExpressionCompilation = true };
+    private readonly ValidationSettings _forceCache = new() { ForceExpressionCache = true };
+    private readonly ValidationSettings _useValidator = new() { ForceExpressionCache = false };
 
     public static IEnumerable<object[]> ValidVbExpressions
     {
@@ -22,6 +24,8 @@ public class ExpressionTests
             yield return new object[] { @$"String.Concat(""alpha "", v, ""beta "", 1)" };
             yield return new object[] { @$"String.Concat(""alpha "", l(0), ""beta "", 1)" };
             yield return new object[] { @$"String.Concat(""alpha "", d(""gamma""), ""beta "", 1)" };
+            yield return new object[] { @"[Enum].Parse(GetType(ArgumentDirection), ""In"").ToString()" };
+            yield return new object[] { "GetType(Activities.VisualBasicSettings).Name" };
         }
     }
 
@@ -49,8 +53,8 @@ public class ExpressionTests
         workflow.Variables.Add(new Variable<List<string>>("l"));
         workflow.Variables.Add(new Variable<Dictionary<string, List<string>>>("d"));
 
-        ValidationResults validationResults = ActivityValidationServices.Validate(workflow);
-        validationResults.Errors.Count.ShouldBe(0);
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
     }
 
     [Theory]
@@ -66,8 +70,8 @@ public class ExpressionTests
         workflow.Variables.Add(new Variable<List<string>>("l"));
         workflow.Variables.Add(new Variable<Dictionary<string, List<string>>>("d"));
 
-        ValidationResults validationResults = ActivityValidationServices.Validate(workflow);
-        validationResults.Errors.Count.ShouldBe(0);
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
     }
 
     [Fact]
@@ -79,8 +83,8 @@ public class ExpressionTests
         Sequence workflow = new();
         workflow.Activities.Add(writeLine);
 
-        ValidationResults validationResults = ActivityValidationServices.Validate(workflow);
-        validationResults.Errors.Count.ShouldBe(1);
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
     }
 
     [Fact]
@@ -92,8 +96,8 @@ public class ExpressionTests
         Sequence workflow = new();
         workflow.Activities.Add(writeLine);
 
-        ValidationResults validationResults = ActivityValidationServices.Validate(workflow);
-        validationResults.Errors.Count.ShouldBe(1);
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
         validationResults.Errors[0].Message.ShouldBe("The name 'b' does not exist in the current context");
     }
 
@@ -107,7 +111,7 @@ public class ExpressionTests
         workflow.Activities.Add(writeLine);
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _skipCompilation);
-        validationResults.Errors.Count.ShouldBe(0);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
     }
 
     [Fact]
@@ -120,7 +124,7 @@ public class ExpressionTests
         workflow.Activities.Add(writeLine);
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _skipCompilation);
-        validationResults.Errors.Count.ShouldBe(0);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
     }
 
     [Fact]
@@ -134,11 +138,11 @@ public class ExpressionTests
         workflow.Variables.Add(new Variable<string>("b", "I'm a variable"));
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _forceCache);
-        validationResults.Errors.Count.ShouldBe(1);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
         validationResults.Errors[0].Message.ShouldContain("A null propagating operator cannot be converted into an expression tree.");
 
         validationResults = ActivityValidationServices.Validate(workflow);
-        validationResults.Errors.Count.ShouldBe(1);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
         validationResults.Errors[0].Message.ShouldContain("A null propagating operator cannot be converted into an expression tree.");
     }
 }
