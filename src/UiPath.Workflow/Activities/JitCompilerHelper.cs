@@ -35,7 +35,8 @@ internal abstract class JitCompilerHelper
         typeof(CodeTypeDeclaration).Assembly, // System
         typeof(Expression).Assembly, // System.Core
         typeof(Conversions).Assembly, //Microsoft.VisualBasic.Core
-        typeof(Activity).Assembly // System.Activities
+        typeof(Activity).Assembly, // System.Activities,
+        typeof(ActivityBuilder).Assembly // UiPath.Workflow
     };
 
     private static readonly object s_typeReferenceCacheLock = new();
