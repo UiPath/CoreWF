@@ -1,5 +1,6 @@
 ﻿using System.Activities.Expressions;
 using System.Activities.Validation;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -90,12 +91,10 @@ public abstract class RoslynExpressionValidator
     /// <param name="environment">location reference environment for the expression validation</param>
     /// <returns>ValidationError objects for the current activity</returns>
     protected virtual IEnumerable<ValidationError> ProcessDiagnostics(ExpressionToCompile expressionToValidate,
-        IEnumerable<Diagnostic> diagnostics, Activity currentActivity, LocationReferenceEnvironment environment)
+        IEnumerable<TextExpressionCompilerError> diagnostics, Activity currentActivity, LocationReferenceEnvironment environment)
     {
         return from diagnostic in diagnostics
-               where diagnostic.Severity >= DiagnosticSeverity.Warning
-               select new ValidationError(diagnostic.GetMessage(),
-                   diagnostic.Severity == DiagnosticSeverity.Warning);
+               select new ValidationError(diagnostic.Message, diagnostic.IsWarning);
     }
 
     /// <summary>
@@ -124,7 +123,13 @@ public abstract class RoslynExpressionValidator
             new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, typeof(T));
 
         CreateExpressionValidator(expressionToValidate);
-        var diagnostics = CompilationUnit.GetDiagnostics();
+        var diagnostics = CompilationUnit.GetDiagnostics().Select(diagnostic => new TextExpressionCompilerError
+        {
+            SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
+            Number = diagnostic.Id,
+            Message = diagnostic.ToString(),
+            IsWarning = diagnostic.Severity < DiagnosticSeverity.Error
+        });
         return ProcessDiagnostics(expressionToValidate, diagnostics, currentActivity, environment);
     }
 
