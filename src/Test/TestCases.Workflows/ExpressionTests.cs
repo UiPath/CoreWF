@@ -98,7 +98,7 @@ public class ExpressionTests
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
         validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
-        validationResults.Errors[0].Message.ShouldBe("The name 'b' does not exist in the current context");
+        validationResults.Errors[0].Message.ShouldContain("The name 'b' does not exist in the current context");
     }
 
     [Fact]
