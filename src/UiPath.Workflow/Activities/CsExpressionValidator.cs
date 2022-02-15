@@ -1,8 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
+using Microsoft.CSharp.Activities;
 using ReflectionMagic;
 
 namespace System.Activities;
@@ -20,6 +24,15 @@ public class CsExpressionValidator : RoslynExpressionValidator
     private static readonly dynamic s_typeOptions = GetTypeOptions();
     private static readonly dynamic s_typeNameFormatter = GetTypeNameFormatter();
 
+    private static readonly HashSet<Assembly> s_defaultReferencedAssemblies = new()
+    {
+        typeof(Collections.ICollection).Assembly,
+        typeof(ICollection<>).Assembly,
+        typeof(Enum).Assembly,
+        typeof(ComponentModel.BrowsableAttribute).Assembly,
+        typeof(CSharpValue<>).Assembly,
+    };
+
     /// <summary>
     ///     Singleton instance of the default validator.
     /// </summary>
@@ -30,6 +43,23 @@ public class CsExpressionValidator : RoslynExpressionValidator
     }
 
     protected override int IdentifierKind => (int) SyntaxKind.IdentifierName;
+
+    /// <summary>
+    ///     Initializes the MetadataReference collection.
+    /// </summary>
+    public CsExpressionValidator() : this(null) { }
+
+    /// <summary>
+    ///     Initializes the MetadataReference collection.
+    /// </summary>
+    /// <param name="referencedAssemblies">
+    ///     Assemblies to seed the collection.
+    /// </param>
+    public CsExpressionValidator(HashSet<Assembly> referencedAssemblies)
+        : base(referencedAssemblies != null
+               ? new HashSet<Assembly>(s_defaultReferencedAssemblies.Union(referencedAssemblies))
+               : s_defaultReferencedAssemblies)
+    { }
 
     protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate)
     {
