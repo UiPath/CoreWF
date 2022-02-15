@@ -123,6 +123,7 @@ public abstract class RoslynExpressionValidator
             new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, typeof(T));
 
         CreateExpressionValidator(expressionToValidate);
+        ModifyPreppedCompilationUnit(expressionToValidate);
         var diagnostics = CompilationUnit.GetDiagnostics().Select(diagnostic => new TextExpressionCompilerError
         {
             SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
@@ -167,6 +168,18 @@ public abstract class RoslynExpressionValidator
 
         return null;
     }
+
+    /// <summary>
+    ///     After all compilation options and syntax trees have been prepared, this method can be 
+    ///     overridden to make modifications before diagnostics are retrieved.
+    /// </summary>
+    /// <param name="expressionToValidate">Original expression</param>
+    /// <remarks>
+    ///     Compilation object should have all imports, references, and compilation options set
+    ///     and should have the first syntax tree set to the method with the expression. Use the
+    ///     <see cref="CompilationUnit"/> property to get or set the Compilation object.
+    /// </remarks>
+    protected virtual void ModifyPreppedCompilationUnit(ExpressionToCompile expressionToValidate) { }
 
     private void CreateExpressionValidator(ExpressionToCompile expressionToValidate)
     {
