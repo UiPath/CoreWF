@@ -94,7 +94,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
         $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
 
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionToCompile expressionToValidate) =>
-        VisualBasicSyntaxTree.ParseText(expressionToValidate.Code, s_vbScriptParseOptions);
+        VisualBasicSyntaxTree.ParseText("?" + expressionToValidate.Code, s_vbScriptParseOptions);
 
     protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
 }
