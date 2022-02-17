@@ -144,16 +144,22 @@ public class ActivityContext
         public void Dispose() => _context.AllowChainedEnvironmentAccess = false;
     }
 
-    public T GetValue<T>(string locationReferenceName) => GetLocation<T>(locationReferenceName).Value;
+    public T GetValue<T>(string locationReferenceName) => GetValueCore<T>(GetLocationReference(locationReferenceName));
 
     internal Location<T> GetLocation<T>(string locationReferenceName)
+    {
+        var locationReference = GetLocationReference(locationReferenceName);
+        return GetLocation<T>(locationReference);
+    }
+
+    private LocationReference GetLocationReference(string locationReferenceName)
     {
         var environment = Activity.GetParentEnvironment();
         if (!environment.TryGetLocationReference(locationReferenceName, out var locationReference))
         {
             throw new ArgumentOutOfRangeException(nameof(locationReferenceName), SR.LocationExpressionCouldNotBeResolved(locationReferenceName));
         }
-        return GetLocation<T>(locationReference);
+        return locationReference;
     }
 
     // Soft-Link: This method is referenced through reflection by
