@@ -130,6 +130,13 @@ Iterate ArrayList
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
         [Fact]
+        public void InArgumentFromLocationName()
+        {
+            Sequence sequence = new() { Variables = { new Variable<string>("var", "value") }, 
+                Activities = { new WriteLine { Text = InArgument<string>.FromLocationName("var") } } };
+            TestHelper.InvokeWorkflow(sequence).ShouldBe("value"+Environment.NewLine);
+        }
+        [Fact]
         public void FuncCode()
         {
             var activity = FuncCodeOnlyWorkflow();
