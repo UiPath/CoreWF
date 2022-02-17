@@ -177,6 +177,8 @@ public sealed class InArgument<T> : InArgument
         };
     }
 
+    public static InArgument<T> FromLocationName(string locationName) => new(new Value<T>(locationName));
+
     // Soft-Link: This method is referenced through reflection by
     // ExpressionUtilities.TryRewriteLambdaExpression.  Update that
     // file if the signature changes.
