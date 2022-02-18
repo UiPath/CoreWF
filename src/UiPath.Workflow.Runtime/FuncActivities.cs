@@ -44,16 +44,23 @@ public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
     private readonly Func<TLocation, TResult, TLocation> _set;
     public FuncReference(string locationName, Func<TLocation, TResult> get, Func<TLocation, TResult, TLocation> set)
     {
-        _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
+        _locationName = locationName;
         _get = get ?? throw new ArgumentNullException(nameof(get));
         _set = set ?? throw new ArgumentNullException(nameof(set));
     }
     protected override Location<TResult> Execute(CodeActivityContext context)
     {
         Location<TLocation> location;
-        using (context.InheritVariables())
+        if (_locationName != null)
         {
-            location = context.GetLocation<TLocation>(_locationName);
+            using (context.InheritVariables())
+            {
+                location = context.GetLocation<TLocation>(_locationName);
+            }
+        }
+        else
+        {
+            location = new Location<TLocation>();
         }
         return new FuncLocation(location, _get, _set);
     }

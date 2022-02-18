@@ -136,6 +136,21 @@ Iterate ArrayList
                 Activities = { new WriteLine { Text = InArgument<string>.FromLocationName("var") } } };
             TestHelper.InvokeWorkflow(sequence).ShouldBe("value"+Environment.NewLine);
         }
+        string _value;
+        [Fact]
+        public void FuncReferenceNoLocation()
+        {
+            Sequence sequence = new()
+            {
+                Activities = 
+                {
+                    new Assign { To = (OutArgument<string>) new FuncReference<int, string>(null, _ => _value, (_, value) => { _value = value; return 0; }),
+                        Value = (InArgument<string>)"newValue" },
+                    new WriteLine { Text = new FuncValue<string>(_=>_value) }
+                }
+            };
+            TestHelper.InvokeWorkflow(sequence).ShouldBe("newValue" + Environment.NewLine);
+        }
         [Fact]
         public void FuncCode()
         {
