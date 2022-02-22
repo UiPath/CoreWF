@@ -29,13 +29,7 @@ public class Reference<TLocation> : CodeActivity<Location<TLocation>>
 {
     private readonly string _locationName;
     public Reference(string locationName) => _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
-    protected override Location<TLocation> Execute(CodeActivityContext context)
-    {
-        using (context.InheritVariables())
-        {
-            return context.GetLocation<TLocation>(_locationName);
-        }
-    }
+    protected override Location<TLocation> Execute(CodeActivityContext context) => context.GetInheritedLocation<TLocation>(_locationName);
 }
 public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
 {
@@ -50,18 +44,7 @@ public class FuncReference<TLocation, TResult> : CodeActivity<Location<TResult>>
     }
     protected override Location<TResult> Execute(CodeActivityContext context)
     {
-        Location<TLocation> location;
-        if (_locationName != null)
-        {
-            using (context.InheritVariables())
-            {
-                location = context.GetLocation<TLocation>(_locationName);
-            }
-        }
-        else
-        {
-            location = new Location<TLocation>();
-        }
+        var location = _locationName == null ? new Location<TLocation>() : context.GetInheritedLocation<TLocation>(_locationName);
         return new FuncLocation(location, _get, _set);
     }
     class FuncLocation : Location<TResult>

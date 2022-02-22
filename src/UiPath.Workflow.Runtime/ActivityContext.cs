@@ -144,20 +144,28 @@ public class ActivityContext
         public void Dispose() => _context.AllowChainedEnvironmentAccess = false;
     }
 
-    public T GetValue<T>(string locationReferenceName) => GetValueCore<T>(GetLocationReference(locationReferenceName));
+    public T GetValue<T>(string locationName) => GetValueCore<T>(GetLocationReference(locationName));
 
-    internal Location<T> GetLocation<T>(string locationReferenceName)
+    internal Location<T> GetInheritedLocation<T>(string locationName)
     {
-        var locationReference = GetLocationReference(locationReferenceName);
+        using (InheritVariables())
+        {
+            return GetLocation<T>(locationName);
+        }
+    }
+
+    internal Location<T> GetLocation<T>(string locationName)
+    {
+        var locationReference = GetLocationReference(locationName);
         return GetLocation<T>(locationReference);
     }
 
-    private LocationReference GetLocationReference(string locationReferenceName)
+    private LocationReference GetLocationReference(string locationName)
     {
         var environment = Activity.GetParentEnvironment();
-        if (!environment.TryGetLocationReference(locationReferenceName, out var locationReference))
+        if (!environment.TryGetLocationReference(locationName, out var locationReference))
         {
-            throw new ArgumentOutOfRangeException(nameof(locationReferenceName), SR.LocationExpressionCouldNotBeResolved(locationReferenceName));
+            throw new ArgumentOutOfRangeException(nameof(locationName), SR.LocationExpressionCouldNotBeResolved(locationName));
         }
         return locationReference;
     }
