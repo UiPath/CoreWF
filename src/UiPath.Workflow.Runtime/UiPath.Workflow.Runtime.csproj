@@ -23,7 +23,8 @@
     <Using Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectCapability Include="DynamicFileNesting" />
+	<ProjectCapability Include="ConfigurableFileNesting" />
+	<ProjectCapability Include="ConfigurableFileNestingFeatureEnabled" />
   </ItemGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
