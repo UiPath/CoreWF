@@ -61,7 +61,8 @@ public class CsExpressionValidator : RoslynExpressionValidator
                : s_defaultReferencedAssemblies)
     { }
 
-    protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate)
+    protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate,
+        Activity currentActivity, LocationReferenceEnvironment environment)
     {
         if (CompilationUnit == null)
         {
