@@ -71,8 +71,11 @@ public abstract class RoslynExpressionValidator
     ///     Gets the <see cref="Compilation" /> object for the current expression.
     /// </summary>
     /// <param name="expressionToValidate">current expression</param>
+    /// <param name="currentActivity">current activity with the expression</param>
+    /// <param name="environment">location reference environment for the expression validation</param>
     /// <returns>Compilation object</returns>
-    protected abstract Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate);
+    protected abstract Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate, 
+        Activity currentActivity, LocationReferenceEnvironment environment);
 
     /// <summary>
     ///     Gets the <see cref="SyntaxTree" /> for the expression.
@@ -122,7 +125,7 @@ public abstract class RoslynExpressionValidator
         var expressionToValidate =
             new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, typeof(T));
 
-        CreateExpressionValidator(expressionToValidate);
+        CreateExpressionValidator(expressionToValidate, currentActivity, environment);
         ModifyPreppedCompilationUnit(expressionToValidate);
         var diagnostics = CompilationUnit.GetDiagnostics().Select(diagnostic => new TextExpressionCompilerError
         {
@@ -181,9 +184,10 @@ public abstract class RoslynExpressionValidator
     /// </remarks>
     protected virtual void ModifyPreppedCompilationUnit(ExpressionToCompile expressionToValidate) { }
 
-    private void CreateExpressionValidator(ExpressionToCompile expressionToValidate)
+    private void CreateExpressionValidator(ExpressionToCompile expressionToValidate, Activity currentActivity, 
+        LocationReferenceEnvironment environment)
     {
-        CompilationUnit = GetCompilationUnit(expressionToValidate);
+        CompilationUnit = GetCompilationUnit(expressionToValidate, currentActivity, environment);
         var syntaxTree = GetSyntaxTreeForExpression(expressionToValidate);
         var oldSyntaxTree = CompilationUnit!.SyntaxTrees.FirstOrDefault();
         CompilationUnit = oldSyntaxTree == null
