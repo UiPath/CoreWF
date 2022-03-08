@@ -57,7 +57,8 @@ public class VbExpressionValidator : RoslynExpressionValidator
                : s_defaultReferencedAssemblies) 
     { }
 
-    protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate)
+    protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate,
+        Activity currentActivity, LocationReferenceEnvironment environment)
     {
         var globalImports = GlobalImport.Parse(expressionToValidate.ImportedNamespaces);
 
