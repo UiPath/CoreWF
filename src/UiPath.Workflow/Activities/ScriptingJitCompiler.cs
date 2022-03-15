@@ -40,6 +40,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
 
     protected MetadataReference[] MetadataReferences { get; set; }
     protected abstract int IdentifierKind { get; }
+    protected virtual StringComparer IdentifierNameComparer => StringComparer.Ordinal;
     protected abstract string CreateExpressionCode(string types, string names, string code);
     protected abstract string GetTypeName(Type type);
     protected abstract Script<object> Create(string code, ScriptOptions options);
@@ -81,7 +82,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     public IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree)
     {
         return syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind)
-                         .Select(n => n.ToString()).Distinct().ToArray();
+                         .Select(n => n.ToString()).Distinct(IdentifierNameComparer).ToArray();
     }
 }
 
@@ -110,6 +111,7 @@ public class VbJitCompiler : ScriptingJitCompiler
     public VbJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
 
     protected override int IdentifierKind => (int) SyntaxKind.IdentifierName;
+    protected override StringComparer IdentifierNameComparer => StringComparer.OrdinalIgnoreCase;
 
     protected override Script<object> Create(string code, ScriptOptions options) =>
         VisualBasicScript.Create("? " + code, options);
