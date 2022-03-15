@@ -23,11 +23,12 @@ public class VbExpressionValidator : RoslynExpressionValidator
     private static readonly HashSet<Assembly> s_defaultReferencedAssemblies = new()
     {
         typeof(Collections.ICollection).Assembly,
-        typeof(ICollection<>).Assembly,
         typeof(Enum).Assembly,
         typeof(ComponentModel.BrowsableAttribute).Assembly,
         typeof(VisualBasicValue<>).Assembly,
     };
+
+    private Compilation DefaultCompilationUnit;
 
     /// <summary>
     ///     Singleton instance of the default validator.
@@ -57,12 +58,12 @@ public class VbExpressionValidator : RoslynExpressionValidator
                : s_defaultReferencedAssemblies) 
     { }
 
-    protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate,
-        Activity currentActivity, LocationReferenceEnvironment environment)
+    protected override void UpdateCompilationUnit(ExpressionContainer expressionContainer)
     {
-        var globalImports = GlobalImport.Parse(expressionToValidate.ImportedNamespaces);
+        var globalImports = GlobalImport.Parse(expressionContainer.ExpressionToValidate.ImportedNamespaces);
+        var metadataReferences = GetMetadataReferencesForExpression(expressionContainer);
 
-        if (CompilationUnit == null)
+        if (DefaultCompilationUnit == null)
         {
             var assemblyName = Guid.NewGuid().ToString();
             VisualBasicCompilationOptions options = new(
@@ -76,26 +77,32 @@ public class VbExpressionValidator : RoslynExpressionValidator
                 optionCompareText: false,
                 embedVbCoreRuntime: false,
                 optimizationLevel: OptimizationLevel.Debug,
-                checkOverflow: false,
+                checkOverflow: true,
                 xmlReferenceResolver: null,
                 sourceReferenceResolver: SourceFileResolver.Default,
                 concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")),
                 assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
-            return VisualBasicCompilation.Create(assemblyName, null, MetadataReferences, options);
+            expressionContainer.CompilationUnit = DefaultCompilationUnit = 
+                VisualBasicCompilation.Create(assemblyName, null, metadataReferences, options);
         }
         else
         {
-            // Replace imports
-            var options = CompilationUnit.Options as VisualBasicCompilationOptions;
-            return CompilationUnit.WithOptions(options!.WithGlobalImports(globalImports));
+            var options = DefaultCompilationUnit.Options as VisualBasicCompilationOptions;
+            var compilation = DefaultCompilationUnit.WithOptions(options!.WithGlobalImports(globalImports));
+
+            var missingReferences = compilation.References.Except(metadataReferences);
+            expressionContainer.CompilationUnit = 
+                missingReferences.Any() 
+                ? compilation.AddReferences(missingReferences) 
+                : compilation;
         }
     }
 
     protected override string CreateValidationCode(string types, string names, string code) =>
         $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
 
-    protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionToCompile expressionToValidate) =>
-        VisualBasicSyntaxTree.ParseText("?" + expressionToValidate.Code, s_vbScriptParseOptions);
+    protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) =>
+        VisualBasicSyntaxTree.ParseText("? " + expressionContainer.ExpressionToValidate.Code, s_vbScriptParseOptions);
 
     protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
 }

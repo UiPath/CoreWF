@@ -1,5 +1,4 @@
-﻿using System.Activities.Expressions;
-using System.Activities.Validation;
+﻿using System.Activities.Validation;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
@@ -16,25 +15,34 @@ namespace System.Activities;
 public abstract class RoslynExpressionValidator
 {
     private const string Comma = ", ";
-    private readonly HashSet<Assembly> _referencedAssemblies = new();
     private readonly Lazy<Dictionary<Assembly, MetadataReference>> _metadataReferenceDictionary;
+    private readonly object _lockRequiredAssemblies = new();
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
     /// </summary>
-    /// <param name="referencedAssemblies">
+    /// <param name="seedAssemblies">
     ///     Assemblies to seed the collection. Will union with
     ///     <see cref="JitCompilerHelper.DefaultReferencedAssemblies" />.
     /// </param>
-    protected RoslynExpressionValidator(HashSet<Assembly> referencedAssemblies = null)
+    protected RoslynExpressionValidator(HashSet<Assembly> seedAssemblies = null)
     {
         _metadataReferenceDictionary = new(GetInitialMetadataReferences);
-        _referencedAssemblies.UnionWith(JitCompilerHelper.DefaultReferencedAssemblies);
-        if (referencedAssemblies != null)
+        var assembliesToReference = new HashSet<Assembly>();
+        assembliesToReference.UnionWith(JitCompilerHelper.DefaultReferencedAssemblies);
+        if (seedAssemblies != null)
         {
-            _referencedAssemblies.UnionWith(referencedAssemblies);
+            assembliesToReference.UnionWith(seedAssemblies);
         }
+
+        RequiredAssemblies = assembliesToReference;
     }
+
+    /// <summary>
+    ///     Assemblies required on the <see cref="Compilation"/> object. Use <see cref="AddRequiredAssembly(Assembly)"/>
+    ///     to add more assemblies.
+    /// </summary>
+    protected IReadOnlySet<Assembly> RequiredAssemblies { get; private set; }
 
     /// <summary>
     ///     The kind of identifier to look for in the syntax tree as variables that need to be resolved for the expression.
@@ -42,14 +50,35 @@ public abstract class RoslynExpressionValidator
     protected abstract int IdentifierKind { get; }
 
     /// <summary>
-    ///     Current compilation unit for compiling the expression.
+    ///     Adds an assembly to the <see cref="RequiredAssemblies"/> set.
     /// </summary>
-    protected Compilation CompilationUnit { get; set; }
+    /// <param name="assembly">assembly</param>
+    /// <remarks>
+    ///     Takes a lock and replaces <see cref="RequiredAssemblies"/> with a new set.
+    /// </remarks>
+    public void AddRequiredAssembly(Assembly assembly)
+    {
+        if (!RequiredAssemblies.Contains(assembly))
+        {
+            lock (_lockRequiredAssemblies)
+            {
+                if (!RequiredAssemblies.Contains(assembly))
+                {
+                    var assemblies = new HashSet<Assembly>(RequiredAssemblies);
+                    assemblies.Add(assembly);
+                    RequiredAssemblies = assemblies;
+                }
+            }
+        }
+    }
 
     /// <summary>
-    ///     Gets the MetadataReference objects for all of the referenced assemblies that this compilation unit could use.
+    ///     Gets the MetadataReference objects for all of the referenced assemblies that expression requires.
     /// </summary>
-    protected IEnumerable<MetadataReference> MetadataReferences => _metadataReferenceDictionary.Value.Values;
+    /// <param name="expressionContainer">expression container</param>
+    /// <returns>MetadataReference objects for all required assemblies</returns>
+    protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) => 
+        expressionContainer.RequiredAssemblies.Select(a => _metadataReferenceDictionary.Value.GetValueOrDefault(a));
 
     /// <summary>
     ///     Gets the type name, which can be language-specific.
@@ -68,42 +97,34 @@ public abstract class RoslynExpressionValidator
     protected abstract string CreateValidationCode(string types, string names, string code);
 
     /// <summary>
-    ///     Gets the <see cref="Compilation" /> object for the current expression.
+    ///     Updates the <see cref="Compilation" /> object for the expression.
     /// </summary>
-    /// <param name="expressionToValidate">current expression</param>
-    /// <param name="currentActivity">current activity with the expression</param>
-    /// <param name="environment">location reference environment for the expression validation</param>
-    /// <returns>Compilation object</returns>
-    protected abstract Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate, 
-        Activity currentActivity, LocationReferenceEnvironment environment);
+    /// <param name="expressionContainer">expression container</param>
+    protected abstract void UpdateCompilationUnit(ExpressionContainer expressionContainer);
 
     /// <summary>
     ///     Gets the <see cref="SyntaxTree" /> for the expression.
     /// </summary>
-    /// <param name="expressionToValidate">contains the text expression</param>
+    /// <param name="expressionContainer">contains the text expression</param>
     /// <returns>a syntax tree to use in the <see cref="Compilation" /></returns>
-    protected abstract SyntaxTree GetSyntaxTreeForExpression(ExpressionToCompile expressionToValidate);
+    protected abstract SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer);
 
     /// <summary>
     ///     Convert diagnostic messages from the compilation into ValidationError objects that can be added to the activity's
     ///     metadata.
     /// </summary>
-    /// <param name="expressionToValidate">expression that was diagnosed</param>
-    /// <param name="diagnostics">diagnostics returned from the compilation of an expression</param>
-    /// <param name="currentActivity">current activity with the expression</param>
-    /// <param name="environment">location reference environment for the expression validation</param>
-    /// <returns>ValidationError objects for the current activity</returns>
-    protected virtual IEnumerable<ValidationError> ProcessDiagnostics(ExpressionToCompile expressionToValidate,
-        IEnumerable<TextExpressionCompilerError> diagnostics, Activity currentActivity, LocationReferenceEnvironment environment)
+    /// <param name="expressionContainer">expression container</param>
+    /// <returns>ValidationError objects that will be added to current activity's metadata</returns>
+    protected virtual IEnumerable<ValidationError> ProcessDiagnostics(ExpressionContainer expressionContainer)
     {
-        return from diagnostic in diagnostics
+        return from diagnostic in expressionContainer.Diagnostics
                select new ValidationError(diagnostic.Message, diagnostic.IsWarning);
     }
 
     /// <summary>
     ///     Validates an expression and returns any validation errors.
     /// </summary>
-    /// <typeparam name="T">Expression return type</typeparam>
+    /// <typeparam name="TResult">Expression return type</typeparam>
     /// <param name="currentActivity">activity containing the expression</param>
     /// <param name="environment">location reference environment</param>
     /// <param name="expressionText">expression text</param>
@@ -112,58 +133,86 @@ public abstract class RoslynExpressionValidator
     ///     Handles common steps for validating expressions with Roslyn. Can be reused for multiple expressions in the same
     ///     language.
     /// </remarks>
-    public IEnumerable<ValidationError> Validate<T>(Activity currentActivity, LocationReferenceEnvironment environment,
+    public IEnumerable<ValidationError> Validate<TResult>(Activity currentActivity, LocationReferenceEnvironment environment,
         string expressionText)
     {
-        EnsureReturnTypeReferenced<T>();
+        var requiredAssemblies = new HashSet<Assembly>(RequiredAssemblies);
+        var resultType = typeof(TResult);
+        var expressionContainer = new ExpressionContainer()
+        {
+            ResultType = resultType,
+            CurrentActivity = currentActivity,
+            Environment = environment,
+        };
 
-        JitCompilerHelper.GetAllImportReferences(currentActivity, true, out var localNamespaces,
-            out var localAssemblies);
-        EnsureAssembliesInCompilationUnit(localAssemblies);
+        JitCompilerHelper.GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
+        requiredAssemblies.UnionWith(localAssemblies.Select(a =>
+        {
+            if (a.Assembly == null)
+            {
+                a.LoadAssembly();
+            }
+            return a.Assembly;
+        }));
+        expressionContainer.RequiredAssemblies = requiredAssemblies;
 
         var scriptAndTypeScope = new JitCompilerHelper.ScriptAndTypeScope(environment, null);
-        var expressionToValidate =
-            new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, typeof(T));
+        expressionContainer.ExpressionToValidate =
+            new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, resultType);
 
-        CreateExpressionValidator(expressionToValidate, currentActivity, environment);
-        ModifyPreppedCompilationUnit(expressionToValidate);
-        var diagnostics = CompilationUnit.GetDiagnostics().Select(diagnostic => new TextExpressionCompilerError
-        {
-            SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
-            Number = diagnostic.Id,
-            Message = diagnostic.ToString(),
-            IsWarning = diagnostic.Severity < DiagnosticSeverity.Error
-        });
-        return ProcessDiagnostics(expressionToValidate, diagnostics, currentActivity, environment);
+        EnsureAssembliesLoaded(expressionContainer);
+        UpdateCompilationUnit(expressionContainer);
+        EnsureReturnTypeReferenced(expressionContainer);
+
+        var syntaxTree = GetSyntaxTreeForExpression(expressionContainer);
+        expressionContainer.CompilationUnit = expressionContainer.CompilationUnit.AddSyntaxTrees(syntaxTree);
+        PrepValidation(expressionContainer);
+
+        ModifyPreppedCompilationUnit(expressionContainer);
+        var diagnostics = expressionContainer.CompilationUnit.GetDiagnostics().Select(diagnostic => 
+            new TextExpressionCompilerError
+            {
+                SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
+                Number = diagnostic.Id,
+                Message = diagnostic.ToString(),
+                IsWarning = diagnostic.Severity < DiagnosticSeverity.Error
+            });
+        expressionContainer.Diagnostics = diagnostics;
+        return ProcessDiagnostics(expressionContainer);
     }
 
     /// <summary>
     ///     Creates or gets a MetadataReference for an Assembly.
     /// </summary>
-    /// <param name="asm">Assembly</param>
+    /// <param name="assemblyReference">Assembly reference</param>
     /// <returns>MetadataReference or null if not found</returns>
     /// <remarks>
     ///     The default function in CoreWF first tries the non-CLS-compliant method
-    ///     <see cref="System.Reflection.Metadata.AssemblyExtensions.TryGetRawMetadata"/>, which may
+    ///     <see cref="Reflection.Metadata.AssemblyExtensions.TryGetRawMetadata"/>, which may
     ///     not work for some assemblies or in certain environments (like Blazor). On failure, the
     ///     default function will then try
-    ///     <see cref="Microsoft.CodeAnalysis.AssemblyMetadata.CreateFromFile" />. If that also fails,
+    ///     <see cref="AssemblyMetadata.CreateFromFile" />. If that also fails,
     ///     the function returns null and will not be cached.
     /// </remarks>
-    protected virtual MetadataReference GetMetadataReference(Assembly asm)
+    protected virtual MetadataReference GetMetadataReferenceForAssembly(Assembly assembly)
     {
+        if (assembly == null)
+        {
+            return null;
+        }
+
         try
         {
-            return References.GetReference(asm);
+            return References.GetReference(assembly);
         }
         catch (NotSupportedException) { }
         catch (NotImplementedException) { }
 
-        if (!string.IsNullOrWhiteSpace(asm.Location))
+        if (!string.IsNullOrWhiteSpace(assembly.Location))
         {
             try
             {
-                return MetadataReference.CreateFromFile(asm.Location);
+                return MetadataReference.CreateFromFile(assembly.Location);
             }
             catch (IOException) { }
             catch (NotSupportedException) { }
@@ -176,34 +225,23 @@ public abstract class RoslynExpressionValidator
     ///     After all compilation options and syntax trees have been prepared, this method can be 
     ///     overridden to make modifications before diagnostics are retrieved.
     /// </summary>
-    /// <param name="expressionToValidate">Original expression</param>
+    /// <param name="expressionContainer">expression container</param>
     /// <remarks>
     ///     Compilation object should have all imports, references, and compilation options set
     ///     and should have the first syntax tree set to the method with the expression. Use the
-    ///     <see cref="CompilationUnit"/> property to get or set the Compilation object.
+    ///     <see cref="ExpressionContainer.CompilationUnit"/> property to get or set the 
+    ///     Compilation object.
     /// </remarks>
-    protected virtual void ModifyPreppedCompilationUnit(ExpressionToCompile expressionToValidate) { }
+    protected virtual void ModifyPreppedCompilationUnit(ExpressionContainer expressionContainer) { }
 
-    private void CreateExpressionValidator(ExpressionToCompile expressionToValidate, Activity currentActivity, 
-        LocationReferenceEnvironment environment)
+    private void PrepValidation(ExpressionContainer expressionContainer)
     {
-        CompilationUnit = GetCompilationUnit(expressionToValidate, currentActivity, environment);
-        var syntaxTree = GetSyntaxTreeForExpression(expressionToValidate);
-        var oldSyntaxTree = CompilationUnit!.SyntaxTrees.FirstOrDefault();
-        CompilationUnit = oldSyntaxTree == null
-            ? CompilationUnit!.AddSyntaxTrees(syntaxTree)
-            : CompilationUnit.ReplaceSyntaxTree(oldSyntaxTree, syntaxTree);
-        PrepValidation(expressionToValidate);
-    }
-
-    private void PrepValidation(ExpressionToCompile expressionToValidate)
-    {
-        var syntaxTree = CompilationUnit.SyntaxTrees.First();
+        var syntaxTree = expressionContainer.CompilationUnit.SyntaxTrees.First();
         var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind)
                                     .Select(n => n.ToString()).Distinct();
         var resolvedIdentifiers =
             identifiers
-                .Select(name => (Name: name, Type: expressionToValidate.VariableTypeGetter(name)))
+                .Select(name => (Name: name, Type: expressionContainer.ExpressionToValidate.VariableTypeGetter(name)))
                 .Where(var => var.Type != null)
                 .ToArray();
 
@@ -211,86 +249,66 @@ public abstract class RoslynExpressionValidator
         var types = string.Join(Comma,
             resolvedIdentifiers
                 .Select(var => var.Type)
-                .Concat(new[] {expressionToValidate.LambdaReturnType})
+                .Concat(new[] { expressionContainer.ResultType })
                 .Select(GetTypeName));
 
-        var lambdaFuncCode = CreateValidationCode(types, names, expressionToValidate.Code);
+        var lambdaFuncCode = CreateValidationCode(types, names, expressionContainer.ExpressionToValidate.Code);
         var sourceText = SourceText.From(lambdaFuncCode);
         var newSyntaxTree = syntaxTree.WithChangedText(sourceText);
-        CompilationUnit = CompilationUnit.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
+        expressionContainer.CompilationUnit = expressionContainer.CompilationUnit.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
     }
 
-    private void EnsureReturnTypeReferenced<T>()
+    private void EnsureReturnTypeReferenced(ExpressionContainer expressionContainer)
     {
-        var expressionReturnType = typeof(T);
-
         HashSet<Type> allBaseTypes = null;
-        JitCompilerHelper.EnsureTypeReferenced(expressionReturnType, ref allBaseTypes);
-        List<MetadataReference> newReferences = null;
+        JitCompilerHelper.EnsureTypeReferenced(expressionContainer.ResultType, ref allBaseTypes);
+        Lazy<List<MetadataReference>> newReferences = new();
         foreach (var baseType in allBaseTypes)
         {
             var asm = baseType.Assembly;
             if (!_metadataReferenceDictionary.Value.ContainsKey(asm))
             {
-                var meta = GetMetadataReference(asm);
+                var meta = GetMetadataReferenceForAssembly(asm);
                 if (meta != null)
                 {
                     _metadataReferenceDictionary.Value.Add(asm, meta);
-                    newReferences ??= new List<MetadataReference>();
-                    newReferences.Add(meta);
+                    newReferences.Value.Add(meta);
                 }
             }
         }
 
-        UpdateMetadataReferencesInCompilationUnit(newReferences);
+        if (newReferences.IsValueCreated && expressionContainer.CompilationUnit != null)
+        {
+            expressionContainer.CompilationUnit = expressionContainer.CompilationUnit.AddReferences(newReferences.Value);
+        }
     }
 
-    private void EnsureAssembliesInCompilationUnit(List<AssemblyReference> localAssemblies)
+    private void EnsureAssembliesLoaded(ExpressionContainer expressionContainer)
     {
-        List<MetadataReference> newReferences = null;
-        foreach (var assemblyRef in localAssemblies)
+        foreach (var assembly in expressionContainer.RequiredAssemblies)
         {
-            var asm = assemblyRef.Assembly;
-            if (asm == null)
+            if (assembly != null && !_metadataReferenceDictionary.Value.ContainsKey(assembly))
             {
-                assemblyRef.LoadAssembly();
-                asm = assemblyRef.Assembly;
-            }
-
-            if (asm != null && !_metadataReferenceDictionary.Value.ContainsKey(asm))
-            {
-                var meta = GetMetadataReference(asm);
+                var meta = GetMetadataReferenceForAssembly(assembly);
                 if (meta != null)
                 {
-                    _metadataReferenceDictionary.Value.Add(asm, meta);
-                    newReferences ??= new List<MetadataReference>();
-                    newReferences.Add(meta);
+                    _metadataReferenceDictionary.Value.TryAdd(assembly, meta);
                 }
             }
-        }
-
-        UpdateMetadataReferencesInCompilationUnit(newReferences);
-    }
-
-    private void UpdateMetadataReferencesInCompilationUnit(IEnumerable<MetadataReference> metadataReferences)
-    {
-        if (metadataReferences != null && CompilationUnit != null)
-        {
-            CompilationUnit = CompilationUnit.AddReferences(metadataReferences);
         }
     }
 
     private Dictionary<Assembly, MetadataReference> GetInitialMetadataReferences()
     {
         var referenceCache = new Dictionary<Assembly, MetadataReference>();
-        foreach (var referencedAssembly in _referencedAssemblies)
+        foreach (var referencedAssembly in RequiredAssemblies)
         {
             if (referenceCache.ContainsKey(referencedAssembly))
             {
                 continue;
             }
 
-            var mr = GetMetadataReference(referencedAssembly);
+            var mr = GetMetadataReferenceForAssembly(referencedAssembly);
             if (mr != null)
             {
                 referenceCache.Add(referencedAssembly, mr);

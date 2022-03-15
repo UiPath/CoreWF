@@ -27,10 +27,11 @@ public class VisualBasicSettings
         //"mscorlib"
         new VisualBasicImportReference {Import = "System", Assembly = typeof(object).Assembly.FullName},
         new VisualBasicImportReference {Import = "System.Collections", Assembly = "System.Runtime"},
-        new VisualBasicImportReference {Import = "System.Collections.Generic", Assembly = "System.Runtime"},
+        new VisualBasicImportReference {Import = "System.Collections.Generic", Assembly = "System.Collections"},
         //"system"
         new VisualBasicImportReference
             {Import = "System.ComponentModel", Assembly = typeof(BrowsableAttribute).Assembly.FullName},
+        new VisualBasicImportReference { Import = "System.Linq", Assembly = typeof(System.Linq.Enumerable).Assembly.FullName },
         new VisualBasicImportReference
             {Import = "System.Linq.Expressions", Assembly = typeof(Expression).Assembly.FullName},
         new VisualBasicImportReference {Import = "System", Assembly = "system"},
