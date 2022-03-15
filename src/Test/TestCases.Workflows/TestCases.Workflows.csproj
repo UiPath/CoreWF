@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
+    <ProjectReference Include="..\CustomTestObjects\CustomTestObjects.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Page Remove="**\*.xaml" />

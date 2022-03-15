@@ -33,6 +33,8 @@ public class CsExpressionValidator : RoslynExpressionValidator
         typeof(CSharpValue<>).Assembly,
     };
 
+    private Compilation DefaultCompilationUnit;
+
     /// <summary>
     ///     Singleton instance of the default validator.
     /// </summary>
@@ -61,37 +63,45 @@ public class CsExpressionValidator : RoslynExpressionValidator
                : s_defaultReferencedAssemblies)
     { }
 
-    protected override Compilation GetCompilationUnit(ExpressionToCompile expressionToValidate,
-        Activity currentActivity, LocationReferenceEnvironment environment)
+    protected override void UpdateCompilationUnit(ExpressionContainer expressionContainer)
     {
-        if (CompilationUnit == null)
+        var metadataReferences = GetMetadataReferencesForExpression(expressionContainer);
+
+        if (DefaultCompilationUnit == null)
         {
             var assemblyName = Guid.NewGuid().ToString();
             CSharpCompilationOptions options = new(
                 OutputKind.DynamicallyLinkedLibrary,
                 mainTypeName: null,
-                usings: expressionToValidate.ImportedNamespaces,
+                usings: expressionContainer.ExpressionToValidate.ImportedNamespaces,
                 optimizationLevel: OptimizationLevel.Debug,
                 checkOverflow: false,
                 xmlReferenceResolver: null,
                 sourceReferenceResolver: SourceFileResolver.Default,
                 concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")),
                 assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
-            return CSharpCompilation.Create(assemblyName, null, MetadataReferences, options);
+            expressionContainer.CompilationUnit = DefaultCompilationUnit = 
+                CSharpCompilation.Create(assemblyName, null, metadataReferences, options);
         }
         else
         {
-            // Replace imports
-            var options = CompilationUnit.Options as CSharpCompilationOptions;
-            return CompilationUnit.WithOptions(options.WithUsings(expressionToValidate.ImportedNamespaces));
+            var options = DefaultCompilationUnit.Options as CSharpCompilationOptions;
+            var compilation = DefaultCompilationUnit.WithOptions(
+                options.WithUsings(expressionContainer.ExpressionToValidate.ImportedNamespaces));
+
+            var missingReferences = compilation.References.Except(metadataReferences);
+            expressionContainer.CompilationUnit =
+                missingReferences.Any()
+                ? compilation.AddReferences(missingReferences)
+                : compilation;
         }
     }
 
     protected override string CreateValidationCode(string types, string names, string code) => 
         $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
 
-    protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionToCompile expressionToValidate) => 
-        CSharpSyntaxTree.ParseText(expressionToValidate.Code, s_csScriptParseOptions);
+    protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) => 
+        CSharpSyntaxTree.ParseText(expressionContainer.ExpressionToValidate.Code, s_csScriptParseOptions);
 
     protected override string GetTypeName(Type type) => 
         (string) s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
@@ -108,10 +118,11 @@ public class CsExpressionValidator : RoslynExpressionValidator
 
     private static object GetTypeNameFormatter()
     {
-        return typeof(CSharpScript).Assembly
-                                   .GetType("Microsoft.CodeAnalysis.CSharp.Scripting.Hosting.CSharpObjectFormatter")
-                                   .AsDynamicType()
-                                   .s_impl
-                                   .TypeNameFormatter;
+        return typeof(CSharpScript)
+            .Assembly
+            .GetType("Microsoft.CodeAnalysis.CSharp.Scripting.Hosting.CSharpObjectFormatter")
+            .AsDynamicType()
+            .s_impl
+            .TypeNameFormatter;
     }
 }

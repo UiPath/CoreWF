@@ -16,6 +16,7 @@ public class Expressions
     private readonly Activity[] _vbSingleExpr100;
     private readonly Activity[] _cs400Stmts;
     private int _activityIndex;
+    private readonly ValidationSettings _useValidator = new() { ForceExpressionCache = false };
 
     public Expressions()
     {
@@ -53,7 +54,7 @@ public class Expressions
     {
         var activity = _vb100Stmts[_activityIndex];
         _activityIndex = (_activityIndex + 1) % _vb100Stmts.Length;
-        _ = ActivityValidationServices.Validate(activity);
+        _ = ActivityValidationServices.Validate(activity, _useValidator);
     }
 
     [Benchmark]
@@ -61,7 +62,7 @@ public class Expressions
     {
         var activity = _vb400Stmts[_activityIndex];
         _activityIndex = (_activityIndex + 1) % _vb400Stmts.Length;
-        _ = ActivityValidationServices.Validate(activity);
+        _ = ActivityValidationServices.Validate(activity, _useValidator);
     }
 
     //[Benchmark]
@@ -69,7 +70,7 @@ public class Expressions
     {
         var activity = _vbSingleExpr100[_activityIndex];
         _activityIndex = (_activityIndex + 1) % _vbSingleExpr100.Length;
-        _ = ActivityValidationServices.Validate(activity);
+        _ = ActivityValidationServices.Validate(activity, _useValidator);
     }
 
     [Benchmark]
@@ -109,7 +110,7 @@ public class Expressions
     {
         var activity = _cs400Stmts[_activityIndex];
         _activityIndex = (_activityIndex + 1) % _cs400Stmts.Length;
-        _ = ActivityValidationServices.Validate(activity);
+        _ = ActivityValidationServices.Validate(activity, _useValidator);
     }
 
     private static Activity GenerateManyExpressionsWorkflow(int startExprNum, int numExpressions, string language = "VB")
