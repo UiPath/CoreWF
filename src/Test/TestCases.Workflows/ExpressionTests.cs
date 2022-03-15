@@ -1,4 +1,5 @@
-﻿using Microsoft.CSharp.Activities;
+﻿using CustomTestObjects;
+using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using Shouldly;
 using System.Activities;
@@ -38,6 +39,13 @@ public class ExpressionTests
             yield return new object[] { $@"string.Join(',', ""alpha"", l[0], 1, ""beta"")" };
             yield return new object[] { $@"string.Join(',', ""alpha"", d[""gamma""], 1, ""beta"")" };
         }
+    }
+
+    static ExpressionTests()
+    {
+        // There's no programmatic way (that I know of) to add assembly references when creating workflows like in these tests.
+        // Adding the custom assembly directly to the expression validator to simulate XAML reference.
+        VbExpressionValidator.Instance = new VbExpressionValidator(new() { typeof(ClassWithCollectionProperties).Assembly });
     }
 
     [Theory]
@@ -141,8 +149,50 @@ public class ExpressionTests
         validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
         validationResults.Errors[0].Message.ShouldContain("A null propagating operator cannot be converted into an expression tree.");
 
-        validationResults = ActivityValidationServices.Validate(workflow);
+        validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
         validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
         validationResults.Errors[0].Message.ShouldContain("A null propagating operator cannot be converted into an expression tree.");
+    }
+
+    [Fact]
+    public void Vb_LambdaExtension()
+    {
+        VisualBasicValue<string> vbv = new("list.First()");
+        WriteLine writeLine = new();
+        writeLine.Text = new InArgument<string>(vbv);
+        Sequence workflow = new();
+        workflow.Activities.Add(writeLine);
+        workflow.Variables.Add(new Variable<List<string>>("list"));
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+    }
+
+    [Fact]
+    public void Vb_Dictionary()
+    {
+        VisualBasicValue<string> vbv = new("something.FooDictionary(\"key\").ToString()");
+        WriteLine writeLine = new();
+        writeLine.Text = new InArgument<string>(vbv);
+        Sequence workflow = new();
+        workflow.Activities.Add(writeLine);
+        workflow.Variables.Add(new Variable<ClassWithCollectionProperties>("something"));
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+    }
+
+    [Fact]
+    public void Vb_IntOverflow()
+    {
+        VisualBasicValue<int> vbv = new("2147483648");
+        Sequence workflow = new();
+        workflow.Variables.Add(new Variable<int>("someint"));
+        Assign assign = new() { To = new OutArgument<int>(workflow.Variables[0]), Value = new InArgument<int>(vbv) };
+        workflow.Activities.Add(assign);
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+        validationResults.Errors[0].Message.ShouldContain("error BC30439: Constant expression not representable in type 'Integer'");
     }
 }
