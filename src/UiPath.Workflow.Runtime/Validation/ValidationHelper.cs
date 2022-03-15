@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace System.Activities.Validation;
 
-public static class ValidationHelper
+internal static class ValidationHelper
 {
     public static void ValidateArguments(
         Activity activity,

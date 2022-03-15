@@ -1,4 +1,5 @@
-﻿using System.Activities.Validation;
+﻿using System.Activities.Expressions;
+using System.Activities.Validation;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
@@ -54,7 +55,8 @@ public abstract class RoslynExpressionValidator
     /// </summary>
     /// <param name="assembly">assembly</param>
     /// <remarks>
-    ///     Takes a lock and replaces <see cref="RequiredAssemblies"/> with a new set.
+    ///     Takes a lock and replaces <see cref="RequiredAssemblies"/> with a new set. Lock is taken in case
+    ///     multiple threads are adding assemblies simultaneously.
     /// </remarks>
     public void AddRequiredAssembly(Assembly assembly)
     {
@@ -64,9 +66,10 @@ public abstract class RoslynExpressionValidator
             {
                 if (!RequiredAssemblies.Contains(assembly))
                 {
-                    var assemblies = new HashSet<Assembly>(RequiredAssemblies);
-                    assemblies.Add(assembly);
-                    RequiredAssemblies = assemblies;
+                    RequiredAssemblies = new HashSet<Assembly>(RequiredAssemblies)
+                    {
+                        assembly
+                    };
                 }
             }
         }
@@ -78,7 +81,7 @@ public abstract class RoslynExpressionValidator
     /// <param name="expressionContainer">expression container</param>
     /// <returns>MetadataReference objects for all required assemblies</returns>
     protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) => 
-        expressionContainer.RequiredAssemblies.Select(a => _metadataReferenceDictionary.Value.GetValueOrDefault(a));
+        expressionContainer.RequiredAssemblies.Select(a => _metadataReferenceDictionary.Value.GetValueOrDefault(a)).Where(a => a != null);
 
     /// <summary>
     ///     Gets the type name, which can be language-specific.
@@ -146,14 +149,7 @@ public abstract class RoslynExpressionValidator
         };
 
         JitCompilerHelper.GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
-        requiredAssemblies.UnionWith(localAssemblies.Select(a =>
-        {
-            if (a.Assembly == null)
-            {
-                a.LoadAssembly();
-            }
-            return a.Assembly;
-        }));
+        requiredAssemblies.UnionWith(localAssemblies.Select(asmRef => asmRef.Assembly ?? LoadAssemblyFromReference(asmRef)));
         expressionContainer.RequiredAssemblies = requiredAssemblies;
 
         var scriptAndTypeScope = new JitCompilerHelper.ScriptAndTypeScope(environment, null);
@@ -233,6 +229,18 @@ public abstract class RoslynExpressionValidator
     ///     Compilation object.
     /// </remarks>
     protected virtual void ModifyPreppedCompilationUnit(ExpressionContainer expressionContainer) { }
+
+    /// <summary>
+    ///     If <see cref="AssemblyReference.Assembly"/> is null, loads the assembly. Default is to
+    ///     call <see cref="AssemblyReference.LoadAssembly"/>.
+    /// </summary>
+    /// <param name="assemblyReference"></param>
+    /// <returns></returns>
+    protected virtual Assembly LoadAssemblyFromReference(AssemblyReference assemblyReference)
+    {
+        assemblyReference.LoadAssembly();
+        return assemblyReference.Assembly;
+    }
 
     private void PrepValidation(ExpressionContainer expressionContainer)
     {
