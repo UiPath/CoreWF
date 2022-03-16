@@ -45,7 +45,8 @@ public class ExpressionTests
     {
         // There's no programmatic way (that I know of) to add assembly references when creating workflows like in these tests.
         // Adding the custom assembly directly to the expression validator to simulate XAML reference.
-        VbExpressionValidator.Instance = new VbExpressionValidator(new() { typeof(ClassWithCollectionProperties).Assembly });
+        // The null is for testing purposes.
+        VbExpressionValidator.Instance = new VbExpressionValidator(new() { typeof(ClassWithCollectionProperties).Assembly, null });
     }
 
     [Theory]
