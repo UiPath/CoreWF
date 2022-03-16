@@ -36,6 +36,7 @@ public abstract class RoslynExpressionValidator
             assembliesToReference.UnionWith(seedAssemblies);
         }
 
+        assembliesToReference.RemoveWhere(x => x == null);
         RequiredAssemblies = assembliesToReference;
     }
 
@@ -81,7 +82,8 @@ public abstract class RoslynExpressionValidator
     /// <param name="expressionContainer">expression container</param>
     /// <returns>MetadataReference objects for all required assemblies</returns>
     protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) => 
-        expressionContainer.RequiredAssemblies.Select(a => _metadataReferenceDictionary.Value.GetValueOrDefault(a)).Where(a => a != null);
+        expressionContainer.RequiredAssemblies.Where(asm => asm != null)
+        .Select(asm => _metadataReferenceDictionary.Value.GetValueOrDefault(asm)).Where(mr => mr != null);
 
     /// <summary>
     ///     Gets the type name, which can be language-specific.
@@ -311,7 +313,7 @@ public abstract class RoslynExpressionValidator
         var referenceCache = new Dictionary<Assembly, MetadataReference>();
         foreach (var referencedAssembly in RequiredAssemblies)
         {
-            if (referenceCache.ContainsKey(referencedAssembly))
+            if (referencedAssembly == null || referenceCache.ContainsKey(referencedAssembly))
             {
                 continue;
             }
