@@ -12,7 +12,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Collections;
-using System.Security;
 using System.Threading;
 using Microsoft.VisualBasic.Activities;
 using Microsoft.VisualBasic.CompilerServices;
@@ -83,7 +82,7 @@ internal abstract class JitCompilerHelper
                     throw;
                 }
 
-                FxTrace.Exception.TraceUnhandledException(e);
+                ExceptionTrace.TraceUnhandledException(e);
             }
         }
     }
@@ -1189,9 +1188,6 @@ internal abstract class JitCompilerHelper
         public bool NamespaceExists(string ns) => false;
     }
 
-    [Fx.Tag.SecurityNoteAttribute(Critical =
-        "Critical because it holds a HostedCompiler instance, which requires FullTrust.")]
-    [SecurityCritical]
     internal class HostedCompilerWrapper
     {
         private readonly object _wrapperLock;
@@ -1276,14 +1272,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
     private static ulong s_lastTimestamp;
     private static readonly object s_rawTreeCacheLock = new();
 
-    [Fx.Tag.SecurityNoteAttribute(Critical =
-        "Critical because it caches objects created under a demand for FullTrust.")]
-    [SecurityCritical]
     private static HopperCache s_rawTreeCache;
 
-    [Fx.Tag.SecurityNoteAttribute(Critical =
-        "Critical because it holds HostedCompilerWrappers which hold HostedCompiler instances, which require FullTrust.")]
-    [SecurityCritical]
     private static CompilerCache s_hostedCompilerCache;
 
     public JitCompilerHelper(string expressionText, HashSet<AssemblyName> refAssemNames,
@@ -1300,20 +1290,11 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
 
     private static HopperCache RawTreeCache
     {
-        [Fx.Tag.SecurityNoteAttribute(Critical = "Critical because it access critical member rawTreeCache.")]
-        [SecurityCritical]
         get => s_rawTreeCache ??= new HopperCache(RawTreeCacheMaxSize, false);
     }
 
     public string TextToCompile { get; }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical =
-            "Critical because it creates Microsoft.Compiler.VisualBasic.HostedCompiler, which is in a non-APTCA assembly, and thus has a LinkDemand.",
-        Safe =
-            "Safe because it puts the HostedCompiler instance into the HostedCompilerCache member, which is SecurityCritical and we are demanding FullTrust.")]
-    [SecuritySafeCritical]
-    //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     private HostedCompilerWrapper GetCachedHostedCompiler(HashSet<Assembly> assemblySet)
     {
         if (s_hostedCompilerCache == null)
@@ -1366,12 +1347,6 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         }
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical =
-            "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
-        Safe = "Safe because we are demanding FullTrust.")]
-    [SecuritySafeCritical]
-    //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public override LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment)
     {
         bool abort;
@@ -1426,7 +1401,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
                         throw;
                     }
 
-                    FxTrace.Exception.TraceUnhandledException(e);
+                    ExceptionTrace.TraceUnhandledException(e);
                     throw;
                 }
             }
@@ -1483,12 +1458,6 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         return Compile<T>(environment, false);
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical =
-            "Critical because it invokes a HostedCompiler, which requires FullTrust and also accesses RawTreeCache, which is SecurityCritical.",
-        Safe = "Safe because we are demanding FullTrust.")]
-    [SecuritySafeCritical]
-    //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public Expression<Func<ActivityContext, T>> Compile<T>(LocationReferenceEnvironment environment,
         bool isLocationReference)
     {
@@ -1567,7 +1536,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
                     }
 
                     // We never want to end up here, Compiler bugs needs to be fixed.
-                    FxTrace.Exception.TraceUnhandledException(e);
+                    ExceptionTrace.TraceUnhandledException(e);
                     throw;
                 }
             }
@@ -1611,11 +1580,6 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             FindParameter(finalBody) ?? ExpressionUtilities.RuntimeContextParameter);
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical = "Critical because it access SecurityCritical member RawTreeCache, thus requiring FullTrust.",
-        Safe = "Safe because we are demanding FullTrust.")]
-    [SecuritySafeCritical]
-    //[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     private static void AddToRawTreeCache(RawTreeCacheKey rawTreeKey, RawTreeCacheValueWrapper rawTreeHolder,
         LambdaExpression lambda)
     {

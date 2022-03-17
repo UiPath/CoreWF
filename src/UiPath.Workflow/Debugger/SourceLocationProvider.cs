@@ -7,11 +7,9 @@ using System.Activities.Validation;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Security;
 using System.Xaml;
 
 namespace System.Activities.Debugger;
@@ -28,20 +26,7 @@ namespace System.Activities.Debugger;
 [DebuggerNonUserCode]
 public static class SourceLocationProvider
 {
-    [Fx.Tag.ThrowsAttribute(typeof(Exception), "Calls Serialize/Deserialize to temporary file")]
-    //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DoNotCatchGeneralExceptionTypes,
-    //    Justification = "We catch all exceptions to avoid leaking security sensitive information.")]
-    //[SuppressMessage(FxCop.Category.Security, "CA2103:ReviewImperativeSecurity",
-    //    Justification = "This is security reviewed.")]
-    //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.SecureAsserts,
-    //    Justification = "The Assert is only enforce while reading the file and the contents is not leaked.")]
-    [SuppressMessage("Reliability", "Reliability108:IsFatalRule",
-        Justification = "We catch all exceptions to avoid leaking security sensitive information.")]
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical =
-            "Asserting FileIOPermission(Read) for the specified file name that is contained the attached property on the XAML.",
-        Safe = "We are not exposing the contents of the file.")]
-    [SecuritySafeCritical]
+    [Fx.Tag.Throws(typeof(Exception), "Calls Serialize/Deserialize to temporary file")]
     internal static Dictionary<object, SourceLocation> GetSourceLocations(Activity rootActivity, out string sourcePath,
         out bool isTemporaryFile, out byte[] checksum)
     {
@@ -118,26 +103,12 @@ public static class SourceLocationProvider
         Activity tempRootActivity;
 
         checksum = SymbolHelper.CalculateChecksum(sourcePath);
-
-        if (TryGetSourceLocation(rootActivity, sourcePath, checksum,
-                out var tempSourceLocation)) // already has source location.
+        if (TryGetSourceLocation(rootActivity, sourcePath, checksum, out _)) // already has source location.
         {
             tempRootActivity = rootActivity;
         }
         else
         {
-#if NET45
-                    // Need to store the file in memory temporary so don't have to re-read the file twice
-                    // for XamlDebugXmlReader's BracketLocator.
-                    // If there is a debugger attached, Assert FileIOPermission for Read access to the specific file.
-                    if (System.Diagnostics.Debugger.IsAttached)
-                    {
-                        permissionRevertNeeded = true;
-                        FileIOPermission permission = new FileIOPermission(FileIOPermissionAccess.Read, sourcePath);
-                        permission.Assert();
-                }
-#endif
-
             var fi = new FileInfo(sourcePath!);
             var buffer = new byte[fi.Length];
 
@@ -223,8 +194,8 @@ public static class SourceLocationProvider
         return newMapping;
     }
 
-    [Fx.Tag.SecurityNoteAttribute(Miscellaneous =
-        "RequiresReview - We are deserializing XAML from a file. The file may have been read under and Assert for FileIOPermission. The data hould be validated and not cached.")]
+    [Fx.Tag.SecurityNote(Miscellaneous =
+        "RequiresReview - We are deserializing XAML from a file. The file may have been read under and Assert for FileIOPermission. The data should be validated and not cached.")]
     internal static object Deserialize(byte[] buffer, Assembly localAssembly)
     {
         using var memoryStream = new MemoryStream(buffer);
@@ -245,8 +216,8 @@ public static class SourceLocationProvider
 
     // Collect mapping for activity1 and its descendants to their corresponding source location.
     // activity2 is the shadow of activity1 but with SourceLocation information.
-    [Fx.Tag.SecurityNoteAttribute(Miscellaneous =
-        "RequiresReview - We are dealing with activity and SourceLocation information that came from the user, possibly under an Assert for FileIOPermission. The data hould be validated and not cached.")]
+    [Fx.Tag.SecurityNote(Miscellaneous =
+        "RequiresReview - We are dealing with activity and SourceLocation information that came from the user, possibly under an Assert for FileIOPermission. The data should be validated and not cached.")]
     private static void CollectMapping(Activity rootActivity1, Activity rootActivity2,
         IDictionary<object, SourceLocation> mapping, string path, byte[] checksum, bool requirePrepareForRuntime)
     {

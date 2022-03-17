@@ -31,8 +31,7 @@ internal static class UnaryExpressionHelper
         try
         {
             UnaryExpression unaryExpression = Expression.MakeUnary(operatorType, operandParameter, typeof(TResult));
-            Expression expressionToCompile = OperatorPermissionHelper.InjectReflectionPermissionIfNecessary(unaryExpression.Method, unaryExpression);
-            Expression<Func<TOperand, TResult>> lambdaExpression = Expression.Lambda<Func<TOperand, TResult>>(expressionToCompile, operandParameter);
+            Expression<Func<TOperand, TResult>> lambdaExpression = Expression.Lambda<Func<TOperand, TResult>>(unaryExpression, operandParameter);
             operation = lambdaExpression.Compile();
             return true;
         }

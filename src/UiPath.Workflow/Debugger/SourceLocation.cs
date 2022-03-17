@@ -3,28 +3,25 @@
 
 using System.Activities.Debugger.Symbol;
 using System.Activities.Internals;
-using System.Activities.Runtime;
-using System.Diagnostics;
-using System.Linq;
 
 namespace System.Activities.Debugger;
 
-// Identifies a specific location in the target source code.
-//
-// This source information is used in creating PDBs, which will be passed to the debugger,
-// which will resolve the source file based off its own source paths.
-// Source ranges can:
-// * refer to just an entire single line.
-// * can be a subset within a single line (when StartLine == EndLine)
-// * can also span multiple lines.
-// When column info is provided, the debugger will highlight the characters starting at the start line and start column,
-// and going up to but not including the character specified by the end line and end column.
-[Fx.Tag.SecurityNoteAttribute(Miscellaneous =
-    "RequiresReview - Our partial trust mechanisms require that this class remain Immutable. Do not add code that allows an instance of this class to change after creation without strict review.")]
-[DebuggerNonUserCode]
-[Serializable]
-[Fx.Tag.XamlVisibleAttribute(false)]
-public class SourceLocation
+/// <remarks>
+/// Identifies a specific location in the target source code.
+/// This source information is used in creating PDBs, which will be passed to the debugger,
+/// which will resolve the source file based off its own source paths.
+/// Source ranges can:
+/// <list type="bullet">
+/// <item>refer to just an entire single line</item>
+/// <item>be a subset within a single line (when StartLine == EndLine)</item>
+/// <item>span multiple lines</item>
+/// </list>
+/// <para>
+/// When column info is provided, the debugger will highlight the characters starting at the start line and start column,
+/// and going up to but not including the character specified by the end line and end column.
+/// </para>
+/// </remarks>
+public record SourceLocation
 {
     // Define a source location from a filename and line-number (1-based).
     // This is a convenience constructor to specify the entire line.
@@ -52,33 +49,33 @@ public class SourceLocation
     {
         if (startLine <= 0)
         {
-            throw FxTrace.Exception.Argument("startLine", SR.InvalidSourceLocationLineNumber("startLine", startLine));
+            throw FxTrace.Exception.Argument(nameof(startLine), SR.InvalidSourceLocationLineNumber(nameof(startLine), startLine));
         }
 
         if (startColumn <= 0)
         {
-            throw FxTrace.Exception.Argument("startColumn", SR.InvalidSourceLocationColumn("startColumn", startColumn));
+            throw FxTrace.Exception.Argument(nameof(startColumn), SR.InvalidSourceLocationColumn(nameof(startColumn), startColumn));
         }
 
         if (endLine <= 0)
         {
-            throw FxTrace.Exception.Argument("endLine", SR.InvalidSourceLocationLineNumber("endLine", endLine));
+            throw FxTrace.Exception.Argument(nameof(endLine), SR.InvalidSourceLocationLineNumber(nameof(endLine), endLine));
         }
 
         if (endColumn <= 0)
         {
-            throw FxTrace.Exception.Argument("endColumn", SR.InvalidSourceLocationColumn("endColumn", endColumn));
+            throw FxTrace.Exception.Argument(nameof(endColumn), SR.InvalidSourceLocationColumn(nameof(endColumn), endColumn));
         }
 
         if (startLine > endLine)
         {
-            throw FxTrace.Exception.ArgumentOutOfRange("endLine", endLine,
+            throw FxTrace.Exception.ArgumentOutOfRange(nameof(endLine), endLine,
                 SR.OutOfRangeSourceLocationEndLine(startLine));
         }
 
         if (startLine == endLine && startColumn > endColumn)
         {
-            throw FxTrace.Exception.ArgumentOutOfRange("endColumn", endColumn,
+            throw FxTrace.Exception.ArgumentOutOfRange(nameof(endColumn), endColumn,
                 SR.OutOfRangeSourceLocationEndColumn(startColumn));
         }
 
@@ -109,43 +106,6 @@ public class SourceLocation
 
     public bool IsSingleWholeLine => EndColumn == int.MaxValue && StartLine == EndLine && StartColumn == 1;
 
-    // Equality comparison function. This checks for strict equality and
-    // not for superset or subset relationships.
-    public override bool Equals(object obj)
-    {
-        if (obj is not SourceLocation rsl)
-        {
-            return false;
-        }
-
-        if (FileName != rsl.FileName)
-        {
-            return false;
-        }
-
-        if (StartLine != rsl.StartLine ||
-            StartColumn != rsl.StartColumn ||
-            EndLine != rsl.EndLine ||
-            EndColumn != rsl.EndColumn)
-        {
-            return false;
-        }
-
-        if ((Checksum == null) ^ (rsl.Checksum == null))
-        {
-            return false;
-        }
-
-        if (Checksum != null && rsl.Checksum != null && !Checksum.SequenceEqual(rsl.Checksum))
-        {
-            return false;
-        }
-
-        // everything matches
-        return true;
-    }
-
-    // Get a hash code.
     public override int GetHashCode()
     {
         return (string.IsNullOrEmpty(FileName) ? 0 : FileName.GetHashCode()) ^

@@ -2,13 +2,11 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Internals;
-using System.Activities.Runtime;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Security;
 
 namespace System.Activities.ExpressionParser;
 
@@ -55,8 +53,6 @@ public class SourceExpressionException : Exception, ISerializable
 
     public IEnumerable<TextExpressionCompilerError> Errors => _errors ??= Array.Empty<TextExpressionCompilerError>();
 
-    [Fx.Tag.SecurityNoteAttribute(Critical = "Critical because we are overriding a critical method in the base class.")]
-    [SecurityCritical]
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         if (info == null)

@@ -248,7 +248,7 @@ public class AssemblyReference
                     exception.InnerException is FileNotFoundException)))
                 {
                     loaded = null;
-                    FxTrace.Exception.AsWarning(ex);
+                    ExceptionTrace.AsWarning(ex);
                 }
                 else
                 {

@@ -1,7 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Security;
 using System.Threading;
 
 namespace System.Activities.Runtime;
@@ -200,18 +199,11 @@ internal class AsyncWaitHandle
 
     private class AsyncWaiter : ActionItem
     {
-        [Fx.Tag.SecurityNote(Critical = "Store the delegate to be invoked")]
-        [SecurityCritical]
         private readonly Action<object, TimeoutException> _callback;
-        [Fx.Tag.SecurityNote(Critical = "Stores the state object to be passed to the callback")]
-        [SecurityCritical]
         private readonly object _state;
-        //IOThreadTimer timer;
         private DelayTimer _timer;
         private TimeSpan _originalTimeout;
 
-        [Fx.Tag.SecurityNote(Critical = "Access critical members", Safe = "Doesn't leak information")]
-        [SecuritySafeCritical]
         public AsyncWaiter(AsyncWaitHandle parent, Action<object, TimeoutException> callback, object state)
         {
             Parent = parent;
@@ -223,12 +215,8 @@ internal class AsyncWaitHandle
 
         public bool TimedOut { get; set; }
 
-        [Fx.Tag.SecurityNote(Critical = "Calls into critical method Schedule", Safe = "Invokes the given delegate under the current context")]
-        [SecuritySafeCritical]
         public void Call() => Schedule();
 
-        [Fx.Tag.SecurityNote(Critical = "Overriding an inherited critical method, access critical members")]
-        [SecurityCritical]
         protected override void Invoke() => _callback(_state,
                 TimedOut ? new TimeoutException(SR.TimeoutOnOperation(_originalTimeout)) : null);
 
@@ -240,9 +228,6 @@ internal class AsyncWaitHandle
             }
 
             _originalTimeout = timeout;
-            //this.timer = new IOThreadTimer(callback, state, false);
-
-            //this.timer.Set(timeout);
             _timer = new DelayTimer(callback, state, timeout);
         }
 

@@ -2,7 +2,6 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
-using System.Security;
 
 namespace System.Activities;
 using Internals;
@@ -408,9 +407,6 @@ public sealed class RuntimeArgument : LocationReference
         // Reflected value for iSCSI CRC-32 polynomial 0x1edc6f41
         private const uint Polynomial = 0x82f63b78;
 
-        [Fx.Tag.SecurityNote(Critical = "Critical because it is marked unsafe.",
-            Safe = "Safe because we aren't leaking anything. We are just using pointers to get into the string.")]
-        [SecuritySafeCritical]
         public unsafe static uint Calculate(string s)
         {
             uint result = 0xffffffff;

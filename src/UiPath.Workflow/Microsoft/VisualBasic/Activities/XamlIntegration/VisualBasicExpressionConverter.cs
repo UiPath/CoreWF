@@ -3,11 +3,9 @@
 
 using System;
 using System.Activities.Expressions;
-using System.Activities.Runtime;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
-using System.Security;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Markup;
@@ -112,11 +110,6 @@ internal static class VisualBasicExpressionConverter
         return settings;
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical = "Critical because we are accessing critical member AssemblyCache.XmlnsMappings.",
-        Safe =
-            "Safe because we prevent partial trusted code from manipulating the cache directly by creating a read-only wrapper around the cached XmlnsMapping.")]
-    [SecuritySafeCritical]
     private static void WrapCachedMapping(NamespaceDeclaration prefix, out ReadOnlyXmlnsMapping readOnlyMapping)
     {
         var xmlns = XNamespace.Get(prefix.Namespace);
@@ -180,19 +173,12 @@ internal static class VisualBasicExpressionConverter
     {
         private static bool s_initialized;
 
-        // This is here so that obtaining the lock is not required to be SecurityCritical.
         public static readonly object XmlnsMappingsLockObject = new();
 
-        [Fx.Tag.SecurityNoteAttribute(Critical =
-            "Critical because we are storing assembly references and if we allowed PT access, they could mess with that.")]
-        [SecurityCritical]
         private static Dictionary<XNamespace, XmlnsMapping> s_xmlnsMappings;
 
         public static Dictionary<XNamespace, XmlnsMapping> XmlnsMappings
         {
-            [Fx.Tag.SecurityNoteAttribute(Critical =
-                "Critical because providing access to the critical xmlnsMappings dictionary.")]
-            [SecurityCritical]
             get
             {
                 EnsureInitialized();
@@ -200,9 +186,6 @@ internal static class VisualBasicExpressionConverter
             }
         }
 
-        [Fx.Tag.SecurityNoteAttribute(Critical =
-            "Critical because we are accessing critical member xmlnsMappings and CacheLoadedAssembly. Only called from CLR.")]
-        [SecurityCritical]
         private static void OnAssemblyLoaded(object sender, AssemblyLoadEventArgs args)
         {
             var assembly = args.LoadedAssembly;
@@ -216,9 +199,6 @@ internal static class VisualBasicExpressionConverter
             }
         }
 
-        [Fx.Tag.SecurityNoteAttribute(Critical =
-            "Critical because we are accessing AppDomain.AssemblyLoaded and we are accessing critical member xmlnsMappings.")]
-        [SecurityCritical]
         private static void EnsureInitialized()
         {
             if (s_initialized)
@@ -256,8 +236,6 @@ internal static class VisualBasicExpressionConverter
             }
         }
 
-        [Fx.Tag.SecurityNoteAttribute(Critical = "Critical because we are accessing critical member xmlnsMappings.")]
-        [SecurityCritical]
         private static void CacheLoadedAssembly(Assembly assembly)
         {
             // this VBImportReference is only used as an entry to the xmlnsMappings cache
@@ -308,11 +286,6 @@ internal static class VisualBasicExpressionConverter
         public bool IsEmpty => ImportReferences == null || ImportReferences.Count == 0;
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical =
-            "Critical because we are accessing a XmlnsMapping that is stored in the XmlnsMappings cache, which is SecurityCritical.",
-        Safe = "Safe because we are wrapping the XmlnsMapping and not allowing unsafe code to modify it.")]
-    [SecuritySafeCritical]
     private struct ReadOnlyXmlnsMapping
     {
         private XmlnsMapping _wrappedMapping;
@@ -336,12 +309,6 @@ internal static class VisualBasicExpressionConverter
         }
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical =
-            "Critical because we are accessing a VisualBasicImportReference that is stored in the XmlnsMappings cache, which is SecurityCritical.",
-        Safe =
-            "Safe because we are wrapping the VisualBasicImportReference and not allowing unsafe code to modify it.")]
-    [SecuritySafeCritical]
     private readonly struct ReadOnlyVisualBasicImportReference
     {
         private readonly VisualBasicImportReference _wrappedReference;
@@ -351,23 +318,9 @@ internal static class VisualBasicExpressionConverter
             _wrappedReference = referenceToWrap;
         }
 
-        // If this is ever needed, uncomment this. It is commented out now to avoid FxCop violation because it is not called.
-        //internal string Assembly
-        //{
-        //    get
-        //    {
-        //        return this.wrappedReference.Assembly;
-        //    }
-        //}
+        internal string Assembly => _wrappedReference.Assembly;
 
-        // If this is ever needed, uncomment this. It is commented out now to avoid FxCop violation because it is not called.
-        //internal string Import
-        //{
-        //    get
-        //    {
-        //        return this.wrappedReference.Import;
-        //    }
-        //}
+        internal string Import => _wrappedReference.Import;
 
         internal Assembly EarlyBoundAssembly => _wrappedReference.EarlyBoundAssembly;
 
@@ -414,10 +367,6 @@ internal static class VisualBasicExpressionConverter
             return _wrappedReference.GetHashCode();
         }
 
-        // If this is ever needed, uncomment this. It is commented out now to avoid FxCop violation because it is not called.
-        //public bool Equals(VisualBasicImportReference other)
-        //{
-        //    return this.wrappedReference.Equals(other);
-        //}
+        public bool Equals(VisualBasicImportReference other) => _wrappedReference.Equals(other);
     }
 }
