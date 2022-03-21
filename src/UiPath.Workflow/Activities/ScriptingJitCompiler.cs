@@ -3,6 +3,7 @@
 
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -72,8 +73,13 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         var results = ScriptingAotCompiler.BuildAssembly(finalCompilation);
         if (results.HasErrors)
         {
+            var errorResults = new TextExpressionCompilerResults
+            {
+                ResultType = results.ResultType,
+            };
+            errorResults.AddMessages(results.CompilerMessages.Where(m => !m.IsWarning));
             throw FxTrace.Exception.AsError(new SourceExpressionException(
-                SR.CompilerErrorSpecificExpression(expressionToCompile.Code, results), results.CompilerMessages));
+                SR.CompilerErrorSpecificExpression(expressionToCompile.Code, errorResults), errorResults.CompilerMessages));
         }
 
         return (LambdaExpression) results.ResultType.GetMethod("CreateExpression")!.Invoke(null, null);
