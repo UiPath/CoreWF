@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Security;
-
 namespace System.Activities.Runtime;
 
 [DataContract]
@@ -41,9 +39,6 @@ internal class BookmarkCallbackWrapper : CallbackWrapper
         set => Options = value;
     }
 
-    [Fx.Tag.SecurityNote(Critical = "Because we are calling EnsureCallback",
-        Safe = "Safe because the method needs to be part of an Activity and we are casting to the callback type and it has a very specific signature. The author of the callback is buying into being invoked from PT.")]
-    [SecuritySafeCritical]
     public void Invoke(NativeActivityContext context, Bookmark bookmark, object value)
     {
         EnsureCallback(bookmarkCallbackType, bookmarkCallbackParameters);

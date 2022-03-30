@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security;
 using System.Threading;
 
 namespace System.Activities.Runtime;
@@ -23,9 +22,6 @@ internal static class Fx
 #endif
 
     private static ExceptionTrace s_exceptionTrace;
-
-    [Tag.SecurityNote(Critical = "This delegate is called from within a ConstrainedExecutionRegion, must not be settable from PT code")]
-    [SecurityCritical]
     private static ExceptionHandler s_asynchronousThreadExceptionHandler;
 
     public static ExceptionTrace Exception
@@ -33,7 +29,7 @@ internal static class Fx
         get
         {
             // don't need a lock here since a true singleton is not required
-            s_exceptionTrace ??= new ExceptionTrace(defaultEventSource/*, Trace*/);
+            s_exceptionTrace ??= new ExceptionTrace(defaultEventSource);
             return s_exceptionTrace;
         }
     }
@@ -42,12 +38,7 @@ internal static class Fx
 
     public static ExceptionHandler AsynchronousThreadExceptionHandler
     {
-        [Tag.SecurityNote(Critical = "access critical field", Safe = "ok for get-only access")]
-        [SecuritySafeCritical]
         get => s_asynchronousThreadExceptionHandler;
-
-        [Tag.SecurityNote(Critical = "sets a critical field")]
-        [SecurityCritical]
         set => s_asynchronousThreadExceptionHandler = value;
     }
 
@@ -81,7 +72,6 @@ internal static class Fx
         Assert(description);
         if (WfEventSource.Instance.ShipAssertExceptionMessageIsEnabled())
             WfEventSource.Instance.ShipAssertExceptionMessage(description);
-        //TraceCore.ShipAssertExceptionMessage(Trace, description);
         throw new InternalException(description);
     }
 
@@ -99,7 +89,6 @@ internal static class Fx
         Assert(description);
         if (WfEventSource.Instance.ShipAssertExceptionMessageIsEnabled())
             WfEventSource.Instance.ShipAssertExceptionMessage(description);
-        //TraceCore.ShipAssertExceptionMessage(Trace, description);
         throw new FatalInternalException(description);
     }
 
@@ -113,32 +102,13 @@ internal static class Fx
 
     // This never returns.  The Exception return type lets you write 'throw AssertAndFailFast()' which tells the compiler/tools that
     // execution stops.
-    [Tag.SecurityNote(Critical = "Calls into critical method Environment.FailFast",
-        Safe = "The side affect of the app crashing is actually intended here")]
-    [SecuritySafeCritical]
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static Exception AssertAndFailFast(string description)
     {
         Assert(description);
         string failFastMessage = SR.FailFastMessage(description);
 
-        // The catch is here to force the finally to run, as finallys don't run until the stack walk gets to a catch.  
-        // The catch makes sure that the finally will run before the stack-walk leaves the frame, but the code inside is impossible to reach.
-        try
-        {
-            try
-            {
-                Exception.TraceFailFast(failFastMessage);
-            }
-            finally
-            {
-                Environment.FailFast(failFastMessage);
-            }
-        }
-        catch
-        {
-            throw;
-        }
+        Environment.FailFast(failFastMessage);
 
         return null; // we'll never get here since we've just fail-fasted
     }
@@ -231,16 +201,13 @@ internal static class Fx
 
     public static SendOrPostCallback ThunkCallback(SendOrPostCallback callback) => new SendOrPostThunk(callback).ThunkFrame;
 
-    //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DoNotCatchGeneralExceptionTypes,
-    //    Justification = "Don't want to hide the exception which is about to crash the process.")]
-    [Tag.SecurityNote(Miscellaneous = "Must not call into PT code as it is called within a CER.")]
     private static void TraceExceptionNoThrow(Exception exception)
     {
         try
         {
             // This call exits the CER.  However, when still inside a catch, normal ThreadAbort is prevented.
             // Rude ThreadAbort will still be allowed to terminate processing.
-            Exception.TraceUnhandledException(exception);
+            ExceptionTrace.TraceUnhandledException(exception);
         }
         catch
         {
@@ -249,11 +216,6 @@ internal static class Fx
         }
     }
 
-    //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.DoNotCatchGeneralExceptionTypes,
-    //    Justification = "Don't want to hide the exception which is about to crash the process.")]
-    //[SuppressMessage(FxCop.Category.ReliabilityBasic, FxCop.Rule.IsFatalRule,
-    //    Justification = "Don't want to hide the exception which is about to crash the process.")]
-    [Tag.SecurityNote(Miscellaneous = "Must not call into PT code as it is called within a CER.")]
     private static bool HandleAtThreadBase(Exception exception)
     {
         // This area is too sensitive to do anything but return.
@@ -279,28 +241,8 @@ internal static class Fx
         return false;
     }
 
-    //private static void UpdateLevel(EtwDiagnosticTrace trace)
-    //{
-    //    if (trace == null)
-    //    {
-    //        return;
-    //    }
-
-    //    if (TraceCore.ActionItemCallbackInvokedIsEnabled(trace) ||
-    //        TraceCore.ActionItemScheduledIsEnabled(trace))
-    //    {
-    //        trace.SetEnd2EndActivityTracingEnabled(true);
-    //    }
-    //}
-
-    //private static void UpdateLevel()
-    //{
-    //    UpdateLevel(Fx.Trace);
-    //}
-
     public abstract class ExceptionHandler
     {
-        [Tag.SecurityNote(Miscellaneous = "Must not call into PT code as it is called within a CER.")]
         public abstract bool HandleException(Exception exception);
     }
 
@@ -584,8 +526,6 @@ internal static class Fx
             public NonThrowingAttribute() { }
         }
 
-        //[SuppressMessage(FxCop.Category.Performance, "CA1813:AvoidUnsealedAttributes",
-        //    Justification = "This is intended to be an attribute heirarchy. It does not affect product perf.")]
         [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor,
             AllowMultiple = true, Inherited = false)]
         [Conditional("CODE_ANALYSIS_CDF")]
@@ -661,23 +601,14 @@ internal static class Fx
 
     internal abstract class Thunk<T> where T : class
     {
-        [Tag.SecurityNote(Critical = "Make these safe to use in SecurityCritical contexts.")]
-        [SecurityCritical]
         private readonly T _callback;
 
-        [Tag.SecurityNote(Critical = "Accesses critical field.", Safe = "Data provided by caller.")]
-        [SecuritySafeCritical]
         protected Thunk(T callback)
         {
             _callback = callback;
         }
 
-        internal T Callback
-        {
-            [Tag.SecurityNote(Critical = "Accesses critical field.", Safe = "Data is not privileged.")]
-            [SecuritySafeCritical]
-            get => _callback;
-        }
+        internal T Callback => _callback;
     }
 
     internal sealed class ActionThunk<T1> : Thunk<Action<T1>>
@@ -685,9 +616,6 @@ internal static class Fx
         public ActionThunk(Action<T1> callback) : base(callback) { }
 
         public Action<T1> ThunkFrame => new(UnhandledExceptionFrame);
-        [Tag.SecurityNote(Critical = "Calls PrepareConstrainedRegions which has a LinkDemand",
-                        Safe = "Guaranteed not to call into PT user code from the finally.")]
-        [SecuritySafeCritical]
 
         private void UnhandledExceptionFrame(T1 result)
         {
@@ -710,9 +638,6 @@ internal static class Fx
         public AsyncThunk(AsyncCallback callback) : base(callback) { }
 
         public AsyncCallback ThunkFrame => new(UnhandledExceptionFrame);
-        [Tag.SecurityNote(Critical = "Calls PrepareConstrainedRegions which has a LinkDemand",
-                        Safe = "Guaranteed not to call into PT user code from the finally.")]
-        [SecuritySafeCritical]
 
         private void UnhandledExceptionFrame(IAsyncResult result)
         {
@@ -735,9 +660,6 @@ internal static class Fx
         public SendOrPostThunk(SendOrPostCallback callback) : base(callback) { }
 
         public SendOrPostCallback ThunkFrame => new(UnhandledExceptionFrame);
-        [Tag.SecurityNote(Critical = "Calls PrepareConstrainedRegions which has a LinkDemand",
-                        Safe = "Guaranteed not to call into PT user code from the finally.")]
-        [SecuritySafeCritical]
 
         private void UnhandledExceptionFrame(object result)
         {

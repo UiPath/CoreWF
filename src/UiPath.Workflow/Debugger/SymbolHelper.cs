@@ -93,10 +93,9 @@ internal static class SymbolHelper
         return checksum;
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical = "Used to get a string from checksum that is provided by the user/from a file.",
-        Safe = "We not exposing any critical data. Just converting the byte array to a hex string.")]
-    [SecuritySafeCritical]
+    /// <remarks>
+    ///     Used to get a string from checksum that is provided by the user/from a file. Not used for secure data.
+    /// </remarks>
     public static string GetHexStringFromChecksum(byte[] checksum)
     {
         return checksum == null
@@ -104,17 +103,18 @@ internal static class SymbolHelper
             : string.Join(string.Empty, checksum.Select(x => x.ToString("X2")).ToArray());
     }
 
-    [Fx.Tag.SecurityNoteAttribute(Critical = "Used to validate checksum that is provided by the user/from a file.",
-        Safe = "We are not exposing any critical data. Just validating that the provided checksum meets the format for the checksums we produce.")]
-    [SecuritySafeCritical]
+    /// <remarks>
+    ///     Used to validate a that is provided by the user/from a file. Not used for secure data.
+    /// </remarks>
     internal static bool ValidateChecksum(byte[] checksumToValidate) =>
         // We are using MD5.ComputeHash, which will return a 16 byte array.
         LocalAppContextSwitches.UseMD5ForWFDebugger
             ? checksumToValidate.Length == 16
             : checksumToValidate.Length == 20;
 
-    //[SuppressMessage("Microsoft.Cryptographic.Standard", "CA5350:MD5CannotBeUsed",
-    //    Justification = "Design has been approved.  We are not using MD5 for any security or cryptography purposes but rather as a hash.")]
+    /// <remarks>
+    ///     Used for generating a hash, not for security/cryptography purposes.
+    /// </remarks>
     private static HashAlgorithm CreateHashProvider() =>
         LocalAppContextSwitches.UseMD5ForWFDebugger ? MD5.Create() : SHA1.Create();
 }

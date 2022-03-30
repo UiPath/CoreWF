@@ -1,22 +1,14 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace System.Activities.Runtime;
-
-using System;
-using System.Activities.Internals;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Security;
+
+namespace System.Activities.Runtime;
 
 [DataContract]
 internal class CallbackWrapper
 {
     private static readonly BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
-
-#if NET45
-    static PermissionSet ReflectionMemberAccessPermissionSet = null; 
-#endif
 
     private string _callbackName;
     private string _declaringAssemblyName;
@@ -87,22 +79,6 @@ internal class CallbackWrapper
         return ReferenceEquals(target, owningInstance.Activity);
     }
 
-    // Special note about establishing callbacks:
-    //
-    // When establising a callback, we need to Assert ReflectionPermission(MemberAccess) because the callback
-    // method will typically be a private method within a class that derives from Activity. Activity authors need
-    // to be aware that their callback may be invoked with different permissions than were present when the Activity
-    // was originally executed and perform appropriate security checks.
-    //
-    // We ensure that the declaring type of the callback method derives from Activity. This check is made in RecreateCallback.
-    //
-    // The classes that derive from CallbackWrapper and call EnsureCallback do an explicit cast of the returned delegate
-    // to the delegate type that they expect before calling thru to the delegate. This cast is done in SecuritySafeCritical code.
-    //
-    // These checks are both made in Security[Safe]Critical code.
-
-    [Fx.Tag.SecurityNote(Critical = "Because we are calling GenerateCallback, which are SecurityCritical.")]
-    [SecurityCritical]
     protected void EnsureCallback(Type delegateType, Type[] parameterTypes, Type genericParameter)
     {
         // We were unloaded and have some work to do to rebuild the callback
@@ -113,9 +89,6 @@ internal class CallbackWrapper
         }
     }
 
-    [Fx.Tag.SecurityNote(Critical = "Because we are calling GenerateCallback, which are SecurityCritical.",
-        Safe = "Because the delegate is not leaked out of this routine. It is only validated.")]
-    [SecuritySafeCritical]
     protected void ValidateCallbackResolution(Type delegateType, Type[] parameterTypes, Type genericParameter)
     {
         Fx.Assert(_callback != null && _callbackName != null, "We must have a callback and a callback name");
@@ -169,8 +142,6 @@ internal class CallbackWrapper
         return null;
     }
 
-    [Fx.Tag.SecurityNote(Critical = "Because we are calling RecreateCallback, which is SecurityCritical.")]
-    [SecurityCritical]
     private Delegate GenerateCallback(Type delegateType, Type[] parameterTypes, Type genericParameter)
     {
         MethodInfo methodInfo = GetMatchingMethod(parameterTypes, out Type declaringType);
@@ -189,8 +160,6 @@ internal class CallbackWrapper
         return RecreateCallback(delegateType, methodInfo);
     }
 
-    [Fx.Tag.SecurityNote(Critical = "Because we are calling RecreateCallback, which is SecurityCritical.")]
-    [SecurityCritical]
     protected void EnsureCallback(Type delegateType, Type[] parameters)
     {
         // We were unloaded and have some work to do to rebuild the callback
@@ -235,9 +204,6 @@ internal class CallbackWrapper
         return declaringType.GetMethod(_callbackName, bindingFlags, null, parameters, null);
     }
 
-    // The MethodInfo passed to this method must be derived
-    [Fx.Tag.SecurityNote(Critical = "Because we are Asserting ReflectionPermission(MemberAccess) in order to get at private callback methods.")]
-    [SecurityCritical]
     private Delegate RecreateCallback(Type delegateType, MethodInfo callbackMethod)
     {
         object targetInstance = null;
@@ -253,32 +219,10 @@ internal class CallbackWrapper
             targetInstance = ActivityInstance.Activity;
         }
 
-#if NET45
-        // Asserting ReflectionPermission.MemberAccess because the callback method is most likely internal or private
-        if (ReflectionMemberAccessPermissionSet == null)
-        {
-            PermissionSet myPermissionSet = new PermissionSet(PermissionState.None);
-            myPermissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
-            Interlocked.CompareExchange(ref ReflectionMemberAccessPermissionSet, myPermissionSet, null);
-        }
-        ReflectionMemberAccessPermissionSet.Assert(); 
-#endif
-        try
-        {
-            return Delegate.CreateDelegate(delegateType, targetInstance, callbackMethod);
-        }
-        finally
-        {
-#if NET45
-            CodeAccessPermission.RevertAssert(); 
-#endif
-        }
+        return Delegate.CreateDelegate(delegateType, targetInstance, callbackMethod);
     }
 
     [OnSerializing]
-    //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.ReviewUnusedParameters)]
-    //[SuppressMessage(FxCop.Category.Usage, "CA2238:ImplementSerializationMethodsCorrectly",
-    //    Justification = "Needs to be internal for serialization in partial trust. We have set InternalsVisibleTo(System.Runtime.Serialization) to allow this.")]
     internal void OnSerializing(StreamingContext context)
     {
         if (_callbackName == null && !IsCallbackNull)

@@ -1,8 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Security;
-
 namespace System.Activities.Runtime;
 
 // can't add FuncCompletionCallbackWrapper<T> since we don't know what to close the generic with
@@ -67,9 +65,6 @@ internal abstract class CompletionCallbackWrapper : CallbackWrapper
         return workItem;
     }
 
-    [Fx.Tag.SecurityNote(Critical = "Because any implementation will be calling EnsureCallback",
-        Safe = "Safe because the method needs to be part of an Activity and we are casting to the callback type and it has a very specific signature. The author of the callback is buying into being invoked from PT.")]
-    [SecuritySafeCritical]
     protected internal abstract void Invoke(NativeActivityContext context, ActivityInstance completedInstance);
 
     [DataContract]

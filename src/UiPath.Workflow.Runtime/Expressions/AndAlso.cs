@@ -48,7 +48,7 @@ public sealed class AndAlso : Activity<bool>
     [DefaultValue(null)]
     public Activity<bool> Right { get; set; }
 
-#if NET45
+#if DYNAMICUPDATE
     protected override void OnCreateDynamicUpdateMap(UpdateMapMetadata metadata, Activity originalActivity)
     {
         metadata.AllowUpdateInsideThisActivity();

@@ -1,7 +1,6 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,17 +23,8 @@ internal abstract class ActionItem
         //Contract.Assert(callback != null, "Cannot schedule a null callback");
         Task.Factory.StartNew(callback, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
 
-    [Fx.Tag.SecurityNote(Critical = "Called after applying the user context on the stack or (potentially) " +
-        "without any user context on the stack")]
-    [SecurityCritical]
     protected abstract void Invoke();
 
-    [Fx.Tag.SecurityNote(Critical = "Access critical field context and critical property " +
-        "CallbackHelper.InvokeWithContextCallback, calls into critical method " +
-        "PartialTrustHelpers.CaptureSecurityContextNoIdentityFlow, calls into critical method ScheduleCallback; " +
-        "since the invoked method and the capturing of the security contex are de-coupled, can't " +
-        "be treated as safe")]
-    [SecurityCritical]
     protected void Schedule()
     {
         if (_isScheduled)
@@ -45,8 +35,6 @@ internal abstract class ActionItem
         _isScheduled = true;
         ScheduleCallback(CallbackHelper.InvokeCallbackAction);
     }
-    [Fx.Tag.SecurityNote(Critical = "Calls into critical static method ScheduleCallback")]
-    [SecurityCritical]
 
     private void ScheduleCallback(Action<object> callback)
     {
@@ -54,10 +42,8 @@ internal abstract class ActionItem
         Task.Factory.StartNew(callback, this, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
     }
 
-    [SecurityCritical]
     internal static class CallbackHelper
     {
-        [Fx.Tag.SecurityNote(Critical = "Stores a delegate to a critical method")]
         private static Action<object> s_invokeCallback;
 
         public static Action<object> InvokeCallbackAction
@@ -69,7 +55,9 @@ internal abstract class ActionItem
             }
         }
 
-        [Fx.Tag.SecurityNote(Critical = "Called by the scheduler without any user context on the stack")]
+        /// <remarks>
+        ///     Called by the scheduler without any user context on the stack
+        /// </remarks>
         private static void InvokeCallback(object state)
         {
             ((ActionItem)state).Invoke();

@@ -86,7 +86,7 @@ public abstract class NativeActivity : Activity
         SetVariablesCollection(information.GetVariables());
     }
 
-#if NET45
+#if DYNAMICUPDATE
     internal sealed override void OnInternalCreateDynamicUpdateMap(DynamicUpdateMapBuilder.Finalizer finalizer,
         DynamicUpdateMapBuilder.IDefinitionMatcher matcher, Activity originalActivity)
     {
