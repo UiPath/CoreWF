@@ -1,5 +1,4 @@
 [![Build Status](https://uipath.visualstudio.com/CoreWF/_apis/build/status/UiPath.CoreWF?repoName=UiPath%2FCoreWF&branchName=develop)](https://uipath.visualstudio.com/CoreWF/_build/latest?definitionId=2249&repoName=UiPath%2FCoreWF&branchName=develop)
-[![MyGet (dev)](https://img.shields.io/badge/CoreWf-Preview-brightgreen.svg)](https://uipath.visualstudio.com/Public.Feeds/_packaging?_a=package&feed=UiPath-Internal&view=versions&package=UiPath.Workflow&protocolType=NuGet)
 
 # CoreWF
 
@@ -77,12 +76,11 @@ a copy of the **System.Xaml** code.
 ## Usage
 
 To add this library to your project, use
-the [MyGet package](https://www.myget.org/feed/uipath-dev/package/nuget/UiPath.Workflow).
+the [NuGet package](https://www.nuget.org/packages/UiPath.Workflow).
 
 ## Debug using Source Link
 
 [Preview builds setup](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/symbols?view=azure-devops#set-up-visual-studio)
-.
 
 ## Contributing
 
