@@ -37,9 +37,7 @@ internal static class BinaryExpressionHelper
         try
         {
             BinaryExpression binaryExpression = Expression.MakeBinary(operatorType, leftParameter, rightParameter);
-
-            Expression expressionToCompile = OperatorPermissionHelper.InjectReflectionPermissionIfNecessary(binaryExpression.Method, binaryExpression);
-            Expression<Func<TLeft, TRight, TResult>> lambdaExpression = Expression.Lambda<Func<TLeft, TRight, TResult>>(expressionToCompile, leftParameter, rightParameter);
+            Expression<Func<TLeft, TRight, TResult>> lambdaExpression = Expression.Lambda<Func<TLeft, TRight, TResult>>(binaryExpression, leftParameter, rightParameter);
             function = lambdaExpression.Compile();
 
             return true;

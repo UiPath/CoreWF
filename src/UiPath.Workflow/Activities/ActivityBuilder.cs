@@ -1,6 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.Debugger;
 using System.Activities.Runtime;
 using System.Activities.Validation;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using System.Xaml;
 namespace System.Activities;
 
 [ContentProperty("Implementation")]
-public sealed class ActivityBuilder
+public sealed class ActivityBuilder : IDebuggableWorkflowTree
 {
     // define attached properties that will identify PropertyReferenceExtension-based
     // object properties
@@ -127,12 +128,10 @@ public sealed class ActivityBuilder
         return propertyReferences;
     }
 
-#if NET45
-        Activity IDebuggableWorkflowTree.GetWorkflowRoot()
-        {
-            return this.Implementation;
-        }
-#endif
+    Activity IDebuggableWorkflowTree.GetWorkflowRoot()
+    {
+        return Implementation;
+    }
 
     internal static KeyedCollection<string, DynamicActivityProperty> CreateActivityPropertyCollection() => 
         new ActivityPropertyCollection();
@@ -249,10 +248,7 @@ public sealed class ActivityBuilder
 }
 
 [ContentProperty("Implementation")]
-public sealed class ActivityBuilder<TResult>
-#if NET45
-        : IDebuggableWorkflowTree
-#endif
+public sealed class ActivityBuilder<TResult> : IDebuggableWorkflowTree
 {
     private KeyedCollection<string, DynamicActivityProperty> _properties;
     private Collection<Constraint> _constraints;
@@ -302,10 +298,8 @@ public sealed class ActivityBuilder<TResult>
     [DependsOn("Constraints")]
     public Activity Implementation { get; set; }
 
-#if NET45
-        Activity IDebuggableWorkflowTree.GetWorkflowRoot()
-        {
-            return this.Implementation;
-        }
-#endif
+    Activity IDebuggableWorkflowTree.GetWorkflowRoot()
+    {
+        return Implementation;
+    }
 }

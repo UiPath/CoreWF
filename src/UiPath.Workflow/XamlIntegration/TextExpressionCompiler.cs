@@ -15,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Security;
 using Microsoft.VisualBasic.Activities;
 
 namespace System.Activities.XamlIntegration;
@@ -543,10 +542,6 @@ public class TextExpressionCompiler
         contextDescriptor.CodeTypeDeclarationForReadOnly.Members.Add(accessorPropertyForReadOnly);
     }
 
-    [Fx.Tag.SecurityNoteAttribute(Critical = "Critical because we are accessing CodeDom.",
-        Safe = "Safe because we are demanding FullTrust")]
-    [SecuritySafeCritical]
-    ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     private bool IsValidTextIdentifierName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -2380,10 +2375,6 @@ public class TextExpressionCompiler
         return locationStatement;
     }
 
-    [Fx.Tag.SecurityNoteAttribute(Critical = "Critical because we are accessing CodeDom.",
-        Safe = "Safe because we are demanding FullTrust")]
-    [SecuritySafeCritical]
-    ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     private void WriteCode(TextWriter textWriter)
     {
         using var codeDomProvider = CodeDomProvider.CreateProvider(_settings.Language);
@@ -2392,11 +2383,6 @@ public class TextExpressionCompiler
             new CodeGeneratorOptions());
     }
 
-    [Fx.Tag.SecurityNoteAttribute(
-        Critical = "Critical because we are using the CodeDomProvider class, which has a link demand for Full Trust.",
-        Safe = "Safe because we are demanding FullTrust")]
-    [SecuritySafeCritical]
-    ////[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     private TextExpressionCompilerResults CompileInMemory()
     {
         var messages = new List<TextExpressionCompilerError>();

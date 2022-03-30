@@ -6,11 +6,9 @@ using System.Activities.Internals;
 using System.Activities.Runtime;
 using System.Activities.Validation;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Security;
 using System.Text;
 using System.Xaml;
 using System.Xml;
@@ -373,10 +371,6 @@ public static class ActivityXamlServices
         };
     }
 
-    [Fx.Tag.SecurityNoteAttribute(Critical = "Critical because we use SecurityCritical methods that do Asserts.",
-        Safe =
-            "Safe because no critical resources are leaked. And we guarantee that the XAML we are accessing is coming from the assembly to which we are asserting access.")]
-    [SecuritySafeCritical]
     public static void InitializeComponent(
         Type componentType,
         object componentInstance
@@ -463,18 +457,9 @@ public static class ActivityXamlServices
         helperClassName = beforeInitializeReader.ReadLine();
     }
 
-    //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.SecureAsserts,
-    //    Justification = "The schema context is not critical data because it is exposed through the assembly manifest and we are asserting to go get that data.")]
-    [Fx.Tag.SecurityNoteAttribute(Critical =
-        "Critical because it Asserts ReflectionPermission(MemberAccess) to the calling assembly.")]
-    [SecurityCritical]
     private static XamlSchemaContext GetXamlSchemaContext(Assembly assembly, string helperClassName)
     {
         XamlSchemaContext typeSchemaContext = null;
-#if NET45
-            ReflectionPermission reflectionPerm = new ReflectionPermission(ReflectionPermissionFlag.MemberAccess);
-            reflectionPerm.Assert();
-#endif
         var schemaContextType = assembly.GetType(helperClassName);
         if (schemaContextType == null)
         {
@@ -498,13 +483,6 @@ public static class ActivityXamlServices
         return typeSchemaContext;
     }
 
-    //[SuppressMessage(FxCop.Category.Security, "CA2103:ReviewImperativeSecurity",
-    //    Justification = "Passing XamlAccessLevel to XamlLoadPermission is okay.")]
-    //[SuppressMessage(FxCop.Category.Security, FxCop.Rule.SecureAsserts,
-    //    Justification = "We are asserting to get private access to the componentType only so that we can initialize it.")]
-    [Fx.Tag.SecurityNoteAttribute(Critical =
-        "Critical because it Asserts XamlLoadPermission(XamlAccessLevel.PrivateAccessTo(type).")]
-    [SecurityCritical]
     private static void InitializeComponentFromXamlResource(Type componentType, string resource,
         object componentInstance, XamlSchemaContext schemaContext)
     {

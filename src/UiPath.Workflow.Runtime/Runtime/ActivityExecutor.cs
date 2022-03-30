@@ -7,7 +7,6 @@ using System.Activities.Tracking;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Tracing;
 using System.Globalization;
-using System.Security;
 using System.Threading;
 using System.Transactions;
 
@@ -2898,9 +2897,6 @@ internal partial class ActivityExecutor : IEnlistmentNotification
         public TransactionContextWaiterCallbackWrapper(Action<NativeActivityTransactionContext, object> action, ActivityInstance owningInstance)
             : base(action, owningInstance) { }
 
-        [Fx.Tag.SecurityNote(Critical = "Because we are calling EnsureCallback",
-            Safe = "Safe because the method needs to be part of an Activity and we are casting to the callback type and it has a very specific signature. The author of the callback is buying into being invoked from PT.")]
-        [SecuritySafeCritical]
         public void Invoke(NativeActivityTransactionContext context, object value)
         {
             EnsureCallback(callbackType, transactionCallbackParameterTypes);
