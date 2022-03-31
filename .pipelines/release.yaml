@@ -52,7 +52,7 @@ jobs:
     inputs:
       command: push
       ${{ if eq(parameters.type, 'public') }}:
-        packagesToPush: $(Pipeline.Workspace)/$(ArtifactName)/**/.nupkg;$(Pipeline.Workspace)/$(ArtifactName)/**/.snupkg
+        packagesToPush: $(Pipeline.Workspace)/$(ArtifactName)/**/*.nupkg;$(Pipeline.Workspace)/$(ArtifactName)/**/*.snupkg
         nuGetFeedType: external
         publishFeedCredentials: $(NugetFeedServiceConnection)
       ${{ else }}:
