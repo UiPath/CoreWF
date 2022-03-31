@@ -39,6 +39,10 @@ jobs:
         searchPattern: '**/*.pdb'
         symbolServerType: teamServices
 
+  - task: NuGetToolInstaller@1
+    inputs:
+      versionSpec: 6.x
+
   - task: NuGetAuthenticate@0
     inputs:
       forceReinstallCredentialProvider: true
