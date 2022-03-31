@@ -76,7 +76,7 @@ a copy of the **System.Xaml** code.
 ## Usage
 
 To add this library to your project, use
-the [NuGet package](https://www.nuget.org/packages/UiPath.Workflow).
+the [NuGet package](https://www.nuget.org/packages/UiPath.Workflow.Runtime).
 
 ## Debug using Source Link
 
