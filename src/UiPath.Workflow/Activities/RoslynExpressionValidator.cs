@@ -83,7 +83,7 @@ public abstract class RoslynExpressionValidator
     /// <returns>MetadataReference objects for all required assemblies</returns>
     protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) => 
         expressionContainer.RequiredAssemblies.Where(asm => asm != null)
-        .Select(asm => _metadataReferenceDictionary.Value.GetValueOrDefault(asm)).Where(mr => mr != null);
+        .Select(asm => TryGetMetadataReference(asm)).Where(mr => mr != null);
 
     /// <summary>
     ///     Gets the type name, which can be language-specific.
@@ -138,7 +138,7 @@ public abstract class RoslynExpressionValidator
     ///     Handles common steps for validating expressions with Roslyn. Can be reused for multiple expressions in the same
     ///     language.
     /// </remarks>
-    public IEnumerable<ValidationError> Validate<TResult>(Activity currentActivity, LocationReferenceEnvironment environment,
+    public virtual IEnumerable<ValidationError> Validate<TResult>(Activity currentActivity, LocationReferenceEnvironment environment,
         string expressionText)
     {
         var requiredAssemblies = new HashSet<Assembly>(RequiredAssemblies);
@@ -293,18 +293,26 @@ public abstract class RoslynExpressionValidator
         }
     }
 
+    private MetadataReference TryGetMetadataReference(Assembly assembly)
+    {
+        MetadataReference meta = null;
+        if (assembly != null && !_metadataReferenceDictionary.Value.TryGetValue(assembly, out meta))
+        {
+            meta = GetMetadataReferenceForAssembly(assembly);
+            if (meta != null)
+            {
+                _metadataReferenceDictionary.Value.TryAdd(assembly, meta);
+            }
+        }
+
+        return meta;
+    }
+
     private void EnsureAssembliesLoaded(ExpressionContainer expressionContainer)
     {
         foreach (var assembly in expressionContainer.RequiredAssemblies)
         {
-            if (assembly != null && !_metadataReferenceDictionary.Value.ContainsKey(assembly))
-            {
-                var meta = GetMetadataReferenceForAssembly(assembly);
-                if (meta != null)
-                {
-                    _metadataReferenceDictionary.Value.TryAdd(assembly, meta);
-                }
-            }
+            TryGetMetadataReference(assembly);
         }
     }
 
