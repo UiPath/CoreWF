@@ -92,12 +92,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
         {
             var options = DefaultCompilationUnit.Options as VisualBasicCompilationOptions;
             var compilation = DefaultCompilationUnit.WithOptions(options!.WithGlobalImports(globalImports));
-
-            var missingReferences = compilation.References.Except(metadataReferences);
-            expressionContainer.CompilationUnit = 
-                missingReferences.Any() 
-                ? compilation.AddReferences(missingReferences) 
-                : compilation;
+            expressionContainer.CompilationUnit = compilation.WithReferences(metadataReferences);
         }
     }
 
