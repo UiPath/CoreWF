@@ -42,22 +42,49 @@ namespace TestConsole
     }
     public class TestDelay : AsyncTaskNativeActivity
     {
-        WriteLine _writeLine = new() { Text = "XXXXXXXXXXXXXXXXXX" };
+        WriteLine _writeLine1 = new() { Text = "AAAAAAAAAAAAAAAA" };
+        WriteLine _writeLine2 = new() { Text = "BBBBBBBBBBBBBBBB" };
+        Activity _activity;
+        TaskCompletionSource<bool> _completionSource;
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             base.CacheMetadata(metadata);
-            metadata.AddChild(_writeLine);
+            metadata.AddChild(_writeLine1);
+            metadata.AddChild(_writeLine2);
         }
         protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
         {
-            context.ScheduleActivity(_writeLine);
+            await Task.Delay(100);
+            await ExecuteAsync(_writeLine1);
+            await Task.Delay(1000);
+            await ExecuteAsync(_writeLine2);
             await Task.Delay(1000);
             return _ => { };
+        }
+        Task ExecuteAsync(Activity activity)
+        {
+            _activity = activity;
+            _completionSource = new();
+            _impl.Resume(true);
+            return _completionSource.Task;
+        }
+        protected override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
+        {
+            var activity = _activity;
+            _activity = null;
+            if (activity != null)
+            {
+                context.ScheduleActivity(activity, (_, __) => _completionSource.SetResult(true), (_, ex, __) => _completionSource.SetException(ex));
+            }
+            else
+            {
+                _impl.BookmarkResumptionCallback(context, value);
+            }
         }
     }
     public abstract class AsyncTaskNativeActivity : NativeActivity
     {
-        private AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
+        protected AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
 
         // Always true because we create bookmarks.
         protected override bool CanInduceIdle => true;
@@ -92,7 +119,7 @@ namespace TestConsole
 
     public abstract class AsyncTaskNativeActivity<T> : NativeActivity<T>
     {
-        private AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
+        protected AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
 
         protected override bool CanInduceIdle => true;
 
@@ -121,7 +148,7 @@ namespace TestConsole
         }
     }
 
-    internal struct AsyncTaskNativeImplementation
+    public struct AsyncTaskNativeImplementation
     {
         private Variable<NoPersistHandle> _noPersistHandle;
 
@@ -129,7 +156,8 @@ namespace TestConsole
         private Variable<CancellationTokenSource> _cancellationTokenSource;
 
         private Variable<bool> _bookmarkResumed;
-
+        BookmarkResumptionHelper _bookmarkHelper;
+        Bookmark _bookmark;
         public void Cancel(NativeActivityContext context)
         {
             bool bookmarkResumed = _bookmarkResumed.Get(context);
@@ -171,14 +199,14 @@ namespace TestConsole
         {
             _noPersistHandle.Get(context).Enter(context);
 
-            Bookmark bookmark = context.CreateBookmark(callback);
-            BookmarkResumptionHelper bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
+            _bookmark = context.CreateBookmark(callback, BookmarkOptions.MultipleResume);
+            _bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
 
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             _cancellationTokenSource.Set(context, cancellationTokenSource);
 
             _bookmarkResumed.Set(context, false);
-
+            var _this = this;
             onExecute(context, cancellationTokenSource.Token).ContinueWith(t =>
             {
                 // We resume the bookmark only if the activity wasn't
@@ -195,20 +223,19 @@ namespace TestConsole
                     {
                         executionResult = t.Result;
                     }
-
-                    bookmarkHelper.ResumeBookmark(bookmark, executionResult);
+                    _this.Resume(executionResult);
                 }
             });
         }
-
+        public void Resume(object executionResult) => _bookmarkHelper.ResumeBookmark(_bookmark, executionResult);
         public void BookmarkResumptionCallback(NativeActivityContext context, object value)
         {
             if (value is Exception ex)
             {
                 ExceptionDispatchInfo.Capture(ex).Throw();
             }
-
             _noPersistHandle.Get(context).Exit(context);
+            context.RemoveBookmark(_bookmark);
 
             Action<NativeActivityContext> executeCallback = value as Action<NativeActivityContext>;
             executeCallback?.Invoke(context);
