@@ -54,11 +54,11 @@ namespace TestConsole
         }
         protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
         {
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
             await ExecuteAsync(_writeLine1);
-            await Task.Delay(1000);
+            await Task.Delay(1000, cancellationToken);
             await ExecuteAsync(_writeLine2);
-            await Task.Delay(1000);
+            await Task.Delay(1000, cancellationToken);
             return _ => { };
         }
         Task ExecuteAsync(Activity activity)
