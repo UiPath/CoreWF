@@ -49,8 +49,8 @@ namespace TestConsole
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             base.CacheMetadata(metadata);
-            metadata.AddChild(_writeLine1);
-            metadata.AddChild(_writeLine2);
+            metadata.AddImplementationChild(_writeLine1);
+            metadata.AddImplementationChild(_writeLine2);
         }
         protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
         {
