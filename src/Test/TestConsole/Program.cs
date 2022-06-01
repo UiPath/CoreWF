@@ -1,5 +1,6 @@
 ﻿using Microsoft.PowerFx;
 using Microsoft.PowerFx.Core.Public.Values;
+using ReflectionMagic;
 using System;
 using System.Activities;
 using System.Activities.Hosting;
@@ -54,6 +55,12 @@ namespace TestConsole
         }
         protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
         {
+            //context.AsDynamic().AllowChainedEnvironmentAccess = true;
+            for (int index = 0; index < 3; index++)
+            {
+                //_writeLine1.Text.Set(context, index.ToString());
+                await ExecuteAsync(_writeLine1);
+            }
             await Task.Delay(100, cancellationToken);
             await ExecuteAsync(_writeLine1);
             await Task.Delay(1000, cancellationToken);
@@ -61,12 +68,13 @@ namespace TestConsole
             await Task.Delay(1000, cancellationToken);
             return _ => { };
         }
-        Task ExecuteAsync(Activity activity)
+        async Task ExecuteAsync(Activity activity)
         {
+            await Task.Yield();
             _activity = activity;
             _completionSource = new();
             _impl.Resume(true);
-            return _completionSource.Task;
+            await _completionSource.Task;
         }
         protected override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
         {
