@@ -82,7 +82,7 @@ namespace TestConsole
             _activity = null;
             if (activity != null)
             {
-                context.ScheduleActivity(activity, (_, __) => _completionSource.SetResult(true), (_, ex, __) => _completionSource.SetException(ex));
+                var activityInstance = context.ScheduleActivity(activity, (_, __) => _completionSource.SetResult(true), (_, ex, __) => _completionSource.SetException(ex));
             }
             else
             {
