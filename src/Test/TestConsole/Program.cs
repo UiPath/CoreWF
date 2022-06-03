@@ -21,10 +21,19 @@ namespace TestConsole
     {
         static void Main()
         {
-            var stopWatch = System.Diagnostics.Stopwatch.StartNew();
-            WorkflowInvoker.Invoke(new TestDelay());
-            stopWatch.Stop();
-            Console.WriteLine(stopWatch.Elapsed.TotalSeconds);
+            WorkflowInvoker.Invoke(new Sequence());
+            while (true)
+            {
+                var stopWatch = System.Diagnostics.Stopwatch.StartNew();
+                for (int index = 0; index < 1000; index++)
+                {
+                    WorkflowInvoker.Invoke(new Sequence());
+                }
+                stopWatch.Stop();
+                Console.WriteLine(stopWatch.Elapsed.TotalMilliseconds);
+                Console.WriteLine(GC.CollectionCount(0));
+                Console.ReadLine();
+            }
             return;
             new PowerFxTests().EvaluateMembers();
             var engine = new RecalcEngine();
