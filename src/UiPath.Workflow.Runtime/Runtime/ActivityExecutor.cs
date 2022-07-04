@@ -2011,32 +2011,23 @@ internal partial class ActivityExecutor : IEnlistmentNotification
         Fx.Assert(_workflowOutputs == null, "We should only get workflow outputs when we actually complete which should only happen once.");
         Fx.Assert(ActivityUtilities.IsCompletedState(_rootInstance.State), "We should only gather outputs when in a completed state.");
         Fx.Assert(_rootEnvironment != null, "We should have set the root environment");
-
         // We only gather outputs for Closed - not for canceled or faulted
         if (_rootInstance.State == ActivityInstanceState.Closed)
         {
             // We use rootElement here instead of _rootInstance.Activity
             // because we don't always reload the root instance (like if it
             // was complete when we last persisted).
-            IList<RuntimeArgument> rootArguments = _rootElement.RuntimeArguments;
-
+            var rootArguments = _rootElement.RuntimeArguments;
             for (int i = 0; i < rootArguments.Count; i++)
             {
-                RuntimeArgument argument = rootArguments[i];
-
+                var argument = rootArguments[i];
                 if (ArgumentDirectionHelper.IsOut(argument.Direction))
                 {
                     _workflowOutputs ??= new Dictionary<string, object>();
-                    Location location = _rootEnvironment.GetSpecificLocation(argument.BoundArgument.Id);
-                    if (location == null)
-                    {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
-                    }
-                    _workflowOutputs.Add(argument.Name, location.Value);
+                    _workflowOutputs.Add(argument.Name, _rootEnvironment.GetValue(argument));
                 }
             }
         }
-
         // GatherRootOutputs only ever gets called once so we can null it out the root environment now.
         _rootEnvironment = null;
     }
@@ -2493,14 +2484,14 @@ internal partial class ActivityExecutor : IEnlistmentNotification
         _lastInstanceId++;
     }
 
-    private ActivityInstance ScheduleActivity(
+    internal ActivityInstance ScheduleActivity(
         Activity activity,
         ActivityInstance parent,
         CompletionBookmark completionBookmark,
         FaultBookmark faultBookmark,
         LocationEnvironment parentEnvironment,
         IDictionary<string, object> argumentValueOverrides,
-        Location resultLocation)
+        Location resultLocation = null)
     {
         ActivityInstance activityInstance = CreateUninitalizedActivityInstance(activity, parent, completionBookmark, faultBookmark);
         bool requiresSymbolResolution = activityInstance.Initialize(parent, _instanceMap, parentEnvironment, _lastInstanceId, this);

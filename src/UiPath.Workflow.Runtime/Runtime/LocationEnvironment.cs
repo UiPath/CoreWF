@@ -308,6 +308,12 @@ internal sealed class LocationEnvironment
         }
     }
 
+    internal object GetValue(RuntimeArgument argument)
+    {
+        var location = GetSpecificLocation(argument.BoundArgument.Id) ?? throw FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
+        return location.Value;
+    }
+
     internal Location<T> GetSpecificLocation<T>(int id) => GetSpecificLocation(id) as Location<T>;
 
     internal Location GetSpecificLocation(int id)
