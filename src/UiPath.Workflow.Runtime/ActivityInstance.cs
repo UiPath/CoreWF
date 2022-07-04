@@ -63,8 +63,6 @@ public sealed class ActivityInstance
     /// <returns>null when there is nothing to return</returns>
     public Dictionary<string, object> GetOutputs()
     {
-        Fx.Assert(ActivityUtilities.IsCompletedState(State), "We should only gather outputs when in a completed state.");
-        Fx.Assert(_environment != null, "We should have set the root environment");
         // We only gather outputs for Closed - not for canceled or faulted
         if (State != ActivityInstanceState.Closed)
         {
