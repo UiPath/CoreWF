@@ -2493,14 +2493,14 @@ internal partial class ActivityExecutor : IEnlistmentNotification
         _lastInstanceId++;
     }
 
-    private ActivityInstance ScheduleActivity(
+    internal ActivityInstance ScheduleActivity(
         Activity activity,
         ActivityInstance parent,
         CompletionBookmark completionBookmark,
         FaultBookmark faultBookmark,
         LocationEnvironment parentEnvironment,
         IDictionary<string, object> argumentValueOverrides,
-        Location resultLocation)
+        Location resultLocation = null)
     {
         ActivityInstance activityInstance = CreateUninitalizedActivityInstance(activity, parent, completionBookmark, faultBookmark);
         bool requiresSymbolResolution = activityInstance.Initialize(parent, _instanceMap, parentEnvironment, _lastInstanceId, this);
