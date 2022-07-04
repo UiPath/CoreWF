@@ -21,6 +21,8 @@ namespace TestConsole
     {
         static void Main()
         {
+            WorkflowInvoker.Invoke(new TestDelay());
+            return;
             WorkflowInvoker.Invoke(new Sequence());
             while (true)
             {
@@ -34,7 +36,6 @@ namespace TestConsole
                 Console.WriteLine(GC.CollectionCount(0));
                 Console.ReadLine();
             }
-            return;
             new PowerFxTests().EvaluateMembers();
             var engine = new RecalcEngine();
             var defaultValue = FormulaValue.New(null, typeof(string));
