@@ -23,8 +23,12 @@ public class KeyValues
 }
 public abstract class ActivityEx : KeyValues
 {
-    protected ActivityEx(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+    protected ActivityEx(Activity activity)
+    {
+        Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+    }
     internal Activity Activity { get; }
+    internal List<Variable> Variables { get; set; }
 }
 public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyValues, new()
 {
@@ -45,6 +49,13 @@ public abstract class HybridActivity : AsyncTaskNativeActivity
         base.CacheMetadata(metadata);
         foreach (var child in _children)
         {
+            if (child.Variables != null)
+            {
+                foreach (var outArg in child.Variables)
+                {
+                    metadata.AddImplementationVariable(outArg);
+                }
+            }
             metadata.AddImplementationChild(child.Activity);
         }
     }

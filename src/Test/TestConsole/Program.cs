@@ -8,9 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TestCases.Workflows;
 using TestCases.Workflows.WF4Samples;
-
 namespace TestConsole;
-
 class Program
 {
     static void Main()
@@ -61,7 +59,12 @@ public class WriteLineEx : ActivityEx<KeyValues>
 }
 public class AssignEx<T> : ActivityEx<AssignOutputs<T>>
 {
-    public AssignEx(Assign<T> activity) : base(activity) { }
+    public AssignEx(Assign<T> activity) : base(activity)
+    {
+        var To = new Variable<int>();
+        activity.To = To;
+        Variables = new() { To };
+    }
     public T Value
     {
         get => Get<T>();
@@ -76,18 +79,8 @@ public class TestDelay : HybridActivity
 {
     WriteLineEx _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
     WriteLineEx _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
-    AssignEx<int> _assign1;
-    Variable<int> _intVar1 = new();
-    public TestDelay()
-    {
-        _assign1 = new(new Assign<int> { To = _intVar1, Value = 1 });
-        _children = new ActivityEx[] { _writeLine1, _writeLine2, _assign1 };
-    }
-    protected override void CacheMetadata(NativeActivityMetadata metadata)
-    {
-        metadata.AddImplementationVariable(_intVar1);
-        base.CacheMetadata(metadata);
-    }
+    AssignEx<int> _assign1 = new(new Assign<int> { Value = 1 });
+    public TestDelay() => _children = new ActivityEx[] { _writeLine1, _writeLine2, _assign1 };
     protected override async Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
     {
         await _writeLine1.ExecuteAsync();
