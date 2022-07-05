@@ -81,47 +81,33 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
 }
 public abstract class AsyncTaskNativeActivity : NativeActivity
 {
-    AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
-
+    AsyncTaskNativeImplementation _impl = new();
     // Always true because we create bookmarks.
     protected override bool CanInduceIdle => true;
-
     protected override void Cancel(NativeActivityContext context)
     {
         _impl.Cancel(context);
-
         // Called so that any outstanding bookmarks are removed.
         // Not the only side effect but it's what we're interested in here.
         base.Cancel(context);
     }
-
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         _impl.CacheMetadata(metadata);
         base.CacheMetadata(metadata);
     }
-
     protected abstract Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken);
-
-    protected override void Execute(NativeActivityContext context)
-    {
-        _impl.Execute(context, ExecuteAsync, BookmarkResumptionCallback);
-    }
-
-    protected virtual void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
-    {
+    protected override void Execute(NativeActivityContext context) => _impl.Execute(context, ExecuteAsync, BookmarkResumptionCallback);
+    protected virtual void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value) =>
         _impl.BookmarkResumptionCallback(context, value);
-    }
     protected void Resume(object result) => _impl.Resume(result);
 }
 public struct AsyncTaskNativeImplementation
 {
-    private Variable<NoPersistHandle> _noPersistHandle;
-
+    Variable<NoPersistHandle> _noPersistHandle;
     // The token from this source should be passed around to any async tasks.
-    private Variable<CancellationTokenSource> _cancellationTokenSource;
-
-    private Variable<bool> _bookmarkResumed;
+    Variable<CancellationTokenSource> _cancellationTokenSource;
+    Variable<bool> _bookmarkResumed;
     BookmarkResumptionHelper _bookmarkHelper;
     Bookmark _bookmark;
     public void Cancel(NativeActivityContext context)
@@ -156,7 +142,7 @@ public struct AsyncTaskNativeImplementation
         metadata.AddImplementationVariable(_cancellationTokenSource);
         metadata.AddImplementationVariable(_bookmarkResumed);
         metadata.RequireExtension<BookmarkResumptionHelper>();
-        metadata.AddDefaultExtensionProvider(BookmarkResumptionHelper.Create);
+        metadata.AddDefaultExtensionProvider(()=>new BookmarkResumptionHelper());
     }
 
     public void Execute(NativeActivityContext context, Func<NativeActivityContext, CancellationToken, Task> onExecute, BookmarkCallback callback)
@@ -173,8 +159,7 @@ public struct AsyncTaskNativeImplementation
         var _this = this;
         onExecute(context, cancellationTokenSource.Token).ContinueWith(t =>
         {
-            // We resume the bookmark only if the activity wasn't
-            // cancelled since the cancellation removes any bookmarks.
+            // We resume the bookmark only if the activity wasn't cancelled since the cancellation removes any bookmarks.
             if (!cancellationTokenSource.IsCancellationRequested)
             {
                 object executionResult = null;
@@ -195,33 +180,15 @@ public struct AsyncTaskNativeImplementation
         }
         _noPersistHandle.Get(context).Exit(context);
         context.RemoveBookmark(_bookmark);
-
         _cancellationTokenSource.Get(context)?.Dispose();
-
         _bookmarkResumed.Set(context, true);
     }
 }
 internal sealed class BookmarkResumptionHelper : IWorkflowInstanceExtension
 {
     private WorkflowInstanceProxy _workflowInstance;
-
-    public static BookmarkResumptionHelper Create()
-    {
-        return new BookmarkResumptionHelper();
-    }
-
-    internal BookmarkResumptionResult ResumeBookmark(Bookmark bookmark, object value)
-    {
-        return _workflowInstance.EndResumeBookmark(_workflowInstance.BeginResumeBookmark(bookmark, value, null, null));
-    }
-
-    IEnumerable<object> IWorkflowInstanceExtension.GetAdditionalExtensions()
-    {
-        yield break;
-    }
-
-    void IWorkflowInstanceExtension.SetInstance(WorkflowInstanceProxy instance)
-    {
-        _workflowInstance = instance;
-    }
+    internal BookmarkResumptionResult ResumeBookmark(Bookmark bookmark, object value) => 
+        _workflowInstance.EndResumeBookmark(_workflowInstance.BeginResumeBookmark(bookmark, value, null, null));
+    IEnumerable<object> IWorkflowInstanceExtension.GetAdditionalExtensions() => null;
+    void IWorkflowInstanceExtension.SetInstance(WorkflowInstanceProxy instance) => _workflowInstance = instance;
 }
