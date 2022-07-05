@@ -61,6 +61,7 @@ public class AssignEx<T> : ActivityEx<AssignOutputs<T>>
 {
     public AssignEx(Assign<T> activity) : base(activity)
     {
+        // required out arguments need to be set
         var To = new Variable<int>();
         activity.To = To;
         Variables = new() { To };
