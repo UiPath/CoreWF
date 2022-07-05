@@ -84,12 +84,12 @@ public class TestDelay : AsyncCodeNativeActivity
             _writeLine1.Text = index.ToString();
             await _writeLine1.ExecuteAsync();
         }
-        await Task.Delay(1000, cancellationToken);
+        await Task.Delay(1000);
         await _writeLine2.ExecuteAsync();
         Console.WriteLine((await _assign1.ExecuteAsync()).To);
         _assign1.Value = 42;
         Console.WriteLine((await _assign1.ExecuteAsync()).To);
-        await Task.Delay(1000, cancellationToken);
+        await Task.Delay(1000);
     }
 }
 public sealed class Assign<T> : CodeActivity
