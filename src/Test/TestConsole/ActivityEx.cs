@@ -26,6 +26,15 @@ public abstract class ActivityEx : KeyedValues
     protected ActivityEx(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
     internal Activity Activity { get; }
 }
+public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyedValues, new()
+{
+    public ActivityEx(Activity activity) : base(activity) { }
+    public async Task<TKeyedValues> ExecuteAsync()
+    {
+        var values = await ((HybridActivity)Activity.GetParent()).ExecuteAsync(this);
+        return values == null ? default : new() { Values = values };
+    }
+}
 public abstract class HybridActivity : AsyncTaskNativeActivity
 {
     ActivityEx _activityEx;
@@ -68,15 +77,6 @@ public abstract class HybridActivity : AsyncTaskNativeActivity
         {
             _impl.BookmarkResumptionCallback(context, value);
         }
-    }
-}
-public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyedValues, new()
-{
-    public ActivityEx(Activity activity) : base(activity) { }
-    public async Task<TKeyedValues> ExecuteAsync()
-    {
-        var values = await ((HybridActivity)Activity.GetParent()).ExecuteAsync(this);
-        return values == null ? default : new() { Values = values };
     }
 }
 public abstract class AsyncTaskNativeActivity : NativeActivity
