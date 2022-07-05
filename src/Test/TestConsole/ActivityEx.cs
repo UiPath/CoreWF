@@ -10,16 +10,15 @@ namespace TestConsole;
 using StringToObject = Dictionary<string, object>;
 public class KeyValues
 {
-    StringToObject _values;
     public KeyValues() { }
-    public KeyValues(StringToObject args) => _values = args;
+    public KeyValues(StringToObject args) => Values = args;
     protected void Set(object value, [CallerMemberName] string name = null)
     {
-        _values ??= new();
-        _values[name] = value;
+        Values ??= new();
+        Values[name] = value;
     }
-    protected T Get<T>([CallerMemberName] string name = null) => (T)_values?.GetValueOrDefault(name);
-    internal StringToObject Values { get => _values; init => _values = value; }
+    protected T Get<T>([CallerMemberName] string name = null) => (T)Values?.GetValueOrDefault(name);
+    internal StringToObject Values { get; set; }
 }
 public abstract class ActivityEx : KeyValues
 {
@@ -32,7 +31,7 @@ public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyValue
     public async Task<TKeyedValues> ExecuteAsync()
     {
         var values = await ((AsyncCodeNativeActivity)Activity.GetParent()).ExecuteAsync(this);
-        return values == null ? default : new() { Values = values };
+        return values == null ? null : new() { Values = values };
     }
 }
 public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
