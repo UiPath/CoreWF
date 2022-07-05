@@ -76,7 +76,18 @@ public class TestDelay : HybridActivity
 {
     WriteLineEx _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
     WriteLineEx _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
-    public TestDelay() => _children = new[] { _writeLine1, _writeLine2 };
+    AssignEx<int> _assign1;
+    Variable<int> _intVar1 = new();
+    public TestDelay()
+    {
+        _assign1 = new(new Assign<int> { To = _intVar1, Value = 1 });
+        _children = new ActivityEx[] { _writeLine1, _writeLine2, _assign1 };
+    }
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        metadata.AddImplementationVariable(_intVar1);
+        base.CacheMetadata(metadata);
+    }
     protected override async Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
     {
         await _writeLine1.ExecuteAsync();
@@ -87,6 +98,9 @@ public class TestDelay : HybridActivity
         }
         await Task.Delay(1000, cancellationToken);
         await _writeLine2.ExecuteAsync();
+        Console.WriteLine((await _assign1.ExecuteAsync()).To);
+        _assign1.Value = 42;
+        Console.WriteLine((await _assign1.ExecuteAsync()).To);
         await Task.Delay(1000, cancellationToken);
     }
 }
