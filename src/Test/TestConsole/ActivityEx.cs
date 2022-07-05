@@ -31,11 +31,11 @@ public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyValue
     public ActivityEx(Activity activity) : base(activity) { }
     public async Task<TKeyedValues> ExecuteAsync()
     {
-        var values = await ((AsyncNativeCodeActivity)Activity.GetParent()).ExecuteAsync(this);
+        var values = await ((AsyncCodeNativeActivity)Activity.GetParent()).ExecuteAsync(this);
         return values == null ? default : new() { Values = values };
     }
 }
-public abstract class AsyncNativeCodeActivity : AsyncTaskNativeActivity
+public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
 {
     ActivityEx _activityEx;
     TaskCompletionSource<StringToObject> _completionSource;
