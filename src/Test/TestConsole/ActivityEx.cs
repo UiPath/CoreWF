@@ -8,11 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace TestConsole;
 using StringToObject = Dictionary<string, object>;
-public class KeyedValues
+public class KeyValues
 {
     StringToObject _values;
-    public KeyedValues() { }
-    public KeyedValues(StringToObject args) => _values = args;
+    public KeyValues() { }
+    public KeyValues(StringToObject args) => _values = args;
     protected void Set(object value, [CallerMemberName] string name = null)
     {
         _values ??= new();
@@ -21,12 +21,12 @@ public class KeyedValues
     protected T Get<T>([CallerMemberName] string name = null) => (T)_values?.GetValueOrDefault(name);
     internal StringToObject Values { get => _values; init => _values = value; }
 }
-public abstract class ActivityEx : KeyedValues
+public abstract class ActivityEx : KeyValues
 {
     protected ActivityEx(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
     internal Activity Activity { get; }
 }
-public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyedValues, new()
+public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyValues, new()
 {
     public ActivityEx(Activity activity) : base(activity) { }
     public async Task<TKeyedValues> ExecuteAsync()

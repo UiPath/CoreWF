@@ -45,7 +45,7 @@ class Program
         new JustInTimeExpressions().SalaryCalculation();
     }
 }
-public class WriteLineEx : ActivityEx<KeyedValues>
+public class WriteLineEx : ActivityEx<KeyValues>
 {
     public WriteLineEx(WriteLine activity) : base(activity) { }
     public string Text
@@ -68,7 +68,7 @@ public class AssignEx<T> : ActivityEx<AssignOutputs<T>>
         set => Set(value);
     }
 }
-public class AssignOutputs<T> : KeyedValues
+public class AssignOutputs<T> : KeyValues
 {
     public T To => Get<T>();
 }
