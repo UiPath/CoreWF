@@ -116,7 +116,7 @@ namespace TestConsole
     }
     public abstract class HybridActivity : AsyncTaskNativeActivity
     {
-        Activity _activity;
+        IActivityEx _activityEx;
         TaskCompletionSource<StringToObject> _completionSource;
         protected IActivityEx[] _children;
         protected override void CacheMetadata(NativeActivityMetadata metadata)
@@ -131,7 +131,7 @@ namespace TestConsole
                 throw new InvalidOperationException("There is already an async call in progress! Make sure you awaited the previous call.");
             }
             await Task.Yield();
-            _activity = activityEx.Activity;
+            _activityEx = activityEx;
             _completionSource = new();
             try
             {
@@ -145,11 +145,12 @@ namespace TestConsole
         }
         protected override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
         {
-            var activity = _activity;
-            _activity = null;
-            if (activity != null)
+            var activityEx = _activityEx;
+            _activityEx = null;
+            if (activityEx != null)
             {
-                var activityInstance = context.ScheduleActivity(activity, (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex));
+                var activityInstance = context.ScheduleActivity(activityEx.Activity, 
+                    (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), activityEx.Values);
             }
             else
             {
@@ -167,7 +168,7 @@ namespace TestConsole
             //context.AsDynamic().AllowChainedEnvironmentAccess = true;
             for (int index = 0; index < 3; index++)
             {
-                //_writeLine1.Text.Set(context, index.ToString());
+                _writeLine1.Text = index.ToString();
                 await _writeLine1.ExecuteAsync();
             }
             await Task.Delay(100, cancellationToken);
