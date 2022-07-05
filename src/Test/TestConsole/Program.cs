@@ -57,12 +57,6 @@ public class WriteLineEx : ActivityEx<KeyValues>
         set => Set(value);
     }
 }
-public sealed class Assign<T> : CodeActivity
-{
-    public OutArgument<T> To { get; set; }
-    public InArgument<T> Value { get; set; }
-    protected override void Execute(CodeActivityContext context) => context.SetValue(To, Value.Get(context));
-}
 public class AssignEx<T> : ActivityEx<AssignOutputs<T>>
 {
     public AssignEx(Assign<T> activity) : base(activity) { }
@@ -97,4 +91,10 @@ public class TestDelay : AsyncCodeNativeActivity
         Console.WriteLine((await _assign1.ExecuteAsync()).To);
         await Task.Delay(1000, cancellationToken);
     }
+}
+public sealed class Assign<T> : CodeActivity
+{
+    public OutArgument<T> To { get; set; }
+    public InArgument<T> Value { get; set; }
+    protected override void Execute(CodeActivityContext context) => context.SetValue(To, Value.Get(context));
 }
