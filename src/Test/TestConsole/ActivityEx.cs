@@ -23,10 +23,7 @@ public class KeyValues
 }
 public abstract class ActivityEx : KeyValues
 {
-    protected ActivityEx(Activity activity)
-    {
-        Activity = activity ?? throw new ArgumentNullException(nameof(activity));
-    }
+    protected ActivityEx(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
     internal Activity Activity { get; }
 }
 public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyValues, new()
