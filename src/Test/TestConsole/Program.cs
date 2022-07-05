@@ -1,19 +1,15 @@
 ﻿using Microsoft.PowerFx;
 using Microsoft.PowerFx.Core.Public.Values;
-using ReflectionMagic;
 using System;
 using System.Activities;
 using System.Activities.Hosting;
 using System.Activities.Statements;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Markup;
 using TestCases.Workflows;
 using TestCases.Workflows.WF4Samples;
 
