@@ -226,7 +226,7 @@ namespace TestConsole
             base.CacheMetadata(metadata);
         }
 
-        protected abstract Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken);
+        protected abstract Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken);
 
         protected override void Execute(NativeActivityContext context)
         {
@@ -284,9 +284,7 @@ namespace TestConsole
             metadata.AddDefaultExtensionProvider(BookmarkResumptionHelper.Create);
         }
 
-        public void Execute(NativeActivityContext context
-            , Func<NativeActivityContext, CancellationToken, Task<Action<NativeActivityContext>>> onExecute
-            , BookmarkCallback callback)
+        public void Execute(NativeActivityContext context, Func<NativeActivityContext, CancellationToken, Task> onExecute, BookmarkCallback callback)
         {
             _noPersistHandle.Get(context).Enter(context);
 
@@ -305,14 +303,9 @@ namespace TestConsole
                 if (!cancellationTokenSource.IsCancellationRequested)
                 {
                     object executionResult = null;
-
                     if (t.IsFaulted)
                     {
                         executionResult = t.Exception.InnerException;
-                    }
-                    else
-                    {
-                        executionResult = t.Result;
                     }
                     _this.Resume(executionResult);
                 }
@@ -327,9 +320,6 @@ namespace TestConsole
             }
             _noPersistHandle.Get(context).Exit(context);
             context.RemoveBookmark(_bookmark);
-
-            Action<NativeActivityContext> executeCallback = value as Action<NativeActivityContext>;
-            executeCallback?.Invoke(context);
 
             _cancellationTokenSource.Get(context)?.Dispose();
 
