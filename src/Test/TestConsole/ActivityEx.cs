@@ -10,8 +10,6 @@ namespace TestConsole;
 using StringToObject = Dictionary<string, object>;
 public class KeyValues
 {
-    public KeyValues() { }
-    public KeyValues(StringToObject args) => Values = args;
     protected void Set(object value, [CallerMemberName] string name = null)
     {
         Values ??= new();
