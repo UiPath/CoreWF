@@ -159,7 +159,7 @@ namespace TestConsole
         WriteLineEx _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
         WriteLineEx _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
         public TestDelay() => _children = new[] { _writeLine1, _writeLine2 };
-        protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
         {
             await ExecuteAsync(_writeLine1);
             for (int index = 0; index < 3; index++)
@@ -170,7 +170,6 @@ namespace TestConsole
             await Task.Delay(1000, cancellationToken);
             await ExecuteAsync(_writeLine2);
             await Task.Delay(1000, cancellationToken);
-            return _ => { };
         }
     }
     public abstract class AsyncTaskNativeActivity : NativeActivity
@@ -195,7 +194,7 @@ namespace TestConsole
             base.CacheMetadata(metadata);
         }
 
-        protected abstract Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken);
+        protected abstract Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken);
 
         protected override void Execute(NativeActivityContext context)
         {
