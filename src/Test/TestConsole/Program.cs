@@ -76,7 +76,7 @@ public class AssignOutputs<T> : KeyValues
 {
     public T To => Get<T>();
 }
-public class TestDelay : HybridActivity
+public class TestDelay : AsyncNativeCodeActivity
 {
     WriteLineEx _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
     WriteLineEx _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
