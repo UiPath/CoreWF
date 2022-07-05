@@ -73,7 +73,7 @@ namespace TestConsole
     {
         readonly Activity _activity;
         public ActivityEx(Activity activity) => _activity = activity ?? throw new ArgumentNullException(nameof(activity));
-        Activity IActivityEx.Activity { get => _activity; }
+        Activity IActivityEx.Activity => _activity;
         public async Task<TKeyedValues> ExecuteAsync()
         {
             var values = await ((HybridActivity)_activity.GetParent()).ExecuteAsync(this);
@@ -104,7 +104,7 @@ namespace TestConsole
             _values[name] = value;
         }
         protected T Get<T>([CallerMemberName] string name = null) => (T)_values?.GetValueOrDefault(name);
-        StringToObject IKeyedValues.Values { get => _values; set => _values = value; }
+        StringToObject IKeyedValues.Values { get => _values; init => _values = value; }
     }
     public interface IActivityEx : IKeyedValues
     {
@@ -112,7 +112,7 @@ namespace TestConsole
     }
     public interface IKeyedValues
     {
-        public StringToObject Values { get; set; }
+        public StringToObject Values { get; init; }
     }
     public abstract class HybridActivity : AsyncTaskNativeActivity
     {
