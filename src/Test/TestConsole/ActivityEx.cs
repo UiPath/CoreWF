@@ -59,7 +59,7 @@ public abstract class HybridActivity : AsyncTaskNativeActivity
         _completionSource = new();
         try
         {
-            _impl.Resume(true);
+            Resume(null);
             return await _completionSource.Task;
         }
         finally
@@ -69,22 +69,19 @@ public abstract class HybridActivity : AsyncTaskNativeActivity
     }
     protected override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
     {
-        var activityEx = _activityEx;
+        if (_activityEx == null)
+        {
+            base.BookmarkResumptionCallback(context, bookmark, value);
+            return;
+        }
+        context.ScheduleActivity(_activityEx.Activity,
+            (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), _activityEx.Values);
         _activityEx = null;
-        if (activityEx != null)
-        {
-            var activityInstance = context.ScheduleActivity(activityEx.Activity,
-                (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), activityEx.Values);
-        }
-        else
-        {
-            _impl.BookmarkResumptionCallback(context, value);
-        }
     }
 }
 public abstract class AsyncTaskNativeActivity : NativeActivity
 {
-    protected AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
+    AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
 
     // Always true because we create bookmarks.
     protected override bool CanInduceIdle => true;
@@ -115,39 +112,8 @@ public abstract class AsyncTaskNativeActivity : NativeActivity
     {
         _impl.BookmarkResumptionCallback(context, value);
     }
+    protected void Resume(object result) => _impl.Resume(result);
 }
-
-public abstract class AsyncTaskNativeActivity<T> : NativeActivity<T>
-{
-    protected AsyncTaskNativeImplementation _impl = new AsyncTaskNativeImplementation();
-
-    protected override bool CanInduceIdle => true;
-
-    protected override void Cancel(NativeActivityContext context)
-    {
-        _impl.Cancel(context);
-        base.Cancel(context);
-    }
-
-    protected override void CacheMetadata(NativeActivityMetadata metadata)
-    {
-        _impl.CacheMetadata(metadata);
-        base.CacheMetadata(metadata);
-    }
-
-    protected abstract Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken);
-
-    protected override void Execute(NativeActivityContext context)
-    {
-        _impl.Execute(context, ExecuteAsync, BookmarkResumptionCallback);
-    }
-
-    protected virtual void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
-    {
-        _impl.BookmarkResumptionCallback(context, value);
-    }
-}
-
 public struct AsyncTaskNativeImplementation
 {
     private Variable<NoPersistHandle> _noPersistHandle;
