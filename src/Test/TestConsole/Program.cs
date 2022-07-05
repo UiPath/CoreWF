@@ -57,15 +57,15 @@ public class WriteLineEx : ActivityEx<KeyValues>
         set => Set(value);
     }
 }
+public sealed class Assign<T> : CodeActivity
+{
+    public OutArgument<T> To { get; set; }
+    public InArgument<T> Value { get; set; }
+    protected override void Execute(CodeActivityContext context) => context.SetValue(To, Value.Get(context));
+}
 public class AssignEx<T> : ActivityEx<AssignOutputs<T>>
 {
-    public AssignEx(Assign<T> activity) : base(activity)
-    {
-        // required out arguments need to be set
-        var To = new Variable<int>();
-        activity.To = To;
-        Variables = new() { To };
-    }
+    public AssignEx(Assign<T> activity) : base(activity) { }
     public T Value
     {
         get => Get<T>();
