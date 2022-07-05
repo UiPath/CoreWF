@@ -10,13 +10,13 @@ namespace TestConsole;
 using StringToObject = Dictionary<string, object>;
 public class KeyValues
 {
+    internal StringToObject Values { get; set; }
     protected void Set(object value, [CallerMemberName] string name = null)
     {
         Values ??= new();
         Values[name] = value;
     }
     protected T Get<T>([CallerMemberName] string name = null) => (T)Values?.GetValueOrDefault(name);
-    internal StringToObject Values { get; set; }
 }
 public abstract class ActivityEx : KeyValues
 {
