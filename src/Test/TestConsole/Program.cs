@@ -71,7 +71,7 @@ namespace TestConsole
     }
     public class ActivityEx<TKeyedValues> : KeyedValues, IActivityEx where TKeyedValues : IKeyedValues, new()
     {
-        private readonly Activity _activity;
+        readonly Activity _activity;
         public ActivityEx(Activity activity) => _activity = activity ?? throw new ArgumentNullException(nameof(activity));
         Activity IActivityEx.Activity { get => _activity; }
         public async Task<TKeyedValues> ExecuteAsync()
