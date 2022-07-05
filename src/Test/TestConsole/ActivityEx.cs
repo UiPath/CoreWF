@@ -43,7 +43,10 @@ public abstract class HybridActivity : AsyncTaskNativeActivity
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         base.CacheMetadata(metadata);
-        metadata.SetImplementationChildrenCollection(new(Array.ConvertAll(_children, c => c.Activity)));
+        foreach (var child in _children)
+        {
+            metadata.AddImplementationChild(child.Activity);
+        }
     }
     public async Task<StringToObject> ExecuteAsync(ActivityEx activityEx)
     {
