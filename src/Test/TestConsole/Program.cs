@@ -8,6 +8,8 @@ using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +19,8 @@ using TestCases.Workflows.WF4Samples;
 
 namespace TestConsole
 {
+    using StringToObject = Dictionary<string, object>;
+
     class Program
     {
         static void Main()
@@ -51,40 +55,93 @@ namespace TestConsole
             new JustInTimeExpressions().SalaryCalculation();
         }
     }
-    public class TestDelay : AsyncTaskNativeActivity
+    public class WriteLineEx : ActivityEx<KeyedValues>
     {
-        WriteLine _writeLine1 = new() { Text = "AAAAAAAAAAAAAAAA" };
-        WriteLine _writeLine2 = new() { Text = "BBBBBBBBBBBBBBBB" };
+        public WriteLineEx(WriteLine activity) : base(activity) { }
+        public string Text
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public TextWriter TextWriter
+        {
+            get => Get<TextWriter>();
+            set => Set(value);
+        }
+    }
+    public class ActivityEx<TKeyedValues> : KeyedValues, IActivityEx where TKeyedValues : IKeyedValues, new()
+    {
+        private readonly Activity _activity;
+        public ActivityEx(Activity activity) => _activity = activity ?? throw new ArgumentNullException(nameof(activity));
+        Activity IActivityEx.Activity { get => _activity; }
+        public async Task<TKeyedValues> ExecuteAsync()
+        {
+            var values = await ((HybridActivity)_activity.GetParent()).ExecuteAsync(this);
+            return values == null ? default : new() { Values = values };
+        }
+    }
+    public class AssignEx<T> : ActivityEx<AssignOutputs<T>>
+    {
+        public AssignEx(Assign<T> activity) : base(activity) { }
+        public T Value
+        {
+            get => Get<T>();
+            set => Set(value);
+        }
+    }
+    public class AssignOutputs<T> : KeyedValues
+    {
+        public T To => Get<T>();
+    }
+    public class KeyedValues : IKeyedValues
+    {
+        StringToObject _values;
+        public KeyedValues() { }
+        public KeyedValues(StringToObject args) => _values = args;
+        protected void Set(object value, [CallerMemberName] string name = null)
+        {
+            _values ??= new();
+            _values[name] = value;
+        }
+        protected T Get<T>([CallerMemberName] string name = null) => (T)_values?.GetValueOrDefault(name);
+        StringToObject IKeyedValues.Values { get => _values; set => _values = value; }
+    }
+    public interface IActivityEx : IKeyedValues
+    {
+        public Activity Activity { get; }
+    }
+    public interface IKeyedValues
+    {
+        public StringToObject Values { get; set; }
+    }
+    public abstract class HybridActivity : AsyncTaskNativeActivity
+    {
         Activity _activity;
-        TaskCompletionSource<bool> _completionSource;
+        TaskCompletionSource<StringToObject> _completionSource;
+        protected IActivityEx[] _children;
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             base.CacheMetadata(metadata);
-            metadata.AddImplementationChild(_writeLine1);
-            metadata.AddImplementationChild(_writeLine2);
+            metadata.SetImplementationChildrenCollection(new(Array.ConvertAll(_children, c => c.Activity)));
         }
-        protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
+        public async Task<StringToObject> ExecuteAsync(IActivityEx activityEx)
         {
-            //context.AsDynamic().AllowChainedEnvironmentAccess = true;
-            for (int index = 0; index < 3; index++)
+            if (_completionSource != null)
             {
-                //_writeLine1.Text.Set(context, index.ToString());
-                await ExecuteAsync(_writeLine1);
+                throw new InvalidOperationException("There is already an async call in progress! Make sure you awaited the previous call.");
             }
-            await Task.Delay(100, cancellationToken);
-            await ExecuteAsync(_writeLine1);
-            await Task.Delay(1000, cancellationToken);
-            await ExecuteAsync(_writeLine2);
-            await Task.Delay(1000, cancellationToken);
-            return _ => { };
-        }
-        async Task ExecuteAsync(Activity activity)
-        {
             await Task.Yield();
-            _activity = activity;
+            _activity = activityEx.Activity;
             _completionSource = new();
-            _impl.Resume(true);
-            await _completionSource.Task;
+            try
+            {
+                _impl.Resume(true);
+                return await _completionSource.Task;
+            }
+            finally
+            {
+                _completionSource = null;
+            }
         }
         protected override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
         {
@@ -92,12 +149,33 @@ namespace TestConsole
             _activity = null;
             if (activity != null)
             {
-                var activityInstance = context.ScheduleActivity(activity, (_, __) => _completionSource.SetResult(true), (_, ex, __) => _completionSource.SetException(ex));
+                var activityInstance = context.ScheduleActivity(activity, (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex));
             }
             else
             {
                 _impl.BookmarkResumptionCallback(context, value);
             }
+        }
+    }
+    public class TestDelay : HybridActivity
+    {
+        WriteLineEx _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
+        WriteLineEx _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
+        public TestDelay() => _children = new[] { _writeLine1, _writeLine2 };
+        protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
+        {
+            //context.AsDynamic().AllowChainedEnvironmentAccess = true;
+            for (int index = 0; index < 3; index++)
+            {
+                //_writeLine1.Text.Set(context, index.ToString());
+                await _writeLine1.ExecuteAsync();
+            }
+            await Task.Delay(100, cancellationToken);
+            await ExecuteAsync(_writeLine1);
+            await Task.Delay(1000, cancellationToken);
+            await ExecuteAsync(_writeLine2);
+            await Task.Delay(1000, cancellationToken);
+            return _ => { };
         }
     }
     public abstract class AsyncTaskNativeActivity : NativeActivity

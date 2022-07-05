@@ -191,6 +191,8 @@ public abstract partial class Activity
 
     internal Activity Parent { get; private set; }
 
+    public Activity GetParent() => Parent;
+
     internal LocationReferenceEnvironment HostEnvironment => RootActivity?._rootProperties?.HostEnvironment;
 
     internal IList<RuntimeArgument> RuntimeArguments => _arguments;
