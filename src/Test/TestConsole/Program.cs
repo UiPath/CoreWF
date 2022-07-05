@@ -79,7 +79,7 @@ public class TestDelay : HybridActivity
     public TestDelay() => _children = new[] { _writeLine1, _writeLine2 };
     protected override async Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
     {
-        await ExecuteAsync(_writeLine1);
+        await _writeLine1.ExecuteAsync();
         for (int index = 0; index < 3; index++)
         {
             _writeLine1.Text = index.ToString();
