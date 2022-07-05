@@ -45,7 +45,7 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
             metadata.AddImplementationChild(child.Activity);
         }
     }
-    public async Task<StringToObject> ExecuteAsync(ActivityEx activityEx)
+    internal async Task<StringToObject> ExecuteAsync(ActivityEx activityEx)
     {
         if (_completionSource != null)
         {
