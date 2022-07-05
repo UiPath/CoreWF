@@ -165,14 +165,12 @@ namespace TestConsole
         public TestDelay() => _children = new[] { _writeLine1, _writeLine2 };
         protected override async Task<Action<NativeActivityContext>> ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
         {
-            //context.AsDynamic().AllowChainedEnvironmentAccess = true;
+            await ExecuteAsync(_writeLine1);
             for (int index = 0; index < 3; index++)
             {
                 _writeLine1.Text = index.ToString();
                 await _writeLine1.ExecuteAsync();
             }
-            await Task.Delay(100, cancellationToken);
-            await ExecuteAsync(_writeLine1);
             await Task.Delay(1000, cancellationToken);
             await ExecuteAsync(_writeLine2);
             await Task.Delay(1000, cancellationToken);
