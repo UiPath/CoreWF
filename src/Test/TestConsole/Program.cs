@@ -168,7 +168,7 @@ namespace TestConsole
                 await _writeLine1.ExecuteAsync();
             }
             await Task.Delay(1000, cancellationToken);
-            await ExecuteAsync(_writeLine2);
+            await _writeLine2.ExecuteAsync();
             await Task.Delay(1000, cancellationToken);
         }
     }
