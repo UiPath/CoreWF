@@ -34,7 +34,7 @@ public class ActivityArgs<TOutputs> : ActivityArgs where TOutputs : Properties, 
 }
 public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
 {
-    ActivityArgs _activityArgs;
+    ActivityArgs _activityToExecute;
     TaskCompletionSource<StringToObject> _completionSource;
     protected ActivityArgs[] _children;
     protected sealed override void CacheMetadata(NativeActivityMetadata metadata)
@@ -52,7 +52,7 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
             throw new InvalidOperationException("There is already an async call in progress! Make sure you awaited the previous call.");
         }
         await Task.Yield();
-        _activityArgs = activityArgs;
+        _activityToExecute = activityArgs;
         _completionSource = new();
         try
         {
@@ -66,14 +66,14 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
     }
     protected sealed override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
     {
-        if (_activityArgs == null)
+        if (_activityToExecute == null)
         {
             base.BookmarkResumptionCallback(context, bookmark, value);
             return;
         }
-        context.ScheduleActivity(_activityArgs.Activity,
-            (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), _activityArgs.Values);
-        _activityArgs = null;
+        context.ScheduleActivity(_activityToExecute.Activity,
+            (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), _activityToExecute.Values);
+        _activityToExecute = null;
     }
 }
 public abstract class AsyncTaskNativeActivity : NativeActivity
