@@ -21,6 +21,7 @@ public class ScheduleActivity
     {
         var activity = new ParentActivity();
         WorkflowInvoker.Invoke(activity);
+        activity.Assign.GetParent().ShouldBe(activity);
         activity.OutArgs.ShouldBe(new() { ["To"] = 42 });
     }
 }
