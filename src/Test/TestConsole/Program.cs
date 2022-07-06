@@ -76,7 +76,7 @@ public class TestDelay : AsyncCodeNativeActivity
     WriteLineEx _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
     AssignEx<int> _assign1 = new(new Assign<int> { Value = 1 });
     public TestDelay() => _children = new ActivityEx[] { _writeLine1, _writeLine2, _assign1 };
-    protected override async Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         await _writeLine1.ExecuteAsync();
         for (int index = 0; index < 3; index++)

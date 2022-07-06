@@ -37,7 +37,7 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
     ActivityEx _activityEx;
     TaskCompletionSource<StringToObject> _completionSource;
     protected ActivityEx[] _children;
-    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    protected sealed override void CacheMetadata(NativeActivityMetadata metadata)
     {
         base.CacheMetadata(metadata);
         foreach (var child in _children)
@@ -64,7 +64,7 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
             _completionSource = null;
         }
     }
-    protected override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
+    protected sealed override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
     {
         if (_activityEx == null)
         {
@@ -93,7 +93,7 @@ public abstract class AsyncTaskNativeActivity : NativeActivity
         _impl.CacheMetadata(metadata);
         base.CacheMetadata(metadata);
     }
-    protected abstract Task ExecuteAsync(NativeActivityContext context, CancellationToken cancellationToken);
+    protected abstract Task ExecuteAsync(CancellationToken cancellationToken);
     protected override void Execute(NativeActivityContext context) => _impl.Execute(context, ExecuteAsync, BookmarkResumptionCallback);
     protected virtual void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value) =>
         _impl.BookmarkResumptionCallback(context, value);
@@ -142,7 +142,7 @@ public struct AsyncTaskNativeImplementation
         metadata.AddDefaultExtensionProvider(()=>new BookmarkResumptionHelper());
     }
 
-    public void Execute(NativeActivityContext context, Func<NativeActivityContext, CancellationToken, Task> onExecute, BookmarkCallback callback)
+    public void Execute(NativeActivityContext context, Func<CancellationToken, Task> onExecute, BookmarkCallback callback)
     {
         _noPersistHandle.Get(context).Enter(context);
 
@@ -154,7 +154,7 @@ public struct AsyncTaskNativeImplementation
 
         _bookmarkResumed.Set(context, false);
         var _this = this;
-        onExecute(context, cancellationTokenSource.Token).ContinueWith(t =>
+        onExecute(cancellationTokenSource.Token).ContinueWith(t =>
         {
             // We resume the bookmark only if the activity wasn't cancelled since the cancellation removes any bookmarks.
             if (!cancellationTokenSource.IsCancellationRequested)
