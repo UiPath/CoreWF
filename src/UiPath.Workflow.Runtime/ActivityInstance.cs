@@ -76,7 +76,7 @@ public sealed class ActivityInstance
                 continue;
             }
             outputs ??= new();
-            var location = _environment.GetSpecificLocation(argument.BoundArgument.Id) ?? throw FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
+            var location = _environment.GetSpecificLocation(argument.BoundArgument.Id) ?? throw ArgumentDirectionHelper.NoOutputLocation(argument);
             outputs.Add(argument.Name, location.Value);
         }
         return outputs;

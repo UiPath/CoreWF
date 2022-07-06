@@ -24,4 +24,6 @@ internal static class ArgumentDirectionHelper
     public static bool IsOut(Argument argument) => IsOut(argument.Direction);
 
     public static bool IsOut(ArgumentDirection direction) => direction is ArgumentDirection.Out or ArgumentDirection.InOut;
+
+    public static Exception NoOutputLocation(RuntimeArgument argument) => FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
 }

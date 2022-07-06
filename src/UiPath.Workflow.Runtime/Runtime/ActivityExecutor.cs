@@ -2030,7 +2030,7 @@ internal partial class ActivityExecutor : IEnlistmentNotification
                     Location location = _rootEnvironment.GetSpecificLocation(argument.BoundArgument.Id);
                     if (location == null)
                     {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.NoOutputLocationWasFound(argument.Name)));
+                        throw ArgumentDirectionHelper.NoOutputLocation(argument);
                     }
                     _workflowOutputs.Add(argument.Name, location.Value);
                 }
