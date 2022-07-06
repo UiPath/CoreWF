@@ -18,14 +18,14 @@ public class Properties
     }
     protected T Get<T>([CallerMemberName] string name = null) => (T)Values?.GetValueOrDefault(name);
 }
-public abstract class ActivityInputs : Properties
+public abstract class ActivityArgs : Properties
 {
-    protected ActivityInputs(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+    protected ActivityArgs(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
     internal Activity Activity { get; }
 }
-public class ActivityInputs<TOutputs> : ActivityInputs where TOutputs : Properties, new()
+public class ActivityArgs<TOutputs> : ActivityArgs where TOutputs : Properties, new()
 {
-    public ActivityInputs(Activity activity) : base(activity) { }
+    public ActivityArgs(Activity activity) : base(activity) { }
     public async Task<TOutputs> ExecuteAsync()
     {
         var values = await ((AsyncCodeNativeActivity)Activity.GetParent()).ExecuteAsync(this);
@@ -34,9 +34,9 @@ public class ActivityInputs<TOutputs> : ActivityInputs where TOutputs : Properti
 }
 public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
 {
-    ActivityInputs _activityInputs;
+    ActivityArgs _activityArgs;
     TaskCompletionSource<StringToObject> _completionSource;
-    protected ActivityInputs[] _children;
+    protected ActivityArgs[] _children;
     protected sealed override void CacheMetadata(NativeActivityMetadata metadata)
     {
         base.CacheMetadata(metadata);
@@ -45,14 +45,14 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
             metadata.AddImplementationChild(child.Activity);
         }
     }
-    internal async Task<StringToObject> ExecuteAsync(ActivityInputs activityInputs)
+    internal async Task<StringToObject> ExecuteAsync(ActivityArgs activityArgs)
     {
         if (_completionSource != null)
         {
             throw new InvalidOperationException("There is already an async call in progress! Make sure you awaited the previous call.");
         }
         await Task.Yield();
-        _activityInputs = activityInputs;
+        _activityArgs = activityArgs;
         _completionSource = new();
         try
         {
@@ -66,14 +66,14 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
     }
     protected sealed override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
     {
-        if (_activityInputs == null)
+        if (_activityArgs == null)
         {
             base.BookmarkResumptionCallback(context, bookmark, value);
             return;
         }
-        context.ScheduleActivity(_activityInputs.Activity,
-            (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), _activityInputs.Values);
-        _activityInputs = null;
+        context.ScheduleActivity(_activityArgs.Activity,
+            (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), _activityArgs.Values);
+        _activityArgs = null;
     }
 }
 public abstract class AsyncTaskNativeActivity : NativeActivity
