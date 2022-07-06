@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace TestConsole;
 using StringToObject = Dictionary<string, object>;
-public class KeyValues
+public class Properties
 {
     internal StringToObject Values { get; set; }
     protected void Set(object value, [CallerMemberName] string name = null)
@@ -18,15 +18,15 @@ public class KeyValues
     }
     protected T Get<T>([CallerMemberName] string name = null) => (T)Values?.GetValueOrDefault(name);
 }
-public abstract class ActivityEx : KeyValues
+public abstract class ActivityArgs : Properties
 {
-    protected ActivityEx(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+    protected ActivityArgs(Activity activity) => Activity = activity ?? throw new ArgumentNullException(nameof(activity));
     internal Activity Activity { get; }
 }
-public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyValues, new()
+public class ActivityArgs<TOutputs> : ActivityArgs where TOutputs : Properties, new()
 {
-    public ActivityEx(Activity activity) : base(activity) { }
-    public async Task<TKeyedValues> ExecuteAsync()
+    public ActivityArgs(Activity activity) : base(activity) { }
+    public async Task<TOutputs> ExecuteAsync()
     {
         var values = await ((AsyncCodeNativeActivity)Activity.GetParent()).ExecuteAsync(this);
         return values == null ? null : new() { Values = values };
@@ -34,9 +34,9 @@ public class ActivityEx<TKeyedValues> : ActivityEx where TKeyedValues : KeyValue
 }
 public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
 {
-    ActivityEx _activityEx;
+    ActivityArgs _activityArgs;
     TaskCompletionSource<StringToObject> _completionSource;
-    protected ActivityEx[] _children;
+    protected ActivityArgs[] _children;
     protected sealed override void CacheMetadata(NativeActivityMetadata metadata)
     {
         base.CacheMetadata(metadata);
@@ -45,14 +45,14 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
             metadata.AddImplementationChild(child.Activity);
         }
     }
-    internal async Task<StringToObject> ExecuteAsync(ActivityEx activityEx)
+    internal async Task<StringToObject> ExecuteAsync(ActivityArgs activityArgs)
     {
         if (_completionSource != null)
         {
             throw new InvalidOperationException("There is already an async call in progress! Make sure you awaited the previous call.");
         }
         await Task.Yield();
-        _activityEx = activityEx;
+        _activityArgs = activityArgs;
         _completionSource = new();
         try
         {
@@ -66,14 +66,14 @@ public abstract class AsyncCodeNativeActivity : AsyncTaskNativeActivity
     }
     protected sealed override void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value)
     {
-        if (_activityEx == null)
+        if (_activityArgs == null)
         {
             base.BookmarkResumptionCallback(context, bookmark, value);
             return;
         }
-        context.ScheduleActivity(_activityEx.Activity,
-            (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), _activityEx.Values);
-        _activityEx = null;
+        context.ScheduleActivity(_activityArgs.Activity,
+            (_, instance) => _completionSource.SetResult(instance.GetOutputs()), (_, ex, __) => _completionSource.SetException(ex), _activityArgs.Values);
+        _activityArgs = null;
     }
 }
 public abstract class AsyncTaskNativeActivity : NativeActivity

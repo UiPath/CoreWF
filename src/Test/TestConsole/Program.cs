@@ -43,9 +43,9 @@ class Program
         new JustInTimeExpressions().SalaryCalculation();
     }
 }
-public class WriteLineEx : ActivityEx<KeyValues>
+public class WriteLineArgs : ActivityArgs<Properties>
 {
-    public WriteLineEx(WriteLine activity) : base(activity) { }
+    public WriteLineArgs(WriteLine activity) : base(activity) { }
     public string Text
     {
         get => Get<string>();
@@ -57,25 +57,25 @@ public class WriteLineEx : ActivityEx<KeyValues>
         set => Set(value);
     }
 }
-public class AssignEx<T> : ActivityEx<AssignOutputs<T>>
+public class AssignArgs<T> : ActivityArgs<AssignOutputs<T>>
 {
-    public AssignEx(Assign<T> activity) : base(activity) { }
+    public AssignArgs(Assign<T> activity) : base(activity) { }
     public T Value
     {
         get => Get<T>();
         set => Set(value);
     }
 }
-public class AssignOutputs<T> : KeyValues
+public class AssignOutputs<T> : Properties
 {
     public T To => Get<T>();
 }
 public class TestDelay : AsyncCodeNativeActivity
 {
-    WriteLineEx _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
-    WriteLineEx _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
-    AssignEx<int> _assign1 = new(new Assign<int> { Value = 1 });
-    public TestDelay() => _children = new ActivityEx[] { _writeLine1, _writeLine2, _assign1 };
+    WriteLineArgs _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
+    WriteLineArgs _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
+    AssignArgs<int> _assign1 = new(new Assign<int> { Value = 1 });
+    public TestDelay() => _children = new ActivityArgs[] { _writeLine1, _writeLine2, _assign1 };
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         await _writeLine1.ExecuteAsync();
