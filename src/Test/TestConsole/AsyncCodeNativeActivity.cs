@@ -131,9 +131,9 @@ public struct AsyncTaskNativeImplementation
 
     public void CacheMetadata(NativeActivityMetadata metadata)
     {
-        _noPersistHandle = new Variable<NoPersistHandle>();
-        _cancellationTokenSource = new Variable<CancellationTokenSource>();
-        _bookmarkResumed = new Variable<bool>();
+        _noPersistHandle = new();
+        _cancellationTokenSource = new();
+        _bookmarkResumed = new();
 
         metadata.AddImplementationVariable(_noPersistHandle);
         metadata.AddImplementationVariable(_cancellationTokenSource);
@@ -149,7 +149,7 @@ public struct AsyncTaskNativeImplementation
         _bookmark = context.CreateBookmark(callback, BookmarkOptions.MultipleResume);
         _bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
 
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource cancellationTokenSource = new();
         _cancellationTokenSource.Set(context, cancellationTokenSource);
 
         _bookmarkResumed.Set(context, false);
