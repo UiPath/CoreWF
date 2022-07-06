@@ -72,9 +72,9 @@ public class AssignOutputs<T> : Properties
 }
 public class TestDelay : AsyncCodeNativeActivity
 {
-    WriteLineArgs _writeLine1 = new(new WriteLine() { Text = "AAAAAAAAAAAAAAAA" });
-    WriteLineArgs _writeLine2 = new(new WriteLine() { Text = "BBBBBBBBBBBBBBBB" });
-    AssignArgs<int> _assign1 = new(new Assign<int> { Value = 1 });
+    WriteLineArgs _writeLine1 = new(new() { Text = "AAAAAAAAAAAAAAAA" });
+    WriteLineArgs _writeLine2 = new(new() { Text = "BBBBBBBBBBBBBBBB" });
+    AssignArgs<int> _assign1 = new(new() { Value = 1 });
     public TestDelay() => _children = new ActivityArgs[] { _writeLine1, _writeLine2, _assign1 };
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
