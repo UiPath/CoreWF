@@ -80,8 +80,8 @@ public abstract class AsyncTaskNativeActivity : NativeActivity
 {
     AsyncTaskNativeImplementation _impl = new();
     // Always true because we create bookmarks.
-    protected override bool CanInduceIdle => true;
-    protected override void Cancel(NativeActivityContext context)
+    protected sealed override bool CanInduceIdle => true;
+    protected sealed override void Cancel(NativeActivityContext context)
     {
         _impl.Cancel(context);
         // Called so that any outstanding bookmarks are removed.
@@ -94,7 +94,7 @@ public abstract class AsyncTaskNativeActivity : NativeActivity
         base.CacheMetadata(metadata);
     }
     protected abstract Task ExecuteAsync(CancellationToken cancellationToken);
-    protected override void Execute(NativeActivityContext context) => _impl.Execute(context, ExecuteAsync, BookmarkResumptionCallback);
+    protected sealed override void Execute(NativeActivityContext context) => _impl.Execute(context, ExecuteAsync, BookmarkResumptionCallback);
     protected virtual void BookmarkResumptionCallback(NativeActivityContext context, Bookmark bookmark, object value) =>
         _impl.BookmarkResumptionCallback(context, value);
     protected void Resume(object result) => _impl.Resume(result);
