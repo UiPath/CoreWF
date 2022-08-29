@@ -63,6 +63,24 @@ namespace TestCases.Workflows
             ((Func<TestIndexerClass, string>)result.Compile())(new TestIndexerClass()).ShouldBe("indexer");
         }
 
+        [Theory]
+        [InlineData(2)]
+        [InlineData(17)]
+        public void VisualBasicJitCompiler_ExpressionWithMultipleVariablesVariables(int noOfVar)
+        {
+            static Type VariableTypeGetter(string name)
+            {
+                return name switch
+                {
+                    _ => typeof(bool),
+                };
+            }
+            var variables = Enumerable.Range(0, noOfVar).Select(x => (char)('a' + x));
+            var expressionToCompile = string.Join(" AND ", variables);
+            var result = _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, VariableTypeGetter, typeof(bool)));
+            result.ReturnType.ShouldBe(typeof(bool));
+        }
+
         [Fact]
         public void CSharpJitCompiler_PropertyAccess()
         {
