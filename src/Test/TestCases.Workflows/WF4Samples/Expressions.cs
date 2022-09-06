@@ -11,7 +11,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using System.Xaml;
+using TestCases.Workflows.TestUtils;
 using Xunit;
 
 namespace TestCases.Workflows.WF4Samples
@@ -122,6 +124,36 @@ Iterate ArrayList
             CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(activity, new Calculation_CompiledExpressionRoot(activity));
             var inputs = new StringDictionary { ["XX"] = 16, ["YY"] = 16 };
             TestHelper.InvokeWorkflow(activity, inputs).ShouldBe("Result == XX^2" + Environment.NewLine);
+        }
+        [Fact]
+        public async Task WorkflowWithReadonlyValueTypeVar()
+        {
+            var activity = TestHelper.GetActivityFromXamlResource(TestXamls.WorkflowWithReadonlyValueTypeVar);
+            var compiledExpressionRoot = await GenerateAndLoadCompiledExpressionRoot(activity);
+            CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(activity, compiledExpressionRoot);
+
+            TestHelper.InvokeWorkflow(activity).ShouldBe(string.Empty);
+        }
+        private static async Task<ICompiledExpressionRoot> GenerateAndLoadCompiledExpressionRoot(Activity activity)
+        {
+            using var expressionsStringWriter = new StringWriter();
+            var activityName = $"{TestXamls.WorkflowWithReadonlyValueTypeVar}_CompiledExpressionRoot";
+            TextExpressionCompilerSettings settings = new()
+            {
+                Activity = activity,
+                Language = "C#",
+                ActivityName = activityName,
+                RootNamespace = null,
+                GenerateAsPartialClass = false,
+                AlwaysGenerateSource = true,
+                ForImplementation = true
+            };
+            new TextExpressionCompiler(settings).GenerateSource(expressionsStringWriter);
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).Select(References.GetReference).ToArray();
+            var project = new Project(assemblies);
+            var compiledExpressionsClassType = await project.Compile(expressionsStringWriter.ToString(), activityName);
+            return (ICompiledExpressionRoot)Activator.CreateInstance(compiledExpressionsClassType, activity);
         }
         [Fact]
         public void Code()

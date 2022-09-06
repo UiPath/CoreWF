@@ -1,0 +1,46 @@
+<Activity x:Class="Main" 
+xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"  
+xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib" 
+xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" 
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>System</x:String>
+   </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>Microsoft.CSharp</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence>
+    <Sequence.Variables>
+      <Variable x:TypeArguments="s:DateTime" Name="dt" />
+      <Variable x:TypeArguments="s:DateTime" Modifiers="ReadOnly" Name="dtReadonly">
+        <Variable.Default>
+          <CSharpValue x:TypeArguments="s:DateTime">new DateTime(2007, 7, 7)</CSharpValue>
+        </Variable.Default>
+      </Variable>
+    </Sequence.Variables>
+    <Assign>
+      <Assign.To>
+        <OutArgument x:TypeArguments="s:DateTime">
+          <CSharpReference x:TypeArguments="s:DateTime">dt</CSharpReference>
+        </OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="s:DateTime">
+          <CSharpValue x:TypeArguments="s:DateTime">new DateTime(2022, 12, 12)</CSharpValue>
+        </InArgument>
+      </Assign.Value>
+    </Assign>
+  </Sequence>
+</Activity>
