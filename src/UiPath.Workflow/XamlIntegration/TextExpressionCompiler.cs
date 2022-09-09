@@ -312,7 +312,7 @@ public class TextExpressionCompiler
         // Generate the variable accessors
         foreach (var v in activity.RuntimeVariables)
         {
-            AddMember(v.Name, v.Type, contextDescriptor);
+            AddMember(v.Name, v.Type, VariableModifiersHelper.IsReadOnly(v.Modifiers), contextDescriptor);
         }
     }
 
@@ -342,6 +342,9 @@ public class TextExpressionCompiler
     }
 
     private void AddMember(string name, Type type, CompiledDataContextDescriptor contextDescriptor)
+        => AddMember(name, type, isReadonly: false, contextDescriptor);
+
+    private void AddMember(string name, Type type, bool isReadonly, CompiledDataContextDescriptor contextDescriptor)
     {
         if (IsValidTextIdentifierName(name))
         {
@@ -360,7 +363,8 @@ public class TextExpressionCompiler
                 {
                     Type = type,
                     Name = name,
-                    Index = contextDescriptor.NextMemberIndex
+                    Index = contextDescriptor.NextMemberIndex,
+                    IsReadonly = isReadonly
                 };
 
                 if (type.IsValueType)
@@ -1756,7 +1760,7 @@ public class TextExpressionCompiler
 
         foreach (var (key, value) in descriptor.Fields)
         {
-            if (descriptor.Duplicates.Contains(key))
+            if (descriptor.Duplicates.Contains(key) || value.IsReadonly)
             {
                 continue;
             }
@@ -2648,5 +2652,6 @@ public class TextExpressionCompiler
         public int Index;
         public string Name;
         public Type Type;
+        public bool IsReadonly;
     }
 }
