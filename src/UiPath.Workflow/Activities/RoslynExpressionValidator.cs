@@ -84,7 +84,7 @@ public abstract class RoslynExpressionValidator
     /// </summary>
     /// <param name="expressionContainer">expression container</param>
     /// <returns>MetadataReference objects for all required assemblies</returns>
-    protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) => 
+    protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) =>
         expressionContainer.RequiredAssemblies.Where(asm => asm != null)
         .Select(asm => TryGetMetadataReference(asm)).Where(mr => mr != null);
 
@@ -157,7 +157,7 @@ public abstract class RoslynExpressionValidator
         requiredAssemblies.UnionWith(localAssemblies.Select(asmRef => asmRef.Assembly ?? LoadAssemblyFromReference(asmRef)));
         expressionContainer.RequiredAssemblies = requiredAssemblies;
 
-        var scriptAndTypeScope = new JitCompilerHelper.ScriptAndTypeScope(environment, null);
+        var scriptAndTypeScope = new JitCompilerHelper.ScriptAndTypeScope(environment);
         expressionContainer.ExpressionToValidate =
             new ExpressionToCompile(expressionText, localNamespaces, scriptAndTypeScope.FindVariable, resultType);
 
@@ -170,7 +170,7 @@ public abstract class RoslynExpressionValidator
         PrepValidation(expressionContainer);
 
         ModifyPreppedCompilationUnit(expressionContainer);
-        var diagnostics = expressionContainer.CompilationUnit.GetDiagnostics().Select(diagnostic => 
+        var diagnostics = expressionContainer.CompilationUnit.GetDiagnostics().Select(diagnostic =>
             new TextExpressionCompilerError
             {
                 SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,

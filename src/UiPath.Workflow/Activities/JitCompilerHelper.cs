@@ -1151,12 +1151,10 @@ internal abstract class JitCompilerHelper
     protected internal class ScriptAndTypeScope
     {
         private readonly LocationReferenceEnvironment _environmentProvider;
-        private List<Assembly> _assemblies;
 
-        public ScriptAndTypeScope(LocationReferenceEnvironment environmentProvider, List<Assembly> assemblies)
+        public ScriptAndTypeScope(LocationReferenceEnvironment environmentProvider)
         {
             _environmentProvider = environmentProvider;
-            _assemblies = assemblies;
         }
 
         public string ErrorMessage { get; private set; }
@@ -1171,8 +1169,8 @@ internal abstract class JitCompilerHelper
             {
                 if (foundMultiple)
                 {
-                    // we have duplicate variable names in the same visible environment!!!!
-                    // compile error here!!!!
+                    // We've found duplicate variable names in the same visible environment.
+                    // We treat this as a compile error.
                     ErrorMessage = SR.AmbiguousVBVariableReference(name);
                     return null;
                 }
@@ -1182,10 +1180,6 @@ internal abstract class JitCompilerHelper
 
             return null;
         }
-
-        public Type[] FindTypes(string typeName, string nsPrefix) => null;
-
-        public bool NamespaceExists(string ns) => false;
     }
 
     internal class HostedCompilerWrapper
@@ -1381,7 +1375,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             // we don't want to see too many of vb expressions in this pass since we just wasted Rewrite time for no good.
         }
 
-        var scriptAndTypeScope = new ScriptAndTypeScope(environment, ReferencedAssemblies.ToList());
+        var scriptAndTypeScope = new ScriptAndTypeScope(environment);
         var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
         var compiler = compilerWrapper.Compiler;
         LambdaExpression lambda = null;
@@ -1509,7 +1503,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             ReferencedAssemblies.Add(baseType.Assembly);
         }
 
-        var scriptAndTypeScope = new ScriptAndTypeScope(environment, ReferencedAssemblies.ToList());
+        var scriptAndTypeScope = new ScriptAndTypeScope(environment);
         var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
         var compiler = compilerWrapper.Compiler;
 
