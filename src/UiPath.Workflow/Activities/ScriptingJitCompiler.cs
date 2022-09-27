@@ -39,7 +39,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
     }
 
-    protected MetadataReference[] MetadataReferences { get; set; }
+    protected IReadOnlyCollection<MetadataReference> MetadataReferences { get; init; }
     protected abstract int IdentifierKind { get; }
     protected virtual StringComparer IdentifierNameComparer => StringComparer.Ordinal;
     protected abstract string CreateExpressionCode(string types, string names, string code);

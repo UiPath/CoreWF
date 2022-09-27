@@ -1385,26 +1385,21 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
         var compiler = compilerWrapper.Compiler;
         LambdaExpression lambda = null;
+        
         try
         {
-            lock (compiler)
+            lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable,
+                typeof(object)));
+        }
+        catch (Exception e)
+        {
+            if (Fx.IsFatal(e))
             {
-                try
-                {
-                    lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable,
-                        typeof(object)));
-                }
-                catch (Exception e)
-                {
-                    if (Fx.IsFatal(e))
-                    {
-                        throw;
-                    }
-
-                    ExceptionTrace.TraceUnhandledException(e);
-                    throw;
-                }
+                throw;
             }
+
+            ExceptionTrace.TraceUnhandledException(e);
+            throw;
         }
         finally
         {
@@ -1521,25 +1516,19 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         LambdaExpression lambda = null;
         try
         {
-            lock (compiler)
+            lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable,
+                lambdaReturnType));
+        }
+        catch (Exception e)
+        {
+            if (Fx.IsFatal(e))
             {
-                try
-                {
-                    lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable,
-                        lambdaReturnType));
-                }
-                catch (Exception e)
-                {
-                    if (Fx.IsFatal(e))
-                    {
-                        throw;
-                    }
-
-                    // We never want to end up here, Compiler bugs needs to be fixed.
-                    ExceptionTrace.TraceUnhandledException(e);
-                    throw;
-                }
+                throw;
             }
+
+            // We never want to end up here, Compiler bugs needs to be fixed.
+            ExceptionTrace.TraceUnhandledException(e);
+            throw;
         }
         finally
         {
