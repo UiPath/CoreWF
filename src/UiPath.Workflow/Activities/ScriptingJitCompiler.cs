@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -116,6 +117,7 @@ public static class References
 
 public class VbJitCompiler : ScriptingJitCompiler
 {
+    static int crt = 0;
     public VbJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
 
     protected override int IdentifierKind => (int)SyntaxKind.IdentifierName;
@@ -128,16 +130,19 @@ public class VbJitCompiler : ScriptingJitCompiler
 
     protected override string CreateExpressionCode(string types, string names, string code)
     {
-        string myDelegate = DefineDelegate(types);
-        return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
-    }
-
-    private static string DefineDelegate(string types)
-    {
         var arrayType = types.Split(",");
         if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return String.Empty;
-            
+            return $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+
+        var (myDelegate,name) = DefineDelegate(types);
+        return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+    }
+
+    private static (string,string) DefineDelegate(string types)
+    {
+        var crtValue = Interlocked.Add(ref crt, 1);
+
+        var arrayType = types.Split(",");
         var part1 = new StringBuilder();
         var part2 = new StringBuilder();
 
@@ -147,12 +152,15 @@ public class VbJitCompiler : ScriptingJitCompiler
             part2.Append($" ByVal arg as T{i},");
         }
         part2.Remove(part2.Length - 1, 1);
-        return $"Public Delegate Function Func(Of {part1} Out TResult)({part2}) As TResult";
+
+        var name = $"Func{crtValue}";
+        return ($"Public Delegate Function {name}(Of {part1} Out TResult)({part2}) As TResult",name);
     }
 }
 
 public class CSharpJitCompiler : ScriptingJitCompiler
 {
+    static int crt = 0;
     private static readonly dynamic s_typeOptions = GetTypeOptions();
     private static readonly dynamic s_typeNameFormatter = GetTypeNameFormatter();
 
@@ -164,8 +172,16 @@ public class CSharpJitCompiler : ScriptingJitCompiler
 
     protected override string GetTypeName(Type type) => (string)s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
 
-    protected override string CreateExpressionCode(string types, string names, string code) =>
-        $"{DefineDelegate(types)} \n public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+    protected override string CreateExpressionCode(string types, string names, string code)
+    {
+        var arrayType = types.Split(",");
+        if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
+            return $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+
+
+        var (myDelegate, name) = DefineDelegate(types);
+        return $"{myDelegate} \n public static Expression<{name}<{types}>> CreateExpression() => ({names}) => {code};";
+    }
 
     private static object GetTypeOptions()
     {
@@ -186,12 +202,10 @@ public class CSharpJitCompiler : ScriptingJitCompiler
                                    .TypeNameFormatter;
     }
 
-    private static string DefineDelegate(string types)
+    private static (string,string) DefineDelegate(string types)
     {
-        var arrayType = types.Split(",");
-        if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return String.Empty;
-        
+        var crtValue = Interlocked.Add(ref crt, 1);
+        var arrayType = types.Split(",");       
         var part1 = new StringBuilder();
         var part2 = new StringBuilder();
 
@@ -201,6 +215,7 @@ public class CSharpJitCompiler : ScriptingJitCompiler
             part2.Append($" T{i} arg{i},");
         }
         part2.Remove(part2.Length - 1, 1);
-        return $"public delegate TResult Func<{part1} out TResult>({part2});";
+        var name = $"Func{crtValue}";
+        return ($"public delegate TResult {name}<{part1} out TResult>({part2});", name);
     }
 }
