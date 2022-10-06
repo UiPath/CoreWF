@@ -7,6 +7,8 @@ namespace System.Activities.Runtime;
 internal class ActivityInstanceReference : ActivityInstanceMap.IActivityReference
 {
     private ActivityInstance _activityInstance;
+    
+    internal ActivityInstanceReference() { }
 
     internal ActivityInstanceReference(ActivityInstance activity)
     {
