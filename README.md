@@ -82,6 +82,7 @@ the [NuGet package](https://www.nuget.org/packages/UiPath.Workflow).
 
 [Preview builds setup](https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/symbols?view=azure-devops#set-up-visual-studio)
 
+[![MyGet (dev)](https://img.shields.io/badge/CoreWf-Preview-brightgreen.svg)](https://uipath.visualstudio.com/Public.Feeds/_packaging?_a=package&feed=UiPath-Internal&view=versions&package=UiPath.Workflow&protocolType=NuGet)
 ## Contributing
 
 Check out the [contributing guide](CONTRIBUTING.md) for information on how to help CoreWF.
