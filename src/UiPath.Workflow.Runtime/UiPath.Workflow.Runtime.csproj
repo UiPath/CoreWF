@@ -32,6 +32,6 @@
     </ItemGroup>
   </Target>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration)=='Release'">
-    <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)" />
+    <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(MSBuildProjectName)" />
   </Target>
 </Project>
