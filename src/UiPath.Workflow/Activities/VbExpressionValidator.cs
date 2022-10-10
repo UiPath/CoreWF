@@ -42,7 +42,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
         set => s_instance = value;
     }
 
-    protected override int IdentifierKind => (int) SyntaxKind.IdentifierName;
+    protected override int IdentifierKind => (int)SyntaxKind.IdentifierName;
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -56,9 +56,9 @@ public class VbExpressionValidator : RoslynExpressionValidator
     ///     Assemblies to seed the collection.
     /// </param>
     public VbExpressionValidator(HashSet<Assembly> referencedAssemblies)
-        : base(referencedAssemblies != null 
-               ? new HashSet<Assembly>(s_defaultReferencedAssemblies.Union(referencedAssemblies)) 
-               : s_defaultReferencedAssemblies) 
+        : base(referencedAssemblies != null
+               ? new HashSet<Assembly>(s_defaultReferencedAssemblies.Union(referencedAssemblies))
+               : s_defaultReferencedAssemblies)
     { }
 
     protected override void UpdateCompilationUnit(ExpressionContainer expressionContainer)
@@ -74,7 +74,6 @@ public class VbExpressionValidator : RoslynExpressionValidator
                 mainTypeName: null,
                 globalImports: globalImports,
                 rootNamespace: "",
-                optionStrict: OptionStrict.On,
                 optionInfer: true,
                 optionExplicit: true,
                 optionCompareText: false,
@@ -83,9 +82,8 @@ public class VbExpressionValidator : RoslynExpressionValidator
                 checkOverflow: true,
                 xmlReferenceResolver: null,
                 sourceReferenceResolver: SourceFileResolver.Default,
-                concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")),
-                assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
-            expressionContainer.CompilationUnit = DefaultCompilationUnit = 
+                concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")));
+            expressionContainer.CompilationUnit = DefaultCompilationUnit =
                 VisualBasicCompilation.Create(assemblyName, null, metadataReferences, options);
         }
         else
