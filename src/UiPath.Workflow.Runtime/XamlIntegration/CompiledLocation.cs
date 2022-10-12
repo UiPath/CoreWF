@@ -21,6 +21,8 @@ internal class CompiledLocation<T> : Location<T>
     private string _expressionText;
     private bool _forImplementation;
 
+    public CompiledLocation() { }
+
     public CompiledLocation(
         Func<T> getMethod,
         Action<T> setMethod,
