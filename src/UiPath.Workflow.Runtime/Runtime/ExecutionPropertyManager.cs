@@ -44,6 +44,8 @@ internal class ExecutionPropertyManager
         }
     }
 
+    public ExecutionPropertyManager(){}
+    
     public ExecutionPropertyManager(ActivityInstance owningInstance, ExecutionPropertyManager parentPropertyManager)
         : this(owningInstance)
     {
