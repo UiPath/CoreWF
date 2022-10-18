@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 namespace JsonFileInstanceStore
@@ -165,11 +166,11 @@ namespace JsonFileInstanceStore
                 asyncResult._manualResetEvent.Dispose();
             }
 
-            if (asyncResult._exception != null)
+            var exception = asyncResult._exception;
+            if (exception != null)
             {
-                throw asyncResult._exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
-
             return asyncResult;
         }
     }

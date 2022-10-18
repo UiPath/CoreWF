@@ -55,7 +55,11 @@ public abstract class Handle
         OnInitialize(context);
     }
 
-    internal void Reinitialize(ActivityInstance owner) => _owner = owner;
+    internal void Reinitialize(ActivityInstance owner)
+    {
+        _owner = owner;
+        _isUninitialized = false;
+    }
 
     internal void Uninitialize(HandleInitializationContext context)
     {
