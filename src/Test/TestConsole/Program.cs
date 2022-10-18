@@ -10,7 +10,15 @@ class Program
 {
     static void Main()
     {
-        WorflowInstanceResumeBookmarkAsyncTests.TestNoPersistSerialization();
+        try
+        {
+            WorflowInstanceResumeBookmarkAsyncTests.TestNoPersistSerialization();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            Console.ReadLine();
+        }
     }
 }
 //new PowerFxTests().EvaluateMembers();

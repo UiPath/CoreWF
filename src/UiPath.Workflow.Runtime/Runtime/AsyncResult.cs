@@ -1,6 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 namespace System.Activities.Runtime;
@@ -326,10 +327,15 @@ internal abstract class AsyncResult : IAsyncResult
 
         //asyncResult.manualResetEvent?.Close();
         asyncResult._manualResetEvent?.Dispose();
-
-        if (asyncResult._exception != null)
+        var exception = asyncResult._exception;
+        if (exception != null)
         {
-            throw Fx.Exception.AsError(asyncResult._exception);
+            var newException = Fx.Exception.AsError(exception);
+            if (newException != exception)
+            {
+                throw newException;
+            }
+            ExceptionDispatchInfo.Capture(exception).Throw();
         }
 
         return asyncResult;

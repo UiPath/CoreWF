@@ -52,40 +52,26 @@ namespace JsonFileInstanceStore
 
         protected override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
         {
-            try
+            if (command is SaveWorkflowCommand)
             {
-                if (command is SaveWorkflowCommand)
-                {
-                    return new TypedCompletedAsyncResult<bool>(SaveWorkflow(context, (SaveWorkflowCommand)command), callback, state);
-                }
-                else if (command is LoadWorkflowCommand)
-                {
-                    return new TypedCompletedAsyncResult<bool>(LoadWorkflow(context, (LoadWorkflowCommand)command), callback, state);
-                }
-                else if (command is CreateWorkflowOwnerCommand)
-                {
-                    return new TypedCompletedAsyncResult<bool>(CreateWorkflowOwner(context, (CreateWorkflowOwnerCommand)command), callback, state);
-                }
-                else if (command is DeleteWorkflowOwnerCommand)
-                {
-                    return new TypedCompletedAsyncResult<bool>(DeleteWorkflowOwner(context, (DeleteWorkflowOwnerCommand)command), callback, state);
-                }
-                return new TypedCompletedAsyncResult<bool>(false, callback, state);
+                return new TypedCompletedAsyncResult<bool>(SaveWorkflow(context, (SaveWorkflowCommand)command), callback, state);
             }
-            catch (Exception e)
+            else if (command is LoadWorkflowCommand)
             {
-                return new TypedCompletedAsyncResult<Exception>(e, callback, state);
+                return new TypedCompletedAsyncResult<bool>(LoadWorkflow(context, (LoadWorkflowCommand)command), callback, state);
             }
+            else if (command is CreateWorkflowOwnerCommand)
+            {
+                return new TypedCompletedAsyncResult<bool>(CreateWorkflowOwner(context, (CreateWorkflowOwnerCommand)command), callback, state);
+            }
+            else if (command is DeleteWorkflowOwnerCommand)
+            {
+                return new TypedCompletedAsyncResult<bool>(DeleteWorkflowOwner(context, (DeleteWorkflowOwnerCommand)command), callback, state);
+            }
+            return new TypedCompletedAsyncResult<bool>(false, callback, state);
         }
 
-        protected override bool EndTryCommand(IAsyncResult result)
-        {
-            if (result is TypedCompletedAsyncResult<Exception> exceptionResult)
-            {
-                throw exceptionResult.Data;
-            }
-            return TypedCompletedAsyncResult<bool>.End(result);
-        }
+        protected override bool EndTryCommand(IAsyncResult result) => TypedCompletedAsyncResult<bool>.End(result);
 
         private bool SaveWorkflow(InstancePersistenceContext context, SaveWorkflowCommand command)
         {
@@ -107,18 +93,11 @@ namespace JsonFileInstanceStore
                 Dictionary<string, InstanceValue> instanceData = SerializeablePropertyBagConvertXNameInstanceValue(command.InstanceData);
                 Dictionary<string, InstanceValue> instanceMetadata = SerializeInstanceMetadataConvertXNameInstanceValue(context, command);
 
-                try
-                {
-                    var serializedInstanceData = JsonConvert.SerializeObject(instanceData, Formatting.Indented, _jsonSerializerSettings);
-                    File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceData", serializedInstanceData);
+                var serializedInstanceData = JsonConvert.SerializeObject(instanceData, Formatting.Indented, _jsonSerializerSettings);
+                File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceData", serializedInstanceData);
 
-                    var serializedInstanceMetadata = JsonConvert.SerializeObject(instanceMetadata, Formatting.Indented, _jsonSerializerSettings);
-                    File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceMetadata", serializedInstanceMetadata);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                var serializedInstanceMetadata = JsonConvert.SerializeObject(instanceMetadata, Formatting.Indented, _jsonSerializerSettings);
+                File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceMetadata", serializedInstanceMetadata);
 
                 foreach (KeyValuePair<XName, InstanceValue> property in command.InstanceMetadataChanges)
                 {
