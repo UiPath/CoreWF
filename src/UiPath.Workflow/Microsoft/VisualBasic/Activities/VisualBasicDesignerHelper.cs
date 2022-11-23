@@ -39,6 +39,12 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
         };
     }
 
+    protected override void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+    {
+        namespaceImportsNames.Add("Microsoft.VisualBasic");
+        base.Initialize(refAssemNames, namespaceImportsNames);
+    }
+
     public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText,
         CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
     {

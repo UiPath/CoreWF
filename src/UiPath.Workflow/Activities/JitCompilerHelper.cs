@@ -55,7 +55,7 @@ internal abstract class JitCompilerHelper
 
     protected virtual void OnCompilerCacheCreated(CompilerCache compilerCache) { }
 
-    protected void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+    protected virtual void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
     {
         namespaceImportsNames.Add("System");
         namespaceImportsNames.Add("System.Linq.Expressions");
