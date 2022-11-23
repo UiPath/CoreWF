@@ -63,6 +63,24 @@ namespace TestCases.Workflows
             ((Func<TestIndexerClass, string>)result.Compile())(new TestIndexerClass()).ShouldBe("indexer");
         }
 
+        [Theory]
+        [InlineData(2)]
+        [InlineData(17)]
+        public void VisualBasicJitCompiler_ExpressionWithMultipleVariablesVariables(int noOfVar)
+        {
+            static Type VariableTypeGetter(string name)
+            {
+                return name switch
+                {
+                    _ => typeof(bool),
+                };
+            }
+            var variables = Enumerable.Range(0, noOfVar).Select(x => ($"a{x}"));
+            var expressionToCompile = string.Join(" AND ", variables);
+            var result = _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, VariableTypeGetter, typeof(bool)));
+            result.ReturnType.ShouldBe(typeof(bool));
+        }
+
         [Fact]
         public void CSharpJitCompiler_PropertyAccess()
         {
@@ -84,6 +102,24 @@ namespace TestCases.Workflows
             ((Func<TestIndexerClass, int, string, string>)result.Compile())(new TestIndexerClass(), 0, "index").ShouldBe("index");
         }
 
+        [Theory]
+        [InlineData(2)]
+        [InlineData(17)]
+        public void CSharpJitCompiler_ExpressionWithMultipleVariablesVariables(int noOfVar)
+        {
+            static Type VariableTypeGetter(string name)
+            {
+                return name switch
+                {
+                    _ => typeof(bool),
+                };
+            }
+            var variables = Enumerable.Range(0, noOfVar).Select(x => ($"a{x}"));
+            var expressionToCompile = string.Join(" && ", variables);
+            var result = _csJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, VariableTypeGetter, typeof(bool)));
+            result.ReturnType.ShouldBe(typeof(bool));
+        }
+
         private static Type VariableTypeGetter(string name)
             => name switch
             {
@@ -94,14 +130,14 @@ namespace TestCases.Workflows
 
     public class ClassWithIndexer
     {
-        public ClassWithIndexer() {}
+        public ClassWithIndexer() { }
         public string this[string indexer] => indexer;
     }
-    
+
     public class TestIndexerClass
     {
         public string Field = string.Empty;
-        public TestIndexerClass() {}
+        public TestIndexerClass() { }
 #pragma warning disable CA1822 // Mark members as static
         public ClassWithIndexer Indexer { get => new(); }
         public string Method(string method) => method;
