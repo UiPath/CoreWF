@@ -3,6 +3,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TestCases.Activities;
 using TestCases.Runtime.WorkflowInstanceTest;
 
 namespace TestConsole;
@@ -12,7 +13,7 @@ class Program
     {
         try
         {
-            WorflowInstanceResumeBookmarkAsyncTests.TestNoPersistSerialization();
+            new StateMachineActivity().MultipleTransitions();
         }
         catch (Exception ex)
         {

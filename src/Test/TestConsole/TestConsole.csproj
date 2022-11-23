@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TestCases.Activities\TestCases.Activities.csproj" />
     <ProjectReference Include="..\TestCases.Runtime\TestCases.Runtime.csproj" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -12,6 +13,13 @@ namespace Test.Common.TestObjects.Utilities
     /// </summary>
     public static class ExceptionHelpers
     {
+        public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> values)
+        {
+            foreach (var value in values)
+            {
+                collection.Add(value);
+            }
+        }
         public static void CheckForException(
             Type exceptionType,
             MethodDelegate tryCode)
