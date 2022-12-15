@@ -6,7 +6,7 @@ using System.Activities;
 using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Threading;
-using Test.Common.TestObjects.Activities.Bpm;
+using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
@@ -514,8 +514,8 @@ namespace TestCases.Activities.Bpm
             TestWriteLine w2True = new TestWriteLine("True", "True will execute");
             TestWriteLine w2False = new TestWriteLine("False", "False wont execute");
 
-            TestBpmStep fs1 = new TestFlowStep(w1);
-            TestBpmStep fs3 = new TestFlowStep(w3);
+            TestBpmStep fs1 = new TestBpmStep(w1);
+            TestBpmStep fs3 = new TestBpmStep(w3);
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart.Variables.Add(margin);
@@ -586,8 +586,8 @@ namespace TestCases.Activities.Bpm
         public void TwoNonConnectedFlowSteps()
         {
             TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
-            TestBpmStep flowStep1 = new TestFlowStep(new TestWriteLine("W1", "W1"));
-            TestBpmStep flowStep2 = new TestFlowStep(new TestWriteLine("W2", "W2"));
+            TestBpmStep flowStep1 = new TestBpmStep(new TestWriteLine("W1", "W1"));
+            TestBpmStep flowStep2 = new TestBpmStep(new TestWriteLine("W2", "W2"));
             flowchart1.Elements.Add(flowStep1);
             flowchart1.Elements.Add(flowStep2);
 
@@ -630,7 +630,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine w3 = new TestWriteLine("W3", "Executing W3");
             TestWriteLine wDefault = new TestWriteLine("wDefault", "Executing wDefault");
 
-            TestBpmStep flowStep1 = new TestFlowStep(w1);
+            TestBpmStep flowStep1 = new TestBpmStep(w1);
 
             Dictionary<string, TestActivity> cases = new Dictionary<string, TestActivity>();
             cases.Add("One", w2);
@@ -752,7 +752,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with cases and default element null. Validation exception expected.
+        /// BpmSwitch with cases and default element null. Validation exception expected.
         /// </summary>        
         [Fact]
         public void FlowSwitchWithCasesAndDefaultNull()
@@ -788,7 +788,7 @@ namespace TestCases.Activities.Bpm
             hints.Add(-1);
 
             TestBpmSwitch<object> fSwitch = (TestBpmSwitch<object>)flowchart1.AddSwitchLink<object>(start1, cases, hints, (object)null, wDefault);
-            ((FlowSwitch<object>)fSwitch.GetProductElement()).Expression = null; // I had to use the product to set a null value to Expression
+            ((BpmSwitch<object>)fSwitch.GetProductElement()).Expression = null; // I had to use the product to set a null value to Expression
 
             TestRuntime.ValidateInstantiationException(flowchart1, string.Format(ErrorStrings.FlowSwitchRequiresExpression, flowchart1.DisplayName));
         }
@@ -802,7 +802,7 @@ namespace TestCases.Activities.Bpm
             TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestBpmFlowchart flowchart2 = new TestBpmFlowchart("flowChart2");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
-            TestBpmFlowElement fStep = new TestFlowStep(w1);
+            TestBpmFlowElement fStep = new TestBpmStep(w1);
             flowchart2.Elements.Add(fStep);
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);

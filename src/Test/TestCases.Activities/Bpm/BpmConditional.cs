@@ -3,7 +3,7 @@
 
 using System;
 using System.Activities;
-using Test.Common.TestObjects.Activities.Bpm;
+using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;

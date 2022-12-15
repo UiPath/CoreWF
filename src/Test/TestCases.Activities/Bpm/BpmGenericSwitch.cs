@@ -5,7 +5,7 @@ using System;
 using System.Activities;
 using System.Activities.Statements;
 using System.Collections.Generic;
-using Test.Common.TestObjects.Activities.Bpm;
+using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.CustomActivities;
 using Test.Common.TestObjects.Runtime;
@@ -18,7 +18,7 @@ namespace TestCases.Activities.Bpm
     public class BpmGenericSwitch : IDisposable
     {
         /// <summary>
-        /// FlowSwitch with single element.
+        /// BpmSwitch with single element.
         /// </summary>        
         [Fact]
         public void FlowSwitchWithOneElement()
@@ -38,7 +38,7 @@ namespace TestCases.Activities.Bpm
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
         /// <summary>
-        /// Simple FlowSwitch with three elements
+        /// Simple BpmSwitch with three elements
         /// </summary>        
         [Fact]
         public void SimpleFlowSwitchWithThreeElements()
@@ -65,7 +65,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with single element which doesnt execute.
+        /// BpmSwitch with single element which doesnt execute.
         /// </summary>        
         [Fact]
         public void FlowSwitchWithOneNonExecutingElement()
@@ -138,7 +138,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with single default element which gets executed.
+        /// BpmSwitch with single default element which gets executed.
         /// </summary>        
         [Fact]
         public void FlowSwitchWithOnlyDefaultElement()
@@ -156,8 +156,8 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with null evaluation.
-        /// FlowSwitch with empty evaluation of Expression.
+        /// BpmSwitch with null evaluation.
+        /// BpmSwitch with empty evaluation of Expression.
         /// </summary>        
         [Fact]
         public void FlowSwitchExpressionEvaluationEmptyExecuteEmptyCase()
@@ -179,8 +179,8 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with a case having null FlowNode.
-        /// FlowSwitch with a case having null flow element.
+        /// BpmSwitch with a case having null FlowNode.
+        /// BpmSwitch with a case having null flow element.
         /// </summary>        
         [Fact]
         public void FlowSwitchWithNullFlowNode()
@@ -201,7 +201,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with default flowchart element in addition to other cases defined. Default gets executed.
+        /// BpmSwitch with default flowchart element in addition to other cases defined. Default gets executed.
         /// </summary>        
         [Fact]
         public void FlowSwitchDefaultExecutionWithMultipleCases()
@@ -228,7 +228,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with null evaluation.
+        /// BpmSwitch with null evaluation.
         /// </summary>        
         [Fact]
         public void FlowSwitchExpressionEvaluationNullExecuteDefault()
@@ -252,7 +252,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// FlowSwitch with all cases pointing to same element.
+        /// BpmSwitch with all cases pointing to same element.
         /// </summary>        
         [Fact]
         public void FlowSwitchWithAllCasesHavingSameElement()
@@ -298,7 +298,7 @@ namespace TestCases.Activities.Bpm
             List<int> hints = new List<int>() { -1 };
 
             TestBpmSwitch<Complex> flowSwitch = flowchart.AddSwitchLink<Complex>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => complexVar.Get(e)) as TestBpmSwitch<Complex>;
-            ((FlowSwitch<Complex>)flowSwitch.GetProductElement()).Cases.Add(null, new FlowStep { Action = new BlockingActivity("Blocking") });
+            ((BpmSwitch<Complex>)flowSwitch.GetProductElement()).Cases.Add(null, new BpmStep { Action = new BlockingActivity("Blocking") });
 
             using (TestWorkflowRuntime runtime = TestRuntime.CreateTestWorkflowRuntime(flowchart))
             {
@@ -311,7 +311,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// Add case in flow switch where the node points to the containing FlowSwitch
+        /// Add case in flow switch where the node points to the containing BpmSwitch
         /// </summary>        
         [Fact]
         public void FlowSwitchWithNodePointingToParentFlowSwitch()

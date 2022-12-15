@@ -4,7 +4,7 @@
 using System;
 using System.Activities;
 using System.Collections.Generic;
-using Test.Common.TestObjects.Activities.Bpm;
+using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Xunit;

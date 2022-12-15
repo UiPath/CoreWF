@@ -5,7 +5,7 @@ using System;
 using System.Activities.Statements;
 using System.Collections.Generic;
 using Act = System.Activities.Statements;
-using Test.Common.TestObjects.Activities.Bpm;
+using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
