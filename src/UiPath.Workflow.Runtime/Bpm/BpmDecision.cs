@@ -6,6 +6,7 @@ public sealed class BpmDecision : BpmNode
 {
     const string DefaultDisplayName = "Decision";
     private CompletionCallback<bool> _onCompleted;
+    public BpmDecision() { }
     public BpmDecision(Expression<Func<ActivityContext, bool>> condition) => Condition = new LambdaValue<bool>(condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition)));
     public BpmDecision(Activity<bool> condition) => Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
     [DefaultValue(null)]
