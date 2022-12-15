@@ -35,7 +35,7 @@ namespace TestCases.Activities.Bpm
                 }
             };
             TestWriteLine writeLine1 = new TestWriteLine("WriteStatus", "I wont execute");
-            TestBpmFlowElement step = flowchart.AddLink(faultySequence, writeLine1);
+            TestBpmElement step = flowchart.AddLink(faultySequence, writeLine1);
             step.IsFaulting = true;
 
             TestRuntime.RunAndValidateAbortedException(flowchart, typeof(InvalidOperationException), new Dictionary<string, string>());

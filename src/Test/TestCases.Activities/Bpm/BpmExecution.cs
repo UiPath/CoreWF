@@ -117,7 +117,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine writeLine2 = new TestWriteLine("w2", "w2");
 
             parent.AddLink(writeLine1, blocking);
-            TestBpmFlowElement element = parent.AddLink(blocking, writeLine2);
+            TestBpmElement element = parent.AddLink(blocking, writeLine2);
             element.IsCancelling = true;
 
             blocking.ExpectedOutcome = Outcome.Canceled;

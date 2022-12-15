@@ -12,15 +12,15 @@ using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities
 {
-    public abstract class TestBpmSwitchBase : TestBpmFlowElement
+    public abstract class TestBpmSwitchBase : TestBpmElement
     {
         private List<int> _hints; // List of hints of executing element in switch. -1 is for default element.
         private int _iterationNumber = 0;
 
         protected BpmNode productFlowSwitch;
         protected TestActivity expressionActivity;
-        protected List<TestBpmFlowElement> caseElements;
-        protected TestBpmFlowElement defaultElement;
+        protected List<TestBpmElement> caseElements;
+        protected TestBpmElement defaultElement;
         protected ExpressionType expressionType;
 
         protected Outcome GetTrace<T>(TraceGroup traceGroup)
@@ -53,7 +53,7 @@ namespace Test.Common.TestObjects.Activities
                 default: break;
             }
 
-            TestBpmFlowElement element = GetNextElement();
+            TestBpmElement element = GetNextElement();
             if (element != null)
             {
                 return element.GetTrace(traceGroup);
@@ -61,7 +61,7 @@ namespace Test.Common.TestObjects.Activities
             return Outcome.Completed;
         }
 
-        internal override TestBpmFlowElement GetNextElement()
+        internal override TestBpmElement GetNextElement()
         {
             if (_hints.Count == 0 || _hints.Count == _iterationNumber)
             {
@@ -97,7 +97,7 @@ namespace Test.Common.TestObjects.Activities
         public TestBpmSwitch()
         {
             this.productFlowSwitch = new BpmSwitch<T>();
-            this.caseElements = new List<TestBpmFlowElement>();
+            this.caseElements = new List<TestBpmElement>();
         }
 
         public string DisplayName
@@ -108,7 +108,7 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        public TestBpmFlowElement Default
+        public TestBpmElement Default
         {
             get { return this.defaultElement; }
             set
@@ -162,7 +162,7 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        internal void AddCase(T expression, TestBpmFlowElement element)
+        internal void AddCase(T expression, TestBpmElement element)
         {
             (this.productFlowSwitch as BpmSwitch<T>).Cases.Add(expression, element == null ? null : element.GetProductElement());
             this.caseElements.Add(element);
@@ -174,7 +174,7 @@ namespace Test.Common.TestObjects.Activities
         /// <param name="caseExpression">used for locating the case in the product</param>
         /// <param name="caseIndex">used for locating the case in the test object</param>
         /// <param name="newElement">new node to be added to BpmSwitch</param>
-        internal void UpdateCase(T caseExpression, int caseIndex, TestBpmFlowElement newElement)
+        internal void UpdateCase(T caseExpression, int caseIndex, TestBpmElement newElement)
         {
             if (caseIndex < 0 || caseIndex >= this.caseElements.Count)
             {

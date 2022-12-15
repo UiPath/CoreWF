@@ -493,7 +493,7 @@ namespace TestCases.Activities.Bpm
             List<int> hints = new List<int>();
             hints.Add(1);
 
-            TestBpmFlowElement switchElement = flowchart.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
+            TestBpmElement switchElement = flowchart.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
 
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, switchElement);
             TestRuntime.RunAndValidateWorkflow(flowchart);
@@ -525,7 +525,7 @@ namespace TestCases.Activities.Bpm
             };
             flowchart.AddConditionalLink(null, flowDecision, w2True, w2False);
 
-            Dictionary<string, TestBpmFlowElement> cases = new Dictionary<string, TestBpmFlowElement>();
+            Dictionary<string, TestBpmElement> cases = new Dictionary<string, TestBpmElement>();
             cases.Add("One", fs1);
             cases.Add("Two", flowDecision);
             cases.Add("Three", fs3);
@@ -639,7 +639,7 @@ namespace TestCases.Activities.Bpm
             List<int> hints = new List<int>();
             hints.Add(1);
 
-            TestBpmFlowElement flowSwitch1 = flowchart1.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
+            TestBpmElement flowSwitch1 = flowchart1.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
 
             flowchart1.Elements.Add(flowStep1);
 
@@ -677,7 +677,7 @@ namespace TestCases.Activities.Bpm
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             };
-            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
+            TestBpmElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
             flowchart1.Elements.Add(tCond);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
@@ -700,7 +700,7 @@ namespace TestCases.Activities.Bpm
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             };
-            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
+            TestBpmElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
         }
@@ -746,7 +746,7 @@ namespace TestCases.Activities.Bpm
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             }; // null here means neither True or False will happen as the action is null
-            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, null, w2False);
+            TestBpmElement tCond = flowchart1.AddConditionalLink(null, flowDecision, null, w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
         }
@@ -802,7 +802,7 @@ namespace TestCases.Activities.Bpm
             TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestBpmFlowchart flowchart2 = new TestBpmFlowchart("flowChart2");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
-            TestBpmFlowElement fStep = new TestBpmStep(w1);
+            TestBpmElement fStep = new TestBpmStep(w1);
             flowchart2.Elements.Add(fStep);
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
@@ -811,7 +811,7 @@ namespace TestCases.Activities.Bpm
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             };
-            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, fStep, flowchart2);
+            TestBpmElement tCond = flowchart1.AddConditionalLink(null, flowDecision, fStep, flowchart2);
 
             TestRuntime.ValidateInstantiationException(flowchart1, string.Format(ErrorStrings.FlowNodeCannotBeShared, flowchart1.DisplayName, flowchart2.DisplayName));
         }

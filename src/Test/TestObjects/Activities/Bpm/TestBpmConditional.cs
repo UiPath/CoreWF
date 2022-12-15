@@ -12,13 +12,13 @@ using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities
 {
-    public class TestBpmFlowConditional : TestBpmFlowElement
+    public class TestBpmFlowConditional : TestBpmElement
     {
         public bool ResetHints = false;
         private BpmDecision _productFlowConditional;
 
-        private TestBpmFlowElement _trueAction;
-        private TestBpmFlowElement _falseAction;
+        private TestBpmElement _trueAction;
+        private TestBpmElement _falseAction;
 
         private List<HintTrueFalse> _trueOrFalse;
         private int _iterationNumber = 0;
@@ -106,7 +106,7 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        internal TestBpmFlowElement TrueAction
+        internal TestBpmElement TrueAction
         {
             get
             {
@@ -126,7 +126,7 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        internal TestBpmFlowElement FalseAction
+        internal TestBpmElement FalseAction
         {
             get
             {
@@ -238,7 +238,7 @@ namespace Test.Common.TestObjects.Activities
             return outcome;
         }
 
-        internal override TestBpmFlowElement GetNextElement()
+        internal override TestBpmElement GetNextElement()
         {
             if (this.CurrentTrueOrFalse == HintTrueFalse.True)
             {

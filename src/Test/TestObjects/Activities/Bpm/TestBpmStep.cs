@@ -7,13 +7,13 @@ using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities
 {
-    public class TestBpmStep : TestBpmFlowElement
+    public class TestBpmStep : TestBpmElement
     {
         private BpmStep _productFlowStep;
 
         private TestActivity _actionActivity;
 
-        private TestBpmFlowElement _nextElement;
+        private TestBpmElement _nextElement;
 
         public TestBpmStep()
         {
@@ -51,7 +51,7 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        internal TestBpmFlowElement NextElement
+        internal TestBpmElement NextElement
         {
             get { return _nextElement; }
             set
@@ -73,7 +73,7 @@ namespace Test.Common.TestObjects.Activities
             return _productFlowStep;
         }
 
-        internal override TestBpmFlowElement GetNextElement()
+        internal override TestBpmElement GetNextElement()
         {
             return this.NextElement;
         }
