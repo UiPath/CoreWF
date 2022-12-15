@@ -13,6 +13,8 @@ public abstract class BpmNode
         Index = -1;
     }
 
+    internal abstract void Execute(NativeActivityContext context, BpmNode completed);
+
     internal abstract Activity ChildActivity { get; }
 
     internal int Index { get; set; }

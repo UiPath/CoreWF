@@ -2,36 +2,20 @@ using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
 using System.Windows.Markup;
 namespace System.Activities.Statements;
-internal interface IBpmSwitch
-{
-    bool Execute(NativeActivityContext context, BpmFlowchart parent);
-    BpmNode GetNextNode(object value);
-}
 [ContentProperty("Cases")]
-public sealed class BpmSwitch<T> : BpmNode, IBpmSwitch
+public sealed class BpmSwitch<T> : BpmNode
 {
     private const string DefaultDisplayName = "Switch";
-    internal IDictionary<T, BpmNode> _cases;
-    private CompletionCallback<T> _onSwitchCompleted;
-
-    public BpmSwitch()
-    {
-        _cases = new NullableKeyDictionary<T, BpmNode>();
-        DisplayName = DefaultDisplayName;
-    }
-
+    internal IDictionary<T, BpmNode> _cases  = new NullableKeyDictionary<T, BpmNode>();
+    private CompletionCallback<T> _onCompleted;
     [DefaultValue(null)]
     public Activity<T> Expression { get; set; }
-
     [DefaultValue(null)]
     public BpmNode Default { get; set; }
-
     [Fx.Tag.KnownXamlExternal]
     public IDictionary<T, BpmNode> Cases => _cases;
-
     [DefaultValue(DefaultDisplayName)]
-    public string DisplayName { get; set; }
-
+    public string DisplayName { get; set; } = DefaultDisplayName;
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
         if (Expression == null)
@@ -39,7 +23,6 @@ public sealed class BpmSwitch<T> : BpmNode, IBpmSwitch
             metadata.AddValidationError(SR.FlowSwitchRequiresExpression(owner.DisplayName));
         }
     }
-
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
         foreach (KeyValuePair<T, BpmNode> item in Cases)
@@ -51,23 +34,19 @@ public sealed class BpmSwitch<T> : BpmNode, IBpmSwitch
             connections.Add(Default);
         }
     }
-
     internal override Activity ChildActivity => Expression;
-
-    bool IBpmSwitch.Execute(NativeActivityContext context, BpmFlowchart parent)
+    internal override void Execute(NativeActivityContext context, BpmNode completed)
     {
-        context.ScheduleActivity(Expression, GetSwitchCompletedCallback(parent));
-        return false;
+        _onCompleted ??= new(OnCompleted);
+        context.ScheduleActivity(Expression, _onCompleted);
     }
-
-    BpmNode IBpmSwitch.GetNextNode(object value)
+    BpmNode GetNextNode(T value)
     {
-        T newValue = (T)value;
-        if (Cases.TryGetValue(newValue, out BpmNode result))
+        if (Cases.TryGetValue(value, out BpmNode result))
         {
             if (TD.FlowchartSwitchCaseIsEnabled())
             {
-                TD.FlowchartSwitchCase(Owner.DisplayName, newValue?.ToString());
+                TD.FlowchartSwitchCase(Owner.DisplayName, value?.ToString());
             }
             return result;
         }
@@ -90,10 +69,9 @@ public sealed class BpmSwitch<T> : BpmNode, IBpmSwitch
             return Default;
         }
     }
-
-    private CompletionCallback<T> GetSwitchCompletedCallback(BpmFlowchart parent)
+    internal void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
-        _onSwitchCompleted ??= new CompletionCallback<T>(parent.OnSwitchCompleted);
-        return _onSwitchCompleted;
+        var next = GetNextNode(result);
+        next.Execute(context, this);
     }
 }

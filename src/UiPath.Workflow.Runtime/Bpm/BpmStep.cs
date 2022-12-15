@@ -1,24 +1,15 @@
-// This file is part of Core WF which is licensed under the MIT license.
-// See LICENSE file in the project root for full license information.
-
 using System.Windows.Markup;
-
 namespace System.Activities.Statements;
-
 [ContentProperty("Action")]
 public sealed class BpmStep : BpmNode
 {
-    public BpmStep() { }
-
+    private CompletionCallback _onCompleted;
     [DefaultValue(null)]
     public Activity Action { get; set; }
-
     [DefaultValue(null)]
     [DependsOn("Action")]
     public BpmNode Next { get; set; }
-
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata) { }
-
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
         if (Next != null)
@@ -26,10 +17,8 @@ public sealed class BpmStep : BpmNode
             connections.Add(Next);
         }
     }
-
     internal override Activity ChildActivity => Action;
-
-    internal bool Execute(NativeActivityContext context, CompletionCallback onCompleted, out BpmNode nextNode)
+    internal override void Execute(NativeActivityContext context, BpmNode completed)
     {
         if (Next == null)
         {
@@ -40,14 +29,13 @@ public sealed class BpmStep : BpmNode
         }
         if (Action == null)
         {
-            nextNode = Next;
-            return true;
+            OnCompleted(context, null);
         }
         else
         {
-            context.ScheduleActivity(Action, onCompleted);
-            nextNode = null;
-            return false;
+            _onCompleted ??= new(OnCompleted);
+            context.ScheduleActivity(Action, _onCompleted);
         }
     }
+    private void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance) => Next.Execute(context, this);
 }

@@ -1,57 +1,23 @@
-// This file is part of Core WF which is licensed under the MIT license.
-// See LICENSE file in the project root for full license information.
-
 using System.Activities.Expressions;
 using System.Linq.Expressions;
 using System.Windows.Markup;
-
 namespace System.Activities.Statements;
-
 public sealed class BpmDecision : BpmNode
 {
-    private const string DefaultDisplayName = "Decision";
-    private string _displayName;
-
-    public BpmDecision()
-    {
-        _displayName = DefaultDisplayName;
-    }
-
-    public BpmDecision(Expression<Func<ActivityContext, bool>> condition)
-        : this()
-    {
-        if (condition == null)
-        {
-            throw FxTrace.Exception.ArgumentNull(nameof(condition));
-        }
-
-        Condition = new LambdaValue<bool>(condition);
-    }
-
-    public BpmDecision(Activity<bool> condition)
-        : this()
-    {
-        Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
-    }
-
+    const string DefaultDisplayName = "Decision";
+    private CompletionCallback<bool> _onCompleted;
+    public BpmDecision(Expression<Func<ActivityContext, bool>> condition) => Condition = new LambdaValue<bool>(condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition)));
+    public BpmDecision(Activity<bool> condition) => Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
     [DefaultValue(null)]
     public Activity<bool> Condition { get; set; }
-
     [DefaultValue(null)]
     [DependsOn("Condition")]
     public BpmNode True { get; set; }
-
     [DefaultValue(null)]
     [DependsOn("True")]
     public BpmNode False { get; set; }
-
     [DefaultValue(DefaultDisplayName)]
-    public string DisplayName
-    {
-        get => _displayName;
-        set => _displayName = value;
-    }
-
+    public string DisplayName { get; set; } = DefaultDisplayName;
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
         if (Condition == null)
@@ -59,25 +25,26 @@ public sealed class BpmDecision : BpmNode
             metadata.AddValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName));
         }
     }
-
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
         if (True != null)
         {
             connections.Add(True);
         }
-
         if (False != null)
         {
             connections.Add(False);
         }
     }
-
     internal override Activity ChildActivity => Condition;
-
-    internal bool Execute(NativeActivityContext context, CompletionCallback<bool> onConditionCompleted)
+    internal override void Execute(NativeActivityContext context, BpmNode completed)
     {
-        context.ScheduleActivity(Condition, onConditionCompleted);
-        return false;
+        _onCompleted ??= new(OnCompleted);
+        context.ScheduleActivity(Condition, _onCompleted);
+    }
+    void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance, bool result)
+    {
+        var next = result ? True : False;
+        next.Execute(context, this);
     }
 }
