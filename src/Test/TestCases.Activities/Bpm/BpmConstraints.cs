@@ -21,7 +21,7 @@ namespace TestCases.Activities.Bpm
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddLink(new TestWriteLine("Hello", "Hello"), new TestWriteLine("Hi", "Hi"));
-            ((Act.Flowchart)flowchart.ProductActivity).StartNode = null;
+            ((Act.BpmFlowchart)flowchart.ProductActivity).StartNode = null;
 
             List<string> errors = new List<string>();
             errors.Add(string.Format(ErrorStrings.FlowchartMissingStartNode, flowchart.DisplayName));
@@ -38,7 +38,7 @@ namespace TestCases.Activities.Bpm
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddLink(new TestWriteLine("Start", "Start"), new TestWriteLine("One", "One"));
-            ((Act.Flowchart)flowchart.ProductActivity).Nodes.RemoveAt(0);
+            ((Act.BpmFlowchart)flowchart.ProductActivity).Nodes.RemoveAt(0);
 
             Validate(flowchart, null); //No constraint violation
         }
@@ -52,12 +52,12 @@ namespace TestCases.Activities.Bpm
             //TestFlowchart OM makes it difficult to construct such invalid flowchart, hence using product and wrapping it in TestFlowchart
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            Act.Flowchart prod = flowchart.ProductActivity as Act.Flowchart;
+            Act.BpmFlowchart prod = flowchart.ProductActivity as Act.BpmFlowchart;
 
-            FlowStep A = new FlowStep();
-            FlowSwitch<object> B = new FlowSwitch<object>();
-            FlowStep C = new FlowStep() { Action = new WriteLine { Text = "Dummy" } };
-            FlowDecision D = new FlowDecision();
+            BpmStep A = new BpmStep();
+            BpmSwitch<object> B = new BpmSwitch<object>();
+            BpmStep C = new BpmStep() { Action = new WriteLine { Text = "Dummy" } };
+            BpmDecision D = new BpmDecision();
 
             //A->B->C->D, StartNode = B, Nodes = {A, A, A}
             A.Next = B;
@@ -82,14 +82,14 @@ namespace TestCases.Activities.Bpm
         {
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            Act.Flowchart prod = flowchart.ProductActivity as Act.Flowchart;
+            Act.BpmFlowchart prod = flowchart.ProductActivity as Act.BpmFlowchart;
 
-            FlowStep step1;
-            FlowStep step2;
-            FlowSwitch<object> flowSwitch = new FlowSwitch<object>
+            BpmStep step1;
+            BpmStep step2;
+            BpmSwitch<object> flowSwitch = new BpmSwitch<object>
             {
-                Cases = { { 2, step2 = new FlowStep { Action = new WriteLine { Text = "Dummy" } } } },
-                Default = step1 = new FlowStep { Action = new WriteLine { Text = "Dummy" } }
+                Cases = { { 2, step2 = new BpmStep { Action = new WriteLine { Text = "Dummy" } } } },
+                Default = step1 = new BpmStep { Action = new WriteLine { Text = "Dummy" } }
             };
 
             prod.StartNode = flowSwitch;
@@ -107,10 +107,10 @@ namespace TestCases.Activities.Bpm
         {
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            Act.Flowchart prod = flowchart.ProductActivity as Act.Flowchart;
+            Act.BpmFlowchart prod = flowchart.ProductActivity as Act.BpmFlowchart;
 
-            FlowStep step;
-            FlowDecision decision = new FlowDecision { True = step = new FlowStep { Action = new WriteLine { Text = "Dummy" } } };
+            BpmStep step;
+            BpmDecision decision = new BpmDecision { True = step = new BpmStep { Action = new WriteLine { Text = "Dummy" } } };
             prod.StartNode = decision;
             prod.Nodes.Add(step);
 
