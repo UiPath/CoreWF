@@ -6,7 +6,7 @@ using System.Activities;
 using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Threading;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
@@ -23,7 +23,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DisplayNameNull()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine w1 = new TestWriteLine("w1", "Hello1");
             flowchart.AddStartLink(w1);
@@ -80,17 +80,17 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ConnectFromFlowconditionalTrueToFlowconditional()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine w1 = new TestWriteLine("w1", "w1");
             TestWriteLine w2 = new TestWriteLine("w2", "w2");
 
-            TestFlowConditional conditional1 = new TestFlowConditional
+            TestBpmFlowConditional conditional1 = new TestBpmFlowConditional
             {
                 Condition = true
             };
 
-            TestFlowConditional conditional2 = new TestFlowConditional
+            TestBpmFlowConditional conditional2 = new TestBpmFlowConditional
             {
                 Condition = true
             };
@@ -108,17 +108,17 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ConnectFromFlowconditionalFalseToFlowconditional()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine w1 = new TestWriteLine("w1", "w1");
             TestWriteLine w2 = new TestWriteLine("w2", "w2");
 
-            TestFlowConditional conditional1 = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional conditional1 = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 Condition = false
             };
 
-            TestFlowConditional conditional2 = new TestFlowConditional
+            TestBpmFlowConditional conditional2 = new TestBpmFlowConditional
             {
                 Condition = true
             };
@@ -136,7 +136,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ConnectFromFlowconditionalBothTrueAndFalseToDifferentFlowconditional()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
@@ -153,17 +153,17 @@ namespace TestCases.Activities.Bpm
                 hints.Add(HintTrueFalse.False);
             }
             hints.Add(HintTrueFalse.True);
-            TestFlowConditional conditional1 = new TestFlowConditional(hints.ToArray())
+            TestBpmFlowConditional conditional1 = new TestBpmFlowConditional(hints.ToArray())
             {
                 ConditionExpression = (e => counter.Get(e) == 5)
             };
 
-            TestFlowConditional conditional2 = new TestFlowConditional
+            TestBpmFlowConditional conditional2 = new TestBpmFlowConditional
             {
                 Condition = true
             };
 
-            TestFlowConditional conditional3 = new TestFlowConditional
+            TestBpmFlowConditional conditional3 = new TestBpmFlowConditional
             {
                 Condition = true
             };
@@ -182,7 +182,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ConnectFromFlowconditionalBothTrueAndFalseToSameFlowconditional()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
@@ -196,12 +196,12 @@ namespace TestCases.Activities.Bpm
                 ToVariable = counter
             };
 
-            TestFlowConditional conditional1 = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional conditional1 = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 ConditionExpression = (e => counter.Get(e) == 5)
             };
 
-            TestFlowConditional conditional2 = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional conditional2 = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 ConditionExpression = (e => counter.Get(e) == 5)
             };
@@ -220,7 +220,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowchartWithoutExplicitOrImplicitStartEvent()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
@@ -235,7 +235,7 @@ namespace TestCases.Activities.Bpm
             hintsList.Add(HintTrueFalse.True);
             hintsList.Add(HintTrueFalse.False);
 
-            TestFlowConditional conditional = new TestFlowConditional(hintsList.ToArray())
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional(hintsList.ToArray())
             {
                 ConditionExpression = (e => counter.Get(e) == 1)
             };
@@ -250,7 +250,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void AddFlowchartToItself()
         {
-            TestFlowchart flow = new TestFlowchart();
+            TestBpmFlowchart flow = new TestBpmFlowchart();
             flow.AddLink(new TestWriteLine("w1", "w1"), flow);
 
             TestRuntime.ValidateInstantiationException(flow, string.Format(ErrorStrings.ActivityCannotReferenceItself, flow.DisplayName));
@@ -263,11 +263,11 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowConditionalWithBothTrueAndFalseActionNull()
         {
-            TestFlowConditional conditional = new TestFlowConditional
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional
             {
                 Condition = false
             };
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddConditionalLink(null, conditional);
 
@@ -285,7 +285,7 @@ namespace TestCases.Activities.Bpm
                 DisplayName = "001008 Delay 00:00:02.0000000",
                 Duration = new TimeSpan(0, 0, 2)
             };
-            TestFlowchart flow = new TestFlowchart();
+            TestBpmFlowchart flow = new TestBpmFlowchart();
 
             flow.AddStartLink(delay);
 
@@ -298,8 +298,8 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void AddSameElementTwiceToFlowchartElementsCollection()
         {
-            TestFlowchart flowchart = new TestFlowchart();
-            TestFlowStep step = new TestFlowStep
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
+            TestBpmStep step = new TestBpmStep
             {
                 ActionActivity = new TestWriteLine("Start", "Dummy Start")
             };
@@ -316,7 +316,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void AddWorkflowElementToElementsCollection()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.Elements.Add(new TestWriteLine("StartAndEnd", "StartAndEnd"));
 
@@ -329,7 +329,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ClearElementsCollectionAtDesignTime()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new System.Activities.Statements.FlowStep { Action = new Delay() });
             ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new System.Activities.Statements.FlowStep { Action = new Delay() });
@@ -345,9 +345,9 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void AddElementToCollectionAtDesignTime()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            flowchart.Elements.Add(new TestFlowStep() { ActionActivity = new TestWriteLine("StartAndEnd", "StartAndEnd") });
+            flowchart.Elements.Add(new TestBpmStep() { ActionActivity = new TestWriteLine("StartAndEnd", "StartAndEnd") });
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -358,10 +358,10 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void RemoveElementFromCollectionAtDesignTime()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             FlowStep step = new FlowStep() { Action = new Delay() };
 
-            flowchart.Elements.Add(new TestFlowStep() { ActionActivity = new TestWriteLine("Start", "Start") });
+            flowchart.Elements.Add(new TestBpmStep() { ActionActivity = new TestWriteLine("Start", "Start") });
             ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(step);
             ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Remove(step);
 
@@ -374,7 +374,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepConnectedToFlowStep()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddLink(new TestWriteLine("Start", "Start"), new TestWriteLine("End", "End"));
 
@@ -387,11 +387,11 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepConnectedToFlowDecision()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine w1 = new TestWriteLine("Start", "Start");
 
-            TestFlowConditional conditional = new TestFlowConditional() { Condition = true };
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional() { Condition = true };
 
             flowchart.AddConditionalLink(w1, conditional, new TestWriteLine("True", "True"), (TestActivity)null);
 
@@ -404,7 +404,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepConnectedToFlowSwitch()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine w1 = new TestWriteLine("Start", "Start");
 
@@ -425,8 +425,8 @@ namespace TestCases.Activities.Bpm
         public void CreateFlowlinkToActivityInNestedFlowchart()
         {
             // This testCase is a pair for: LinkFromNestedFlowchartToParent()
-            TestFlowchart parentFlowchart = new TestFlowchart("Parent");
-            TestFlowchart childFlowchart = new TestFlowchart("Child");
+            TestBpmFlowchart parentFlowchart = new TestBpmFlowchart("Parent");
+            TestBpmFlowchart childFlowchart = new TestBpmFlowchart("Child");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
@@ -444,7 +444,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowDecisionConnectedToFlowStep()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 3);
             flowchart.Variables.Add(counter);
 
@@ -453,7 +453,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.True)
             {
                 ConditionExpression = (context => counter.Get(context) > 0)
             };
@@ -469,7 +469,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowDecisionConnectedToFlowSwitch()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 3);
             flowchart.Variables.Add(counter);
 
@@ -480,7 +480,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine w3 = new TestWriteLine("WriteLine3", "Executing WriteLine3");
             TestWriteLine wDefault = new TestWriteLine("wDefault", "Executing wDefault");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 ConditionExpression = (context => counter.Get(context) > 4)
             };
@@ -493,7 +493,7 @@ namespace TestCases.Activities.Bpm
             List<int> hints = new List<int>();
             hints.Add(1);
 
-            TestFlowElement switchElement = flowchart.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
+            TestBpmFlowElement switchElement = flowchart.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
 
             flowchart.AddConditionalLink(writeLine1, flowDecision, writeLine2, switchElement);
             TestRuntime.RunAndValidateWorkflow(flowchart);
@@ -505,7 +505,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchConnectedToFlowDecision()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine wStart = new TestWriteLine("Start", "Flowchart started");
             TestWriteLine wDefault = new TestWriteLine("Default", "Default");
@@ -514,18 +514,18 @@ namespace TestCases.Activities.Bpm
             TestWriteLine w2True = new TestWriteLine("True", "True will execute");
             TestWriteLine w2False = new TestWriteLine("False", "False wont execute");
 
-            TestFlowStep fs1 = new TestFlowStep(w1);
-            TestFlowStep fs3 = new TestFlowStep(w3);
+            TestBpmStep fs1 = new TestFlowStep(w1);
+            TestBpmStep fs3 = new TestFlowStep(w3);
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.True)
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             };
             flowchart.AddConditionalLink(null, flowDecision, w2True, w2False);
 
-            Dictionary<string, TestFlowElement> cases = new Dictionary<string, TestFlowElement>();
+            Dictionary<string, TestBpmFlowElement> cases = new Dictionary<string, TestBpmFlowElement>();
             cases.Add("One", fs1);
             cases.Add("Two", flowDecision);
             cases.Add("Three", fs3);
@@ -545,7 +545,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepWithNullAction()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestWriteLine w1 = new TestWriteLine("writeLine1", "Executing writeLine1");
             flowchart1.AddLink(null, w1);
 
@@ -558,7 +558,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepWithNullNext()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestWriteLine w1 = new TestWriteLine("writeLine1", "Executing writeLine1");
             flowchart1.AddStartLink(w1);
             TestRuntime.RunAndValidateWorkflow(flowchart1);
@@ -571,8 +571,8 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepWithBothActionAndNextNull()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
-            TestFlowStep flowStep1 = new TestFlowStep();
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
+            TestBpmStep flowStep1 = new TestBpmStep();
             flowchart1.Elements.Add(flowStep1);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
@@ -585,9 +585,9 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void TwoNonConnectedFlowSteps()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
-            TestFlowStep flowStep1 = new TestFlowStep(new TestWriteLine("W1", "W1"));
-            TestFlowStep flowStep2 = new TestFlowStep(new TestWriteLine("W2", "W2"));
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
+            TestBpmStep flowStep1 = new TestFlowStep(new TestWriteLine("W1", "W1"));
+            TestBpmStep flowStep2 = new TestFlowStep(new TestWriteLine("W2", "W2"));
             flowchart1.Elements.Add(flowStep1);
             flowchart1.Elements.Add(flowStep2);
 
@@ -600,12 +600,12 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepAndFlowDecisionNotConnected()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
             TestWriteLine w2 = new TestWriteLine("W2", "Executing W2");
             TestWriteLine w3 = new TestWriteLine("W3", "Executing W3");
 
-            TestFlowConditional flowCond1 = new TestFlowConditional(HintTrueFalse.True)
+            TestBpmFlowConditional flowCond1 = new TestBpmFlowConditional(HintTrueFalse.True)
             {
                 Condition = true
             };
@@ -623,14 +623,14 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepAndFlowSwitchNotConnected()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestWriteLine start1 = new TestWriteLine("Start", "Executing Start");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
             TestWriteLine w2 = new TestWriteLine("W2", "Executing W2");
             TestWriteLine w3 = new TestWriteLine("W3", "Executing W3");
             TestWriteLine wDefault = new TestWriteLine("wDefault", "Executing wDefault");
 
-            TestFlowStep flowStep1 = new TestFlowStep(w1);
+            TestBpmStep flowStep1 = new TestFlowStep(w1);
 
             Dictionary<string, TestActivity> cases = new Dictionary<string, TestActivity>();
             cases.Add("One", w2);
@@ -639,7 +639,7 @@ namespace TestCases.Activities.Bpm
             List<int> hints = new List<int>();
             hints.Add(1);
 
-            TestFlowElement flowSwitch1 = flowchart1.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
+            TestBpmFlowElement flowSwitch1 = flowchart1.AddSwitchLink<string>(null, cases, hints, "Two", wDefault);
 
             flowchart1.Elements.Add(flowStep1);
 
@@ -652,7 +652,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowDecisionAndFlowSwitchNotConnected()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestWriteLine start1 = new TestWriteLine("Start", "Executing Start");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
             TestWriteLine w2 = new TestWriteLine("W2", "Executing W2");
@@ -673,11 +673,11 @@ namespace TestCases.Activities.Bpm
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.True)
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             };
-            TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
+            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
             flowchart1.Elements.Add(tCond);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
@@ -689,18 +689,18 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowDecisionAsStartElement()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
 
             TestWriteLine w2True = new TestWriteLine("True", "True will execute");
             TestWriteLine w2False = new TestWriteLine("False", "False wont execute");
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.True)
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             };
-            TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
+            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, w2True, w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
         }
@@ -711,7 +711,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchAsStartElement()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
             TestWriteLine w2 = new TestWriteLine("W2", "Executing W2");
             TestWriteLine wDefault = new TestWriteLine("wDefault", "Executing wDefault");
@@ -734,7 +734,7 @@ namespace TestCases.Activities.Bpm
         public void FlowDecisionWithTrueElementNullEvaluationTrue()
         {
             // This is a valid testcase and we don't expect error.
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
 
             TestWriteLine w2True = new TestWriteLine("True", "True will execute");
             TestWriteLine w2False = new TestWriteLine("False", "False wont execute");
@@ -742,11 +742,11 @@ namespace TestCases.Activities.Bpm
             Variable<int> margin = new Variable<int> { Name = "margin", Default = 10 };
 
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional((HintTrueFalse[])null)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional((HintTrueFalse[])null)
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             }; // null here means neither True or False will happen as the action is null
-            TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, null, w2False);
+            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, null, w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
         }
@@ -758,7 +758,7 @@ namespace TestCases.Activities.Bpm
         public void FlowSwitchWithCasesAndDefaultNull()
         {
             // This is a valid testcase and we don't expect error.
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
 
             List<int> hints = new List<int>();
             hints.Add(-1); // It was needed to set it to -1, else testObjects would return error.
@@ -774,7 +774,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithExpressionNull()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
             TestWriteLine start1 = new TestWriteLine("Start", "Executing Start");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
             TestWriteLine w2 = new TestWriteLine("W2", "Executing W2");
@@ -787,7 +787,7 @@ namespace TestCases.Activities.Bpm
             List<int> hints = new List<int>();
             hints.Add(-1);
 
-            TestFlowSwitch<object> fSwitch = (TestFlowSwitch<object>)flowchart1.AddSwitchLink<object>(start1, cases, hints, (object)null, wDefault);
+            TestBpmSwitch<object> fSwitch = (TestBpmSwitch<object>)flowchart1.AddSwitchLink<object>(start1, cases, hints, (object)null, wDefault);
             ((FlowSwitch<object>)fSwitch.GetProductElement()).Expression = null; // I had to use the product to set a null value to Expression
 
             TestRuntime.ValidateInstantiationException(flowchart1, string.Format(ErrorStrings.FlowSwitchRequiresExpression, flowchart1.DisplayName));
@@ -799,19 +799,19 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void AddSameElementToParentAndChild()
         {
-            TestFlowchart flowchart1 = new TestFlowchart("flowChart1");
-            TestFlowchart flowchart2 = new TestFlowchart("flowChart2");
+            TestBpmFlowchart flowchart1 = new TestBpmFlowchart("flowChart1");
+            TestBpmFlowchart flowchart2 = new TestBpmFlowchart("flowChart2");
             TestWriteLine w1 = new TestWriteLine("W1", "Executing W1");
-            TestFlowElement fStep = new TestFlowStep(w1);
+            TestBpmFlowElement fStep = new TestFlowStep(w1);
             flowchart2.Elements.Add(fStep);
 
             Variable<int> margin = VariableHelper.CreateInitialized<int>("Margin", 10);
             flowchart1.Variables.Add(margin);
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.True)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.True)
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             };
-            TestFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, fStep, flowchart2);
+            TestBpmFlowElement tCond = flowchart1.AddConditionalLink(null, flowDecision, fStep, flowchart2);
 
             TestRuntime.ValidateInstantiationException(flowchart1, string.Format(ErrorStrings.FlowNodeCannotBeShared, flowchart1.DisplayName, flowchart2.DisplayName));
         }
@@ -822,7 +822,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepAsStartNode()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddStartLink(new TestWriteLine("Begin", "End"));
 
@@ -835,7 +835,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void StartNodeNotInNodesCollection()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddStartLink(new TestWriteLine("Hello", "Hello"));
 
@@ -850,7 +850,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void StartNodeNullNodeCollectionNotNull()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddLink(new TestWriteLine("One", "One"), new TestWriteLine("Two", "Two"));
 
@@ -868,7 +868,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void StartNodeNullNodeCollectionNull()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -879,7 +879,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ValidStartNodeWithNodeCollectionEmpty()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddLink(new TestWriteLine("One", "One"), new TestWriteLine("Two", "Two"));
 

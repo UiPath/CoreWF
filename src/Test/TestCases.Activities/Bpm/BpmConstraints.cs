@@ -5,7 +5,7 @@ using System;
 using System.Activities.Statements;
 using System.Collections.Generic;
 using Act = System.Activities.Statements;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
@@ -18,7 +18,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void MissingStartNode()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddLink(new TestWriteLine("Hello", "Hello"), new TestWriteLine("Hi", "Hi"));
             ((Act.Flowchart)flowchart.ProductActivity).StartNode = null;
@@ -35,7 +35,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void StartNodeNotInNodesCollection()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             flowchart.AddLink(new TestWriteLine("Start", "Start"), new TestWriteLine("One", "One"));
             ((Act.Flowchart)flowchart.ProductActivity).Nodes.RemoveAt(0);
@@ -50,7 +50,7 @@ namespace TestCases.Activities.Bpm
         public void ComplexScenario()
         {
             //TestFlowchart OM makes it difficult to construct such invalid flowchart, hence using product and wrapping it in TestFlowchart
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Act.Flowchart prod = flowchart.ProductActivity as Act.Flowchart;
 
@@ -80,7 +80,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchRequiresExpression()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Act.Flowchart prod = flowchart.ProductActivity as Act.Flowchart;
 
@@ -105,7 +105,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowDecisionConditionMustBeSet()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Act.Flowchart prod = flowchart.ProductActivity as Act.Flowchart;
 

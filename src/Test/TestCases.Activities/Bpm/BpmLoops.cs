@@ -4,7 +4,7 @@
 using System;
 using System.Activities;
 using System.Collections.Generic;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Xunit;
@@ -19,7 +19,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void MultipleActivitiesInLoop()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
             flowchart.Variables.Add(counter);
@@ -38,7 +38,7 @@ namespace TestCases.Activities.Bpm
             hints.Add(HintTrueFalse.False);
             hints.Add(HintTrueFalse.False);
             hints.Add(HintTrueFalse.True);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(hints.ToArray())
             {
                 ConditionExpression = (context => counter.Get(context) == 3)
             };
@@ -58,7 +58,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void Flowchart_Forloop()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
             flowchart.Variables.Add(counter);
@@ -78,7 +78,7 @@ namespace TestCases.Activities.Bpm
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(hints.ToArray())
             {
                 ConditionExpression = (context => counter.Get(context) < 50)
             };
@@ -96,7 +96,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void Flowchart_ForEach()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             List<int> tenInts = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
@@ -133,7 +133,7 @@ namespace TestCases.Activities.Bpm
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(hints.ToArray())
             {
                 ConditionExpression = (context => boolVar.Get(context) == true)
             };
@@ -153,7 +153,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowchartVariableUseInLoop()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
@@ -171,7 +171,7 @@ namespace TestCases.Activities.Bpm
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(hints.ToArray())
             {
                 ConditionExpression = (context => counter.Get(context) < 10)
             };
@@ -189,7 +189,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void NestedLoopsExecution()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             Variable<int> innerLoopcounter = VariableHelper.CreateInitialized<int>("InnerLoopCounter", 0);
             flowchart.Variables.Add(innerLoopcounter);
@@ -221,7 +221,7 @@ namespace TestCases.Activities.Bpm
                 outerHints.Add(HintTrueFalse.True);
             }
             outerHints.Add(HintTrueFalse.False);
-            TestFlowConditional outerFlowDecision = new TestFlowConditional(outerHints.ToArray())
+            TestBpmFlowConditional outerFlowDecision = new TestBpmFlowConditional(outerHints.ToArray())
             {
                 ConditionExpression = (context => outerLoopCounter.Get(context) < 10)
             };
@@ -232,7 +232,7 @@ namespace TestCases.Activities.Bpm
                 innerHints.Add(HintTrueFalse.True);
             }
             innerHints.Add(HintTrueFalse.False);
-            TestFlowConditional innerFlowDecision = new TestFlowConditional(innerHints.ToArray())
+            TestBpmFlowConditional innerFlowDecision = new TestBpmFlowConditional(innerHints.ToArray())
             {
                 ConditionExpression = (context => innerLoopcounter.Get(context) < 5),
                 ResetHints = true
@@ -266,7 +266,7 @@ namespace TestCases.Activities.Bpm
             TestWhile w = new TestWhile("While1");
             s.Activities.Add(w);
 
-            TestFlowchart f = new TestFlowchart("Flow1");
+            TestBpmFlowchart f = new TestBpmFlowchart("Flow1");
 
             TestAssign<int> assign = new TestAssign<int>("Assign1")
             {
@@ -290,9 +290,9 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void NestedFlowchartInLoop()
         {
-            TestFlowchart parentFlowchart = new TestFlowchart("ParentFlowchart");
+            TestBpmFlowchart parentFlowchart = new TestBpmFlowchart("ParentFlowchart");
 
-            TestFlowchart childFlowchart = new TestFlowchart("ChildFlowchart");
+            TestBpmFlowchart childFlowchart = new TestBpmFlowchart("ChildFlowchart");
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
@@ -310,7 +310,7 @@ namespace TestCases.Activities.Bpm
                 hints.Add(HintTrueFalse.True);
             }
             hints.Add(HintTrueFalse.False);
-            TestFlowConditional flowDecision = new TestFlowConditional(hints.ToArray())
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(hints.ToArray())
             {
                 ConditionExpression = (env => counter.Get(env) <= 5)
             };
@@ -330,7 +330,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteFiveLevelDeepNestedLoops()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flowchart1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flowchart1");
 
             Variable<int> loop1Counter = VariableHelper.CreateInitialized<int>("Loop1Counter", 0);
             flowchart.Variables.Add(loop1Counter);
@@ -385,27 +385,27 @@ namespace TestCases.Activities.Bpm
             hintsList.Add(HintTrueFalse.False);
 
             HintTrueFalse[] hints = hintsList.ToArray();
-            TestFlowConditional flowDecision1 = new TestFlowConditional(hints)
+            TestBpmFlowConditional flowDecision1 = new TestBpmFlowConditional(hints)
             {
                 ConditionExpression = (env => loop1Counter.Get(env) <= 5)
             };
 
-            TestFlowConditional flowDecision2 = new TestFlowConditional(hints)
+            TestBpmFlowConditional flowDecision2 = new TestBpmFlowConditional(hints)
             {
                 ConditionExpression = (env => loop2Counter.Get(env) <= 5)
             };
 
-            TestFlowConditional flowDecision3 = new TestFlowConditional(hints)
+            TestBpmFlowConditional flowDecision3 = new TestBpmFlowConditional(hints)
             {
                 ConditionExpression = (env => loop3Counter.Get(env) <= 5)
             };
 
-            TestFlowConditional flowDecision4 = new TestFlowConditional(hints)
+            TestBpmFlowConditional flowDecision4 = new TestBpmFlowConditional(hints)
             {
                 ConditionExpression = (env => loop4Counter.Get(env) <= 5)
             };
 
-            TestFlowConditional flowDecision5 = new TestFlowConditional(hints)
+            TestBpmFlowConditional flowDecision5 = new TestBpmFlowConditional(hints)
             {
                 ConditionExpression = (env => loop5Counter.Get(env) <= 5)
             };
@@ -436,7 +436,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchInLoopDifferentCaseEvaluation()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
             flowchart.Variables.Add(counter);
@@ -478,7 +478,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchInLoopSameCaseEvaluation()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> switchVariable = VariableHelper.CreateInitialized<int>("switchVar", 0);
             Variable<int> ifVariable = VariableHelper.CreateInitialized<int>("ifVar", 0);
@@ -505,7 +505,7 @@ namespace TestCases.Activities.Bpm
             }
             hintsList.Add(HintTrueFalse.False);
 
-            TestFlowConditional conditional = new TestFlowConditional(hintsList.ToArray())
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional(hintsList.ToArray())
             {
                 ConditionExpression = env => ifVariable.Get(env) < 5
             };
@@ -522,7 +522,7 @@ namespace TestCases.Activities.Bpm
 
             flowchart.AddLink(new TestWriteLine("Start", "Flowchart started"), writeBegin);
             flowchart.AddConditionalLink(writeBegin, conditional, incrementIfVariable, incrementSwitchVariable);
-            TestFlowSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(incrementIfVariable, cases, hints, env => switchVariable.Get(env), new TestWriteLine("Default", "Default")) as TestFlowSwitch<object>;
+            TestBpmSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(incrementIfVariable, cases, hints, env => switchVariable.Get(env), new TestWriteLine("Default", "Default")) as TestBpmSwitch<object>;
             flowchart.AddLink(incrementSwitchVariable, flowSwitch);
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
@@ -535,7 +535,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void Flowchart_DoWhile()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>(0);
             counter.Name = "counter";
@@ -548,7 +548,7 @@ namespace TestCases.Activities.Bpm
             }
             hintsList.Add(HintTrueFalse.False);
 
-            TestFlowConditional conditional = new TestFlowConditional(hintsList.ToArray()) { ConditionExpression = env => counter.Get(env) < 10 };
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional(hintsList.ToArray()) { ConditionExpression = env => counter.Get(env) < 10 };
 
             TestWriteLine start = new TestWriteLine("Start", "Flowchart Started");
             TestIncrement incrementByOne = new TestIncrement() { CounterVariable = counter, IncrementCount = 1 };
@@ -566,7 +566,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchInLoopDefaultEvaluation()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>(0);
             counter.Name = "counter";
@@ -588,7 +588,7 @@ namespace TestCases.Activities.Bpm
 
             TestIncrement incByOne = new TestIncrement { IncrementCount = 1, CounterVariable = counter };
 
-            TestFlowSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => counter.Get(e), incByOne) as TestFlowSwitch<object>;
+            TestBpmSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => counter.Get(e), incByOne) as TestBpmSwitch<object>;
 
             flowchart.AddLink(incByOne, flowSwitch);
 

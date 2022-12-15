@@ -3,7 +3,7 @@
 
 using System;
 using System.Activities;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
@@ -20,7 +20,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DecisionTrueEvaluation()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 3);
             flowchart.Variables.Add(counter);
 
@@ -29,7 +29,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional
             {
                 ConditionExpression = ((env) => (counter.Get(env) == 3))
             };
@@ -45,7 +45,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DecisionFalseEvaluation()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 3);
             flowchart.Variables.Add(counter);
 
@@ -53,7 +53,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 ConditionExpression = (context => counter.Get(context) > 3)
             };
@@ -70,7 +70,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExpressionSetToTrue()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             Variable<bool> trueVar = new Variable<bool>("trueVar", true);
 
@@ -80,7 +80,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional
             {
                 ConditionVariable = trueVar
             };
@@ -96,13 +96,13 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExpressionSetToFalse()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 Condition = false
             };
@@ -119,12 +119,12 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DecisionTruePinConnectedConditionEvaluationTrue()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional
             {
                 Condition = true
             };
@@ -141,12 +141,12 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DecisionTruePinConnectedConditionEvaluationFalse()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 Condition = false
             };
@@ -163,7 +163,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ConditionExpressionOnFlowchartVariable()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 3);
 
@@ -173,7 +173,7 @@ namespace TestCases.Activities.Bpm
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
 
-            TestFlowConditional flowDecision = new TestFlowConditional
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional
             {
                 ConditionExpression = (context => counter.Get(context) == 3)
             };
@@ -190,12 +190,12 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DecisionFalsePinConnectedConditionEvaluationFalse()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.False)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.False)
             {
                 Condition = false
             };
@@ -211,12 +211,12 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DecisionFalsePinConnectedConditionEvaluationTrue()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional
             {
                 Condition = true
             };
@@ -232,12 +232,12 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void TrueFalsePinsInOrJoin()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
-            TestFlowConditional flowDecision = new TestFlowConditional
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional
             {
                 Condition = true
             };
@@ -256,7 +256,7 @@ namespace TestCases.Activities.Bpm
             Variable<int> counter1 = VariableHelper.CreateInitialized<int>("counter1", 0);
             Variable<int> counter2 = VariableHelper.CreateInitialized<int>("counter2", 2);
 
-            TestFlowchart flowchart = new TestFlowchart("Flowchart")
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flowchart")
             {
                 Variables =
                 {
@@ -273,7 +273,7 @@ namespace TestCases.Activities.Bpm
                 ToExpression = ((env) => counter2.Get(env))
             };
 
-            TestFlowConditional flowDecision = new TestFlowConditional(HintTrueFalse.Exception)
+            TestBpmFlowConditional flowDecision = new TestBpmFlowConditional(HintTrueFalse.Exception)
             {
                 ConditionExpression = ((env) => counter1.Get(env) / (counter2.Get(env) - 1) >= 0),
             };
@@ -293,11 +293,11 @@ namespace TestCases.Activities.Bpm
         {
             TestExpressionEvaluator<bool> myExpression = new TestExpressionEvaluator<bool>(true);
 
-            TestFlowConditional flowConditinoal = new TestFlowConditional
+            TestBpmFlowConditional flowConditinoal = new TestBpmFlowConditional
             {
                 ConditionValueExpression = (TestActivity)myExpression
             };
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             flowchart.AddConditionalLink(new TestWriteLine("Start", "FLowchart started"),
                                          flowConditinoal,
                                          new TestWriteLine("True Action", "True Action"),
@@ -313,10 +313,10 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ConditionExpressionSetToNull()
         {
-            TestFlowConditional conditional = new TestFlowConditional();
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional();
             conditional.ProductFlowConditional.Condition = null;
 
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             flowchart.AddConditionalLink(null, conditional, new TestWriteLine("True", "True"), new TestWriteLine("False", "False"));
 
             TestRuntime.ValidateInstantiationException(flowchart, string.Format(ErrorStrings.FlowDecisionRequiresCondition, flowchart.DisplayName));
@@ -328,9 +328,9 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void DecisionWithNoPinConnected()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            TestFlowConditional decision = new TestFlowConditional
+            TestBpmFlowConditional decision = new TestBpmFlowConditional
             {
                 Condition = true
             };
@@ -345,13 +345,13 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ConditionExpressionOnExistingVariable()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<bool> flag = VariableHelper.CreateInitialized<bool>(true);
             flag.Name = "flag";
             flowchart.Variables.Add(flag);
 
-            TestFlowConditional decision = new TestFlowConditional { ConditionExpression = e => flag.Get(e) };
+            TestBpmFlowConditional decision = new TestBpmFlowConditional { ConditionExpression = e => flag.Get(e) };
 
             flowchart.AddConditionalLink(new TestWriteLine("Start", "Start"), decision, new TestWriteLine("True", "True"), new TestWriteLine("false", "false"));
 

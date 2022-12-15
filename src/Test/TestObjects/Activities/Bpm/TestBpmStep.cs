@@ -7,20 +7,20 @@ using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities.Bpm
 {
-    public class TestFlowStep : TestFlowElement
+    public class TestBpmStep : TestBpmFlowElement
     {
-        private FlowStep _productFlowStep;
+        private BpmStep _productFlowStep;
 
         private TestActivity _actionActivity;
 
-        private TestFlowElement _nextElement;
+        private TestBpmFlowElement _nextElement;
 
-        public TestFlowStep()
+        public TestBpmStep()
         {
-            _productFlowStep = new FlowStep();
+            _productFlowStep = new BpmStep();
         }
 
-        public TestFlowStep(TestActivity actionActivity)
+        public TestBpmStep(TestActivity actionActivity)
             : this()
         {
             if (actionActivity == null)
@@ -51,7 +51,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        internal TestFlowElement NextElement
+        internal TestBpmFlowElement NextElement
         {
             get { return _nextElement; }
             set
@@ -68,12 +68,12 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        public override FlowNode GetProductElement()
+        public override BpmNode GetProductElement()
         {
             return _productFlowStep;
         }
 
-        internal override TestFlowElement GetNextElement()
+        internal override TestBpmFlowElement GetNextElement()
         {
             return this.NextElement;
         }

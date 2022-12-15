@@ -4,7 +4,7 @@
 using System;
 using System.Activities;
 using System.Collections.Generic;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
@@ -21,7 +21,7 @@ namespace TestCases.Activities.Bpm
         public void Flowchart_FaultNotHandled()
         {
             Variable<Exception> exception = new Variable<Exception>();
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             flowchart.Variables.Add(exception);
 
             TestSequence faultySequence = new TestSequence
@@ -35,7 +35,7 @@ namespace TestCases.Activities.Bpm
                 }
             };
             TestWriteLine writeLine1 = new TestWriteLine("WriteStatus", "I wont execute");
-            TestFlowElement step = flowchart.AddLink(faultySequence, writeLine1);
+            TestBpmFlowElement step = flowchart.AddLink(faultySequence, writeLine1);
             step.IsFaulting = true;
 
             TestRuntime.RunAndValidateAbortedException(flowchart, typeof(InvalidOperationException), new Dictionary<string, string>());
@@ -48,7 +48,7 @@ namespace TestCases.Activities.Bpm
         //[Fact]
         private void FlowchartInTryCatchBlock_FaultHandled()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             flowchart.AddStartLink(new TestThrow<Exception>()
             {
                 ExpectedOutcome = Outcome.CaughtException()
@@ -77,7 +77,7 @@ namespace TestCases.Activities.Bpm
         private void FaultWhileExpressionEvaluation()
         {
             const string exceptionString = "I am a faulty little expression's exception";
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestExpressionEvaluatorWithBody<bool> faultyExpression = new TestExpressionEvaluatorWithBody<bool>
             {
@@ -88,7 +88,7 @@ namespace TestCases.Activities.Bpm
             };
             TestWriteLine writeLine1 = new TestWriteLine("WriteStatus", "I will execute");
 
-            TestFlowConditional conditional = new TestFlowConditional() { ConditionValueExpression = faultyExpression };
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional() { ConditionValueExpression = faultyExpression };
 
             flowchart.AddConditionalLink(writeLine1, conditional, new TestWriteLine("True", "True"), new TestWriteLine("False", "False"));
 
@@ -103,7 +103,7 @@ namespace TestCases.Activities.Bpm
         //[Fact]
         private void FaultWhileSwitchExpressionEvaluation()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestExpressionEvaluatorWithBody<object> faultExp = new TestExpressionEvaluatorWithBody<object>
             {
@@ -125,14 +125,14 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FaultWhileExecutingInLoop()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>(-3);
             counter.Name = "counter";
             flowchart.Variables.Add(counter);
 
             List<HintTrueFalse> hints = new List<HintTrueFalse> { HintTrueFalse.True, HintTrueFalse.True, HintTrueFalse.Exception };
-            TestFlowConditional conditional = new TestFlowConditional(hints.ToArray()) { ConditionExpression = env => (counter.Get(env) - 1) / counter.Get(env) > 0 };
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional(hints.ToArray()) { ConditionExpression = env => (counter.Get(env) - 1) / counter.Get(env) > 0 };
 
             TestIncrement decByOne = new TestIncrement { CounterVariable = counter, IncrementCount = 1 };
 
@@ -150,11 +150,11 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FaultFromFiveLevelDeepNestedFlowchart()
         {
-            TestFlowchart parent = new TestFlowchart();
-            TestFlowchart child1 = new TestFlowchart();
-            TestFlowchart child2 = new TestFlowchart();
-            TestFlowchart child3 = new TestFlowchart();
-            TestFlowchart child4 = new TestFlowchart();
+            TestBpmFlowchart parent = new TestBpmFlowchart();
+            TestBpmFlowchart child1 = new TestBpmFlowchart();
+            TestBpmFlowchart child2 = new TestBpmFlowchart();
+            TestBpmFlowchart child3 = new TestBpmFlowchart();
+            TestBpmFlowchart child4 = new TestBpmFlowchart();
 
             child4.AddStartLink(new TestThrow<WorkflowApplicationAbortedException>());
 
@@ -172,11 +172,11 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FaultFromFiveLevelDeepNestedFlowchart_Handled()
         {
-            TestFlowchart parent = new TestFlowchart();
-            TestFlowchart child1 = new TestFlowchart();
-            TestFlowchart child2 = new TestFlowchart();
-            TestFlowchart child3 = new TestFlowchart();
-            TestFlowchart child4 = new TestFlowchart();
+            TestBpmFlowchart parent = new TestBpmFlowchart();
+            TestBpmFlowchart child1 = new TestBpmFlowchart();
+            TestBpmFlowchart child2 = new TestBpmFlowchart();
+            TestBpmFlowchart child3 = new TestBpmFlowchart();
+            TestBpmFlowchart child4 = new TestBpmFlowchart();
 
             child4.AddStartLink(new TestThrow<WorkflowApplicationAbortedException>() { ExpectedOutcome = Outcome.CaughtException() });
 

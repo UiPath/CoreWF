@@ -3,7 +3,7 @@
 
 using System.Activities;
 using System.Collections.Generic;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
@@ -21,7 +21,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void Flowchart_Parallel()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
@@ -47,7 +47,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void Flowchart_Sequence()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
@@ -67,9 +67,9 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteNestedFlowchart()
         {
-            TestFlowchart parentFlowchart = new TestFlowchart("Parent");
+            TestBpmFlowchart parentFlowchart = new TestBpmFlowchart("Parent");
 
-            TestFlowchart childFlowchart = new TestFlowchart("Child");
+            TestBpmFlowchart childFlowchart = new TestBpmFlowchart("Child");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
@@ -87,7 +87,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteSingleActivity()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flowchart");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flowchart");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
 
@@ -102,7 +102,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteEmptyFlowchart()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flowchart1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flowchart1");
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -110,14 +110,14 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void CancelExecutingChildActivities()
         {
-            TestFlowchart parent = new TestFlowchart("Parent");
+            TestBpmFlowchart parent = new TestBpmFlowchart("Parent");
 
             TestBlockingActivity blocking = new TestBlockingActivity("BlockingActivity", "B1");
             TestWriteLine writeLine1 = new TestWriteLine("w1", "w1");
             TestWriteLine writeLine2 = new TestWriteLine("w2", "w2");
 
             parent.AddLink(writeLine1, blocking);
-            TestFlowElement element = parent.AddLink(blocking, writeLine2);
+            TestBpmFlowElement element = parent.AddLink(blocking, writeLine2);
             element.IsCancelling = true;
 
             blocking.ExpectedOutcome = Outcome.Canceled;
@@ -139,7 +139,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void PersistFlowchart()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
@@ -169,7 +169,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void GetChildrenModifyChildrenExecute()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
             TestWriteLine writeLine3 = new TestWriteLine("hello3", "Hello3");
@@ -193,7 +193,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void CancelFlowchart()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestBlockingActivity blocking1 = new TestBlockingActivity("B1", "B1")
             {
@@ -220,8 +220,8 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void LinkFromNestedFlowchartToParent()
         {
-            TestFlowchart parent = new TestFlowchart("Parent");
-            TestFlowchart child = new TestFlowchart("Child");
+            TestBpmFlowchart parent = new TestBpmFlowchart("Parent");
+            TestBpmFlowchart child = new TestBpmFlowchart("Child");
 
             TestWriteLine w1 = new TestWriteLine("w1", "w1");
             TestWriteLine w2 = new TestWriteLine("w2", "w2");
@@ -240,7 +240,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void CancelFlowchartWhileEvaluatingFlowSwitchExpression()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 
@@ -283,7 +283,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void CancelFlowchartWhileEvaluatingFlowConditionalCondition()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestBlockingActivity blocking = new TestBlockingActivity("Block", "Blocked") { ExpectedOutcome = Outcome.Canceled };
 
@@ -293,7 +293,7 @@ namespace TestCases.Activities.Bpm
                 WillBodyExecute = true
             };
 
-            TestFlowConditional conditional = new TestFlowConditional
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional
             {
                 ConditionValueExpression = expression
             };
@@ -324,7 +324,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowStepActionToNestedActivityInSequence()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine w1 = new TestWriteLine("w1", "w1");
             TestWriteLine w2 = new TestWriteLine("w2", "w2");
@@ -346,7 +346,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteSameActivityMultipleTimesInDifferentFlowSteps()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             TestWriteLine writeLine = new TestWriteLine("Hello", "Hello");
 
             flowchart.AddLink(writeLine, writeLine);
@@ -360,8 +360,8 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void AccessVariableOnParentFromNestedFlowchart()
         {
-            TestFlowchart parent = new TestFlowchart();
-            TestFlowchart child = new TestFlowchart();
+            TestBpmFlowchart parent = new TestBpmFlowchart();
+            TestBpmFlowchart child = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>(2);
             counter.Name = "counter";
@@ -390,8 +390,8 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void TryAccessVariableInNestedFlowchartFromParent()
         {
-            TestFlowchart parent = new TestFlowchart();
-            TestFlowchart child = new TestFlowchart();
+            TestBpmFlowchart parent = new TestBpmFlowchart();
+            TestBpmFlowchart child = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>(0);
             child.Variables.Add(counter);
@@ -409,11 +409,11 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteFiveLevelDeepNestedFlowchart()
         {
-            TestFlowchart parent = new TestFlowchart();
-            TestFlowchart child1 = new TestFlowchart();
-            TestFlowchart child2 = new TestFlowchart();
-            TestFlowchart child3 = new TestFlowchart();
-            TestFlowchart child4 = new TestFlowchart();
+            TestBpmFlowchart parent = new TestBpmFlowchart();
+            TestBpmFlowchart child1 = new TestBpmFlowchart();
+            TestBpmFlowchart child2 = new TestBpmFlowchart();
+            TestBpmFlowchart child3 = new TestBpmFlowchart();
+            TestBpmFlowchart child4 = new TestBpmFlowchart();
 
             parent.AddLink(new TestWriteLine("Parent Start", "Parent started"), child1);
             child1.AddLink(new TestWriteLine("Child1 Start", "Child1 started"), child2);
@@ -431,7 +431,7 @@ namespace TestCases.Activities.Bpm
         //[Fact]
         private void BlockingActivityInFlowchart()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestBlockingActivity blocking = new TestBlockingActivity("Block");
 
@@ -455,11 +455,11 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FiveLevelDeepEmptyNestedFlowchart()
         {
-            TestFlowchart parent = new TestFlowchart();
-            TestFlowchart child1 = new TestFlowchart();
-            TestFlowchart child2 = new TestFlowchart();
-            TestFlowchart child3 = new TestFlowchart();
-            TestFlowchart child4 = new TestFlowchart();
+            TestBpmFlowchart parent = new TestBpmFlowchart();
+            TestBpmFlowchart child1 = new TestBpmFlowchart();
+            TestBpmFlowchart child2 = new TestBpmFlowchart();
+            TestBpmFlowchart child3 = new TestBpmFlowchart();
+            TestBpmFlowchart child4 = new TestBpmFlowchart();
 
             parent.AddStartLink(child1);
             child1.AddStartLink(child2);
@@ -476,11 +476,11 @@ namespace TestCases.Activities.Bpm
         //[Fact]
         private void FiveLevelDeepNestedFlowchartWithBlockingActivity()
         {
-            TestFlowchart parent = new TestFlowchart();
-            TestFlowchart child1 = new TestFlowchart();
-            TestFlowchart child2 = new TestFlowchart();
-            TestFlowchart child3 = new TestFlowchart();
-            TestFlowchart child4 = new TestFlowchart();
+            TestBpmFlowchart parent = new TestBpmFlowchart();
+            TestBpmFlowchart child1 = new TestBpmFlowchart();
+            TestBpmFlowchart child2 = new TestBpmFlowchart();
+            TestBpmFlowchart child3 = new TestBpmFlowchart();
+            TestBpmFlowchart child4 = new TestBpmFlowchart();
             TestBlockingActivity blocking = new TestBlockingActivity("Blocked");
 
             parent.AddStartLink(child1);
@@ -507,7 +507,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteFlowchartWithSingleActivityNotMarkedStart()
         {
-            TestFlowchart flowchart = new TestFlowchart { Elements = { new TestWriteLine("Only One", "OnlyOne") } };
+            TestBpmFlowchart flowchart = new TestBpmFlowchart { Elements = { new TestWriteLine("Only One", "OnlyOne") } };
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -518,13 +518,13 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowchartWithOnlyFlowConditionalWithoutStartEvent()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<bool> flag = VariableHelper.CreateInitialized<bool>(true);
             flag.Name = "flag";
             flowchart.Variables.Add(flag);
 
-            TestFlowConditional decision = new TestFlowConditional { ConditionExpression = env => flag.Get(env) };
+            TestBpmFlowConditional decision = new TestBpmFlowConditional { ConditionExpression = env => flag.Get(env) };
 
             flowchart.AddConditionalLink(null, decision, new TestWriteLine("True", "True"), new TestWriteLine("False", "False"));
 
@@ -537,7 +537,7 @@ namespace TestCases.Activities.Bpm
         [Fact()]
         public void UnloadFlowchartWhileExecutingFlowConditionalCondition()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestExpressionEvaluatorWithBody<bool> expression = new TestExpressionEvaluatorWithBody<bool>(true)
             {
@@ -545,7 +545,7 @@ namespace TestCases.Activities.Bpm
                 WillBodyExecute = true
             };
 
-            TestFlowConditional conditional = new TestFlowConditional(HintTrueFalse.True)
+            TestBpmFlowConditional conditional = new TestBpmFlowConditional(HintTrueFalse.True)
             {
                 ConditionValueExpression = expression
             };
@@ -581,7 +581,7 @@ namespace TestCases.Activities.Bpm
         [Fact()]
         public void UnloadFlowchartWhileExecutingFlowSwitchExpression()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 
@@ -628,7 +628,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void Flowchart_Listen()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>(0);
             counter.Name = "counter";
@@ -670,7 +670,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void UseVariableInFlowchart()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> flag = VariableHelper.CreateInitialized<int>(23);
             flag.Name = "flag";
@@ -687,7 +687,7 @@ namespace TestCases.Activities.Bpm
         [Fact()]
         public void UnloadFlowchartWhileExecutingFlowStep()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestBlockingActivity blocking = new TestBlockingActivity("Block");
 

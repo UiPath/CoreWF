@@ -5,7 +5,7 @@ using System;
 using System.Activities;
 using System.Activities.Statements;
 using System.Collections.Generic;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.CustomActivities;
 using Test.Common.TestObjects.Runtime;
@@ -23,7 +23,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithOneElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 
@@ -43,7 +43,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void SimpleFlowSwitchWithThreeElements()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             Variable<int> expression = new Variable<int> { Name = "expression", Default = 2 };
 
             flowchart.Variables.Add(expression);
@@ -70,7 +70,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithOneNonExecutingElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 
@@ -91,7 +91,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void SwitchExpressionOnCustomtype()
         {
-            TestFlowchart flow = new TestFlowchart();
+            TestBpmFlowchart flow = new TestBpmFlowchart();
 
             Complex defaultValue = new Complex(3, 3);
 
@@ -117,7 +117,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void SwitchExpressionOnExistingVariable()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             const string defaultValue = "Two";
             Variable<string> stringVar = VariableHelper.CreateInitialized<string>("stringVar", defaultValue);
@@ -143,7 +143,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithOnlyDefaultElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine defaultWrite = new TestWriteLine("Default", "Default");
 
@@ -162,7 +162,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchExpressionEvaluationEmptyExecuteEmptyCase()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<string> expVariable = new Variable<string> { Name = "ExpVar", Default = string.Empty };
             flowchart.Variables.Add(expVariable);
@@ -185,7 +185,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithNullFlowNode()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> expression = new Variable<int> { Name = "expression", Default = 1 };
             flowchart.Variables.Add(expression);
@@ -206,7 +206,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchDefaultExecutionWithMultipleCases()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> expressionVariable = new Variable<int> { Name = "expression", Default = 4 };
             flowchart.Variables.Add(expressionVariable);
@@ -233,7 +233,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchExpressionEvaluationNullExecuteDefault()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<string> expVariable = new Variable<string> { Name = "ExpVar" };
             flowchart.Variables.Add(expVariable);
@@ -257,7 +257,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithAllCasesHavingSameElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
@@ -285,7 +285,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchHavingCaseWithNullKeyEvaluateNull()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<Complex> complexVar = VariableHelper.CreateInitialized<Complex>("complexVar", (Complex)null);
             flowchart.Variables.Add(complexVar);
@@ -297,7 +297,7 @@ namespace TestCases.Activities.Bpm
 
             List<int> hints = new List<int>() { -1 };
 
-            TestFlowSwitch<Complex> flowSwitch = flowchart.AddSwitchLink<Complex>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => complexVar.Get(e)) as TestFlowSwitch<Complex>;
+            TestBpmSwitch<Complex> flowSwitch = flowchart.AddSwitchLink<Complex>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => complexVar.Get(e)) as TestBpmSwitch<Complex>;
             ((FlowSwitch<Complex>)flowSwitch.GetProductElement()).Cases.Add(null, new FlowStep { Action = new BlockingActivity("Blocking") });
 
             using (TestWorkflowRuntime runtime = TestRuntime.CreateTestWorkflowRuntime(flowchart))
@@ -316,7 +316,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithNodePointingToParentFlowSwitch()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
 
             flowchart.Variables.Add(counter);
@@ -358,7 +358,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ThrowFromNode()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             Variable<int> expression = new Variable<int> { Name = "expression", Default = 3 };
 
             flowchart.Variables.Add(expression);
@@ -384,7 +384,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ThrowWhileEvaluatingExpression()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 

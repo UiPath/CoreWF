@@ -11,17 +11,17 @@ using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.Activities.Bpm
 {
-    public class TestFlowchart : TestActivity
+    public class TestBpmFlowchart : TestActivity
     {
         public bool HintExceptionWillBeHandled = false;
-        private MemberCollection<TestFlowElement> _elements;
+        private MemberCollection<TestBpmFlowElement> _elements;
         private IList<Directive> _compensationHint;
-        private TestFlowElement _startElement;
+        private TestBpmFlowElement _startElement;
 
-        public TestFlowchart()
+        public TestBpmFlowchart()
         {
-            this.ProductActivity = new Flowchart();
-            _elements = new MemberCollection<TestFlowElement>(AddFlowElement)
+            this.ProductActivity = new BpmFlowchart();
+            _elements = new MemberCollection<TestBpmFlowElement>(AddFlowElement)
             {
                 RemoveItem = RemoveFlowElementItem,
                 RemoveAtItem = RemoveFlowElementAt
@@ -29,7 +29,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             _compensationHint = new List<Directive>();
         }
 
-        public TestFlowchart(string displayName)
+        public TestBpmFlowchart(string displayName)
             : this()
         {
             this.DisplayName = displayName;
@@ -43,7 +43,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        public MemberCollection<TestFlowElement> Elements
+        public MemberCollection<TestBpmFlowElement> Elements
         {
             get { return _elements; }
         }
@@ -54,11 +54,11 @@ namespace Test.Common.TestObjects.Activities.Bpm
             set { _compensationHint = value; }
         }
 
-        private Flowchart ProductFlowchart
+        private BpmFlowchart ProductFlowchart
         {
             get
             {
-                return (Flowchart)this.ProductActivity;
+                return (BpmFlowchart)this.ProductActivity;
             }
         }
 
@@ -74,33 +74,33 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        private void SetStartNode(TestFlowElement startElement)
+        private void SetStartNode(TestBpmFlowElement startElement)
         {
             _startElement = startElement;
-            ((Flowchart)ProductActivity).StartNode = startElement.GetProductElement();
+            ((BpmFlowchart)ProductActivity).StartNode = startElement.GetProductElement();
         }
 
-        protected void AddFlowElement(TestFlowElement item)
+        protected void AddFlowElement(TestBpmFlowElement item)
         {
             if (_startElement == null)
             {
                 SetStartNode(item);
             }
-            ((Flowchart)ProductActivity).Nodes.Add(item.GetProductElement());
+            ((BpmFlowchart)ProductActivity).Nodes.Add(item.GetProductElement());
         }
 
-        protected bool RemoveFlowElementItem(TestFlowElement item)
+        protected bool RemoveFlowElementItem(TestBpmFlowElement item)
         {
-            return ((Flowchart)ProductActivity).Nodes.Remove(item.GetProductElement());
+            return ((BpmFlowchart)ProductActivity).Nodes.Remove(item.GetProductElement());
         }
 
         protected void RemoveFlowElementAt(int index)
         {
-            ((Flowchart)ProductActivity).Nodes.RemoveAt(index);
+            ((BpmFlowchart)ProductActivity).Nodes.RemoveAt(index);
         }
 
         // This overload is for more complicated scenarios
-        private TestFlowElement AddTestFlowLink(TestFlowElement flowchartElement)
+        private TestBpmFlowElement AddTestFlowLink(TestBpmFlowElement flowchartElement)
         {
             if (!_elements.Contains(flowchartElement))
             {
@@ -109,23 +109,23 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return flowchartElement;
         }
 
-        public TestFlowElement AddLink(TestActivity sourceActivity, TestActivity targetActivity)
+        public TestBpmFlowElement AddLink(TestActivity sourceActivity, TestActivity targetActivity)
         {
             //Search in the elements collection if the flowstep exists and just needs to be
             //connected to next element
-            TestFlowStep sourceStep = GetFlowStepContainingActionActivity(sourceActivity);
-            TestFlowStep targetStep = GetFlowStepContainingActionActivity(targetActivity);
+            TestBpmStep sourceStep = GetFlowStepContainingActionActivity(sourceActivity);
+            TestBpmStep targetStep = GetFlowStepContainingActionActivity(targetActivity);
 
             if (sourceStep == null)
             {
-                sourceStep = new TestFlowStep(sourceActivity);
+                sourceStep = new TestBpmStep(sourceActivity);
                 SetStartNode(sourceStep);
                 AddTestFlowLink(sourceStep);
             }
 
             if (targetStep == null)
             {
-                targetStep = new TestFlowStep(targetActivity);
+                targetStep = new TestBpmStep(targetActivity);
             }
             sourceStep.NextElement = targetStep;
             AddTestFlowLink(targetStep);
@@ -135,13 +135,13 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return sourceStep;
         }
 
-        public TestFlowElement AddLink(TestActivity sourceActivity, TestFlowElement flowElement)
+        public TestBpmFlowElement AddLink(TestActivity sourceActivity, TestBpmFlowElement flowElement)
         {
-            TestFlowStep sourceStep = GetFlowStepContainingActionActivity(sourceActivity);
+            TestBpmStep sourceStep = GetFlowStepContainingActionActivity(sourceActivity);
 
             if (sourceStep == null)
             {
-                sourceStep = new TestFlowStep(sourceActivity);
+                sourceStep = new TestBpmStep(sourceActivity);
                 SetStartNode(sourceStep);
                 AddTestFlowLink(sourceStep);
             }
@@ -157,16 +157,16 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// </summary>
         /// <param name="flowStep">FlowStep to be updated</param>
         /// <param name="newNextActivity">new activity to be executed next</param>
-        /// <param name="removeOldNextNode">wehther we want to remove the old Next node from Flowchart</param>
-        public void ChangeFlowStepNextNode(TestFlowStep flowStep, TestActivity newNextActivity, bool removeOldNextNode = true)
+        /// <param name="removeOldNextNode">wehther we want to remove the old Next node from BpmFlowchart</param>
+        public void ChangeFlowStepNextNode(TestBpmStep flowStep, TestActivity newNextActivity, bool removeOldNextNode = true)
         {
-            TestFlowStep newNextNode = null;
+            TestBpmStep newNextNode = null;
             if (newNextActivity != null)
             {
                 newNextNode = this.GetFlowStepContainingActionActivity(newNextActivity);
                 if (newNextNode == null)
                 {
-                    newNextNode = new TestFlowStep(newNextActivity);
+                    newNextNode = new TestBpmStep(newNextActivity);
                 }
             }
 
@@ -182,16 +182,16 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// </summary>
         /// <param name="flowStep">FlowStep to be updated</param>
         /// <param name="newNextNode">new node to be executed next</param>
-        /// <param name="removeOldNextNode">wehther we want to remove the old Next node from Flowchart</param>
-        public void ChangeFlowStepNextNode(TestFlowStep flowStep, TestFlowElement newNextNode, bool removeOldNextNode = true)
+        /// <param name="removeOldNextNode">wehther we want to remove the old Next node from BpmFlowchart</param>
+        public void ChangeFlowStepNextNode(TestBpmStep flowStep, TestBpmFlowElement newNextNode, bool removeOldNextNode = true)
         {
-            // remove old Next node from Flowchart
+            // remove old Next node from BpmFlowchart
             if (removeOldNextNode)
             {
                 this.Elements.Remove(flowStep.NextElement);
             }
 
-            // add new Next node to Flowchart
+            // add new Next node to BpmFlowchart
             if (newNextNode != null)
             {
                 this.AddTestFlowLink(newNextNode);
@@ -201,25 +201,25 @@ namespace Test.Common.TestObjects.Activities.Bpm
             flowStep.NextElement = newNextNode;
         }
 
-        public TestFlowElement AddStartLink(TestActivity targetActivity)
+        public TestBpmFlowElement AddStartLink(TestActivity targetActivity)
         {
-            TestFlowStep flowStep = new TestFlowStep(targetActivity);
+            TestBpmStep flowStep = new TestBpmStep(targetActivity);
             SetStartNode(flowStep);
             return AddTestFlowLink(flowStep);
         }
-        public TestFlowElement AddFaultLink(TestActivity sourceActivity, TestActivity targetActivity, Variable<Exception> exception, bool isExceptionHandler)
+        public TestBpmFlowElement AddFaultLink(TestActivity sourceActivity, TestActivity targetActivity, Variable<Exception> exception, bool isExceptionHandler)
         {
             throw new NotImplementedException();
         }
 
-        public TestFlowElement AddConditionalLink(TestActivity sourceActivity, TestFlowConditional flowConditional, TestActivity trueActivity, TestActivity falseActivity)
+        public TestBpmFlowElement AddConditionalLink(TestActivity sourceActivity, TestBpmFlowConditional flowConditional, TestActivity trueActivity, TestActivity falseActivity)
         {
             if (sourceActivity != null)
             {
-                TestFlowStep flowStep = GetFlowStepContainingActionActivity(sourceActivity);
+                TestBpmStep flowStep = GetFlowStepContainingActionActivity(sourceActivity);
                 if (flowStep == null)
                 {
-                    flowStep = new TestFlowStep(sourceActivity)
+                    flowStep = new TestBpmStep(sourceActivity)
                     {
                         NextElement = flowConditional
                     };
@@ -236,28 +236,28 @@ namespace Test.Common.TestObjects.Activities.Bpm
             if (trueActivity != null)
             {
                 //For loops we need to check if the element already exists with the target activity
-                TestFlowStep trueStep = GetFlowStepContainingActionActivity(trueActivity);
+                TestBpmStep trueStep = GetFlowStepContainingActionActivity(trueActivity);
                 if (trueStep != null)
                 {
                     flowConditional.TrueAction = trueStep;
                 }
                 else
                 {
-                    flowConditional.TrueAction = new TestFlowStep(trueActivity);
+                    flowConditional.TrueAction = new TestBpmStep(trueActivity);
                 }
                 AddTestFlowLink(flowConditional.TrueAction);
             }
             if (falseActivity != null)
             {
                 //For loops we need to check if the element already exists with the target activity
-                TestFlowStep falseStep = GetFlowStepContainingActionActivity(falseActivity);
+                TestBpmStep falseStep = GetFlowStepContainingActionActivity(falseActivity);
                 if (falseStep != null)
                 {
                     flowConditional.FalseAction = falseStep;
                 }
                 else
                 {
-                    flowConditional.FalseAction = new TestFlowStep(falseActivity);
+                    flowConditional.FalseAction = new TestBpmStep(falseActivity);
                 }
                 AddTestFlowLink(flowConditional.FalseAction);
             }
@@ -270,12 +270,12 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return flowConditional;
         }
 
-        public TestFlowElement AddConditionalLink(TestActivity sourceActivity, TestFlowConditional flowConditional)
+        public TestBpmFlowElement AddConditionalLink(TestActivity sourceActivity, TestBpmFlowConditional flowConditional)
         {
             return AddConditionalLink(sourceActivity, flowConditional, (TestActivity)null, (TestActivity)null);
         }
 
-        public TestFlowElement AddConditionalLink(TestActivity sourceActivity, TestFlowConditional flowConditional, TestActivity trueActivity, TestFlowElement falseFlowElement)
+        public TestBpmFlowElement AddConditionalLink(TestActivity sourceActivity, TestBpmFlowConditional flowConditional, TestActivity trueActivity, TestBpmFlowElement falseFlowElement)
         {
             AddConditionalLink(sourceActivity, flowConditional, trueActivity, (TestActivity)null);
             flowConditional.FalseAction = falseFlowElement;
@@ -283,7 +283,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return flowConditional;
         }
 
-        public TestFlowElement AddConditionalLink(TestActivity sourceActivity, TestFlowConditional flowConditional, TestFlowElement trueFlowElement, TestActivity falseActivity)
+        public TestBpmFlowElement AddConditionalLink(TestActivity sourceActivity, TestBpmFlowConditional flowConditional, TestBpmFlowElement trueFlowElement, TestActivity falseActivity)
         {
             AddConditionalLink(sourceActivity, flowConditional, (TestActivity)null, falseActivity);
             flowConditional.TrueAction = trueFlowElement;
@@ -291,7 +291,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return flowConditional;
         }
 
-        public TestFlowElement AddConditionalLink(TestActivity sourceActivity, TestFlowConditional flowConditional, TestFlowElement trueFlowElement, TestFlowElement falseFlowElement)
+        public TestBpmFlowElement AddConditionalLink(TestActivity sourceActivity, TestBpmFlowConditional flowConditional, TestBpmFlowElement trueFlowElement, TestBpmFlowElement falseFlowElement)
         {
             AddConditionalLink(sourceActivity, flowConditional, (TestActivity)null, (TestActivity)null);
             flowConditional.TrueAction = trueFlowElement;
@@ -304,7 +304,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// <summary>
         /// Modify the FlowDecision's Condition and its corresponding hint.
         /// </summary>
-        public void ChangeFlowDecisionCondition(TestFlowConditional flowDecision, bool newCondition, List<HintTrueFalse> newHint)
+        public void ChangeFlowDecisionCondition(TestBpmFlowConditional flowDecision, bool newCondition, List<HintTrueFalse> newHint)
         {
             flowDecision.Condition = newCondition;
             flowDecision.TrueOrFalse = newHint;
@@ -313,7 +313,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// <summary>
         /// Modify the FlowDecision's Condition activity and its corresponding hint.
         /// </summary>
-        public void ChangeFlowDecisionCondition(TestFlowConditional flowDecision, TestActivity newConditionActivity, List<HintTrueFalse> newHint)
+        public void ChangeFlowDecisionCondition(TestBpmFlowConditional flowDecision, TestActivity newConditionActivity, List<HintTrueFalse> newHint)
         {
             flowDecision.ConditionValueExpression = newConditionActivity;
             flowDecision.TrueOrFalse = newHint;
@@ -325,10 +325,10 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// <param name="flowConditional">FlowDecision to be updated</param>
         /// <param name="changeTrueAction">true if TrueAction to be changed, false if FalseAction to be changed</param>
         /// <param name="newAction">new activity to be executed on the specified FlowDecision's path</param>
-        /// <param name="removeOldNode">wehther we want to remove the old node from Flowchart</param>
-        public void ChangeFlowDecisionAction(TestFlowConditional flowConditional, bool changeTrueAction, TestActivity newAction, bool removeOldNode = true)
+        /// <param name="removeOldNode">wehther we want to remove the old node from BpmFlowchart</param>
+        public void ChangeFlowDecisionAction(TestBpmFlowConditional flowConditional, bool changeTrueAction, TestActivity newAction, bool removeOldNode = true)
         {
-            // remove old node from Flowchart
+            // remove old node from BpmFlowchart
             if (removeOldNode)
             {
                 if (changeTrueAction)
@@ -341,14 +341,14 @@ namespace Test.Common.TestObjects.Activities.Bpm
                 }
             }
 
-            // add new node to Flowchart
-            TestFlowStep newNode = null;
+            // add new node to BpmFlowchart
+            TestBpmStep newNode = null;
             if (newAction != null)
             {
                 newNode = this.GetFlowStepContainingActionActivity(newAction);
                 if (newNode == null)
                 {
-                    newNode = new TestFlowStep(newAction);
+                    newNode = new TestBpmStep(newAction);
                 }
 
                 this.AddTestFlowLink(newNode);
@@ -365,12 +365,12 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        public TestFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestFlowElement> cases, List<int> hintsExecutingActivityIndex, T expression, params TestActivity[] defaultActivity)
+        public TestBpmFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestBpmFlowElement> cases, List<int> hintsExecutingActivityIndex, T expression, params TestActivity[] defaultActivity)
         {
-            TestFlowSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, null, hintsExecutingActivityIndex, defaultActivity, true) as TestFlowSwitch<T>;
+            TestBpmSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, null, hintsExecutingActivityIndex, defaultActivity, true) as TestBpmSwitch<T>;
             flowSwitch.Expression = expression;
 
-            foreach (KeyValuePair<T, TestFlowElement> flowCase in cases)
+            foreach (KeyValuePair<T, TestBpmFlowElement> flowCase in cases)
             {
                 flowSwitch.AddCase(flowCase.Key, flowCase.Value);
                 AddTestFlowLink(flowCase.Value);
@@ -378,41 +378,41 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return AddTestFlowLink(flowSwitch);
         }
 
-        public TestFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, T expression, params TestActivity[] defaultActivity)
+        public TestBpmFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, T expression, params TestActivity[] defaultActivity)
         {
-            TestFlowSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestFlowSwitch<T>;
+            TestBpmSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestBpmSwitch<T>;
             flowSwitch.Expression = expression;
             return AddTestFlowLink(flowSwitch);
         }
 
-        public TestFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, Variable<T> expressionVariable, params TestActivity[] defaultActivity)
+        public TestBpmFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, Variable<T> expressionVariable, params TestActivity[] defaultActivity)
         {
-            TestFlowSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestFlowSwitch<T>;
+            TestBpmSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestBpmSwitch<T>;
             flowSwitch.ExpressionVariable = expressionVariable;
             return AddTestFlowLink(flowSwitch);
         }
 
-        public TestFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, Expression<Func<ActivityContext, T>> lambdaExpression, params TestActivity[] defaultActivity)
+        public TestBpmFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, Expression<Func<ActivityContext, T>> lambdaExpression, params TestActivity[] defaultActivity)
         {
-            TestFlowSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestFlowSwitch<T>;
+            TestBpmSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestBpmSwitch<T>;
             flowSwitch.LambdaExpression = lambdaExpression;
             return AddTestFlowLink(flowSwitch);
         }
 
-        public TestFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, TestActivity expressionActivity, params TestActivity[] defaultActivity)
+        public TestBpmFlowElement AddSwitchLink<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, TestActivity expressionActivity, params TestActivity[] defaultActivity)
         {
-            TestFlowSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestFlowSwitch<T>;
+            TestBpmSwitch<T> flowSwitch = CreateSwitchElement<T>(sourceActivity, cases, hintsExecutingActivityIndex, defaultActivity, true) as TestBpmSwitch<T>;
             flowSwitch.ExpressionActivity = expressionActivity;
             return AddTestFlowLink(flowSwitch);
         }
 
-        private TestFlowSwitchBase CreateSwitchElement<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, TestActivity[] defaultActivity, bool genericSwitch = false)
+        private TestBpmSwitchBase CreateSwitchElement<T>(TestActivity sourceActivity, Dictionary<T, TestActivity> cases, List<int> hintsExecutingActivityIndex, TestActivity[] defaultActivity, bool genericSwitch = false)
         {
-            TestFlowStep flowStep = null;
-            List<TestFlowStep> newAddedSteps = new List<TestFlowStep>();
+            TestBpmStep flowStep = null;
+            List<TestBpmStep> newAddedSteps = new List<TestBpmStep>();
 
-            TestFlowSwitchBase flowSwitch;
-            flowSwitch = new TestFlowSwitch<T>();
+            TestBpmSwitchBase flowSwitch;
+            flowSwitch = new TestBpmSwitch<T>();
 
             flowSwitch.SetHints(hintsExecutingActivityIndex);
 
@@ -421,7 +421,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
                 flowStep = GetFlowStepContainingActionActivity(sourceActivity);
                 if (flowStep == null)
                 {
-                    flowStep = new TestFlowStep(sourceActivity);
+                    flowStep = new TestBpmStep(sourceActivity);
                     AddTestFlowLink(flowStep);
                 }
             }
@@ -430,35 +430,35 @@ namespace Test.Common.TestObjects.Activities.Bpm
             {
                 foreach (KeyValuePair<T, TestActivity> flowCase in cases)
                 {
-                    TestFlowStep targetStep = GetFlowStepContainingActionActivity(flowCase.Value);
+                    TestBpmStep targetStep = GetFlowStepContainingActionActivity(flowCase.Value);
                     if (targetStep == null && flowCase.Value != null)
                     {
                         //Need this to find identical FlowSteps in the cases locally as they are not
                         //added yet to the linked list
                         if ((targetStep = FindMatchingCase(newAddedSteps, flowCase.Value.DisplayName)) == null)
                         {
-                            targetStep = new TestFlowStep(flowCase.Value);
+                            targetStep = new TestBpmStep(flowCase.Value);
                             newAddedSteps.Add(targetStep);
                         }
                         AddTestFlowLink(targetStep);
                     }
 
-                    (flowSwitch as TestFlowSwitch<T>).AddCase(flowCase.Key, targetStep);
+                    (flowSwitch as TestBpmSwitch<T>).AddCase(flowCase.Key, targetStep);
                 }
             }
 
             if (defaultActivity != null && defaultActivity.Length != 0)
             {
-                TestFlowStep defaultStep = GetFlowStepContainingActionActivity(defaultActivity[0]);
+                TestBpmStep defaultStep = GetFlowStepContainingActionActivity(defaultActivity[0]);
                 if (defaultStep == null)
                 {
                     if ((defaultStep = FindMatchingCase(newAddedSteps, defaultActivity[0].DisplayName)) == null)
                     {
-                        defaultStep = new TestFlowStep(defaultActivity[0]);
+                        defaultStep = new TestBpmStep(defaultActivity[0]);
                     }
                 }
 
-                (flowSwitch as TestFlowSwitch<T>).Default = defaultStep;
+                (flowSwitch as TestBpmSwitch<T>).Default = defaultStep;
                 AddTestFlowLink(defaultStep);
             }
 
@@ -477,7 +477,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// <summary>
         /// Modify the FlowSwitch's Expression and its corresponding hint.
         /// </summary>
-        public void ChangeFlowSwitchExpression<T>(TestFlowSwitch<T> flowSwitch, T newExpression, List<int> newHint)
+        public void ChangeFlowSwitchExpression<T>(TestBpmSwitch<T> flowSwitch, T newExpression, List<int> newHint)
         {
             flowSwitch.Expression = newExpression;
             flowSwitch.SetHints(newHint);
@@ -486,7 +486,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// <summary>
         /// Modify the FlowSwitch's Expression activity and its corresponding hint.
         /// </summary>
-        public void ChangeFlowSwitchExpression<T>(TestFlowSwitch<T> flowSwitch, TestActivity newExpressionActivity, List<int> newHint)
+        public void ChangeFlowSwitchExpression<T>(TestBpmSwitch<T> flowSwitch, TestActivity newExpressionActivity, List<int> newHint)
         {
             flowSwitch.ExpressionActivity = newExpressionActivity;
             flowSwitch.SetHints(newHint);
@@ -498,13 +498,13 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// <param name="flowSwitch">FlowSwitch to be updated</param>
         /// <param name="flowSwitchCase">case whose action to be updated</param>
         /// <param name="newCaseActivity">new activity to be executed in the given FlowSwitch Case</param>
-        /// <param name="removeOldCaseNode">wehther we want to remove the old Case node from Flowchart</param>
-        public void ChangeFlowSwitchCaseAction<T>(TestFlowSwitch<T> flowSwitch, T caseExpression, int caseIndex, TestActivity oldCaseActivity, TestActivity newCaseActivity, bool removeOldCaseNode = true)
+        /// <param name="removeOldCaseNode">wehther we want to remove the old Case node from BpmFlowchart</param>
+        public void ChangeFlowSwitchCaseAction<T>(TestBpmSwitch<T> flowSwitch, T caseExpression, int caseIndex, TestActivity oldCaseActivity, TestActivity newCaseActivity, bool removeOldCaseNode = true)
         {
-            TestFlowStep oldCaseNode = null;
-            TestFlowStep newCaseNode = null;
+            TestBpmStep oldCaseNode = null;
+            TestBpmStep newCaseNode = null;
 
-            // remove old Case node from Flowchart
+            // remove old Case node from BpmFlowchart
             if (removeOldCaseNode)
             {
                 oldCaseNode = this.GetFlowStepContainingActionActivity(oldCaseActivity);
@@ -515,13 +515,13 @@ namespace Test.Common.TestObjects.Activities.Bpm
                 this.Elements.Remove(oldCaseNode);
             }
 
-            // add new Case node to Flowchart
+            // add new Case node to BpmFlowchart
             if (newCaseActivity != null)
             {
                 newCaseNode = this.GetFlowStepContainingActionActivity(newCaseActivity);
                 if (newCaseNode == null)
                 {
-                    newCaseNode = new TestFlowStep(newCaseActivity);
+                    newCaseNode = new TestBpmStep(newCaseActivity);
                 }
 
                 this.AddTestFlowLink(newCaseNode);
@@ -531,9 +531,9 @@ namespace Test.Common.TestObjects.Activities.Bpm
             flowSwitch.UpdateCase(caseExpression, caseIndex, newCaseNode);
         }
 
-        private TestFlowStep FindMatchingCase(List<TestFlowStep> steps, string displayName)
+        private TestBpmStep FindMatchingCase(List<TestBpmStep> steps, string displayName)
         {
-            foreach (TestFlowStep step in steps)
+            foreach (TestBpmStep step in steps)
             {
                 if (step.ActionActivity.DisplayName == displayName)
                 {
@@ -570,25 +570,25 @@ namespace Test.Common.TestObjects.Activities.Bpm
 
         internal override IEnumerable<TestActivity> GetChildren()
         {
-            List<TestFlowConditional> conditionals = new List<TestFlowConditional>();
-            List<TestFlowSwitchBase> switches = new List<TestFlowSwitchBase>();
+            List<TestBpmFlowConditional> conditionals = new List<TestBpmFlowConditional>();
+            List<TestBpmSwitchBase> switches = new List<TestBpmSwitchBase>();
             List<TestActivity> activities = new List<TestActivity>();
 
-            TestFlowElement current = _startElement;
+            TestBpmFlowElement current = _startElement;
 
             while (current != null)
             {
-                if (current is TestFlowConditional && !conditionals.Contains((TestFlowConditional)current))
+                if (current is TestBpmFlowConditional && !conditionals.Contains((TestBpmFlowConditional)current))
                 {
-                    conditionals.Add((TestFlowConditional)current);
+                    conditionals.Add((TestBpmFlowConditional)current);
                 }
-                else if (current is TestFlowSwitchBase && !switches.Contains((TestFlowSwitchBase)current))
+                else if (current is TestBpmSwitchBase && !switches.Contains((TestBpmSwitchBase)current))
                 {
-                    switches.Add((TestFlowSwitchBase)current);
+                    switches.Add((TestBpmSwitchBase)current);
                 }
-                else if (current is TestFlowStep && ((TestFlowStep)current).ActionActivity != null)
+                else if (current is TestBpmStep && ((TestBpmStep)current).ActionActivity != null)
                 {
-                    activities.Add(((TestFlowStep)current).ActionActivity);
+                    activities.Add(((TestBpmStep)current).ActionActivity);
                 }
                 current = current.GetNextElement();
             }
@@ -599,7 +599,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
         }
 
         //
-        // Flowchart Split Compensation/Confirmation
+        // BpmFlowchart Split Compensation/Confirmation
         // - needs to participate in the results building because, again, the traces
         // will be unordered
         //
@@ -664,35 +664,35 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        private TestFlowStep GetFlowStepContainingActionActivity(TestActivity activity)
+        private TestBpmStep GetFlowStepContainingActionActivity(TestActivity activity)
         {
             if (_startElement == null || activity == null)
             {
                 return null;
             }
 
-            List<TestFlowConditional> conditionals = new List<TestFlowConditional>();
-            List<TestFlowSwitchBase> switches = new List<TestFlowSwitchBase>();
-            TestFlowElement current = _startElement;
+            List<TestBpmFlowConditional> conditionals = new List<TestBpmFlowConditional>();
+            List<TestBpmSwitchBase> switches = new List<TestBpmSwitchBase>();
+            TestBpmFlowElement current = _startElement;
 
             while (current != null)
             {
-                if (current is TestFlowConditional && !conditionals.Contains((TestFlowConditional)current))
+                if (current is TestBpmFlowConditional && !conditionals.Contains((TestBpmFlowConditional)current))
                 {
-                    conditionals.Add((TestFlowConditional)current);
+                    conditionals.Add((TestBpmFlowConditional)current);
                 }
-                else if (current is TestFlowSwitchBase && !switches.Contains((TestFlowSwitchBase)current))
+                else if (current is TestBpmSwitchBase && !switches.Contains((TestBpmSwitchBase)current))
                 {
-                    switches.Add((TestFlowSwitchBase)current);
+                    switches.Add((TestBpmSwitchBase)current);
                 }
-                else if (current is TestFlowStep && ((TestFlowStep)current).ActionActivity.DisplayName == activity.DisplayName)
+                else if (current is TestBpmStep && ((TestBpmStep)current).ActionActivity.DisplayName == activity.DisplayName)
                 {
                     //Need to reset the iteration numbers of
                     //flowconditionals and flowSwitched since they will be increment 
                     //on GetNextElement()
                     ResetConditionalsIterationCounter(conditionals);
                     ResetSwitchesIterationCounter(switches);
-                    return current as TestFlowStep;
+                    return current as TestBpmStep;
                 }
                 current = current.GetNextElement();
             }
@@ -707,39 +707,39 @@ namespace Test.Common.TestObjects.Activities.Bpm
         /// 
         /// Note that this function works only for FlowSwitch that is NOT in a loop.
         /// </summary>
-        public TestFlowElement GetFlowSwitchChosenNode(TestFlowSwitchBase flowSwitch)
+        public TestBpmFlowElement GetFlowSwitchChosenNode(TestBpmSwitchBase flowSwitch)
         {
-            TestFlowElement chosenCase = flowSwitch.GetNextElement();
-            ResetSwitchesIterationCounter(new List<TestFlowSwitchBase>() { flowSwitch });  // reset the iteration counter to erase the side-effect caused by GetNextElement();
+            TestBpmFlowElement chosenCase = flowSwitch.GetNextElement();
+            ResetSwitchesIterationCounter(new List<TestBpmSwitchBase>() { flowSwitch });  // reset the iteration counter to erase the side-effect caused by GetNextElement();
             return chosenCase;
         }
 
         private void ResetElements()
         {
-            foreach (TestFlowElement element in _elements)
+            foreach (TestBpmFlowElement element in _elements)
             {
-                if (element is TestFlowConditional)
+                if (element is TestBpmFlowConditional)
                 {
-                    ((TestFlowConditional)element).ResetIterationNumber();
+                    ((TestBpmFlowConditional)element).ResetIterationNumber();
                 }
-                else if (element is TestFlowSwitchBase)
+                else if (element is TestBpmSwitchBase)
                 {
-                    ((TestFlowSwitchBase)element).ResetIterationNumber();
+                    ((TestBpmSwitchBase)element).ResetIterationNumber();
                 }
             }
         }
 
-        private void ResetConditionalsIterationCounter(List<TestFlowConditional> conditionals)
+        private void ResetConditionalsIterationCounter(List<TestBpmFlowConditional> conditionals)
         {
-            foreach (TestFlowConditional conditional in conditionals)
+            foreach (TestBpmFlowConditional conditional in conditionals)
             {
                 conditional.ResetIterationNumber();
             }
         }
 
-        private void ResetSwitchesIterationCounter(List<TestFlowSwitchBase> switches)
+        private void ResetSwitchesIterationCounter(List<TestBpmSwitchBase> switches)
         {
-            foreach (TestFlowSwitchBase flowSwitch in switches)
+            foreach (TestBpmSwitchBase flowSwitch in switches)
             {
                 flowSwitch.ResetIterationNumber();
             }

@@ -4,7 +4,7 @@
 using System;
 using System.Activities;
 using System.Collections.Generic;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Xunit;
@@ -19,7 +19,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void SimpleFlowSwitchWithThreeElements()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
             Variable<object> expression = new Variable<object>("expression", context => "Two");
 
             flowchart.Variables.Add(expression);
@@ -46,7 +46,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithOneElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 
@@ -67,7 +67,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithOneNonExecutingElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 
@@ -87,7 +87,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithOnlyDefaultElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine defaultWrite = new TestWriteLine("Default", "Default");
 
@@ -105,7 +105,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithAllCasesHavingSameElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>("counter", 0);
             flowchart.Variables.Add(counter);
@@ -136,7 +136,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithNullFlowElement()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<object> expression = new Variable<object>("expression", context => 1);
             flowchart.Variables.Add(expression);
@@ -157,7 +157,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchExpressionEvaluationNullExecuteDefault()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<int> expVariable = new Variable<int> { Name = "ExpVar" };
             flowchart.Variables.Add(expVariable);
@@ -177,7 +177,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchDefaultExecutionWithMultipleCases()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<object> expressionVariable = new Variable<object>("expression", context => "Four");
             flowchart.Variables.Add(expressionVariable);
@@ -204,7 +204,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void SwitchExpressionOnExistingVariable()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             const string defaultValue = "Two";
             Variable<string> stringVar = VariableHelper.CreateInitialized<string>("stringVar", defaultValue);
@@ -230,7 +230,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ThrowWhileEvaluatingExpression()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             TestWriteLine writeHello = new TestWriteLine("Hello", "Hello");
 
@@ -260,7 +260,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void CasesWithAllKeysCustomType()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<object> expressionVariable = new Variable<object>("expression", context => new SwitchExpressionClass(1));
             flowchart.Variables.Add(expressionVariable);
@@ -287,7 +287,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void AddNullKeyInFlowSwitch()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<string> stringVar = VariableHelper.CreateInitialized<string>("stringVar", (string)null);
             flowchart.Variables.Add(stringVar);
@@ -299,7 +299,7 @@ namespace TestCases.Activities.Bpm
 
             List<int> hints = new List<int> { 3 };
 
-            TestFlowSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => stringVar.Get(e), new TestWriteLine("Default", "Default Activity")) as TestFlowSwitch<object>;
+            TestBpmSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => stringVar.Get(e), new TestWriteLine("Default", "Default Activity")) as TestBpmSwitch<object>;
             flowSwitch.AddNullCase(new TestWriteLine("Four", "Four"));
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
@@ -311,7 +311,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchWithBothKeyAndValueNull()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<string> stringVar = VariableHelper.CreateInitialized<string>("stringVar", (string)null);
             flowchart.Variables.Add(stringVar);
@@ -323,7 +323,7 @@ namespace TestCases.Activities.Bpm
 
             List<int> hints = new List<int> { 3 };
 
-            TestFlowSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => stringVar.Get(e)) as TestFlowSwitch<object>;
+            TestBpmSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => stringVar.Get(e)) as TestBpmSwitch<object>;
             flowSwitch.AddNullCase(null);
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
@@ -332,7 +332,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FlowSwitchHavingCaseWithNullKeyEvaluateNull()
         {
-            TestFlowchart flowchart = new TestFlowchart();
+            TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
             Variable<string> stringVar = VariableHelper.CreateInitialized<string>("stringVar", (string)null);
             flowchart.Variables.Add(stringVar);
@@ -344,7 +344,7 @@ namespace TestCases.Activities.Bpm
 
             List<int> hints = new List<int>() { 3 };
 
-            TestFlowSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => stringVar.Get(e), new TestWriteLine("Default", "Default Activity")) as TestFlowSwitch<object>;
+            TestBpmSwitch<object> flowSwitch = flowchart.AddSwitchLink<object>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => stringVar.Get(e), new TestWriteLine("Default", "Default Activity")) as TestBpmSwitch<object>;
             flowSwitch.AddNullCase(new TestWriteLine("Four", "Four"));
 
             TestRuntime.RunAndValidateWorkflow(flowchart);

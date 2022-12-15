@@ -8,7 +8,7 @@ using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities.Bpm
 {
-    public abstract class TestFlowElement
+    public abstract class TestBpmFlowElement
     {
         [DefaultValue(false)]
         public virtual bool IsFaulting
@@ -23,15 +23,15 @@ namespace Test.Common.TestObjects.Activities.Bpm
             get;
             set;
         }
-        public static implicit operator TestFlowElement(TestActivity activity)
+        public static implicit operator TestBpmFlowElement(TestActivity activity)
         {
-            return new TestFlowStep { ActionActivity = activity };
+            return new TestBpmStep { ActionActivity = activity };
         }
 
         internal abstract Outcome GetTrace(TraceGroup traceGroup);
-        public abstract FlowNode GetProductElement();
+        public abstract BpmNode GetProductElement();
 
         //This is needed to return the next element based on the hints (for conditional elements)
-        internal abstract TestFlowElement GetNextElement();
+        internal abstract TestBpmFlowElement GetNextElement();
     }
 }

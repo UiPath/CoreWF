@@ -3,7 +3,7 @@
 
 using System;
 using System.Activities;
-using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Bpm;
 using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Xunit;
@@ -18,7 +18,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ThreeActivitiesInAndJoin()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             TestWriteLine writeLine1 = new TestWriteLine("hello1", "Hello1");
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
@@ -44,7 +44,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ThreeActivitiesInOrJoin()
         {
-            TestFlowchart flowchart = new TestFlowchart("Flow1");
+            TestBpmFlowchart flowchart = new TestBpmFlowchart("Flow1");
 
             Variable<int> counter = VariableHelper.CreateInitialized<int>(0);
             counter.Name = "counter";

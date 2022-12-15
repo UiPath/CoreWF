@@ -26,13 +26,13 @@ namespace Test.Common.TestObjects.Activities.Bpm
         Literal,
         VariableValue
     }
-    public class TestFlowConditional : TestFlowElement
+    public class TestBpmFlowConditional : TestBpmFlowElement
     {
         public bool ResetHints = false;
-        private FlowDecision _productFlowConditional;
+        private BpmDecision _productFlowConditional;
 
-        private TestFlowElement _trueAction;
-        private TestFlowElement _falseAction;
+        private TestBpmFlowElement _trueAction;
+        private TestBpmFlowElement _falseAction;
 
         private List<HintTrueFalse> _trueOrFalse;
         private int _iterationNumber = 0;
@@ -41,22 +41,22 @@ namespace Test.Common.TestObjects.Activities.Bpm
 
         private TestActivity _expressionActivity;
 
-        public TestFlowConditional(string displayName, params HintTrueFalse[] thenOrElseHint)
+        public TestBpmFlowConditional(string displayName, params HintTrueFalse[] thenOrElseHint)
             : this(thenOrElseHint)
         {
             this.DisplayName = displayName;
         }
 
-        public TestFlowConditional(params HintTrueFalse[] thenOrElseHint)
+        public TestBpmFlowConditional(params HintTrueFalse[] thenOrElseHint)
         {
-            _productFlowConditional = new FlowDecision();
+            _productFlowConditional = new BpmDecision();
             if (thenOrElseHint != null)
             {
                 _trueOrFalse = new List<HintTrueFalse>(thenOrElseHint);
             }
         }
 
-        public FlowDecision ProductFlowConditional
+        public BpmDecision ProductFlowConditional
         {
             get
             {
@@ -120,7 +120,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        internal TestFlowElement TrueAction
+        internal TestBpmFlowElement TrueAction
         {
             get
             {
@@ -140,7 +140,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             }
         }
 
-        internal TestFlowElement FalseAction
+        internal TestBpmFlowElement FalseAction
         {
             get
             {
@@ -252,7 +252,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return outcome;
         }
 
-        internal override TestFlowElement GetNextElement()
+        internal override TestBpmFlowElement GetNextElement()
         {
             if (this.CurrentTrueOrFalse == HintTrueFalse.True)
             {
@@ -282,7 +282,7 @@ namespace Test.Common.TestObjects.Activities.Bpm
             return Outcome.Completed;
         }
 
-        public override FlowNode GetProductElement()
+        public override BpmNode GetProductElement()
         {
             return _productFlowConditional;
         }
