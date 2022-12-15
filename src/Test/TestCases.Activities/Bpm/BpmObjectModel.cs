@@ -50,11 +50,11 @@ namespace TestCases.Activities.Bpm
                 Message = new InArgument<string>("Hello3")
             };
 
-            FlowStep flowStep1 = new FlowStep { Action = writeLine1 };
-            FlowStep flowStep2 = new FlowStep { Action = writeLine2, Next = flowStep1 };
-            FlowStep flowStep3 = new FlowStep { Action = writeLine3, Next = flowStep2 };
+            BpmStep flowStep1 = new BpmStep { Action = writeLine1 };
+            BpmStep flowStep2 = new BpmStep { Action = writeLine2, Next = flowStep1 };
+            BpmStep flowStep3 = new BpmStep { Action = writeLine3, Next = flowStep2 };
 
-            System.Activities.Statements.Flowchart flowchart = new System.Activities.Statements.Flowchart
+            System.Activities.Statements.BpmFlowchart flowchart = new System.Activities.Statements.BpmFlowchart
             {
                 Nodes =
                 {
@@ -168,7 +168,7 @@ namespace TestCases.Activities.Bpm
                 Condition = true
             };
 
-            flowchart.AddLink(new TestWriteLine("Start", "Flowchart Started"), assign);
+            flowchart.AddLink(new TestWriteLine("Start", "BpmFlowchart Started"), assign);
             flowchart.AddConditionalLink(assign, conditional1, conditional3, conditional2);
             flowchart.AddConditionalLink(null, conditional2, assign, (TestActivity)null);
             flowchart.AddConditionalLink(null, conditional3, new TestWriteLine("End", "The End"), (TestActivity)null);
@@ -215,7 +215,7 @@ namespace TestCases.Activities.Bpm
         }
 
         /// <summary>
-        /// Flowchart without an explicit or implicit start event.
+        /// BpmFlowchart without an explicit or implicit start event.
         /// </summary>        
         [Fact]
         public void FlowchartWithoutExplicitOrImplicitStartEvent()
@@ -331,10 +331,10 @@ namespace TestCases.Activities.Bpm
         {
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new System.Activities.Statements.FlowStep { Action = new Delay() });
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(new System.Activities.Statements.FlowStep { Action = new Delay() });
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).Nodes.Add(new System.Activities.Statements.BpmStep { Action = new Delay() });
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).Nodes.Add(new System.Activities.Statements.BpmStep { Action = new Delay() });
 
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).Nodes.Clear();
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -359,11 +359,11 @@ namespace TestCases.Activities.Bpm
         public void RemoveElementFromCollectionAtDesignTime()
         {
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
-            FlowStep step = new FlowStep() { Action = new Delay() };
+            BpmStep step = new BpmStep() { Action = new Delay() };
 
             flowchart.Elements.Add(new TestBpmStep() { ActionActivity = new TestWriteLine("Start", "Start") });
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Add(step);
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Remove(step);
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).Nodes.Add(step);
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).Nodes.Remove(step);
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -507,7 +507,7 @@ namespace TestCases.Activities.Bpm
         {
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            TestWriteLine wStart = new TestWriteLine("Start", "Flowchart started");
+            TestWriteLine wStart = new TestWriteLine("Start", "BpmFlowchart started");
             TestWriteLine wDefault = new TestWriteLine("Default", "Default");
             TestWriteLine w1 = new TestWriteLine("One", "One wont execute");
             TestWriteLine w3 = new TestWriteLine("Three", "Three wont execute");
@@ -839,7 +839,7 @@ namespace TestCases.Activities.Bpm
 
             flowchart.AddStartLink(new TestWriteLine("Hello", "Hello"));
 
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).Nodes.Clear();
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -854,7 +854,7 @@ namespace TestCases.Activities.Bpm
 
             flowchart.AddLink(new TestWriteLine("One", "One"), new TestWriteLine("Two", "Two"));
 
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).StartNode = null;
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).StartNode = null;
 
             List<TestConstraintViolation> constraints = new List<TestConstraintViolation>();
             constraints.Add(new TestConstraintViolation(string.Format(ErrorStrings.FlowchartMissingStartNode, flowchart.DisplayName), flowchart.ProductActivity));
@@ -883,7 +883,7 @@ namespace TestCases.Activities.Bpm
 
             flowchart.AddLink(new TestWriteLine("One", "One"), new TestWriteLine("Two", "Two"));
 
-            ((System.Activities.Statements.Flowchart)flowchart.ProductActivity).Nodes.Clear();
+            ((System.Activities.Statements.BpmFlowchart)flowchart.ProductActivity).Nodes.Clear();
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
