@@ -1,6 +1,8 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.Runtime;
+
 namespace System.Activities.Statements;
 
 public abstract class BpmNode
@@ -62,4 +64,31 @@ public abstract class BpmNode
     }
 
     internal abstract void GetConnectedNodes(IList<BpmNode> connections);
+}
+static class BpmNodeUtils
+{
+    public static void TryExecute(this BpmNode node, NativeActivityContext context, BpmNode completed, ActivityInstance completedInstance)
+    {
+        if (node == null)
+        {
+            if (context.IsCancellationRequested)
+            {
+                Fx.Assert(completedInstance != null, "cannot request cancel if we never scheduled any children");
+                // we are done but the last child didn't complete successfully
+                if (completedInstance.State != ActivityInstanceState.Closed)
+                {
+                    context.MarkCanceled();
+                }
+            }
+            return;
+        }
+        if (context.IsCancellationRequested)
+        {
+            // we're not done and cancel has been requested
+            context.MarkCanceled();
+            return;
+        }
+        Fx.Assert(node != null, "caller should validate");
+        node.Execute(context, completed);
+    }
 }

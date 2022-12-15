@@ -37,5 +37,5 @@ public sealed class BpmStep : BpmNode
             context.ScheduleActivity(Action, _onCompleted);
         }
     }
-    private void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance) => Next.Execute(context, this);
+    private void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance) => Next.TryExecute(context, this, completedInstance);
 }

@@ -137,7 +137,7 @@ public sealed class BpmFlowchart : NativeActivity
             {
                 TD.FlowchartStart(DisplayName);
             }
-            ExecuteNodeChain(context, StartNode, null);
+            StartNode.TryExecute(context, null, null);
         }
         else
         {
@@ -146,29 +146,5 @@ public sealed class BpmFlowchart : NativeActivity
                 TD.FlowchartEmpty(DisplayName);
             }
         }
-    }
-    private void ExecuteNodeChain(NativeActivityContext context, BpmNode node, ActivityInstance completedInstance)
-    {
-        if (node == null)
-        {
-            if (context.IsCancellationRequested)
-            {
-                Fx.Assert(completedInstance != null, "cannot request cancel if we never scheduled any children");
-                // we are done but the last child didn't complete successfully
-                if (completedInstance.State != ActivityInstanceState.Closed)
-                {
-                    context.MarkCanceled();
-                }
-            }
-            return;
-        }
-        if (context.IsCancellationRequested)
-        {
-            // we're not done and cancel has been requested
-            context.MarkCanceled();
-            return;
-        }
-        Fx.Assert(node != null, "caller should validate");
-        node.Execute(context, null);
     }
 }
