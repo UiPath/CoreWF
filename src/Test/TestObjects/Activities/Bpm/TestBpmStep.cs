@@ -5,7 +5,7 @@ using System.Activities.Statements;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
 
-namespace Test.Common.TestObjects.Activities.Bpm
+namespace Test.Common.TestObjects.Activities
 {
     public class TestBpmStep : TestBpmFlowElement
     {

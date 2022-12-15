@@ -10,22 +10,8 @@ using System.Activities.Expressions;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
 
-namespace Test.Common.TestObjects.Activities.Bpm
+namespace Test.Common.TestObjects.Activities
 {
-    public enum HintTrueFalse
-    {
-        True,
-        False,
-        Exception
-    }
-
-    public enum ExpressionType
-    {
-        Activity,
-        VisualBasicValue,
-        Literal,
-        VariableValue
-    }
     public class TestBpmFlowConditional : TestBpmFlowElement
     {
         public bool ResetHints = false;

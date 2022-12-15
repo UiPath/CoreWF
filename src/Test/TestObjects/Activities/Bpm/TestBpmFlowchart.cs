@@ -9,7 +9,7 @@ using System.Activities.Statements;
 using Test.Common.TestObjects.Activities.Collections;
 using Test.Common.TestObjects.Utilities.Validation;
 
-namespace Test.Common.TestObjects.Activities.Bpm
+namespace Test.Common.TestObjects.Activities
 {
     public class TestBpmFlowchart : TestActivity
     {

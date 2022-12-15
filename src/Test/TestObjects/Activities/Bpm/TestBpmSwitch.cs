@@ -10,7 +10,7 @@ using System.Activities.Expressions;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
 
-namespace Test.Common.TestObjects.Activities.Bpm
+namespace Test.Common.TestObjects.Activities
 {
     public abstract class TestBpmSwitchBase : TestBpmFlowElement
     {
