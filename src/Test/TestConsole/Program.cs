@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Activities;
+using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TestCases.Activities;
 using TestCases.Runtime.WorkflowInstanceTest;
 
 namespace TestConsole;
@@ -13,7 +13,9 @@ class Program
     {
         try
         {
-            new StateMachineActivity().MultipleTransitions();
+            var writeLine = new WriteLine { Text = "dd" };
+            var sequence = new Sequence { Activities = { new Sequence { Activities = { writeLine } }, writeLine } };
+            WorkflowInvoker.Invoke(sequence);
         }
         catch (Exception ex)
         {
