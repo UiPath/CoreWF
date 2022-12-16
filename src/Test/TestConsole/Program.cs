@@ -14,7 +14,7 @@ class Program
         try
         {
             var writeLine = new WriteLine { Text = "dd" };
-            var sequence = new Sequence { Activities = { new Sequence { Activities = { writeLine } }, writeLine } };
+            var sequence = new Sequence { DisplayName = "Outer",  Activities = { new Sequence { DisplayName = "Inner" , Activities = { writeLine } }, writeLine } };
             WorkflowInvoker.Invoke(sequence);
         }
         catch (Exception ex)
