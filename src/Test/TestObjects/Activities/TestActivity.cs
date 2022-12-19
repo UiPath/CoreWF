@@ -153,7 +153,7 @@ namespace Test.Common.TestObjects.Activities
             expected.AddIgnoreTypes(typeof(BookmarkResumptionTrace));
         }
 
-        internal virtual Outcome GetTrace(TraceGroup traceGroup)
+        internal Outcome GetTrace(TraceGroup traceGroup)
         {
             // if None add nothing to trace
             if (ExpectedOutcome.DefaultPropogationState != OutcomeState.None)

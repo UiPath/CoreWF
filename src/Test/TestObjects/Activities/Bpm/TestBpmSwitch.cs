@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 using System.Activities;
 using System.Activities.Statements;
 using System.Activities.Expressions;
-using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
 
 namespace Test.Common.TestObjects.Activities
@@ -23,42 +22,32 @@ namespace Test.Common.TestObjects.Activities
         protected TestBpmElement defaultElement;
         protected ExpressionType expressionType;
 
-        protected Outcome GetTrace<T>(TraceGroup traceGroup)
+        internal IEnumerable<TestActivity> GetChildren<T>()
         {
-            Outcome outcome = Outcome.Completed;
-
             switch (expressionType)
             {
                 case ExpressionType.Activity:
-                    outcome = this.expressionActivity.GetTrace(traceGroup);
-
-                    if (outcome.DefaultPropogationState != OutcomeState.Completed)
-                    {
-                        return outcome;
-                    }
+                    yield return expressionActivity;
                     break;
-
                 case ExpressionType.Literal:
-                    new TestDummyTraceActivity(typeof(Literal<T>), Outcome.Completed).GetTrace(traceGroup);
+                    yield return new TestDummyTraceActivity(typeof(Literal<T>), Outcome.Completed);
                     break;
 
                 case ExpressionType.VisualBasicValue:
-                    new TestDummyTraceActivity(typeof(LambdaValue<T>), Outcome.Completed).GetTrace(traceGroup);
+                    yield return new TestDummyTraceActivity(typeof(LambdaValue<T>), Outcome.Completed);
                     break;
 
                 case ExpressionType.VariableValue:
-                    new TestDummyTraceActivity(typeof(VariableValue<T>), Outcome.Completed).GetTrace(traceGroup);
+                    yield return new TestDummyTraceActivity(typeof(VariableValue<T>), Outcome.Completed);
                     break;
 
                 default: break;
             }
-
-            TestBpmElement element = GetNextElement();
+            var element = GetNextElement();
             if (element != null)
             {
-                return element.GetTrace(traceGroup);
+                yield return element;
             }
-            return Outcome.Completed;
         }
 
         internal override TestBpmElement GetNextElement()
@@ -188,12 +177,7 @@ namespace Test.Common.TestObjects.Activities
             this.caseElements.RemoveAt(caseIndex);
             this.caseElements.Insert(caseIndex, newElement);
         }
-
-        internal override Outcome GetTrace(TraceGroup traceGroup)
-        {
-            return base.GetTrace<T>(traceGroup);
-        }
-
+        internal override IEnumerable<TestActivity> GetChildren() => GetChildren<T>();
         public void AddNullCase(TestActivity activity)
         {
             TestBpmStep step = null;
