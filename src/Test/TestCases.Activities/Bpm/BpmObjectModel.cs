@@ -318,7 +318,7 @@ namespace TestCases.Activities.Bpm
         {
             TestBpmFlowchart flowchart = new TestBpmFlowchart();
 
-            flowchart.Elements.Add(new TestWriteLine("StartAndEnd", "StartAndEnd"));
+            flowchart.Elements.Add(TestBpmElement.FromTestActivity(new TestWriteLine("StartAndEnd", "StartAndEnd")));
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }
@@ -746,7 +746,7 @@ namespace TestCases.Activities.Bpm
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             }; // null here means neither True or False will happen as the action is null
-            TestBpmElement tCond = flowchart1.AddConditionalLink(null, flowDecision, null, w2False);
+            TestBpmElement tCond = flowchart1.AddConditionalLink(default, flowDecision, default(TestBpmElement), w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
         }

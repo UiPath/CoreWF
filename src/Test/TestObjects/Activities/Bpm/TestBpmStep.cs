@@ -4,6 +4,7 @@
 using System.Activities.Statements;
 using Test.Common.TestObjects.Utilities.Validation;
 using Test.Common.TestObjects.Activities.Tracing;
+using System.Collections.Generic;
 
 namespace Test.Common.TestObjects.Activities
 {
@@ -78,23 +79,16 @@ namespace Test.Common.TestObjects.Activities
             return this.NextElement;
         }
 
-        internal override Outcome GetTrace(TraceGroup traceGroup)
+        internal override IEnumerable<TestActivity> GetChildren()
         {
             if (_actionActivity != null)
             {
-                Outcome outcome = _actionActivity.GetTrace(traceGroup);
-                if (outcome.DefaultPropogationState != OutcomeState.Completed)
-                {
-                    return outcome;
-                }
+                yield return _actionActivity;
             }
-
             if (_nextElement != null && !IsFaulting && !IsCancelling)
             {
-                return _nextElement.GetTrace(traceGroup);
+                yield return _nextElement;
             }
-
-            return Outcome.Completed;
         }
     }
 }

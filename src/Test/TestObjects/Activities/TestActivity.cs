@@ -36,7 +36,7 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        public Activity ProductActivity
+        public virtual Activity ProductActivity
         {
             get { return _productActivity; }
             protected internal set
@@ -153,7 +153,7 @@ namespace Test.Common.TestObjects.Activities
             expected.AddIgnoreTypes(typeof(BookmarkResumptionTrace));
         }
 
-        internal Outcome GetTrace(TraceGroup traceGroup)
+        internal virtual Outcome GetTrace(TraceGroup traceGroup)
         {
             // if None add nothing to trace
             if (ExpectedOutcome.DefaultPropogationState != OutcomeState.None)

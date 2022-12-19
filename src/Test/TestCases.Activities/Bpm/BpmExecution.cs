@@ -507,7 +507,7 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void ExecuteFlowchartWithSingleActivityNotMarkedStart()
         {
-            TestBpmFlowchart flowchart = new TestBpmFlowchart { Elements = { new TestWriteLine("Only One", "OnlyOne") } };
+            TestBpmFlowchart flowchart = new TestBpmFlowchart { Elements = { TestBpmElement.FromTestActivity(new TestWriteLine("Only One", "OnlyOne")) } };
 
             TestRuntime.RunAndValidateWorkflow(flowchart);
         }

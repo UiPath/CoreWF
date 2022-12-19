@@ -138,7 +138,7 @@ namespace TestCases.Activities.Bpm
 
             flowchart.AddLink(new TestWriteLine("Start", "Start"), decByOne);
 
-            flowchart.AddConditionalLink(decByOne, conditional, decByOne, null);
+            flowchart.AddConditionalLink(decByOne, conditional, decByOne, default(TestBpmElement));
 
             TestRuntime.RunAndValidateAbortedException(flowchart, typeof(DivideByZeroException), null);
         }

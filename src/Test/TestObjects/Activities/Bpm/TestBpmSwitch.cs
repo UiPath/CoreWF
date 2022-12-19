@@ -100,14 +100,6 @@ namespace Test.Common.TestObjects.Activities
             this.caseElements = new List<TestBpmElement>();
         }
 
-        public string DisplayName
-        {
-            set
-            {
-                (this.productFlowSwitch as BpmSwitch<T>).DisplayName = value;
-            }
-        }
-
         public TestBpmElement Default
         {
             get { return this.defaultElement; }

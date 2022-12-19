@@ -5,7 +5,6 @@ namespace System.Activities.Statements;
 [ContentProperty("Cases")]
 public sealed class BpmSwitch<T> : BpmNode
 {
-    private const string DefaultDisplayName = "Switch";
     internal IDictionary<T, BpmNode> _cases  = new NullableKeyDictionary<T, BpmNode>();
     private CompletionCallback<T> _onCompleted;
     [DefaultValue(null)]
@@ -14,8 +13,6 @@ public sealed class BpmSwitch<T> : BpmNode
     public BpmNode Default { get; set; }
     [Fx.Tag.KnownXamlExternal]
     public IDictionary<T, BpmNode> Cases => _cases;
-    [DefaultValue(DefaultDisplayName)]
-    public string DisplayName { get; set; } = DefaultDisplayName;
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
         if (Expression == null)
@@ -34,8 +31,7 @@ public sealed class BpmSwitch<T> : BpmNode
             connections.Add(Default);
         }
     }
-    internal override Activity ChildActivity => Expression;
-    internal override void Execute(NativeActivityContext context, BpmNode completed)
+    protected override void Execute(NativeActivityContext context)
     {
         _onCompleted ??= new(OnCompleted);
         context.ScheduleActivity(Expression, _onCompleted);

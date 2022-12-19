@@ -4,7 +4,6 @@ using System.Windows.Markup;
 namespace System.Activities.Statements;
 public sealed class BpmDecision : BpmNode
 {
-    const string DefaultDisplayName = "Decision";
     private CompletionCallback<bool> _onCompleted;
     public BpmDecision() { }
     public BpmDecision(Expression<Func<ActivityContext, bool>> condition) => Condition = new LambdaValue<bool>(condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition)));
@@ -17,8 +16,6 @@ public sealed class BpmDecision : BpmNode
     [DefaultValue(null)]
     [DependsOn("True")]
     public BpmNode False { get; set; }
-    [DefaultValue(DefaultDisplayName)]
-    public string DisplayName { get; set; } = DefaultDisplayName;
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
         if (Condition == null)
@@ -37,8 +34,7 @@ public sealed class BpmDecision : BpmNode
             connections.Add(False);
         }
     }
-    internal override Activity ChildActivity => Condition;
-    internal override void Execute(NativeActivityContext context, BpmNode completed)
+    protected override void Execute(NativeActivityContext context)
     {
         _onCompleted ??= new(OnCompleted);
         context.ScheduleActivity(Condition, _onCompleted);

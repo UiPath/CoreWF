@@ -50,14 +50,6 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        public string DisplayName
-        {
-            set
-            {
-                _productFlowConditional.DisplayName = value;
-            }
-        }
-
         public bool Condition
         {
             set

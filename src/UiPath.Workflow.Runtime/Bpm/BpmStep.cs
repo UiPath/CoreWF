@@ -17,8 +17,7 @@ public sealed class BpmStep : BpmNode
             connections.Add(Next);
         }
     }
-    internal override Activity ChildActivity => Action;
-    internal override void Execute(NativeActivityContext context, BpmNode completed)
+    protected override void Execute(NativeActivityContext context)
     {
         if (Next == null)
         {
