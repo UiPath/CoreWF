@@ -30,16 +30,11 @@ public abstract class BpmNode : NativeActivity
             return false;
         }
         // if owner.ValidateUnconnectedNodes - BpmFlowchart will be responsible for calling OnOpen for all the Nodes (connected and unconnected)
-        if (!owner.ValidateUnconnectedNodes)
-        {
-            OnOpen(owner, metadata);
-        }
         _owner = owner;
         _cacheId = owner.CacheId;
         Index = -1;
         return true;
     }
-    internal abstract void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata);
     internal abstract void GetConnectedNodes(IList<BpmNode> connections);
 }
 static class BpmNodeUtils

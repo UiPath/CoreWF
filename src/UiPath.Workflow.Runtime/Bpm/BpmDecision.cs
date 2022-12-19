@@ -18,13 +18,13 @@ public sealed class BpmDecision : BpmNode
     public BpmNode False { get; set; }
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
-        metadata.AddChild(Condition);
-    }
-    internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
-    {
         if (Condition == null)
         {
-            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName));
+            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(Parent.DisplayName));
+        }
+        else
+        {
+            metadata.AddChild(Condition);
         }
     }
     internal override void GetConnectedNodes(IList<BpmNode> connections)

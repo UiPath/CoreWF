@@ -13,7 +13,6 @@ public sealed class BpmStep : BpmNode
     {
         metadata.AddChild(Action);
     }
-    internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata) { }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
         if (Next != null)

@@ -15,13 +15,13 @@ public sealed class BpmSwitch<T> : BpmNode
     public IDictionary<T, BpmNode> Cases => _cases;
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
-        AddChild(Expression);
-    }
-    internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
-    {
         if (Expression == null)
         {
-            metadata.AddValidationError(SR.FlowSwitchRequiresExpression(owner.DisplayName));
+            metadata.AddValidationError(SR.FlowSwitchRequiresExpression(Parent.DisplayName));
+        }
+        else
+        {
+            AddChild(Expression);
         }
     }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
