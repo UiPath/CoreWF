@@ -27,6 +27,7 @@ public abstract class RoslynExpressionValidator
 
     private const string Comma = ", ";
     private readonly Lazy<ConcurrentDictionary<Assembly, MetadataReference>> _metadataReferences;
+    private readonly object _lockRequiredAssemblies = new();
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -52,12 +53,37 @@ public abstract class RoslynExpressionValidator
     ///     Assemblies required on the <see cref="Compilation"/> object. Use <see cref="AddRequiredAssembly(Assembly)"/>
     ///     to add more assemblies.
     /// </summary>
-    protected IReadOnlySet<Assembly> RequiredAssemblies { get; init; }
+    protected IReadOnlySet<Assembly> RequiredAssemblies { get; private set; }
 
     /// <summary>
     ///     The kind of identifier to look for in the syntax tree as variables that need to be resolved for the expression.
     /// </summary>
     protected abstract int IdentifierKind { get; }
+
+    /// <summary>
+    ///     Adds an assembly to the <see cref="RequiredAssemblies"/> set.
+    /// </summary>
+    /// <param name="assembly">assembly</param>
+    /// <remarks>
+    ///     Takes a lock and replaces <see cref="RequiredAssemblies"/> with a new set. Lock is taken in case
+    ///     multiple threads are adding assemblies simultaneously.
+    /// </remarks>
+    public void AddRequiredAssembly(Assembly assembly)
+    {
+        if (!RequiredAssemblies.Contains(assembly))
+        {
+            lock (_lockRequiredAssemblies)
+            {
+                if (!RequiredAssemblies.Contains(assembly))
+                {
+                    RequiredAssemblies = new HashSet<Assembly>(RequiredAssemblies)
+                    {
+                        assembly
+                    };
+                }
+            }
+        }
+    }
 
     /// <summary>
     ///     Gets the MetadataReference objects for all of the referenced assemblies that expression requires.
