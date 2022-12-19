@@ -432,10 +432,12 @@ namespace TestCases.Activities.Bpm
             TestWriteLine writeLine2 = new TestWriteLine("hello2", "Hello2");
 
             parentFlowchart.AddLink(childFlowchart, writeLine1);
-            parentFlowchart.AddLink(writeLine1, writeLine2);
-            childFlowchart.AddStartLink(writeLine2);
+            var step = parentFlowchart.AddLink(writeLine1, writeLine2);
+            var displayName = step.GetNextElement().DisplayName;
+            var errorDisplayName = childFlowchart.AddStartLink(writeLine2).DisplayName;
 
-            TestRuntime.ValidateInstantiationException(parentFlowchart, string.Format(ErrorStrings.ActivityCannotBeReferencedWithoutTarget, writeLine2.DisplayName, childFlowchart.DisplayName, parentFlowchart.DisplayName));
+            TestRuntime.ValidateInstantiationException(parentFlowchart, string.Format(ErrorStrings.ActivityCannotBeReferencedWithoutTarget, writeLine2.DisplayName,
+                errorDisplayName, displayName));
         }
 
         /// <summary>
@@ -746,7 +748,7 @@ namespace TestCases.Activities.Bpm
             {
                 ConditionExpression = (context => margin.Get(context) > 0)
             }; // null here means neither True or False will happen as the action is null
-            TestBpmElement tCond = flowchart1.AddConditionalLink(default, flowDecision, default(TestBpmElement), w2False);
+            TestBpmElement tCond = flowchart1.AddConditionalLink(default, flowDecision, default(TestActivity), w2False);
 
             TestRuntime.RunAndValidateWorkflow(flowchart1);
         }

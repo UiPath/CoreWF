@@ -219,7 +219,7 @@ namespace Test.Common.TestObjects.Activities
                 }
             }
         }
-        internal override TestBpmElement GetNextElement()
+        public override TestBpmElement GetNextElement()
         {
             if (this.CurrentTrueOrFalse == HintTrueFalse.True)
             {

@@ -50,7 +50,7 @@ namespace Test.Common.TestObjects.Activities
             }
         }
 
-        internal override TestBpmElement GetNextElement()
+        public override TestBpmElement GetNextElement()
         {
             if (_hints.Count == 0 || _hints.Count == _iterationNumber)
             {

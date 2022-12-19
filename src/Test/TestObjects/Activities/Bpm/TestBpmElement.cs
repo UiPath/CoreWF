@@ -31,6 +31,6 @@ namespace Test.Common.TestObjects.Activities
         public abstract BpmNode GetProductElement();
 
         //This is needed to return the next element based on the hints (for conditional elements)
-        internal abstract TestBpmElement GetNextElement();
+        public abstract TestBpmElement GetNextElement();
     }
 }

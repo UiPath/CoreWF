@@ -72,7 +72,7 @@ namespace Test.Common.TestObjects.Activities
             return _productFlowStep;
         }
 
-        internal override TestBpmElement GetNextElement()
+        public override TestBpmElement GetNextElement()
         {
             return this.NextElement;
         }
