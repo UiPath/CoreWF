@@ -9,6 +9,10 @@ public sealed class BpmStep : BpmNode
     [DefaultValue(null)]
     [DependsOn("Action")]
     public BpmNode Next { get; set; }
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        metadata.AddChild(Action);
+    }
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata) { }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {

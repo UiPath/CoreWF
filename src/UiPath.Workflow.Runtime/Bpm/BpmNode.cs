@@ -11,6 +11,10 @@ public abstract class BpmNode : NativeActivity
     internal int Index { get; set; }
     internal bool IsOpen => _owner != null;
     internal BpmFlowchart Owner => _owner;
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+    }
+    internal override bool CanBeScheduledBy(Activity parent) => parent is BpmNode || parent is BpmFlowchart;
     // Returns true if this is the first time we've visited this node during this pass
     internal bool Open(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
