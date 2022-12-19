@@ -251,9 +251,9 @@ namespace TestCases.Activities.Bpm
         public void AddFlowchartToItself()
         {
             TestBpmFlowchart flow = new TestBpmFlowchart();
-            flow.AddLink(new TestWriteLine("w1", "w1"), flow);
-
-            TestRuntime.ValidateInstantiationException(flow, string.Format(ErrorStrings.ActivityCannotReferenceItself, flow.DisplayName));
+            var step = flow.AddLink(new TestWriteLine("w1", "w1"), flow);
+            var message = $"Activity '{flow.DisplayName}' is a root activity, and cannot be referenced by activity '{step.GetNextElement().DisplayName}'";
+            TestRuntime.ValidateInstantiationException(flow, message);
         }
 
         /// <summary>
