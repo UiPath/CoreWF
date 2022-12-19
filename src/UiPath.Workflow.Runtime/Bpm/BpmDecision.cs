@@ -16,6 +16,10 @@ public sealed class BpmDecision : BpmNode
     [DefaultValue(null)]
     [DependsOn("True")]
     public BpmNode False { get; set; }
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        metadata.AddChild(Condition);
+    }
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
         if (Condition == null)

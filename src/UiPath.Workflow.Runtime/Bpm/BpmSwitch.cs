@@ -13,6 +13,10 @@ public sealed class BpmSwitch<T> : BpmNode
     public BpmNode Default { get; set; }
     [Fx.Tag.KnownXamlExternal]
     public IDictionary<T, BpmNode> Cases => _cases;
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        AddChild(Expression);
+    }
     internal override void OnOpen(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
         if (Expression == null)
