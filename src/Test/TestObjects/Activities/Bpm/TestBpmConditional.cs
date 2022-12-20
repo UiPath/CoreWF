@@ -8,6 +8,7 @@ using System.Activities;
 using System.Activities.Statements;
 using System.Activities.Expressions;
 using Test.Common.TestObjects.Activities.Tracing;
+using Test.Common.TestObjects.Utilities.Validation;
 
 namespace Test.Common.TestObjects.Activities
 {
@@ -184,40 +185,64 @@ namespace Test.Common.TestObjects.Activities
         {
             return CurrentTrueOrFalse;
         }
-        internal override IEnumerable<TestActivity> GetChildren()
+        protected override void GetActivitySpecificTrace(TraceGroup traceGroup)
         {
+            var outcome = Outcome.Completed;
+
             HintTrueFalse currentHint = GetCurrentOutcome();
+
             switch (_conditionType)
             {
                 case ExpressionType.Activity:
-                    yield return _expressionActivity;
+                    CurrentOutcome = _expressionActivity.GetTrace(traceGroup);
+
+                    if (CurrentOutcome.DefaultPropogationState != OutcomeState.Completed)
+                    {
+                        return;
+                    }
                     break;
                 case ExpressionType.Literal:
-                    yield return new TestDummyTraceActivity(typeof(Literal<bool>), Outcome.Completed);
+                    new TestDummyTraceActivity(typeof(Literal<bool>), Outcome.Completed).GetTrace(traceGroup);
                     break;
                 case ExpressionType.VisualBasicValue:
                     //Just use LambdaValue as there is no round trip
-                    yield return new TestDummyTraceActivity(typeof(LambdaValue<bool>), (currentHint == HintTrueFalse.Exception) ? Outcome.Faulted : Outcome.Completed);
+                    new TestDummyTraceActivity(typeof(LambdaValue<bool>), (currentHint == HintTrueFalse.Exception) ? Outcome.Faulted : Outcome.Completed).GetTrace(traceGroup);
                     break;
                 case ExpressionType.VariableValue:
-                    yield return new TestDummyTraceActivity(typeof(VariableValue<bool>), (currentHint == HintTrueFalse.Exception) ? Outcome.Faulted : Outcome.Completed);
+                    new TestDummyTraceActivity(typeof(VariableValue<bool>), (currentHint == HintTrueFalse.Exception) ? Outcome.Faulted : Outcome.Completed).GetTrace(traceGroup);
                     break;
                 default: break;
             }
+
             if (currentHint == HintTrueFalse.True)
             {
-                if (_trueAction != null)
-                {
-                    yield return _trueAction;
-                }
+                outcome = GetTrueActionTrace(traceGroup);
             }
             else if (currentHint == HintTrueFalse.False)
             {
-                if (_falseAction != null)
-                {
-                    yield return _falseAction;
-                }
+                outcome = GetFalseActionTrace(traceGroup);
             }
+            else
+            {
+                outcome = Outcome.None;
+            }
+            CurrentOutcome = outcome;
+        }
+        private Outcome GetTrueActionTrace(TraceGroup traceGroup)
+        {
+            if (_trueAction != null)
+            {
+                return _trueAction.GetTrace(traceGroup);
+            }
+            return Outcome.Completed;
+        }
+        private Outcome GetFalseActionTrace(TraceGroup traceGroup)
+        {
+            if (_falseAction != null)
+            {
+                return _falseAction.GetTrace(traceGroup);
+            }
+            return Outcome.Completed;
         }
         public override TestBpmElement GetNextElement()
         {

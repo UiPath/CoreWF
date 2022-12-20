@@ -125,20 +125,19 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void FaultWhileExecutingInLoop()
         {
-            TestBpmFlowchart flowchart = new TestBpmFlowchart();
-
+            TestBpmFlowchart flowchart = new();
             Variable<int> counter = VariableHelper.CreateInitialized<int>(-3);
             counter.Name = "counter";
             flowchart.Variables.Add(counter);
 
-            List<HintTrueFalse> hints = new List<HintTrueFalse> { HintTrueFalse.True, HintTrueFalse.True, HintTrueFalse.Exception };
-            TestBpmFlowConditional conditional = new TestBpmFlowConditional(hints.ToArray()) { ConditionExpression = env => (counter.Get(env) - 1) / counter.Get(env) > 0 };
+            List<HintTrueFalse> hints = new() { HintTrueFalse.True, HintTrueFalse.True, HintTrueFalse.Exception };
+            TestBpmFlowConditional conditional = new(hints.ToArray()) { ConditionExpression = env => (counter.Get(env) - 1) / counter.Get(env) > 0 };
 
-            TestIncrement decByOne = new TestIncrement { CounterVariable = counter, IncrementCount = 1 };
+            TestIncrement decByOne = new() { CounterVariable = counter, IncrementCount = 1 };
 
             flowchart.AddLink(new TestWriteLine("Start", "Start"), decByOne);
 
-            flowchart.AddConditionalLink(decByOne, conditional, decByOne, default(TestBpmElement));
+            flowchart.AddConditionalLink(decByOne, conditional, decByOne, default(TestActivity));
 
             TestRuntime.RunAndValidateAbortedException(flowchart, typeof(DivideByZeroException), null);
         }
