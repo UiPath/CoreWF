@@ -212,7 +212,7 @@ namespace Test.Common.TestObjects.Runtime
             {
                 //Log.TraceInternal("Errors found:");
                 //Log.TraceInternal(sb.ToString());
-                throw new Exception("FAIL, error while validating in TestWorkflowRuntime.ValidateConstraints");
+                throw new Exception(sb.ToString());
             }
             //Log.TraceInternal("ValidateConstraints: Validation complete.");
 

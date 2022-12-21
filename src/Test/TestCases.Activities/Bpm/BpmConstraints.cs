@@ -10,6 +10,7 @@ using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
 using Xunit;
+using System.Activities;
 
 namespace TestCases.Activities.Bpm
 {
@@ -70,11 +71,12 @@ namespace TestCases.Activities.Bpm
             prod.Nodes.Add(A);
             prod.Nodes.Add(A);
 
-            List<string> errors = new List<string>();
-            errors.Add(string.Format(ErrorStrings.FlowSwitchRequiresExpression, prod.DisplayName));
-            errors.Add(string.Format(ErrorStrings.FlowDecisionRequiresCondition, prod.DisplayName));
-
-            Validate(flowchart, errors);
+            List<TestConstraintViolation> constraints = new()
+            {
+                new(string.Format(ErrorStrings.FlowSwitchRequiresExpression, prod.DisplayName), B),
+                new(string.Format(ErrorStrings.FlowDecisionRequiresCondition, prod.DisplayName), D),
+            };
+            TestRuntime.ValidateConstraints(flowchart, constraints, null);
         }
 
         [Fact]
@@ -96,10 +98,12 @@ namespace TestCases.Activities.Bpm
             prod.Nodes.Add(step1);
             prod.Nodes.Add(step2);
 
-            List<string> errors = new List<string>();
-            errors.Add(string.Format(ErrorStrings.FlowSwitchRequiresExpression, prod.DisplayName));
+            List<string> errors = new()
+            {
+                string.Format(ErrorStrings.FlowSwitchRequiresExpression, prod.DisplayName)
+            };
 
-            Validate(flowchart, errors);
+            Validate(flowchart, errors, flowSwitch);
         }
 
         [Fact]
@@ -117,10 +121,10 @@ namespace TestCases.Activities.Bpm
             List<string> errors = new List<string>();
             errors.Add(string.Format(ErrorStrings.FlowDecisionRequiresCondition, prod.DisplayName));
 
-            Validate(flowchart, errors);
+            Validate(flowchart, errors, decision);
         }
 
-        private void Validate(TestActivity activity, List<string> errors)
+        private void Validate(TestActivity activity, List<string> errors, Activity source = null)
         {
             List<TestConstraintViolation> constraints = new List<TestConstraintViolation>();
 
@@ -128,7 +132,7 @@ namespace TestCases.Activities.Bpm
             {
                 foreach (string error in errors)
                 {
-                    constraints.Add(new TestConstraintViolation(error, activity.ProductActivity));
+                    constraints.Add(new TestConstraintViolation(error, source ?? activity.ProductActivity));
                 }
             }
 
