@@ -220,18 +220,20 @@ namespace TestCases.Activities.Bpm
         [Fact]
         public void LinkFromNestedFlowchartToParent()
         {
-            TestBpmFlowchart parent = new TestBpmFlowchart("Parent");
-            TestBpmFlowchart child = new TestBpmFlowchart("Child");
+            TestBpmFlowchart parent = new("Parent");
+            TestBpmFlowchart child = new("Child");
 
-            TestWriteLine w1 = new TestWriteLine("w1", "w1");
-            TestWriteLine w2 = new TestWriteLine("w2", "w2");
-            TestWriteLine w3 = new TestWriteLine("w3", "w3");
+            TestWriteLine w1 = new("w1", "w1");
+            TestWriteLine w2 = new("w2", "w2");
+            TestWriteLine w3 = new("w3", "w3");
 
             parent.AddLink(w1, w2);
-            parent.AddLink(w2, child);
-            child.AddLink(w3, w2);
-
-            TestRuntime.ValidateInstantiationException(parent, string.Format(ErrorStrings.ActivityCannotBeReferencedWithoutTarget, w2.DisplayName, child.DisplayName, parent.DisplayName));
+            var parentStep = parent.AddLink(w2, child);
+            var parentStepDisplayName = parentStep.DisplayName;
+            var childStep = (TestBpmStep)child.AddLink(w3, w2);
+            var childStepDisplayName = childStep.GetNextElement().DisplayName;
+            TestRuntime.ValidateInstantiationException(parent, string.Format(ErrorStrings.ActivityCannotBeReferencedWithoutTarget, w2.DisplayName,
+                parentStepDisplayName, childStepDisplayName));
         }
 
         /// <summary>
