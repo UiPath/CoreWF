@@ -2,5 +2,6 @@
   <ItemGroup>
     <ProjectReference Include="../JsonFileInstanceStore/JsonFileInstanceStore.csproj" />
     <ProjectReference Include="../TestObjects/TestObjects.csproj" />
+    <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
   </ItemGroup>
 </Project>
