@@ -4,12 +4,7 @@ public abstract class BpmNode : NativeActivity
 {
     private BpmFlowchart _owner;
     private int _cacheId;
-    internal BpmNode()
-    {
-        Index = -1;
-    }
-    internal int Index { get; set; }
-    internal bool IsOpen => _owner != null;
+    internal int Index { get; set; } = -1;
     internal BpmFlowchart Owner => _owner;
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
