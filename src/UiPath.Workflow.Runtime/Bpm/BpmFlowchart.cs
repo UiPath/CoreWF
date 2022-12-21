@@ -59,8 +59,10 @@ public sealed class BpmFlowchart : NativeActivity
         {
             metadata.AddValidationError(SR.FlowchartContainsUnconnectedNodes(DisplayName));
         }
-        IEnumerable<BpmNode> childrenNodes = ValidateUnconnectedNodes ? Nodes.Distinct() : _reachableNodes;
-        metadata.SetChildrenCollection(new Collection<Activity>(childrenNodes.ToArray()));
+        var childrenNodes = ValidateUnconnectedNodes ?Nodes.Distinct() : _reachableNodes;
+        var children = new Collection<Activity>();
+        children.AddRange(childrenNodes);
+        metadata.SetChildrenCollection(children);
     }
     private void GatherReachableNodes(NativeActivityMetadata metadata)
     {
