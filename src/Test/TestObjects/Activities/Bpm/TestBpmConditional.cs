@@ -15,7 +15,7 @@ namespace Test.Common.TestObjects.Activities
     public class TestBpmFlowConditional : TestBpmElement
     {
         public bool ResetHints = false;
-        private BpmDecision _productFlowConditional;
+        private new BpmDecision ProductActivity => (BpmDecision)base.ProductActivity;
 
         private TestBpmElement _trueAction;
         private TestBpmElement _falseAction;
@@ -35,7 +35,7 @@ namespace Test.Common.TestObjects.Activities
 
         public TestBpmFlowConditional(params HintTrueFalse[] thenOrElseHint)
         {
-            _productFlowConditional = new BpmDecision();
+            base.ProductActivity = new BpmDecision();
             if (thenOrElseHint != null)
             {
                 _trueOrFalse = new List<HintTrueFalse>(thenOrElseHint);
@@ -46,7 +46,7 @@ namespace Test.Common.TestObjects.Activities
         {
             get
             {
-                return _productFlowConditional;
+                return ProductActivity;
             }
         }
 
@@ -54,7 +54,7 @@ namespace Test.Common.TestObjects.Activities
         {
             set
             {
-                _productFlowConditional.Condition = new Literal<bool>(value);
+                ProductActivity.Condition = new Literal<bool>(value);
                 _conditionType = ExpressionType.Literal;
             }
         }
@@ -63,7 +63,7 @@ namespace Test.Common.TestObjects.Activities
         {
             set
             {
-                _productFlowConditional.Condition = new LambdaValue<bool>(value);
+                ProductActivity.Condition = new LambdaValue<bool>(value);
                 _conditionType = ExpressionType.VisualBasicValue;
             }
         }
@@ -93,7 +93,7 @@ namespace Test.Common.TestObjects.Activities
         {
             set
             {
-                _productFlowConditional.Condition = new VariableValue<bool>(value);
+                ProductActivity.Condition = new VariableValue<bool>(value);
                 _conditionType = ExpressionType.VariableValue;
             }
         }
@@ -109,11 +109,11 @@ namespace Test.Common.TestObjects.Activities
                 _trueAction = value;
                 if (value != null)
                 {
-                    _productFlowConditional.True = value.GetProductElement();
+                    ProductActivity.True = value.ProductActivity;
                 }
                 else
                 {
-                    _productFlowConditional.True = null;
+                    ProductActivity.True = null;
                 }
             }
         }
@@ -129,11 +129,11 @@ namespace Test.Common.TestObjects.Activities
                 _falseAction = value;
                 if (value != null)
                 {
-                    _productFlowConditional.False = value.GetProductElement();
+                    ProductActivity.False = value.ProductActivity;
                 }
                 else
                 {
-                    _productFlowConditional.False = null;
+                    ProductActivity.False = null;
                 }
             }
         }
@@ -255,12 +255,6 @@ namespace Test.Common.TestObjects.Activities
                 return FalseAction;
             }
         }
-
-        public override BpmNode GetProductElement()
-        {
-            return _productFlowConditional;
-        }
-
         internal void ResetIterationNumber()
         {
             _iterationNumber = 0;

@@ -8,7 +8,7 @@ namespace Test.Common.TestObjects.Activities
 {
     public class TestBpmStep : TestBpmElement
     {
-        private BpmStep _productFlowStep;
+        private new BpmStep ProductActivity => (BpmStep)base.ProductActivity;
 
         private TestActivity _actionActivity;
 
@@ -16,7 +16,7 @@ namespace Test.Common.TestObjects.Activities
 
         public TestBpmStep()
         {
-            _productFlowStep = new BpmStep();
+            base.ProductActivity = new BpmStep();
         }
 
         public TestBpmStep(TestActivity actionActivity)
@@ -27,7 +27,7 @@ namespace Test.Common.TestObjects.Activities
                 return;
             }
             _actionActivity = actionActivity;
-            _productFlowStep.Action = actionActivity.ProductActivity;
+            ProductActivity.Action = actionActivity.ProductActivity;
         }
 
         public TestActivity ActionActivity
@@ -41,11 +41,11 @@ namespace Test.Common.TestObjects.Activities
                 _actionActivity = value;
                 if (value != null)
                 {
-                    _productFlowStep.Action = value.ProductActivity;
+                    ProductActivity.Action = value.ProductActivity;
                 }
                 else
                 {
-                    _productFlowStep.Action = null;
+                    ProductActivity.Action = null;
                 }
             }
         }
@@ -58,20 +58,14 @@ namespace Test.Common.TestObjects.Activities
                 _nextElement = value;
                 if (value != null)
                 {
-                    _productFlowStep.Next = value.GetProductElement();
+                    ProductActivity.Next = value.ProductActivity;
                 }
                 else
                 {
-                    _productFlowStep.Next = null;
+                    ProductActivity.Next = null;
                 }
             }
         }
-
-        public override BpmNode GetProductElement()
-        {
-            return _productFlowStep;
-        }
-
         public override TestBpmElement GetNextElement()
         {
             return this.NextElement;

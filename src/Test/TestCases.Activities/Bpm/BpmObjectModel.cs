@@ -790,7 +790,7 @@ namespace TestCases.Activities.Bpm
             hints.Add(-1);
 
             TestBpmSwitch<object> fSwitch = (TestBpmSwitch<object>)flowchart1.AddSwitchLink<object>(start1, cases, hints, (object)null, wDefault);
-            ((BpmSwitch<object>)fSwitch.GetProductElement()).Expression = null; // I had to use the product to set a null value to Expression
+            ((BpmSwitch<object>)fSwitch.ProductActivity).Expression = null; // I had to use the product to set a null value to Expression
 
             TestRuntime.ValidateInstantiationException(flowchart1, string.Format(ErrorStrings.FlowSwitchRequiresExpression, flowchart1.DisplayName));
         }

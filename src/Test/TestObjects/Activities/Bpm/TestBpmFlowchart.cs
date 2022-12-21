@@ -77,7 +77,7 @@ namespace Test.Common.TestObjects.Activities
         private void SetStartNode(TestBpmElement startElement)
         {
             _startElement = startElement;
-            ((BpmFlowchart)ProductActivity).StartNode = startElement.GetProductElement();
+            ((BpmFlowchart)ProductActivity).StartNode = startElement.ProductActivity;
         }
 
         protected void AddFlowElement(TestBpmElement item)
@@ -86,12 +86,12 @@ namespace Test.Common.TestObjects.Activities
             {
                 SetStartNode(item);
             }
-            ((BpmFlowchart)ProductActivity).Nodes.Add(item.GetProductElement());
+            ((BpmFlowchart)ProductActivity).Nodes.Add(item.ProductActivity);
         }
 
         protected bool RemoveFlowElementItem(TestBpmElement item)
         {
-            return ((BpmFlowchart)ProductActivity).Nodes.Remove(item.GetProductElement());
+            return ((BpmFlowchart)ProductActivity).Nodes.Remove(item.ProductActivity);
         }
 
         protected void RemoveFlowElementAt(int index)

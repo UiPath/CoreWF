@@ -298,7 +298,7 @@ namespace TestCases.Activities.Bpm
             List<int> hints = new List<int>() { -1 };
 
             TestBpmSwitch<Complex> flowSwitch = flowchart.AddSwitchLink<Complex>(new TestWriteLine("Start", "Flowchart started"), cases, hints, e => complexVar.Get(e)) as TestBpmSwitch<Complex>;
-            ((BpmSwitch<Complex>)flowSwitch.GetProductElement()).Cases.Add(null, new BpmStep { Action = new BlockingActivity("Blocking") });
+            ((BpmSwitch<Complex>)flowSwitch.ProductActivity).Cases.Add(null, new BpmStep { Action = new BlockingActivity("Blocking") });
 
             using (TestWorkflowRuntime runtime = TestRuntime.CreateTestWorkflowRuntime(flowchart))
             {

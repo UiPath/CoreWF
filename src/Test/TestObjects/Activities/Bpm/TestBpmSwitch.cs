@@ -16,7 +16,6 @@ namespace Test.Common.TestObjects.Activities
         private List<int> _hints; // List of hints of executing element in switch. -1 is for default element.
         private int _iterationNumber = 0;
 
-        protected BpmNode productFlowSwitch;
         protected TestActivity expressionActivity;
         protected List<TestBpmElement> caseElements;
         protected TestBpmElement defaultElement;
@@ -64,11 +63,6 @@ namespace Test.Common.TestObjects.Activities
             return this.caseElements[_hints[_iterationNumber++]];
         }
 
-        public override BpmNode GetProductElement()
-        {
-            return this.productFlowSwitch;
-        }
-
         internal void SetHints(List<int> hints)
         {
             _hints = new List<int>(hints);
@@ -83,9 +77,10 @@ namespace Test.Common.TestObjects.Activities
 
     public class TestBpmSwitch<T> : TestBpmSwitchBase
     {
+        protected new BpmSwitch<T> ProductActivity => (BpmSwitch<T>)base.ProductActivity;
         public TestBpmSwitch()
         {
-            this.productFlowSwitch = new BpmSwitch<T>();
+            base.ProductActivity = new BpmSwitch<T>();
             this.caseElements = new List<TestBpmElement>();
         }
 
@@ -95,7 +90,7 @@ namespace Test.Common.TestObjects.Activities
             set
             {
                 this.defaultElement = value;
-                (this.productFlowSwitch as BpmSwitch<T>).Default = value.GetProductElement();
+                ProductActivity.Default = value.ProductActivity;
             }
         }
 
@@ -103,7 +98,7 @@ namespace Test.Common.TestObjects.Activities
         {
             set
             {
-                (this.productFlowSwitch as BpmSwitch<T>).Expression = new Literal<T>(value);
+                ProductActivity.Expression = new Literal<T>(value);
                 expressionType = ExpressionType.Literal;
             }
         }
@@ -112,7 +107,7 @@ namespace Test.Common.TestObjects.Activities
         {
             set
             {
-                (this.productFlowSwitch as BpmSwitch<T>).Expression = new LambdaValue<T>(value);
+                ProductActivity.Expression = new LambdaValue<T>(value);
                 expressionType = ExpressionType.VisualBasicValue;
             }
         }
@@ -125,11 +120,11 @@ namespace Test.Common.TestObjects.Activities
                 this.expressionActivity = value;
                 if (value == null)
                 {
-                    (this.productFlowSwitch as BpmSwitch<T>).Expression = null;
+                    ProductActivity.Expression = null;
                 }
                 else
                 {
-                    (this.productFlowSwitch as BpmSwitch<T>).Expression = (Activity<T>)(value.ProductActivity);
+                    ProductActivity.Expression = (Activity<T>)(value.ProductActivity);
                 }
             }
         }
@@ -138,14 +133,14 @@ namespace Test.Common.TestObjects.Activities
         {
             set
             {
-                (this.productFlowSwitch as BpmSwitch<T>).Expression = new VariableValue<T>(value);
+                ProductActivity.Expression = new VariableValue<T>(value);
                 expressionType = ExpressionType.VariableValue;
             }
         }
 
         internal void AddCase(T expression, TestBpmElement element)
         {
-            (this.productFlowSwitch as BpmSwitch<T>).Cases.Add(expression, element == null ? null : element.GetProductElement());
+            ProductActivity.Cases.Add(expression, element == null ? null : element.ProductActivity);
             this.caseElements.Add(element);
         }
 
@@ -167,12 +162,12 @@ namespace Test.Common.TestObjects.Activities
                 throw new ArgumentException("Given caseExpression is null.");
             }
 
-            if (!(this.productFlowSwitch as BpmSwitch<T>).Cases.ContainsKey(caseExpression))
+            if (!ProductActivity.Cases.ContainsKey(caseExpression))
             {
                 throw new ArgumentException("Given caseExpression cannot be found in the set of cases.");
             }
 
-            (this.productFlowSwitch as BpmSwitch<T>).Cases[caseExpression] = (newElement == null) ? null : newElement.GetProductElement();
+            ProductActivity.Cases[caseExpression] = (newElement == null) ? null : newElement.ProductActivity;
 
             this.caseElements.RemoveAt(caseIndex);
             this.caseElements.Insert(caseIndex, newElement);
@@ -186,9 +181,9 @@ namespace Test.Common.TestObjects.Activities
             if (activity != null)
             {
                 step = new TestBpmStep(activity);
-                node = step.GetProductElement();
+                node = step.ProductActivity;
             }
-            (this.productFlowSwitch as BpmSwitch<T>).Cases.Add(default(T), node);
+            ProductActivity.Cases.Add(default(T), node);
             this.caseElements.Add(step);
         }
     }

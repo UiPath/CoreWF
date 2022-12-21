@@ -337,9 +337,9 @@ namespace TestCases.Activities.Bpm
 
             flowchart.AddLink(w1, seq);
             flowchart.AddLink(seq, w3);
-            flowchart.AddLink(w3, w2);
+            var step = flowchart.AddLink(w3, w2);
 
-            TestRuntime.ValidateInstantiationException(flowchart, string.Format(ErrorStrings.ActivityCannotBeReferencedWithoutTarget, w2.DisplayName, seq.DisplayName, flowchart.DisplayName));
+            TestRuntime.ValidateInstantiationException(flowchart, string.Format(ErrorStrings.ActivityCannotBeReferencedWithoutTarget, w2.DisplayName, seq.DisplayName, step.GetNextElement().DisplayName));
         }
 
         /// <summary>
