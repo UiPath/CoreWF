@@ -33,24 +33,7 @@ public sealed class BpmFlowchart : NativeActivity
     [DependsOn("Variables")]
     public BpmNode StartNode { get; set; }
     [DependsOn("StartNode")]
-    public Collection<BpmNode> Nodes
-    {
-        get
-        {
-            _nodes ??= new ValidatingCollection<BpmNode>
-            {
-                // disallow null values
-                OnAddValidationCallback = item =>
-                {
-                    if (item == null)
-                    {
-                        throw FxTrace.Exception.ArgumentNull(nameof(item));
-                    }
-                }
-            };
-            return _nodes;
-        }
-    }
+    public Collection<BpmNode> Nodes => _nodes ??= ValidatingCollection<BpmNode>.NullCheck();
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         metadata.SetVariablesCollection(Variables);

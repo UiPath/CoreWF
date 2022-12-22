@@ -4,6 +4,7 @@ using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TestCases.Activities.Bpm;
 using TestCases.Runtime.WorkflowInstanceTest;
 
 namespace TestConsole;
@@ -13,9 +14,10 @@ class Program
     {
         try
         {
-            var writeLine = new WriteLine { Text = "dd" };
-            var sequence = new Sequence { DisplayName = "Outer",  Activities = { new Sequence { DisplayName = "Inner" , Activities = { writeLine } }, writeLine } };
-            WorkflowInvoker.Invoke(sequence);
+            new BpmParallelTest().Should_execute_branches();
+            //var writeLine = new WriteLine { Text = "dd" };
+            //var sequence = new Sequence { DisplayName = "Outer",  Activities = { new Sequence { DisplayName = "Inner" , Activities = { writeLine } }, writeLine } };
+            //WorkflowInvoker.Invoke(sequence);
         }
         catch (Exception ex)
         {

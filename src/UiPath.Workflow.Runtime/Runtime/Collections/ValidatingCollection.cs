@@ -12,7 +12,17 @@ namespace System.Activities.Runtime.Collections
         public ValidatingCollection()
         {
         }
-
+        public static ValidatingCollection<T> NullCheck() => new()
+        {
+            // disallow null values
+            OnAddValidationCallback = item =>
+            {
+                if (item == null)
+                {
+                    throw FxTrace.Exception.ArgumentNull(nameof(item));
+                }
+            }
+        };
         public Action<T> OnAddValidationCallback { get; set; }
         public Action OnMutateValidationCallback { get; set; }
 
