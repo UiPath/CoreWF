@@ -7,6 +7,14 @@ using Validation;
 
 public static class WorkflowInspectionServices
 {
+    public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> values)
+    {
+        foreach (var value in values)
+        {
+            collection.Add(value);
+        }
+    }
+
     public static void CacheMetadata(Activity rootActivity) => CacheMetadata(rootActivity, null);
 
     public static void CacheMetadata(Activity rootActivity, LocationReferenceEnvironment hostEnvironment)

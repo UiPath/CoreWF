@@ -40,5 +40,5 @@ public sealed class BpmStep : BpmNode
         }
     }
     private void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance) => Next.TryExecute(context, this, completedInstance);
-    public static BpmStep New(Activity activity) => new() { Action = activity };
+    public static BpmStep New(Activity activity, BpmNode next = null ) => new() { Action = activity, Next = next };
 }

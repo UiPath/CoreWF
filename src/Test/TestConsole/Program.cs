@@ -14,7 +14,7 @@ class Program
     {
         try
         {
-            new BpmParallelTest().Should_execute_branches();
+            new BpmParallelTest().Should_join_branches();
             //var writeLine = new WriteLine { Text = "dd" };
             //var sequence = new Sequence { DisplayName = "Outer",  Activities = { new Sequence { DisplayName = "Inner" , Activities = { writeLine } }, writeLine } };
             //WorkflowInvoker.Invoke(sequence);

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace TestCases.Activities.Bpm
 {
-    public class BpmJoin : IDisposable
+    public class BpmJoinTest : IDisposable
     {
         /// <summary>
         /// Three activities connected by AND join in flowchart.
