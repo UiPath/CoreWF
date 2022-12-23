@@ -64,12 +64,18 @@ public class BpmParallelTest
         app.Unload();
         WorkflowApplication resumedApp = new(root) { InstanceStore = store };
         ManualResetEvent manualResetEvent = new(default);
-        resumedApp.Completed = _ => manualResetEvent.Set();
+        WorkflowApplicationCompletedEventArgs completedArgs = null;
+        resumedApp.Completed = args =>
+        {
+            completedArgs = args;
+            manualResetEvent.Set();
+        };
         resumedApp.Aborted = args => args.Reason.ShouldBeNull();
         resumedApp.Load(appId);
         resumedApp.Run();
         resumedApp.ResumeBookmark("blocking", null);
         manualResetEvent.WaitOne();
+        completedArgs.TerminationException.ShouldBeNull();
         list.ShouldBe(new() { "branch2", "branch1", "item3" });
     }
 }
