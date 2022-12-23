@@ -68,7 +68,6 @@ public class BpmParallelTest
         resumedApp.Aborted = args => args.Reason.ShouldBeNull();
         resumedApp.Load(appId);
         resumedApp.Run();
-        Thread.Sleep(100);
         resumedApp.ResumeBookmark("blocking", null);
         manualResetEvent.WaitOne();
         list.ShouldBe(new() { "branch2", "branch1", "item3" });
