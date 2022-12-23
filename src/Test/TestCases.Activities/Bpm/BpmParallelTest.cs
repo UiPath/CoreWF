@@ -4,6 +4,7 @@ using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
 using System.Collections.Generic;
+using System.Threading;
 using Test.Common.TestObjects.CustomActivities;
 using Xunit;
 namespace TestCases.Activities.Bpm;
@@ -38,6 +39,38 @@ public class BpmParallelTest
         var flowchart = new BpmFlowchart { StartNode = parallel, Nodes = { parallel, join, step3 } };
         var root = new Sequence() { Variables = { strings }, Activities = { flowchart } };
         WorkflowInvoker.Invoke(root);
+        list.ShouldBe(new() { "branch2", "branch1", "item3" });
+    }
+    [Fact]
+    public void Should_persist_join()
+    {
+        var list = new List<string>();
+        Variable<ICollection<string>> strings = new("strings", c => list);
+        AddToCollection<string> branch1 = new() { Collection = strings, Item = "branch1" };
+        AddToCollection<string> branch2 = new() { Collection = strings, Item = "branch2" };
+        AddToCollection<string> item3 = new() { Collection = strings, Item = "item3" };
+        BlockingActivity blockingActivity = new("blocking");
+        var step3 = BpmStep.New(item3);
+        BpmJoin join = new() { Next = step3 };
+        var parallel = new BpmParallel { Branches = { BpmStep.New(blockingActivity, join), BpmStep.New(branch1, join), BpmStep.New(branch2, join) } };
+        join.Branches.AddRange(parallel.Branches);
+        var flowchart = new BpmFlowchart { StartNode = parallel, Nodes = { parallel, join, step3 } };
+        var root = new Sequence() { Variables = { strings }, Activities = { flowchart } };
+        var store = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        WorkflowApplication app = new(root) { InstanceStore = store };
+        app.Run();
+        var appId = app.Id;
+        Thread.Sleep(100); 
+        app.Unload();
+        WorkflowApplication resumedApp = new(root) { InstanceStore = store };
+        ManualResetEvent manualResetEvent = new(default);
+        resumedApp.Completed = _ => manualResetEvent.Set();
+        resumedApp.Aborted = args => args.Reason.ShouldBeNull();
+        resumedApp.Load(appId);
+        resumedApp.Run();
+        Thread.Sleep(100);
+        resumedApp.ResumeBookmark("blocking", null);
+        manualResetEvent.WaitOne();
         list.ShouldBe(new() { "branch2", "branch1", "item3" });
     }
 }
