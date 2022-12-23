@@ -36,6 +36,7 @@ public sealed class BpmFlowchart : NativeActivity
     public Collection<BpmNode> Nodes => _nodes ??= ValidatingCollection<BpmNode>.NullCheck();
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
+        Variables.Add(new Variable<Dictionary<string, object>>("flowchartState", c => new()));
         metadata.SetVariablesCollection(Variables);
         GatherReachableNodes(metadata);
         if (ValidateUnconnectedNodes && (_reachableNodes.Count < Nodes.Count))

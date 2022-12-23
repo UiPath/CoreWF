@@ -1,11 +1,11 @@
 ﻿using System.Activities.Hosting;
 using System.Activities.Runtime.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 namespace System.Activities.Statements;
 public class BpmJoin : BpmNode
 {
-    int _finishedCount;
     ValidatingCollection<BpmNode> _branches;
     [DefaultValue(null)]
     public Collection<BpmNode> Branches => _branches ??= ValidatingCollection<BpmNode>.NullCheck();
@@ -17,26 +17,38 @@ public class BpmJoin : BpmNode
         metadata.RequireExtension<BookmarkResumptionHelper>();
         metadata.AddDefaultExtensionProvider(() => new BookmarkResumptionHelper());
     }
+    record JoinState
+    {
+        public int Count;
+    }
     protected override void Execute(NativeActivityContext context)
     {
-        _finishedCount++;
-        if (_finishedCount == Branches.Count)
+        var key = $"{nameof(BpmJoin)}";
+        Dictionary<string, object> state;
+        using (context.InheritVariables())
         {
-            _finishedCount = 0;
+            state = context.GetValue<Dictionary<string, object>>("flowchartState");
+        }
+        var joinState = (JoinState)(state.GetValueOrDefault(key) ?? new JoinState());
+        joinState.Count++;
+        if (joinState.Count == Branches.Count)
+        {
+            state.Remove(key);
             var bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
-            Task.Run(()=>bookmarkHelper.ResumeBookmark(new Bookmark(BookmarkName()), null));
+            Task.Run(()=>bookmarkHelper.ResumeBookmark(new Bookmark(key), null));
             if (Next != null)
             {
                 context.ScheduleActivity(Next);
             }
             return;
         }
-        if (_finishedCount == 1)
+        if (joinState.Count == 1)
         {
-            context.CreateBookmark(BookmarkName(), delegate { GetHashCode(); });
+            state[key] = joinState;
+            context.CreateBookmark(key, OnBookmarkResumed);
         }
     }
-    string BookmarkName() => $"{nameof(BpmJoin)}{GetHashCode()}";
+    private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value) { }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
         if (Next != null)
