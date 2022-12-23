@@ -27,3 +27,4 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemas.microsoft.com/netfx/2009/xaml/activities", "System.Activities.XamlIntegration")]
 [assembly: InternalsVisibleTo("UiPath.Workflow")]
 [assembly: InternalsVisibleTo("TestCases.Workflows")]
+[assembly: InternalsVisibleTo("TestCases.Activities")]

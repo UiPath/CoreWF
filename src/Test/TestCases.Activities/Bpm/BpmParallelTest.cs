@@ -55,7 +55,7 @@ public class BpmParallelTest
         var parallel = new BpmParallel { Branches = { BpmStep.New(blockingActivity, join), BpmStep.New(branch1, join), BpmStep.New(branch2, join) } };
         join.Branches.AddRange(parallel.Branches);
         var flowchart = new BpmFlowchart { StartNode = parallel, Nodes = { parallel, join, step3 } };
-        var root = new Sequence() { Variables = { strings }, Activities = { flowchart } };
+        var root = new ActivityWithResult<ICollection<string>>() { In = strings, Body = flowchart };
         var store = new JsonFileInstanceStore.FileInstanceStore(".\\~");
         WorkflowApplication app = new(root) { InstanceStore = store };
         app.Run();
@@ -76,6 +76,20 @@ public class BpmParallelTest
         resumedApp.ResumeBookmark("blocking", null);
         manualResetEvent.WaitOne();
         completedArgs.TerminationException.ShouldBeNull();
-        list.ShouldBe(new() { "branch2", "branch1", "item3" });
+        ((ICollection<string>)completedArgs.Outputs["Result"]).ShouldBe(new[]{ "branch2", "branch1", "item3" });
     }
+}
+public class ActivityWithResult<TResult> : NativeActivity<TResult>
+{
+    public Variable<TResult> In { get; set; } = new();
+    public Activity Body { get; set; }
+    protected override void Execute(NativeActivityContext context) => context.ScheduleActivity(Body, (context, _)=>
+    {
+        TResult value;
+        using (context.InheritVariables())
+        {
+            value = In.Get(context);
+        }
+        context.SetValue(Result, value);
+    });
 }
