@@ -30,18 +30,17 @@ public class BpmJoin : BpmNode
         }
         var joinState = (JoinState)(state.GetValueOrDefault(key) ?? new JoinState());
         joinState.Count++;
+        if (joinState.Count == 1)
+        {
+            state[key] = joinState;
+            context.CreateBookmark(key, OnBookmarkResumed);
+        }
         if (joinState.Count == Branches.Count)
         {
             state.Remove(key);
             var bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
             Task.Run(()=>bookmarkHelper.ResumeBookmark(new Bookmark(key), null));
             TryExecute(Next, context, context.CurrentInstance);
-            return;
-        }
-        if (joinState.Count == 1)
-        {
-            state[key] = joinState;
-            context.CreateBookmark(key, OnBookmarkResumed);
         }
     }
     private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value) { }
