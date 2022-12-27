@@ -43,7 +43,7 @@ public class BpmJoin : BpmNode
             TryExecute(Next, context, context.CurrentInstance);
         }
     }
-    private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value) { }
+    static void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value) { }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
         if (Next != null)
