@@ -33,7 +33,7 @@ public class BpmJoin : BpmNode
         {
             joinState = new() { Count = 1 };
             state.Add(key, joinState);
-            context.CreateBookmark(key, OnBookmarkResumed);
+            context.CreateBookmark(key);
         }
         else
         {
@@ -47,7 +47,6 @@ public class BpmJoin : BpmNode
             TryExecute(Next, context, context.CurrentInstance);
         }
     }
-    static void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value) { }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
         if (Next != null)
