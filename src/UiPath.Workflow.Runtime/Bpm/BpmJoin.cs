@@ -1,4 +1,5 @@
 ﻿using System.Activities.Hosting;
+using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -43,7 +44,7 @@ public class BpmJoin : BpmNode
         {
             state.Remove(key);
             var bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
-            ThreadPool.UnsafeQueueUserWorkItem(_=>bookmarkHelper.ResumeBookmark(new Bookmark(key), null), null);
+            bookmarkHelper.ResumeBookmark(new Bookmark(key));
             TryExecute(Next, context, context.CurrentInstance);
         }
     }
@@ -58,9 +59,24 @@ public class BpmJoin : BpmNode
 }
 internal sealed class BookmarkResumptionHelper : IWorkflowInstanceExtension
 {
-    private WorkflowInstanceProxy _workflowInstance;
-    internal BookmarkResumptionResult ResumeBookmark(Bookmark bookmark, object value) =>
-        _workflowInstance.EndResumeBookmark(_workflowInstance.BeginResumeBookmark(bookmark, value, null, null));
+    private WorkflowInstanceProxy _instance;
+    public void ResumeBookmark(Bookmark bookmark)
+    {
+        var asyncResult = _instance.BeginResumeBookmark(bookmark, null, Fx.ThunkCallback(OnResumeBookmarkCompleted), _instance);
+        if (asyncResult.CompletedSynchronously)
+        {
+            _instance.EndResumeBookmark(asyncResult);
+        }
+    }
+    private static void OnResumeBookmarkCompleted(IAsyncResult result)
+    {
+        if (!result.CompletedSynchronously)
+        {
+            WorkflowInstanceProxy instance = result.AsyncState as WorkflowInstanceProxy;
+            Fx.Assert(instance != null, "BeginResumeBookmark should pass a WorkflowInstanceProxy object as the async state object.");
+            instance.EndResumeBookmark(result);
+        }
+    }
     IEnumerable<object> IWorkflowInstanceExtension.GetAdditionalExtensions() => null;
-    void IWorkflowInstanceExtension.SetInstance(WorkflowInstanceProxy instance) => _workflowInstance = instance;
+    void IWorkflowInstanceExtension.SetInstance(WorkflowInstanceProxy instance) => _instance = instance;
 }
