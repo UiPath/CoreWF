@@ -28,12 +28,16 @@ public class BpmJoin : BpmNode
         {
             state = context.GetValue<Dictionary<string, object>>("flowchartState");
         }
-        var joinState = (JoinState)(state.GetValueOrDefault(key) ?? new JoinState());
-        joinState.Count++;
-        if (joinState.Count == 1)
+        var joinState = (JoinState)state.GetValueOrDefault(key);
+        if (joinState == null)
         {
-            state[key] = joinState;
+            joinState = new() { Count = 1 };
+            state.Add(key, joinState);
             context.CreateBookmark(key, OnBookmarkResumed);
+        }
+        else
+        {
+            joinState.Count++;
         }
         if (joinState.Count == Branches.Count)
         {
