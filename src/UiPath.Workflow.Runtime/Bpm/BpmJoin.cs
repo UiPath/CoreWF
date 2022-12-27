@@ -1,7 +1,7 @@
 ﻿using System.Activities.Hosting;
 using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using System.Threading;
 namespace System.Activities.Statements;
 public class BpmJoin : BpmNode
 {
@@ -43,7 +43,7 @@ public class BpmJoin : BpmNode
         {
             state.Remove(key);
             var bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
-            Task.Run(()=>bookmarkHelper.ResumeBookmark(new Bookmark(key), null));
+            ThreadPool.UnsafeQueueUserWorkItem(_=>bookmarkHelper.ResumeBookmark(new Bookmark(key), null), null);
             TryExecute(Next, context, context.CurrentInstance);
         }
     }
