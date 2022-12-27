@@ -109,7 +109,7 @@ public sealed class BpmFlowchart : NativeActivity
             {
                 TD.FlowchartStart(DisplayName);
             }
-            StartNode.TryExecute(context, null, null);
+            StartNode.TryExecute(StartNode, context, null);
         }
         else
         {

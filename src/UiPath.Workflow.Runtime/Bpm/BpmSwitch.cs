@@ -69,9 +69,5 @@ public sealed class BpmSwitch<T> : BpmNode
             return Default;
         }
     }
-    internal void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance, T result)
-    {
-        var next = GetNextNode(result);
-        next.TryExecute(context, this, completedInstance);
-    }
+    internal void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance, T result) => TryExecute(GetNextNode(result), context, completedInstance);
 }

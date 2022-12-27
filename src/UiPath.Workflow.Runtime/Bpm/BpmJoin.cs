@@ -35,7 +35,7 @@ public class BpmJoin : BpmNode
             state.Remove(key);
             var bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
             Task.Run(()=>bookmarkHelper.ResumeBookmark(new Bookmark(key), null));
-            Next.TryExecute(context, this, context.CurrentInstance);
+            TryExecute(Next, context, context.CurrentInstance);
             return;
         }
         if (joinState.Count == 1)

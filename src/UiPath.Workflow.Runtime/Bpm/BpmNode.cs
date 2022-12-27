@@ -31,10 +31,7 @@ public abstract class BpmNode : NativeActivity
         return true;
     }
     internal abstract void GetConnectedNodes(IList<BpmNode> connections);
-}
-static class BpmNodeUtils
-{
-    public static void TryExecute(this BpmNode node, NativeActivityContext context, BpmNode completed, ActivityInstance completedInstance)
+    public void TryExecute(BpmNode node, NativeActivityContext context, ActivityInstance completedInstance)
     {
         if (node == null)
         {

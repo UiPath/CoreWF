@@ -43,9 +43,5 @@ public sealed class BpmDecision : BpmNode
         _onCompleted ??= new(OnCompleted);
         context.ScheduleActivity(Condition, _onCompleted);
     }
-    void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance, bool result)
-    {
-        var next = result ? True : False;
-        next.TryExecute(context, this, completedInstance);
-    }
+    void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance, bool result) => TryExecute(result ? True : False, context, completedInstance);
 }
