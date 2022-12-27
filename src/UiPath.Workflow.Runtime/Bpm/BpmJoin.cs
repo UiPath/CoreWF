@@ -68,12 +68,13 @@ internal sealed class BookmarkResumptionHelper : IWorkflowInstanceExtension
     }
     private static void OnResumeBookmarkCompleted(IAsyncResult result)
     {
-        if (!result.CompletedSynchronously)
+        if (result.CompletedSynchronously)
         {
-            WorkflowInstanceProxy instance = result.AsyncState as WorkflowInstanceProxy;
-            Fx.Assert(instance != null, "BeginResumeBookmark should pass a WorkflowInstanceProxy object as the async state object.");
-            instance.EndResumeBookmark(result);
+            return;
         }
+        WorkflowInstanceProxy instance = result.AsyncState as WorkflowInstanceProxy;
+        Fx.Assert(instance != null, "BeginResumeBookmark should pass a WorkflowInstanceProxy object as the async state object.");
+        instance.EndResumeBookmark(result);
     }
     IEnumerable<object> IWorkflowInstanceExtension.GetAdditionalExtensions() => null;
     void IWorkflowInstanceExtension.SetInstance(WorkflowInstanceProxy instance) => _instance = instance;
