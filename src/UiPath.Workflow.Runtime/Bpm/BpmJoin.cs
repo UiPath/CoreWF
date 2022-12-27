@@ -23,7 +23,7 @@ public class BpmJoin : BpmNode
     }
     protected override void Execute(NativeActivityContext context)
     {
-        var key = $"{nameof(BpmJoin)}";
+        var key = $"{nameof(BpmJoin)}_{Id}";
         Dictionary<string, object> state;
         using (context.InheritVariables())
         {
