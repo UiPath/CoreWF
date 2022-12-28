@@ -90,7 +90,7 @@ internal abstract class JitCompilerHelper
     public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces,
         out List<AssemblyReference> assemblies)
     {
-        var namespaceList = new List<string>();
+        var namespaceList = new List<string>() { "System.Linq.Expressions" };
         var assemblyList = new List<AssemblyReference>();
 
         // Start with the defaults; any settings on the Activity will be added to these
