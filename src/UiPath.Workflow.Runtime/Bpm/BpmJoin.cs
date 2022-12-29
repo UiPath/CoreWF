@@ -11,11 +11,7 @@ public class BpmJoin : BpmNode
     [DefaultValue(null)]
     public BpmNode Next { get; set; }
     protected override bool CanInduceIdle => true;
-    protected override void CacheMetadata(NativeActivityMetadata metadata)
-    {
-        metadata.RequireExtension<BookmarkResumptionHelper>();
-        metadata.AddDefaultExtensionProvider(() => new BookmarkResumptionHelper());
-    }
+    protected override void CacheMetadata(NativeActivityMetadata metadata) => metadata.AddDefaultExtensionProvider(static() => new BookmarkResumptionHelper());
     record JoinState
     {
         public int Count;
@@ -23,11 +19,7 @@ public class BpmJoin : BpmNode
     protected override void Execute(NativeActivityContext context)
     {
         var key = $"{nameof(BpmJoin)}_{Id}";
-        Dictionary<string, object> state;
-        using (context.InheritVariables())
-        {
-            state = context.GetValue<Dictionary<string, object>>("flowchartState");
-        }
+        var state = context.GetInheritedValue<Dictionary<string, object>>("flowchartState");
         var joinState = (JoinState)state.GetValueOrDefault(key);
         if (joinState == null)
         {
@@ -39,13 +31,13 @@ public class BpmJoin : BpmNode
         {
             joinState.Count++;
         }
-        if (joinState.Count == Branches.Count)
+        if (joinState.Count < Branches.Count)
         {
-            state.Remove(key);
-            var bookmarkHelper = context.GetExtension<BookmarkResumptionHelper>();
-            bookmarkHelper.ResumeBookmark(new Bookmark(key));
-            TryExecute(Next, context, context.CurrentInstance);
+            return;
         }
+        state.Remove(key);
+        context.GetExtension<BookmarkResumptionHelper>().ResumeBookmark(key);
+        TryExecute(Next, context, context.CurrentInstance);
     }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
     {
@@ -58,9 +50,9 @@ public class BpmJoin : BpmNode
 internal sealed class BookmarkResumptionHelper : IWorkflowInstanceExtension
 {
     private WorkflowInstanceProxy _instance;
-    public void ResumeBookmark(Bookmark bookmark)
+    public void ResumeBookmark(string name)
     {
-        var asyncResult = _instance.BeginResumeBookmark(bookmark, null, Fx.ThunkCallback(OnResumeBookmarkCompleted), _instance);
+        var asyncResult = _instance.BeginResumeBookmark(new Bookmark(name), null, Fx.ThunkCallback(OnResumeBookmarkCompleted), _instance);
         if (asyncResult.CompletedSynchronously)
         {
             _instance.EndResumeBookmark(asyncResult);
