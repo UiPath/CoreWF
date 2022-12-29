@@ -184,7 +184,7 @@ public sealed class StateMachine : NativeActivity
             metadata.AddVariable(variable);
         }
 
-        StateMachineExtension.Install(metadata);
+        ResumeBookmarkExtension.Install(metadata);
     }
 
     /// <summary>

@@ -9,7 +9,7 @@ public class BpmJoin : BpmNode
     [DefaultValue(null)]
     public BpmNode Next { get; set; }
     protected override bool CanInduceIdle => true;
-    protected override void CacheMetadata(NativeActivityMetadata metadata) => StateMachineExtension.Install(metadata);
+    protected override void CacheMetadata(NativeActivityMetadata metadata) => ResumeBookmarkExtension.Install(metadata);
     record JoinState
     {
         public int Count;
@@ -34,7 +34,7 @@ public class BpmJoin : BpmNode
             return;
         }
         state.Remove(key);
-        context.GetExtension<StateMachineExtension>().ResumeBookmark(new(key));
+        context.GetExtension<ResumeBookmarkExtension>().ResumeBookmark(new(key));
         TryExecute(Next, context, context.CurrentInstance);
     }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
