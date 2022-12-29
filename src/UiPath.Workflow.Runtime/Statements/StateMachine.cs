@@ -23,7 +23,6 @@ public sealed class StateMachine : NativeActivity
     // internal Id of StateMachine. it's a constant value and states of state machine will generate their ids based on this root id.
     private const string RootId = "0";
     private const string ExitProperty = "Exit";
-    private static readonly Func<StateMachineExtension> getDefaultExtension = new(GetStateMachineExtension);
 
     // states in root level of StateMachine
     private Collection<State> _states;
@@ -185,7 +184,7 @@ public sealed class StateMachine : NativeActivity
             metadata.AddVariable(variable);
         }
 
-        metadata.AddDefaultExtensionProvider(getDefaultExtension);
+        StateMachineExtension.Install(metadata);
     }
 
     /// <summary>
@@ -395,8 +394,6 @@ public sealed class StateMachine : NativeActivity
             }
         }
     }
-
-    private static StateMachineExtension GetStateMachineExtension() => new();
 
     /// <summary>
     /// Create internal states

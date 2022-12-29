@@ -1,6 +1,4 @@
-﻿using System.Activities.Hosting;
-using System.Activities.Runtime;
-using System.Activities.Runtime.Collections;
+﻿using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
 namespace System.Activities.Statements;
 public class BpmJoin : BpmNode
@@ -11,7 +9,7 @@ public class BpmJoin : BpmNode
     [DefaultValue(null)]
     public BpmNode Next { get; set; }
     protected override bool CanInduceIdle => true;
-    protected override void CacheMetadata(NativeActivityMetadata metadata) => metadata.AddDefaultExtensionProvider(static() => new BookmarkResumptionHelper());
+    protected override void CacheMetadata(NativeActivityMetadata metadata) => StateMachineExtension.Install(metadata);
     record JoinState
     {
         public int Count;
@@ -36,7 +34,7 @@ public class BpmJoin : BpmNode
             return;
         }
         state.Remove(key);
-        context.GetExtension<BookmarkResumptionHelper>().ResumeBookmark(key);
+        context.GetExtension<StateMachineExtension>().ResumeBookmark(new(key));
         TryExecute(Next, context, context.CurrentInstance);
     }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
@@ -46,28 +44,4 @@ public class BpmJoin : BpmNode
             connections.Add(Next);
         }
     }
-}
-internal sealed class BookmarkResumptionHelper : IWorkflowInstanceExtension
-{
-    private WorkflowInstanceProxy _instance;
-    public void ResumeBookmark(string name)
-    {
-        var asyncResult = _instance.BeginResumeBookmark(new Bookmark(name), null, Fx.ThunkCallback(OnResumeBookmarkCompleted), _instance);
-        if (asyncResult.CompletedSynchronously)
-        {
-            _instance.EndResumeBookmark(asyncResult);
-        }
-    }
-    private static void OnResumeBookmarkCompleted(IAsyncResult result)
-    {
-        if (result.CompletedSynchronously)
-        {
-            return;
-        }
-        WorkflowInstanceProxy instance = result.AsyncState as WorkflowInstanceProxy;
-        Fx.Assert(instance != null, "BeginResumeBookmark should pass a WorkflowInstanceProxy object as the async state object.");
-        instance.EndResumeBookmark(result);
-    }
-    IEnumerable<object> IWorkflowInstanceExtension.GetAdditionalExtensions() => null;
-    void IWorkflowInstanceExtension.SetInstance(WorkflowInstanceProxy instance) => _instance = instance;
 }

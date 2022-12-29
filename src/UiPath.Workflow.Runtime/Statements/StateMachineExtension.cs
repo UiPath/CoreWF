@@ -13,6 +13,8 @@ internal class StateMachineExtension : IWorkflowInstanceExtension
 {
     private WorkflowInstanceProxy _instance;
 
+    public static void Install(NativeActivityMetadata metadata) => metadata.AddDefaultExtensionProvider(static()=>new StateMachineExtension());
+
     /// <summary>
     /// Used to get additional extensions.
     /// </summary>
