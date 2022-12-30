@@ -8,7 +8,7 @@ internal class ResumeBookmarkExtension : IWorkflowInstanceExtension
     public static void Resume(ActivityContext context, Bookmark bookmark)
     {
         var extension = context.GetExtension<ResumeBookmarkExtension>();
-        Fx.Assert(extension != null, "Failed to obtain a StateMachineExtension.");
+        Fx.Assert(extension != null, "Failed to obtain a ResumeBookmarkExtension.");
         extension.ResumeBookmark(bookmark);
     }
     public IEnumerable<object> GetAdditionalExtensions() => null;
