@@ -34,7 +34,7 @@ public class BpmJoin : BpmNode
             return;
         }
         state.Remove(key);
-        context.GetExtension<ResumeBookmarkExtension>().ResumeBookmark(new(key));
+        ResumeBookmarkExtension.Resume(context, new(key));
         TryExecute(Next, context, context.CurrentInstance);
     }
     internal override void GetConnectedNodes(IList<BpmNode> connections)
