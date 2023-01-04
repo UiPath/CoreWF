@@ -41,8 +41,15 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
 
     protected override void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
     {
-        namespaceImportsNames.Add("Microsoft.VisualBasic");
+        AddDefaultNamespaces(namespaceImportsNames);
         base.Initialize(refAssemNames, namespaceImportsNames);
+    }
+
+    private static void AddDefaultNamespaces(HashSet<string> namespaceImportsNames)
+    {
+        namespaceImportsNames.Add("System");
+        namespaceImportsNames.Add("System.Linq.Expressions");
+        namespaceImportsNames.Add("Microsoft.VisualBasic");
     }
 
     public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText,

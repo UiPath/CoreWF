@@ -37,8 +37,6 @@ internal abstract class JitCompilerHelper
         typeof(Activity).Assembly // System.Activities
     };
 
-    private static HashSet<string> DefaultNamespaces = new HashSet<string> { "System", "System.Linq.Expressions" };
-
     private static readonly object s_typeReferenceCacheLock = new();
     private static readonly HopperCache s_typeReferenceCache = new(TypeReferenceCacheMaxSize, false);
     private static readonly FindMatch s_delegateFindLocationReferenceMatchShortcut = FindLocationReferenceMatchShortcut;
@@ -91,16 +89,12 @@ internal abstract class JitCompilerHelper
     {
         namespaceImportsNames.Remove("");
         namespaceImportsNames.Remove(null);
-        foreach (var ns in DefaultNamespaces)
-        {
-            namespaceImportsNames.Add(ns);
-        }
     }
 
     public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces,
         out List<AssemblyReference> assemblies)
     {
-        var namespaceList = new List<string>(DefaultNamespaces);
+        var namespaceList = new List<string>();
         var assemblyList = new List<AssemblyReference>();
 
         // Start with the defaults; any settings on the Activity will be added to these
