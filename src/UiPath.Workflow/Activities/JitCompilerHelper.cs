@@ -89,6 +89,8 @@ internal abstract class JitCompilerHelper
     {
         namespaceImportsNames.Remove("");
         namespaceImportsNames.Remove(null);
+        namespaceImportsNames.Add("System");
+        namespaceImportsNames.Add("System.Linq.Expressions");
     }
 
     public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces,
