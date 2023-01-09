@@ -1,15 +1,16 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using System.Activities.Expressions;
 using System.Activities.Validation;
 using System.Activities.XamlIntegration;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
 
 namespace System.Activities;
 
@@ -18,8 +19,14 @@ namespace System.Activities;
 /// </summary>
 public abstract class RoslynExpressionValidator
 {
+    private readonly IReadOnlyCollection<string> _defaultNamespaces = new string[]
+    {
+        "System",
+        "System.Linq.Expressions"
+    };
+
     private const string Comma = ", ";
-    private readonly Lazy<Dictionary<Assembly, MetadataReference>> _metadataReferenceDictionary;
+    private readonly Lazy<ConcurrentDictionary<Assembly, MetadataReference>> _metadataReferences;
     private readonly object _lockRequiredAssemblies = new();
 
     /// <summary>
@@ -31,15 +38,14 @@ public abstract class RoslynExpressionValidator
     /// </param>
     protected RoslynExpressionValidator(HashSet<Assembly> seedAssemblies = null)
     {
-        _metadataReferenceDictionary = new(GetInitialMetadataReferences);
-        var assembliesToReference = new HashSet<Assembly>();
-        assembliesToReference.UnionWith(JitCompilerHelper.DefaultReferencedAssemblies);
+        _metadataReferences = new(GetInitialMetadataReferences);
+
+        var assembliesToReference = new HashSet<Assembly>(JitCompilerHelper.DefaultReferencedAssemblies);
         if (seedAssemblies != null)
         {
-            assembliesToReference.UnionWith(seedAssemblies);
+            assembliesToReference.UnionWith(seedAssemblies.Where(a => a is not null));
         }
 
-        assembliesToReference.RemoveWhere(x => x == null);
         RequiredAssemblies = assembliesToReference;
     }
 
@@ -85,8 +91,7 @@ public abstract class RoslynExpressionValidator
     /// <param name="expressionContainer">expression container</param>
     /// <returns>MetadataReference objects for all required assemblies</returns>
     protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) =>
-        expressionContainer.RequiredAssemblies.Where(asm => asm != null)
-        .Select(asm => TryGetMetadataReference(asm)).Where(mr => mr != null);
+        expressionContainer.RequiredAssemblies.Select(asm => TryGetMetadataReference(asm)).Where(mr => mr is not null);
 
     /// <summary>
     ///     Gets the type name, which can be language-specific.
@@ -154,8 +159,10 @@ public abstract class RoslynExpressionValidator
         };
 
         JitCompilerHelper.GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
-        requiredAssemblies.UnionWith(localAssemblies.Select(asmRef => asmRef.Assembly ?? LoadAssemblyFromReference(asmRef)));
+        requiredAssemblies.UnionWith(localAssemblies.Where(aref => aref is not null).Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
         expressionContainer.RequiredAssemblies = requiredAssemblies;
+
+        localNamespaces.AddRange(_defaultNamespaces);
 
         var scriptAndTypeScope = new JitCompilerHelper.ScriptAndTypeScope(environment);
         expressionContainer.ExpressionToValidate =
@@ -279,12 +286,12 @@ public abstract class RoslynExpressionValidator
         foreach (var baseType in allBaseTypes)
         {
             var asm = baseType.Assembly;
-            if (!_metadataReferenceDictionary.Value.ContainsKey(asm))
+            if (!_metadataReferences.Value.ContainsKey(asm))
             {
                 var meta = GetMetadataReferenceForAssembly(asm);
                 if (meta != null)
                 {
-                    _metadataReferenceDictionary.Value.Add(asm, meta);
+                    _metadataReferences.Value.TryAdd(asm, meta);
                     newReferences.Value.Add(meta);
                 }
             }
@@ -299,12 +306,12 @@ public abstract class RoslynExpressionValidator
     private MetadataReference TryGetMetadataReference(Assembly assembly)
     {
         MetadataReference meta = null;
-        if (assembly != null && !_metadataReferenceDictionary.Value.TryGetValue(assembly, out meta))
+        if (assembly != null && !_metadataReferences.Value.TryGetValue(assembly, out meta))
         {
             meta = GetMetadataReferenceForAssembly(assembly);
             if (meta != null)
             {
-                _metadataReferenceDictionary.Value.TryAdd(assembly, meta);
+                _metadataReferences.Value.TryAdd(assembly, meta);
             }
         }
 
@@ -319,20 +326,20 @@ public abstract class RoslynExpressionValidator
         }
     }
 
-    private Dictionary<Assembly, MetadataReference> GetInitialMetadataReferences()
+    private ConcurrentDictionary<Assembly, MetadataReference> GetInitialMetadataReferences()
     {
-        var referenceCache = new Dictionary<Assembly, MetadataReference>();
+        var referenceCache = new ConcurrentDictionary<Assembly, MetadataReference>();
         foreach (var referencedAssembly in RequiredAssemblies)
         {
-            if (referencedAssembly == null || referenceCache.ContainsKey(referencedAssembly))
+            if (referencedAssembly is null || referenceCache.ContainsKey(referencedAssembly))
             {
                 continue;
             }
 
-            var mr = GetMetadataReferenceForAssembly(referencedAssembly);
-            if (mr != null)
+            var metadataReference = GetMetadataReferenceForAssembly(referencedAssembly);
+            if (metadataReference != null)
             {
-                referenceCache.Add(referencedAssembly, mr);
+                referenceCache.TryAdd(referencedAssembly, metadataReference);
             }
         }
 

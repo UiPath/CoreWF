@@ -57,10 +57,8 @@ internal abstract class JitCompilerHelper
 
     protected virtual void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
     {
-        namespaceImportsNames.Add("System");
-        namespaceImportsNames.Add("System.Linq.Expressions");
-        namespaceImportsNames.Remove("");
-        namespaceImportsNames.Remove(null);
+        SanitizeNamespaces(namespaceImportsNames);
+        
         NamespaceImports = namespaceImportsNames;
 
         foreach (var assemblyName in refAssemNames)
@@ -85,6 +83,14 @@ internal abstract class JitCompilerHelper
                 ExceptionTrace.TraceUnhandledException(e);
             }
         }
+    }
+
+    private static void SanitizeNamespaces(ICollection<string> namespaceImportsNames)
+    {
+        namespaceImportsNames.Remove("");
+        namespaceImportsNames.Remove(null);
+        namespaceImportsNames.Add("System");
+        namespaceImportsNames.Add("System.Linq.Expressions");
     }
 
     public static void GetAllImportReferences(Activity activity, bool isDesignTime, out List<string> namespaces,
