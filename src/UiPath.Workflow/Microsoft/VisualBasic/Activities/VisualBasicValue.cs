@@ -20,8 +20,6 @@ namespace Microsoft.VisualBasic.Activities;
 public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSerializableExpression,
     IExpressionContainer, ITextExpression
 {
-    private Func<ActivityContext, TResult> _compiledExpression;
-    private Expression<Func<ActivityContext, TResult>> _expressionTree;
     private CompiledExpressionInvoker _invoker;
 
     public VisualBasicValue()
@@ -44,40 +42,12 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
 
     public Expression GetExpressionTree()
     {
-        if (!IsMetadataCached)
+        if (IsMetadataCached)
         {
-            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+            return _invoker.GetExpressionTree();
         }
 
-        if (_expressionTree == null)
-        {
-            if (_invoker != null)
-            {
-                return _invoker.GetExpressionTree();
-            }
-
-            // it's safe to create this CodeActivityMetadata here,
-            // because we know we are using it only as lookup purpose.
-            var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
-            var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
-            try
-            {
-                _expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
-            }
-            catch (SourceExpressionException e)
-            {
-                throw FxTrace.Exception.AsError(
-                    new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message)));
-            }
-            finally
-            {
-                metadata.Dispose();
-            }
-        }
-
-        Fx.Assert(_expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
-        return ExpressionUtilities.RewriteNonCompiledExpressionTree(_expressionTree);
-
+        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
     }
 
     public bool CanConvertToString(IValueSerializerContext context) => true;
@@ -86,19 +56,11 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
 
     protected override TResult Execute(CodeActivityContext context)
     {
-        if (_expressionTree == null)
-        {
-            return (TResult) _invoker.InvokeExpression(context);
-        }
-
-        _compiledExpression ??= _expressionTree.Compile();
-
-        return _compiledExpression(context);
+        return (TResult)_invoker.InvokeExpression(context);
     }
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        _expressionTree = null;
         _invoker = new CompiledExpressionInvoker(this, false, metadata);
         if (metadata.Environment.CompileExpressions)
         {
@@ -111,18 +73,6 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
                          ExpressionText))
             {
                 AddTempValidationError(validationError);
-            }
-        }
-        else
-        {
-            try
-            {
-                var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-                _expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
-            }
-            catch (SourceExpressionException e)
-            {
-                metadata.AddValidationError(e.Message);
             }
         }
     }

@@ -23,10 +23,11 @@ namespace TestCases.Workflows.WF4Samples
     public abstract class ExpressionsBase
     {
         protected abstract bool CompileExpressions { get; }
-        protected Activity GetActivityFromXamlResource(TestXamls xamlName) => TestHelper.GetActivityFromXamlResource(xamlName, CompileExpressions);
+        protected DynamicActivity GetActivityFromXamlResource(TestXamls xamlName) => TestHelper.GetActivityFromXamlResource(xamlName, CompileExpressions);
         protected Activity Compile(TestXamls xamlName)
         {
             var activity = GetActivityFromXamlResource(xamlName);
+            ActivityXamlServices.Compile(activity, new());
             Compiler.Run(activity);
             return activity;
         }
@@ -39,6 +40,7 @@ Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, ave
         public void SalaryCalculation()
         {
             var activity = GetActivityFromXamlResource(TestXamls.SalaryCalculation);
+            ActivityXamlServices.Compile(activity, new());
             TestHelper.InvokeWorkflow(activity).ShouldBe(CorrectOutput);
         }
 
@@ -55,6 +57,7 @@ Iterate ArrayList
         public void NonGenericForEach()
         {
             var activity = GetActivityFromXamlResource(TestXamls.NonGenericForEach);
+            ActivityXamlServices.Compile(activity, new());
             TestHelper.InvokeWorkflow(activity).ShouldBe(ForEachCorrectOutput);
         }
     }
