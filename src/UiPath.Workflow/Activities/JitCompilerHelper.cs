@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime;
 using System.Runtime.Collections;
 using System.Threading;
 using Microsoft.VisualBasic.Activities;
@@ -34,7 +35,9 @@ internal abstract class JitCompilerHelper
         typeof(CodeTypeDeclaration).Assembly, // System
         typeof(Expression).Assembly, // System.Core
         typeof(Conversions).Assembly, //Microsoft.VisualBasic.Core
-        typeof(Activity).Assembly // System.Activities
+        typeof(Activity).Assembly, // System.Activities
+        Assembly.Load("System.Runtime"), // System.Runtime.dll
+        Assembly.Load("netstandard") // netstandard.dll
     };
 
     private static readonly object s_typeReferenceCacheLock = new();
