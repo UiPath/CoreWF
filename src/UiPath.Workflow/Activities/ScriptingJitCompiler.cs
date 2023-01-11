@@ -75,7 +75,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
             CreateExpressionCode(types, names, expressionToCompile.Code))));
         
-        var collectibleAlc = new AssemblyLoadContext("ScriptingAot" + Guid.NewGuid(), true);
+        var collectibleAlc = new AssemblyLoadContext("ScriptingJit" + Guid.NewGuid(), true);
         collectibleAlc.Resolving += CollectibleAlc_Resolving;
         using var scope = collectibleAlc.EnterContextualReflection();
         

@@ -5,6 +5,7 @@ using System.Activities.Runtime;
 using System.Collections;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace System.Activities.Expressions;
@@ -148,10 +149,22 @@ public class AssemblyReference
         // found starting from the end of the array of Assemblies
         // returned by AppDomain.GetAssemblies()
         Assembly[] currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        // For collectible assemblies, we need to ensure that they
+        // are not cached, but are usable in expressions.
+        var collectibleAssemblies = new Dictionary<string, Assembly>();
         for (int i = currentAssemblies.Length - 1; i >= 0; i--)
         {
             Assembly curAsm = currentAssemblies[i];
-            if (curAsm.IsDynamic)
+            if (curAsm.IsCollectible)
+            {
+                // ignore collectible assemblies in the caching process
+                collectibleAssemblies.Add(curAsm.FullName, curAsm);
+                collectibleAssemblies.Add(curAsm.GetName().Name, curAsm);
+                continue;
+            }
+
+            if (curAsm.IsDynamic || curAsm.IsCollectible)
             {
                 // ignore dynamic assemblies
                 continue;
@@ -179,6 +192,13 @@ public class AssemblyReference
             }
         }
 
+        // Collectible assemblies should never be cached.
+        // Load attempts should also be avoided for them.
+        if (collectibleAssemblies.TryGetValue(assemblyName.FullName, out var collectibleAsembly))
+        {
+            return collectibleAsembly;
+        }
+
         assembly = LoadAssembly(assemblyName);
         if (assembly != null)
         {
@@ -196,7 +216,7 @@ public class AssemblyReference
     // we don't cache DynamicAssemblies because they may be collectible and we don't want to root them
     internal static AssemblyName GetFastAssemblyName(Assembly assembly)
     {
-        if (assembly.IsDynamic)
+        if (assembly.IsDynamic || assembly.IsCollectible)
         {
             return new AssemblyName(assembly.FullName);
         }
