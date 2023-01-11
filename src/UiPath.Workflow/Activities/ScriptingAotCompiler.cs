@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -46,10 +47,10 @@ public abstract class ScriptingAotCompiler : AheadOfTimeCompiler
 
     public static TextExpressionCompilerResults BuildAssembly(Compilation compilation)
     {
-        return BuildAssembly(compilation, compilation.ScriptClass.Name);
+        return BuildAssembly(compilation, compilation.ScriptClass.Name, AssemblyLoadContext.Default);
     }
 
-    public static TextExpressionCompilerResults BuildAssembly(Compilation compilation, string typeName,
+    public static TextExpressionCompilerResults BuildAssembly(Compilation compilation, string typeName, AssemblyLoadContext loadContext = null,
         Stream copy = null)
     {
         var results = GetCompilerResults(compilation);
@@ -66,7 +67,8 @@ public abstract class ScriptingAotCompiler : AheadOfTimeCompiler
             return results;
         }
 
-        results.ResultType = Assembly.Load(stream.GetBuffer()).GetType(typeName, true);
+        stream.Position = 0;
+        results.ResultType = loadContext.LoadFromStream(stream).GetType(typeName, true);
         if (copy != null)
         {
             stream.Position = 0;
