@@ -1293,6 +1293,19 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         get => s_rawTreeCache ??= new HopperCache(RawTreeCacheMaxSize, false);
     }
 
+    public static void ClearRawTreeCache()
+    {
+        if (s_rawTreeCache == null)
+        {
+            return;
+        }
+
+        lock (s_rawTreeCacheLock)
+        {
+            s_rawTreeCache = new HopperCache(RawTreeCacheMaxSize, false);
+        }
+    }
+
     public string TextToCompile { get; }
 
     private HostedCompilerWrapper GetCachedHostedCompiler(HashSet<Assembly> assemblySet)

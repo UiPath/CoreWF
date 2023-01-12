@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Runtime.Loader;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -73,7 +74,12 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
                 .Select(GetTypeName));
         var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
             CreateExpressionCode(types, names, expressionToCompile.Code))));
-        var results = ScriptingAotCompiler.BuildAssembly(finalCompilation);
+        
+        var collectibleAlc = new AssemblyLoadContext("ScriptingJit" + Guid.NewGuid(), true);
+        collectibleAlc.Resolving += CollectibleAlc_Resolving;
+        using var scope = collectibleAlc.EnterContextualReflection();
+        
+        var results = ScriptingAotCompiler.BuildAssembly(finalCompilation, compilation.ScriptClass.Name, collectibleAlc);
         if (results.HasErrors)
         {
             var errorResults = new TextExpressionCompilerResults
@@ -86,6 +92,15 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         }
 
         return (LambdaExpression)results.ResultType.GetMethod("CreateExpression")!.Invoke(null, null);
+    }
+
+    private Assembly CollectibleAlc_Resolving(AssemblyLoadContext loadContext, AssemblyName assemblyName)
+    {
+        var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == assemblyName.FullName);
+        if (assembly != null)
+            return assembly;
+
+        return loadContext.LoadFromAssemblyName(assemblyName);
     }
 
     public IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree)

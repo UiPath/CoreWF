@@ -36,6 +36,8 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
             {
                 compilerCache.Clear();
             }
+
+            ClearRawTreeCache();
         };
     }
 
