@@ -23,27 +23,19 @@ jobs:
         Write-Host "##vso[task.setvariable variable=Version;]$fullVersion"
         Write-Host "Version that will be used is $fullVersion"
 
-  - task: DotNetCoreCLI@2
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: src
-      arguments: --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings
-      
-  - task: DeleteFiles@1
-    displayName: Remove tests output
-    inputs:
-      SourceFolder: src
-      Contents: |
-        UiPath.Workflow.Runtime\bin\$(BuildConfiguration)\*.*nupkg
-        UiPath.Workflow\bin\$(BuildConfiguration)\*.*nupkg
-        
   - task: MSBuild@1
     displayName: msbuild
     inputs:
       solution: src/UiPath.Workflow.sln
       configuration: $(BuildConfiguration)
-      msbuildArguments: /p:Version="$(Version)" /t:Rebuild
+      msbuildArguments: /t:restore /p:Version="$(Version)"
+
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: src
+      arguments: --no-build --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: Build.ArtifactStagingDirectory'
