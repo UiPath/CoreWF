@@ -43,7 +43,7 @@ jobs:
     inputs:
       solution: src/UiPath.Workflow.sln
       configuration: $(BuildConfiguration)
-      msbuildArguments: /t:restore /p:Version="$(Version)" /t:Rebuild
+      msbuildArguments: /p:Version="$(Version)" /t:Rebuild
       restoreNugetPackages: true
 
   - task: CopyFiles@2
