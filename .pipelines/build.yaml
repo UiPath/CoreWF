@@ -28,7 +28,7 @@ jobs:
     inputs:
       command: test
       projects: src
-      arguments: --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings
+      arguments: --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings /p:Version="$(Version)"
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: Build.ArtifactStagingDirectory'
