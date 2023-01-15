@@ -38,6 +38,7 @@ jobs:
         symbolsFolder: $(Pipeline.Workspace)/$(ArtifactName)/Symbols
         searchPattern: '**/*.pdb'
         symbolServerType: teamServices
+        indexSources: false
 
   - task: NuGetToolInstaller@1
     inputs:
