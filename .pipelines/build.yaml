@@ -44,7 +44,6 @@ jobs:
       solution: src/UiPath.Workflow.sln
       configuration: $(BuildConfiguration)
       msbuildArguments: /p:Version="$(Version)" /t:Rebuild
-      restoreNugetPackages: true
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: Build.ArtifactStagingDirectory'
