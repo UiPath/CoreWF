@@ -9,7 +9,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AgileObjects.ReadableExpressions" Version="3.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="4.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="$(RoslynPackageVersion)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynPackageVersion)" />
   </ItemGroup>
 </Project>
