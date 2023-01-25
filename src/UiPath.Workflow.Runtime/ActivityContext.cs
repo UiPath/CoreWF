@@ -146,7 +146,7 @@ public class ActivityContext
 
     public T GetValue<T>(string locationName) => GetValueCore<T>(GetLocationReference(locationName));
 
-    internal T GetInheritedValue<T>(string locationName) => GetInheritedLocation<T>(locationName).Value;
+    public T GetInheritedValue<T>(string locationName) => GetInheritedLocation<T>(locationName).Value;
 
     internal Location<T> GetInheritedLocation<T>(string locationName)
     {
