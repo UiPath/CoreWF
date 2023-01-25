@@ -102,23 +102,6 @@ public sealed class BpmFlowchart : NativeActivity
                 }
             }
         }
-    }
-    protected override void Execute(NativeActivityContext context)
-    {
-        if (StartNode != null)
-        {
-            if (TD.FlowchartStartIsEnabled())
-            {
-                TD.FlowchartStart(DisplayName);
-            }
-            StartNode.TryExecute(StartNode, context, null);
-        }
-        else
-        {
-            if (TD.FlowchartEmptyIsEnabled())
-            {
-                TD.FlowchartEmpty(DisplayName);
-            }
-        }
-    }
+    }           
+    protected override void Execute(NativeActivityContext context) => StartNode?.TryExecute(StartNode, context, null);
 }

@@ -24,13 +24,6 @@ public sealed class BpmStep : BpmNode
     }
     protected override void Execute(NativeActivityContext context)
     {
-        if (Next == null)
-        {
-            if (TD.FlowchartNextNullIsEnabled())
-            {
-                TD.FlowchartNextNull(Owner.DisplayName);
-            }
-        }
         if (Action == null)
         {
             OnCompleted(context, null);

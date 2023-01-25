@@ -41,34 +41,6 @@ public sealed class BpmSwitch<T> : BpmNode
         _onCompleted ??= new(OnCompleted);
         context.ScheduleActivity(Expression, _onCompleted);
     }
-    BpmNode GetNextNode(T value)
-    {
-        if (Cases.TryGetValue(value, out BpmNode result))
-        {
-            if (TD.FlowchartSwitchCaseIsEnabled())
-            {
-                TD.FlowchartSwitchCase(Owner.DisplayName, value?.ToString());
-            }
-            return result;
-        }
-        else
-        {
-            if (Default != null)
-            {
-                if (TD.FlowchartSwitchDefaultIsEnabled())
-                {
-                    TD.FlowchartSwitchDefault(Owner.DisplayName);
-                }
-            }
-            else
-            {
-                if (TD.FlowchartSwitchCaseNotFoundIsEnabled())
-                {
-                    TD.FlowchartSwitchCaseNotFound(Owner.DisplayName);
-                }
-            }
-            return Default;
-        }
-    }
+    BpmNode GetNextNode(T value) => Cases.TryGetValue(value, out BpmNode result) ? result : Default;
     internal void OnCompleted(NativeActivityContext context, ActivityInstance completedInstance, T result) => TryExecute(GetNextNode(result), context, completedInstance);
 }
