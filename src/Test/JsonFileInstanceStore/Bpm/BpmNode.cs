@@ -4,6 +4,7 @@ using UiPath.Workflow.Runtime;
 namespace System.Activities.Statements;
 public abstract class BpmNode : GoToTargetActivity
 {
+    private string _parentId;
     private BpmFlowchart _owner;
     internal int Index { get; set; } = -1;
     internal BpmFlowchart Owner => _owner;
@@ -11,8 +12,20 @@ public abstract class BpmNode : GoToTargetActivity
     // Returns true if this is the first time we've visited this node during this pass
     internal bool Open(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
+        if (_parentId != null)
+        {
+            // We've already visited this node during this pass
+            if (!ReferenceEquals(_owner, owner))
+            {
+                metadata.AddValidationError(SR.FlowNodeCannotBeShared(_owner.DisplayName, owner.DisplayName));
+            }
+            // Whether we found an issue or not we don't want to change
+            // the metadata during this pass.
+            return false;
+        }
         // if owner.ValidateUnconnectedNodes - BpmFlowchart will be responsible for calling OnOpen for all the Nodes (connected and unconnected)
         _owner = owner;
+        _parentId = owner.Id;
         Index = -1;
         return true;
     }

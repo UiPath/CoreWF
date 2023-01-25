@@ -208,7 +208,7 @@ public class SR : StringResourceBase
     public static string FlowchartContainsUnconnectedNodes(object p0) => Instance["FlowchartContainsUnconnectedNodes", p0];
     public static string FlowchartMissingStartNode(object p0) => Instance["FlowchartMissingStartNode", p0];
     public static string FlowDecisionRequiresCondition(object p0) => Instance["FlowDecisionRequiresCondition", p0];
-    internal static string FlowNodeCannotBeShared(object p0, object p1) => Instance["FlowNodeCannotBeShared", p0, p1];
+    public static string FlowNodeCannotBeShared(object p0, object p1) => Instance["FlowNodeCannotBeShared", p0, p1];
     public static string FlowSwitchRequiresExpression(object p0) => Instance["FlowSwitchRequiresExpression", p0];
     internal static string ForEachRequiresNonNullValues(object p0) => Instance["ForEachRequiresNonNullValues", p0];
     internal static string GenericInstanceCommand(object p0) => Instance["GenericInstanceCommand", p0];
