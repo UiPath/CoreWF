@@ -1,7 +1,7 @@
 using System.Activities.Hosting;
 using System.Activities.Runtime;
 namespace System.Activities.Statements;
-internal class ResumeBookmarkExtension : IWorkflowInstanceExtension
+public class ResumeBookmarkExtension : IWorkflowInstanceExtension
 {
     private WorkflowInstanceProxy _instance;
     public static void Install(NativeActivityMetadata metadata) => metadata.AddDefaultExtensionProvider(static()=>new ResumeBookmarkExtension());

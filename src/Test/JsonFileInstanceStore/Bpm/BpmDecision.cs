@@ -1,4 +1,6 @@
 using System.Activities.Expressions;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Windows.Markup;
 namespace System.Activities.Statements;
@@ -6,8 +8,8 @@ public sealed class BpmDecision : BpmNode
 {
     private CompletionCallback<bool> _onCompleted;
     public BpmDecision() { }
-    public BpmDecision(Expression<Func<ActivityContext, bool>> condition) => Condition = new LambdaValue<bool>(condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition)));
-    public BpmDecision(Activity<bool> condition) => Condition = condition ?? throw FxTrace.Exception.ArgumentNull(nameof(condition));
+    public BpmDecision(Expression<Func<ActivityContext, bool>> condition) => Condition = new LambdaValue<bool>(condition ?? throw new ArgumentNullException(nameof(condition)));
+    public BpmDecision(Activity<bool> condition) => Condition = condition ?? throw new ArgumentNullException(nameof(condition));
     [DefaultValue(null)]
     public Activity<bool> Condition { get; set; }
     [DefaultValue(null)]
@@ -20,7 +22,7 @@ public sealed class BpmDecision : BpmNode
     {
         if (Condition == null)
         {
-            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(Parent.DisplayName));
+            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(Owner.DisplayName));
         }
         else
         {

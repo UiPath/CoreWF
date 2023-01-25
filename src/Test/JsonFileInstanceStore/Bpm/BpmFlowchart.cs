@@ -1,6 +1,8 @@
 using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Markup;
 namespace System.Activities.Statements;
@@ -23,7 +25,7 @@ public sealed class BpmFlowchart : NativeActivity
                 {
                     if (item == null)
                     {
-                        throw FxTrace.Exception.ArgumentNull(nameof(item));
+                        throw new ArgumentNullException(nameof(item));
                     }
                 }
             };
@@ -66,7 +68,7 @@ public sealed class BpmFlowchart : NativeActivity
     {
         if (node.Open(this, metadata))
         {
-            Fx.Assert(node.Index == -1 && !_reachableNodes.Contains(node), "Corrupt BpmFlowchart.reachableNodes.");
+            System.Diagnostics.Debug.Assert(node.Index == -1 && !_reachableNodes.Contains(node), "Corrupt BpmFlowchart.reachableNodes.");
             node.Index = _reachableNodes.Count;
             _reachableNodes.Add(node);
             return true;
@@ -75,7 +77,7 @@ public sealed class BpmFlowchart : NativeActivity
     }
     private static void DepthFirstVisitNodes(Func<BpmNode, bool> visitNodeCallback, BpmNode start)
     {
-        Fx.Assert(visitNodeCallback != null, "This must be supplied since it stops us from infinitely looping.");
+        System.Diagnostics.Debug.Assert(visitNodeCallback != null, "This must be supplied since it stops us from infinitely looping.");
         List<BpmNode> connected = new();
         Stack<BpmNode> stack = new();
         if (start == null)

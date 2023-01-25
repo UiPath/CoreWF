@@ -1,5 +1,7 @@
 ﻿using System.Activities.Runtime.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 namespace System.Activities.Statements;
 public class BpmParallel : BpmNode
 {

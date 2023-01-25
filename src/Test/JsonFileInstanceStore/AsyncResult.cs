@@ -100,7 +100,7 @@ namespace JsonFileInstanceStore
             {
                 // If we completedSynchronously, then there is no chance that the manualResetEvent was created so
                 // we do not need to worry about a race condition.
-                Debug.Assert(_manualResetEvent == null, "No ManualResetEvent should be created for a synchronous AsyncResult.");
+                System.Diagnostics.Debug.Assert(_manualResetEvent == null, "No ManualResetEvent should be created for a synchronous AsyncResult.");
                 _isCompleted = true;
             }
             else

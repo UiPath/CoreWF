@@ -1,5 +1,7 @@
 using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Markup;
 namespace System.Activities.Statements;
 [ContentProperty("Cases")]
@@ -11,17 +13,16 @@ public sealed class BpmSwitch<T> : BpmNode
     public Activity<T> Expression { get; set; }
     [DefaultValue(null)]
     public BpmNode Default { get; set; }
-    [Fx.Tag.KnownXamlExternal]
     public IDictionary<T, BpmNode> Cases => _cases;
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         if (Expression == null)
         {
-            metadata.AddValidationError(SR.FlowSwitchRequiresExpression(Parent.DisplayName));
+            metadata.AddValidationError(SR.FlowSwitchRequiresExpression(Owner.DisplayName));
         }
         else
         {
-            AddChild(Expression);
+            metadata.AddChild(Expression);
         }
     }
     internal override void GetConnectedNodes(IList<BpmNode> connections)

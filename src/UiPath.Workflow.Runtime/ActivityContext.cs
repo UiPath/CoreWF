@@ -42,7 +42,7 @@ public class ActivityContext
 
     internal Activity Activity { get; private set; }
 
-    internal ActivityInstance CurrentInstance => _instance;
+    public ActivityInstance CurrentInstance => _instance;
 
     internal ActivityExecutor CurrentExecutor => _executor;
 
