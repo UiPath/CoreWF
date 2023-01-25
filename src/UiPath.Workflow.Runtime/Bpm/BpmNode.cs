@@ -1,13 +1,13 @@
 using System.Activities.Runtime;
+using UiPath.Workflow.Runtime;
 namespace System.Activities.Statements;
-public abstract class BpmNode : NativeActivity
+public abstract class BpmNode : GoToTargetActivity
 {
     private BpmFlowchart _owner;
     private int _cacheId;
     internal int Index { get; set; } = -1;
     internal BpmFlowchart Owner => _owner;
     protected override void CacheMetadata(NativeActivityMetadata metadata){}
-    internal override bool CanBeScheduledBy(Activity parent) => parent is BpmNode || parent is BpmFlowchart;
     // Returns true if this is the first time we've visited this node during this pass
     internal bool Open(BpmFlowchart owner, NativeActivityMetadata metadata)
     {
