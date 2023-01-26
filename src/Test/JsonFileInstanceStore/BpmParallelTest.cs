@@ -3,10 +3,9 @@ using System.Activities;
 using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Threading;
-using Test.Common.TestObjects.CustomActivities;
+using UiPath.Bpm.Activities;
 using Xunit;
 namespace TestCases.Activities.Bpm;
-using Sequence = System.Activities.Statements.Sequence;
 public class BpmParallelTest
 {
     [Fact]
@@ -94,4 +93,38 @@ public class ActivityWithResult<TResult> : NativeActivity<TResult>
         }
         context.SetValue(Result, value);
     });
+}
+public class BlockingActivity : NativeActivity
+{
+    public BlockingActivity()
+    {
+    }
+
+    public BlockingActivity(string displayName)
+    {
+        this.DisplayName = displayName;
+    }
+
+    protected override void CacheMetadata(NativeActivityMetadata metadata)
+    {
+        // nothing to do
+    }
+
+    protected override void Execute(NativeActivityContext context)
+    {
+        context.CreateBookmark(this.DisplayName, new BookmarkCallback(OnBookmarkResumed));
+    }
+
+    private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
+    {
+        // No-op
+    }
+
+    protected override bool CanInduceIdle
+    {
+        get
+        {
+            return true;
+        }
+    }
 }

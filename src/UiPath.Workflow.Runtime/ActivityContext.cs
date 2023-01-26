@@ -131,7 +131,7 @@ public class ActivityContext
         }
     }
 
-    internal InheritVariablesHelper InheritVariables() => new(this);
+    public InheritVariablesHelper InheritVariables() => new(this);
 
     public readonly struct InheritVariablesHelper : IDisposable
     {
