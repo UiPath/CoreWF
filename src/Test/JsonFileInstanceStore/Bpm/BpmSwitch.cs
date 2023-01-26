@@ -3,7 +3,7 @@ using System.Activities.Runtime.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Markup;
-namespace System.Activities.Statements;
+namespace UiPath.Bpm.Activities;
 [ContentProperty("Cases")]
 public sealed class BpmSwitch<T> : BpmNode
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-namespace System.Activities.Statements;
+namespace UiPath.Bpm.Activities;
 public class BpmParallel : BpmNode
 {
     private ValidatingCollection<BpmNode> _branches;

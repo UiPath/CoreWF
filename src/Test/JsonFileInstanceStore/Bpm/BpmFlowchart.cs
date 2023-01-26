@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Markup;
-namespace System.Activities.Statements;
+namespace UiPath.Bpm.Activities;
 [ContentProperty("Nodes")]
 public sealed class BpmFlowchart : NativeActivity
 {

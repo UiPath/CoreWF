@@ -1,9 +1,9 @@
 ﻿using System.Activities.Runtime.Collections;
+using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-
-namespace System.Activities.Statements;
+namespace UiPath.Bpm.Activities;
 public class BpmJoin : BpmNode
 {
     ValidatingCollection<BpmNode> _branches;

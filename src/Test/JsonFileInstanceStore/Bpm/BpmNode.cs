@@ -1,7 +1,7 @@
 using System.Activities.Runtime;
 using System.Collections.Generic;
 using UiPath.Workflow.Runtime;
-namespace System.Activities.Statements;
+namespace UiPath.Bpm.Activities;
 public abstract class BpmNode : GoToTargetActivity
 {
     private string _parentId;

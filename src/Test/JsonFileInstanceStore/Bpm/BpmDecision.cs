@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Windows.Markup;
-namespace System.Activities.Statements;
+namespace UiPath.Bpm.Activities;
 public sealed class BpmDecision : BpmNode
 {
     private CompletionCallback<bool> _onCompleted;
