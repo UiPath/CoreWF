@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace System.Activities;
 
-internal abstract class StringResourceBase
+public abstract class StringResourceBase
 {
     protected internal abstract ResourceManager ResourceManager { get; }
 

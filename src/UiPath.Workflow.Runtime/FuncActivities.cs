@@ -5,13 +5,7 @@ public class Value<TResult> : CodeActivity<TResult>
 {
     private readonly string _locationName;
     public Value(string locationName) => _locationName = locationName ?? throw new ArgumentNullException(nameof(locationName));
-    protected override TResult Execute(CodeActivityContext context)
-    {
-        using (context.InheritVariables())
-        {
-            return context.GetValue<TResult>(_locationName);
-        }
-    }
+    protected override TResult Execute(CodeActivityContext context) => context.GetInheritedValue<TResult>(_locationName);
 }
 public class FuncValue<TResult> : CodeActivity<TResult>
 {

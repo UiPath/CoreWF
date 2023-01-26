@@ -363,9 +363,7 @@ internal sealed class InternalState : NativeActivity<string>
 
         if (completedEvent != null)
         {
-            StateMachineExtension extension = context.GetExtension<StateMachineExtension>();
-            Fx.Assert(extension != null, "Failed to obtain a StateMachineExtension.");
-            extension.ResumeBookmark(completedEvent.Bookmark);
+            ResumeBookmarkExtension.Resume(context, completedEvent.Bookmark);
         }
     }
 
