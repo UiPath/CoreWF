@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace System.Activities.Runtime.Collections;
 
-internal class NullableKeyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+public class NullableKeyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
 {
     private bool _isNullKeyPresent;
     private TValue _nullKeyValue;

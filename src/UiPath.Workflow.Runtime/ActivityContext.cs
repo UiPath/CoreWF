@@ -42,7 +42,7 @@ public class ActivityContext
 
     internal Activity Activity { get; private set; }
 
-    internal ActivityInstance CurrentInstance => _instance;
+    public ActivityInstance CurrentInstance => _instance;
 
     internal ActivityExecutor CurrentExecutor => _executor;
 
@@ -131,7 +131,7 @@ public class ActivityContext
         }
     }
 
-    internal InheritVariablesHelper InheritVariables() => new(this);
+    public InheritVariablesHelper InheritVariables() => new(this);
 
     public readonly struct InheritVariablesHelper : IDisposable
     {
@@ -145,6 +145,8 @@ public class ActivityContext
     }
 
     public T GetValue<T>(string locationName) => GetValueCore<T>(GetLocationReference(locationName));
+
+    public T GetInheritedValue<T>(string locationName) => GetInheritedLocation<T>(locationName).Value;
 
     internal Location<T> GetInheritedLocation<T>(string locationName)
     {

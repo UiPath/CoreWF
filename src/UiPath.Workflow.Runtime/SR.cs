@@ -5,7 +5,7 @@ using System.Resources;
 
 namespace System.Activities;
 
-internal class SR : StringResourceBase
+public class SR : StringResourceBase
 {
     internal static readonly SR Instance = new();
 
@@ -205,11 +205,11 @@ internal class SR : StringResourceBase
     internal static string FaultContextNotFound(object p0) => Instance["FaultContextNotFound", p0];
     internal static string FinalStateCannotHaveProperty(object p0, object p1) => Instance["FinalStateCannotHaveProperty", p0, p1];
     internal static string FinalStateCannotHaveTransition(object p0) => Instance["FinalStateCannotHaveTransition", p0];
-    internal static string FlowchartContainsUnconnectedNodes(object p0) => Instance["FlowchartContainsUnconnectedNodes", p0];
-    internal static string FlowchartMissingStartNode(object p0) => Instance["FlowchartMissingStartNode", p0];
-    internal static string FlowDecisionRequiresCondition(object p0) => Instance["FlowDecisionRequiresCondition", p0];
-    internal static string FlowNodeCannotBeShared(object p0, object p1) => Instance["FlowNodeCannotBeShared", p0, p1];
-    internal static string FlowSwitchRequiresExpression(object p0) => Instance["FlowSwitchRequiresExpression", p0];
+    public static string FlowchartContainsUnconnectedNodes(object p0) => Instance["FlowchartContainsUnconnectedNodes", p0];
+    public static string FlowchartMissingStartNode(object p0) => Instance["FlowchartMissingStartNode", p0];
+    public static string FlowDecisionRequiresCondition(object p0) => Instance["FlowDecisionRequiresCondition", p0];
+    public static string FlowNodeCannotBeShared(object p0, object p1) => Instance["FlowNodeCannotBeShared", p0, p1];
+    public static string FlowSwitchRequiresExpression(object p0) => Instance["FlowSwitchRequiresExpression", p0];
     internal static string ForEachRequiresNonNullValues(object p0) => Instance["ForEachRequiresNonNullValues", p0];
     internal static string GenericInstanceCommand(object p0) => Instance["GenericInstanceCommand", p0];
     internal static string GenericInstanceCommandNull => Instance["GenericInstanceCommandNull"];

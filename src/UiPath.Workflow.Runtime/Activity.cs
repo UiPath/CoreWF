@@ -317,7 +317,7 @@ public abstract partial class Activity
 
     internal virtual bool IsResultArgument(RuntimeArgument argument) => false;
 
-    internal bool CanBeScheduledBy(Activity parent)
+    internal virtual bool CanBeScheduledBy(Activity parent)
     {
         // fast path if we're the sole (or first) child
         if (ReferenceEquals(parent, Parent))
