@@ -57,6 +57,32 @@ public sealed class ActivityInstance
         ImplementationVersion = activity.ImplementationVersion;
     }
 
+    /// <summary>
+    /// The values of the out arguments.
+    /// </summary>
+    /// <returns>null when there is nothing to return</returns>
+    public Dictionary<string, object> GetOutputs()
+    {
+        Fx.Assert(ActivityUtilities.IsCompletedState(State), "We should only gather outputs when in a completed state.");
+        Fx.Assert(_environment != null, "We should have set the root environment");
+        // We only gather outputs for Closed - not for canceled or faulted
+        if (State != ActivityInstanceState.Closed)
+        {
+            return null;
+        }
+        Dictionary<string, object> outputs = null;
+        foreach (var argument in Activity.RuntimeArguments)
+        {
+            if (!ArgumentDirectionHelper.IsOut(argument.Direction))
+            {
+                continue;
+            }
+            outputs ??= new();
+            outputs.Add(argument.Name, _environment.GetValue(argument));
+        }
+        return outputs;
+    }
+
     public Activity Activity
     {
         get => _activity;

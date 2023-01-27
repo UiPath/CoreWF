@@ -444,7 +444,11 @@ public class NativeActivityContext : ActivityContext
 
     public ActivityInstance ScheduleActivity(Activity activity, FaultCallback onFaulted) => ScheduleActivity(activity, null, onFaulted);
 
-    public ActivityInstance ScheduleActivity(Activity activity, CompletionCallback onCompleted, FaultCallback onFaulted)
+    public ActivityInstance ScheduleActivity(Activity activity, CompletionCallback onCompleted, FaultCallback onFaulted) =>
+        ScheduleActivity(activity, onCompleted, onFaulted, null);
+
+    public ActivityInstance ScheduleActivity(Activity activity, CompletionCallback onCompleted, FaultCallback onFaulted, 
+        IDictionary<string, object> argumentValueOverrides)
     {
         ThrowIfDisposed();
 
@@ -479,10 +483,11 @@ public class NativeActivityContext : ActivityContext
             }
         }
 
-        return InternalScheduleActivity(activity, completionBookmark, faultBookmark);
+        return InternalScheduleActivity(activity, completionBookmark, faultBookmark, argumentValueOverrides);
     }
 
-    private ActivityInstance InternalScheduleActivity(Activity activity, CompletionBookmark onCompleted, FaultBookmark onFaulted)
+    private ActivityInstance InternalScheduleActivity(Activity activity, CompletionBookmark onCompleted, FaultBookmark onFaulted,
+        IDictionary<string, object> argumentValueOverrides = null)
     {
         ActivityInstance parent = CurrentInstance;
 
@@ -512,8 +517,7 @@ public class NativeActivityContext : ActivityContext
             return ActivityInstance.CreateCanceledInstance(activity);
         }
 
-        return _executor.ScheduleActivity(activity, parent, onCompleted,
-            onFaulted, null);
+        return _executor.ScheduleActivity(activity, parent, onCompleted, onFaulted, null, argumentValueOverrides);
     }
 
     //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
