@@ -74,6 +74,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
                 mainTypeName: null,
                 globalImports: globalImports,
                 rootNamespace: "",
+                optionStrict: OptionStrict.On,
                 optionInfer: true,
                 optionExplicit: true,
                 optionCompareText: false,

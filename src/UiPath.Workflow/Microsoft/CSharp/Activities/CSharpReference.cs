@@ -49,6 +49,15 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
+
+        if (metadata.Environment.IsValidating)
+        {
+            foreach (var validationError in VbExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment,
+                         ExpressionText))
+            {
+                AddTempValidationError(validationError);
+            }
+        }
     }
 
     protected override Location<TResult> Execute(CodeActivityContext context)

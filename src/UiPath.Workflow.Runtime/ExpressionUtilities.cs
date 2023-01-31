@@ -1928,13 +1928,4 @@ internal static class ExpressionUtilities
 
         return hasChanged;
     }
-
-    internal static Expression RewriteNonCompiledExpressionTree(LambdaExpression originalLambdaExpression)
-    {
-        ExpressionTreeRewriter expressionVisitor = new();
-        return expressionVisitor.Visit(Expression.Lambda(
-            typeof(Func<,>).MakeGenericType(typeof(ActivityContext), originalLambdaExpression.ReturnType),
-            originalLambdaExpression.Body,
-            new ParameterExpression[] { RuntimeContextParameter }));
-    }
 }
