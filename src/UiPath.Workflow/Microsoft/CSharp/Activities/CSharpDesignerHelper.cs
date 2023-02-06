@@ -5,6 +5,7 @@ using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.VisualBasic.Activities;
 
@@ -15,8 +16,38 @@ internal class CSharpHelper : JitCompilerHelper<CSharpHelper>
     public CSharpHelper(string expressionText, HashSet<AssemblyName> refAssemNames,
         HashSet<string> namespaceImportsNames) : base(expressionText, refAssemNames, namespaceImportsNames) { }
 
+    private CSharpHelper(string expressionText) : base(expressionText) { }
+
     protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => 
         new CSharpJitCompiler(references);
+
+    public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText,
+        CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
+    {
+        GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out var localNamespaces,
+            out var localAssemblies);
+        var helper = new CSharpHelper(expressionText);
+        var localReferenceAssemblies = new HashSet<AssemblyName>();
+        var localImports = new HashSet<string>(localNamespaces);
+        foreach (var assemblyReference in localAssemblies)
+        {
+            if (assemblyReference.Assembly != null)
+            {
+                // directly add the Assembly to the list
+                // so that we don't have to go through 
+                // the assembly resolution process
+                helper.ReferencedAssemblies ??= new HashSet<Assembly>();
+                helper.ReferencedAssemblies.Add(assemblyReference.Assembly);
+            }
+            else if (assemblyReference.AssemblyName != null)
+            {
+                localReferenceAssemblies.Add(assemblyReference.AssemblyName);
+            }
+        }
+
+        helper.Initialize(localReferenceAssemblies, localImports);
+        return helper.Compile<T>(publicAccessor, isLocationExpression);
+    }
 }
 
 internal class CSharpExpressionFactory<T> : ExpressionFactory

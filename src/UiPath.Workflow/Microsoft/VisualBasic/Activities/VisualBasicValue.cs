@@ -6,13 +6,11 @@ using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
-using System.Activities.Runtime;
 using System.Activities.XamlIntegration;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Markup;
-using ActivityContext = System.Activities.ActivityContext;
 
 namespace Microsoft.VisualBasic.Activities;
 
@@ -42,12 +40,27 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
 
     public Expression GetExpressionTree()
     {
-        if (IsMetadataCached)
-        {
-            return _invoker.GetExpressionTree();
-        }
+        if (!IsMetadataCached)
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
-        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(Compile());
+    }
+
+    public object ExecuteInContext(CodeActivityContext context)
+    {
+        var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), true);
+        try
+        {
+            context.Reinitialize(context.CurrentInstance, context.CurrentExecutor, this, context.CurrentInstance.InternalId);
+
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+            var lambda = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+            return lambda.Compile().Invoke(context);
+        }
+        finally
+        {
+            metadata.Dispose();
+        }
     }
 
     public bool CanConvertToString(IValueSerializerContext context) => true;
@@ -74,6 +87,25 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
             {
                 AddTempValidationError(validationError);
             }
+        }
+    }
+
+    private LambdaExpression Compile()
+    {
+        var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
+        var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
+        try
+        {
+            return VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+        }
+        catch (SourceExpressionException e)
+        {
+            throw FxTrace.Exception.AsError(
+                new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message)));
+        }
+        finally
+        {
+            metadata.Dispose();
         }
     }
 }
