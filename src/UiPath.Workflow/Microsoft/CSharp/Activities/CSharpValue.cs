@@ -3,6 +3,7 @@
 
 using System;
 using System.Activities;
+using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.ComponentModel;
@@ -38,12 +39,27 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 
     public Expression GetExpressionTree()
     {
-        if (IsMetadataCached)
-        {
-            return _invoker.GetExpressionTree();
-        }
+        if (!IsMetadataCached)
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
-        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(Compile());
+    }
+
+    public object ExecuteInContext(CodeActivityContext context)
+    {
+        var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), true);
+        try
+        {
+            context.Reinitialize(context.CurrentInstance, context.CurrentExecutor, this, context.CurrentInstance.InternalId);
+
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+            var lambda = CSharpHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+            return lambda.Compile().Invoke(context);
+        }
+        finally
+        {
+            metadata.Dispose();
+        }
     }
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
@@ -66,6 +82,25 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 
     protected override TResult Execute(CodeActivityContext context)
     {
-        return (TResult) _invoker.InvokeExpression(context);
+        return (TResult)_invoker.InvokeExpression(context);
+    }
+
+    private LambdaExpression Compile()
+    {
+        var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
+        var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
+        try
+        {
+            return CSharpHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+        }
+        catch (SourceExpressionException e)
+        {
+            throw FxTrace.Exception.AsError(
+                new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(e.Message)));
+        }
+        finally
+        {
+            metadata.Dispose();
+        }
     }
 }
