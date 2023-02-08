@@ -71,6 +71,8 @@ public class XamlDebuggerXmlReader : XamlReader, IXamlLineInfo
     private readonly Dictionary<XamlNode, DocumentRange> _initializationValueRanges;
     private readonly Stack<XamlNode> _objectDeclarationRecords;
     private readonly XamlSchemaContext _schemaContext;
+    private readonly DebuggerSerializerContext _serializerContext;
+    private readonly object _serializerContextLock = new();
     private readonly IXamlLineInfo _xamlLineInfo;
     private XamlMember _endColumnMember;
     private XamlMember _endLineMember;
@@ -104,6 +106,7 @@ public class XamlDebuggerXmlReader : XamlReader, IXamlLineInfo
         _initializationValueRanges = new Dictionary<XamlNode, DocumentRange>();
         _bufferedXamlNodes = new Queue<XamlNode>();
         Current = CreateCurrentNode();
+        _serializerContext = new DebuggerSerializerContext(_schemaContext);
         SourceLocationFound += SetSourceLocation;
     }
 
@@ -132,6 +135,7 @@ public class XamlDebuggerXmlReader : XamlReader, IXamlLineInfo
         _objectDeclarationRecords = new Stack<XamlNode>();
         _bufferedXamlNodes = new Queue<XamlNode>();
         Current = CreateCurrentNode();
+        _serializerContext = new DebuggerSerializerContext(_schemaContext);
         SourceLocationFound += SetSourceLocation;
     }
 
@@ -308,34 +312,97 @@ public class XamlDebuggerXmlReader : XamlReader, IXamlLineInfo
 
     internal static void SetSourceLocation(object sender, SourceLocationFoundEventArgs args)
     {
-        var target = args.Target;
-        var targetType = target.GetType();
-        var reader = (XamlDebuggerXmlReader) sender;
-        var shouldStoreAttachedProperty = false;
+        var reader = (XamlDebuggerXmlReader)sender;
 
-        if (reader.CollectNonActivitySourceLocation)
+        if (!reader.CanCollectSourceLocation(args))
         {
-            shouldStoreAttachedProperty = targetType != typeof(string);
+            return;
         }
-        else
+
+        var target = args.Target;
+        var sourceLocation = args.SourceLocation;
+        SetStartLine(target, sourceLocation.StartLine);
+        SetStartColumn(target, sourceLocation.StartColumn);
+        SetEndLine(target, sourceLocation.EndLine);
+        SetEndColumn(target, sourceLocation.EndColumn);
+    }
+
+    /// <summary>
+    /// Should return false when System.Xaml.XamlObjectReader.MemberMarkupInfo.GetPropertyValueInfoInternal ThrowIfPropertiesAreAttached
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    private bool CanCollectSourceLocation(SourceLocationFoundEventArgs args)
+    {
+        if (args.IsValueNode)
         {
-            if (typeof(Activity).IsAssignableFrom(targetType) &&
-                !typeof(IExpressionContainer).IsAssignableFrom(targetType) &&
-                !typeof(IValueSerializableExpression).IsAssignableFrom(targetType))
+            return false;
+        }
+
+        var propertyValue = args.Target;
+
+        if (propertyValue == null)
+        {
+            return true;
+        }
+
+        var targetType = propertyValue.GetType();
+
+        if (!CollectNonActivitySourceLocation)
+        {
+            return typeof(Activity).IsAssignableFrom(targetType) &&
+                   !typeof(IExpressionContainer).IsAssignableFrom(targetType) &&
+                   !typeof(IValueSerializableExpression).IsAssignableFrom(targetType);
+        }
+        
+        var xamlType = SchemaContext.GetXamlType(targetType);
+
+        if (IsXamlTemplate(Member, xamlType))
+        {
+            return true;
+        }
+
+        if (propertyValue is string)
+        {
+            return false;
+        }
+
+        var actualTypeConverter = xamlType?.TypeConverter?.ConverterInstance;
+        var propertyConverter = Member?.TypeConverter?.ConverterInstance ?? actualTypeConverter;
+        var valueSerializer = (Member?.ValueSerializer ?? xamlType?.ValueSerializer)?.ConverterInstance;
+
+        if (propertyConverter == null)
+        {
+            return true;
+        }
+
+        lock (_serializerContextLock)
+        {
+            _serializerContext.Instance = propertyValue;
+            
+            try
             {
-                shouldStoreAttachedProperty = true;
+                if (_serializerContext.CanSerializeToString(valueSerializer, propertyConverter, actualTypeConverter, propertyValue))
+                {
+                    return false;
+                }
+
+                if (_serializerContext.CanConvertToMarkupExtension(propertyConverter, propertyValue))
+                {
+                    return true;
+                }
+
+                return !_serializerContext.CanConvertToString(propertyConverter, propertyValue);
+            }
+            finally
+            {
+                _serializerContext.Instance = null;
             }
         }
 
-        shouldStoreAttachedProperty = shouldStoreAttachedProperty && !args.IsValueNode;
-
-        if (shouldStoreAttachedProperty)
+        static bool IsXamlTemplate(XamlMember xamlProperty, XamlType xamlType)
         {
-            var sourceLocation = args.SourceLocation;
-            SetStartLine(target, sourceLocation.StartLine);
-            SetStartColumn(target, sourceLocation.StartColumn);
-            SetEndLine(target, sourceLocation.EndLine);
-            SetEndColumn(target, sourceLocation.EndColumn);
+            return xamlProperty?.DeferringLoader != null || xamlType?.DeferringLoader != null;
         }
     }
 
