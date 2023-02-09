@@ -1,6 +1,8 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Microsoft.VisualBasic.Activities;
+using Microsoft.VisualBasic.CompilerServices;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
@@ -11,11 +13,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime;
 using System.Runtime.Collections;
 using System.Threading;
-using Microsoft.VisualBasic.Activities;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace System.Activities;
 
@@ -26,6 +25,7 @@ internal abstract class JitCompilerHelper
     // cache for type's all base types, interfaces, generic arguments, element type
     // HopperCache is a pseudo-MRU cache
     private const int TypeReferenceCacheMaxSize = 100;
+    private static IReadOnlyCollection<AssemblyReference> _defaultAssemblyReferences;
 
     // the following assemblies are provided to the compiler by default
     // items are public so the decompiler knows which assemblies it doesn't need to reference for interfaces
@@ -37,8 +37,11 @@ internal abstract class JitCompilerHelper
         typeof(Conversions).Assembly, //Microsoft.VisualBasic.Core
         typeof(Activity).Assembly, // System.Activities
         Assembly.Load("System.Runtime"), // System.Runtime.dll
-        Assembly.Load("netstandard") // netstandard.dll
+        Assembly.Load("netstandard"), // netstandard.dll
+        typeof(JitCompilerHelper).Assembly // UiPath.Workflow
     };
+
+    public static IReadOnlyCollection<AssemblyReference> DefaultAssemblyReferences => _defaultAssemblyReferences ??= DefaultReferencedAssemblies.Select(a => new AssemblyReference(a.GetName().Name)).ToList();
 
     private static readonly object s_typeReferenceCacheLock = new();
     private static readonly HopperCache s_typeReferenceCache = new(TypeReferenceCacheMaxSize, false);
@@ -61,7 +64,7 @@ internal abstract class JitCompilerHelper
     protected virtual void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
     {
         SanitizeNamespaces(namespaceImportsNames);
-        
+
         NamespaceImports = namespaceImportsNames;
 
         foreach (var assemblyName in refAssemNames)
@@ -100,7 +103,7 @@ internal abstract class JitCompilerHelper
         out List<AssemblyReference> assemblies)
     {
         var namespaceList = new List<string>();
-        var assemblyList = new List<AssemblyReference>();
+        var assemblyList = new List<AssemblyReference>(DefaultAssemblyReferences);
 
         // Start with the defaults; any settings on the Activity will be added to these
         // The default settings are mutable, so we need to re-copy this list on every call
@@ -261,7 +264,7 @@ internal abstract class JitCompilerHelper
             case ExpressionType.Subtract:
             case ExpressionType.SubtractChecked:
 
-                var binaryExpression = (BinaryExpression) expression;
+                var binaryExpression = (BinaryExpression)expression;
                 expr1 = Rewrite(binaryExpression.Left, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -274,7 +277,7 @@ internal abstract class JitCompilerHelper
                     return null;
                 }
 
-                var conversion = (LambdaExpression) Rewrite(binaryExpression.Conversion, lambdaParameters, out abort);
+                var conversion = (LambdaExpression)Rewrite(binaryExpression.Conversion, lambdaParameters, out abort);
                 if (abort)
                 {
                     return null;
@@ -290,7 +293,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.Conditional:
 
-                var conditional = (ConditionalExpression) expression;
+                var conditional = (ConditionalExpression)expression;
                 expr1 = Rewrite(conditional.Test, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -316,7 +319,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.Invoke:
 
-                var invocation = (InvocationExpression) expression;
+                var invocation = (InvocationExpression)expression;
                 expr1 = Rewrite(invocation.Expression, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -344,14 +347,14 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.Lambda:
 
-                var lambda = (LambdaExpression) expression;
+                var lambda = (LambdaExpression)expression;
                 expr1 = Rewrite(lambda.Body, lambda.Parameters, isLocationExpression, out abort);
                 return abort ? null : Expression.Lambda(lambda.Type, expr1, lambda.Parameters);
 
             case ExpressionType.ListInit:
 
-                var listInit = (ListInitExpression) expression;
-                newExpression = (NewExpression) Rewrite(listInit.NewExpression, lambdaParameters, out abort);
+                var listInit = (ListInitExpression)expression;
+                newExpression = (NewExpression)Rewrite(listInit.NewExpression, lambdaParameters, out abort);
                 if (abort)
                 {
                     return null;
@@ -380,7 +383,7 @@ internal abstract class JitCompilerHelper
                 return Expression.ListInit(newExpression, initializers);
 
             case ExpressionType.Parameter:
-                var variableExpression = (ParameterExpression) expression;
+                var variableExpression = (ParameterExpression)expression;
                 if (lambdaParameters != null && lambdaParameters.Contains(variableExpression))
                 {
                     return variableExpression;
@@ -388,19 +391,19 @@ internal abstract class JitCompilerHelper
 
                 FindMatch findMatch;
                 if (IsShortCutRewrite)
-                    // 
-                    //  this is the opportunity to inspect whether the cached LambdaExpression(raw expression tree)
-                    // does coincide with the current LocationReferenceEnvironment.
-                    // If any mismatch discovered, it immediately returns NULL, indicating cache lookup failure.
-                    //                         
+                // 
+                //  this is the opportunity to inspect whether the cached LambdaExpression(raw expression tree)
+                // does coincide with the current LocationReferenceEnvironment.
+                // If any mismatch discovered, it immediately returns NULL, indicating cache lookup failure.
+                //                         
                 {
                     findMatch = s_delegateFindLocationReferenceMatchShortcut;
                 }
                 else
-                    // 
-                    // variable(LocationReference) resolution process
-                    // Note that the non-shortcut compilation pass always gaurantees successful variable resolution here.
-                    //
+                // 
+                // variable(LocationReference) resolution process
+                // Note that the non-shortcut compilation pass always gaurantees successful variable resolution here.
+                //
                 {
                     findMatch = s_delegateFindFirstLocationReferenceMatch;
                 }
@@ -443,7 +446,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.MemberAccess:
 
-                var memberExpression = (MemberExpression) expression;
+                var memberExpression = (MemberExpression)expression;
 
                 // When creating a location for a member on a struct, we also need a location
                 // for the struct (so we don't just set the member on a copy of the struct)
@@ -460,8 +463,8 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.MemberInit:
 
-                var memberInit = (MemberInitExpression) expression;
-                newExpression = (NewExpression) Rewrite(memberInit.NewExpression, lambdaParameters, out abort);
+                var memberInit = (MemberInitExpression)expression;
+                newExpression = (NewExpression)Rewrite(memberInit.NewExpression, lambdaParameters, out abort);
                 if (abort)
                 {
                     return null;
@@ -509,7 +512,7 @@ internal abstract class JitCompilerHelper
                     return Expression.ArrayIndex(expr1, indexes);
                 }
 
-                var alternateIndex = (BinaryExpression) expression;
+                var alternateIndex = (BinaryExpression)expression;
                 expr1 = Rewrite(alternateIndex.Left, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -526,7 +529,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.Call:
 
-                var methodCall = (MethodCallExpression) expression;
+                var methodCall = (MethodCallExpression)expression;
                 expr1 = Rewrite(methodCall.Object, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -554,7 +557,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.NewArrayInit:
 
-                var newArray = (NewArrayExpression) expression;
+                var newArray = (NewArrayExpression)expression;
                 var tmpExpressions = newArray.Expressions;
                 var arrayInitializers = new List<Expression>(tmpExpressions.Count);
                 for (i = 0; i < tmpExpressions.Count; i++)
@@ -572,7 +575,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.NewArrayBounds:
 
-                var newArrayBounds = (NewArrayExpression) expression;
+                var newArrayBounds = (NewArrayExpression)expression;
                 tmpExpressions = newArrayBounds.Expressions;
                 var bounds = new List<Expression>(tmpExpressions.Count);
                 for (i = 0; i < tmpExpressions.Count; i++)
@@ -590,7 +593,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.New:
 
-                newExpression = (NewExpression) expression;
+                newExpression = (NewExpression)expression;
                 if (newExpression.Constructor == null)
                 {
                     // must be creating a valuetype
@@ -620,7 +623,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.TypeIs:
 
-                var typeBinary = (TypeBinaryExpression) expression;
+                var typeBinary = (TypeBinaryExpression)expression;
                 expr1 = Rewrite(typeBinary.Expression, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -638,7 +641,7 @@ internal abstract class JitCompilerHelper
             case ExpressionType.Quote:
             case ExpressionType.TypeAs:
 
-                var unary = (UnaryExpression) expression;
+                var unary = (UnaryExpression)expression;
                 expr1 = Rewrite(unary.Operand, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -649,7 +652,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.UnaryPlus:
 
-                var unaryPlus = (UnaryExpression) expression;
+                var unaryPlus = (UnaryExpression)expression;
                 expr1 = Rewrite(unaryPlus.Operand, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -661,12 +664,12 @@ internal abstract class JitCompilerHelper
             // Expression Tree V2.0 types. This is due to the hosted VB compiler generating ET V2.0 nodes
             case ExpressionType.Block:
 
-                var block = (BlockExpression) expression;
+                var block = (BlockExpression)expression;
                 var tmpVariables = block.Variables;
                 var parameterList = new List<ParameterExpression>(tmpVariables.Count);
                 for (i = 0; i < tmpVariables.Count; i++)
                 {
-                    var param = (ParameterExpression) Rewrite(tmpVariables[i], lambdaParameters, out abort);
+                    var param = (ParameterExpression)Rewrite(tmpVariables[i], lambdaParameters, out abort);
                     if (abort)
                     {
                         return null;
@@ -692,7 +695,7 @@ internal abstract class JitCompilerHelper
 
             case ExpressionType.Assign:
 
-                var assign = (BinaryExpression) expression;
+                var assign = (BinaryExpression)expression;
                 expr1 = Rewrite(assign.Left, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -724,7 +727,7 @@ internal abstract class JitCompilerHelper
         {
             case MemberBindingType.Assignment:
 
-                var assignment = (MemberAssignment) binding;
+                var assignment = (MemberAssignment)binding;
                 expr1 = Rewrite(assignment.Expression, lambdaParameters, out abort);
                 if (abort)
                 {
@@ -735,7 +738,7 @@ internal abstract class JitCompilerHelper
 
             case MemberBindingType.ListBinding:
 
-                var list = (MemberListBinding) binding;
+                var list = (MemberListBinding)binding;
                 List<ElementInit> initializers = null;
                 var tmpInitializers = list.Initializers;
                 if (tmpInitializers.Count <= 0)
@@ -771,7 +774,7 @@ internal abstract class JitCompilerHelper
 
             case MemberBindingType.MemberBinding:
 
-                var member = (MemberMemberBinding) binding;
+                var member = (MemberMemberBinding)binding;
                 var tmpBindings = member.Bindings;
                 var bindings = new List<MemberBinding>(tmpBindings.Count);
                 for (i = 0; i < tmpBindings.Count; i++)
@@ -825,11 +828,11 @@ internal abstract class JitCompilerHelper
             case ExpressionType.RightShift:
             case ExpressionType.Subtract:
             case ExpressionType.SubtractChecked:
-                var binaryExpression = (BinaryExpression) expression;
+                var binaryExpression = (BinaryExpression)expression;
                 return FindParameter(binaryExpression.Left) ?? FindParameter(binaryExpression.Right);
 
             case ExpressionType.Conditional:
-                var conditional = (ConditionalExpression) expression;
+                var conditional = (ConditionalExpression)expression;
                 return FindParameter(conditional.Test) ??
                     FindParameter(conditional.IfTrue) ?? FindParameter(conditional.IfFalse);
 
@@ -837,23 +840,23 @@ internal abstract class JitCompilerHelper
                 return null;
 
             case ExpressionType.Invoke:
-                var invocation = (InvocationExpression) expression;
+                var invocation = (InvocationExpression)expression;
                 return FindParameter(invocation.Expression) ?? FindParameter(invocation.Arguments);
 
             case ExpressionType.Lambda:
-                var lambda = (LambdaExpression) expression;
+                var lambda = (LambdaExpression)expression;
                 return FindParameter(lambda.Body);
 
             case ExpressionType.ListInit:
-                var listInit = (ListInitExpression) expression;
+                var listInit = (ListInitExpression)expression;
                 return FindParameter(listInit.NewExpression) ?? FindParameter(listInit.Initializers);
 
             case ExpressionType.MemberAccess:
-                var memberExpression = (MemberExpression) expression;
+                var memberExpression = (MemberExpression)expression;
                 return FindParameter(memberExpression.Expression);
 
             case ExpressionType.MemberInit:
-                var memberInit = (MemberInitExpression) expression;
+                var memberInit = (MemberInitExpression)expression;
                 return FindParameter(memberInit.NewExpression) ?? FindParameter(memberInit.Bindings);
 
             case ExpressionType.ArrayIndex:
@@ -863,24 +866,24 @@ internal abstract class JitCompilerHelper
                     return FindParameter(arrayIndex.Object) ?? FindParameter(arrayIndex.Arguments);
                 }
 
-                var alternateIndex = (BinaryExpression) expression;
+                var alternateIndex = (BinaryExpression)expression;
                 return FindParameter(alternateIndex.Left) ?? FindParameter(alternateIndex.Right);
 
             case ExpressionType.Call:
-                var methodCall = (MethodCallExpression) expression;
+                var methodCall = (MethodCallExpression)expression;
                 return FindParameter(methodCall.Object) ?? FindParameter(methodCall.Arguments);
 
             case ExpressionType.NewArrayInit:
             case ExpressionType.NewArrayBounds:
-                var newArray = (NewArrayExpression) expression;
+                var newArray = (NewArrayExpression)expression;
                 return FindParameter(newArray.Expressions);
 
             case ExpressionType.New:
-                var newExpression = (NewExpression) expression;
+                var newExpression = (NewExpression)expression;
                 return FindParameter(newExpression.Arguments);
 
             case ExpressionType.Parameter:
-                var parameterExpression = (ParameterExpression) expression;
+                var parameterExpression = (ParameterExpression)expression;
                 if (parameterExpression.Type == typeof(ActivityContext) && parameterExpression.Name == "context")
                 {
                     return parameterExpression;
@@ -889,7 +892,7 @@ internal abstract class JitCompilerHelper
                 return null;
 
             case ExpressionType.TypeIs:
-                var typeBinary = (TypeBinaryExpression) expression;
+                var typeBinary = (TypeBinaryExpression)expression;
                 return FindParameter(typeBinary.Expression);
 
             case ExpressionType.ArrayLength:
@@ -901,13 +904,13 @@ internal abstract class JitCompilerHelper
             case ExpressionType.Quote:
             case ExpressionType.TypeAs:
             case ExpressionType.UnaryPlus:
-                var unary = (UnaryExpression) expression;
+                var unary = (UnaryExpression)expression;
                 return FindParameter(unary.Operand);
 
             // Expression Tree V2.0 types
 
             case ExpressionType.Block:
-                var block = (BlockExpression) expression;
+                var block = (BlockExpression)expression;
                 var toReturn = FindParameter(block.Expressions);
                 if (toReturn != null)
                 {
@@ -918,7 +921,7 @@ internal abstract class JitCompilerHelper
                 return FindParameter(variableList);
 
             case ExpressionType.Assign:
-                var assign = (BinaryExpression) expression;
+                var assign = (BinaryExpression)expression;
                 return FindParameter(assign.Left) ?? FindParameter(assign.Right);
         }
 
@@ -940,17 +943,17 @@ internal abstract class JitCompilerHelper
             switch (binding.BindingType)
             {
                 case MemberBindingType.Assignment:
-                    var assignment = (MemberAssignment) binding;
+                    var assignment = (MemberAssignment)binding;
                     result = FindParameter(assignment.Expression);
                     break;
 
                 case MemberBindingType.ListBinding:
-                    var list = (MemberListBinding) binding;
+                    var list = (MemberListBinding)binding;
                     result = FindParameter(list.Initializers);
                     break;
 
                 case MemberBindingType.MemberBinding:
-                    var member = (MemberMemberBinding) binding;
+                    var member = (MemberMemberBinding)binding;
                     result = FindParameter(member.Bindings);
                     break;
 
@@ -974,17 +977,17 @@ internal abstract class JitCompilerHelper
         // lookup cache 
         // underlying assumption is that type's inheritance(or interface) hierarchy 
         // stays static throughout the lifetime of AppDomain
-        var alreadyVisited = (HashSet<Type>) s_typeReferenceCache.GetValue(s_typeReferenceCacheLock, type);
+        var alreadyVisited = (HashSet<Type>)s_typeReferenceCache.GetValue(s_typeReferenceCacheLock, type);
         if (alreadyVisited != null)
         {
             if (typeReferences == null)
-                // used in VBHelper.Compile<>
-                // must not alter this set being returned for integrity of cache
+            // used in VBHelper.Compile<>
+            // must not alter this set being returned for integrity of cache
             {
                 typeReferences = alreadyVisited;
             }
             else
-                // used in VBDesignerHelper.FindTypeReferences
+            // used in VBDesignerHelper.FindTypeReferences
             {
                 typeReferences.UnionWith(alreadyVisited);
             }
@@ -1002,13 +1005,13 @@ internal abstract class JitCompilerHelper
         }
 
         if (typeReferences == null)
-            // used in VBHelper.Compile<>
-            // must not alter this set being returned for integrity of cache
+        // used in VBHelper.Compile<>
+        // must not alter this set being returned for integrity of cache
         {
             typeReferences = alreadyVisited;
         }
         else
-            // used in VBDesignerHelper.FindTypeReferences
+        // used in VBDesignerHelper.FindTypeReferences
         {
             typeReferences.UnionWith(alreadyVisited);
         }
@@ -1017,8 +1020,8 @@ internal abstract class JitCompilerHelper
     private static void EnsureTypeReferencedRecurse(Type type, HashSet<Type> alreadyVisited)
     {
         if (alreadyVisited.Contains(type))
-            // this prevents circular reference
-            // example), class Foo : IBar<Foo>
+        // this prevents circular reference
+        // example), class Foo : IBar<Foo>
         {
             return;
         }
@@ -1401,7 +1404,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
         var compiler = compilerWrapper.Compiler;
         LambdaExpression lambda = null;
-        
+
         try
         {
             lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable,
@@ -1432,8 +1435,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         // replace the field references with variable references to our dummy variables
         // and rewrite lambda.body.Type to equal the lambda return type T            
         if (lambda == null)
-            // ExpressionText was either an empty string or Null
-            // we return null which eventually evaluates to default(TResult) at execution time.
+        // ExpressionText was either an empty string or Null
+        // we return null which eventually evaluates to default(TResult) at execution time.
         {
             return null;
         }
@@ -1515,7 +1518,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         HashSet<Type> allBaseTypes = null;
         EnsureTypeReferenced(lambdaReturnType, ref allBaseTypes);
         foreach (var baseType in allBaseTypes)
-            // allBaseTypes list always contains lambdaReturnType
+        // allBaseTypes list always contains lambdaReturnType
         {
             ReferencedAssemblies.Add(baseType.Assembly);
         }
@@ -1566,8 +1569,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         // replace the field references with variable references to our dummy variables
         // and rewrite lambda.body.Type to equal the lambda return type T            
         if (lambda == null)
-            // ExpressionText was either an empty string or Null
-            // we return null which eventually evaluates to default(TResult) at execution time.
+        // ExpressionText was either an empty string or Null
+        // we return null which eventually evaluates to default(TResult) at execution time.
         {
             return null;
         }
@@ -1589,24 +1592,24 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         LambdaExpression lambda)
     {
         if (rawTreeHolder != null)
-            // this indicates that the key had been found in RawTreeCache,
-            // but the value Expression Tree failed the short-cut Rewrite.
-            // ---- is really not an issue here, because
-            // any one of possibly many raw Expression Trees that are all 
-            // represented by the same key can be written here.
+        // this indicates that the key had been found in RawTreeCache,
+        // but the value Expression Tree failed the short-cut Rewrite.
+        // ---- is really not an issue here, because
+        // any one of possibly many raw Expression Trees that are all 
+        // represented by the same key can be written here.
         {
             rawTreeHolder.Value = lambda;
         }
         else
-            // we never hit RawTreeCache with the given key
+        // we never hit RawTreeCache with the given key
         {
             lock (s_rawTreeCacheLock)
             {
                 // ensure we don't add the same key with two different RawTreeValueWrappers
                 if (RawTreeCache.GetValue(s_rawTreeCacheLock, rawTreeKey) == null)
-                    // do we need defense against alternating miss of the shortcut Rewrite?
+                // do we need defense against alternating miss of the shortcut Rewrite?
                 {
-                    RawTreeCache.Add(rawTreeKey, new RawTreeCacheValueWrapper {Value = lambda});
+                    RawTreeCache.Add(rawTreeKey, new RawTreeCacheValueWrapper { Value = lambda });
                 }
             }
         }
