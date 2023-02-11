@@ -200,10 +200,7 @@ public static class SourceLocationProvider
     {
         using var memoryStream = new MemoryStream(buffer);
         using TextReader streamReader = new StreamReader(memoryStream);
-        using var xamlDebuggerReader =
-            new XamlDebuggerXmlReader(streamReader, new XamlSchemaContext(), localAssembly);
-        xamlDebuggerReader.SourceLocationFound += XamlDebuggerXmlReader.SetSourceLocation;
-
+        using var xamlDebuggerReader = new XamlDebuggerXmlReader(streamReader, new XamlSchemaContext(), localAssembly);
         using var activityBuilderReader = ActivityXamlServices.CreateBuilderReader(xamlDebuggerReader);
         return XamlServices.Load(activityBuilderReader);
     }
