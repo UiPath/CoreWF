@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Markup;
+using ActivityContext = System.Activities.ActivityContext;
 
 namespace Microsoft.CSharp.Activities;
 
@@ -17,6 +18,10 @@ namespace Microsoft.CSharp.Activities;
 public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextExpression
 {
     private CompiledExpressionInvoker _invoker;
+    private Expression<Func<ActivityContext, TResult>> _lambdaExpression;
+
+    private Expression<Func<ActivityContext, TResult>> LambdaExpression
+        => _lambdaExpression ??= Compile();
 
     public CSharpReference()
     {
@@ -41,7 +46,7 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
         if (!IsMetadataCached)
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
-        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(Compile());
+        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(LambdaExpression);
     }
 
     public object ExecuteInContext(CodeActivityContext context)
@@ -65,6 +70,7 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
+        _lambdaExpression = null;
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
 
         if (metadata.Environment.IsValidating)
@@ -79,9 +85,15 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
 
     protected override Location<TResult> Execute(CodeActivityContext context)
     {
-        var value = (Location<TResult>)_invoker.InvokeExpression(context);
+        return _invoker.IsExpressionCompiled(context)
+            ? (Location<TResult>)_invoker.InvokeExpression(context)
+            : GetLocation(context);
+    }
 
-        return value;
+    private Location<TResult> GetLocation(CodeActivityContext context)
+    {
+        var locationFactory = ExpressionUtilities.CreateLocationFactory<TResult>(LambdaExpression);
+        return locationFactory.CreateLocation(context);
     }
 
     private Expression<Func<System.Activities.ActivityContext, TResult>> CompileLocationExpression(
@@ -108,7 +120,7 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
         return expressionTreeToReturn;
     }
 
-    private LambdaExpression Compile()
+    private Expression<Func<ActivityContext, TResult>> Compile()
     {
         var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
         var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);

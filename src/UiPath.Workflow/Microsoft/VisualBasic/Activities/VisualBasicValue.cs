@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Markup;
+using ActivityContext = System.Activities.ActivityContext;
 
 namespace Microsoft.VisualBasic.Activities;
 
@@ -19,6 +20,10 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
     IExpressionContainer, ITextExpression
 {
     private CompiledExpressionInvoker _invoker;
+    private Expression<Func<ActivityContext, TResult>> _lambdaExpression;
+
+    private Expression<Func<ActivityContext, TResult>> LambdaExpression
+        => _lambdaExpression ??= Compile();
 
     public VisualBasicValue()
     {
@@ -43,7 +48,7 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
         if (!IsMetadataCached)
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
-        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(Compile());
+        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(LambdaExpression);
     }
 
     public object ExecuteInContext(CodeActivityContext context)
@@ -55,7 +60,7 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
 
             var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
             var lambda = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
-            return lambda.Compile().Invoke(context);
+            return lambda.Compile()(context);
         }
         finally
         {
@@ -69,11 +74,14 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
 
     protected override TResult Execute(CodeActivityContext context)
     {
-        return (TResult)_invoker.InvokeExpression(context);
+        return _invoker.IsExpressionCompiled(context)
+            ? (TResult)_invoker.InvokeExpression(context)
+            : LambdaExpression.Compile()(context);
     }
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
+        _lambdaExpression = null;
         _invoker = new CompiledExpressionInvoker(this, false, metadata);
         if (metadata.Environment.CompileExpressions)
         {
@@ -90,7 +98,7 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
         }
     }
 
-    private LambdaExpression Compile()
+    private Expression<Func<ActivityContext, TResult>> Compile()
     {
         var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
         var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);

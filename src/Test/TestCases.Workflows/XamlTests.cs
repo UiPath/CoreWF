@@ -28,11 +28,10 @@ namespace TestCases.Workflows
         protected IStringDictionary InvokeWorkflow(string xamlString, IStringDictionary inputs = null)
         {
             var activity = Load(xamlString);
-            ActivityXamlServices.Compile(activity, new());
             return WorkflowInvoker.Invoke(activity, inputs ?? new StringDictionary());
         }
-        protected DynamicActivity Load(string xamlString) =>
-            ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = CompileExpressions }) as DynamicActivity;
+        protected Activity Load(string xamlString) =>
+            ActivityXamlServices.Load(new StringReader(xamlString), new ActivityXamlServicesSettings { CompileExpressions = CompileExpressions });
         public static IEnumerable<object[]> XamlNoInputs { get; } = new[]
         {
             new object[] { @"

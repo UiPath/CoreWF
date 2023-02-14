@@ -18,6 +18,10 @@ namespace Microsoft.CSharp.Activities;
 public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 {
     private CompiledExpressionInvoker _invoker;
+    private Expression<Func<System.Activities.ActivityContext, TResult>> _lambdaExpression;
+
+    private Expression<Func<System.Activities.ActivityContext, TResult>> LambdaExpression
+        => _lambdaExpression ??= Compile();
 
     public CSharpValue()
     {
@@ -42,7 +46,7 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
         if (!IsMetadataCached)
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
-        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(Compile());
+        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(LambdaExpression);
     }
 
     public object ExecuteInContext(CodeActivityContext context)
@@ -54,7 +58,7 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 
             var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
             var lambda = CSharpHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
-            return lambda.Compile().Invoke(context);
+            return lambda.Compile()(context);
         }
         finally
         {
@@ -64,6 +68,7 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
+        _lambdaExpression = null;
         _invoker = new CompiledExpressionInvoker(this, false, metadata);
         if (metadata.Environment.CompileExpressions)
         {
@@ -82,10 +87,12 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 
     protected override TResult Execute(CodeActivityContext context)
     {
-        return (TResult)_invoker.InvokeExpression(context);
+        return _invoker.IsExpressionCompiled(context)
+            ? (TResult)_invoker.InvokeExpression(context)
+            : LambdaExpression.Compile()(context);
     }
 
-    private LambdaExpression Compile()
+    private Expression<Func<System.Activities.ActivityContext, TResult>> Compile()
     {
         var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
         var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
