@@ -44,4 +44,9 @@ public class ExpressionContainer
     ///     Diagnostics reported by validating the expression.
     /// </summary>
     public IEnumerable<TextExpressionCompilerError> Diagnostics { get; set; }
+
+    /// <summary>
+    /// populated before CreateValidationCode step
+    /// </summary>
+    public (string Name, Type Type)[] ResolvedIdentifiers { get; set; }
 }

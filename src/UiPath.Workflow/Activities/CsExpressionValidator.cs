@@ -100,8 +100,11 @@ public class CsExpressionValidator : RoslynExpressionValidator
         }
     }
 
-    protected override string CreateValidationCode(string types, string names, string code) => 
-        $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+    protected override string CreateValidationCode(string types, string names, ExpressionContainer expressionContainer)
+    {
+        var code = expressionContainer.ExpressionToValidate.Code;
+        return $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+    }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) => 
         CSharpSyntaxTree.ParseText(expressionContainer.ExpressionToValidate.Code, s_csScriptParseOptions);
