@@ -2,7 +2,7 @@
 
 # CoreWF
 
-A port of the Windows Workflow Foundation (WF) runtime to .NET 6. This project is still in the experimental phase. It
+A port of the Windows Workflow Foundation (WF) runtime to .NET 6. It
 is [licensed](LICENSE) under the MIT License.
 
 __This is not an official Microsoft release of WF on .NET 6. CoreWF is a derivative work of Microsoft's copyrighted
