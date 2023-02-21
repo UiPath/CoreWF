@@ -23,7 +23,7 @@ namespace TestCases.Workflows.WF4Samples
     public abstract class ExpressionsBase
     {
         protected abstract bool CompileExpressions { get; }
-        protected Activity GetActivityFromXamlResource(TestXamls xamlName) => TestHelper.GetActivityFromXamlResource(xamlName, CompileExpressions);
+        protected DynamicActivity GetActivityFromXamlResource(TestXamls xamlName) => TestHelper.GetActivityFromXamlResource(xamlName, CompileExpressions);
         protected Activity Compile(TestXamls xamlName)
         {
             var activity = GetActivityFromXamlResource(xamlName);

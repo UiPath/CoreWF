@@ -177,7 +177,11 @@ public abstract class RoslynExpressionValidator
         PrepValidation(expressionContainer);
 
         ModifyPreppedCompilationUnit(expressionContainer);
-        var diagnostics = expressionContainer.CompilationUnit.GetDiagnostics().Select(diagnostic =>
+        var diagnostics = expressionContainer
+            .CompilationUnit
+            .GetDiagnostics()
+            .Where(d=> d.Severity == DiagnosticSeverity.Error)
+            .Select(diagnostic =>
             new TextExpressionCompilerError
             {
                 SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
