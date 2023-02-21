@@ -23,6 +23,4 @@ public interface ITextExpression
     }
 
     Expression GetExpressionTree();
-
-    object ExecuteInContext(CodeActivityContext context);
 }

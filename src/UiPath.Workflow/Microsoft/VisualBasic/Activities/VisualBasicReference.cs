@@ -3,8 +3,10 @@
 
 using System;
 using System.Activities;
+using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
+using System.Activities.Runtime;
 using System.Activities.XamlIntegration;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -18,11 +20,9 @@ namespace Microsoft.VisualBasic.Activities;
 public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResult>>, IValueSerializableExpression,
     IExpressionContainer, ITextExpression
 {
+    private Expression<Func<ActivityContext, TResult>> _expressionTree;
     private CompiledExpressionInvoker _invoker;
-    private Expression<Func<ActivityContext, TResult>> _lambdaExpression;
-
-    private Expression<Func<ActivityContext, TResult>> LambdaExpression
-        => _lambdaExpression ??= Compile();
+    private LocationFactory<TResult> _locationFactory;
 
     public VisualBasicReference()
     {
@@ -44,29 +44,40 @@ public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResul
 
     public Expression GetExpressionTree()
     {
-        if (!IsMetadataCached)
-            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
-
-        return _invoker.GetExpressionTree() ?? ExpressionUtilities.RewriteNonCompiledExpressionTree(LambdaExpression);
-    }
-
-    public object ExecuteInContext(CodeActivityContext context)
-    {
-        var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), true);
-        try
+        if (IsMetadataCached)
         {
-            context.Reinitialize(context.CurrentInstance, context.CurrentExecutor, this, context.CurrentInstance.InternalId);
+            if (_expressionTree == null)
+            {
+                if (_invoker != null)
+                {
+                    return _invoker.GetExpressionTree();
+                }
 
-            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-            var expressionTree = CompileLocationExpression(publicAccessor, out _);
+                // it's safe to create this CodeActivityMetadata here,
+                // because we know we are using it only as lookup purpose.
+                var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
+                var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
+                try
+                {
+                    _expressionTree = CompileLocationExpression(publicAccessor, out var validationError);
 
-            var locationFactory = ExpressionUtilities.CreateLocationFactory<TResult>(expressionTree);
-            return locationFactory.CreateLocation(context);
+                    if (validationError != null)
+                    {
+                        throw FxTrace.Exception.AsError(
+                            new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(validationError)));
+                    }
+                }
+                finally
+                {
+                    metadata.Dispose();
+                }
+            }
+
+            Fx.Assert(_expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
+            return ExpressionUtilities.RewriteNonCompiledExpressionTree(_expressionTree);
         }
-        finally
-        {
-            metadata.Dispose();
-        }
+
+        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
     }
 
     public bool CanConvertToString(IValueSerializerContext context)
@@ -83,74 +94,64 @@ public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResul
 
     protected override Location<TResult> Execute(CodeActivityContext context)
     {
-        return _invoker.IsExpressionCompiled(context)
-            ? (Location<TResult>)_invoker.InvokeExpression(context)
-            : GetLocation(context);
-    }
+        if (_expressionTree == null)
+        {
+            return (Location<TResult>) _invoker.InvokeExpression(context);
+        }
 
-    private Location<TResult> GetLocation(CodeActivityContext context)
-    {
-        var locationFactory = ExpressionUtilities.CreateLocationFactory<TResult>(LambdaExpression);
-        return locationFactory.CreateLocation(context);
+        _locationFactory ??= ExpressionUtilities.CreateLocationFactory<TResult>(_expressionTree);
+        return _locationFactory.CreateLocation(context);
     }
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
-        _lambdaExpression = null;
+        _expressionTree = null;
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
-
-        if (metadata.Environment.IsValidating)
+        if (metadata.Environment.CompileExpressions)
         {
-            foreach (var validationError in VbExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment,
-                         ExpressionText))
-            {
-                AddTempValidationError(validationError);
-            }
+            return;
+        }
+
+        // If ICER is not implemented that means we haven't been compiled
+        var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+        _expressionTree = CompileLocationExpression(publicAccessor, out var validationError);
+        if (validationError != null)
+        {
+            metadata.AddValidationError(validationError);
         }
     }
 
-    private Expression<Func<System.Activities.ActivityContext, TResult>> CompileLocationExpression(
+    private Expression<Func<ActivityContext, TResult>> CompileLocationExpression(
         CodeActivityPublicEnvironmentAccessor publicAccessor, out string validationError)
     {
-        var expressionTreeToReturn = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, true);
+        Expression<Func<ActivityContext, TResult>> expressionTreeToReturn = null;
         validationError = null;
-        string extraErrorMessage = null;
-        // inspect the expressionTree to see if it is a valid location expression(L-value)
-        if (!publicAccessor.ActivityMetadata.HasViolations && (expressionTreeToReturn == null ||
-            !ExpressionUtilities.IsLocation(expressionTreeToReturn, typeof(TResult), out extraErrorMessage)))
+        try
         {
-            var errorMessage = SR.InvalidLValueExpression;
-
-            if (extraErrorMessage != null)
+            expressionTreeToReturn = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, true);
+            // inspect the expressionTree to see if it is a valid location expression(L-value)
+            string extraErrorMessage = null;
+            if (!publicAccessor.ActivityMetadata.HasViolations && (expressionTreeToReturn == null ||
+                !ExpressionUtilities.IsLocation(
+                    expressionTreeToReturn, typeof(TResult),
+                    out extraErrorMessage)))
             {
-                errorMessage += ":" + extraErrorMessage;
-            }
+                var errorMessage = SR.InvalidLValueExpression;
 
-            expressionTreeToReturn = null;
-            validationError = SR.CompilerErrorSpecificExpression(ExpressionText, errorMessage);
+                if (extraErrorMessage != null)
+                {
+                    errorMessage += ":" + extraErrorMessage;
+                }
+
+                expressionTreeToReturn = null;
+                validationError = SR.CompilerErrorSpecificExpression(ExpressionText, errorMessage);
+            }
+        }
+        catch (SourceExpressionException e)
+        {
+            validationError = e.Message;
         }
 
         return expressionTreeToReturn;
-    }
-
-    private Expression<Func<ActivityContext, TResult>> Compile()
-    {
-        var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
-        var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
-        try
-        {
-            var expressionTree = CompileLocationExpression(publicAccessor, out var validationError);
-
-            if (validationError != null)
-            {
-                throw FxTrace.Exception.AsError(
-                    new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(validationError)));
-            }
-            return expressionTree;
-        }
-        finally
-        {
-            metadata.Dispose();
-        }
     }
 }
