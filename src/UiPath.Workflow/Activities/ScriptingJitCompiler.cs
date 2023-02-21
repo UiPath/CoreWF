@@ -38,8 +38,11 @@ public record ExpressionToCompile(string Code, IReadOnlyCollection<string> Impor
 
 public abstract class ScriptingJitCompiler : JustInTimeCompiler
 {
+    private readonly HashSet<Assembly> _referencedAssemblies;
+
     protected ScriptingJitCompiler(HashSet<Assembly> referencedAssemblies)
     {
+        _referencedAssemblies = referencedAssemblies;
         MetadataReferences = referencedAssemblies.GetMetadataReferences().ToArray();
     }
 
@@ -76,30 +79,39 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
             CreateExpressionCode(types, names, expressionToCompile.Code))));
         
         var collectibleAlc = new AssemblyLoadContext("ScriptingJit" + Guid.NewGuid(), true);
-        collectibleAlc.Resolving += CollectibleAlc_Resolving;
-        using var scope = collectibleAlc.EnterContextualReflection();
-        
-        var results = ScriptingAotCompiler.BuildAssembly(finalCompilation, compilation.ScriptClass.Name, collectibleAlc);
-        if (results.HasErrors)
+        try
         {
-            var errorResults = new TextExpressionCompilerResults
-            {
-                ResultType = results.ResultType,
-            };
-            errorResults.AddMessages(results.CompilerMessages.Where(m => !m.IsWarning));
-            throw FxTrace.Exception.AsError(new SourceExpressionException(
-                SR.CompilerErrorSpecificExpression(expressionToCompile.Code, errorResults), errorResults.CompilerMessages));
-        }
+             collectibleAlc.Resolving += CollectibleAlc_Resolving;
+            using var scope = collectibleAlc.EnterContextualReflection();
 
-        return (LambdaExpression)results.ResultType.GetMethod("CreateExpression")!.Invoke(null, null);
+            var results =
+                ScriptingAotCompiler.BuildAssembly(finalCompilation, compilation.ScriptClass.Name, collectibleAlc);
+            if (results.HasErrors)
+            {
+                var errorResults = new TextExpressionCompilerResults
+                {
+                    ResultType = results.ResultType,
+                };
+                errorResults.AddMessages(results.CompilerMessages.Where(m => !m.IsWarning));
+                throw FxTrace.Exception.AsError(new SourceExpressionException(
+                    SR.CompilerErrorSpecificExpression(expressionToCompile.Code, errorResults),
+                    errorResults.CompilerMessages));
+            }
+
+            return (LambdaExpression)results.ResultType.GetMethod("CreateExpression")!.Invoke(null, null);
+        }
+        finally
+        {
+            collectibleAlc.Resolving -= CollectibleAlc_Resolving;
+            collectibleAlc.Unload();
+        }
     }
 
     private Assembly CollectibleAlc_Resolving(AssemblyLoadContext loadContext, AssemblyName assemblyName)
     {
-        var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == assemblyName.FullName);
-        if (assembly != null)
-            return assembly;
-
+        var assembly = _referencedAssemblies.FirstOrDefault(a => a.FullName == assemblyName.FullName);
+        if (assembly is not null && !string.IsNullOrWhiteSpace(assembly.Location))
+            return loadContext.LoadFromAssemblyPath(assembly.Location);
         return loadContext.LoadFromAssemblyName(assemblyName);
     }
 
