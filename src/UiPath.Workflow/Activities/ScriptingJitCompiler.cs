@@ -97,9 +97,8 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     private Assembly CollectibleAlc_Resolving(AssemblyLoadContext loadContext, AssemblyName assemblyName)
     {
         var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == assemblyName.FullName);
-        if (assembly != null)
-            return assembly;
-
+        if (assembly is not null && !string.IsNullOrWhiteSpace(assembly.Location))
+            return loadContext.LoadFromAssemblyPath(assembly.Location);
         return loadContext.LoadFromAssemblyName(assemblyName);
     }
 
