@@ -21,10 +21,10 @@ namespace TestCases.Workflows
             return consoleOutputWriter.ToString();
         }
 
-        internal static DynamicActivity GetActivityFromXamlResource(TestXamls xamlName, bool compileExpressions = false)
+        internal static Activity GetActivityFromXamlResource(TestXamls xamlName, bool compileExpressions = false)
         {
             var xamlStream = GetXamlStream(xamlName);
-            return ActivityXamlServices.Load(xamlStream, new ActivityXamlServicesSettings { CompileExpressions = compileExpressions }) as DynamicActivity;
+            return ActivityXamlServices.Load(xamlStream, new ActivityXamlServicesSettings { CompileExpressions = compileExpressions });
         }
 
         public static Stream GetXamlStream(TestXamls xamlName)

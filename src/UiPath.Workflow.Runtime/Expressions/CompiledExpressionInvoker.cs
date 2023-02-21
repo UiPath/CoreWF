@@ -108,27 +108,6 @@ public class CompiledExpressionInvoker
         return value;
     }
 
-    internal bool IsExpressionCompiled(ActivityContext activityContext)
-    {
-        if (activityContext == null)
-        {
-            throw FxTrace.Exception.ArgumentNull(nameof(activityContext));
-        }
-
-        if (_compiledRoot == null || _expressionId < 0)
-        {
-            if (!TryGetCompiledExpressionRoot(_expressionActivity, _metadataRoot, out _compiledRoot) ||
-                !CanExecuteExpression(_compiledRoot, out _expressionId))
-            {
-                if (!TryGetCurrentCompiledExpressionRoot(activityContext, out _compiledRoot, out _expressionId))
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     //
     // Internal helper to find the correct ICER for a given expression.
     internal static bool TryGetCompiledExpressionRoot(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot)

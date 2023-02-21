@@ -14,6 +14,7 @@ namespace TestCases.Workflows;
 public class ExpressionTests
 {
     private readonly ValidationSettings _skipCompilation = new() { SkipExpressionCompilation = true };
+    private readonly ValidationSettings _forceCache = new() { ForceExpressionCache = true };
     private readonly ValidationSettings _useValidator = new() { ForceExpressionCache = false };
 
     public static IEnumerable<object[]> ValidVbExpressions
@@ -145,7 +146,7 @@ public class ExpressionTests
         workflow.Activities.Add(writeLine);
         workflow.Variables.Add(new Variable<string>("b", "I'm a variable"));
 
-        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _forceCache);
         validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
         validationResults.Errors[0].Message.ShouldContain("A null propagating operator cannot be converted into an expression tree.");
 
