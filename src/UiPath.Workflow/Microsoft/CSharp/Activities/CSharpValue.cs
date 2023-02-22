@@ -54,14 +54,7 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
             return;
         }
 
-        if (metadata.Environment.IsValidating)
-        {
-            foreach (var validationError in CsExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment,
-                         ExpressionText))
-            {
-                AddTempValidationError(validationError);
-            }
-        }
+       CsExpressionValidator.Instance.ValidateActivity<TResult>(this, metadata.Environment, ExpressionText);
     }
 
     protected override TResult Execute(CodeActivityContext context)

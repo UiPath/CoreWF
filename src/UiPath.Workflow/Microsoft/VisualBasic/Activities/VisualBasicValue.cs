@@ -105,15 +105,7 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
             return;
         }
 
-        if (metadata.Environment.IsValidating)
-        {
-            foreach (var validationError in VbExpressionValidator.Instance.Validate<TResult>(this, metadata.Environment,
-                         ExpressionText))
-            {
-                AddTempValidationError(validationError);
-            }
-        }
-        else
+        if (!VbExpressionValidator.Instance.ValidateActivity<TResult>(this, metadata.Environment, ExpressionText))
         {
             try
             {

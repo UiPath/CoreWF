@@ -25,7 +25,6 @@ internal abstract class JitCompilerHelper
     // cache for type's all base types, interfaces, generic arguments, element type
     // HopperCache is a pseudo-MRU cache
     private const int TypeReferenceCacheMaxSize = 100;
-    private static IReadOnlyCollection<AssemblyReference> _defaultAssemblyReferences;
 
     // the following assemblies are provided to the compiler by default
     // items are public so the decompiler knows which assemblies it doesn't need to reference for interfaces
@@ -35,16 +34,8 @@ internal abstract class JitCompilerHelper
         typeof(CodeTypeDeclaration).Assembly, // System
         typeof(Expression).Assembly, // System.Core
         typeof(Conversions).Assembly, //Microsoft.VisualBasic.Core
-        typeof(Activity).Assembly, // System.Activities
-        Assembly.Load("System.Runtime"), // System.Runtime.dll
-        Assembly.Load("netstandard"), // netstandard.dll
-        typeof(JitCompilerHelper).Assembly // UiPath.Workflow
+        typeof(Activity).Assembly // System.Activities
     };
-
-    public static IReadOnlyCollection<AssemblyReference> DefaultAssemblyReferences => 
-                                                        _defaultAssemblyReferences ??= DefaultReferencedAssemblies
-                                                        .Select(a => new AssemblyReference(a.GetName().Name))
-                                                        .ToList();
 
     private static readonly object s_typeReferenceCacheLock = new();
     private static readonly HopperCache s_typeReferenceCache = new(TypeReferenceCacheMaxSize, false);
@@ -106,7 +97,7 @@ internal abstract class JitCompilerHelper
         out List<AssemblyReference> assemblies)
     {
         var namespaceList = new List<string>();
-        var assemblyList = new List<AssemblyReference>(DefaultAssemblyReferences);
+        var assemblyList = new List<AssemblyReference>();
 
         // Start with the defaults; any settings on the Activity will be added to these
         // The default settings are mutable, so we need to re-copy this list on every call

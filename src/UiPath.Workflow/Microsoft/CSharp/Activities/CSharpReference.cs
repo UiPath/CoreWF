@@ -49,11 +49,13 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
+
+        CsExpressionValidator.Instance.ValidateActivity<TResult>(this, metadata.Environment, ExpressionText);
     }
 
     protected override Location<TResult> Execute(CodeActivityContext context)
     {
-        var value = (Location<TResult>) _invoker.InvokeExpression(context);
+        var value = (Location<TResult>)_invoker.InvokeExpression(context);
 
         return value;
     }
