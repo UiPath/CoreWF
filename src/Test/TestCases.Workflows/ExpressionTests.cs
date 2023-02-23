@@ -201,7 +201,7 @@ public class ExpressionTests
     public void VBValidator_StrictOn()
     {
         var activity = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("(\"3\" + 3).ToString")) };
-        var result = ActivityValidationServices.Validate(activity, new() { ForceExpressionCache = false });
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
         result.Errors.First().Message.ShouldContain("error BC30512: Option Strict On");
@@ -211,7 +211,7 @@ public class ExpressionTests
     public void VBValue_ShowsValidationError()
     {
         var activity = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("var1")) };
-        var result = ActivityValidationServices.Validate(activity, new() { ForceExpressionCache = false });
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
         result.Errors.First().Message.ShouldContain("error BC30451: 'var1' is not declared");
@@ -225,7 +225,7 @@ public class ExpressionTests
             To = new OutArgument<string>(new VisualBasicReference<string>("var1")),
             Value = new InArgument<string>("\"abc\"")
         };
-        var result = ActivityValidationServices.Validate(activity, new() { ForceExpressionCache = false });
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
         result.Errors.First().Message.ShouldContain("error BC30451: 'var1' is not declared");
@@ -235,7 +235,7 @@ public class ExpressionTests
     public void CSValue_ShowsValidationError()
     {
         var activity = new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("var1")) };
-        var result = ActivityValidationServices.Validate(activity, new() { ForceExpressionCache = false });
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
         result.Errors.First().Message.ShouldContain("The name 'var1' does not exist in the current context");
@@ -249,7 +249,7 @@ public class ExpressionTests
             To = new OutArgument<string>(new CSharpReference<string>("var1")),
             Value = new InArgument<string>("\"abc\"")
         };
-        var result = ActivityValidationServices.Validate(activity, new() { ForceExpressionCache = false });
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
         result.Errors.First().Message.ShouldContain("The name 'var1' does not exist in the current context");
