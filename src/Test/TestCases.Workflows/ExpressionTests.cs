@@ -196,4 +196,62 @@ public class ExpressionTests
         validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
         validationResults.Errors[0].Message.ShouldContain("error BC30439: Constant expression not representable in type 'Integer'");
     }
+
+    [Fact]
+    public void VBValidator_StrictOn()
+    {
+        var activity = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("(\"3\" + 3).ToString")) };
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldContain("error BC30512: Option Strict On");
+    }
+
+    [Fact]
+    public void VBValue_ShowsValidationError()
+    {
+        var activity = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("var1")) };
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldContain("error BC30451: 'var1' is not declared");
+    }
+
+    [Fact]
+    public void VBReference_ShowsValidationError()
+    {
+        var activity = new Assign
+        {
+            To = new OutArgument<string>(new VisualBasicReference<string>("var1")),
+            Value = new InArgument<string>("\"abc\"")
+        };
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldContain("error BC30451: 'var1' is not declared");
+    }
+
+    [Fact]
+    public void CSValue_ShowsValidationError()
+    {
+        var activity = new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("var1")) };
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldContain("The name 'var1' does not exist in the current context");
+    }
+
+    [Fact]
+    public void CSReference_ShowsValidationError()
+    {
+        var activity = new Assign
+        {
+            To = new OutArgument<string>(new CSharpReference<string>("var1")),
+            Value = new InArgument<string>("\"abc\"")
+        };
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldContain("The name 'var1' does not exist in the current context");
+    }
 }

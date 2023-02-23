@@ -86,6 +86,27 @@ public abstract class RoslynExpressionValidator
     }
 
     /// <summary>
+    /// Validates the activity if the environment.IsValidating is set to true
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="activity"></param>
+    /// <param name="environment"></param>
+    /// <param name="expressionText"></param>
+    /// <returns></returns>
+    internal bool ValidateActivity<T>(Activity activity, LocationReferenceEnvironment environment, string expressionText)
+    {
+        if (!environment.IsValidating)
+        {
+            return false;
+        }
+        foreach (var validationError in Validate<T>(activity, environment, expressionText))
+        {
+            activity.AddTempValidationError(validationError);
+        }
+        return true;
+    }
+
+    /// <summary>
     ///     Gets the MetadataReference objects for all of the referenced assemblies that expression requires.
     /// </summary>
     /// <param name="expressionContainer">expression container</param>
@@ -177,7 +198,11 @@ public abstract class RoslynExpressionValidator
         PrepValidation(expressionContainer);
 
         ModifyPreppedCompilationUnit(expressionContainer);
-        var diagnostics = expressionContainer.CompilationUnit.GetDiagnostics().Select(diagnostic =>
+        var diagnostics = expressionContainer
+            .CompilationUnit
+            .GetDiagnostics()
+            .Where(d=> d.Severity == DiagnosticSeverity.Error)
+            .Select(diagnostic =>
             new TextExpressionCompilerError
             {
                 SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,

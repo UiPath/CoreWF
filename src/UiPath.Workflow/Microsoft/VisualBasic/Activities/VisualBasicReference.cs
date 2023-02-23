@@ -96,7 +96,7 @@ public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResul
     {
         if (_expressionTree == null)
         {
-            return (Location<TResult>) _invoker.InvokeExpression(context);
+            return (Location<TResult>)_invoker.InvokeExpression(context);
         }
 
         _locationFactory ??= ExpressionUtilities.CreateLocationFactory<TResult>(_expressionTree);
@@ -112,12 +112,15 @@ public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResul
             return;
         }
 
-        // If ICER is not implemented that means we haven't been compiled
-        var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-        _expressionTree = CompileLocationExpression(publicAccessor, out var validationError);
-        if (validationError != null)
+        if (!VbExpressionValidator.Instance.ValidateActivity<TResult>(this, metadata.Environment, ExpressionText))
         {
-            metadata.AddValidationError(validationError);
+            // If ICER is not implemented that means we haven't been compiled
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+            _expressionTree = CompileLocationExpression(publicAccessor, out var validationError);
+            if (validationError != null)
+            {
+                metadata.AddValidationError(validationError);
+            }
         }
     }
 
