@@ -95,15 +95,15 @@ public abstract class RoslynExpressionValidator
     /// <returns></returns>
     internal bool ValidateActivity<T>(Activity activity, LocationReferenceEnvironment environment, string expressionText)
     {
-        if (environment.IsValidating)
+        if (!environment.IsValidating)
         {
-            foreach (var validationError in Validate<T>(activity, environment, expressionText))
-            {
-                activity.AddTempValidationError(validationError);
-            }
-            return true;
+            return false;
         }
-        return false;
+        foreach (var validationError in Validate<T>(activity, environment, expressionText))
+        {
+            activity.AddTempValidationError(validationError);
+        }
+        return true;
     }
 
     /// <summary>
