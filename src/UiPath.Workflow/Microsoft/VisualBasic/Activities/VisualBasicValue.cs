@@ -24,16 +24,9 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
     private Expression<Func<ActivityContext, TResult>> _expressionTree;
     private CompiledExpressionInvoker _invoker;
 
-    public VisualBasicValue()
-    {
-        UseOldFastPath = true;
-    }
+    public VisualBasicValue() => UseOldFastPath = true;
 
-    public VisualBasicValue(string expressionText)
-        : this()
-    {
-        ExpressionText = expressionText;
-    }
+    public VisualBasicValue(string expressionText) : this() => ExpressionText = expressionText;
 
     public string ExpressionText { get; set; }
 
@@ -48,14 +41,12 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
         {
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
         }
-
         if (_expressionTree == null)
         {
             if (_invoker != null)
             {
                 return _invoker.GetExpressionTree();
             }
-
             // it's safe to create this CodeActivityMetadata here,
             // because we know we are using it only as lookup purpose.
             var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
@@ -74,10 +65,8 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
                 metadata.Dispose();
             }
         }
-
         Fx.Assert(_expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
         return ExpressionUtilities.RewriteNonCompiledExpressionTree(_expressionTree);
-
     }
 
     public bool CanConvertToString(IValueSerializerContext context) => true;
@@ -90,9 +79,7 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
         {
             return (TResult) _invoker.InvokeExpression(context);
         }
-
         _compiledExpression ??= _expressionTree.Compile();
-
         return _compiledExpression(context);
     }
 
@@ -100,22 +87,18 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
     {
         _expressionTree = null;
         _invoker = new CompiledExpressionInvoker(this, false, metadata);
-        if (metadata.Environment.CompileExpressions)
+        if (VbExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText))
         {
             return;
         }
-
-        if (!VbExpressionValidator.Instance.ValidateActivity<TResult>(this, metadata.Environment, ExpressionText))
+        try
         {
-            try
-            {
-                var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
-                _expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
-            }
-            catch (SourceExpressionException e)
-            {
-                metadata.AddValidationError(e.Message);
-            }
+            var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
+            _expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+        }
+        catch (SourceExpressionException e)
+        {
+            metadata.AddValidationError(e.Message);
         }
     }
 }

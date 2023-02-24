@@ -93,8 +93,13 @@ public abstract class RoslynExpressionValidator
     /// <param name="environment"></param>
     /// <param name="expressionText"></param>
     /// <returns></returns>
-    internal bool ValidateActivity<T>(Activity activity, LocationReferenceEnvironment environment, string expressionText)
+    internal bool TryValidate<T>(Activity activity, CodeActivityMetadata metadata, string expressionText)
     {
+        var environment = metadata.Environment;
+        if (environment.CompileExpressions)
+        {
+            return true;
+        }
         if (!environment.IsValidating)
         {
             return false;

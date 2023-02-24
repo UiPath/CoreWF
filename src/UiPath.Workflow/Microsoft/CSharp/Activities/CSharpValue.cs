@@ -18,16 +18,9 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 {
     private CompiledExpressionInvoker _invoker;
 
-    public CSharpValue()
-    {
-        UseOldFastPath = true;
-    }
+    public CSharpValue() => UseOldFastPath = true;
 
-    public CSharpValue(string expressionText) :
-        this()
-    {
-        ExpressionText = expressionText;
-    }
+    public CSharpValue(string expressionText) : this() => ExpressionText = expressionText;
 
     public string ExpressionText { get; set; }
 
@@ -36,29 +29,13 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 
     public bool RequiresCompilation => true;
 
-    public Expression GetExpressionTree()
-    {
-        if (IsMetadataCached)
-        {
-            return _invoker.GetExpressionTree();
-        }
-
-        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
-    }
+    public Expression GetExpressionTree() => IsMetadataCached ? _invoker.GetExpressionTree() : throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
         _invoker = new CompiledExpressionInvoker(this, false, metadata);
-        if (metadata.Environment.CompileExpressions)
-        {
-            return;
-        }
-
-       CsExpressionValidator.Instance.ValidateActivity<TResult>(this, metadata.Environment, ExpressionText);
+       CsExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText);
     }
 
-    protected override TResult Execute(CodeActivityContext context)
-    {
-        return (TResult) _invoker.InvokeExpression(context);
-    }
+    protected override TResult Execute(CodeActivityContext context) => (TResult) _invoker.InvokeExpression(context);
 }
