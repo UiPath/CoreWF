@@ -213,11 +213,7 @@ public class CompiledExpressionInvoker
         {
             foreach (LocationReference reference in environment.GetLocationReferences())
             {
-                if (_textExpression.RequiresCompilation)
-                {
-                    _accessor.CreateLocationArgument(reference, false);
-                }
-
+                _accessor.CreateLocationArgument(reference, false);
                 _locationReferences.Add(new InlinedLocationReference(reference, _metadata.CurrentActivity));
             }
         }

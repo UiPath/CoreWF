@@ -580,7 +580,7 @@ public static class ActivityXamlServices
 
         protected override void VisitITextExpression(Activity activity, out bool exit)
         {
-            if (activity is ITextExpression {RequiresCompilation: true} textExpression)
+            if (activity is ITextExpression textExpression)
             {
                 RequiresCompilation = true;
 
