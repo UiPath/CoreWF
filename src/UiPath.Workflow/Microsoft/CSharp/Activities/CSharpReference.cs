@@ -27,8 +27,6 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Language => "C#";
 
-    public bool RequiresCompilation => true;
-
     public Expression GetExpressionTree() => IsMetadataCached ? _invoker.GetExpressionTree() : throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)

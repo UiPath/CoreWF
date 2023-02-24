@@ -33,8 +33,6 @@ public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResul
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Language => VisualBasicHelper.Language;
 
-    public bool RequiresCompilation => true;
-
     public Expression GetExpressionTree()
     {
         if (IsMetadataCached)

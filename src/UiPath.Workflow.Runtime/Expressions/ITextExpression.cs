@@ -17,10 +17,5 @@ public interface ITextExpression
         get;
     }
 
-    bool RequiresCompilation
-    {
-        get;
-    }
-
     Expression GetExpressionTree();
 }
