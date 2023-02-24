@@ -2011,21 +2011,17 @@ internal partial class ActivityExecutor : IEnlistmentNotification
         Fx.Assert(_workflowOutputs == null, "We should only get workflow outputs when we actually complete which should only happen once.");
         Fx.Assert(ActivityUtilities.IsCompletedState(_rootInstance.State), "We should only gather outputs when in a completed state.");
         Fx.Assert(_rootEnvironment != null, "We should have set the root environment");
-        // We only gather outputs for Closed - not for canceled or faulted
-        if (_rootInstance.State == ActivityInstanceState.Closed)
+        // We use rootElement here instead of _rootInstance.Activity
+        // because we don't always reload the root instance (like if it
+        // was complete when we last persisted).
+        var rootArguments = _rootElement.RuntimeArguments;
+        for (int i = 0; i < rootArguments.Count; i++)
         {
-            // We use rootElement here instead of _rootInstance.Activity
-            // because we don't always reload the root instance (like if it
-            // was complete when we last persisted).
-            var rootArguments = _rootElement.RuntimeArguments;
-            for (int i = 0; i < rootArguments.Count; i++)
+            var argument = rootArguments[i];
+            if (ArgumentDirectionHelper.IsOut(argument.Direction))
             {
-                var argument = rootArguments[i];
-                if (ArgumentDirectionHelper.IsOut(argument.Direction))
-                {
-                    _workflowOutputs ??= new Dictionary<string, object>();
-                    _workflowOutputs.Add(argument.Name, _rootEnvironment.GetValue(argument));
-                }
+                _workflowOutputs ??= new Dictionary<string, object>();
+                _workflowOutputs.Add(argument.Name, _rootEnvironment.GetValue(argument));
             }
         }
         // GatherRootOutputs only ever gets called once so we can null it out the root environment now.

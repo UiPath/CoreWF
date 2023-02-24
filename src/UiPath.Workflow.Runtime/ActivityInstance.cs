@@ -557,11 +557,11 @@ public sealed class ActivityInstance
 
             executor.CancelPendingOperation(currentInstance);
 
+            currentInstance._state = ActivityInstanceState.Faulted;
+
             executor.HandleRootCompletion(currentInstance);
 
             currentInstance.MarkAsComplete(executor.RawBookmarkScopeManager, bookmarkManager);
-
-            currentInstance._state = ActivityInstanceState.Faulted;
 
             currentInstance.FinalizeState(executor, false, !isTerminate);
         }
