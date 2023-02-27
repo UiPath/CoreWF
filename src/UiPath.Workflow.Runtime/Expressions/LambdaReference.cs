@@ -55,7 +55,10 @@ public sealed class LambdaReference<T> : CodeActivity<Location<T>>, IExpressionC
     protected override Location<T> Execute(CodeActivityContext context)
     {
         _locationFactory ??= ExpressionUtilities.CreateLocationFactory<T>(_rewrittenTree);
-        return _locationFactory.CreateLocation(context);
+        using (context.InheritVariables())
+        {
+            return _locationFactory.CreateLocation(context);
+        }
     }
 
     public bool CanConvertToString(IValueSerializerContext context) => true;

@@ -176,7 +176,10 @@ internal static class ExpressionUtilities
                 }
                 else if (method.Name == "GetValue" && declaringType == activityContextType)
                 {
-                    return new LocationReferenceFactory<T>(callExpression.Arguments[0], expression.Parameters);
+                    var argument = callExpression.Arguments[0];
+                    return argument.Type == typeof(string) ? 
+                        new ByNameLocationFactory<T>((string)((ConstantExpression)argument).Value) : 
+                        new LocationReferenceFactory<T>(argument, expression.Parameters);
                 }
                 else if (method.Name == "Get" && declaringType.IsGenericType)
                 {
@@ -442,6 +445,13 @@ internal static class ExpressionUtilities
 
             return argument.RuntimeArgument.GetLocation(context) as Location<T>;
         }
+    }
+
+    private class ByNameLocationFactory<T> : LocationFactory<T>
+    {
+        private readonly string _locationName;
+        public ByNameLocationFactory(string locationName) => _locationName = locationName;
+        public override Location<T> CreateLocation(ActivityContext context) => context.GetLocation<T>(_locationName);
     }
 
     private class LocationReferenceFactory<T> : LocationFactory<T>

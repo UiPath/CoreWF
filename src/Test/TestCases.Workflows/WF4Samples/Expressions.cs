@@ -349,7 +349,7 @@ Iterate ArrayList
                     },
                     new Assign<double>()
                     {
-                        To = new LambdaReference<double>(ctx => stats.Get(ctx).MinSalary),
+                        To = new LambdaReference<double>(ctx => ctx.GetValue<SalaryStats>("SalaryStats").MinSalary),
                         Value = new LambdaValue<double>(ctx => Math.Min(e1.Get(ctx).Salary, e2.Get(ctx).Salary))
                     },
                     new Assign<double>()
