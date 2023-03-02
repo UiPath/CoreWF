@@ -1,10 +1,13 @@
 ﻿using CustomTestObjects;
 using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
+using Newtonsoft.Json;
 using Shouldly;
 using System.Activities;
+using System.Activities.Expressions;
 using System.Activities.Statements;
 using System.Activities.Validation;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -253,5 +256,42 @@ public class ExpressionTests
 
         result.Errors.Count.ShouldBe(1);
         result.Errors.First().Message.ShouldContain("The name 'var1' does not exist in the current context");
+    }
+
+    [Fact]
+    public void VBValue_Validate_AddsRequiredAssembliesPerExpressionValidated()
+    {
+        var simpleActivity = new WriteLine() { Text = new InArgument<string>(new VisualBasicValue<string>("1.ToString")) };
+
+        var requiresNewtonsoftActivity = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("GetType(JsonConvert).ToString")) };
+        var dy = new DynamicActivity() { Implementation = () => requiresNewtonsoftActivity };
+        TextExpression.SetReferencesForImplementation(dy, new[] { new AssemblyReference("Newtonsoft.Json") });
+        TextExpression.SetNamespacesForImplementation(dy, new[] { "Newtonsoft.Json" });
+
+        // first validate an activity without needing Newtonsoft.Json assembly
+        ActivityValidationServices.Validate(simpleActivity, _useValidator);
+
+        // then validate with a new assembly required (Newtonsoft.Json)
+        var result = ActivityValidationServices.Validate(dy, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void CSValue_Validate_AddsRequiredAssembliesPerExpressionValidated()
+    {
+        
+        var simpleActivity = new WriteLine() { Text = new InArgument<string>(new CSharpValue<string>("1.ToString()"))};
+
+        var requiresNewtonsoftActivity = new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("typeof(JsonConvert).Name")) };
+        var dy = new DynamicActivity() { Implementation = () => requiresNewtonsoftActivity };
+        TextExpression.SetReferencesForImplementation(dy, new[] { new AssemblyReference("Newtonsoft.Json") });
+        TextExpression.SetNamespacesForImplementation(dy, new[] { "Newtonsoft.Json" });
+
+        // first validate an activity without needing Newtonsoft.Json assembly
+        ActivityValidationServices.Validate(simpleActivity, _useValidator);
+
+        // then validate with a new assembly required (Newtonsoft.Json)
+        var result = ActivityValidationServices.Validate(dy, _useValidator);
+        result.Errors.ShouldBeEmpty();
     }
 }

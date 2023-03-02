@@ -89,14 +89,9 @@ public class CsExpressionValidator : RoslynExpressionValidator
         else
         {
             var options = DefaultCompilationUnit.Options as CSharpCompilationOptions;
-            var compilation = DefaultCompilationUnit.WithOptions(
-                options.WithUsings(expressionContainer.ExpressionToValidate.ImportedNamespaces));
-
-            var missingReferences = compilation.References.Except(metadataReferences);
-            expressionContainer.CompilationUnit =
-                missingReferences.Any()
-                ? compilation.AddReferences(missingReferences)
-                : compilation;
+            expressionContainer.CompilationUnit = DefaultCompilationUnit
+                .WithOptions(options.WithUsings(expressionContainer.ExpressionToValidate.ImportedNamespaces))
+                .WithReferences(metadataReferences);
         }
     }
 
