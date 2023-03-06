@@ -12,105 +12,65 @@ internal abstract class CompiledExpressionActivityVisitor
     public void Visit(Activity activity, bool forImplementation)
     {
         ForImplementation = forImplementation;
-        VisitRoot(activity, out _);
+        VisitRoot(activity);
     }
 
-    private void VisitCore(Activity activity, out bool exit)
+    private void VisitCore(Activity activity)
     {
         if (activity is ITextExpression)
         {
-            VisitITextExpression(activity, out exit);
+            VisitITextExpression(activity);
             return;
         }
         // Look for variable scopes
         if (activity.RuntimeVariables != null && activity.RuntimeVariables.Count > 0)
         {
-            VisitVariableScope(activity, out exit);
-            if (exit)
-            {
-                return;
-            }
+            VisitVariableScope(activity);
         }
         else
         {
-            Visit(activity, out exit);
-            if (exit)
-            {
-                return;
-            }
+            Visit(activity);
         }
 
         return;
     }
 
-    protected virtual void Visit(Activity activity, out bool exit)
+    protected virtual void Visit(Activity activity)
     {
-        VisitArguments(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
-
-        VisitPublicActivities(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitArguments(activity);
+        VisitPublicActivities(activity);
     }
 
-    protected virtual void VisitRoot(Activity activity, out bool exit)
+    protected virtual void VisitRoot(Activity activity)
     {
         if (ForImplementation)
         {
-            VisitRootImplementation(activity, out exit);
-            if (exit)
-            {
-                return;
-            }
-
-            exit = false;
+            VisitRootImplementation(activity);
         }
         else
         {
-            VisitRootPublic(activity, out exit);
-            if (exit)
-            {
-                return;
-            }
-
-            exit = false;
+            VisitRootPublic(activity);
         }
     }
 
-    protected virtual void VisitRootImplementationArguments(Activity activity, out bool exit)
+    protected virtual void VisitRootImplementationArguments(Activity activity)
     {
-        VisitArguments(activity, out exit, VisitRootImplementationArgument);
-        if (exit)
-        {
-            return;
-        }
-
-        exit = false;
+        VisitArguments(activity, VisitRootImplementationArgument);
     }
 
-    protected virtual void VisitRootImplementationArgument(RuntimeArgument runtimeArgument, out bool exit)
+    protected virtual void VisitRootImplementationArgument(RuntimeArgument runtimeArgument)
     {
         if (runtimeArgument.IsBound)
         {
             Activity expression = runtimeArgument.BoundArgument.Expression;
             if (expression != null)
             {
-                VisitCore(expression, out exit);
-                if (exit)
-                {
-                    return;
-                }
+                VisitCore(expression);
             }
         }
-        exit = false;
     }
 
-    protected virtual void VisitVariableScope(Activity activity, out bool exit)
+    protected virtual void VisitVariableScope(Activity activity)
     {
         //
         // Walk the contained variables' default expressions
@@ -118,59 +78,33 @@ internal abstract class CompiledExpressionActivityVisitor
         {
             if (v.Default != null)
             {
-                VisitCore(v.Default, out exit);
-                if (exit)
-                {
-                    return;
-                }
+                VisitCore(v.Default);
             }
         }
 
-        VisitVariableScopeArguments(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitVariableScopeArguments(activity);
 
-        VisitPublicActivities(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
-
-        exit = false;
+        VisitPublicActivities(activity);
     }
 
-    protected virtual void VisitRootImplementationScope(Activity activity, out bool exit)
+    protected virtual void VisitRootImplementationScope(Activity activity)
     {
         foreach (Variable v in activity.RuntimeVariables)
         {
             if (v.Default != null)
             {
-                VisitCore(v.Default, out exit);
-                if (exit)
-                {
-                    return;
-                }
+                VisitCore(v.Default);
             }
         }
 
-        VisitImportedChildren(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitImportedChildren(activity);
 
-        VisitImportedDelegates(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitImportedDelegates(activity);
     }
 
-    protected virtual void VisitITextExpression(Activity activity, out bool exit) => exit = false;
+    protected virtual void VisitITextExpression(Activity activity) { }
 
-    protected virtual void VisitChildren(Activity activity, out bool exit)
+    protected virtual void VisitChildren(Activity activity)
     {
         if (activity.Children != null)
         {
@@ -178,34 +112,24 @@ internal abstract class CompiledExpressionActivityVisitor
             {
                 if (activity == activity.Children[i].Parent)
                 {
-                    VisitCore(activity.Children[i], out exit);
-                    if (exit)
-                    {
-                        return;
-                    }
+                    VisitCore(activity.Children[i]);
                 }
             }
         }
-        exit = false;
     }
 
-    protected virtual void VisitImportedChildren(Activity activity, out bool exit)
+    protected virtual void VisitImportedChildren(Activity activity)
     {
         if (activity.ImportedChildren != null)
         {
             for (int i = 0; i < activity.ImportedChildren.Count; i++)
             {
-                VisitCore(activity.ImportedChildren[i], out exit);
-                if (exit)
-                {
-                    return;
-                }
+                VisitCore(activity.ImportedChildren[i]);
             }
         }
-        exit = false;
     }
 
-    protected virtual void VisitDelegates(Activity activity, out bool exit)
+    protected virtual void VisitDelegates(Activity activity)
     {
         if (activity.Delegates != null)
         {
@@ -213,216 +137,123 @@ internal abstract class CompiledExpressionActivityVisitor
             {
                 if (activity == activityDelegate.Owner)
                 {
-                    VisitDelegate(activityDelegate, out exit);
-
-                    if (exit)
-                    {
-                        return;
-                    }
+                    VisitDelegate(activityDelegate);
                 }
             }
         }
-        exit = false;
     }
 
-    protected virtual void VisitImportedDelegates(Activity activity, out bool exit)
+    protected virtual void VisitImportedDelegates(Activity activity)
     {
         if (activity.ImportedDelegates != null)
         {
             foreach (ActivityDelegate activityDelegate in activity.ImportedDelegates)
             {
-                VisitDelegate(activityDelegate, out exit);
-
-                if (exit)
-                {
-                    return;
-                }
+                VisitDelegate(activityDelegate);
             }
         }
-        exit = false;
     }
 
-    protected virtual void VisitDelegate(ActivityDelegate activityDelegate, out bool exit)
+    protected virtual void VisitDelegate(ActivityDelegate activityDelegate)
     {
-        VisitDelegateArguments(activityDelegate, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitDelegateArguments(activityDelegate);
 
         if (activityDelegate.Handler != null)
         {
-            VisitCore(activityDelegate.Handler, out exit);
-            if (exit)
-            {
-                return;
-            }
+            VisitCore(activityDelegate.Handler);
         }
     }
 
-    protected virtual void VisitDelegateArguments(ActivityDelegate activityDelegate, out bool exit)
+    protected virtual void VisitDelegateArguments(ActivityDelegate activityDelegate)
     {
         foreach (RuntimeDelegateArgument delegateArgument in activityDelegate.RuntimeDelegateArguments)
         {
             if (delegateArgument.BoundArgument != null)
             {
-                VisitDelegateArgument(delegateArgument, out exit);
-
-                if (exit)
-                {
-                    return;
-                }
+                VisitDelegateArgument(delegateArgument);
             }
         }
-
-        exit = false;
     }
 
-    protected virtual void VisitDelegateArgument(RuntimeDelegateArgument delegateArgument, out bool exit) => exit = false;
+    protected virtual void VisitDelegateArgument(RuntimeDelegateArgument delegateArgument) { }
 
-    protected virtual void VisitVariableScopeArguments(Activity activity, out bool exit)
+    protected virtual void VisitVariableScopeArguments(Activity activity)
     {
-        VisitArguments(activity, out exit, VisitVariableScopeArgument);
-        if (exit)
-        {
-            return;
-        }
-
-        exit = false;
+        VisitArguments(activity, VisitVariableScopeArgument);
     }
 
-    protected virtual void VisitVariableScopeArgument(RuntimeArgument runtimeArgument, out bool exit)
+    protected virtual void VisitVariableScopeArgument(RuntimeArgument runtimeArgument)
     {
-        VisitArgument(runtimeArgument, out exit);
-        if (exit)
-        {
-            return;
-        }
-
-        exit = false;
+        VisitArgument(runtimeArgument);
     }
 
-    protected virtual void VisitArguments(Activity activity, out bool exit)
+    protected virtual void VisitArguments(Activity activity)
     {
-        VisitArguments(activity, out exit, VisitArgument);
-        if (exit)
-        {
-            return;
-        }
-
-        exit = false;
+        VisitArguments(activity, VisitArgument);
     }
 
-    protected virtual void VisitArgument(RuntimeArgument runtimeArgument, out bool exit)
+    protected virtual void VisitArgument(RuntimeArgument runtimeArgument)
     {
         if (runtimeArgument.IsBound)
         {
             Activity expression = runtimeArgument.BoundArgument.Expression;
             if (expression != null)
             {
-                VisitCore(expression, out exit);
-                if (exit)
-                {
-                    return;
-                }
+                VisitCore(expression);
             }
         }
-        exit = false;
     }
 
-    private void VisitRootPublic(Activity activity, out bool exit)
+    private void VisitRootPublic(Activity activity)
     {
         if (activity.RuntimeVariables != null && activity.RuntimeVariables.Count > 0)
         {
-            VisitVariableScope(activity, out exit);
-            if (exit)
-            {
-                return;
-            }
+            VisitVariableScope(activity);
         }
         else
         {
-            VisitArguments(activity, out exit);
-            if (exit)
-            {
-                return;
-            }
+            VisitArguments(activity);
 
-            VisitPublicActivities(activity, out exit);
-            if (exit)
-            {
-                return;
-            }
+            VisitPublicActivities(activity);
         }
     }
 
-    private void VisitRootImplementation(Activity activity, out bool exit)
+    private void VisitRootImplementation(Activity activity)
     {
-        VisitRootImplementationArguments(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitRootImplementationArguments(activity);
 
-        VisitRootImplementationScope(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitRootImplementationScope(activity);
 
         if (activity.ImplementationChildren != null)
         {
             for (int i = 0; i < activity.ImplementationChildren.Count; i++)
             {
-                VisitCore(activity.ImplementationChildren[i], out exit);
-                if (exit)
-                {
-                    return;
-                }
+                VisitCore(activity.ImplementationChildren[i]);
             }
         }
-        exit = false;
     }
 
-    private void VisitPublicActivities(Activity activity, out bool exit)
+    private void VisitPublicActivities(Activity activity)
     {
-        VisitChildren(activity, out exit);
-        if (exit)
+        VisitChildren(activity);
         {
             return;
         }
 
-        VisitDelegates(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitDelegates(activity);
 
-        VisitImportedChildren(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitImportedChildren(activity);
 
-        VisitImportedDelegates(activity, out exit);
-        if (exit)
-        {
-            return;
-        }
+        VisitImportedDelegates(activity);
     }
 
-    private static void VisitArguments(Activity activity, out bool exit, VisitArgumentDelegate visitArgument)
+    private static void VisitArguments(Activity activity, VisitArgumentDelegate visitArgument)
     {
         foreach (RuntimeArgument runtimeArgument in activity.RuntimeArguments)
         {
-            visitArgument(runtimeArgument, out exit);
-            if (exit)
-            {
-                return;
-            }
+            visitArgument(runtimeArgument);
         }
-        exit = false;
     }
 
-    private delegate void VisitArgumentDelegate(RuntimeArgument runtimeArgument, out bool exit);
+    private delegate void VisitArgumentDelegate(RuntimeArgument runtimeArgument);
 }

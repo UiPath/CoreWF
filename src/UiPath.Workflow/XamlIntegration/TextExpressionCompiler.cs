@@ -2517,18 +2517,18 @@ public class TextExpressionCompiler
 
         public int NextExpressionId { get; set; }
 
-        protected override void VisitRoot(Activity activity, out bool exit)
+        protected override void VisitRoot(Activity activity)
         {
             _compiler.OnRootActivity();
 
-            base.VisitRoot(activity, out exit);
+            base.VisitRoot(activity);
 
             _compiler.OnAfterRootActivity();
         }
 
-        protected override void VisitRootImplementationArguments(Activity activity, out bool exit)
+        protected override void VisitRootImplementationArguments(Activity activity)
         {
-            base.VisitRootImplementationArguments(activity, out exit);
+            base.VisitRootImplementationArguments(activity);
 
             if (ForImplementation)
             {
@@ -2536,52 +2536,49 @@ public class TextExpressionCompiler
             }
         }
 
-        protected override void VisitVariableScope(Activity activity, out bool exit)
+        protected override void VisitVariableScope(Activity activity)
         {
             _compiler.OnVariableScope(activity);
 
-            base.VisitVariableScope(activity, out exit);
+            base.VisitVariableScope(activity);
             _compiler.OnAfterVariableScope();
         }
 
-        protected override void VisitRootImplementationScope(Activity activity, out bool exit)
+        protected override void VisitRootImplementationScope(Activity activity)
         {
             _compiler.OnRootImplementationScope(activity, out var rootArgumentAccessorContext);
 
-            base.VisitRootImplementationScope(activity, out exit);
+            base.VisitRootImplementationScope(activity);
 
             _compiler.OnAfterRootImplementationScope(activity, rootArgumentAccessorContext);
         }
 
-        protected override void VisitVariableScopeArgument(RuntimeArgument runtimeArgument, out bool exit)
+        protected override void VisitVariableScopeArgument(RuntimeArgument runtimeArgument)
         {
             _compiler.InVariableScopeArgument = true;
-            base.VisitVariableScopeArgument(runtimeArgument, out exit);
+            base.VisitVariableScopeArgument(runtimeArgument);
             _compiler.InVariableScopeArgument = false;
         }
 
-        protected override void VisitITextExpression(Activity activity, out bool exit)
+        protected override void VisitITextExpression(Activity activity)
         {
             _compiler.OnITextExpressionFound(activity, this);
-            exit = false;
         }
 
-        protected override void VisitDelegate(ActivityDelegate activityDelegate, out bool exit)
+        protected override void VisitDelegate(ActivityDelegate activityDelegate)
         {
             _compiler.OnActivityDelegateScope();
 
-            base.VisitDelegate(activityDelegate, out exit);
+            base.VisitDelegate(activityDelegate);
 
             _compiler.OnAfterActivityDelegateScope();
-
-            exit = false;
         }
 
-        protected override void VisitDelegateArgument(RuntimeDelegateArgument delegateArgument, out bool exit)
+        protected override void VisitDelegateArgument(RuntimeDelegateArgument delegateArgument)
         {
             _compiler.OnDelegateArgument(delegateArgument);
 
-            base.VisitDelegateArgument(delegateArgument, out exit);
+            base.VisitDelegateArgument(delegateArgument);
         }
     }
 

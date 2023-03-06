@@ -234,44 +234,44 @@ public abstract class CompiledDataContext
 
         public HashSet<Activity> DataContextActivities => _dataContextActivities;
 
-        protected override void VisitRoot(Activity activity, out bool exit)
+        protected override void VisitRoot(Activity activity)
         {
             _dataContextActivities.Add(activity);
-            base.VisitRoot(activity, out exit);
+            base.VisitRoot(activity);
         }
 
-        protected override void VisitVariableScope(Activity activity, out bool exit)
+        protected override void VisitVariableScope(Activity activity)
         {
             if (!_dataContextActivities.Contains(activity))
             {
                 _dataContextActivities.Add(activity);
             }
-            base.VisitVariableScope(activity, out exit);
+            base.VisitVariableScope(activity);
         }
 
-        protected override void VisitDelegate(ActivityDelegate activityDelegate, out bool exit)
+        protected override void VisitDelegate(ActivityDelegate activityDelegate)
         {
             if (activityDelegate.Handler != null)
             {
                 _dataContextActivities.Add(activityDelegate.Handler);
             }
-            base.VisitDelegate(activityDelegate, out exit);
+            base.VisitDelegate(activityDelegate);
         }
 
-        protected override void VisitVariableScopeArgument(RuntimeArgument runtimeArgument, out bool exit)
+        protected override void VisitVariableScopeArgument(RuntimeArgument runtimeArgument)
         {
             _inVariableScopeArgument = true;
-            base.VisitVariableScopeArgument(runtimeArgument, out exit);
+            base.VisitVariableScopeArgument(runtimeArgument);
             _inVariableScopeArgument = false;
         }
 
-        protected override void VisitITextExpression(Activity activity, out bool exit)
+        protected override void VisitITextExpression(Activity activity)
         {
             if (_inVariableScopeArgument)
             {
                 _dataContextActivities.Add(activity);
             }
-            base.VisitITextExpression(activity, out exit);
+            base.VisitITextExpression(activity);
         }
     }
 

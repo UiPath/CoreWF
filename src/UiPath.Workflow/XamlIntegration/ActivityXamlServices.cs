@@ -578,7 +578,7 @@ public static class ActivityXamlServices
 
         public IEnumerable<string> GetConflictingLanguages() => _languages.Count > 1 ? _languages : null;
 
-        protected override void VisitITextExpression(Activity activity, out bool exit)
+        protected override void VisitITextExpression(Activity activity)
         {
             if (activity is ITextExpression textExpression)
             {
@@ -592,7 +592,7 @@ public static class ActivityXamlServices
                 }
             }
 
-            base.VisitITextExpression(activity, out exit);
+            base.VisitITextExpression(activity);
         }
     }
 }
