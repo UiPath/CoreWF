@@ -236,9 +236,6 @@ internal abstract class CompiledExpressionActivityVisitor
     private void VisitPublicActivities(Activity activity)
     {
         VisitChildren(activity);
-        {
-            return;
-        }
 
         VisitDelegates(activity);
 
