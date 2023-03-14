@@ -159,8 +159,8 @@ public class AssemblyReference
             if (curAsm.IsCollectible)
             {
                 // ignore collectible assemblies in the caching process
-                collectibleAssemblies.Add(curAsm.FullName, curAsm);
-                collectibleAssemblies.Add(curAsm.GetName().Name, curAsm);
+                collectibleAssemblies.TryAdd(curAsm.FullName, curAsm);
+                collectibleAssemblies.TryAdd(curAsm.GetName().Name, curAsm);
                 continue;
             }
 
