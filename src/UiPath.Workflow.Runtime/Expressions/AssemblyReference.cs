@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace System.Activities.Expressions;
 
@@ -148,7 +149,7 @@ public class AssemblyReference
         // as Xaml would do.  that is to find the first match
         // found starting from the end of the array of Assemblies
         // returned by AppDomain.GetAssemblies()
-        Assembly[] currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Assembly[] currentAssemblies = AssemblyLoadContext.All.SelectMany(c=>c.Assemblies).ToArray();
 
         // For collectible assemblies, we need to ensure that they
         // are not cached, but are usable in expressions.
@@ -164,7 +165,7 @@ public class AssemblyReference
                 continue;
             }
 
-            if (curAsm.IsDynamic || curAsm.IsCollectible)
+            if (curAsm.IsDynamic)
             {
                 // ignore dynamic assemblies
                 continue;
