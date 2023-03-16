@@ -7,6 +7,7 @@ using System.Activities;
 using System.Activities.Statements;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Tracing;
 using Test.Common.TestObjects.Activities.Variables;
@@ -387,24 +388,25 @@ public class WorkflowInstanceAbortTests
                 manualResetEvent.Set();
             }
         };
+        root.Action = () => app.Terminate(new Exception());
         app.Run();
         manualResetEvent.WaitOne();
         completedArgs.TerminationException.ShouldNotBeNull();
-        completedArgs.Outputs["Result"].ShouldBe(0);
+        completedArgs.Outputs["Result"].ShouldBe(42);
     }
     public class ActivityWithResult<TResult> : NativeActivity<TResult>
     {
-        public Variable<TResult> In { get; set; } = new();
-        public Activity Body { get; set; }
-        protected override void Execute(NativeActivityContext context) => context.ScheduleActivity(Body, (context, _) =>
+        public Action Action;
+        protected override void Execute(NativeActivityContext context)
         {
-            TResult value;
-            using (context.InheritVariables())
-            {
-                value = In.Get(context);
-            }
-            context.SetValue(Result, value);
-            context.Terminate(new());
-        });
+            context.SetValue(Result, 42);
+            Task.Run(Action);
+            context.CreateBookmark();
+        }
+        protected override void Cancel(NativeActivityContext context)
+        {
+            Console.WriteLine("Cancel");
+            base.Cancel(context);
+        }
     }
 }

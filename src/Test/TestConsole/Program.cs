@@ -12,7 +12,7 @@ class Program
     {
         try
         {
-            WorflowInstanceResumeBookmarkAsyncTests.TestNoPersistSerialization();
+            new WorkflowInstanceAbortTests().Should_return_outargs_on_terminate();
         }
         catch (Exception ex)
         {
