@@ -3,9 +3,10 @@
 
 namespace System.Activities.Expressions;
 
-// this is an internal interface for EnvironmentLocationReference/EnvironmentLocationValue/LocationReferenceValue to implement
+// this is an interface for EnvironmentLocationReference/EnvironmentLocationValue/LocationReferenceValue to implement
 // to avoid creating instances of those generic types via expensive Activator.CreateInstance.
-internal interface ILocationReferenceExpression
+public interface ILocationReferenceExpression
 {
     ActivityWithResult CreateNewInstance(LocationReference locationReference);
+    LocationReference LocationReference { get; }
 }

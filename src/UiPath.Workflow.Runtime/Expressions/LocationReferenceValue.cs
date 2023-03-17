@@ -16,7 +16,7 @@ internal sealed class LocationReferenceValue<T> : CodeActivity<T>, IExpressionCo
         _locationReference = locationReference;
     }
 
-    LocationReference ILocationReferenceWrapper.LocationReference => _locationReference;
+    public LocationReference LocationReference => _locationReference;
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
