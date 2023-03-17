@@ -397,6 +397,7 @@ public class WorkflowInstanceAbortTests
     public class ActivityWithResult<TResult> : NativeActivity<TResult>
     {
         public Action Action;
+        protected override bool CanInduceIdle => true;
         protected override void Execute(NativeActivityContext context)
         {
             context.SetValue(Result, 42);
