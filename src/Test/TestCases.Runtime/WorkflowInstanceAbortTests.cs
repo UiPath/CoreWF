@@ -389,9 +389,11 @@ public class WorkflowInstanceAbortTests
             }
         };
         var exception = new Exception();
-        root.Action = () => app.BeginTerminate(exception, null, null);
+        IAsyncResult asyncResult = null;
+        root.Action = ()=> asyncResult = app.BeginTerminate(exception, null, null);
         app.Run();
         manualResetEvent.WaitOne();
+        app.EndTerminate(asyncResult);
         completedArgs.TerminationException.ShouldBe(exception);
         completedArgs.Outputs["Result"].ShouldBe(42);
     }
@@ -402,7 +404,7 @@ public class WorkflowInstanceAbortTests
         protected override void Execute(NativeActivityContext context)
         {
             context.SetValue(Result, 42);
-            Task.Run(Action);
+            Action();
             context.CreateBookmark();
         }
         protected override void Cancel(NativeActivityContext context)
