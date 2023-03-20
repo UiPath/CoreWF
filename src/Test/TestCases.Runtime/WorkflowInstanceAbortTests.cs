@@ -388,10 +388,11 @@ public class WorkflowInstanceAbortTests
                 manualResetEvent.Set();
             }
         };
-        root.Action = () => app.Terminate(new Exception());
+        var exception = new Exception();
+        root.Action = () => app.BeginTerminate(exception, null, null);
         app.Run();
         manualResetEvent.WaitOne();
-        completedArgs.TerminationException.ShouldNotBeNull();
+        completedArgs.TerminationException.ShouldBe(exception);
         completedArgs.Outputs["Result"].ShouldBe(42);
     }
     public class ActivityWithResult<TResult> : NativeActivity<TResult>
