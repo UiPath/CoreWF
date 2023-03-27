@@ -39,6 +39,8 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
 
             ClearRawTreeCache();
         };
+
+        base.OnCompilerCacheCreated(compilerCache);
     }
 
     protected override void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)

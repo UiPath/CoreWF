@@ -53,7 +53,9 @@ internal abstract class JitCompilerHelper
     public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
     protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
 
-    protected virtual void OnCompilerCacheCreated(CompilerCache compilerCache) { }
+    protected virtual void OnCompilerCacheCreated(CompilerCache compilerCache) 
+    {
+    }
 
     protected virtual void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
     {
@@ -1293,6 +1295,21 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         get => s_rawTreeCache ??= new HopperCache(RawTreeCacheMaxSize, false);
     }
 
+    protected override void OnCompilerCacheCreated(CompilerCache compilerCache)
+    {
+        CompilationCachingSettings.Default.OnCacheClearRequest += delegate
+        {
+            lock (compilerCache)
+            {
+                compilerCache.Clear();
+            }
+
+            ClearRawTreeCache();
+        };
+
+        base.OnCompilerCacheCreated(compilerCache);
+    }
+
     public static void ClearRawTreeCache()
     {
         if (s_rawTreeCache == null)
@@ -1316,11 +1333,13 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             var oldCompilerCache = Interlocked.CompareExchange(ref s_hostedCompilerCache,
                 new CompilerCache(HostedCompilerCacheSize, HashSet<Assembly>.CreateSetComparer()),
                 null);
+
+
             if (oldCompilerCache == null)
             {
                 OnCompilerCacheCreated(s_hostedCompilerCache);
             }
-        }
+        }        
 
         lock (s_hostedCompilerCache)
         {
@@ -1520,6 +1539,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         var scriptAndTypeScope = new ScriptAndTypeScope(environment);
         var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
         var compiler = compilerWrapper.Compiler;
+
 
         if (TD.CompileVbExpressionStartIsEnabled())
         {
