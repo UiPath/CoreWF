@@ -321,7 +321,11 @@ public abstract class RoslynExpressionValidator
                 var meta = GetMetadataReferenceForAssembly(asm);
                 if (meta != null)
                 {
-                    _metadataReferences.Value.TryAdd(asm, meta);
+                    if (CanCache(asm))
+                    {
+                        _metadataReferences.Value.TryAdd(asm, meta);
+                    }
+
                     newReferences.Value.Add(meta);
                 }
             }
@@ -339,7 +343,7 @@ public abstract class RoslynExpressionValidator
         if (assembly != null && !_metadataReferences.Value.TryGetValue(assembly, out meta))
         {
             meta = GetMetadataReferenceForAssembly(assembly);
-            if (meta != null)
+            if (meta != null && CanCache(assembly))
             {
                 _metadataReferences.Value.TryAdd(assembly, meta);
             }
@@ -347,6 +351,9 @@ public abstract class RoslynExpressionValidator
 
         return meta;
     }
+
+    private bool CanCache(Assembly assembly)
+        => !assembly.IsCollectible && !assembly.IsDynamic;
 
     private void EnsureAssembliesLoaded(ExpressionContainer expressionContainer)
     {
