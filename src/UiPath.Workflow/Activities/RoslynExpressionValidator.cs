@@ -28,6 +28,7 @@ public abstract class RoslynExpressionValidator
     private const string Comma = ", ";
     private readonly Lazy<ConcurrentDictionary<Assembly, MetadataReference>> _metadataReferences;
     private readonly object _lockRequiredAssemblies = new();
+    protected virtual StringComparer IdentifierNameComparer => StringComparer.Ordinal;
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -288,7 +289,7 @@ public abstract class RoslynExpressionValidator
     {
         var syntaxTree = expressionContainer.CompilationUnit.SyntaxTrees.First();
         var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind)
-                                    .Select(n => n.ToString()).Distinct();
+                                    .Select(n => n.ToString()).Distinct(IdentifierNameComparer);
         var resolvedIdentifiers =
             identifiers
                 .Select(name => (Name: name, Type: expressionContainer.ExpressionToValidate.VariableTypeGetter(name)))

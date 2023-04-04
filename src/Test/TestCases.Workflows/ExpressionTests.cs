@@ -235,6 +235,18 @@ public class ExpressionTests
     }
 
     [Fact]
+    public void VbValue_IdentifiersComparerOrdinalIgnoreCase()
+    {
+        var root = new Sequence();
+        root.Variables.Add(new Variable<List<object>>("count"));
+        root.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("count.Count.ToString")) });
+
+        var result = ActivityValidationServices.Validate(root, _useValidator);
+
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
     public void CSValue_ShowsValidationError()
     {
         var activity = new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("var1")) };
