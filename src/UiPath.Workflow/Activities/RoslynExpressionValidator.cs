@@ -117,7 +117,7 @@ public abstract class RoslynExpressionValidator
     /// </summary>
     /// <param name="expressionContainer">expression container</param>
     /// <returns>MetadataReference objects for all required assemblies</returns>
-    protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) =>
+    protected virtual IEnumerable<MetadataReference> GetMetadataReferencesForExpression(ExpressionContainer expressionContainer) =>
         expressionContainer.RequiredAssemblies.Select(asm => TryGetMetadataReference(asm)).Where(mr => mr is not null);
 
     /// <summary>
@@ -134,7 +134,7 @@ public abstract class RoslynExpressionValidator
     /// <param name="names">list of parameter names in comma-separated string</param>
     /// <param name="code">expression code</param>
     /// <returns>expression wrapped in a method or function that returns a LambdaExpression</returns>
-    protected abstract string CreateValidationCode(string types, string names, string code);
+    protected abstract string CreateValidationCode(string types, string names, ExpressionContainer expressionContainer);
 
     /// <summary>
     ///     Updates the <see cref="Compilation" /> object for the expression.
@@ -207,7 +207,7 @@ public abstract class RoslynExpressionValidator
         var diagnostics = expressionContainer
             .CompilationUnit
             .GetDiagnostics()
-            .Where(d=> d.Severity == DiagnosticSeverity.Error)
+            .Where(d => d.Severity == DiagnosticSeverity.Error)
             .Select(diagnostic =>
             new TextExpressionCompilerError
             {
@@ -296,6 +296,8 @@ public abstract class RoslynExpressionValidator
                 .Where(var => var.Type != null)
                 .ToArray();
 
+        expressionContainer.ResolvedIdentifiers = resolvedIdentifiers;
+
         var names = string.Join(Comma, resolvedIdentifiers.Select(var => var.Name));
         var types = string.Join(Comma,
             resolvedIdentifiers
@@ -303,7 +305,7 @@ public abstract class RoslynExpressionValidator
                 .Concat(new[] { expressionContainer.ResultType })
                 .Select(GetTypeName));
 
-        var lambdaFuncCode = CreateValidationCode(types, names, expressionContainer.ExpressionToValidate.Code);
+        var lambdaFuncCode = CreateValidationCode(types, names, expressionContainer);
         var sourceText = SourceText.From(lambdaFuncCode);
         var newSyntaxTree = syntaxTree.WithChangedText(sourceText);
         expressionContainer.CompilationUnit = expressionContainer.CompilationUnit.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
