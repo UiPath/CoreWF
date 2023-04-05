@@ -22,6 +22,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
 
     private static readonly VisualBasicParseOptions s_vbScriptParseOptions =
         new(kind: SourceCodeKind.Script, languageVersion: LanguageVersion.Latest);
+    protected override StringComparer IdentifierNameComparer => StringComparer.OrdinalIgnoreCase;
 
     private static readonly HashSet<Assembly> s_defaultReferencedAssemblies = new()
     {
