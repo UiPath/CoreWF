@@ -40,7 +40,17 @@ internal abstract class CompiledExpressionActivityVisitor
             }
         }
 
-        return;
+        if (activity.ImplementationChildren != null)
+        {
+            for (int i = 0; i < activity.ImplementationChildren.Count; i++)
+            {
+                VisitCore(activity.ImplementationChildren[i], out exit);
+                if (exit)
+                {
+                    return;
+                }
+            }
+        }
     }
 
     protected virtual void Visit(Activity activity, out bool exit)

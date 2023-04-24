@@ -72,12 +72,7 @@ public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResul
 
     protected override Location<TResult> Execute(CodeActivityContext context)
     {
-        if (_expressionTree == null)
-        {
-            return (Location<TResult>)_invoker.InvokeExpression(context);
-        }
-        _locationFactory ??= ExpressionUtilities.CreateLocationFactory<TResult>(_expressionTree);
-        return _locationFactory.CreateLocation(context);
+        return (Location<TResult>)_invoker.InvokeExpression(context);
     }
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)

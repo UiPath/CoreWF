@@ -16,7 +16,6 @@ using ActivityContext = System.Activities.ActivityContext;
 
 namespace Microsoft.VisualBasic.Activities;
 
-[DebuggerStepThrough]
 public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSerializableExpression,
     IExpressionContainer, ITextExpression
 {
@@ -73,12 +72,7 @@ public sealed class VisualBasicValue<TResult> : CodeActivity<TResult>, IValueSer
 
     protected override TResult Execute(CodeActivityContext context)
     {
-        if (_expressionTree == null)
-        {
-            return (TResult) _invoker.InvokeExpression(context);
-        }
-        _compiledExpression ??= _expressionTree.Compile();
-        return _compiledExpression(context);
+        return (TResult)_invoker.InvokeExpression(context);
     }
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)

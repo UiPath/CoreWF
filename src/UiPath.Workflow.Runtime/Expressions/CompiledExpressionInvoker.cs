@@ -113,8 +113,15 @@ public class CompiledExpressionInvoker
     internal static bool TryGetCompiledExpressionRoot(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot)
     {
         bool forImplementation = expression.MemberOf != expression.RootActivity.MemberOf;
-
-        return TryGetCompiledExpressionRoot(target, forImplementation, out compiledExpressionRoot);
+        if (TryGetCompiledExpressionRoot(target, forImplementation, out compiledExpressionRoot))
+        {
+            return true;
+        }
+        else if (target.Parent is not null)
+        {
+            return TryGetCompiledExpressionRoot(expression, target.Parent, out compiledExpressionRoot);
+        }
+        return false;
     }
 
     //
