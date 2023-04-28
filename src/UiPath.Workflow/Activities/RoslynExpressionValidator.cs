@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace System.Activities;
 
@@ -25,9 +26,11 @@ public abstract class RoslynExpressionValidator
         "System.Linq.Expressions"
     };
 
-    private const string Comma = ", ";
+    private const string ErrorRegex = "((\\(.*\\)).*error )(.*)";
     private readonly Lazy<ConcurrentDictionary<Assembly, MetadataReference>> _metadataReferences;
     private readonly object _lockRequiredAssemblies = new();
+
+    protected const string Comma = ", ";
     protected virtual StringComparer IdentifierNameComparer => StringComparer.Ordinal;
 
     /// <summary>
@@ -94,7 +97,7 @@ public abstract class RoslynExpressionValidator
     /// <param name="environment"></param>
     /// <param name="expressionText"></param>
     /// <returns></returns>
-    internal bool TryValidate<T>(Activity activity, CodeActivityMetadata metadata, string expressionText)
+    internal bool TryValidate<T>(Activity activity, CodeActivityMetadata metadata, string expressionText, bool isLocation = false)
     {
         var environment = metadata.Environment;
         if (environment.CompileExpressions)
@@ -105,7 +108,7 @@ public abstract class RoslynExpressionValidator
         {
             return false;
         }
-        foreach (var validationError in Validate<T>(activity, environment, expressionText))
+        foreach (var validationError in Validate<T>(activity, environment, expressionText, isLocation))
         {
             activity.AddTempValidationError(validationError);
         }
@@ -133,8 +136,18 @@ public abstract class RoslynExpressionValidator
     /// <param name="types">list of parameter types in comma-separated string</param>
     /// <param name="names">list of parameter names in comma-separated string</param>
     /// <param name="code">expression code</param>
+    /// <param name="isLocation">determines if the expression is a location / reference</param>
     /// <returns>expression wrapped in a method or function that returns a LambdaExpression</returns>
-    protected abstract string CreateValidationCode(string types, string names, string code);
+    protected string CreateValidationCode(IEnumerable<string> types, string returnType, string names, string code, bool isLocation)
+    {
+        return isLocation
+            ? CreateReferenceCode(string.Join(Comma, types), names, code)
+            : CreateValueCode(string.Join(Comma, types.Concat(new[] { returnType })), names, code);
+    }
+
+    protected abstract string CreateValueCode(string types, string names, string code);
+
+    protected abstract string CreateReferenceCode(string types, string names, string code);
 
     /// <summary>
     ///     Updates the <see cref="Compilation" /> object for the expression.
@@ -157,8 +170,20 @@ public abstract class RoslynExpressionValidator
     /// <returns>ValidationError objects that will be added to current activity's metadata</returns>
     protected virtual IEnumerable<ValidationError> ProcessDiagnostics(ExpressionContainer expressionContainer)
     {
-        return from diagnostic in expressionContainer.Diagnostics
-               select new ValidationError(diagnostic.Message, diagnostic.IsWarning);
+        var errors = new List<ValidationError>();
+        foreach (var diagnostic in expressionContainer.Diagnostics)
+        {
+            var match = Regex.Match(diagnostic.Message, ErrorRegex);
+            if (match.Success)
+            {
+                errors.Add(new ValidationError(match.Groups[3].Value, diagnostic.IsWarning));
+            }
+            else
+            {
+                errors.Add(new ValidationError(diagnostic.Message, diagnostic.IsWarning));
+            }
+        }
+        return errors;
     }
 
     /// <summary>
@@ -174,7 +199,7 @@ public abstract class RoslynExpressionValidator
     ///     language.
     /// </remarks>
     public virtual IEnumerable<ValidationError> Validate<TResult>(Activity currentActivity, LocationReferenceEnvironment environment,
-        string expressionText)
+        string expressionText, bool isLocation)
     {
         var requiredAssemblies = new HashSet<Assembly>(RequiredAssemblies);
         var resultType = typeof(TResult);
@@ -183,6 +208,7 @@ public abstract class RoslynExpressionValidator
             ResultType = resultType,
             CurrentActivity = currentActivity,
             Environment = environment,
+            IsLocation = isLocation
         };
 
         JitCompilerHelper.GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
@@ -207,7 +233,7 @@ public abstract class RoslynExpressionValidator
         var diagnostics = expressionContainer
             .CompilationUnit
             .GetDiagnostics()
-            .Where(d=> d.Severity == DiagnosticSeverity.Error)
+            .Where(d => d.Severity == DiagnosticSeverity.Error)
             .Select(diagnostic =>
             new TextExpressionCompilerError
             {
@@ -297,13 +323,10 @@ public abstract class RoslynExpressionValidator
                 .ToArray();
 
         var names = string.Join(Comma, resolvedIdentifiers.Select(var => var.Name));
-        var types = string.Join(Comma,
-            resolvedIdentifiers
-                .Select(var => var.Type)
-                .Concat(new[] { expressionContainer.ResultType })
-                .Select(GetTypeName));
+        var types = resolvedIdentifiers.Select(var => var.Type).Select(GetTypeName);
+        var returnType = GetTypeName(expressionContainer.ResultType);
+        var lambdaFuncCode = CreateValidationCode(types, returnType, names, expressionContainer.ExpressionToValidate.Code, expressionContainer.IsLocation);
 
-        var lambdaFuncCode = CreateValidationCode(types, names, expressionContainer.ExpressionToValidate.Code);
         var sourceText = SourceText.From(lambdaFuncCode);
         var newSyntaxTree = syntaxTree.WithChangedText(sourceText);
         expressionContainer.CompilationUnit = expressionContainer.CompilationUnit.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);

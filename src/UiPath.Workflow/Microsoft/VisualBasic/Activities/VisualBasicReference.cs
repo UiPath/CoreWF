@@ -84,7 +84,7 @@ public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResul
     {
         _expressionTree = null;
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
-        if (VbExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText))
+        if (VbExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText, true))
         {
             return;
         }

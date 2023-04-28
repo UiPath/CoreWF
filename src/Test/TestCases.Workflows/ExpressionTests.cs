@@ -1,13 +1,11 @@
 ﻿using CustomTestObjects;
 using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
-using Newtonsoft.Json;
 using Shouldly;
 using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
 using System.Activities.Validation;
-using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -185,6 +183,97 @@ public class ExpressionTests
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
         validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
     }
+    #region Check locations are not readonly
+    [Fact]
+    public void VB_Readonly_ThrowsError()
+    {
+        var activity = new Assign();
+        activity.To = new OutArgument<bool>(new VisualBasicReference<bool>("Environment.HasShutdownStarted"));
+        activity.Value = new InArgument<bool>(new Literal<bool>(true));
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldBe("BC30526: Property 'HasShutdownStarted' is 'ReadOnly'.");
+    }
+
+    [Fact]
+    public void VB_NonReadonly_Works()
+    {
+        var activity = new Assign();
+        activity.To = new OutArgument<string>(new VisualBasicReference<string>("Environment.CurrentDirectory"));
+        activity.Value = new InArgument<string>(new Literal<string>("bla"));
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void VB_Variable_Works()
+    {
+        var seq = new Sequence();
+        seq.Variables.Add(new Variable<string>("v1"));
+        var activity = new Assign();
+        activity.To = new OutArgument<string>(new VisualBasicReference<string>("v1"));
+        activity.Value = new InArgument<string>(new Literal<string>("bla"));
+        seq.Activities.Add(activity);
+        var result = ActivityValidationServices.Validate(seq, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void VB_AssignmentInLocation_DoesNotWork()
+    {
+        var activity = new Assign();
+        activity.To = new OutArgument<string>(new VisualBasicReference<string>("Environment.CurrentDirectory = \"abc\""));
+        activity.Value = new InArgument<string>(new Literal<string>("bla"));
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldBe("BC30512: Option Strict On disallows implicit conversions from 'Boolean' to 'String'.");
+    }
+
+    [Fact]
+    public void CS_Readonly_ThrowsError()
+    {
+        var activity = new Assign();
+        activity.To = new OutArgument<bool>(new CSharpReference<bool>("Environment.HasShutdownStarted"));
+        activity.Value = new InArgument<bool>(new Literal<bool>(true));
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldBe("CS0200: Property or indexer 'Environment.HasShutdownStarted' cannot be assigned to -- it is read only");
+    }
+
+    [Fact]
+    public void CS_NonReadonly_Works()
+    {
+        var activity = new Assign();
+        activity.To = new OutArgument<string>(new CSharpReference<string>("Environment.CurrentDirectory"));
+        activity.Value = new InArgument<string>(new Literal<string>("bla"));
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void CS_Variable_Works()
+    {
+        var seq = new Sequence();
+        seq.Variables.Add(new Variable<string>("v1"));
+        var activity = new Assign();
+        activity.To = new OutArgument<string>(new CSharpReference<string>("v1"));
+        activity.Value = new InArgument<string>(new Literal<string>("bla"));
+        seq.Activities.Add(activity);
+        var result = ActivityValidationServices.Validate(seq, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void CS_AssignmentInLocation_DoesNotWork()
+    {
+        var activity = new Assign();
+        activity.To = new OutArgument<string>(new CSharpReference<string>("Environment.CurrentDirectory = \"abc\""));
+        activity.Value = new InArgument<string>(new Literal<string>("bla"));
+        var result = ActivityValidationServices.Validate(activity, _useValidator);
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldBe("CS0131: The left-hand side of an assignment must be a variable, property or indexer");
+    }
+    #endregion
 
     [Fact]
     public void Vb_IntOverflow()
@@ -197,7 +286,7 @@ public class ExpressionTests
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
         validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
-        validationResults.Errors[0].Message.ShouldContain("error BC30439: Constant expression not representable in type 'Integer'");
+        validationResults.Errors[0].Message.ShouldContain("Constant expression not representable in type 'Integer'");
     }
 
     [Fact]
@@ -207,7 +296,7 @@ public class ExpressionTests
         var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
-        result.Errors.First().Message.ShouldContain("error BC30512: Option Strict On");
+        result.Errors.First().Message.ShouldContain("Option Strict On");
     }
 
     [Fact]
@@ -217,7 +306,7 @@ public class ExpressionTests
         var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
-        result.Errors.First().Message.ShouldContain("error BC30451: 'var1' is not declared");
+        result.Errors.First().Message.ShouldContain("'var1' is not declared");
     }
 
     [Fact]
@@ -231,7 +320,7 @@ public class ExpressionTests
         var result = ActivityValidationServices.Validate(activity, _useValidator);
 
         result.Errors.Count.ShouldBe(1);
-        result.Errors.First().Message.ShouldContain("error BC30451: 'var1' is not declared");
+        result.Errors.First().Message.ShouldContain("'var1' is not declared");
     }
 
     [Fact]
@@ -291,8 +380,8 @@ public class ExpressionTests
     [Fact]
     public void CSValue_Validate_AddsRequiredAssembliesPerExpressionValidated()
     {
-        
-        var simpleActivity = new WriteLine() { Text = new InArgument<string>(new CSharpValue<string>("1.ToString()"))};
+
+        var simpleActivity = new WriteLine() { Text = new InArgument<string>(new CSharpValue<string>("1.ToString()")) };
 
         var requiresNewtonsoftActivity = new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("typeof(JsonConvert).Name")) };
         var dy = new DynamicActivity() { Implementation = () => requiresNewtonsoftActivity };

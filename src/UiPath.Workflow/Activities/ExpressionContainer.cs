@@ -44,4 +44,10 @@ public class ExpressionContainer
     ///     Diagnostics reported by validating the expression.
     /// </summary>
     public IEnumerable<TextExpressionCompilerError> Diagnostics { get; set; }
+
+    /// <summary>
+    ///     Set to true if the activity is a location / reference
+    ///     so extra checks must be made on it
+    /// </summary>
+    public bool IsLocation { get; set; }
 }

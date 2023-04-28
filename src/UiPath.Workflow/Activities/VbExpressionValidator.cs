@@ -1,14 +1,14 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
 using Microsoft.VisualBasic.Activities;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace System.Activities;
 
@@ -19,6 +19,9 @@ public class VbExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<VbExpressionValidator> s_default = new();
     private static VbExpressionValidator s_instance;
+
+    private const string _valueValidationTemplate = "Public Shared Function CreateExpression() As Expression(Of Func(Of {0}))\nReturn Function({1}) ({2})\nEnd Function\n";
+    private const string _referenceValidationTemplate = "Public Shared Function IsLocation() As {0}\nReturn Function({1}) as Action \nReturn Sub() {2} = Nothing\nEnd Function\nEnd Function";
 
     private static readonly VisualBasicParseOptions s_vbScriptParseOptions =
         new(kind: SourceCodeKind.Script, languageVersion: LanguageVersion.Latest);
@@ -96,8 +99,14 @@ public class VbExpressionValidator : RoslynExpressionValidator
         }
     }
 
-    protected override string CreateValidationCode(string types, string names, string code) =>
-        $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+    protected override string CreateValueCode(string types, string names, string code)
+     => string.Format(_valueValidationTemplate, types, names, code);
+
+    protected override string CreateReferenceCode(string types, string names, string code)
+    {
+        var actionDefinition = types.Any() ? $"Action(Of {string.Join(Comma, types)})" : "Action";
+        return string.Format(_referenceValidationTemplate, actionDefinition, names, code);
+    }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) =>
         VisualBasicSyntaxTree.ParseText("? " + expressionContainer.ExpressionToValidate.Code, s_vbScriptParseOptions);
