@@ -32,7 +32,7 @@ public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextEx
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
-        CsExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText);
+        CsExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText, true);
     }
 
     protected override Location<TResult> Execute(CodeActivityContext context) => (Location<TResult>)_invoker.InvokeExpression(context);

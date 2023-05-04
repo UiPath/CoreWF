@@ -1,16 +1,16 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
 using Microsoft.CSharp.Activities;
 using ReflectionMagic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace System.Activities;
 
@@ -21,6 +21,8 @@ public class CsExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<CsExpressionValidator> s_default = new();
     private static CsExpressionValidator s_instance;
+    private const string _valueValidationTemplate = "public static Expression<Func<{0}>> CreateExpression() => ({1}) => {2};\n";
+    private const string _referenceValidationTemplate = "public static {0} IsLocation() => ({1}) => {2} = default;";
 
     private static readonly CSharpParseOptions s_csScriptParseOptions = new(kind: SourceCodeKind.Script);
 
@@ -47,7 +49,7 @@ public class CsExpressionValidator : RoslynExpressionValidator
         set => s_instance = value;
     }
 
-    protected override int IdentifierKind => (int) SyntaxKind.IdentifierName;
+    protected override int IdentifierKind => (int)SyntaxKind.IdentifierName;
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -83,7 +85,7 @@ public class CsExpressionValidator : RoslynExpressionValidator
                 sourceReferenceResolver: SourceFileResolver.Default,
                 concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")),
                 assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
-            expressionContainer.CompilationUnit = DefaultCompilationUnit = 
+            expressionContainer.CompilationUnit = DefaultCompilationUnit =
                 CSharpCompilation.Create(assemblyName, null, metadataReferences, options);
         }
         else
@@ -95,14 +97,20 @@ public class CsExpressionValidator : RoslynExpressionValidator
         }
     }
 
-    protected override string CreateValidationCode(string types, string names, string code) => 
-        $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+    protected override string CreateValueCode(string types, string names, string code)
+     => string.Format(_valueValidationTemplate, types, names, code);
 
-    protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) => 
+    protected override string CreateReferenceCode(string types, string names, string code)
+    {
+        var actionDefinition = types.Any() ? $"Action<{string.Join(Comma, types)}>" : "Action";
+        return string.Format(_referenceValidationTemplate, actionDefinition, names, code);
+    }
+
+    protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) =>
         CSharpSyntaxTree.ParseText(expressionContainer.ExpressionToValidate.Code, s_csScriptParseOptions);
 
-    protected override string GetTypeName(Type type) => 
-        (string) s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
+    protected override string GetTypeName(Type type) =>
+        (string)s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
 
     private static object GetTypeOptions()
     {

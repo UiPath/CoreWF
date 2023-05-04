@@ -2,7 +2,7 @@
 using CoreWf.Benchmarks;
 
 #if RELEASE
-BenchmarkRunner.Run<Expressions>();
+BenchmarkRunner.Run<RoslynValidatorReferenceVsNonReference>();
 #else
 var e = new Expressions();
 try
