@@ -25,7 +25,6 @@ public class VbExpressionValidator : RoslynExpressionValidator
 
     private static readonly VisualBasicParseOptions s_vbScriptParseOptions =
         new(kind: SourceCodeKind.Script, languageVersion: LanguageVersion.Latest);
-    protected override StringComparer IdentifierNameComparer => StringComparer.OrdinalIgnoreCase;
 
     private static readonly HashSet<Assembly> s_defaultReferencedAssemblies = new()
     {
@@ -46,7 +45,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
         set => s_instance = value;
     }
 
-    protected override int IdentifierKind => (int)SyntaxKind.IdentifierName;
+    protected override CompilerHelper CompilerHelper { get; } = new VBCompilerHelper();
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -100,7 +99,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
     }
 
     protected override string CreateValueCode(string types, string names, string code)
-     => string.Format(_valueValidationTemplate, types, names, code);
+     => CompilerHelper.CreateExpressionCode(types, names, code);
 
     protected override string CreateReferenceCode(string types, string names, string code)
     {

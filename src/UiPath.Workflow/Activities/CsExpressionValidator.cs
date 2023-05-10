@@ -49,7 +49,7 @@ public class CsExpressionValidator : RoslynExpressionValidator
         set => s_instance = value;
     }
 
-    protected override int IdentifierKind => (int)SyntaxKind.IdentifierName;
+    protected override CompilerHelper CompilerHelper { get; } = new CSharpCompilerHelper();
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -98,7 +98,7 @@ public class CsExpressionValidator : RoslynExpressionValidator
     }
 
     protected override string CreateValueCode(string types, string names, string code)
-     => string.Format(_valueValidationTemplate, types, names, code);
+     => CompilerHelper.CreateExpressionCode(types, names, code);
 
     protected override string CreateReferenceCode(string types, string names, string code)
     {
