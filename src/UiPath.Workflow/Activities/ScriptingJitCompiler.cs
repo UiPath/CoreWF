@@ -10,14 +10,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.Loader;
-using System.Text;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting;
 using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
 using ReflectionMagic;
@@ -44,11 +41,9 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     }
 
     protected IReadOnlyCollection<MetadataReference> MetadataReferences { get; init; }
-    protected abstract int IdentifierKind { get; }
-    protected virtual StringComparer IdentifierNameComparer => StringComparer.Ordinal;
-    protected abstract string CreateExpressionCode(string types, string names, string code);
     protected abstract string GetTypeName(Type type);
     protected abstract Script<object> Create(string code, ScriptOptions options);
+    protected abstract CompilerHelper CompilerHelper { get; }
 
     public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
     {
@@ -73,12 +68,12 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
                 .Select(GetTypeName));
         var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
-            CreateExpressionCode(types, names, expressionToCompile.Code))));
-        
+            CompilerHelper.CreateExpressionCode(types, names, expressionToCompile.Code))));
+
         var collectibleAlc = new AssemblyLoadContext("ScriptingJit" + Guid.NewGuid(), true);
         collectibleAlc.Resolving += CollectibleAlc_Resolving;
         using var scope = collectibleAlc.EnterContextualReflection();
-        
+
         var results = ScriptingAotCompiler.BuildAssembly(finalCompilation, compilation.ScriptClass.Name, collectibleAlc);
         if (results.HasErrors)
         {
@@ -105,8 +100,8 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
 
     public IEnumerable<string> GetIdentifiers(SyntaxTree syntaxTree)
     {
-        return syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind)
-                         .Select(n => n.ToString()).Distinct(IdentifierNameComparer).ToArray();
+        return syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == CompilerHelper.IdentifierKind)
+                         .Select(n => n.ToString()).Distinct(CompilerHelper.IdentifierNameComparer).ToArray();
     }
 }
 
@@ -132,71 +127,28 @@ public static class References
 
 public class VbJitCompiler : ScriptingJitCompiler
 {
-    static int crt = 0;
     public VbJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
 
-    protected override int IdentifierKind => (int)SyntaxKind.IdentifierName;
-    protected override StringComparer IdentifierNameComparer => StringComparer.OrdinalIgnoreCase;
+    protected override CompilerHelper CompilerHelper { get; } = new VBCompilerHelper();
 
     protected override Script<object> Create(string code, ScriptOptions options) =>
         VisualBasicScript.Create("? " + code, options);
 
     protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
-
-    protected override string CreateExpressionCode(string types, string names, string code)
-    {
-        var arrayType = types.Split(",");
-        if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
-
-        var (myDelegate,name) = DefineDelegate(types);
-        return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
-    }
-
-    private static (string,string) DefineDelegate(string types)
-    {
-        var crtValue = Interlocked.Add(ref crt, 1);
-
-        var arrayType = types.Split(",");
-        var part1 = new StringBuilder();
-        var part2 = new StringBuilder();
-
-        for (var i = 0; i < arrayType.Length - 1; i++)
-        {
-            part1.Append($" In T{i},");
-            part2.Append($" ByVal arg as T{i},");
-        }
-        part2.Remove(part2.Length - 1, 1);
-
-        var name = $"Func{crtValue}";
-        return ($"Public Delegate Function {name}(Of {part1} Out TResult)({part2}) As TResult",name);
-    }
 }
 
 public class CSharpJitCompiler : ScriptingJitCompiler
 {
-    static int crt = 0;
     private static readonly dynamic s_typeOptions = GetTypeOptions();
     private static readonly dynamic s_typeNameFormatter = GetTypeNameFormatter();
 
     public CSharpJitCompiler(HashSet<Assembly> referencedAssemblies) : base(referencedAssemblies) { }
 
-    protected override int IdentifierKind => (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName;
+    protected override CompilerHelper CompilerHelper { get; } = new CSharpCompilerHelper();
 
     protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
 
     protected override string GetTypeName(Type type) => (string)s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
-
-    protected override string CreateExpressionCode(string types, string names, string code)
-    {
-        var arrayType = types.Split(",");
-        if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
-
-
-        var (myDelegate, name) = DefineDelegate(types);
-        return $"{myDelegate} \n public static Expression<{name}<{types}>> CreateExpression() => ({names}) => {code};";
-    }
 
     private static object GetTypeOptions()
     {
@@ -215,22 +167,5 @@ public class CSharpJitCompiler : ScriptingJitCompiler
                                    .AsDynamicType()
                                    .s_impl
                                    .TypeNameFormatter;
-    }
-
-    private static (string,string) DefineDelegate(string types)
-    {
-        var crtValue = Interlocked.Add(ref crt, 1);
-        var arrayType = types.Split(",");       
-        var part1 = new StringBuilder();
-        var part2 = new StringBuilder();
-
-        for (var i = 0; i < arrayType.Length - 1; i++)
-        {
-            part1.Append($"in T{i}, ");
-            part2.Append($" T{i} arg{i},");
-        }
-        part2.Remove(part2.Length - 1, 1);
-        var name = $"Func{crtValue}";
-        return ($"public delegate TResult {name}<{part1} out TResult>({part2});", name);
     }
 }

@@ -395,4 +395,33 @@ public class ExpressionTests
         var result = ActivityValidationServices.Validate(dy, _useValidator);
         result.Errors.ShouldBeEmpty();
     }
+
+
+    [Fact]
+    public void VBRoslynValidator_ValidatesMoreThan16Arguments()
+    {
+        var sequence = new Sequence();
+        for (int i = 0; i < 20; i++)
+        {
+            sequence.Variables.Add(new Variable<string>($"var{i}"));
+        }
+        var testActivity = new VisualBasicValue<string[]>(string.Format("{{{0}}}", string.Join(", ", Enumerable.Range(0, 20).Select(r => $"var{r}"))));
+        sequence.Activities.Add(testActivity);
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void CSRoslynValidator_ValidatesMoreThan16Arguments()
+    {
+        var sequence = new Sequence();
+        for (int i = 0; i < 20; i++)
+        {
+            sequence.Variables.Add(new Variable<string>($"var{i}"));
+        }
+        var testActivity = new CSharpValue<string[]>(string.Format("new [] {{{0}}}", string.Join(", ", Enumerable.Range(0, 20).Select(r => $"var{r}"))));
+        sequence.Activities.Add(testActivity);
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
 }

@@ -31,8 +31,8 @@ public abstract class RoslynExpressionValidator
     private readonly object _lockRequiredAssemblies = new();
 
     protected const string Comma = ", ";
-    protected virtual StringComparer IdentifierNameComparer => StringComparer.Ordinal;
 
+    protected abstract CompilerHelper CompilerHelper { get; }
     /// <summary>
     ///     Initializes the MetadataReference collection.
     /// </summary>
@@ -58,11 +58,6 @@ public abstract class RoslynExpressionValidator
     ///     to add more assemblies.
     /// </summary>
     protected IReadOnlySet<Assembly> RequiredAssemblies { get; private set; }
-
-    /// <summary>
-    ///     The kind of identifier to look for in the syntax tree as variables that need to be resolved for the expression.
-    /// </summary>
-    protected abstract int IdentifierKind { get; }
 
     /// <summary>
     ///     Adds an assembly to the <see cref="RequiredAssemblies"/> set.
@@ -314,8 +309,8 @@ public abstract class RoslynExpressionValidator
     private void PrepValidation(ExpressionContainer expressionContainer)
     {
         var syntaxTree = expressionContainer.CompilationUnit.SyntaxTrees.First();
-        var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == IdentifierKind)
-                                    .Select(n => n.ToString()).Distinct(IdentifierNameComparer);
+        var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == CompilerHelper.IdentifierKind)
+                                    .Select(n => n.ToString()).Distinct(CompilerHelper.IdentifierNameComparer);
         var resolvedIdentifiers =
             identifiers
                 .Select(name => (Name: name, Type: expressionContainer.ExpressionToValidate.VariableTypeGetter(name)))
