@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.VisualBasic;
-using System;
 using System.Text;
 using System.Threading;
 
@@ -7,7 +6,7 @@ namespace System.Activities
 {
     public sealed class VBCompilerHelper : CompilerHelper
     {
-        static int crt = 0;
+        private static int crt = 0;
 
         public override int IdentifierKind => (int)SyntaxKind.IdentifierName;
 
@@ -23,7 +22,7 @@ namespace System.Activities
             return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
         }
 
-        private static (string, string) DefineDelegate(string types)
+        public override (string, string) DefineDelegate(string types)
         {
             var crtValue = Interlocked.Add(ref crt, 1);
 

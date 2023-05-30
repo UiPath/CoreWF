@@ -81,4 +81,6 @@ public class ValidationSettings
     /// Defaulting to true until validation path is proven.
     /// </remarks>
     public bool ForceExpressionCache { get; set; } = true;
+
+    internal bool IsDesignValidating { get; set; }
 }

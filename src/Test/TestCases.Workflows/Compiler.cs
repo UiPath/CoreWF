@@ -9,13 +9,14 @@ using System.Linq.Expressions;
 using System.Reflection;
 namespace TestCases.Workflows
 {
-    using static ExpressionUtilities;
     using static Expression;
+    using static ExpressionUtilities;
+
     static class Compiler
     {
         public static void Run(Activity root)
         {
-            ActivityValidationServices.Validate(root, new() { SkipValidatingRootConfiguration = true, ForceExpressionCache = true });
+            ActivityValidationServices.Validate(root, new() { SkipValidatingRootConfiguration = true });
             foreach (var activity in root.GetChildren().ToArray())
             {
                 foreach (var argument in activity.RuntimeArguments)
@@ -132,7 +133,7 @@ namespace TestCases.Workflows
             return isLocation;
         }
         private static string LocationName(this MethodCallExpression node) => ((LocationReference)((ConstantExpression)node.Arguments[0]).Value).Name;
-        static IEnumerable<Activity> GetChildren(this Activity root) => 
+        static IEnumerable<Activity> GetChildren(this Activity root) =>
             new[] { root }.Concat(WorkflowInspectionServices.GetActivities(root).SelectMany(a => a.GetChildren()));
         static readonly MethodInfo ActivityContextGetValue = typeof(ActivityContext).GetMethod(nameof(ActivityContext.GetValue), new Type[] { typeof(string) });
     }

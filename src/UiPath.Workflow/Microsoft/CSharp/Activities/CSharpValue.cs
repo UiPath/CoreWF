@@ -14,7 +14,7 @@ namespace Microsoft.CSharp.Activities;
 
 [DebuggerStepThrough]
 [ContentProperty("ExpressionText")]
-public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
+public class CSharpValue<TResult> : TextExpressionBase<TResult>
 {
     private CompiledExpressionInvoker _invoker;
 
@@ -22,17 +22,27 @@ public class CSharpValue<TResult> : CodeActivity<TResult>, ITextExpression
 
     public CSharpValue(string expressionText) : this() => ExpressionText = expressionText;
 
-    public string ExpressionText { get; set; }
+    public override string ExpressionText { get; set; }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public string Language => "C#";
+    public override string Language => "C#";
 
-    public Expression GetExpressionTree() => IsMetadataCached ? _invoker.GetExpressionTree() : throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+    public override Expression GetExpressionTree() => IsMetadataCached ? _invoker.GetExpressionTree() : throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
         _invoker = new CompiledExpressionInvoker(this, false, metadata);
-       CsExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText);
+
+        if (metadata.Environment.CompileExpressions)
+        {
+            return;
+        }
+
+        if (CsExpressionValidator.Instance.TryValidate<TResult>(this, metadata, ExpressionText))
+        {
+            return;
+        }
+        QueueForValidation<TResult>(metadata, false);
     }
 
     protected override TResult Execute(CodeActivityContext context) => (TResult) _invoker.InvokeExpression(context);

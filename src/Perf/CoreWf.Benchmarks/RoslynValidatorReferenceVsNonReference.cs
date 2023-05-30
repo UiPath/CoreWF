@@ -7,7 +7,6 @@ namespace CoreWf.Benchmarks;
 
 public class RoslynValidatorReferenceVsNonReference
 {
-    private readonly ValidationSettings _useValidator = new() { ForceExpressionCache = false };
 
     [Benchmark]
     public void TestVBValue()
@@ -15,7 +14,7 @@ public class RoslynValidatorReferenceVsNonReference
         for (var i = 0; i < 1000; i++)
         {
             var activity = new VisualBasicValue<bool>("Environment.Is64BitOperatingSystem");
-            ActivityValidationServices.Validate(activity, _useValidator);
+            DesignValidationServices.Validate(activity);
         }
     }
 
@@ -25,7 +24,7 @@ public class RoslynValidatorReferenceVsNonReference
         for (var i = 0; i < 1000; i++)
         {
             var activity = new VisualBasicReference<bool>("Environment.Is64BitOperatingSystem");
-            ActivityValidationServices.Validate(activity, _useValidator);
+            DesignValidationServices.Validate(activity);
         }
     }
 
@@ -35,7 +34,7 @@ public class RoslynValidatorReferenceVsNonReference
         for (var i = 0; i < 1000; i++)
         {
             var activity = new CSharpReference<bool>("Environment.Is64BitOperatingSystem");
-            ActivityValidationServices.Validate(activity, _useValidator);
+            DesignValidationServices.Validate(activity);
         }
     }
 
@@ -45,7 +44,7 @@ public class RoslynValidatorReferenceVsNonReference
         for (var i = 0; i < 1000; i++)
         {
             var activity = new CSharpValue<bool>("Environment.Is64BitOperatingSystem");
-            ActivityValidationServices.Validate(activity, _useValidator);
+            DesignValidationServices.Validate(activity);
         }
     }
 }

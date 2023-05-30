@@ -3,6 +3,7 @@
 
 namespace System.Activities;
 using Runtime;
+using System.Activities.Validation;
 
 [Fx.Tag.XamlVisible(false)]
 public abstract class LocationReferenceEnvironment
@@ -15,6 +16,13 @@ public abstract class LocationReferenceEnvironment
     /// Indicates if this LRE is created as part of activity validation.
     /// </summary>
     internal bool IsValidating { get; set; }
+
+    /// <summary>
+    /// Indicates if this LRE is created as part of activity validation.
+    /// </summary>
+    internal bool IsDesignValidating { get; set; }
+
+    internal ValidationScope ValidationScope { get; set; }
 
     public abstract Activity Root { get; }
 
