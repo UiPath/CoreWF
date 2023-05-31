@@ -114,6 +114,13 @@ public sealed partial class WorkflowApplication : WorkflowInstance
         _initialWorkflowArguments = inputs ?? throw FxTrace.Exception.ArgumentNull(nameof(inputs));
     }
 
+    public WorkflowApplication(Activity workflowDefinition, IDictionary<string, object> inputs, WorkflowIdentity definitionIdentity, IList<Handle> executionProperties)
+        : this(workflowDefinition, definitionIdentity)
+    {
+        _initialWorkflowArguments = inputs ?? throw FxTrace.Exception.ArgumentNull(nameof(inputs));
+        _rootExecutionProperties = executionProperties;
+    }
+
     private WorkflowApplication(Activity workflowDefinition, IDictionary<string, object> inputs, IList<Handle> executionProperties)
         : this(workflowDefinition)
     {

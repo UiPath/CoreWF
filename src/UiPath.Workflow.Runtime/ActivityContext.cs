@@ -29,6 +29,15 @@ public class ActivityContext
         _instanceId = instance.InternalId;
     }
 
+    public ExecutionProperties Properties
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return new ExecutionProperties(this, CurrentInstance, CurrentInstance.PropertyManager);
+        }
+    }
+
     internal LocationEnvironment Environment
     {
         get
