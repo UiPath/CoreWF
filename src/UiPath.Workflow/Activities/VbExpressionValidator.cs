@@ -20,8 +20,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
     private static readonly Lazy<VbExpressionValidator> s_default = new();
     private static VbExpressionValidator s_instance;
 
-    private const string _valueValidationTemplate = "Public Shared Function CreateExpression() As Expression(Of Func(Of {0}))\nReturn Function({1}) ({2})\nEnd Function\n";
-    private const string _referenceValidationTemplate = "Public Shared Function IsLocation() As {0}\nReturn Function({1}) as Action \nReturn Sub() {2} = Nothing\nEnd Function\nEnd Function";
+    private const string _referenceValidationTemplate = "Public Shared Function IsLocation() As {0}\nReturn Function({1}) as Action \nReturn Sub() {2} = CType(Nothing, {3})\nEnd Function\nEnd Function";
 
     private static readonly VisualBasicParseOptions s_vbScriptParseOptions =
         new(kind: SourceCodeKind.Script, languageVersion: LanguageVersion.Latest);
@@ -101,10 +100,12 @@ public class VbExpressionValidator : RoslynExpressionValidator
     protected override string CreateValueCode(string types, string names, string code)
      => CompilerHelper.CreateExpressionCode(types, names, code);
 
-    protected override string CreateReferenceCode(string types, string names, string code)
+    protected override string CreateReferenceCode(string types, string names, string code, string returnType)
     {
-        var actionDefinition = types.Any() ? $"Action(Of {string.Join(Comma, types)})" : "Action";
-        return string.Format(_referenceValidationTemplate, actionDefinition, names, code);
+        var actionDefinition = !string.IsNullOrWhiteSpace(types) 
+            ? $"Action(Of {string.Join(Comma, types)})" 
+            : "Action";
+        return string.Format(_referenceValidationTemplate, actionDefinition, names, code, returnType);
     }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) =>

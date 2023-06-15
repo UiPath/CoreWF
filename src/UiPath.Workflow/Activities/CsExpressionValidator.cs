@@ -21,8 +21,7 @@ public class CsExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<CsExpressionValidator> s_default = new();
     private static CsExpressionValidator s_instance;
-    private const string _valueValidationTemplate = "public static Expression<Func<{0}>> CreateExpression() => ({1}) => {2};\n";
-    private const string _referenceValidationTemplate = "public static {0} IsLocation() => ({1}) => {2} = default;";
+    private const string _referenceValidationTemplate = "public static {0} IsLocation() => ({1}) => {2} = default({3});";
 
     private static readonly CSharpParseOptions s_csScriptParseOptions = new(kind: SourceCodeKind.Script);
 
@@ -100,10 +99,12 @@ public class CsExpressionValidator : RoslynExpressionValidator
     protected override string CreateValueCode(string types, string names, string code)
      => CompilerHelper.CreateExpressionCode(types, names, code);
 
-    protected override string CreateReferenceCode(string types, string names, string code)
+    protected override string CreateReferenceCode(string type, string names, string code, string returnType)
     {
-        var actionDefinition = types.Any() ? $"Action<{string.Join(Comma, types)}>" : "Action";
-        return string.Format(_referenceValidationTemplate, actionDefinition, names, code);
+        var actionDefinition = !string.IsNullOrWhiteSpace(type) 
+            ? $"Action<{string.Join(Comma, type)}>" 
+            : "Action";
+        return string.Format(_referenceValidationTemplate, actionDefinition, names, code, returnType);
     }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(ExpressionContainer expressionContainer) =>
