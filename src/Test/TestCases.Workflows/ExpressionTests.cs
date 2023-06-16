@@ -424,4 +424,50 @@ public class ExpressionTests
         var result = ActivityValidationServices.Validate(sequence, _useValidator);
         result.Errors.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void VBReferenceTypeIsChecked()
+    {
+        var sequence = new Sequence();
+        sequence.Variables.Add(new Variable<string>("var1"));
+        sequence.Activities.Add(new Assign { To = new OutArgument<int>(new VisualBasicReference<int>("var1")), Value = new InArgument<int>(3) });
+
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldBe("BC30512: Option Strict On disallows implicit conversions from 'Integer' to 'String'.");
+    }
+
+    [Fact]
+    public void VBReferenceTypeIsCheckedForGenerics()
+    {
+        var sequence = new Sequence();
+        sequence.Variables.Add(new Variable<List<string>>("var1"));
+        sequence.Activities.Add(new Assign { To = new OutArgument<List<string>>(new VisualBasicReference<List<string>>("var1")), Value = new InArgument<List<string>>(new VisualBasicValue<List<string>>("Nothing")) });
+
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void CSharpReferenceTypeIsChecked()
+    {
+        var sequence = new Sequence();
+        sequence.Variables.Add(new Variable<string>("var1"));
+        sequence.Activities.Add(new Assign { To = new OutArgument<int>(new CSharpReference<int>("var1")), Value = new InArgument<int>(3) });
+
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.Count.ShouldBe(1);
+        result.Errors.First().Message.ShouldBe("CS0029: Cannot implicitly convert type 'int' to 'string'");
+    }
+
+    [Fact]
+    public void CSharpReferenceTypeIsCheckedForGenerics()
+    {
+        var sequence = new Sequence();
+        sequence.Variables.Add(new Variable<List<string>>("var1"));
+        sequence.Activities.Add(new Assign { To = new OutArgument<List<string>>(new CSharpReference<List<string>>("var1")), Value = new InArgument<List<string>>(new CSharpValue<List<string>>("default"))});
+
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
 }

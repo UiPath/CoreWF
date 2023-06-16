@@ -136,13 +136,13 @@ public abstract class RoslynExpressionValidator
     protected string CreateValidationCode(IEnumerable<string> types, string returnType, string names, string code, bool isLocation)
     {
         return isLocation
-            ? CreateReferenceCode(string.Join(Comma, types), names, code)
+            ? CreateReferenceCode(string.Join(Comma, types), names, code, returnType)
             : CreateValueCode(string.Join(Comma, types.Concat(new[] { returnType })), names, code);
     }
 
     protected abstract string CreateValueCode(string types, string names, string code);
 
-    protected abstract string CreateReferenceCode(string types, string names, string code);
+    protected abstract string CreateReferenceCode(string types, string names, string code, string returnType);
 
     /// <summary>
     ///     Updates the <see cref="Compilation" /> object for the expression.
