@@ -8,6 +8,7 @@ using System.Activities.Statements;
 using System.Activities.Validation;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace TestCases.Workflows;
@@ -47,7 +48,8 @@ public class ExpressionTests
         // There's no programmatic way (that I know of) to add assembly references when creating workflows like in these tests.
         // Adding the custom assembly directly to the expression validator to simulate XAML reference.
         // The null is for testing purposes.
-        VbExpressionValidator.Instance = new VbExpressionValidator(new() { typeof(ClassWithCollectionProperties).Assembly, null });
+        VbExpressionValidator.Instance.AddRequiredAssembly(typeof(ClassWithCollectionProperties).Assembly);
+        CSharpExpressionValidator.Instance.AddRequiredAssembly(typeof(ClassWithCollectionProperties).Assembly);
     }
 
     [Theory]
@@ -423,6 +425,67 @@ public class ExpressionTests
         sequence.Activities.Add(testActivity);
         var result = ActivityValidationServices.Validate(sequence, _useValidator);
         result.Errors.ShouldBeEmpty();
+    }
+    [Fact]
+    public void VB_Multithreaded_NoError()
+    {
+        var activities = new List<Activity>();
+        var tasks = new List<Task>();
+        var results = new List<ValidationResults>();
+        for (var i = 0; i < 20; i++)
+        {
+            var seq = new Sequence();
+            seq.Variables.Add(new Variable<int>("sum"));
+            for (var j = 0; j < 10000; j++)
+            {
+                seq.Activities.Add(new Assign
+                {
+                    To = new OutArgument<int>(new VisualBasicReference<int>("sum")),
+                    Value = new InArgument<int>(new VisualBasicValue<int>($"sum + {j}"))
+                });
+            }
+        }
+        foreach (var activity in activities)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                results.Add(ActivityValidationServices.Validate(activity, _useValidator));
+            }));
+        }
+        Task.WaitAll(tasks.ToArray());
+
+        results.All(r => !r.Errors.Any() && !r.Warnings.Any()).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void CS_Multithreaded_NoError()
+    {
+        var activities = new List<Activity>();
+        var tasks = new List<Task>();
+        var results = new List<ValidationResults>();
+        for (var i = 0; i < 20; i++)
+        {
+            var seq = new Sequence();
+            seq.Variables.Add(new Variable<int>("sum"));
+            for (var j = 0; j < 10000; j++)
+            {
+                seq.Activities.Add(new Assign
+                {
+                    To = new OutArgument<int>(new CSharpReference<int>("sum")),
+                    Value = new InArgument<int>(new CSharpValue<int>($"sum + {j}"))
+                });
+            }
+        }
+        foreach (var activity in activities)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                results.Add(ActivityValidationServices.Validate(activity, _useValidator));
+            }));
+        }
+        Task.WaitAll(tasks.ToArray());
+
+        results.All(r => !r.Errors.Any() && !r.Warnings.Any()).ShouldBeTrue();
     }
 
     [Fact]

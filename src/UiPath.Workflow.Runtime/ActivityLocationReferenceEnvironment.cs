@@ -12,7 +12,10 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
     private Dictionary<string, LocationReference> _declarations;
     private List<LocationReference> _unnamedDeclarations;
 
-    public ActivityLocationReferenceEnvironment() { }
+    public ActivityLocationReferenceEnvironment()
+    {
+        Extensions = new();
+    }
 
     public ActivityLocationReferenceEnvironment(LocationReferenceEnvironment parent)
     {
@@ -22,6 +25,7 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
             CompileExpressions = parent.CompileExpressions;
             IsValidating = parent.IsValidating;
             InternalRoot = parent.Root;
+            Extensions = parent.Extensions;
         }
     }
 

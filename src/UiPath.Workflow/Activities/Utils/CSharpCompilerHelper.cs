@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
-using System;
 using System.Text;
 using System.Threading;
 
@@ -7,7 +6,7 @@ namespace System.Activities
 {
     public sealed class CSharpCompilerHelper : CompilerHelper
     {
-        static int crt = 0;
+        private static int crt = 0;
 
         public override int IdentifierKind => (int)SyntaxKind.IdentifierName;
 
@@ -19,12 +18,11 @@ namespace System.Activities
             if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
                 return $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
 
-
             var (myDelegate, name) = DefineDelegate(types);
             return $"{myDelegate} \n public static Expression<{name}<{types}>> CreateExpression() => ({names}) => {code};";
         }
 
-        private static (string, string) DefineDelegate(string types)
+        public override (string, string) DefineDelegate(string types)
         {
             var crtValue = Interlocked.Add(ref crt, 1);
             var arrayType = types.Split(",");

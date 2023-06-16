@@ -21,7 +21,7 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
 
     private VisualBasicHelper(string expressionText) : base(expressionText) { }
 
-    internal static string Language => "VB";
+    internal const string Language = "VB";
 
     protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references)
     {

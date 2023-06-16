@@ -10,8 +10,9 @@ namespace System.Activities.Validation;
 
 public static class ActivityValidationServices
 {
-    internal static readonly ReadOnlyCollection<Activity> EmptyChildren = new(Array.Empty<Activity>());
     private static readonly ValidationSettings defaultSettings = new();
+
+    internal static readonly ReadOnlyCollection<Activity> EmptyChildren = new(Array.Empty<Activity>());
     internal static ReadOnlyCollection<ValidationError> EmptyValidationErrors = new(new List<ValidationError>(0));
 
     public static ValidationResults Validate(Activity toValidate) => Validate(toValidate, defaultSettings);
@@ -245,7 +246,7 @@ public static class ActivityValidationServices
         return exceptionString;
     }
 
-    static internal string GenerateValidationErrorPrefix(Activity toValidate, ActivityUtilities.ActivityCallStack parentChain, ProcessActivityTreeOptions options, out Activity source)
+    internal static string GenerateValidationErrorPrefix(Activity toValidate, ActivityUtilities.ActivityCallStack parentChain, ProcessActivityTreeOptions options, out Activity source)
     {
         bool parentVisible = true;
         string prefix = "";
@@ -453,7 +454,26 @@ public static class ActivityValidationServices
                 ActivityUtilities.CacheRootMetadata(_rootToValidate, _environment, _options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref _errors);
             }
 
+            var extension = GetValidationExtension(_environment);
+            if (extension is not null)
+            {
+                var results = extension.Validate(_rootToValidate);
+                if (_errors?.Any() == true)
+                {
+                    foreach (var error in _errors)
+                    {
+                        results.Add(error);
+                    }
+                }
+                return new ValidationResults(results);
+            }
+
             return new ValidationResults(_errors);
+        }
+
+        private static IValidationExtension GetValidationExtension(LocationReferenceEnvironment environment)
+        {
+            return environment.Extensions.Get<IValidationExtension>();
         }
 
         private void ValidateElement(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)
