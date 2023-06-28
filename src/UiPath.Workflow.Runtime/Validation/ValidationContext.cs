@@ -46,13 +46,13 @@ public sealed class ValidationContext
             {
                 currentNode = currentNode.Parent;
             }
-            List<Activity> nodes = ActivityValidationServices.GetChildren(new ActivityUtilities.ChildActivity(currentNode, true), new ActivityUtilities.ActivityCallStack(), _options);
+            List<Activity> nodes = ActivityUtilities.GetChildren(new ActivityUtilities.ChildActivity(currentNode, true), new ActivityUtilities.ActivityCallStack(), _options);
             nodes.Add(currentNode);
             return nodes;
         }
         else
         {
-            return ActivityValidationServices.EmptyChildren;
+            return ActivityUtilities.EmptyChildren;
         }
     }
 
@@ -60,11 +60,11 @@ public sealed class ValidationContext
     {
         if (!_owner.Equals(ActivityUtilities.ChildActivity.Empty))
         {
-            return ActivityValidationServices.GetChildren(_owner, _parentChain, _options);
+            return ActivityUtilities.GetChildren(_owner, _parentChain, _options);
         }
         else
         {
-            return ActivityValidationServices.EmptyChildren;
+            return ActivityUtilities.EmptyChildren;
         }
     }
 

@@ -27,7 +27,7 @@ public static class WorkflowInspectionServices
 
         ActivityUtilities.CacheRootMetadata(rootActivity, hostEnvironment, ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
 
-        ActivityValidationServices.ThrowIfViolationsExist(validationErrors);
+        ActivityUtilities.ThrowIfViolationsExist(validationErrors);
     }
 
     public static Activity Resolve(Activity root, string id)
@@ -48,7 +48,7 @@ public static class WorkflowInspectionServices
 
             ActivityUtilities.CacheRootMetadata(root, new ActivityLocationReferenceEnvironment(), ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
 
-            ActivityValidationServices.ThrowIfViolationsExist(validationErrors);
+            ActivityUtilities.ThrowIfViolationsExist(validationErrors);
         }
 
         QualifiedId parsedId = QualifiedId.Parse(id);
@@ -74,7 +74,7 @@ public static class WorkflowInspectionServices
 
             ActivityUtilities.CacheRootMetadata(activity, new ActivityLocationReferenceEnvironment(), ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
 
-            ActivityValidationServices.ThrowIfViolationsExist(validationErrors);
+            ActivityUtilities.ThrowIfViolationsExist(validationErrors);
         }
 
         int i = 0;
@@ -177,7 +177,7 @@ public static class WorkflowInspectionServices
 
             ActivityUtilities.CacheRootMetadata(activity, new ActivityLocationReferenceEnvironment(), ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
 
-            ActivityValidationServices.ThrowIfViolationsExist(validationErrors);
+            ActivityUtilities.ThrowIfViolationsExist(validationErrors);
         }
 
         return activity.InternalCanInduceIdle;

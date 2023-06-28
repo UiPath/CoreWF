@@ -334,7 +334,7 @@ public abstract class WorkflowInstance
             }
             IList<ValidationError> validationErrors = null;
             ActivityUtilities.CacheRootMetadata(WorkflowDefinition, localEnvironment, ProcessActivityTreeOptions.FullCachingOptions, null, ref validationErrors);
-            ActivityValidationServices.ThrowIfViolationsExist(validationErrors);
+            ActivityUtilities.ThrowIfViolationsExist(validationErrors);
         }
     }
 
@@ -388,7 +388,7 @@ public abstract class WorkflowInstance
 
             if (WorkflowDefinition.RuntimeArguments.Count > 0 || (actualInputs != null && actualInputs.Count > 0))
             {
-                ActivityValidationServices.ValidateRootInputs(WorkflowDefinition, actualInputs);
+                ActivityUtilities.ValidateRootInputs(WorkflowDefinition, actualInputs);
             }
 
             _executor.ScheduleRootActivity(WorkflowDefinition, actualInputs, workflowExecutionProperties);

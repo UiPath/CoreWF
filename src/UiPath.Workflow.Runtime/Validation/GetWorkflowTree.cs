@@ -17,6 +17,6 @@ public sealed class GetWorkflowTree : CodeActivity<IEnumerable<Activity>>
         Fx.Assert(ValidationContext != null, "ValidationContext must not be null");
 
         ValidationContext currentContext = ValidationContext.Get(context);
-        return currentContext != null ? currentContext.GetWorkflowTree() : ActivityValidationServices.EmptyChildren;
+        return currentContext != null ? currentContext.GetWorkflowTree() : ActivityUtilities.EmptyChildren;
     }
 }

@@ -17,6 +17,6 @@ public sealed class GetParentChain : CodeActivity<IEnumerable<Activity>>
         Fx.Assert(ValidationContext != null, "ValidationContext must not be null");
 
         ValidationContext currentContext = ValidationContext.Get(context);
-        return currentContext != null ? currentContext.GetParents() : ActivityValidationServices.EmptyChildren;
+        return currentContext != null ? currentContext.GetParents() : ActivityUtilities.EmptyChildren;
     }
 }

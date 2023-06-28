@@ -765,7 +765,7 @@ public abstract partial class Activity
 
         if (_arguments != null && _arguments.Count > 1)
         {
-            ActivityValidationServices.ValidateEvaluationOrder(_arguments, this, ref _tempValidationErrors);
+            ActivityUtilities.ValidateEvaluationOrder(_arguments, this, ref _tempValidationErrors);
         }
 
         if (_tempValidationErrors != null)

@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Runtime;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace System.Activities.Validation;
@@ -18,7 +19,7 @@ public class ValidationResults
     {
         if (allValidationErrors == null)
         {
-            _allValidationErrors = ActivityValidationServices.EmptyValidationErrors;
+            _allValidationErrors = ActivityUtilities.EmptyValidationErrors;
         }
         else
         {
@@ -56,8 +57,8 @@ public class ValidationResults
     {
         if (_allValidationErrors.Count == 0)
         {
-            _errors = ActivityValidationServices.EmptyValidationErrors;
-            _warnings = ActivityValidationServices.EmptyValidationErrors;
+            _errors = ActivityUtilities.EmptyValidationErrors;
+            _warnings = ActivityUtilities.EmptyValidationErrors;
         }
         else
         {
@@ -82,7 +83,7 @@ public class ValidationResults
 
             if (warningsList == null)
             {
-                _warnings = ActivityValidationServices.EmptyValidationErrors;
+                _warnings = ActivityUtilities.EmptyValidationErrors;
             }
             else
             {
@@ -91,7 +92,7 @@ public class ValidationResults
 
             if (errorsList == null)
             {
-                _errors = ActivityValidationServices.EmptyValidationErrors;
+                _errors = ActivityUtilities.EmptyValidationErrors;
             }
             else
             {

@@ -17,6 +17,6 @@ public sealed class GetChildSubtree : CodeActivity<IEnumerable<Activity>>
         Fx.Assert(ValidationContext != null, "ValidationContext must not be null");
 
         ValidationContext currentContext = ValidationContext.Get(context);
-        return currentContext != null ? currentContext.GetChildren() : ActivityValidationServices.EmptyChildren;
+        return currentContext != null ? currentContext.GetChildren() : ActivityUtilities.EmptyChildren;
     }
 }
