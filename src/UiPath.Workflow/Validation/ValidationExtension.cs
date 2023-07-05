@@ -1,15 +1,16 @@
 ﻿using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace System.Activities.Validation
 {
     internal sealed class ValidationExtension : IValidationExtension
     {
-        public IList<ValidationError> Validate(Activity activity)
+        public IList<ValidationError> Validate(Activity activity, IList<ValidationError> existingErrors)
         {
             var validator = GetValidator(Scope.Language);
-            return validator.Validate(activity, Scope);
+            return validator.Validate(activity, Scope).Concat(existingErrors).ToList();
         }
 
         private static RoslynExpressionValidator GetValidator(string language)

@@ -454,26 +454,10 @@ public static class ActivityValidationServices
                 ActivityUtilities.CacheRootMetadata(_rootToValidate, _environment, _options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref _errors);
             }
 
-            var extension = GetValidationExtension(_environment);
-            if (extension is not null)
-            {
-                var results = extension.Validate(_rootToValidate);
-                if (_errors?.Any() == true)
-                {
-                    foreach (var error in _errors)
-                    {
-                        results.Add(error);
-                    }
-                }
-                return new ValidationResults(results);
-            }
+            return new ValidationResults(GetValidationResults(_environment) ?? _errors);
 
-            return new ValidationResults(_errors);
-        }
-
-        private static IValidationExtension GetValidationExtension(LocationReferenceEnvironment environment)
-        {
-            return environment.Extensions.Get<IValidationExtension>();
+            IList<ValidationError> GetValidationResults(LocationReferenceEnvironment environment) => 
+                environment.Extensions.Get<IValidationExtension>()?.Validate(_rootToValidate, _errors);
         }
 
         private void ValidateElement(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)

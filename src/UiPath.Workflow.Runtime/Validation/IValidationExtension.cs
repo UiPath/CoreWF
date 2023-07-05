@@ -2,8 +2,6 @@
 {
     internal interface IValidationExtension
     {
-        IList<ValidationError> Validate(Activity activity);
-
-        void QueueExpressionForValidation<T>(ExpressionToValidate expressionToValidate, string language);
+        IList<ValidationError> Validate(Activity activity, IList<ValidationError> existingErrors);
     }
 }

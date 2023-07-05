@@ -25,7 +25,7 @@ namespace System.Activities
 
             if (metadata.Environment.IsValidating)
             {
-                var extension = metadata.Environment.Extensions.GetOrAdd(_validationFunc);
+                var extension = metadata.Environment.Extensions.GetOrAdd(_validationFunc) as ValidationExtension;
                 extension.QueueExpressionForValidation<T>(new()
                 {
                     Activity = this,
