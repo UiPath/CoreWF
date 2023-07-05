@@ -62,6 +62,47 @@ public abstract partial class Activity
             }
         }
 
+        public object GetOrAddDefaultExtensionProvider<T>(Func<T> extensionProvider) 
+            where T : class
+        {
+            Type key = typeof(T);
+            if (_activityExtensionProviders == null)
+            {
+                _activityExtensionProviders = new Dictionary<Type, WorkflowInstanceExtensionProvider>();
+            }
+            else
+            {
+                if (_activityExtensionProviders.TryGetValue(key, out var existingExtensionProvider))
+                {
+                    return existingExtensionProvider.ProvideValue(); // already have a provider of this type
+                }
+            }
+
+            var newExtensionProvider = new WorkflowInstanceExtensionProviderWithValue<T>(extensionProvider);
+            _activityExtensionProviders.Add(key, newExtensionProvider);
+
+            // if we're providing an extension that exactly matches a required type, simplify further bookkeeping
+            if (_requiredExtensionTypes != null)
+            {
+                _requiredExtensionTypes.Remove(key);
+            }
+
+            return newExtensionProvider.ProvideValue();
+        }
+
+        public object GetDefaultExtensionProvider<T>()
+            where T : class
+        {
+            Type key = typeof(T);
+
+            if (_activityExtensionProviders != null && _activityExtensionProviders.TryGetValue(key, out var existingExtensionProvider))
+            {
+                return existingExtensionProvider.ProvideValue(); // already have a provider of this type
+            }
+
+            return null;
+        }
+
         public void RequireExtension(Type extensionType)
         {
             // if we're providing an extension that exactly matches a required type, don't bother with further bookkeeping

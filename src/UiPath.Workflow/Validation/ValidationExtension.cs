@@ -10,7 +10,11 @@ namespace System.Activities.Validation
         public IList<ValidationError> Validate(Activity activity, IList<ValidationError> existingErrors)
         {
             var validator = GetValidator(Scope.Language);
-            return validator.Validate(activity, Scope).Concat(existingErrors).ToList();
+            var newErrrors = validator.Validate(activity, Scope);
+            if(existingErrors != null)
+              return newErrrors.Concat(existingErrors).ToList();
+
+            return newErrrors;
         }
 
         private static RoslynExpressionValidator GetValidator(string language)

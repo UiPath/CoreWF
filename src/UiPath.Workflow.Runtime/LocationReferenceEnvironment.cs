@@ -16,8 +16,6 @@ public abstract class LocationReferenceEnvironment
     /// </summary>
     internal bool IsValidating { get; set; }
 
-    internal EnvironmentExtensions Extensions { get; set; }
-
     public abstract Activity Root { get; }
 
     public LocationReferenceEnvironment Parent { get; protected set; }

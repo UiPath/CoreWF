@@ -456,8 +456,8 @@ public static class ActivityValidationServices
 
             return new ValidationResults(GetValidationResults(_environment) ?? _errors);
 
-            IList<ValidationError> GetValidationResults(LocationReferenceEnvironment environment) => 
-                environment.Extensions.Get<IValidationExtension>()?.Validate(_rootToValidate, _errors);
+            IList<ValidationError> GetValidationResults(LocationReferenceEnvironment environment) =>
+                _rootToValidate.GetExtensionProvider<IValidationExtension>()?.Validate(_rootToValidate, _errors);
         }
 
         private void ValidateElement(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)

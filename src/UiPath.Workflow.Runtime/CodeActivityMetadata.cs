@@ -105,6 +105,16 @@ public struct CodeActivityMetadata
         _activity.AddDefaultExtensionProvider(extensionProvider);
     }
 
+    public object GetOrAddDefaultExtensionProvider<T>(Func<T> extensionProvider)
+        where T : class
+    {
+        if (extensionProvider == null)
+        {
+            throw FxTrace.Exception.ArgumentNull(nameof(extensionProvider));
+        }
+        return _activity.GetOrAddDefaultExtensionProvider(extensionProvider);
+    }
+
     public void RequireExtension<T>()
         where T : class => _activity.RequireExtension(typeof(T));
 

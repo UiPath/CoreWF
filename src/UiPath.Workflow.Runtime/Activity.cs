@@ -887,6 +887,21 @@ public abstract partial class Activity
         _rootActivity._rootProperties.AddDefaultExtensionProvider(extensionProvider);
     }
 
+    internal object GetOrAddDefaultExtensionProvider<T>(Func<T> extensionProvider)
+    where T : class
+    {
+        Fx.Assert(extensionProvider != null, "caller must verify");
+        Fx.Assert(_rootActivity != null && _rootActivity._rootProperties != null, "need a valid root");
+        return _rootActivity._rootProperties.GetOrAddDefaultExtensionProvider(extensionProvider);
+    }
+
+    internal T GetExtensionProvider<T>()
+        where T : class
+    {
+        Fx.Assert(_rootActivity != null && _rootActivity._rootProperties != null, "need a valid root");
+        return _rootActivity._rootProperties.GetDefaultExtensionProvider<T>() as T;
+    }
+
     internal void RequireExtension(Type extensionType)
     {
         Fx.Assert(extensionType != null && !extensionType.IsValueType, "caller should verify we have a valid reference type");

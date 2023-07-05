@@ -14,7 +14,6 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
 
     public ActivityLocationReferenceEnvironment()
     {
-        Extensions = new();
     }
 
     public ActivityLocationReferenceEnvironment(LocationReferenceEnvironment parent)
@@ -25,7 +24,6 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
             CompileExpressions = parent.CompileExpressions;
             IsValidating = parent.IsValidating;
             InternalRoot = parent.Root;
-            Extensions = parent.Extensions;
         }
     }
 

@@ -48,3 +48,30 @@ internal class WorkflowInstanceExtensionProvider<T> : WorkflowInstanceExtensionP
         return value;
     }
 }
+
+internal class WorkflowInstanceExtensionProviderWithValue<T> : WorkflowInstanceExtensionProvider
+    where T : class
+{
+    private readonly Func<T> _providerFunction;
+    private bool _hasGeneratedValue;
+    private T _value;
+
+    public WorkflowInstanceExtensionProviderWithValue(Func<T> providerFunction)
+        : base()
+    {
+        _providerFunction = providerFunction;
+        Type = typeof(T);
+    }
+
+    public override object ProvideValue()
+    {
+        if (!_hasGeneratedValue)
+        {
+            _value = _providerFunction();
+            GeneratedTypeMatchesDeclaredType = ReferenceEquals(_value.GetType(), Type);
+            _hasGeneratedValue = true;
+        }
+
+        return _value;
+    }
+}
