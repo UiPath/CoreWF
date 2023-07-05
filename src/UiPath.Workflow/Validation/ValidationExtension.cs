@@ -6,7 +6,7 @@ namespace System.Activities.Validation
 {
     internal sealed class ValidationExtension : IValidationExtension
     {
-        public IList<ValidationError> Validate(Activity activity)
+        public IEnumerable<ValidationError> Validate(Activity activity)
         {
             var validator = GetValidator(Scope.Language);
             return validator.Validate(activity, Scope);

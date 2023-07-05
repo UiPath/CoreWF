@@ -429,6 +429,7 @@ public static class ActivityValidationServices
         {
             _settings = settings;
             _rootToValidate = toValidate;
+            _errors = new List<ValidationError>();
             _environment = settings.Environment ?? new ActivityLocationReferenceEnvironment();
             _environment.IsValidating = !settings.ForceExpressionCache;
             if (settings.SkipExpressionCompilation)
@@ -453,27 +454,11 @@ public static class ActivityValidationServices
                 // We want to add the CacheMetadata errors to our errors collection
                 ActivityUtilities.CacheRootMetadata(_rootToValidate, _environment, _options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref _errors);
             }
+            
+            return new ValidationResults(_errors.Concat(GetValidationExtensionResults(_environment)).ToList());
 
-            var extension = GetValidationExtension(_environment);
-            if (extension is not null)
-            {
-                var results = extension.Validate(_rootToValidate);
-                if (_errors?.Any() == true)
-                {
-                    foreach (var error in _errors)
-                    {
-                        results.Add(error);
-                    }
-                }
-                return new ValidationResults(results);
-            }
-
-            return new ValidationResults(_errors);
-        }
-
-        private static IValidationExtension GetValidationExtension(LocationReferenceEnvironment environment)
-        {
-            return environment.Extensions.Get<IValidationExtension>();
+            IEnumerable<ValidationError> GetValidationExtensionResults(LocationReferenceEnvironment environment) => 
+                environment.Extensions.Get<IValidationExtension>()?.Validate(_rootToValidate) ?? Array.Empty<ValidationError>();
         }
 
         private void ValidateElement(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)
