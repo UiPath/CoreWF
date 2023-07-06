@@ -12,21 +12,21 @@ namespace System.Activities
         /// If the extension does not exist,
         /// it will invoke the <paramref name="createExtensionFactory"/> parameter
         /// </summary>
-        /// <typeparam name="T">The type of the extension</typeparam>
+        /// <typeparam name="TExtension">The type of the extension</typeparam>
         /// <param name="createExtensionFactory">The factory to create the extension</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public TInterface GetOrAdd<TInterface>(Func<TInterface> createExtensionFactory) 
-            where TInterface : class 
+        public TExtension GetOrAdd<TExtension>(Func<TExtension> createExtensionFactory) 
+            where TExtension : class 
         {
-            var type = typeof(TInterface);
+            var type = typeof(TExtension);
             if (_extensions.TryGetValue(type, out object extension))
             {
-                return extension as TInterface;
+                return extension as TExtension;
             }
 
             return CreateAndAdd();
 
-            TInterface CreateAndAdd()
+            TExtension CreateAndAdd()
             {
                 var extension = createExtensionFactory();
                 if (extension is null)
@@ -55,15 +55,15 @@ namespace System.Activities
         /// so if a second extension with the same type is added, it will
         /// throw an <see cref="InvalidOperationException"/> 
         /// </summary>
-        /// <typeparam name="TInterface">The type of the extension</typeparam>
+        /// <typeparam name="TExtension">The type of the extension</typeparam>
         /// <param name="extension">The extension</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Add<TInterface>(TInterface extension) where TInterface : class
+        public void Add<TExtension>(TExtension extension) where TExtension : class
         {
-            if (_extensions.ContainsKey(typeof(TInterface)))
-                throw new InvalidOperationException($"Service '{typeof(TInterface).FullName}' already exists");
+            if (_extensions.ContainsKey(typeof(TExtension)))
+                throw new InvalidOperationException($"Service '{typeof(TExtension).FullName}' already exists");
 
-            _extensions[typeof(TInterface)] = extension;
+            _extensions[typeof(TExtension)] = extension;
         }
 
         internal IReadOnlyCollection<object> All => _extensions.Values;

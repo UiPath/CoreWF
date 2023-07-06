@@ -436,7 +436,7 @@ public class ExpressionTests
         {
             var seq = new Sequence();
             seq.Variables.Add(new Variable<int>("sum"));
-            for (var j = 0; j < 10000; j++)
+            for (var j = 0; j < 1000; j++)
             {
                 seq.Activities.Add(new Assign
                 {
@@ -444,6 +444,7 @@ public class ExpressionTests
                     Value = new InArgument<int>(new VisualBasicValue<int>($"sum + {j}"))
                 });
             }
+            activities.Add(seq);
         }
         foreach (var activity in activities)
         {
@@ -467,7 +468,7 @@ public class ExpressionTests
         {
             var seq = new Sequence();
             seq.Variables.Add(new Variable<int>("sum"));
-            for (var j = 0; j < 10000; j++)
+            for (var j = 0; j < 1000; j++)
             {
                 seq.Activities.Add(new Assign
                 {
@@ -475,6 +476,7 @@ public class ExpressionTests
                     Value = new InArgument<int>(new CSharpValue<int>($"sum + {j}"))
                 });
             }
+            activities.Add(seq);
         }
         foreach (var activity in activities)
         {
