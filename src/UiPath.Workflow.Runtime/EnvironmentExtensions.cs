@@ -24,7 +24,17 @@ namespace System.Activities
                 return extension as TInterface;
             }
 
-            return CreateAndAdd(createExtensionFactory, type);
+            return CreateAndAdd();
+
+            TInterface CreateAndAdd()
+            {
+                var extension = createExtensionFactory();
+                if (extension is null)
+                    throw new ArgumentNullException(nameof(extension));
+
+                _extensions[type] = extension;
+                return extension;
+            }
         }
 
         /// <summary>
@@ -48,9 +58,7 @@ namespace System.Activities
         /// <typeparam name="TInterface">The type of the extension</typeparam>
         /// <param name="extension">The extension</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Add<TInterface, TImplementation>(TImplementation extension) 
-            where TInterface : class
-            where TImplementation : class, TInterface
+        public void Add<TInterface>(TInterface extension) where TInterface : class
         {
             if (_extensions.ContainsKey(typeof(TInterface)))
                 throw new InvalidOperationException($"Service '{typeof(TInterface).FullName}' already exists");
@@ -58,17 +66,6 @@ namespace System.Activities
             _extensions[typeof(TInterface)] = extension;
         }
 
-
-        #region private methods
-        private T CreateAndAdd<T>(Func<T> createExtensionFactory, Type type) where T : class
-        {
-            var extension = createExtensionFactory();
-            if (extension is null)
-                throw new ArgumentNullException(nameof(extension));
-
-            _extensions[type] = extension;
-            return extension;
-        }
-        #endregion
+        internal IReadOnlyCollection<object> All => _extensions.Values;
     }
 }

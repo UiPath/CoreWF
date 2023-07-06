@@ -2,6 +2,6 @@
 {
     internal interface IValidationExtension
     {
-        IEnumerable<ValidationError> Validate(Activity activity);
+        IEnumerable<ValidationError> PostValidate(Activity activity);
     }
 }
