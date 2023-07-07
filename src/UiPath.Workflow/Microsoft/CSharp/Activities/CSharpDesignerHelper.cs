@@ -17,6 +17,8 @@ internal class CSharpHelper : JitCompilerHelper<CSharpHelper>
 
     protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => 
         new CSharpJitCompiler(references);
+
+    internal const string Language = "C#";
 }
 
 internal class CSharpExpressionFactory<T> : ExpressionFactory

@@ -10,8 +10,9 @@ namespace System.Activities.Validation;
 
 public static class ActivityValidationServices
 {
-    internal static readonly ReadOnlyCollection<Activity> EmptyChildren = new(Array.Empty<Activity>());
     private static readonly ValidationSettings defaultSettings = new();
+
+    internal static readonly ReadOnlyCollection<Activity> EmptyChildren = new(Array.Empty<Activity>());
     internal static ReadOnlyCollection<ValidationError> EmptyValidationErrors = new(new List<ValidationError>(0));
 
     public static ValidationResults Validate(Activity toValidate) => Validate(toValidate, defaultSettings);
@@ -245,7 +246,7 @@ public static class ActivityValidationServices
         return exceptionString;
     }
 
-    static internal string GenerateValidationErrorPrefix(Activity toValidate, ActivityUtilities.ActivityCallStack parentChain, ProcessActivityTreeOptions options, out Activity source)
+    internal static string GenerateValidationErrorPrefix(Activity toValidate, ActivityUtilities.ActivityCallStack parentChain, ProcessActivityTreeOptions options, out Activity source)
     {
         bool parentVisible = true;
         string prefix = "";
@@ -453,7 +454,10 @@ public static class ActivityValidationServices
                 ActivityUtilities.CacheRootMetadata(_rootToValidate, _environment, _options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref _errors);
             }
 
-            return new ValidationResults(_errors);
+            return new ValidationResults(GetValidationExtensionResults().Concat(_errors ?? Array.Empty<ValidationError>()).ToList());
+
+            IEnumerable<ValidationError> GetValidationExtensionResults() =>
+                _environment.Extensions.All.OfType<IValidationExtension>().SelectMany(validationExtension => validationExtension.PostValidate(_rootToValidate));
         }
 
         private void ValidateElement(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)
