@@ -429,7 +429,6 @@ public static class ActivityValidationServices
         {
             _settings = settings;
             _rootToValidate = toValidate;
-            _errors = new List<ValidationError>();
             _environment = settings.Environment ?? new ActivityLocationReferenceEnvironment();
             _environment.IsValidating = !settings.ForceExpressionCache;
             if (settings.SkipExpressionCompilation)
@@ -454,10 +453,10 @@ public static class ActivityValidationServices
                 // We want to add the CacheMetadata errors to our errors collection
                 ActivityUtilities.CacheRootMetadata(_rootToValidate, _environment, _options, new ActivityUtilities.ProcessActivityCallback(ValidateElement), ref _errors);
             }
-            
-            return new ValidationResults(_errors.Concat(GetValidationExtensionResults()).ToList());
 
-            IEnumerable<ValidationError> GetValidationExtensionResults() => 
+            return new ValidationResults(GetValidationExtensionResults().Concat(_errors ?? Array.Empty<ValidationError>()).ToList());
+
+            IEnumerable<ValidationError> GetValidationExtensionResults() =>
                 _environment.Extensions.All.OfType<IValidationExtension>().SelectMany(validationExtension => validationExtension.PostValidate(_rootToValidate));
         }
 
