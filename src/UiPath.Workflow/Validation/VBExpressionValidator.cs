@@ -13,8 +13,9 @@ using System.Runtime.InteropServices;
 namespace System.Activities.Validation;
 /// <summary>
 ///     Validates VB.NET expressions for use in fast design-time expression validation.
+///     ⚠️ Do not seal this class, required for customization by certain hosts.
 /// </summary>
-public sealed class VbExpressionValidator : RoslynExpressionValidator
+public class VbExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<VbExpressionValidator> s_instance = new(() => new(s_defaultReferencedAssemblies));
     private static readonly CompilerHelper s_compilerHelper = new VBCompilerHelper();

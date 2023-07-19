@@ -16,8 +16,9 @@ namespace System.Activities.Validation;
 
 /// <summary>
 ///     Validates C# expressions for use in fast design-time expression validation.
+///     ⚠️ Do not seal this class, required for customization by certain hosts.
 /// </summary>
-public sealed class CSharpExpressionValidator : RoslynExpressionValidator
+public class CSharpExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<CSharpExpressionValidator> s_instance = new(() => new(s_defaultReferencedAssemblies));
     private const string _valueValidationTemplate = "public static Expression<Func<{0}>> CreateExpression{1}() => ({2}) => {3};//activityId:{4}";
