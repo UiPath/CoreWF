@@ -142,9 +142,9 @@ public abstract class RoslynExpressionValidator
     /// </summary>
     /// <param name="expressionContainer">expression container</param>
     /// <returns>ValidationError objects that will be added to current activity's metadata</returns>
-    private IList<ValidationError> ProcessDiagnostics(ImmutableArray<Diagnostic> diagnostics, string text, ValidationScope validationScope)
+    private IEnumerable<ValidationError> ProcessDiagnostics(ImmutableArray<Diagnostic> diagnostics, string text, ValidationScope validationScope)
     {
-        var errors = new List<ValidationError>();
+        var errors = new List<(ValidationError, Diagnostic)>();
         if (diagnostics.Any())
         {
             foreach (var diagnostic in diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error))
@@ -160,10 +160,20 @@ public abstract class RoslynExpressionValidator
                 {
                     error = new ValidationError(diagnostic.ToString(), false);
                 }
-                errors.Add(error);
+                errors.Add((error, diagnostic));
             }
         }
-        return errors;
+        return CurateErrors(errors);
+    }
+
+    /// <summary>
+    /// Required for errors customization by certain hosts.
+    /// </summary>
+    /// <param name="originalErrors"></param>
+    /// <returns></returns>
+    protected virtual IEnumerable<ValidationError> CurateErrors(IEnumerable<(ValidationError error, Diagnostic)> originalErrors)
+    {
+        return originalErrors.Select(item => item.error);
     }
 
     private Activity GetErrorActivity(string[] textLines, Diagnostic diagnostic, ValidationScope validationScope)
@@ -206,7 +216,7 @@ public abstract class RoslynExpressionValidator
 
         var diagnostics = compilation
             .GetDiagnostics();
-        var errors = ProcessDiagnostics(diagnostics, expressionsTextBuilder.ToString(), validationScope);
+        var errors = ProcessDiagnostics(diagnostics, expressionsTextBuilder.ToString(), validationScope).ToList();
         validationScope.Clear();
         return errors;
     }
