@@ -17,6 +17,8 @@ public sealed class ExecutionProperties : IEnumerable<KeyValuePair<string, objec
     private ExecutionPropertyManager _properties;
     private readonly IdSpace _currentIdSpace;
 
+    public ExecutionProperties(ActivityContext context) : this(context, context.CurrentInstance, context.CurrentInstance.PropertyManager) { }
+
     internal ExecutionProperties(ActivityContext currentContext, ActivityInstance scope, ExecutionPropertyManager properties)
     {
         _context = currentContext;
