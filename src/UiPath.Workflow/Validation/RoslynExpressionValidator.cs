@@ -163,7 +163,7 @@ public abstract class RoslynExpressionValidator
                 errors.Add((error, diagnostic));
             }
         }
-        return CurateErrors(errors);
+        return CurateErrors(errors, text);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public abstract class RoslynExpressionValidator
     /// </summary>
     /// <param name="originalErrors"></param>
     /// <returns></returns>
-    protected virtual IEnumerable<ValidationError> CurateErrors(IEnumerable<(ValidationError error, Diagnostic)> originalErrors)
+    protected virtual IEnumerable<ValidationError> CurateErrors(IEnumerable<(ValidationError error, Diagnostic)> originalErrors, string text)
     {
         return originalErrors.Select(item => item.error);
     }
