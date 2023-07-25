@@ -178,19 +178,19 @@ internal abstract class DesignerHelperImpl
     }
 
     internal Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
-        out Type returnType, out SourceExpressionException compileError)
+        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
     {
         GetAllImportReferences(parent, out var namespaces, out var assemblies);
         return CreatePrecompiledReference(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
-            out returnType, out compileError, out _);
+            out returnType, out compileError, out vbSettings);
     }
 
     internal Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
-        out Type returnType, out SourceExpressionException compileError)
+        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
     {
         GetAllImportReferences(parent, out var namespaces, out var assemblies);
         return CreatePrecompiledValue(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
-            out returnType, out compileError, out _);
+            out returnType, out compileError, out vbSettings);
     }
 
     public Activity CreatePrecompiledReference(Type targetType, string expressionText, IEnumerable<string> namespaces,

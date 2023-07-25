@@ -140,16 +140,27 @@ public static class VisualBasicDesignerHelper
     }
 
     public static Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
+        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
+    {
+        return s_impl.CreatePrecompiledValue(targetType, expressionText, parent, out returnType, out compileError, out vbSettings);
+    }
+
+    public static Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError)
     {
-        return s_impl.CreatePrecompiledValue(targetType, expressionText, parent, out returnType, out compileError);
+        return CreatePrecompiledValue(targetType, expressionText, parent, out returnType, out compileError, out _);
+    }
+    
+    public static Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
+        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
+    {
+        return s_impl.CreatePrecompiledReference(targetType, expressionText, parent, out returnType,out compileError, out vbSettings);
     }
 
     public static Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError)
     {
-        return s_impl.CreatePrecompiledReference(targetType, expressionText, parent, out returnType,
-            out compileError);
+        return CreatePrecompiledReference(targetType, expressionText, parent, out returnType,out compileError, out _);
     }
 }
 
