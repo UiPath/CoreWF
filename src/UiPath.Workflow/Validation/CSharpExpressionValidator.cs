@@ -49,7 +49,7 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
     /// <summary>
     ///     Singleton instance of the default validator.
     /// </summary>
-    public static CSharpExpressionValidator Instance => s_instance.Value;
+    public static CSharpExpressionValidator Instance { get; set; } = s_instance.Value;
 
     protected override CompilerHelper CompilerHelper { get; } = new CSharpCompilerHelper();
 
@@ -61,7 +61,7 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
     /// <param name="referencedAssemblies">
     ///     Assemblies to seed the collection.
     /// </param>
-    private CSharpExpressionValidator(HashSet<Assembly> referencedAssemblies)
+    protected CSharpExpressionValidator(HashSet<Assembly> referencedAssemblies)
         : base(referencedAssemblies != null
                ? new HashSet<Assembly>(s_defaultReferencedAssemblies.Union(referencedAssemblies))
                : s_defaultReferencedAssemblies)

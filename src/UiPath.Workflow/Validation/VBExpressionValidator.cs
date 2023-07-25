@@ -45,7 +45,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
     /// <param name="referencedAssemblies">
     ///     Assemblies to seed the collection.
     /// </param>
-    private VbExpressionValidator(HashSet<Assembly> referencedAssemblies)
+    protected VbExpressionValidator(HashSet<Assembly> referencedAssemblies)
         : base(referencedAssemblies != null
                ? new HashSet<Assembly>(s_defaultReferencedAssemblies.Union(referencedAssemblies))
                : s_defaultReferencedAssemblies)
@@ -56,7 +56,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
     /// <summary>
     ///     Singleton instance of the default validator.
     /// </summary>
-    public static VbExpressionValidator Instance => s_instance.Value;
+    public static VbExpressionValidator Instance { get; set; } = s_instance.Value;
 
     protected override CompilerHelper CompilerHelper { get; } = new VBCompilerHelper();
 
