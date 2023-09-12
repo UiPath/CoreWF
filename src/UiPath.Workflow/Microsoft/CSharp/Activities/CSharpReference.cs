@@ -5,7 +5,6 @@ using System;
 using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Internals;
-using System.Activities.Validation;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
@@ -15,7 +14,7 @@ namespace Microsoft.CSharp.Activities;
 
 [DebuggerStepThrough]
 [ContentProperty("ExpressionText")]
-public class CSharpReference<TResult> : TextExpressionBase<Location<TResult>>, ITextExpression
+public class CSharpReference<TResult> : CodeActivity<Location<TResult>>, ITextExpression
 {
     private CompiledExpressionInvoker _invoker;
 
@@ -23,17 +22,17 @@ public class CSharpReference<TResult> : TextExpressionBase<Location<TResult>>, I
 
     public CSharpReference(string expressionText) : this() => ExpressionText = expressionText;
 
-    public override string ExpressionText { get; set; }
+    public string ExpressionText { get; set; }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string Language => CSharpHelper.Language;
+    public string Language => CSharpHelper.Language;
 
-    public override Expression GetExpressionTree() => IsMetadataCached ? _invoker.GetExpressionTree() : throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+    public Expression GetExpressionTree() => IsMetadataCached ? _invoker.GetExpressionTree() : throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
 
     protected override void CacheMetadata(CodeActivityMetadata metadata)
     {
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
-        QueueForValidation<TResult>(metadata, true);
+        TextExpressionHelper.QueueForValidation<TResult>(this, metadata, ExpressionText, Language, true);
     }
 
     protected override Location<TResult> Execute(CodeActivityContext context) => (Location<TResult>)_invoker.InvokeExpression(context);
