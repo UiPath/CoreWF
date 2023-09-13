@@ -21,8 +21,8 @@ namespace System.Activities.Validation;
 public class CSharpExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<CSharpExpressionValidator> s_instance = new(() => new(s_defaultReferencedAssemblies));
-    private const string _valueValidationTemplate = "public static Expression<Func<{0}>> CreateExpression{1}() => ({2}) => {3};//activityId:{4}";
-    private const string _delegateValueValidationTemplate = "{0}\npublic static Expression<{1}<{2}>> CreateExpression{3}() => ({4}) => {5};//activityId:{6}";
+    private const string _valueValidationTemplate = "public static System.Linq.Expressions.Expression<System.Func<{0}>> CreateExpression{1}() => ({2}) => {3};//activityId:{4}";
+    private const string _delegateValueValidationTemplate = "{0}\npublic static System.Linq.Expressions.Expression<{1}<{2}>> CreateExpression{3}() => ({4}) => {5};//activityId:{6}";
     private const string _referenceValidationTemplate = "public static {0} IsLocation{1}() => ({2}) => {3} = default({4});//activityId:{5}";
 
     private static readonly CompilerHelper s_compilerHelper = new CSharpCompilerHelper();
