@@ -1,20 +1,12 @@
-﻿using System.Activities.Expressions;
-using System.Activities.Validation;
-using System.Linq.Expressions;
+﻿using System.Activities.Validation;
 
 namespace System.Activities
 {
-    public abstract class TextExpressionBase<TResult> : CodeActivity<TResult>, ITextExpression
+    internal static class TextExpressionHelper
     {
         private static readonly Func<ValidationExtension> _validationFunc = () => new();
 
-        public abstract string ExpressionText { get; set; }
-
-        public abstract string Language { get; }
-
-        public abstract Expression GetExpressionTree();
-
-        protected bool QueueForValidation<T>(CodeActivityMetadata metadata, bool isLocation)
+        public static bool QueueForValidation<T>(Activity activity, CodeActivityMetadata metadata, string expressionText, string language, bool isLocation)
         {
             if (metadata.Environment.CompileExpressions)
             {
@@ -26,12 +18,12 @@ namespace System.Activities
                 var extension = metadata.Environment.Extensions.GetOrAdd(_validationFunc);
                 extension.QueueExpressionForValidation<T>(new()
                 {
-                    Activity = this,
-                    ExpressionText = ExpressionText,
+                    Activity = activity,
+                    ExpressionText = expressionText,
                     IsLocation = isLocation,
                     ResultType = typeof(T),
                     Environment = metadata.Environment
-                }, Language);
+                }, language);
 
                 return true;
             }
