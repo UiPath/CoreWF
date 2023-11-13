@@ -17,6 +17,8 @@ public sealed class FlowStep : FlowNode
     [DependsOn("Action")]
     public FlowNode Next { get; set; }
 
+    public string DisplayName { get; set; }
+
     internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata) { }
 
     internal override void GetConnectedNodes(IList<FlowNode> connections)
