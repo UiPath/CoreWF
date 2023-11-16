@@ -9,7 +9,7 @@ namespace System.Activities;
 
 
 /// <summary>
-/// An asynhronous task-based <see cref="AsyncCodeActivity"/>
+/// An asynchronous task-based <see cref="AsyncCodeActivity"/>
 /// </summary>
 public abstract class AsyncTaskCodeActivity : AsyncCodeActivity
 {
@@ -45,6 +45,12 @@ public abstract class AsyncTaskCodeActivity : AsyncCodeActivity
         ((CancellationTokenSource)context.UserState).Cancel();
     }
 
+    /// <summary>
+    /// The operation executed at runtime.
+    /// </summary>
+    /// <param name="context">The context for this activity.</param>
+    /// <param name="cancellationToken">A cancellation token for this operation.</param>
+    /// <returns>A <see cref="Task"/> representing the lifetime of this operation.</returns>
     private protected abstract Task ExecuteAsync
     (
         AsyncCodeActivityContext context,
@@ -52,6 +58,10 @@ public abstract class AsyncTaskCodeActivity : AsyncCodeActivity
     );
 }
 
+/// <summary>
+/// An asynchronous task-based <see cref="AsyncCodeActivity{TResult}"/>.
+/// </summary>
+/// <typeparam name="TResult">The type of the result this activity returns.</typeparam>
 public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
 {
     protected sealed override IAsyncResult BeginExecute
@@ -86,6 +96,12 @@ public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult
         ((CancellationTokenSource)context.UserState).Cancel();
     }
 
+    /// <summary>
+    /// The operation executed at runtime.
+    /// </summary>
+    /// <param name="context">The context for this activity.</param>
+    /// <param name="cancellationToken">A cancellation token for this operation.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the lifetime and containing the result of this operation.</returns>
     private protected abstract Task<TResult> ExecuteAsync
     (
         AsyncCodeActivityContext context,
