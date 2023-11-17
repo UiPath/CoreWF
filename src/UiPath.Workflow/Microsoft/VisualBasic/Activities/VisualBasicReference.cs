@@ -7,7 +7,6 @@ using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
-using System.Activities.Validation;
 using System.Activities.XamlIntegration;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -18,8 +17,8 @@ using ActivityContext = System.Activities.ActivityContext;
 namespace Microsoft.VisualBasic.Activities;
 
 [DebuggerStepThrough]
-public sealed class VisualBasicReference<TResult> : TextExpressionBase<Location<TResult>>, IValueSerializableExpression,
-    IExpressionContainer
+public sealed class VisualBasicReference<TResult> : CodeActivity<Location<TResult>>, IValueSerializableExpression,
+    IExpressionContainer, ITextExpression
 {
     private Expression<Func<ActivityContext, TResult>> _expressionTree;
     private CompiledExpressionInvoker _invoker;
@@ -29,12 +28,12 @@ public sealed class VisualBasicReference<TResult> : TextExpressionBase<Location<
 
     public VisualBasicReference(string expressionText) : this() => ExpressionText = expressionText;
 
-    public override string ExpressionText { get; set; }
+    public string ExpressionText { get; set; }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override string Language => VisualBasicHelper.Language;
+    public string Language => VisualBasicHelper.Language;
 
-    public override Expression GetExpressionTree()
+    public Expression GetExpressionTree()
     {
         if (IsMetadataCached)
         {
@@ -86,7 +85,7 @@ public sealed class VisualBasicReference<TResult> : TextExpressionBase<Location<
         _expressionTree = null;
         _invoker = new CompiledExpressionInvoker(this, true, metadata);
 
-        if (QueueForValidation<TResult>(metadata, true))
+        if (TextExpressionHelper.QueueForValidation<TResult>(this, metadata, ExpressionText, Language, true))
         {
             return;
         }

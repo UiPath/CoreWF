@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 
 namespace System.Activities
 {
+    // DO NOT DELETE THIS for compatibility reasons.
     public abstract class TextExpressionBase<TResult> : CodeActivity<TResult>, ITextExpression
     {
         private static readonly Func<ValidationExtension> _validationFunc = () => new();
