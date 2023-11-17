@@ -1,4 +1,5 @@
-﻿using System.Activities.Expressions;
+﻿using ReflectionMagic;
+using System.Activities.Expressions;
 using System.Activities.Validation;
 using System.Linq.Expressions;
 
@@ -9,7 +10,14 @@ namespace System.Activities
     {
         private static readonly Func<ValidationExtension> _validationFunc = () => new();
 
-        public abstract string ExpressionText { get; set; }
+        public string ExpressionText
+        {
+            get => null;
+            set
+            {
+                this.AsDynamic().ExpressionText = value;
+            }
+        }
 
         public abstract string Language { get; }
 
