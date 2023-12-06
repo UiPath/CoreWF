@@ -3,38 +3,43 @@
 
 using System;
 using System.Activities;
-using System.Activities.Expressions;
-using System.Activities.Internals;
-using System.Activities.Validation;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Markup;
+using ActivityContext = System.Activities.ActivityContext;
 
 namespace Microsoft.CSharp.Activities;
 
 [DebuggerStepThrough]
 [ContentProperty("ExpressionText")]
-public class CSharpValue<TResult> : TextExpressionBase<TResult>
+public sealed class CSharpValue<TResult> : TextExpressionBase<TResult, TResult>
 {
-    private CompiledExpressionInvoker _invoker;
+    private Func<ActivityContext, TResult> _compiledExpression;
 
     public CSharpValue() => UseOldFastPath = true;
 
     public CSharpValue(string expressionText) : this() => ExpressionText = expressionText;
 
-    public override string ExpressionText { get; set; }
-
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Language => CSharpHelper.Language;
 
-    public override Expression GetExpressionTree() => IsMetadataCached ? _invoker.GetExpressionTree() : throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+    public override string ExpressionText { get; set; }
 
-    protected override void CacheMetadata(CodeActivityMetadata metadata)
+    public override void UpdateExpressionText(string expressionText)
     {
-        _invoker = new CompiledExpressionInvoker(this, false, metadata);
-        QueueForValidation<TResult>(metadata, false);
+        base.UpdateExpressionText(expressionText);
+        _compiledExpression = null;
     }
 
-    protected override TResult Execute(CodeActivityContext context) => (TResult) _invoker.InvokeExpression(context);
+    public override Expression GetExpressionTree() => ResolveExpressionTree();
+
+    protected override TResult ExecuteCompiledExpression(CodeActivityContext context)
+    {
+        _compiledExpression ??= _expressionTree.Compile();
+        return _compiledExpression(context);
+    }
+
+    protected override string GetContextCompilationError(
+        CodeActivityPublicEnvironmentAccessor publicAccessor) => null;
 }

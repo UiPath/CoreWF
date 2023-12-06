@@ -17,5 +17,7 @@ public interface ITextExpression
         get;
     }
 
+    void UpdateExpressionText(string expressionText);
+
     Expression GetExpressionTree();
 }
