@@ -7,7 +7,6 @@ using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
-using System.Activities.Validation;
 using System.Activities.XamlIntegration;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -18,8 +17,8 @@ using ActivityContext = System.Activities.ActivityContext;
 namespace Microsoft.VisualBasic.Activities;
 
 [DebuggerStepThrough]
-public sealed class VisualBasicReference<TResult> : TextExpressionBase<Location<TResult>>, IValueSerializableExpression,
-    IExpressionContainer
+public sealed class VisualBasicReference<TResult>
+    : TextExpressionBase<Location<TResult>>, IValueSerializableExpression, IExpressionContainer
 {
     private Expression<Func<ActivityContext, TResult>> _expressionTree;
     private CompiledExpressionInvoker _invoker;
@@ -29,42 +28,50 @@ public sealed class VisualBasicReference<TResult> : TextExpressionBase<Location<
 
     public VisualBasicReference(string expressionText) : this() => ExpressionText = expressionText;
 
-    public override string ExpressionText { get; set; }
-
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Language => VisualBasicHelper.Language;
 
+    public override string ExpressionText { get; set; }
+
+    public override bool UpdateExpressionText(string expressionText)
+    {
+        base.UpdateExpressionText(expressionText);
+        _locationFactory = null;
+        CompileExpressionTree();
+        return _expressionTree != null;
+    }
+
     public override Expression GetExpressionTree()
     {
-        if (IsMetadataCached)
+        CheckIsMetadataCached();
+
+        if (_expressionTree == null)
         {
-            if (_expressionTree == null)
-            {
-                if (_invoker != null)
-                {
-                    return _invoker.GetExpressionTree();
-                }
-                // it's safe to create this CodeActivityMetadata here,
-                // because we know we are using it only as lookup purpose.
-                var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
-                var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
-                try
-                {
-                    _expressionTree = CompileLocationExpression(publicAccessor, out var validationError);
-                    if (validationError != null)
-                    {
-                        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(validationError)));
-                    }
-                }
-                finally
-                {
-                    metadata.Dispose();
-                }
-            }
-            Fx.Assert(_expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
-            return ExpressionUtilities.RewriteNonCompiledExpressionTree(_expressionTree);
+            if (_invoker != null)
+                return _invoker.GetExpressionTree();
+
+            // it's safe to create this CodeActivityMetadata here,
+            // because we know we are using it only as lookup purpose.
+            CompileExpressionTree();
         }
-        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
+        Fx.Assert(_expressionTree.NodeType == ExpressionType.Lambda, "Lambda expression required");
+        return ExpressionUtilities.RewriteNonCompiledExpressionTree(_expressionTree);
+    }
+
+    private void CompileExpressionTree()
+    {
+        var metadata = new CodeActivityMetadata(this, GetParentEnvironment(), false);
+        var publicAccessor = CodeActivityPublicEnvironmentAccessor.CreateWithoutArgument(metadata);
+        try
+        {
+            _expressionTree = CompileLocationExpression(publicAccessor, out var validationError);
+            if (validationError != null)
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ExpressionTamperedSinceLastCompiled(validationError)));
+        }
+        finally
+        {
+            metadata.Dispose();
+        }
     }
 
     public bool CanConvertToString(IValueSerializerContext context) => true;

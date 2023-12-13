@@ -7,15 +7,11 @@ namespace System.Activities.Expressions;
 
 public interface ITextExpression
 {
-    string ExpressionText
-    {
-        get;
-    }
+    string Language { get; }
 
-    string Language
-    {
-        get;
-    }
+    string ExpressionText { get; }
+
+    bool UpdateExpressionText(string expressionText);
 
     Expression GetExpressionTree();
 }

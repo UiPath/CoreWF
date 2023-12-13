@@ -1,4 +1,5 @@
 ﻿using System.Activities.Expressions;
+using System.Activities.Internals;
 using System.Activities.Validation;
 using System.Linq.Expressions;
 
@@ -11,6 +12,13 @@ namespace System.Activities
         public abstract string ExpressionText { get; set; }
 
         public abstract string Language { get; }
+
+        public virtual bool UpdateExpressionText(string expressionText)
+        {
+            CheckIsMetadataCached();
+            ExpressionText = expressionText;
+            return true;
+        }
 
         public abstract Expression GetExpressionTree();
 
@@ -36,6 +44,12 @@ namespace System.Activities
                 return true;
             }
             return false;
+        }
+
+        protected void CheckIsMetadataCached()
+        {
+            if (!IsMetadataCached)
+                throw FxTrace.Exception.AsError(new InvalidOperationException(SR.ActivityIsUncached));
         }
     }
 }
