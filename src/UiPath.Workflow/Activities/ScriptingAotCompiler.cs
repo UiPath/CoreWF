@@ -85,7 +85,8 @@ public abstract class ScriptingAotCompiler : AheadOfTimeCompiler
             SourceLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line,
             Number = diagnostic.Id,
             Message = diagnostic.ToString(),
-            IsWarning = diagnostic.Severity < DiagnosticSeverity.Error
+            IsWarning = diagnostic.Severity < DiagnosticSeverity.Error,
+            Diagnostic = diagnostic // used by Studio Web through reflection
         }));
     }
 
