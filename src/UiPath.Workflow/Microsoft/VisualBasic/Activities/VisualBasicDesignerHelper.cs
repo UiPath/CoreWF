@@ -4,15 +4,12 @@
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
-using System.Activities.Expressions;
-using System.Activities.Validation;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Microsoft.VisualBasic.Activities;
-
-using CompilerFactory = Func<HashSet<Assembly>, JustInTimeCompiler>;
 
 internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
 {
@@ -83,6 +80,8 @@ internal class VisualBasicDesignerHelperImpl : DesignerHelperImpl
     public override Type ExpressionFactoryType => typeof(VisualBasicExpressionFactory<>);
     public override string Language => VisualBasicHelper.Language;
 
+    protected override ExpressionCompiler Compiler { get; } = new VisualBasicExpressionCompiler();
+
     public override JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyName> references,
         HashSet<string> namespaces)
     {
@@ -94,10 +93,6 @@ public static class VisualBasicDesignerHelper
 {
     private static readonly DesignerHelperImpl s_impl = new VisualBasicDesignerHelperImpl();
 
-    // Returns the additional constraint for visual basic which enforces variable name shadowing for 
-    // projects targeting 4.0 for backward compatibility. 
-    public static Constraint NameShadowingConstraint { get; } = new VisualBasicNameShadowingConstraint();
-
     // Recompile the VBValue passed in, with its current LocationReferenceEnvironment context
     // in a weakly-typed manner (the argument VBValue's type argument is ignored)
     //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters,
@@ -107,6 +102,9 @@ public static class VisualBasicDesignerHelper
     {
         return s_impl.RecompileValue(visualBasicValue, out returnType, out compileError, out vbSettings);
     }
+
+    public static Task<CompiledExpressionResult> RecompileValueAsync(ActivityWithResult rValue)
+        => s_impl.RecompileValueAsync(rValue);
 
     // Recompile the VBReference passed in, with its current LocationReferenceEnvironment context
     // in a weakly-typed manner (the argument VBReference's type argument is ignored)
@@ -118,7 +116,10 @@ public static class VisualBasicDesignerHelper
         return s_impl.RecompileReference(visualBasicReference, out returnType, out compileError, out vbSettings);
     }
 
-    // create a pre-compiled VBValueExpression, and also provides expressin type back to the caller.
+    public static Task<CompiledExpressionResult> RecompileReferenceAsync(ActivityWithResult rValue)
+        => s_impl.RecompileReferenceAsync(rValue);
+
+    // create a pre-compiled VBValueExpression, and also provides expression type back to the caller.
     //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.AvoidOutParameters,
     //    Justification = "Design has been approved")]
     public static Activity CreatePrecompiledVisualBasicValue(Type targetType, string expressionText,
@@ -130,6 +131,9 @@ public static class VisualBasicDesignerHelper
             environment, out returnType, out compileError, out vbSettings);
     }
 
+    public static Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+    => s_impl.CreatePrecompiledValueAsync(targetType, expressionText, namespaces, assemblies, environment);
+
     public static Activity CreatePrecompiledVisualBasicReference(Type targetType, string expressionText,
         IEnumerable<string> namespaces, IEnumerable<string> referencedAssemblies,
         LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
@@ -138,6 +142,9 @@ public static class VisualBasicDesignerHelper
         return s_impl.CreatePrecompiledReference(targetType, expressionText, namespaces, referencedAssemblies,
             environment, out returnType, out compileError, out vbSettings);
     }
+
+    public static Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+        => s_impl.CreatePrecompiledReferenceAsync(targetType, expressionText, namespaces, assemblies, environment);
 
     public static Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
@@ -150,17 +157,17 @@ public static class VisualBasicDesignerHelper
     {
         return CreatePrecompiledValue(targetType, expressionText, parent, out returnType, out compileError, out _);
     }
-    
+
     public static Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
     {
-        return s_impl.CreatePrecompiledReference(targetType, expressionText, parent, out returnType,out compileError, out vbSettings);
+        return s_impl.CreatePrecompiledReference(targetType, expressionText, parent, out returnType, out compileError, out vbSettings);
     }
 
     public static Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError)
     {
-        return CreatePrecompiledReference(targetType, expressionText, parent, out returnType,out compileError, out _);
+        return CreatePrecompiledReference(targetType, expressionText, parent, out returnType, out compileError, out _);
     }
 }
 

@@ -6,6 +6,7 @@ using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.VisualBasic.Activities;
 
 namespace Microsoft.CSharp.Activities;
@@ -31,13 +32,15 @@ internal class CSharpExpressionFactory<T> : ExpressionFactory
 internal class CSharpDesignerHelperImpl : DesignerHelperImpl
 {
     public override Type ExpressionFactoryType => typeof(CSharpExpressionFactory<>);
-    public override string Language => "C#";
+    public override string Language => CSharpHelper.Language;
 
     public override JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyName> references,
         HashSet<string> namespaces)
     {
         return new CSharpHelper(expressionText, references, namespaces);
     }
+
+    protected override ExpressionCompiler Compiler => new CSharpExpressionCompiler();
 }
 
 public static class CSharpDesignerHelper
@@ -46,15 +49,19 @@ public static class CSharpDesignerHelper
 
     public static Activity RecompileValue(ActivityWithResult rValue, out Type returnType,
         out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
-    {
-        return s_impl.RecompileValue(rValue, out returnType, out compileError, out vbSettings);
-    }
+        => s_impl.RecompileValue(rValue, out returnType, out compileError, out vbSettings);
+
+    public static Task<CompiledExpressionResult> RecompileValueAsync(ActivityWithResult rValue)
+        => s_impl.RecompileValueAsync(rValue);
 
     public static Activity RecompileReference(ActivityWithResult lValue, out Type returnType,
         out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
     {
         return s_impl.RecompileReference(lValue, out returnType, out compileError, out vbSettings);
     }
+
+    public static Task<CompiledExpressionResult> RecompileReferenceAsync(ActivityWithResult rValue)
+        => s_impl.RecompileReferenceAsync(rValue);
 
     public static Activity CreatePrecompiledValue(Type targetType, string expressionText,
         IEnumerable<string> namespaces, IEnumerable<string> referencedAssemblies,
@@ -98,4 +105,10 @@ public static class CSharpDesignerHelper
     {
         return CreatePrecompiledReference(targetType, expressionText, parent, out returnType, out compileError, out _);
     }
+
+    public static Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+        => s_impl.CreatePrecompiledValueAsync(targetType, expressionText, namespaces, assemblies, environment);
+
+    public static Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+        => s_impl.CreatePrecompiledReferenceAsync(targetType, expressionText, namespaces, assemblies, environment);
 }

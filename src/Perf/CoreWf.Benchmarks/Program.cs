@@ -2,23 +2,10 @@
 using CoreWf.Benchmarks;
 
 #if RELEASE
-BenchmarkRunner.Run<RoslynValidatorReferenceVsNonReference>();
+BenchmarkRunner.Run<ExpressionTextboxPerformance>();
 #else
-var e = new Expressions();
-try
-{
-    //e.CSharp();
-    //e.VB();
-    //e.VBSingleExpr100();
-    //e.VB400Stmts();
-    e.CS400Stmts();
-    //e.VBSingleExpr100Stmts();
-    //e.VBSingleExpr200Stmts();
-    //e.VBSingleExpr400Stmts();
-    //e.VB400Stmts_AOT();
-}
-catch (Exception ex)
-{
-    Console.WriteLine(ex.Message);
-}
+new ExpressionTextboxPerformance().CS_CreatePrecompiledValue();
+new ExpressionTextboxPerformance().VB_CreatePrecompiledValue();
+await new ExpressionTextboxPerformance().CS_CreatePrecompiledValueAsync();
+await new ExpressionTextboxPerformance().VB_CreatePrecompiledValueAsync();
 #endif
