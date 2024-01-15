@@ -294,6 +294,7 @@ namespace TestCases.Workflows
                 Add("New JsonArrayAttribute()", typeof(JsonArrayAttribute), new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" });
             }
         }
+
         [Fact]
         public void Should_compile_CSharp()
         {
@@ -302,12 +303,49 @@ namespace TestCases.Workflows
                 name => name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
+
         [Fact]
         public void Should_Fail_VBConversion()
         {
             var compiler = new VbJitCompiler(new[] { typeof(int).Assembly, typeof(Expression).Assembly, typeof(Conversions).Assembly }.ToHashSet());
             new Action(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" }, _ => typeof(int), typeof(string))))
                 .ShouldThrow<SourceExpressionException>().Message.ShouldContain("BC30512: Option Strict On disallows implicit conversions");
+        }
+
+        [Fact]
+        public void VBExtraQuote_DoesNotBreakValidation()
+        {
+            var root = new DynamicActivity();
+            var sequence = new Sequence();
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"abc\"\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"valid\"")) });
+            ////sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("2")) });
+            //sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"valid\"")) });
+            //sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"valid\"")) });
+            //sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"valid\"")) });
+            root.Implementation = () => sequence;
+
+            var validationResult = ActivityValidationServices.Validate(root, new() { ForceExpressionCache = false });
+            validationResult.Errors.Count.ShouldBe(1);
+        }
+
+        [Fact]
+        public void CSExtraQuote_DoesNotBreakValidation()
+        {
+            var root = new DynamicActivity();
+            var sequence = new Sequence();
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("2")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            root.Implementation = () => sequence;
+
+            var validationResult = ActivityValidationServices.Validate(root, new() { ForceExpressionCache = false });
+            validationResult.Errors.Count.ShouldBe(1);
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase

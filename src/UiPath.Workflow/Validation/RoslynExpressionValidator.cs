@@ -4,7 +4,6 @@
 using Microsoft.CodeAnalysis;
 using System.Activities.Expressions;
 using System.Activities.Utils;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -136,13 +135,15 @@ public abstract class RoslynExpressionValidator
         var errors = new List<(ValidationError, Diagnostic)>();
         if (diagnostics.Any())
         {
+            var textLines = text.Split('\n');
             foreach (var diagnostic in diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error))
             {
                 var match = Regex.Match(diagnostic.ToString(), ErrorRegex);
                 ValidationError error;
                 if (match.Success)
                 {
-                    var activity = GetErrorActivity(text.Split('\n'), diagnostic, validationScope);
+                    var diagnosticLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line;
+                    var activity = GetErrorActivity(textLines, diagnosticLineNumber, validationScope);
                     error = new ValidationError(match.Groups[3].Value, false, activity);
                 }
                 else
@@ -165,17 +166,22 @@ public abstract class RoslynExpressionValidator
         return originalErrors.Select(item => item.error);
     }
 
-    private Activity GetErrorActivity(string[] textLines, Diagnostic diagnostic, ValidationScope validationScope)
+    private Activity GetErrorActivity(string[] textLines, int diagnosticLineNumber, ValidationScope validationScope)
     {
-        var diagnosticLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line;
+        if (diagnosticLineNumber < 0)
+            return null;
+
         var lineText = textLines[diagnosticLineNumber];
         var lineMatch = Regex.Match(lineText, ActivityIdentifierRegex);
+
         if (lineMatch.Success)
         {
-            var activityId = lineMatch.Groups[2].Value.TrimEnd('\r');
-            return validationScope.GetExpression(activityId).Activity;
+            return validationScope.GetExpression(lineMatch.Groups[2].Value).Activity;
         }
-        return null;
+        else
+        {
+            return GetErrorActivity(textLines, diagnosticLineNumber - 1, validationScope);
+        }
     }
 
     internal IList<ValidationError> Validate(Activity currentActivity, ValidationScope validationScope)
@@ -194,19 +200,29 @@ public abstract class RoslynExpressionValidator
         var compilation = GetCompilation(requiredAssemblies, localNamespaces);
         var expressionsTextBuilder = new StringBuilder();
         int index = 0;
+        List<ValidationError> errors = new();
         foreach (var expressionToValidate in validationScope.GetAllExpressions())
         {
-            PrepValidation(expressionToValidate, expressionsTextBuilder, index++);
+            if (!IsExpressionWellFormatted(expressionToValidate.ExpressionText))
+            {
+                errors.Add(new ValidationError("Bad format exception", expressionToValidate.Activity));
+            }
+            else
+            {
+                AddExpressionToValidate(expressionToValidate, expressionsTextBuilder, index++);
+            }
         }
 
         compilation = compilation.AddSyntaxTrees(GetSyntaxTreeForValidation(expressionsTextBuilder.ToString()));
 
         var diagnostics = compilation
             .GetDiagnostics();
-        var errors = ProcessDiagnostics(diagnostics, expressionsTextBuilder.ToString(), validationScope).ToList();
+        errors.AddRange(ProcessDiagnostics(diagnostics, expressionsTextBuilder.ToString(), validationScope));
         validationScope.Clear();
         return errors;
     }
+
+    protected abstract bool IsExpressionWellFormatted(string expressionText);
 
     /// <summary>
     ///     Creates or gets a MetadataReference for an Assembly.
@@ -228,7 +244,7 @@ public abstract class RoslynExpressionValidator
         return assemblyReference.Assembly;
     }
 
-    private void PrepValidation(ExpressionToValidate expressionToValidate, StringBuilder expressionBuilder, int index)
+    private void AddExpressionToValidate(ExpressionToValidate expressionToValidate, StringBuilder expressionBuilder, int index)
     {
         var syntaxTree = GetSyntaxTreeForExpression(expressionToValidate.ExpressionText);
         var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == CompilerHelper.IdentifierKind)

@@ -16,9 +16,9 @@ namespace System.Activities.Validation;
 /// </summary>
 public class CSharpExpressionValidator : RoslynExpressionValidator
 {
-    private const string _valueValidationTemplate = "public static System.Linq.Expressions.Expression<System.Func<{0}>> CreateExpression{1}() => ({2}) => {3};//activityId:{4}";
-    private const string _delegateValueValidationTemplate = "{0}\npublic static System.Linq.Expressions.Expression<{1}<{2}>> CreateExpression{3}() => ({4}) => {5};//activityId:{6}";
-    private const string _referenceValidationTemplate = "public static {0} IsLocation{1}() => ({2}) => {3} = default({4});//activityId:{5}";
+    private const string _valueValidationTemplate = "public static System.Linq.Expressions.Expression<System.Func<{0}>> CreateExpression{1}()//activityId:{4}\n => ({2}) => {3};";
+    private const string _delegateValueValidationTemplate = "{0}\npublic static System.Linq.Expressions.Expression<{1}<{2}>> CreateExpression{3}()//activityId:{6}\n => ({4}) => {5};";
+    private const string _referenceValidationTemplate = "public static {0} IsLocation{1}()//activityId:{5}\n => ({2}) => {3} = default({4});";
 
     private static readonly Lazy<CSharpExpressionValidator> s_instance = new(() => new());
     public override string Language => CSharpHelper.Language;
@@ -31,6 +31,12 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
     protected override CSharpCompilerHelper CompilerHelper { get; } = new CSharpCompilerHelper();
 
     protected override string ActivityIdentifierRegex { get; } = @"(\/\/activityId):(.*)";
+
+    protected override bool IsExpressionWellFormatted(string expressionText)
+    {
+        //TODO: validate the format;
+        return true;
+    }
 
     /// <summary>
     ///     Initializes the MetadataReference collection.

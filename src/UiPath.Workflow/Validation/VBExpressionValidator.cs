@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.VisualBasic.Activities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using static System.Activities.CompilerHelper;
 
@@ -17,9 +18,9 @@ public class VbExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<VbExpressionValidator> s_instance = new(() => new());
 
-    private const string _valueValidationTemplate = "Public Shared Function CreateExpression{0}() As System.Linq.Expressions.Expression(Of System.Func(Of {1}))'activityId:{4}\nReturn Function({2}) ({3})'activityId:{4}\nEnd Function";
-    private const string _delegateValueValidationTemplate = "{0}\nPublic Shared Function CreateExpression{1}() As System.Linq.Expressions.Expression(Of {2}(Of {3}))'activityId:{6}\nReturn Function({4}) ({5})'activityId:{6}\nEnd Function";
-    private const string _referenceValidationTemplate = "Public Shared Function IsLocation{0}() As {1}'activityId:{5}\nReturn Function({2}) as System.Action'activityId:{5}\nReturn Sub() {3} = CType(Nothing, {4})'activityId:{5}\nEnd Function'activityId:{5}\nEnd Function";
+    private const string _valueValidationTemplate = "Public Shared Function CreateExpression{0}() As System.Linq.Expressions.Expression(Of System.Func(Of {1}))'activityId:{4}\nReturn Function({2}) ({3})\nEnd Function";
+    private const string _delegateValueValidationTemplate = "{0}\nPublic Shared Function CreateExpression{1}() As System.Linq.Expressions.Expression(Of {2}(Of {3}))'activityId:{6}\nReturn Function({4}) ({5})\nEnd Function";
+    private const string _referenceValidationTemplate = "Public Shared Function IsLocation{0}() As {1}'activityId:{5}\nReturn Function({2}) as System.Action\nReturn Sub() {3} = CType(Nothing, {4})\nEnd Function\nEnd Function";
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -41,6 +42,12 @@ public class VbExpressionValidator : RoslynExpressionValidator
     protected override VBCompilerHelper CompilerHelper { get; } = new VBCompilerHelper();
 
     protected override string ActivityIdentifierRegex { get; } = "('activityId):(.*)";
+
+    protected override bool IsExpressionWellFormatted(string expressionText)
+    {
+        var numberOfDoubleQuotes = expressionText.Split("\"\"");
+        return numberOfDoubleQuotes.Length % 2 == 1;
+    }
 
     protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces)
     {
