@@ -1,15 +1,20 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.VisualBasic.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.VisualBasic.Activities;
+using System.Threading.Tasks;
 
 namespace System.Activities;
 
@@ -21,63 +26,25 @@ internal abstract class ExpressionFactory
 
 internal abstract class DesignerHelperImpl
 {
+    private static readonly ImmutableArray<DiagnosticAnalyzer> _usedTypesAnalizerList = new List<DiagnosticAnalyzer> { new UsedTypesAnalyzer() }.ToImmutableArray();
+    private const string _usedTypesDiagnosticId = "UT_001";
+
     public abstract Type ExpressionFactoryType { get; }
     public abstract string Language { get; }
+
+    protected abstract ExpressionCompiler Compiler { get; }
 
     public abstract JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyName> references,
         HashSet<string> namespaces);
 
-    public Activity RecompileValue(ActivityWithResult rValue, out Type returnType,
-        out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
-    {
-        if (rValue is not ITextExpression textExpression || textExpression.Language != Language)
-        {
-            throw FxTrace.Exception.AsError(new ArgumentException());
-        }
 
-        var expressionText = textExpression.ExpressionText;
-        var environment = rValue.GetParentEnvironment();
-
-        GetAllImportReferences(rValue, out var namespaces, out var referencedAssemblies);
-
-        return CreatePrecompiledValue(
-            null,
-            expressionText,
-            namespaces,
-            referencedAssemblies,
-            environment,
-            out returnType,
-            out compileError,
-            out vbSettings);
-    }
-
-    public Activity RecompileReference(ActivityWithResult lValue, out Type returnType,
-        out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
-    {
-        if (lValue is not ITextExpression textExpression || textExpression.Language != Language)
-        {
-            throw FxTrace.Exception.AsError(new ArgumentException());
-        }
-
-        var expressionText = textExpression.ExpressionText;
-        var environment = lValue.GetParentEnvironment();
-
-        GetAllImportReferences(lValue, out var namespaces, out var referencedAssemblies);
-
-        return CreatePrecompiledReference(
-            null,
-            expressionText,
-            namespaces,
-            referencedAssemblies,
-            environment,
-            out returnType,
-            out compileError,
-            out vbSettings);
-    }
-
-    public Activity CreatePrecompiledValue(Type targetType, string expressionText, IEnumerable<string> namespaces,
+    public Activity CreatePrecompiledValue(Type targetType,
+        string expressionText,
+        IEnumerable<string> namespaces,
         IEnumerable<string> referencedAssemblies,
-        LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
+        LocationReferenceEnvironment environment,
+        out Type returnType,
+        out SourceExpressionException compileError,
         out VisualBasicSettings vbSettings)
     {
         LambdaExpression lambda = null;
@@ -131,11 +98,11 @@ internal abstract class DesignerHelperImpl
         {
             var genericCompileMethod = compilerHelper.GetType()
                                                      .GetMethod("Compile",
-                                                         new[] {typeof(LocationReferenceEnvironment)});
+                                                         new[] { typeof(LocationReferenceEnvironment) });
             genericCompileMethod = genericCompileMethod.MakeGenericMethod(targetType);
             try
             {
-                lambda = (LambdaExpression) genericCompileMethod.Invoke(compilerHelper, new object[] {environment});
+                lambda = (LambdaExpression)genericCompileMethod.Invoke(compilerHelper, new object[] { environment });
                 returnType = targetType;
             }
             catch (TargetInvocationException e)
@@ -166,36 +133,73 @@ internal abstract class DesignerHelperImpl
                 }
 
                 var assemblyName = AssemblyReference.GetFastAssemblyName(tassembly).Name;
-                var importReference = new VisualBasicImportReference {Assembly = assemblyName, Import = type.Namespace};
+                var importReference = new VisualBasicImportReference { Assembly = assemblyName, Import = type.Namespace };
                 vbSettings.ImportReferences.Add(importReference);
             }
         }
 
         var concreteHelperType = ExpressionFactoryType.MakeGenericType(targetType);
-        var expressionFactory = (ExpressionFactory) Activator.CreateInstance(concreteHelperType);
+        var expressionFactory = (ExpressionFactory)Activator.CreateInstance(concreteHelperType);
 
         return expressionFactory.CreateValue(expressionText);
     }
 
-    internal Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
-        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
-    {
-        GetAllImportReferences(parent, out var namespaces, out var assemblies);
-        return CreatePrecompiledReference(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
-            out returnType, out compileError, out vbSettings);
-    }
-
-    internal Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
-        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
-    {
-        GetAllImportReferences(parent, out var namespaces, out var assemblies);
-        return CreatePrecompiledValue(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
-            out returnType, out compileError, out vbSettings);
-    }
-
-    public Activity CreatePrecompiledReference(Type targetType, string expressionText, IEnumerable<string> namespaces,
+    public Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces,
         IEnumerable<string> referencedAssemblies,
-        LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
+        LocationReferenceEnvironment environment)
+        => CreatePrecompiledExpressionAsync(targetType, expressionText, false, namespaces, referencedAssemblies, environment);
+
+    public Activity RecompileValue(ActivityWithResult rValue, out Type returnType,
+        out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
+    {
+        if (rValue is not ITextExpression textExpression || textExpression.Language != Language)
+        {
+            throw FxTrace.Exception.AsError(new ArgumentException());
+        }
+
+        var expressionText = textExpression.ExpressionText;
+        var environment = rValue.GetParentEnvironment();
+
+        GetAllImportReferences(rValue, out var namespaces, out var referencedAssemblies);
+
+        return CreatePrecompiledValue(
+            null,
+            expressionText,
+            namespaces,
+            referencedAssemblies,
+            environment,
+            out returnType,
+            out compileError,
+            out vbSettings);
+    }
+
+    public Task<CompiledExpressionResult> RecompileValueAsync(ActivityWithResult rValue)
+    {
+        if (rValue is not ITextExpression textExpression || textExpression.Language != Language)
+        {
+            throw FxTrace.Exception.AsError(new ArgumentException());
+        }
+
+        var expressionText = textExpression.ExpressionText;
+        var environment = rValue.GetParentEnvironment();
+
+        GetAllImportReferences(rValue, out var namespaces, out var referencedAssemblies);
+
+        return CreatePrecompiledValueAsync(
+            null,
+            expressionText,
+            namespaces,
+            referencedAssemblies,
+            environment);
+    }
+
+    public Activity CreatePrecompiledReference(Type targetType,
+        string expressionText,
+        IEnumerable<string> namespaces,
+        IEnumerable<string> referencedAssemblies,
+        LocationReferenceEnvironment environment,
+        out Type returnType,
+        out SourceExpressionException compileError,
         out VisualBasicSettings vbSettings)
     {
         LambdaExpression lambda = null;
@@ -263,11 +267,11 @@ internal abstract class DesignerHelperImpl
         {
             var genericCompileMethod = compilerHelper.GetType()
                                                      .GetMethod("Compile",
-                                                         new[] {typeof(LocationReferenceEnvironment)});
+                                                          new[] { typeof(LocationReferenceEnvironment) });
             genericCompileMethod = genericCompileMethod.MakeGenericMethod(targetType);
             try
             {
-                lambda = (LambdaExpression) genericCompileMethod.Invoke(compilerHelper, new object[] {environment});
+                lambda = (LambdaExpression)genericCompileMethod.Invoke(compilerHelper, new object[] { environment });
                 // inspect the expressionTree to see if it is a valid location expression(L-value)
                 if (!ExpressionUtilities.IsLocation(lambda, targetType, out var extraErrorMessage))
                 {
@@ -317,15 +321,112 @@ internal abstract class DesignerHelperImpl
                 }
 
                 var assemblyName = AssemblyReference.GetFastAssemblyName(tassembly).Name;
-                var importReference = new VisualBasicImportReference {Assembly = assemblyName, Import = type.Namespace};
+                var importReference = new VisualBasicImportReference { Assembly = assemblyName, Import = type.Namespace };
                 vbSettings.ImportReferences.Add(importReference);
             }
         }
 
         var concreteHelperType = ExpressionFactoryType.MakeGenericType(targetType);
-        var expressionFactory = (ExpressionFactory) Activator.CreateInstance(concreteHelperType);
+        var expressionFactory = (ExpressionFactory)Activator.CreateInstance(concreteHelperType);
 
         return expressionFactory.CreateReference(expressionText);
+    }
+
+    public Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces,
+        IEnumerable<string> referencedAssemblies, LocationReferenceEnvironment environment)
+        => CreatePrecompiledExpressionAsync(targetType, expressionText, true, namespaces, referencedAssemblies, environment);
+
+    public Activity RecompileReference(ActivityWithResult lValue, out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
+    {
+        if (lValue is not ITextExpression textExpression || textExpression.Language != Language)
+        {
+            throw FxTrace.Exception.AsError(new ArgumentException());
+        }
+
+        var expressionText = textExpression.ExpressionText;
+        var environment = lValue.GetParentEnvironment();
+
+        GetAllImportReferences(lValue, out var namespaces, out var referencedAssemblies);
+
+        return CreatePrecompiledReference(
+            null,
+            expressionText,
+            namespaces,
+            referencedAssemblies,
+            environment,
+            out returnType,
+            out compileError,
+            out vbSettings);
+    }
+
+    public Task<CompiledExpressionResult> RecompileReferenceAsync(ActivityWithResult lValue)
+    {
+        if (lValue is not ITextExpression textExpression || textExpression.Language != Language)
+        {
+            throw FxTrace.Exception.AsError(new ArgumentException());
+        }
+
+        var expressionText = textExpression.ExpressionText;
+        var environment = lValue.GetParentEnvironment();
+
+        GetAllImportReferences(lValue, out var namespaces, out var referencedAssemblies);
+
+        return CreatePrecompiledReferenceAsync(
+            null,
+            expressionText,
+            namespaces,
+            referencedAssemblies,
+            environment);
+    }
+
+    internal Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
+        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
+    {
+        GetAllImportReferences(parent, out var namespaces, out var assemblies);
+        return CreatePrecompiledReference(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
+            out returnType, out compileError, out vbSettings);
+    }
+
+    internal Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
+        out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
+    {
+        GetAllImportReferences(parent, out var namespaces, out var assemblies);
+        return CreatePrecompiledValue(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
+            out returnType, out compileError, out vbSettings);
+    }
+
+    private async Task<CompiledExpressionResult> CreatePrecompiledExpressionAsync(Type targetType, string expressionText, bool isLocation, IEnumerable<string> namespaces,
+        IEnumerable<string> referencedAssemblies,
+        LocationReferenceEnvironment environment)
+    {
+        SourceExpressionException compileError = null;
+        var returnType = typeof(object);
+        var vbSettings = new VisualBasicSettings();
+        namespaces ??= Array.Empty<string>();
+        referencedAssemblies ??= Array.Empty<string>();
+
+        // execute compiler
+        var compilation = Compiler.Compile(expressionText, isLocation, targetType ?? typeof(object), namespaces.ToList(), referencedAssemblies.ToList(), environment);
+        var diagnostics = await compilation.WithAnalyzers(_usedTypesAnalizerList).GetAllDiagnosticsAsync();
+
+        if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
+        {
+            compileError = GetErrorsFromDiagnostics(expressionText, diagnostics);
+        }
+
+        else
+        {
+            returnType = Compiler.GetReturnType(compilation);
+            PopulateVbSettings(vbSettings, diagnostics);
+        }
+
+        targetType ??= returnType;
+
+        var concreteHelperType = ExpressionFactoryType.MakeGenericType(targetType);
+        var expressionFactory = (ExpressionFactory)Activator.CreateInstance(concreteHelperType);
+
+        var activity = isLocation ? expressionFactory.CreateReference(expressionText) : expressionFactory.CreateValue(expressionText);
+        return new CompiledExpressionResult(activity, returnType, compileError, vbSettings);
     }
 
     private static void EnsureTypeReferenced(Type type, bool isDirectReference, HashSet<Type> typeReferences)
@@ -414,23 +515,23 @@ internal abstract class DesignerHelperImpl
             case ExpressionType.RightShift:
             case ExpressionType.Subtract:
             case ExpressionType.SubtractChecked:
-                var binaryExpression = (BinaryExpression) expression;
+                var binaryExpression = (BinaryExpression)expression;
                 FindTypeReferences(binaryExpression.Left, typeReferences);
                 FindTypeReferences(binaryExpression.Right, typeReferences);
                 return;
 
             case ExpressionType.Conditional:
-                var conditional = (ConditionalExpression) expression;
+                var conditional = (ConditionalExpression)expression;
                 FindTypeReferences(conditional.Test, typeReferences);
                 FindTypeReferences(conditional.IfTrue, typeReferences);
                 FindTypeReferences(conditional.IfFalse, typeReferences);
                 return;
 
             case ExpressionType.Constant:
-                var constantExpr = (ConstantExpression) expression;
+                var constantExpr = (ConstantExpression)expression;
                 if (constantExpr.Value is Type)
                 {
-                    EnsureTypeReferenced((Type) constantExpr.Value, true, typeReferences);
+                    EnsureTypeReferenced((Type)constantExpr.Value, true, typeReferences);
                 }
                 else if (constantExpr.Value != null)
                 {
@@ -440,7 +541,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.Invoke:
-                var invocation = (InvocationExpression) expression;
+                var invocation = (InvocationExpression)expression;
                 FindTypeReferences(invocation.Expression, typeReferences);
                 for (var i = 0; i < invocation.Arguments.Count; i++)
                 {
@@ -450,7 +551,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.Lambda:
-                var lambda = (LambdaExpression) expression;
+                var lambda = (LambdaExpression)expression;
                 FindTypeReferences(lambda.Body, typeReferences);
                 for (var i = 0; i < lambda.Parameters.Count; i++)
                 {
@@ -460,7 +561,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.ListInit:
-                var listInit = (ListInitExpression) expression;
+                var listInit = (ListInitExpression)expression;
                 FindTypeReferences(listInit.NewExpression, typeReferences);
                 for (var i = 0; i < listInit.Initializers.Count; i++)
                 {
@@ -474,12 +575,12 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.Parameter:
-                var paramExpr = (ParameterExpression) expression;
+                var paramExpr = (ParameterExpression)expression;
                 EnsureTypeReferenced(paramExpr.Type, false, typeReferences);
                 return;
 
             case ExpressionType.MemberAccess:
-                var memberExpression = (MemberExpression) expression;
+                var memberExpression = (MemberExpression)expression;
                 if (memberExpression.Expression == null)
                 {
                     EnsureTypeReferenced(memberExpression.Member.DeclaringType, true, typeReferences);
@@ -493,7 +594,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.MemberInit:
-                var memberInit = (MemberInitExpression) expression;
+                var memberInit = (MemberInitExpression)expression;
                 FindTypeReferences(memberInit.NewExpression, typeReferences);
                 var bindings = memberInit.Bindings;
                 for (var i = 0; i < bindings.Count; i++)
@@ -517,13 +618,13 @@ internal abstract class DesignerHelperImpl
                     return;
                 }
 
-                var alternateIndex = (BinaryExpression) expression;
+                var alternateIndex = (BinaryExpression)expression;
                 FindTypeReferences(alternateIndex.Left, typeReferences);
                 FindTypeReferences(alternateIndex.Right, typeReferences);
                 return;
 
             case ExpressionType.Call:
-                var methodCall = (MethodCallExpression) expression;
+                var methodCall = (MethodCallExpression)expression;
                 var method = methodCall.Method;
                 EnsureTypeReferenced(methodCall.Type, false, typeReferences);
                 if (methodCall.Object != null)
@@ -563,7 +664,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.NewArrayInit:
-                var newArray = (NewArrayExpression) expression;
+                var newArray = (NewArrayExpression)expression;
                 EnsureTypeReferenced(newArray.Type.GetElementType(), true, typeReferences);
                 var expressions = newArray.Expressions;
                 for (var i = 0; i < expressions.Count; i++)
@@ -574,7 +675,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.NewArrayBounds:
-                var newArrayBounds = (NewArrayExpression) expression;
+                var newArrayBounds = (NewArrayExpression)expression;
                 EnsureTypeReferenced(newArrayBounds.Type.GetElementType(), true, typeReferences);
                 var boundExpressions = newArrayBounds.Expressions;
                 for (var i = 0; i < boundExpressions.Count; i++)
@@ -585,13 +686,13 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.New:
-                var newExpression = (NewExpression) expression;
+                var newExpression = (NewExpression)expression;
                 if (newExpression.Constructor != null)
                 {
                     EnsureTypeReferenced(newExpression.Constructor.DeclaringType, true, typeReferences);
                 }
                 else
-                    // if no constructors defined (e.g. structs), the simply use the type
+                // if no constructors defined (e.g. structs), the simply use the type
                 {
                     EnsureTypeReferenced(newExpression.Type, true, typeReferences);
                 }
@@ -605,7 +706,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.TypeIs:
-                var typeBinary = (TypeBinaryExpression) expression;
+                var typeBinary = (TypeBinaryExpression)expression;
                 FindTypeReferences(typeBinary.Expression, typeReferences);
                 EnsureTypeReferenced(typeBinary.TypeOperand, true, typeReferences);
                 return;
@@ -613,7 +714,7 @@ internal abstract class DesignerHelperImpl
             case ExpressionType.TypeAs:
             case ExpressionType.Convert:
             case ExpressionType.ConvertChecked:
-                var unary = (UnaryExpression) expression;
+                var unary = (UnaryExpression)expression;
                 FindTypeReferences(unary.Operand, typeReferences);
                 EnsureTypeReferenced(unary.Type, true, typeReferences);
                 return;
@@ -624,14 +725,14 @@ internal abstract class DesignerHelperImpl
             case ExpressionType.Not:
             case ExpressionType.Quote:
             case ExpressionType.UnaryPlus:
-                var unaryExpression = (UnaryExpression) expression;
+                var unaryExpression = (UnaryExpression)expression;
                 FindTypeReferences(unaryExpression.Operand, typeReferences);
                 return;
 
             // Expression Tree V2.0 types.  This is due to the hosted VB compiler generating ET V2.0 nodes
 
             case ExpressionType.Block:
-                var block = (BlockExpression) expression;
+                var block = (BlockExpression)expression;
                 var variables = block.Variables;
                 for (var i = 0; i < variables.Count; i++)
                 {
@@ -647,7 +748,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case ExpressionType.Assign:
-                var assign = (BinaryExpression) expression;
+                var assign = (BinaryExpression)expression;
                 FindTypeReferences(assign.Left, typeReferences);
                 FindTypeReferences(assign.Right, typeReferences);
                 return;
@@ -661,12 +762,12 @@ internal abstract class DesignerHelperImpl
         switch (binding.BindingType)
         {
             case MemberBindingType.Assignment:
-                var assignment = (MemberAssignment) binding;
+                var assignment = (MemberAssignment)binding;
                 FindTypeReferences(assignment.Expression, typeReferences);
                 return;
 
             case MemberBindingType.ListBinding:
-                var list = (MemberListBinding) binding;
+                var list = (MemberListBinding)binding;
                 var initializers = list.Initializers;
                 for (var i = 0; i < initializers.Count; i++)
                 {
@@ -680,7 +781,7 @@ internal abstract class DesignerHelperImpl
                 return;
 
             case MemberBindingType.MemberBinding:
-                var member = (MemberMemberBinding) binding;
+                var member = (MemberMemberBinding)binding;
                 var bindings = member.Bindings;
                 for (var i = 0; i < bindings.Count; i++)
                 {
@@ -695,8 +796,7 @@ internal abstract class DesignerHelperImpl
         }
     }
 
-    private static void GetAllImportReferences(Activity activity, out List<string> namespaces,
-        out List<string> assemblies)
+    private static void GetAllImportReferences(Activity activity, out List<string> namespaces, out List<string> assemblies)
     {
         JitCompilerHelper.GetAllImportReferences(activity, true, out namespaces, out var referencedAssemblies);
 
@@ -711,6 +811,31 @@ internal abstract class DesignerHelperImpl
             {
                 assemblies.Add(reference.Assembly.FullName);
             }
+        }
+    }
+
+    private static SourceExpressionException GetErrorsFromDiagnostics(string expressionText, ImmutableArray<Diagnostic> diagnostics)
+    {
+        var errors = new TextExpressionCompilerResults();
+        errors.AddMessages(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Select(diag =>
+            new TextExpressionCompilerError
+            {
+                SourceLineNumber = diag.Location.GetMappedLineSpan().StartLinePosition.Line,
+                Number = diag.Id,
+                Message = diag.ToString(),
+                IsWarning = diag.Severity < DiagnosticSeverity.Error
+            }));
+        return new SourceExpressionException(
+            SR.CompilerErrorSpecificExpression(expressionText, errors), errors.CompilerMessages);
+    }
+
+    private static void PopulateVbSettings(VisualBasicSettings vbSettings, ImmutableArray<Diagnostic> diagnostics)
+    {
+        foreach (var diagnostic in diagnostics.Where(d => d.Id == _usedTypesDiagnosticId))
+        {
+            var diagMessages = diagnostic.GetMessage()[1..^1].Split('|');
+            var import = new VisualBasicImportReference { Import = diagMessages[0].Trim(), Assembly = diagMessages[1].Trim().Split(',')[0] };
+            vbSettings.ImportReferences.Add(import);
         }
     }
 }

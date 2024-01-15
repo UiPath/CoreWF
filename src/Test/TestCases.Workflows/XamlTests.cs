@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.CSharp.Activities;
+using Microsoft.VisualBasic.Activities;
+using Microsoft.VisualBasic.CompilerServices;
+using Newtonsoft.Json;
+using Shouldly;
+using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
@@ -9,12 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using Microsoft.CSharp.Activities;
-using Microsoft.VisualBasic.Activities;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
-using Shouldly;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace TestCases.Workflows
@@ -184,31 +184,33 @@ namespace TestCases.Workflows
             // this one is cached
             VbCompile(text, resultType, namespaces, assemblies);
         }
+
         [Fact]
         public void VisualBasic_ChangeCompiler()
         {
             var empty = Array.Empty<string>();
-            VbCompile("\"abc\"", typeof(string), empty, empty);
+            var activity = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"a\"")) };
             VisualBasicSettings.Default.CompilerFactory = _ => new ThrowingJitCompiler();
             // this one is cached
-            new Action(()=>VbCompile("\"a\"", typeof(string), empty, empty)).ShouldThrow<NotImplementedException>();
+            new Action(() => WorkflowInspectionServices.CacheMetadata(activity)).ShouldThrow<NotImplementedException>();
             VisualBasicSettings.Default.CompilerFactory = references => new VbJitCompiler(references);
         }
-        class ThrowingJitCompiler : JustInTimeCompiler
+
+        private class ThrowingJitCompiler : JustInTimeCompiler
         {
             public override LambdaExpression CompileExpression(ExpressionToCompile compilerRequest) => throw new NotImplementedException();
         }
         private static void VbCompile(string text, Type resultType, string[] namespaces, string[] assemblies)
         {
-            var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, namespaces, assemblies, null, out var returnType, out var compileError, out _);
-            Check(text, resultType, value, returnType, compileError);
+            var value = VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, text, namespaces, assemblies, null, out var returnType, out var compileError, out var settings);
+            Check(text, resultType, value, returnType, compileError, settings);
         }
         private static void CSharpCompile(string text, Type resultType, string[] namespaces, string[] assemblies)
         {
-            var value = CSharpDesignerHelper.CreatePrecompiledValue(null, text, namespaces, assemblies, null, out var returnType, out var compileError, out _);
-            Check(text, resultType, value, returnType, compileError);
+            var value = CSharpDesignerHelper.CreatePrecompiledValue(null, text, namespaces, assemblies, null, out var returnType, out var compileError, out var settings);
+            Check(text, resultType, value, returnType, compileError, settings);
         }
-        private static void Check(string text, Type resultType, Activity value, Type returnType, SourceExpressionException compileError)
+        private static void Check(string text, Type resultType, Activity value, Type returnType, SourceExpressionException compileError, VisualBasicSettings settings)
         {
             ((ITextExpression)value).ExpressionText.ShouldBe(text);
             ((ActivityWithResult)value).ResultType.ShouldBe(resultType);
@@ -223,6 +225,53 @@ namespace TestCases.Workflows
             // this one is cached
             CSharpCompile(text, resultType, namespaces, assemblies);
         }
+
+        [Theory]
+        [MemberData(nameof(GetCSharpTestData))]
+        public async Task CS_CreatePrecompiledValueAsync(string expression, IEnumerable<string> namespaces, IEnumerable<string> assemblies, IEnumerable<VisualBasicImportReference> importReferences)
+        {
+            var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(null, expression, namespaces, assemblies, null);
+
+            foreach (var reference in importReferences)
+            {
+                result.VisualBasicSettings.ImportReferences.ShouldContain(reference, $"Did not contain namespace {reference.Import} from assembly {reference.Assembly}");
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetVBTestData))]
+        public async Task VB_CreatePrecompiledValueAsync(string expression, IEnumerable<string> namespaces, IEnumerable<string> assemblies, IEnumerable<VisualBasicImportReference> importReferences)
+        {
+            var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(null, expression, namespaces, assemblies, null);
+
+            foreach (var reference in importReferences)
+            {
+                result.VisualBasicSettings.ImportReferences.ShouldContain(reference, $"Did not contain namespace {reference.Import} from assembly {reference.Assembly}");
+            }
+        }
+
+        public static IEnumerable<object[]> GetCSharpTestData
+        {
+            get
+            {
+                yield return new object[] { "typeof(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new JToken[5]", new[] { "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new Dictionary<Dictionary<JToken, string>, JToken>()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new ClassWithDictionaryProperty().TestProperty", new[] { "TestCases.Workflows" }, new[] { "System.Collections", "TestCases.Workflows", }, new[] { new VisualBasicImportReference { Assembly = "TestCases.Workflows", Import = "TestCases.Workflows" }, new VisualBasicImportReference { Assembly = "System.Private.CoreLib", Import = "System.Collections" } } };
+            }
+        }
+
+        public static IEnumerable<object[]> GetVBTestData
+        {
+            get
+            {
+                yield return new object[] { "GetType(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new JToken(5){}", new[] { "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new Dictionary(Of Dictionary(Of JToken, String), JToken)()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new ClassWithDictionaryProperty().TestProperty", new[] { "TestCases.Workflows" }, new[] { "System.Collections", "TestCases.Workflows", }, new[] { new VisualBasicImportReference { Assembly = "TestCases.Workflows", Import = "TestCases.Workflows" }, new VisualBasicImportReference { Assembly = "System.Private.CoreLib", Import = "System.Collections" } } };
+            }
+        }
+
         public class CSharpInferTypeData : TheoryData<string, Type, string[], string[]>
         {
             public CSharpInferTypeData()
@@ -230,8 +279,8 @@ namespace TestCases.Workflows
                 var empty = Array.Empty<string>();
                 Add("\"abc\"", typeof(string), empty, empty);
                 Add("123", typeof(int), empty, empty);
-                Add("new List<string>()", typeof(List<string>), new[]{ "System.Collections.Generic" }, empty);
-                Add("new JsonArrayAttribute()", typeof(JsonArrayAttribute), new[]{ "Newtonsoft.Json" }, new[]{ "Newtonsoft.Json" });
+                Add("new List<string>()", typeof(List<string>), new[] { "System.Collections.Generic" }, empty);
+                Add("new JsonArrayAttribute()", typeof(JsonArrayAttribute), new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" });
             }
         }
         public class VisualBasicInferTypeData : TheoryData<string, Type, string[], string[]>
@@ -241,15 +290,15 @@ namespace TestCases.Workflows
                 var empty = Array.Empty<string>();
                 Add("\"abc\"", typeof(string), empty, empty);
                 Add("123", typeof(int), empty, empty);
-                Add("New List(Of String)()", typeof(List<string>), new[]{ "System.Collections.Generic" }, empty);
-                Add("New JsonArrayAttribute()", typeof(JsonArrayAttribute), new[]{ "Newtonsoft.Json" }, new[]{ "Newtonsoft.Json" });
+                Add("New List(Of String)()", typeof(List<string>), new[] { "System.Collections.Generic" }, empty);
+                Add("New JsonArrayAttribute()", typeof(JsonArrayAttribute), new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" });
             }
         }
         [Fact]
         public void Should_compile_CSharp()
         {
             var compiler = new CSharpJitCompiler(new[] { typeof(Expression).Assembly, typeof(Enumerable).Assembly }.ToHashSet());
-            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" }, 
+            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" },
                 name => name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
@@ -265,7 +314,7 @@ namespace TestCases.Workflows
     {
         protected override bool CompileExpressions => true;
 
-        const string CSharpExpressions = @"
+        private const string CSharpExpressions = @"
                 <Activity x:Class='WFTemplate'
                           xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
                           xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
@@ -282,7 +331,7 @@ namespace TestCases.Workflows
         public void CompileExpressionsDefault() => InvokeWorkflow(CSharpExpressions);
         [Fact]
         public void CompileExpressionsWithCompiler() =>
-            new Action(()=>ActivityXamlServices.Load(new StringReader(CSharpExpressions), 
+            new Action(() => ActivityXamlServices.Load(new StringReader(CSharpExpressions),
                 new ActivityXamlServicesSettings { CSharpCompiler = new CSharpCompiler() })).ShouldThrow<NotImplementedException>();
         [Fact]
         public void CSharpCompileError()
@@ -301,7 +350,7 @@ namespace TestCases.Workflows
                     </Sequence>
                 </Activity>";
             new Action(() => InvokeWorkflow(xaml)).ShouldThrow<InvalidOperationException>().Data.Values.Cast<string>()
-                .ShouldAllBe(error=>error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
+                .ShouldAllBe(error => error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
         }
         [Fact]
         public void SetCompiledExpressionRootForImplementation()
@@ -314,7 +363,7 @@ namespace TestCases.Workflows
         public void ValidateSkipCompilation()
         {
             var writeLine = new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("[s]")) };
-            var results = ActivityValidationServices.Validate(writeLine, new(){ SkipExpressionCompilation = true });
+            var results = ActivityValidationServices.Validate(writeLine, new() { SkipExpressionCompilation = true });
             results.Errors.ShouldBeEmpty();
         }
         [Fact]
@@ -325,7 +374,7 @@ xmlns:hw='clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows'>
                     <hw:WithMyVar />
                 </Activity>";
             var root = Load(xaml);
-            var withMyVar = (WithMyVar) WorkflowInspectionServices.Resolve(root, "1.1");
+            var withMyVar = (WithMyVar)WorkflowInspectionServices.Resolve(root, "1.1");
             ((ITextExpression)((Sequence)withMyVar.Body.Handler).Activities[0]).GetExpressionTree();
         }
         [Fact]
@@ -364,7 +413,8 @@ xmlns:hw='clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows'>
             var outputs = InvokeWorkflow(xamlString, inputs);
             outputs["myOutput"].ShouldBe(5);
         }
-        class CSharpCompiler : AheadOfTimeCompiler
+
+        private class CSharpCompiler : AheadOfTimeCompiler
         {
             public override TextExpressionCompilerResults Compile(ClassToCompile classToCompile) => throw new NotImplementedException();
         }
@@ -406,5 +456,10 @@ xmlns:hw='clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows'>
             base.CacheMetadata(metadata);
         }
         protected override void Execute(NativeActivityContext context) => context.ScheduleAction(Body, DateTime.Now);
+    }
+
+    public class ClassWithDictionaryProperty
+    {
+        public Dictionary<string, string> TestProperty { get; set; }
     }
 }

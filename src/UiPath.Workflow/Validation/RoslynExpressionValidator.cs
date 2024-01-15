@@ -3,10 +3,10 @@
 
 using Microsoft.CodeAnalysis;
 using System.Activities.Expressions;
+using System.Activities.Utils;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -20,18 +20,9 @@ namespace System.Activities.Validation;
 /// </summary>
 public abstract class RoslynExpressionValidator
 {
-    private readonly IReadOnlyCollection<string> _defaultNamespaces = new string[]
-    {
-        "System",
-        "System.Linq.Expressions"
-    };
-
     private const string ErrorRegex = "((\\(.*\\)).*error )(.*)";
     protected abstract string ActivityIdentifierRegex { get; }
-    private readonly Lazy<ConcurrentDictionary<Assembly, MetadataReference>> _metadataReferences;
     private readonly object _lockRequiredAssemblies = new();
-
-    protected const string Comma = ", ";
 
     protected abstract CompilerHelper CompilerHelper { get; }
 
@@ -45,9 +36,7 @@ public abstract class RoslynExpressionValidator
     /// </param>
     protected RoslynExpressionValidator(HashSet<Assembly> seedAssemblies = null)
     {
-        _metadataReferences = new(GetInitialMetadataReferences);
-
-        var assembliesToReference = new HashSet<Assembly>(JitCompilerHelper.DefaultReferencedAssemblies);
+        var assembliesToReference = new HashSet<Assembly>(DefaultReferencedAssemblies);
         if (seedAssemblies != null)
         {
             assembliesToReference.UnionWith(seedAssemblies.Where(a => a is not null));
@@ -92,7 +81,7 @@ public abstract class RoslynExpressionValidator
     /// <param name="assemblies">The list of assemblies</param>
     /// <returns>MetadataReference objects for all required assemblies</returns>
     protected IEnumerable<MetadataReference> GetMetadataReferencesForExpression(IReadOnlyCollection<Assembly> assemblies) =>
-        assemblies.Select(asm => TryGetMetadataReference(asm)).Where(mr => mr is not null);
+        assemblies.Select(asm => GetMetadataReferenceForAssembly(asm)).Where(mr => mr is not null);
 
     /// <summary>
     ///     Gets the type name, which can be language-specific.
@@ -112,8 +101,8 @@ public abstract class RoslynExpressionValidator
     protected string CreateValidationCode(IEnumerable<string> types, string returnType, string names, string code, bool isLocation, string activityId, int index)
     {
         return isLocation
-            ? CreateReferenceCode(string.Join(Comma, types), names, code, activityId, returnType, index)
-            : CreateValueCode(string.Join(Comma, types.Concat(new[] { returnType })), names, code, activityId, index);
+            ? CreateReferenceCode(string.Join(CompilerHelper.Comma, types), names, code, activityId, returnType, index)
+            : CreateValueCode(string.Join(CompilerHelper.Comma, types.Concat(new[] { returnType })), names, code, activityId, index);
     }
 
     protected abstract string CreateValueCode(string types, string names, string code, string activityId, int index);
@@ -200,15 +189,13 @@ public abstract class RoslynExpressionValidator
 
         GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
         requiredAssemblies.UnionWith(localAssemblies.Where(aref => aref is not null).Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
-        localNamespaces.AddRange(_defaultNamespaces);
+        localNamespaces.AddRange(CompilerHelper.DefaultNamespaces);
 
-        EnsureAssembliesLoaded(requiredAssemblies);
         var compilation = GetCompilation(requiredAssemblies, localNamespaces);
         var expressionsTextBuilder = new StringBuilder();
         int index = 0;
         foreach (var expressionToValidate in validationScope.GetAllExpressions())
         {
-            EnsureReturnTypeReferenced(expressionToValidate.ResultType, ref compilation);
             PrepValidation(expressionToValidate, expressionsTextBuilder, index++);
         }
 
@@ -224,42 +211,10 @@ public abstract class RoslynExpressionValidator
     /// <summary>
     ///     Creates or gets a MetadataReference for an Assembly.
     /// </summary>
-    /// <param name="assemblyReference">Assembly reference</param>
+    /// <param name="assembly">The assembly</param>
     /// <returns>MetadataReference or null if not found</returns>
-    /// <remarks>
-    ///     The default function in CoreWF first tries the non-CLS-compliant method
-    ///     <see cref="Reflection.Metadata.AssemblyExtensions.TryGetRawMetadata"/>, which may
-    ///     not work for some assemblies or in certain environments (like Blazor). On failure, the
-    ///     default function will then try
-    ///     <see cref="AssemblyMetadata.CreateFromFile" />. If that also fails,
-    ///     the function returns null and will not be cached.
-    /// </remarks>
     protected virtual MetadataReference GetMetadataReferenceForAssembly(Assembly assembly)
-    {
-        if (assembly == null)
-        {
-            return null;
-        }
-
-        try
-        {
-            return References.GetReference(assembly);
-        }
-        catch (NotSupportedException) { }
-        catch (NotImplementedException) { }
-
-        if (!string.IsNullOrWhiteSpace(assembly.Location))
-        {
-            try
-            {
-                return MetadataReference.CreateFromFile(assembly.Location);
-            }
-            catch (IOException) { }
-            catch (NotSupportedException) { }
-        }
-
-        return null;
-    }
+    => MetadataReferenceUtils.GetMetadataReferenceForAssembly(assembly);
 
     /// <summary>
     ///     If <see cref="AssemblyReference.Assembly"/> is null, loads the assembly. Default is to
@@ -284,85 +239,11 @@ public abstract class RoslynExpressionValidator
                 .Where(var => var.Type != null)
                 .ToArray();
 
-        var names = string.Join(Comma, resolvedIdentifiers.Select(var => var.Name));
+        var names = string.Join(CompilerHelper.Comma, resolvedIdentifiers.Select(var => var.Name));
         var types = resolvedIdentifiers.Select(var => var.Type).Select(GetTypeName);
         var returnType = GetTypeName(expressionToValidate.ResultType);
         var lambdaFuncCode = CreateValidationCode(types, returnType, names, expressionToValidate.ExpressionText, expressionToValidate.IsLocation, expressionToValidate.Activity.Id, index);
         expressionBuilder.AppendLine(lambdaFuncCode);
     }
 
-    private void EnsureReturnTypeReferenced(Type resultType, ref Compilation compilation)
-    {
-        HashSet<Type> allBaseTypes = null;
-        JitCompilerHelper.EnsureTypeReferenced(resultType, ref allBaseTypes);
-        Lazy<List<MetadataReference>> newReferences = new();
-        foreach (var baseType in allBaseTypes)
-        {
-            var asm = baseType.Assembly;
-            if (!_metadataReferences.Value.ContainsKey(asm))
-            {
-                var meta = GetMetadataReferenceForAssembly(asm);
-                if (meta != null)
-                {
-                    if (CanCache(asm))
-                    {
-                        _metadataReferences.Value.TryAdd(asm, meta);
-                    }
-
-                    newReferences.Value.Add(meta);
-                }
-            }
-        }
-
-        if (newReferences.IsValueCreated && compilation != null)
-        {
-            compilation = compilation.AddReferences(newReferences.Value);
-        }
-    }
-
-    private MetadataReference TryGetMetadataReference(Assembly assembly)
-    {
-        MetadataReference meta = null;
-        if (assembly != null && !_metadataReferences.Value.TryGetValue(assembly, out meta))
-        {
-            meta = GetMetadataReferenceForAssembly(assembly);
-            if (meta != null && CanCache(assembly))
-            {
-                _metadataReferences.Value.TryAdd(assembly, meta);
-            }
-        }
-
-        return meta;
-    }
-
-    private bool CanCache(Assembly assembly)
-        => !assembly.IsCollectible && !assembly.IsDynamic;
-
-    private void EnsureAssembliesLoaded(IReadOnlyCollection<Assembly> assemblies)
-    {
-        foreach (var assembly in assemblies)
-        {
-            TryGetMetadataReference(assembly);
-        }
-    }
-
-    private ConcurrentDictionary<Assembly, MetadataReference> GetInitialMetadataReferences()
-    {
-        var referenceCache = new ConcurrentDictionary<Assembly, MetadataReference>();
-        foreach (var referencedAssembly in RequiredAssemblies)
-        {
-            if (referencedAssembly is null || referenceCache.ContainsKey(referencedAssembly))
-            {
-                continue;
-            }
-
-            var metadataReference = GetMetadataReferenceForAssembly(referencedAssembly);
-            if (metadataReference != null)
-            {
-                referenceCache.TryAdd(referencedAssembly, metadataReference);
-            }
-        }
-
-        return referenceCache;
-    }
 }

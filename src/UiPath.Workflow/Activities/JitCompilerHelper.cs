@@ -34,7 +34,14 @@ internal abstract class JitCompilerHelper
         typeof(CodeTypeDeclaration).Assembly, // System
         typeof(Expression).Assembly, // System.Core
         typeof(Conversions).Assembly, //Microsoft.VisualBasic.Core
-        typeof(Activity).Assembly // System.Activities
+        typeof(Activity).Assembly, // System.Activities
+        typeof(Collections.ICollection).Assembly,
+        typeof(ICollection<>).Assembly,
+        typeof(Enum).Assembly,
+        typeof(ComponentModel.BrowsableAttribute).Assembly,
+        typeof(VisualBasicValue<>).Assembly,
+        Assembly.Load("netstandard"),
+        Assembly.Load("System.Runtime")
     };
 
     private static readonly object s_typeReferenceCacheLock = new();
@@ -1339,7 +1346,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             {
                 OnCompilerCacheCreated(s_hostedCompilerCache);
             }
-        }        
+        }
 
         lock (s_hostedCompilerCache)
         {
@@ -1417,7 +1424,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
         var compiler = compilerWrapper.Compiler;
         LambdaExpression lambda = null;
-        
+
         try
         {
             lambda = compiler.CompileExpression(ExpressionToCompile(scriptAndTypeScope.FindVariable,
@@ -1448,8 +1455,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         // replace the field references with variable references to our dummy variables
         // and rewrite lambda.body.Type to equal the lambda return type T            
         if (lambda == null)
-            // ExpressionText was either an empty string or Null
-            // we return null which eventually evaluates to default(TResult) at execution time.
+        // ExpressionText was either an empty string or Null
+        // we return null which eventually evaluates to default(TResult) at execution time.
         {
             return null;
         }

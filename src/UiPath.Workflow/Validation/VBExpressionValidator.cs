@@ -3,12 +3,10 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic;
-using Microsoft.CodeAnalysis.VisualBasic.Scripting.Hosting;
 using Microsoft.VisualBasic.Activities;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
+using static System.Activities.CompilerHelper;
 
 namespace System.Activities.Validation;
 /// <summary>
@@ -17,27 +15,11 @@ namespace System.Activities.Validation;
 /// </summary>
 public class VbExpressionValidator : RoslynExpressionValidator
 {
-    private static readonly Lazy<VbExpressionValidator> s_instance = new(() => new(s_defaultReferencedAssemblies));
-    private static readonly CompilerHelper s_compilerHelper = new VBCompilerHelper();
+    private static readonly Lazy<VbExpressionValidator> s_instance = new(() => new());
 
     private const string _valueValidationTemplate = "Public Shared Function CreateExpression{0}() As System.Linq.Expressions.Expression(Of System.Func(Of {1}))'activityId:{4}\nReturn Function({2}) ({3})'activityId:{4}\nEnd Function";
     private const string _delegateValueValidationTemplate = "{0}\nPublic Shared Function CreateExpression{1}() As System.Linq.Expressions.Expression(Of {2}(Of {3}))'activityId:{6}\nReturn Function({4}) ({5})'activityId:{6}\nEnd Function";
     private const string _referenceValidationTemplate = "Public Shared Function IsLocation{0}() As {1}'activityId:{5}\nReturn Function({2}) as System.Action'activityId:{5}\nReturn Sub() {3} = CType(Nothing, {4})'activityId:{5}\nEnd Function'activityId:{5}\nEnd Function";
-
-    private static readonly VisualBasicParseOptions s_vbScriptParseOptions =
-        new(kind: SourceCodeKind.Script, languageVersion: LanguageVersion.Latest);
-
-    private static readonly HashSet<Assembly> s_defaultReferencedAssemblies = new()
-    {
-        typeof(Collections.ICollection).Assembly,
-        typeof(Enum).Assembly,
-        typeof(ComponentModel.BrowsableAttribute).Assembly,
-        typeof(VisualBasicValue<>).Assembly,
-        Assembly.Load("netstandard"),
-        Assembly.Load("System.Runtime")
-    };
-
-    private readonly Compilation DefaultCompilationUnit = InitDefaultCompilationUnit();
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -45,10 +27,8 @@ public class VbExpressionValidator : RoslynExpressionValidator
     /// <param name="referencedAssemblies">
     ///     Assemblies to seed the collection.
     /// </param>
-    protected VbExpressionValidator(HashSet<Assembly> referencedAssemblies)
-        : base(referencedAssemblies != null
-               ? new HashSet<Assembly>(s_defaultReferencedAssemblies.Union(referencedAssemblies))
-               : s_defaultReferencedAssemblies)
+    protected VbExpressionValidator(HashSet<Assembly> referencedAssemblies = null)
+        : base(referencedAssemblies)
     { }
 
     public override string Language => VisualBasicHelper.Language;
@@ -58,7 +38,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
     /// </summary>
     public static VbExpressionValidator Instance { get; set; } = s_instance.Value;
 
-    protected override CompilerHelper CompilerHelper { get; } = new VBCompilerHelper();
+    protected override VBCompilerHelper CompilerHelper { get; } = new VBCompilerHelper();
 
     protected override string ActivityIdentifierRegex { get; } = "('activityId):(.*)";
 
@@ -67,38 +47,18 @@ public class VbExpressionValidator : RoslynExpressionValidator
         var globalImports = GlobalImport.Parse(namespaces);
         var metadataReferences = GetMetadataReferencesForExpression(assemblies);
 
-        var options = DefaultCompilationUnit.Options as VisualBasicCompilationOptions;
-        return DefaultCompilationUnit.WithOptions(options!.WithGlobalImports(globalImports)).WithReferences(metadataReferences);
+        var options = CompilerHelper.DefaultCompilationUnit.Options as VisualBasicCompilationOptions;
+        return CompilerHelper.DefaultCompilationUnit.WithOptions(options!.WithGlobalImports(globalImports)).WithReferences(metadataReferences);
     }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(string expressionText) =>
-        VisualBasicSyntaxTree.ParseText("? " + expressionText, s_vbScriptParseOptions);
+        VisualBasicSyntaxTree.ParseText("? " + expressionText, CompilerHelper.ScriptParseOptions);
 
     protected override SyntaxTree GetSyntaxTreeForValidation(string expressionText) =>
-        VisualBasicSyntaxTree.ParseText(expressionText, s_vbScriptParseOptions);
+        VisualBasicSyntaxTree.ParseText(expressionText, CompilerHelper.ScriptParseOptions);
 
-    protected override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
+    protected override string GetTypeName(Type type) => CompilerHelper.GetTypeName(type);
 
-    private static Compilation InitDefaultCompilationUnit()
-    {
-        var assemblyName = Guid.NewGuid().ToString();
-        VisualBasicCompilationOptions options = new(
-            OutputKind.DynamicallyLinkedLibrary,
-            mainTypeName: null,
-            globalImports: null,
-            rootNamespace: "",
-            optionStrict: OptionStrict.On,
-            optionInfer: true,
-            optionExplicit: true,
-            optionCompareText: false,
-            embedVbCoreRuntime: false,
-            optimizationLevel: OptimizationLevel.Debug,
-            checkOverflow: true,
-            xmlReferenceResolver: null,
-            sourceReferenceResolver: SourceFileResolver.Default,
-            concurrentBuild: !RuntimeInformation.IsOSPlatform(OSPlatform.Create("BROWSER")));
-        return VisualBasicCompilation.Create(assemblyName, null, null, options);
-    }
 
     protected override string CreateValueCode(string types, string names, string code, string activityId, int index)
     {
@@ -106,7 +66,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
         if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
             return string.Format(_valueValidationTemplate, index, types, names, code, activityId);
 
-        var (myDelegate, name) = s_compilerHelper.DefineDelegate(types);
+        var (myDelegate, name) = CompilerHelper.DefineDelegate(types);
         return string.Format(_delegateValueValidationTemplate, myDelegate, index, name, types, names, code, activityId);
     }
 
