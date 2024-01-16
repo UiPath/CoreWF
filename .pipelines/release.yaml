@@ -44,7 +44,7 @@ jobs:
     inputs:
       versionSpec: 6.x
 
-  - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@1
     inputs:
       forceReinstallCredentialProvider: true
 
