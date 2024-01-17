@@ -17,9 +17,11 @@ public class VbExpressionValidator : RoslynExpressionValidator
 {
     private static readonly Lazy<VbExpressionValidator> s_instance = new(() => new());
 
-    private const string _valueValidationTemplate = "Public Shared Function CreateExpression{0}() As System.Linq.Expressions.Expression(Of System.Func(Of {1}))'activityId:{4}\nReturn Function({2}) ({3})'activityId:{4}\nEnd Function";
-    private const string _delegateValueValidationTemplate = "{0}\nPublic Shared Function CreateExpression{1}() As System.Linq.Expressions.Expression(Of {2}(Of {3}))'activityId:{6}\nReturn Function({4}) ({5})'activityId:{6}\nEnd Function";
-    private const string _referenceValidationTemplate = "Public Shared Function IsLocation{0}() As {1}'activityId:{5}\nReturn Function({2}) as System.Action'activityId:{5}\nReturn Sub() {3} = CType(Nothing, {4})'activityId:{5}\nEnd Function'activityId:{5}\nEnd Function";
+    // This is used in case the expression does not properly close (missing quote)
+    private const string _expressionEnder = "'\"";
+    private const string _valueValidationTemplate = "Public Shared Function CreateExpression{0}() As System.Linq.Expressions.Expression(Of System.Func(Of {1}))'activityId:{4}\nReturn Function({2}) ({3}) {5}\nEnd Function";
+    private const string _delegateValueValidationTemplate = "{0}\nPublic Shared Function CreateExpression{1}() As System.Linq.Expressions.Expression(Of {2}(Of {3}))'activityId:{6}\nReturn Function({4}) ({5}){7}\nEnd Function";
+    private const string _referenceValidationTemplate = "Public Shared Function IsLocation{0}() As {1}'activityId:{5}\nReturn Function({2}) as System.Action\nReturn Sub() {3} = CType(Nothing, {4}){6}\nEnd Function\nEnd Function";
 
     /// <summary>
     ///     Initializes the MetadataReference collection.
@@ -64,10 +66,10 @@ public class VbExpressionValidator : RoslynExpressionValidator
     {
         var arrayType = types.Split(",");
         if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return string.Format(_valueValidationTemplate, index, types, names, code, activityId);
+            return string.Format(_valueValidationTemplate, index, types, names, code, activityId, _expressionEnder);
 
         var (myDelegate, name) = CompilerHelper.DefineDelegate(types);
-        return string.Format(_delegateValueValidationTemplate, myDelegate, index, name, types, names, code, activityId);
+        return string.Format(_delegateValueValidationTemplate, myDelegate, index, name, types, names, code, activityId, _expressionEnder);
     }
 
     protected override string CreateReferenceCode(string types, string names, string code, string activityId, string returnType, int index)
@@ -75,6 +77,6 @@ public class VbExpressionValidator : RoslynExpressionValidator
         var actionDefinition = !string.IsNullOrWhiteSpace(types)
             ? $"Action(Of {string.Join(Comma, types)})"
             : "Action";
-        return string.Format(_referenceValidationTemplate, index, actionDefinition, names, code, returnType, activityId);
+        return string.Format(_referenceValidationTemplate, index, actionDefinition, names, code, returnType, activityId, _expressionEnder);
     }
 }
