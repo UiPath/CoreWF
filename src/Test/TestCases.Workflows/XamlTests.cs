@@ -294,6 +294,7 @@ namespace TestCases.Workflows
                 Add("New JsonArrayAttribute()", typeof(JsonArrayAttribute), new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" });
             }
         }
+
         [Fact]
         public void Should_compile_CSharp()
         {
@@ -302,12 +303,55 @@ namespace TestCases.Workflows
                 name => name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
+
         [Fact]
         public void Should_Fail_VBConversion()
         {
             var compiler = new VbJitCompiler(new[] { typeof(int).Assembly, typeof(Expression).Assembly, typeof(Conversions).Assembly }.ToHashSet());
             new Action(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" }, _ => typeof(int), typeof(string))))
                 .ShouldThrow<SourceExpressionException>().Message.ShouldContain("BC30512: Option Strict On disallows implicit conversions");
+        }
+
+        [Fact]
+        // Ensure that if the quotes are not properly closed for an expression, this will not 
+        // break the whole validation.
+        public void VBExtraQuote_DoesNotBreakValidation()
+        {
+            var root = new DynamicActivity();
+            var sequence = new Sequence();
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"invalid\"\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("\"valid\"")) });
+            root.Implementation = () => sequence;
+
+            var validationResult = ActivityValidationServices.Validate(root, new() { ForceExpressionCache = false });
+            validationResult.Errors.Count.ShouldBe(1);
+            validationResult.Errors.First().Message.ShouldBe("BC30198: ')' expected.");
+        }
+
+        [Fact]
+        // Ensure that no matter the format of the expression, multiline comment not closed,
+        // or multiline text not closed, the error will not break the whole validation
+        public void CSExtraQuote_DoesNotBreakValidation()
+        {
+            var root = new DynamicActivity();
+            var sequence = new Sequence();
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("@\"invalid")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"valid\"")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("\"invalid\" /*")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("@\"invalid")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("$@\"invalid")) });
+            sequence.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("@$\"invalid")) });
+
+            root.Implementation = () => sequence;
+
+            var validationResult = ActivityValidationServices.Validate(root, new() { ForceExpressionCache = false });
+            validationResult.Errors.Count.ShouldBe(5);
+            foreach (var error in validationResult.Errors)
+            {
+                error.Message.ShouldBe("CS1002: ; expected");
+            }
         }
     }
     public class AheadOfTimeXamlTests : XamlTestsBase
