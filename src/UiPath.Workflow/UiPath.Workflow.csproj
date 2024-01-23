@@ -4,7 +4,7 @@
         <Description>Unofficial port of the Windows Workflow Foundation (WF) to .NET 6</Description>
         <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <GeneratePackageOnBuild Condition="$(Configuration)=='Release'">true</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild Condition="$(Configuration)=='Debug'">true</GeneratePackageOnBuild>
         <RepositoryType>git</RepositoryType>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <IncludeSymbols>true</IncludeSymbols>
@@ -30,8 +30,11 @@
         <ItemGroup>
             <BuildOutputInPackage Include="$(OutputPath)Microsoft.CodeAnalysis.VisualBasic.Scripting.*"/>
         </ItemGroup>
+		<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+			<BuildOutputInPackage Include="$(OutputPath)System.xaml.dll"/>
+		</ItemGroup>
     </Target>
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration)=='Release'">
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration)=='Debug'">
         <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)"/>
     </Target>
 </Project>
