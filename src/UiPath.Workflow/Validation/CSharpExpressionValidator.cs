@@ -20,10 +20,12 @@ namespace System.Activities.Validation;
 /// </summary>
 public class CSharpExpressionValidator : RoslynExpressionValidator
 {
+    // This is used in case the expression does not properly close (e.g. missing quotes, or multiline comment not closed)
+    private const string _expressionEnder = "// */ // \"";
     private static readonly Lazy<CSharpExpressionValidator> s_instance = new(() => new(s_defaultReferencedAssemblies));
-    private const string _valueValidationTemplate = "public static System.Linq.Expressions.Expression<System.Func<{0}>> CreateExpression{1}() => ({2}) => {3};//activityId:{4}";
-    private const string _delegateValueValidationTemplate = "{0}\npublic static System.Linq.Expressions.Expression<{1}<{2}>> CreateExpression{3}() => ({4}) => {5};//activityId:{6}";
-    private const string _referenceValidationTemplate = "public static {0} IsLocation{1}() => ({2}) => {3} = default({4});//activityId:{5}";
+    private const string _valueValidationTemplate = "public static System.Linq.Expressions.Expression<System.Func<{0}>> CreateExpression{1}()//activityId:{4}\n => ({2}) => {3}; {5}";
+    private const string _delegateValueValidationTemplate = "{0}\npublic static System.Linq.Expressions.Expression<{1}<{2}>> CreateExpression{3}()//activityId:{6}\n => ({4}) => {5}; {7}";
+    private const string _referenceValidationTemplate = "public static {0} IsLocation{1}()//activityId:{5}\n => ({2}) => {3} = default({4}); {6}";
 
     private static readonly CompilerHelper s_compilerHelper = new CSharpCompilerHelper();
     private static readonly CSharpParseOptions s_csScriptParseOptions = new(kind: SourceCodeKind.Script);
@@ -95,10 +97,10 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
     {
         var arrayType = types.Split(",");
         if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return string.Format(_valueValidationTemplate, types, index, names, code, activityId);
+            return string.Format(_valueValidationTemplate, types, index, names, code, activityId, _expressionEnder);
 
         var (myDelegate, name) = s_compilerHelper.DefineDelegate(types);
-        return string.Format(_delegateValueValidationTemplate, myDelegate, name, types, index, names, code, activityId);
+        return string.Format(_delegateValueValidationTemplate, myDelegate, name, types, index, names, code, activityId, _expressionEnder);
     }
 
     protected override string CreateReferenceCode(string types, string names, string code, string activityId, string returnType, int index)
@@ -106,7 +108,7 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
         var actionDefinition = !string.IsNullOrWhiteSpace(types) 
             ? $"Action<{string.Join(Comma, types)}>" 
             : "Action";
-        return string.Format(_referenceValidationTemplate, actionDefinition, index, names, code, returnType, activityId);
+        return string.Format(_referenceValidationTemplate, actionDefinition, index, names, code, returnType, activityId, _expressionEnder);
     }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(string expressionText) =>

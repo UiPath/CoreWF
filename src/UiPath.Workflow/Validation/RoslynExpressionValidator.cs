@@ -147,13 +147,15 @@ public abstract class RoslynExpressionValidator
         var errors = new List<(ValidationError, Diagnostic)>();
         if (diagnostics.Any())
         {
+            var textLines = text.Split('\n');
             foreach (var diagnostic in diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error))
             {
                 var match = Regex.Match(diagnostic.ToString(), ErrorRegex);
                 ValidationError error;
                 if (match.Success)
                 {
-                    var activity = GetErrorActivity(text.Split('\n'), diagnostic, validationScope);
+                    var diagnosticLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line;
+                    var activity = GetErrorActivity(textLines, diagnosticLineNumber, validationScope);
                     error = new ValidationError(match.Groups[3].Value, false, activity);
                 }
                 else
@@ -176,17 +178,22 @@ public abstract class RoslynExpressionValidator
         return originalErrors.Select(item => item.error);
     }
 
-    private Activity GetErrorActivity(string[] textLines, Diagnostic diagnostic, ValidationScope validationScope)
+    private Activity GetErrorActivity(string[] textLines, int diagnosticLineNumber, ValidationScope validationScope)
     {
-        var diagnosticLineNumber = diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line;
+        if (diagnosticLineNumber < 0)
+            return null;
+
         var lineText = textLines[diagnosticLineNumber];
         var lineMatch = Regex.Match(lineText, ActivityIdentifierRegex);
+
         if (lineMatch.Success)
         {
-            var activityId = lineMatch.Groups[2].Value.TrimEnd('\r');
-            return validationScope.GetExpression(activityId).Activity;
+            return validationScope.GetExpression(lineMatch.Groups[2].Value).Activity;
         }
-        return null;
+        else
+        {
+            return GetErrorActivity(textLines, diagnosticLineNumber - 1, validationScope);
+        }
     }
 
     internal IList<ValidationError> Validate(Activity currentActivity, ValidationScope validationScope)
@@ -208,8 +215,7 @@ public abstract class RoslynExpressionValidator
         int index = 0;
         foreach (var expressionToValidate in validationScope.GetAllExpressions())
         {
-            EnsureReturnTypeReferenced(expressionToValidate.ResultType, ref compilation);
-            PrepValidation(expressionToValidate, expressionsTextBuilder, index++);
+            AddExpressionToValidate(expressionToValidate, expressionsTextBuilder, index++);
         }
 
         compilation = compilation.AddSyntaxTrees(GetSyntaxTreeForValidation(expressionsTextBuilder.ToString()));
@@ -273,7 +279,7 @@ public abstract class RoslynExpressionValidator
         return assemblyReference.Assembly;
     }
 
-    private void PrepValidation(ExpressionToValidate expressionToValidate, StringBuilder expressionBuilder, int index)
+    private void AddExpressionToValidate(ExpressionToValidate expressionToValidate, StringBuilder expressionBuilder, int index)
     {
         var syntaxTree = GetSyntaxTreeForExpression(expressionToValidate.ExpressionText);
         var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == CompilerHelper.IdentifierKind)
@@ -289,35 +295,6 @@ public abstract class RoslynExpressionValidator
         var returnType = GetTypeName(expressionToValidate.ResultType);
         var lambdaFuncCode = CreateValidationCode(types, returnType, names, expressionToValidate.ExpressionText, expressionToValidate.IsLocation, expressionToValidate.Activity.Id, index);
         expressionBuilder.AppendLine(lambdaFuncCode);
-    }
-
-    private void EnsureReturnTypeReferenced(Type resultType, ref Compilation compilation)
-    {
-        HashSet<Type> allBaseTypes = null;
-        JitCompilerHelper.EnsureTypeReferenced(resultType, ref allBaseTypes);
-        Lazy<List<MetadataReference>> newReferences = new();
-        foreach (var baseType in allBaseTypes)
-        {
-            var asm = baseType.Assembly;
-            if (!_metadataReferences.Value.ContainsKey(asm))
-            {
-                var meta = GetMetadataReferenceForAssembly(asm);
-                if (meta != null)
-                {
-                    if (CanCache(asm))
-                    {
-                        _metadataReferences.Value.TryAdd(asm, meta);
-                    }
-
-                    newReferences.Value.Add(meta);
-                }
-            }
-        }
-
-        if (newReferences.IsValueCreated && compilation != null)
-        {
-            compilation = compilation.AddReferences(newReferences.Value);
-        }
     }
 
     private MetadataReference TryGetMetadataReference(Assembly assembly)
