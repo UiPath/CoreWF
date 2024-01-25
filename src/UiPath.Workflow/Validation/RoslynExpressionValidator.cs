@@ -215,6 +215,7 @@ public abstract class RoslynExpressionValidator
         int index = 0;
         foreach (var expressionToValidate in validationScope.GetAllExpressions())
         {
+            EnsureReturnTypeReferenced(expressionToValidate.ResultType, ref compilation);
             AddExpressionToValidate(expressionToValidate, expressionsTextBuilder, index++);
         }
 
@@ -295,6 +296,35 @@ public abstract class RoslynExpressionValidator
         var returnType = GetTypeName(expressionToValidate.ResultType);
         var lambdaFuncCode = CreateValidationCode(types, returnType, names, expressionToValidate.ExpressionText, expressionToValidate.IsLocation, expressionToValidate.Activity.Id, index);
         expressionBuilder.AppendLine(lambdaFuncCode);
+    }
+
+    private void EnsureReturnTypeReferenced(Type resultType, ref Compilation compilation)
+    {
+        HashSet<Type> allBaseTypes = null;
+        JitCompilerHelper.EnsureTypeReferenced(resultType, ref allBaseTypes);
+        Lazy<List<MetadataReference>> newReferences = new();
+        foreach (var baseType in allBaseTypes)
+        {
+            var asm = baseType.Assembly;
+            if (!_metadataReferences.Value.ContainsKey(asm))
+            {
+                var meta = GetMetadataReferenceForAssembly(asm);
+                if (meta != null)
+                {
+                    if (CanCache(asm))
+                    {
+                        _metadataReferences.Value.TryAdd(asm, meta);
+                    }
+
+                    newReferences.Value.Add(meta);
+                }
+            }
+        }
+
+        if (newReferences.IsValueCreated && compilation != null)
+        {
+            compilation = compilation.AddReferences(newReferences.Value);
+        }
     }
 
     private MetadataReference TryGetMetadataReference(Assembly assembly)
