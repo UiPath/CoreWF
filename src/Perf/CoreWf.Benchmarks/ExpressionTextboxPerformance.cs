@@ -2,6 +2,8 @@
 using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using System.Activities;
+using System.Activities.Expressions;
+using System.Reflection;
 
 namespace CoreWf.Benchmarks
 {
@@ -27,13 +29,13 @@ namespace CoreWf.Benchmarks
         [Benchmark]
         public async Task CS_CreatePrecompiledValueAsync()
         {
-            await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(object), $"1 + {index++}", new[] { "System" }, new[] { "System" }, GetFreshEnvironment);
+            await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(object), $"1 + {index++}", new[] { "System" }, new[] { (AssemblyReference)new AssemblyName("System") }, GetFreshEnvironment);
         }
 
         [Benchmark]
         public async Task VB_CreatePrecompiledValueAsync()
         {
-            await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(typeof(object), $"1 + {index++}", new[] { "System" }, new[] { "System" }, GetFreshEnvironment);
+            await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(typeof(object), $"1 + {index++}", new[] { "System" }, new[] { (AssemblyReference)new AssemblyName("System") }, GetFreshEnvironment);
         }
     }
 }

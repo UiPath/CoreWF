@@ -4,6 +4,7 @@
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
+using System.Activities.Expressions;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,8 +14,8 @@ namespace Microsoft.VisualBasic.Activities;
 
 internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
 {
-    public VisualBasicHelper(string expressionText, HashSet<AssemblyName> refAssemNames,
-        HashSet<string> namespaceImportsNames) : base(expressionText, refAssemNames, namespaceImportsNames) { }
+    public VisualBasicHelper(string expressionText, HashSet<AssemblyReference> assemblyReferences,
+        HashSet<string> namespaceImportsNames) : base(expressionText, assemblyReferences, namespaceImportsNames) { }
 
     private VisualBasicHelper(string expressionText) : base(expressionText) { }
 
@@ -40,10 +41,10 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
         base.OnCompilerCacheCreated(compilerCache);
     }
 
-    protected override void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+    protected override void Initialize(HashSet<AssemblyReference> assemblyReferences, HashSet<string> namespaceImportsNames)
     {
         namespaceImportsNames.Add("Microsoft.VisualBasic");
-        base.Initialize(refAssemNames, namespaceImportsNames);
+        base.Initialize(assemblyReferences, namespaceImportsNames);
     }
 
     public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText,
@@ -52,7 +53,7 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
         GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out var localNamespaces,
             out var localAssemblies);
         var helper = new VisualBasicHelper(expressionText);
-        var localReferenceAssemblies = new HashSet<AssemblyName>();
+        var localReferenceAssemblies = new HashSet<AssemblyReference>();
         var localImports = new HashSet<string>(localNamespaces);
         foreach (var assemblyReference in localAssemblies)
         {
@@ -66,7 +67,7 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
             }
             else if (assemblyReference.AssemblyName != null)
             {
-                localReferenceAssemblies.Add(assemblyReference.AssemblyName);
+                localReferenceAssemblies.Add(assemblyReference);
             }
         }
 
@@ -82,11 +83,8 @@ internal class VisualBasicDesignerHelperImpl : DesignerHelperImpl
 
     protected override ExpressionCompiler Compiler { get; } = new VisualBasicExpressionCompiler();
 
-    public override JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyName> references,
-        HashSet<string> namespaces)
-    {
-        return new VisualBasicHelper(expressionText, references, namespaces);
-    }
+    public override JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyReference> references, HashSet<string> namespaces)
+        => new VisualBasicHelper(expressionText, references, namespaces);
 }
 
 public static class VisualBasicDesignerHelper
@@ -131,7 +129,16 @@ public static class VisualBasicDesignerHelper
             environment, out returnType, out compileError, out vbSettings);
     }
 
-    public static Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+    public static Activity CreatePrecompiledVisualBasicValue(Type targetType, string expressionText,
+        IEnumerable<string> namespaces, IEnumerable<AssemblyReference> referencedAssemblies,
+        LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
+        out VisualBasicSettings vbSettings)
+    {
+        return s_impl.CreatePrecompiledValue(targetType, expressionText, namespaces, referencedAssemblies,
+            environment, out returnType, out compileError, out vbSettings);
+    }
+
+    public static Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<AssemblyReference> assemblies, LocationReferenceEnvironment environment)
     => s_impl.CreatePrecompiledValueAsync(targetType, expressionText, namespaces, assemblies, environment);
 
     public static Activity CreatePrecompiledVisualBasicReference(Type targetType, string expressionText,
@@ -143,7 +150,16 @@ public static class VisualBasicDesignerHelper
             environment, out returnType, out compileError, out vbSettings);
     }
 
-    public static Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+    public static Activity CreatePrecompiledVisualBasicReference(Type targetType, string expressionText,
+        IEnumerable<string> namespaces, IEnumerable<AssemblyReference> referencedAssemblies,
+        LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
+        out VisualBasicSettings vbSettings)
+    {
+        return s_impl.CreatePrecompiledReference(targetType, expressionText, namespaces, referencedAssemblies,
+            environment, out returnType, out compileError, out vbSettings);
+    }
+
+    public static Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<AssemblyReference> assemblies, LocationReferenceEnvironment environment)
         => s_impl.CreatePrecompiledReferenceAsync(targetType, expressionText, namespaces, assemblies, environment);
 
     public static Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
