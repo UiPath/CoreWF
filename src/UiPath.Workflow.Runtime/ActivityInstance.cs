@@ -57,6 +57,8 @@ public sealed class ActivityInstance
         ImplementationVersion = activity.ImplementationVersion;
     }
 
+    internal int DelegateParameterCount { get; set; }
+
     /// <summary>
     /// The values of the out arguments.
     /// </summary>
@@ -709,6 +711,7 @@ public sealed class ActivityInstance
         _parent = parent;
         _instanceMap = instanceMap;
         _id = instanceId;
+        DelegateParameterCount = delegateParameterCount;
 
         if (_instanceMap != null)
         {

@@ -799,7 +799,7 @@ internal static class ActivityUtilities
 
     private static bool ShouldShortcut(Activity activity, ProcessActivityTreeOptions options) => options.SkipIfCached && options.IsRuntimeReadyOptions && activity.IsRuntimeReady;
 
-    private static void ProcessActivityTreeCore(ChildActivity currentActivity, ActivityCallStack parentChain, ProcessActivityTreeOptions options, ProcessActivityCallback callback, ref IList<ValidationError> validationErrors)
+    internal static void ProcessActivityTreeCore(ChildActivity currentActivity, ActivityCallStack parentChain, ProcessActivityTreeOptions options, ProcessActivityCallback callback, ref IList<ValidationError> validationErrors)
     {
         Fx.Assert(options != null, "We need you to explicitly specify options.");
         Fx.Assert(currentActivity.Activity.MemberOf != null, "We must have an activity with MemberOf setup or we need to skipIdGeneration.");

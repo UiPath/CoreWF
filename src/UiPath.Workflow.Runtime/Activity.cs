@@ -84,7 +84,11 @@ public abstract partial class Activity
         }
     }
 
-    protected internal int CacheId => _cacheId;
+    protected internal int CacheId
+    {
+        get => _cacheId;
+        set => _cacheId = value;
+    }
 
     internal RelationshipType RelationshipToParent => _relationshipToParent;
 
