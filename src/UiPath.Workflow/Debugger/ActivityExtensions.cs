@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace UiPath.Workflow.Debugger;
 
+/// <summary>
+/// TODO - add unit tests.
+/// </summary>
 public static class ActivityExtensions
 {
     /// <summary>
@@ -17,7 +20,7 @@ public static class ActivityExtensions
     /// ATTENTION - calling this method will generate a new activity.Id
     /// </summary>
     /// <returns>a list of validation errors</returns>
-    public static IList<ValidationError> RefreshActivityTree(this Activity activity)
+    public static IList<ValidationError> RefreshCacheMetadata(this Activity activity)
     {
         if (activity == null)
             return Array.Empty<ValidationError>();
