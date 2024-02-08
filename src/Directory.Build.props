@@ -1,11 +1,15 @@
 <Project>
+	<PropertyGroup>
+        <CoreFrameworks>|net6.0|net8.0|</CoreFrameworks>
+		<WinFrameworks>|net6.0-windows|net8.0-windows|</WinFrameworks>
+    </PropertyGroup>
     <PropertyGroup>
         <Version>6.0.0</Version>
         <RoslynPackageVersion>4.5.0-2.22527.10</RoslynPackageVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
-        <UseWPF Condition="$(TargetFramework) == 'net6.0-windows'">true</UseWPF>
+        <UseWPF  Condition="$(WinFrameworks.Contains('|$(TargetFramework)|'))">true</UseWPF>
     </PropertyGroup>
-    <ItemGroup Condition="$(AssemblyName) != 'System.Xaml' AND $(TargetFramework) != 'net6.0-windows'">
+    <ItemGroup Condition="$(AssemblyName) != 'System.Xaml' AND $(CoreFrameworks.Contains('|$(TargetFramework)|'))">
         <ProjectReference Include="$(SolutionDir)\System.Xaml\System.Xaml.csproj" PrivateAssets="All"/>
     </ItemGroup>
 </Project>

@@ -189,7 +189,7 @@ namespace TestCases.Activities
             catch (Exception exception)
             {
                 Dictionary<string, string> exceptionProperty = new Dictionary<string, string>();
-                exceptionProperty.Add("Message", string.Format("Ambiguous match found."));
+                exceptionProperty.Add("Message", string.Format("Ambiguous match found"));
 
                 ExceptionHelpers.ValidateException(exception, typeof(System.Reflection.AmbiguousMatchException), exceptionProperty);
             }
@@ -743,7 +743,7 @@ namespace TestCases.Activities
             catch (Exception exception)
             {
                 Dictionary<string, string> exceptionProperty = new Dictionary<string, string>();
-                exceptionProperty.Add("Message", string.Format("Ambiguous match found."));
+                exceptionProperty.Add("Message", string.Format("Ambiguous match found"));
 
                 ExceptionHelpers.ValidateException(exception, typeof(System.Reflection.AmbiguousMatchException), exceptionProperty);
             }
