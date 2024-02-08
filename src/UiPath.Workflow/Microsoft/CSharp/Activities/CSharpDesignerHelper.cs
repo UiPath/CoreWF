@@ -4,6 +4,7 @@
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
+using System.Activities.Expressions;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ namespace Microsoft.CSharp.Activities;
 
 internal class CSharpHelper : JitCompilerHelper<CSharpHelper>
 {
-    public CSharpHelper(string expressionText, HashSet<AssemblyName> refAssemNames,
-        HashSet<string> namespaceImportsNames) : base(expressionText, refAssemNames, namespaceImportsNames) { }
+    public CSharpHelper(string expressionText, HashSet<AssemblyReference> assemblyReferences,
+        HashSet<string> namespaceImportsNames) : base(expressionText, assemblyReferences, namespaceImportsNames) { }
 
     protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => 
         new CSharpJitCompiler(references);
@@ -34,7 +35,7 @@ internal class CSharpDesignerHelperImpl : DesignerHelperImpl
     public override Type ExpressionFactoryType => typeof(CSharpExpressionFactory<>);
     public override string Language => CSharpHelper.Language;
 
-    public override JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyName> references,
+    public override JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyReference> references,
         HashSet<string> namespaces)
     {
         return new CSharpHelper(expressionText, references, namespaces);
@@ -72,8 +73,26 @@ public static class CSharpDesignerHelper
             environment, out returnType, out compileError, out vbSettings);
     }
 
+    public static Activity CreatePrecompiledValue(Type targetType, string expressionText,
+        IEnumerable<string> namespaces, IEnumerable<AssemblyReference> referencedAssemblies,
+        LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
+        out VisualBasicSettings vbSettings)
+    {
+        return s_impl.CreatePrecompiledValue(targetType, expressionText, namespaces, referencedAssemblies,
+            environment, out returnType, out compileError, out vbSettings);
+    }
+
     public static Activity CreatePrecompiledReference(Type targetType, string expressionText,
         IEnumerable<string> namespaces, IEnumerable<string> referencedAssemblies,
+        LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
+        out VisualBasicSettings vbSettings)
+    {
+        return s_impl.CreatePrecompiledReference(targetType, expressionText, namespaces, referencedAssemblies,
+            environment, out returnType, out compileError, out vbSettings);
+    }
+
+    public static Activity CreatePrecompiledReference(Type targetType, string expressionText,
+        IEnumerable<string> namespaces, IEnumerable<AssemblyReference> referencedAssemblies,
         LocationReferenceEnvironment environment, out Type returnType, out SourceExpressionException compileError,
         out VisualBasicSettings vbSettings)
     {
@@ -86,7 +105,6 @@ public static class CSharpDesignerHelper
     {
         return s_impl.CreatePrecompiledValue(targetType, expressionText, parent, out returnType, out compileError, out vbSettings);
     }
-
 
     public static Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError)
@@ -106,9 +124,9 @@ public static class CSharpDesignerHelper
         return CreatePrecompiledReference(targetType, expressionText, parent, out returnType, out compileError, out _);
     }
 
-    public static Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+    public static Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<AssemblyReference> assemblies, LocationReferenceEnvironment environment)
         => s_impl.CreatePrecompiledValueAsync(targetType, expressionText, namespaces, assemblies, environment);
 
-    public static Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<string> assemblies, LocationReferenceEnvironment environment)
+    public static Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces, IEnumerable<AssemblyReference> assemblies, LocationReferenceEnvironment environment)
         => s_impl.CreatePrecompiledReferenceAsync(targetType, expressionText, namespaces, assemblies, environment);
 }

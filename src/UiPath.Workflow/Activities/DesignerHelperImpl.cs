@@ -3,6 +3,7 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.PowerFx.Core.Public.Values;
 using Microsoft.VisualBasic.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
@@ -34,9 +35,7 @@ internal abstract class DesignerHelperImpl
 
     protected abstract ExpressionCompiler Compiler { get; }
 
-    public abstract JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyName> references,
-        HashSet<string> namespaces);
-
+    public abstract JitCompilerHelper CreateJitCompilerHelper(string expressionText, HashSet<AssemblyReference> references, HashSet<string> namespaces);
 
     public Activity CreatePrecompiledValue(Type targetType,
         string expressionText,
@@ -46,34 +45,24 @@ internal abstract class DesignerHelperImpl
         out Type returnType,
         out SourceExpressionException compileError,
         out VisualBasicSettings vbSettings)
+    => CreatePrecompiledValue(targetType, expressionText, namespaces, CreateReferences(referencedAssemblies), environment, out returnType, out compileError, out vbSettings);
+
+    public Activity CreatePrecompiledValue(Type targetType,
+        string expressionText,
+        IEnumerable<string> namespaces,
+        IEnumerable<AssemblyReference> referencedAssemblies,
+        LocationReferenceEnvironment environment,
+        out Type returnType,
+        out SourceExpressionException compileError,
+        out VisualBasicSettings vbSettings)
     {
         LambdaExpression lambda = null;
-        var namespacesSet = new HashSet<string>();
-        var assembliesSet = new HashSet<AssemblyName>();
+        var namespacesSet = new HashSet<string>(namespaces ?? Enumerable.Empty<string>());
+        var assembliesSet = new HashSet<AssemblyReference>(referencedAssemblies ?? Enumerable.Empty<AssemblyReference>());
+        namespacesSet.Remove(null);
+        assembliesSet.Remove(null);
         compileError = null;
         returnType = null;
-
-        if (namespaces != null)
-        {
-            foreach (var ns in namespaces)
-            {
-                if (ns != null)
-                {
-                    namespacesSet.Add(ns);
-                }
-            }
-        }
-
-        if (referencedAssemblies != null)
-        {
-            foreach (var assm in referencedAssemblies)
-            {
-                if (assm != null)
-                {
-                    assembliesSet.Add(new AssemblyName(assm));
-                }
-            }
-        }
 
         var compilerHelper = CreateJitCompilerHelper(expressionText, assembliesSet, namespacesSet);
         if (targetType == null)
@@ -145,7 +134,7 @@ internal abstract class DesignerHelperImpl
     }
 
     public Task<CompiledExpressionResult> CreatePrecompiledValueAsync(Type targetType, string expressionText, IEnumerable<string> namespaces,
-        IEnumerable<string> referencedAssemblies,
+        IEnumerable<AssemblyReference> referencedAssemblies,
         LocationReferenceEnvironment environment)
         => CreatePrecompiledExpressionAsync(targetType, expressionText, false, namespaces, referencedAssemblies, environment);
 
@@ -160,13 +149,13 @@ internal abstract class DesignerHelperImpl
         var expressionText = textExpression.ExpressionText;
         var environment = rValue.GetParentEnvironment();
 
-        GetAllImportReferences(rValue, out var namespaces, out var referencedAssemblies);
+        JitCompilerHelper.GetAllImportReferences(rValue, true, out var namespaces, out var assemblies);
 
         return CreatePrecompiledValue(
             null,
             expressionText,
             namespaces,
-            referencedAssemblies,
+            assemblies,
             environment,
             out returnType,
             out compileError,
@@ -183,13 +172,13 @@ internal abstract class DesignerHelperImpl
         var expressionText = textExpression.ExpressionText;
         var environment = rValue.GetParentEnvironment();
 
-        GetAllImportReferences(rValue, out var namespaces, out var referencedAssemblies);
+        JitCompilerHelper.GetAllImportReferences(rValue, true, out var namespaces, out var assemblies);
 
         return CreatePrecompiledValueAsync(
             null,
             expressionText,
             namespaces,
-            referencedAssemblies,
+            assemblies,
             environment);
     }
 
@@ -201,34 +190,24 @@ internal abstract class DesignerHelperImpl
         out Type returnType,
         out SourceExpressionException compileError,
         out VisualBasicSettings vbSettings)
+    => CreatePrecompiledReference(targetType, expressionText, namespaces, CreateReferences(referencedAssemblies), environment, out returnType, out compileError, out vbSettings);
+
+    public Activity CreatePrecompiledReference(Type targetType,
+        string expressionText,
+        IEnumerable<string> namespaces,
+        IEnumerable<AssemblyReference> referencedAssemblies,
+        LocationReferenceEnvironment environment,
+        out Type returnType,
+        out SourceExpressionException compileError,
+        out VisualBasicSettings vbSettings)
     {
         LambdaExpression lambda = null;
-        var namespacesSet = new HashSet<string>();
-        var assembliesSet = new HashSet<AssemblyName>();
+        var namespacesSet = new HashSet<string>(namespaces ?? Enumerable.Empty<string>());
+        var assembliesSet = new HashSet<AssemblyReference>(referencedAssemblies ?? Enumerable.Empty<AssemblyReference>());
+        namespacesSet.Remove(null);
+        assembliesSet.Remove(null);
         compileError = null;
         returnType = null;
-
-        if (namespaces != null)
-        {
-            foreach (var ns in namespaces)
-            {
-                if (ns != null)
-                {
-                    namespacesSet.Add(ns);
-                }
-            }
-        }
-
-        if (referencedAssemblies != null)
-        {
-            foreach (var assm in referencedAssemblies)
-            {
-                if (assm != null)
-                {
-                    assembliesSet.Add(new AssemblyName(assm));
-                }
-            }
-        }
 
         var compilerHelper = CreateJitCompilerHelper(expressionText, assembliesSet, namespacesSet);
         if (targetType == null)
@@ -333,7 +312,7 @@ internal abstract class DesignerHelperImpl
     }
 
     public Task<CompiledExpressionResult> CreatePrecompiledReferenceAsync(Type targetType, string expressionText, IEnumerable<string> namespaces,
-        IEnumerable<string> referencedAssemblies, LocationReferenceEnvironment environment)
+        IEnumerable<AssemblyReference> referencedAssemblies, LocationReferenceEnvironment environment)
         => CreatePrecompiledExpressionAsync(targetType, expressionText, true, namespaces, referencedAssemblies, environment);
 
     public Activity RecompileReference(ActivityWithResult lValue, out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
@@ -346,13 +325,13 @@ internal abstract class DesignerHelperImpl
         var expressionText = textExpression.ExpressionText;
         var environment = lValue.GetParentEnvironment();
 
-        GetAllImportReferences(lValue, out var namespaces, out var referencedAssemblies);
+        JitCompilerHelper.GetAllImportReferences(lValue, true, out var namespaces, out var assemblies);
 
         return CreatePrecompiledReference(
             null,
             expressionText,
             namespaces,
-            referencedAssemblies,
+            assemblies,
             environment,
             out returnType,
             out compileError,
@@ -369,20 +348,20 @@ internal abstract class DesignerHelperImpl
         var expressionText = textExpression.ExpressionText;
         var environment = lValue.GetParentEnvironment();
 
-        GetAllImportReferences(lValue, out var namespaces, out var referencedAssemblies);
+        JitCompilerHelper.GetAllImportReferences(lValue, true, out var namespaces, out var assemblies);
 
         return CreatePrecompiledReferenceAsync(
             null,
             expressionText,
             namespaces,
-            referencedAssemblies,
+            assemblies,
             environment);
     }
 
     internal Activity CreatePrecompiledReference(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
     {
-        GetAllImportReferences(parent, out var namespaces, out var assemblies);
+        JitCompilerHelper.GetAllImportReferences(parent, true, out var namespaces, out var assemblies);
         return CreatePrecompiledReference(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
             out returnType, out compileError, out vbSettings);
     }
@@ -390,20 +369,20 @@ internal abstract class DesignerHelperImpl
     internal Activity CreatePrecompiledValue(Type targetType, string expressionText, Activity parent,
         out Type returnType, out SourceExpressionException compileError, out VisualBasicSettings vbSettings)
     {
-        GetAllImportReferences(parent, out var namespaces, out var assemblies);
+        JitCompilerHelper.GetAllImportReferences(parent, true, out var namespaces, out var assemblies);
         return CreatePrecompiledValue(targetType, expressionText, namespaces, assemblies, parent.PublicEnvironment,
             out returnType, out compileError, out vbSettings);
     }
 
     private async Task<CompiledExpressionResult> CreatePrecompiledExpressionAsync(Type targetType, string expressionText, bool isLocation, IEnumerable<string> namespaces,
-        IEnumerable<string> referencedAssemblies,
+        IEnumerable<AssemblyReference> referencedAssemblies,
         LocationReferenceEnvironment environment)
     {
         SourceExpressionException compileError = null;
         var returnType = typeof(object);
         var vbSettings = new VisualBasicSettings();
         namespaces ??= Array.Empty<string>();
-        referencedAssemblies ??= Array.Empty<string>();
+        referencedAssemblies ??= Array.Empty<AssemblyReference>();
 
         // execute compiler
         var compilation = Compiler.Compile(expressionText, isLocation, targetType ?? typeof(object), namespaces.ToList(), referencedAssemblies.ToList(), environment);
@@ -796,23 +775,6 @@ internal abstract class DesignerHelperImpl
         }
     }
 
-    private static void GetAllImportReferences(Activity activity, out List<string> namespaces, out List<string> assemblies)
-    {
-        JitCompilerHelper.GetAllImportReferences(activity, true, out namespaces, out var referencedAssemblies);
-
-        assemblies = new List<string>();
-        foreach (var reference in referencedAssemblies)
-        {
-            if (reference.AssemblyName != null)
-            {
-                assemblies.Add(reference.AssemblyName.FullName);
-            }
-            else if (reference.Assembly != null)
-            {
-                assemblies.Add(reference.Assembly.FullName);
-            }
-        }
-    }
 
     private static SourceExpressionException GetErrorsFromDiagnostics(string expressionText, ImmutableArray<Diagnostic> diagnostics)
     {
@@ -838,4 +800,7 @@ internal abstract class DesignerHelperImpl
             vbSettings.ImportReferences.Add(import);
         }
     }
+
+    private static IEnumerable<AssemblyReference> CreateReferences(IEnumerable<string> assemblyNames)
+        => assemblyNames?.OfType<string>().Select(asmName => (AssemblyReference)new AssemblyName(asmName)) ?? Enumerable.Empty<AssemblyReference>();
 }

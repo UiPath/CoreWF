@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -228,7 +229,7 @@ namespace TestCases.Workflows
 
         [Theory]
         [MemberData(nameof(GetCSharpTestData))]
-        public async Task CS_CreatePrecompiledValueAsync(string expression, IEnumerable<string> namespaces, IEnumerable<string> assemblies, IEnumerable<VisualBasicImportReference> importReferences)
+        public async Task CS_CreatePrecompiledValueAsync(string expression, IEnumerable<string> namespaces, IEnumerable<AssemblyReference> assemblies, IEnumerable<VisualBasicImportReference> importReferences)
         {
             var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(null, expression, namespaces, assemblies, null);
 
@@ -240,7 +241,7 @@ namespace TestCases.Workflows
 
         [Theory]
         [MemberData(nameof(GetVBTestData))]
-        public async Task VB_CreatePrecompiledValueAsync(string expression, IEnumerable<string> namespaces, IEnumerable<string> assemblies, IEnumerable<VisualBasicImportReference> importReferences)
+        public async Task VB_CreatePrecompiledValueAsync(string expression, IEnumerable<string> namespaces, IEnumerable<AssemblyReference> assemblies, IEnumerable<VisualBasicImportReference> importReferences)
         {
             var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(null, expression, namespaces, assemblies, null);
 
@@ -254,10 +255,11 @@ namespace TestCases.Workflows
         {
             get
             {
-                yield return new object[] { "typeof(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
-                yield return new object[] { "new JToken[5]", new[] { "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
-                yield return new object[] { "new Dictionary<Dictionary<JToken, string>, JToken>()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
-                yield return new object[] { "new ClassWithDictionaryProperty().TestProperty", new[] { "TestCases.Workflows" }, new[] { "System.Collections", "TestCases.Workflows", }, new[] { new VisualBasicImportReference { Assembly = "TestCases.Workflows", Import = "TestCases.Workflows" }, new VisualBasicImportReference { Assembly = "System.Private.CoreLib", Import = "System.Collections" } } };
+                yield return new object[] { "typeof(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "typeof(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { (AssemblyReference)typeof(JsonToken).Assembly }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new JToken[5]", new[] { "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new Dictionary<Dictionary<JToken, string>, JToken>()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new ClassWithDictionaryProperty().TestProperty", new[] { "TestCases.Workflows" }, new[] { (AssemblyReference)new AssemblyName("System.Collections"), (AssemblyReference)new AssemblyName("TestCases.Workflows") }, new[] { new VisualBasicImportReference { Assembly = "TestCases.Workflows", Import = "TestCases.Workflows" }, new VisualBasicImportReference { Assembly = "System.Private.CoreLib", Import = "System.Collections" } } };
             }
         }
 
@@ -265,10 +267,11 @@ namespace TestCases.Workflows
         {
             get
             {
-                yield return new object[] { "GetType(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
-                yield return new object[] { "new JToken(5){}", new[] { "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
-                yield return new object[] { "new Dictionary(Of Dictionary(Of JToken, String), JToken)()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { "Newtonsoft.Json" }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
-                yield return new object[] { "new ClassWithDictionaryProperty().TestProperty", new[] { "TestCases.Workflows" }, new[] { "System.Collections", "TestCases.Workflows", }, new[] { new VisualBasicImportReference { Assembly = "TestCases.Workflows", Import = "TestCases.Workflows" }, new VisualBasicImportReference { Assembly = "System.Private.CoreLib", Import = "System.Collections" } } };
+                yield return new object[] { "GetType(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "GetType(JsonConvert)", new[] { "Newtonsoft.Json" }, new[] { (AssemblyReference)typeof(JsonToken).Assembly }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new JToken(5){}", new[] { "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new Dictionary(Of Dictionary(Of JToken, String), JToken)()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, new[] { new VisualBasicImportReference { Assembly = "Newtonsoft.Json", Import = "Newtonsoft.json" } } };
+                yield return new object[] { "new ClassWithDictionaryProperty().TestProperty", new[] { "TestCases.Workflows" }, new[] { (AssemblyReference)new AssemblyName("System.Collections"), (AssemblyReference)new AssemblyName("TestCases.Workflows") }, new[] { new VisualBasicImportReference { Assembly = "TestCases.Workflows", Import = "TestCases.Workflows" }, new VisualBasicImportReference { Assembly = "System.Private.CoreLib", Import = "System.Collections" } } };
             }
         }
 

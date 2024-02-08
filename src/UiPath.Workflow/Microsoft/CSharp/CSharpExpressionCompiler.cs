@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Activities;
+using System.Activities.Expressions;
 using System.Activities.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ internal sealed class CSharpExpressionCompiler : ExpressionCompiler
 {
     private readonly CSharpCompilerHelper _compilerHelper = new();
 
-    protected override Compilation GetCompilation(IReadOnlyCollection<string> assemblies, IReadOnlyCollection<string> namespaces)
+    protected override Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces)
     {
         var options = _compilerHelper.DefaultCompilationUnit.Options as CSharpCompilationOptions;
 

@@ -12,10 +12,10 @@ namespace System.Activities
 {
     internal abstract class ExpressionCompiler
     {
-        public Compilation Compile(string expressionText, bool isLocation, Type returnType, IReadOnlyCollection<string> namespaces, IReadOnlyCollection<string> referencedAssemblies, LocationReferenceEnvironment environment)
+        public Compilation Compile(string expressionText, bool isLocation, Type returnType, IReadOnlyCollection<string> namespaces, IReadOnlyCollection<AssemblyReference> referencedAssemblies, LocationReferenceEnvironment environment)
         {
             var syntaxTree = GetSyntaxTreeForExpression(expressionText, isLocation, returnType, environment);
-            return GetCompilation(JitCompilerHelper.DefaultReferencedAssemblies.Select(a => AssemblyReference.GetFastAssemblyName(a).Name).Union(referencedAssemblies).ToList(), namespaces).AddSyntaxTrees(syntaxTree);
+            return GetCompilation(JitCompilerHelper.DefaultReferencedAssemblies.Select(a => (AssemblyReference)a).Union(referencedAssemblies).ToList(), namespaces).AddSyntaxTrees(syntaxTree);
         }
 
         public abstract Type GetReturnType(Compilation compilation);
@@ -66,7 +66,7 @@ namespace System.Activities
             }
         }
 
-        protected abstract Compilation GetCompilation(IReadOnlyCollection<string> assemblies, IReadOnlyCollection<string> namespaces);
+        protected abstract Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces);
 
         protected abstract SyntaxTree GetSyntaxTreeForExpression(string expression, bool isLocation, Type returnType, LocationReferenceEnvironment environment);
 

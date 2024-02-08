@@ -33,10 +33,8 @@ namespace System.Activities.Utils
             return meta;
         }
 
-        internal static IReadOnlyCollection<MetadataReference> GetMetadataReferences(IEnumerable<string> assemblyNames)
-        {
-            return GetMetadataReferences(assemblyNames.Select(a => AssemblyReference.GetAssembly(new AssemblyName(a))));
-        }
+        internal static IReadOnlyCollection<MetadataReference> GetMetadataReferences(IEnumerable<AssemblyReference> assemblyReferences)
+            => GetMetadataReferences(assemblyReferences.OfType<AssemblyReference>().Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
 
         internal static IReadOnlyCollection<MetadataReference> GetMetadataReferences(IEnumerable<Assembly> assemblies)
         {
@@ -80,6 +78,18 @@ namespace System.Activities.Utils
             }
 
             return null;
+        }
+
+        /// <summary>
+        ///     If <see cref="AssemblyReference.Assembly"/> is null, loads the assembly. Default is to
+        ///     call <see cref="AssemblyReference.LoadAssembly"/>.
+        /// </summary>
+        /// <param name="assemblyReference"></param>
+        /// <returns></returns>
+        private static Assembly LoadAssemblyFromReference(AssemblyReference assemblyReference)
+        {
+            assemblyReference.LoadAssembly();
+            return assemblyReference.Assembly;
         }
     }
 }

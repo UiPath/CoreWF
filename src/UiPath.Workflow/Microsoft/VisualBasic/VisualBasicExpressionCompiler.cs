@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.VisualBasic;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System;
 using System.Activities;
+using System.Activities.Expressions;
 using System.Activities.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ internal sealed class VisualBasicExpressionCompiler : ExpressionCompiler
         return GetSystemType(typeInfo, GetAssemblyForType(typeInfo));
     }
 
-    protected override Compilation GetCompilation(IReadOnlyCollection<string> assemblies, IReadOnlyCollection<string> namespaces)
+    protected override Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces)
     {
         var options = _compilerHelper.DefaultCompilationUnit.Options as VisualBasicCompilationOptions;
 

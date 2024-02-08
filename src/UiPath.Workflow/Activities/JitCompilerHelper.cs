@@ -64,19 +64,22 @@ internal abstract class JitCompilerHelper
     {
     }
 
-    protected virtual void Initialize(HashSet<AssemblyName> refAssemNames, HashSet<string> namespaceImportsNames)
+    protected virtual void Initialize(HashSet<AssemblyReference> assemblyReferences, HashSet<string> namespaceImportsNames)
     {
         SanitizeNamespaces(namespaceImportsNames);
-        
         NamespaceImports = namespaceImportsNames;
+        InitializeAssemblies(assemblyReferences);
+    }
 
-        foreach (var assemblyName in refAssemNames)
+    private void InitializeAssemblies(HashSet<AssemblyReference> assemblyReferences)
+    {
+        ReferencedAssemblies ??= new HashSet<Assembly>();
+
+        foreach (var assemblyReference in assemblyReferences)
         {
-            ReferencedAssemblies ??= new HashSet<Assembly>();
-
             try
             {
-                var loaded = AssemblyReference.GetAssembly(assemblyName);
+                var loaded = GetAssembly(assemblyReference);
                 if (loaded != null)
                 {
                     ReferencedAssemblies.Add(loaded);
@@ -92,6 +95,21 @@ internal abstract class JitCompilerHelper
                 ExceptionTrace.TraceUnhandledException(e);
             }
         }
+    }
+
+    private static Assembly GetAssembly(AssemblyReference assemblyReference)
+    {
+        if (assemblyReference?.Assembly is not null)
+        {
+            return assemblyReference.Assembly;
+        }
+
+        if (assemblyReference?.AssemblyName is not null)
+        {
+            return AssemblyReference.GetAssembly(assemblyReference.AssemblyName);
+        }
+
+        return null;
     }
 
     private static void SanitizeNamespaces(ICollection<string> namespaceImportsNames)
@@ -1285,11 +1303,10 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
 
     private static CompilerCache s_hostedCompilerCache;
 
-    public JitCompilerHelper(string expressionText, HashSet<AssemblyName> refAssemNames,
-        HashSet<string> namespaceImportsNames)
+    public JitCompilerHelper(string expressionText, HashSet<AssemblyReference> assemblyReferences, HashSet<string> namespaceImportsNames)
         : this(expressionText)
     {
-        Initialize(refAssemNames, namespaceImportsNames);
+        Initialize(assemblyReferences, namespaceImportsNames);
     }
 
     protected JitCompilerHelper(string expressionText)
