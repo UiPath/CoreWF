@@ -41,7 +41,7 @@ internal sealed class VisualBasicExpressionCompiler : ExpressionCompiler
 
     protected override SyntaxTree GetSyntaxTreeForExpression(string expression, bool isLocation, Type returnType, LocationReferenceEnvironment environment)
     {
-        var syntaxTree = VisualBasicSyntaxTree.ParseText(expression, _compilerHelper.ScriptParseOptions);
+        var syntaxTree = VisualBasicSyntaxTree.ParseText("? " + expression, _compilerHelper.ScriptParseOptions);
         var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == (int)SyntaxKind.IdentifierName)
                                     .Select(n => n.ToString()).Distinct(_compilerHelper.IdentifierNameComparer);
         var resolvedIdentifiers = identifiers
