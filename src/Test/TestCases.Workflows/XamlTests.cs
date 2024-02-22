@@ -251,6 +251,21 @@ namespace TestCases.Workflows
             }
         }
 
+        [Fact]
+        public async Task VB_CreatePrecompiedValueAsync_ProperlyIdentifiesVariables()
+        {
+            var seq = new Sequence();
+            var location = new ActivityLocationReferenceEnvironment();
+            WorkflowInspectionServices.CacheMetadata(seq, location);
+            IList<ValidationError> errors = new List<ValidationError>();
+
+            location.Declare(new Variable<string>("variable1"), seq, ref errors);
+            var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(typeof(string), "\"\" + variable1", null, null, location);
+            result.SourceExpressionException?.Errors.ShouldBeEmpty();
+            result.ReturnType.ShouldBe(typeof(string));
+            result.Activity.ShouldNotBeNull();
+        }
+
         public static IEnumerable<object[]> GetCSharpTestData
         {
             get
