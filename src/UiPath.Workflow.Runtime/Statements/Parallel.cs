@@ -3,7 +3,9 @@
 
 using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows.Markup;
+using static System.Activities.XD;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -129,7 +131,7 @@ public sealed class Parallel : NativeActivity
 
             for (int i = Branches.Count - 1; i >= 0; i--)
             {
-                context.ScheduleActivity(Branches[i], onBranchComplete);
+                var instance = context.ScheduleActivity(Branches[i], onBranchComplete);
             }
         }
     }
