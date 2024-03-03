@@ -73,7 +73,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         collectibleAlc.Resolving += CollectibleAlc_Resolving;
         using var scope = collectibleAlc.EnterContextualReflection();
 
-        var results = ScriptingAotCompiler.BuildAssembly(finalCompilation, compilation.ScriptClass.Name, collectibleAlc);
+        var results = TryBuild();
         if (results.HasErrors)
         {
             var errorResults = new TextExpressionCompilerResults
@@ -86,7 +86,22 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         }
 
         return (LambdaExpression)results.ResultType.GetMethod("CreateExpression")!.Invoke(null, null);
+
+        TextExpressionCompilerResults TryBuild()
+        {
+            try
+            {
+                return ScriptingAotCompiler.BuildAssembly(finalCompilation, compilation.ScriptClass.Name, collectibleAlc);
+            }
+            catch(Exception ex)
+            {
+                throw FxTrace.Exception.AsError(new SourceExpressionException(SR.CompilerError, ex));
+            }
+
+        }
     }
+
+
 
     private Assembly CollectibleAlc_Resolving(AssemblyLoadContext loadContext, AssemblyName assemblyName)
     {

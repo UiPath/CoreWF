@@ -1,6 +1,7 @@
 ﻿using Shouldly;
 using System;
 using System.Activities;
+using System.Activities.ExpressionParser;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -120,6 +121,31 @@ namespace TestCases.Workflows
             result.ReturnType.ShouldBe(typeof(bool));
         }
 
+        [Fact]
+        public void VbExpression_UndeclaredObject()
+        {
+            var expressionToCompile = "new UndeclaredClass()";
+            var sut = () => _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s)=>null, typeof(object)));
+
+            Assert.ThrowsAny<SourceExpressionException>(sut);
+        }
+
+        [Fact]
+        public void VbExpression_WithObjectInitializer()
+        {
+            var expressionToCompile = "new TestIndexerClass() With {.Field=\"1\"}";
+            var result = _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s)=>null, typeof(TestIndexerClass)));
+            result.ReturnType.ShouldBe(typeof(TestIndexerClass));
+        }
+
+        [Fact]
+        public void VbExpression_UndeclaredObjectWithObjectInitializer()
+        {
+            var expressionToCompile = "new UndeclaredClass() With {.Field=\"1\"}";
+            var sut = () => _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s)=>null, typeof(object)));
+
+            Assert.ThrowsAny<SourceExpressionException>(sut);
+        }
         private static Type VariableTypeGetter(string name)
             => name switch
             {
