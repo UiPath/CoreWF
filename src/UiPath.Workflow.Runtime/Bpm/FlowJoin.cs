@@ -1,10 +1,10 @@
 ﻿using System.Activities.Statements;
+using System.Linq;
 namespace System.Activities.Bpm;
 
 public class FlowJoin : FlowNodeExtensible
 {
-    private FlowchartState<JoinState> _joinStates;
-    private HashSet<FlowNode> _connectedBranches = new();
+    private FlowchartState<Dictionary<string,JoinState>> _joinStates;
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
     [DefaultValue(null)]
@@ -14,10 +14,10 @@ public class FlowJoin : FlowNodeExtensible
 
     record JoinState
     {
-        public int Count;
-
-        public int WaitCount { get; internal set; }
-        public bool Done { get; internal set; }
+        public int WaitCount { get; set; }
+        public bool Done { get; set; }
+        public HashSet<int> CompletedNodeIndeces { get; set; }
+        public List<int> ConnectedBranches { get; set; }
     }
 
     internal override void GetConnectedNodes(IList<FlowNode> connections)
@@ -30,36 +30,46 @@ public class FlowJoin : FlowNodeExtensible
 
     internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
     {
-        _joinStates = new("FlowJoin", owner);
+        _joinStates = new("FlowJoin", owner, () => new());
         base.OnOpen(owner, metadata);
     }
 
-    internal override void Execute(NativeActivityContext context)
+    internal override void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode)
     {
         var key = $"{Index}";
         var joinStates = _joinStates.GetOrAdd(context);
         joinStates.TryGetValue(key, out var joinState);
         if (joinState == null)
         {
-            joinState = new() { Count = 1, WaitCount = Math.Min(_connectedBranches.Count, WaitCount ?? _connectedBranches.Count) };
+            List<int> connectedBranches = new (Owner._extension.GetPredecessors(context, Index));
+            joinState = new() 
+            {
+                ConnectedBranches = connectedBranches,
+                CompletedNodeIndeces = new HashSet<int>(),
+                WaitCount = Math.Min(connectedBranches.Count, WaitCount ?? connectedBranches.Count) 
+            };
             joinStates.Add(key, joinState);
         }
-        else
-        {
-            joinState.Count++;
-        }
-        if (joinState.Count < joinState.WaitCount || joinState.Done)
+        joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
+
+        if (joinState.CompletedNodeIndeces.Count < joinState.WaitCount || joinState.Done)
         {
             return;
         }
-
         joinState.Done = true;
-        context.CancelChildren();
-        Owner.ExecuteNextNode(context, Next, context.CurrentInstance);
-    }
+        var toCancel = joinState.ConnectedBranches.Except(joinState.CompletedNodeIndeces);
+        Cancel(toCancel);
+        Owner.ExecuteNextNode(context, Next, completedInstance);
 
-    protected override void NotifyPredecessor(FlowNode predecessor)
-    {
-        _connectedBranches.Add(predecessor);
+        void Cancel(IEnumerable<int> toCancel) 
+        {
+            foreach (var branch in toCancel)
+            {
+                if (Owner._extension.Cancel(context, branch))
+                {
+                    Cancel(Owner._extension.GetPredecessors(context, branch));
+                }
+            }
+        }
     }
 }
