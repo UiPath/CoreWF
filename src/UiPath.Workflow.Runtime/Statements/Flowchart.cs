@@ -17,7 +17,7 @@ namespace System.Activities.Statements;
 [ContentProperty("Nodes")]
 public sealed class Flowchart : NativeActivity
 {
-    private readonly FlowNodeExtensible.Extension _extension;
+    internal readonly FlowNodeExtensible.Extension _extension;
     internal bool IsLegacyFlowchart;
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
@@ -188,7 +188,6 @@ public sealed class Flowchart : NativeActivity
                 node.OnOpen(this, metadata);
             }
             node.GetChildActivities(uniqueChildren);
-            _extension.NotifyNode(node);
         }
 
         List<Activity> children = new(uniqueChildren.Count);
@@ -286,10 +285,9 @@ public sealed class Flowchart : NativeActivity
 
     private void ExecuteNodeChain(NativeActivityContext context, FlowNode node, ActivityInstance completedInstance)
     {
-        if (completedInstance?.IsCancellationRequested == true)
-        {
+        if (_extension.IsCancelRequested(context, completedInstance))
             return;
-        }
+
 
         if (node == null)
         {
@@ -316,16 +314,18 @@ public sealed class Flowchart : NativeActivity
 
         Fx.Assert(node != null, "caller should validate");
         FlowNode current = node;
+        var previousNode = GetCurrentNode(context, completedInstance);
         do
         {
             if (current is FlowNodeExtensible nextExtensible)
             {
-                nextExtensible.Execute(context);
+                nextExtensible.Execute(context, completedInstance, previousNode);
                 current = null;
                 continue;
             }
             if (ExecuteSingleNode(context, current, out FlowNode next))
             {
+                previousNode = current;
                 current = next;
             }
             else
