@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
     <ProjectReference Include="..\CustomTestObjects\CustomTestObjects.csproj" />
+    <ProjectReference Include="..\JsonFileInstanceStore\JsonFileInstanceStore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Page Remove="**\*.xaml" />
