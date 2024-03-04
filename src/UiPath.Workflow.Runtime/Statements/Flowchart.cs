@@ -1,6 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.Bpm;
 using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
@@ -16,6 +17,8 @@ namespace System.Activities.Statements;
 [ContentProperty("Nodes")]
 public sealed class Flowchart : NativeActivity
 {
+    private readonly FlowNodeExtensible.Extension _extension;
+    internal bool IsLegacyFlowchart;
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
@@ -27,6 +30,7 @@ public sealed class Flowchart : NativeActivity
     {
         _currentNode = new Variable<int>();
         _reachableNodes = new Collection<FlowNode>();
+        _extension = new (this);
     }
 
     [DefaultValue(false)]
@@ -184,6 +188,7 @@ public sealed class Flowchart : NativeActivity
                 node.OnOpen(this, metadata);
             }
             node.GetChildActivities(uniqueChildren);
+            _extension.NotifyNode(node);
         }
 
         List<Activity> children = new(uniqueChildren.Count);
@@ -226,7 +231,7 @@ public sealed class Flowchart : NativeActivity
         return false;
     }
 
-    private static void DepthFirstVisitNodes(Func<FlowNode, bool> visitNodeCallback, FlowNode start)
+    private void DepthFirstVisitNodes(Func<FlowNode, bool> visitNodeCallback, FlowNode start)
     {
         Fx.Assert(visitNodeCallback != null, "This must be supplied since it stops us from infinitely looping.");
 
@@ -250,7 +255,7 @@ public sealed class Flowchart : NativeActivity
             {
                 connected.Clear();
                 current.GetConnectedNodes(connected);
-
+                _extension.RecordLinks(current, connected);
                 for (int i = 0; i < connected.Count; i++)
                 {
                     stack.Push(connected[i]);
@@ -258,7 +263,6 @@ public sealed class Flowchart : NativeActivity
             }
         }
     }
-
 
     protected override void Execute(NativeActivityContext context)
     {
@@ -268,6 +272,7 @@ public sealed class Flowchart : NativeActivity
             {
                 TD.FlowchartStart(DisplayName);
             }
+            _extension.OnExecute(context);
             ExecuteNodeChain(context, StartNode, null);
         }
         else
@@ -308,6 +313,12 @@ public sealed class Flowchart : NativeActivity
         FlowNode current = node;
         do
         {
+            if (current is FlowNodeExtensible nextExtensible)
+            {
+                nextExtensible.Execute(context);
+                current = null;
+                continue;
+            }
             if (ExecuteSingleNode(context, current, out FlowNode next))
             {
                 current = next;
@@ -319,6 +330,11 @@ public sealed class Flowchart : NativeActivity
             }
         }
         while (current != null);
+    }
+
+    internal void ExecuteNextNode(NativeActivityContext context, FlowNode next, ActivityInstance completedInstance)
+    {
+        ExecuteNodeChain(context, next, completedInstance);
     }
 
     private bool ExecuteSingleNode(NativeActivityContext context, FlowNode node, out FlowNode nextNode)
@@ -343,9 +359,12 @@ public sealed class Flowchart : NativeActivity
         return switchNode.Execute(context, this);
     }
 
-    private FlowNode GetCurrentNode(NativeActivityContext context)
+    private FlowNode GetCurrentNode(NativeActivityContext context, ActivityInstance completedInstance)
     {
-        int index = _currentNode.Get(context);
+        if (!_extension.TryGetCurrentNode(context, completedInstance, out var index))
+        {
+            index = _currentNode.Get(context);
+        }
         FlowNode result = _reachableNodes[index];
         Fx.Assert(result != null, "corrupt internal state");
         return result;
@@ -353,7 +372,7 @@ public sealed class Flowchart : NativeActivity
 
     private void OnStepCompleted(NativeActivityContext context, ActivityInstance completedInstance)
     {
-        FlowStep step = GetCurrentNode(context) as FlowStep;
+        FlowStep step = GetCurrentNode(context, completedInstance) as FlowStep;
         Fx.Assert(step != null, "corrupt internal state");
         FlowNode next = step.Next;
         ExecuteNodeChain(context, next, completedInstance);
@@ -361,7 +380,7 @@ public sealed class Flowchart : NativeActivity
 
     private void OnDecisionCompleted(NativeActivityContext context, ActivityInstance completedInstance, bool result)
     {
-        FlowDecision decision = GetCurrentNode(context) as FlowDecision;
+        FlowDecision decision = GetCurrentNode(context, completedInstance) as FlowDecision;
         Fx.Assert(decision != null, "corrupt internal state");
         FlowNode next = result ? decision.True : decision.False;
         ExecuteNodeChain(context, next, completedInstance);
@@ -369,7 +388,7 @@ public sealed class Flowchart : NativeActivity
 
     internal void OnSwitchCompleted<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
-        IFlowSwitch switchNode = GetCurrentNode(context) as IFlowSwitch;
+        IFlowSwitch switchNode = GetCurrentNode(context, completedInstance) as IFlowSwitch;
         Fx.Assert(switchNode != null, "corrupt internal state");
         FlowNode next = switchNode.GetNextNode(result);
         ExecuteNodeChain(context, next, completedInstance);
