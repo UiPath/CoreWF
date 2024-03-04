@@ -1,52 +1,76 @@
 ﻿using Shouldly;
 using System.Activities;
-using System.Activities.Validation;
 using System.Activities.Statements;
 using System.Collections.Generic;
 using System.Threading;
 using System.Activities.Bpm;
 using Xunit;
-using System.Linq;
 
 namespace TestCases.Activitiess.Bpm;
 public class BpmParallelTest
 {
+    private readonly List<string> _strings = new();
+    private readonly Variable<ICollection<string>> _stringsVariable;
+
+    public BpmParallelTest()
+    {
+        _stringsVariable = new("strings", c => _strings);
+    }
+
+    private AddToCollection<string> AddString(string stringToAdd)
+        => new (){ Collection = _stringsVariable, Item = stringToAdd };
+
+    private void InvokeFlowChart(FlowNode startNode)
+    {
+        var flowchart = new Flowchart { StartNode = startNode, Variables = { _stringsVariable } };
+        WorkflowInvoker.Invoke(flowchart);
+    }
+
     [Fact]
     public void Should_execute_branches()
     {
-        var list = new List<string>();
-        Variable<ICollection<string>> strings = new("strings", c => list);
-        AddToCollection<string> branch1 = new() { Collection = strings, Item = "branch1" };
-        AddToCollection<string> branch2 = new() { Collection = strings, Item = "branch2" };
-
-        var parallel = new FlowParallel().PointTo(branch1, branch2);
-        var flowchart = new Flowchart { StartNode = parallel, Variables = { strings } };
-
-        WorkflowInvoker.Invoke(flowchart);
-        list.ShouldBe(new() { "branch2", "branch1" });
+        var branch1Str = "branch1";
+        var branch2Str = "branch2";
+        var parallel = new FlowParallel().FlowTo(AddString(branch1Str), AddString(branch2Str));
+        InvokeFlowChart(parallel);
+        _strings.ShouldBe(new() { branch1Str, branch2Str });
     }
 
     [Fact]
     public void Should_join_branches()
     {
-        var list = new List<string>();
-        Variable<ICollection<string>> strings = new("strings", c => list);
-        AddToCollection<string> branch1 = new() { Collection = strings, Item = "branch1" };
-        AddToCollection<string> branch2 = new() { Collection = strings, Item = "branch2" };
-        AddToCollection<string> item3 = new() { Collection = strings, Item = "item3" };
+        var branch1Str = "branch1";
+        var branch2Str = "branch2";
+        var stopString = "stop";
 
-        var join = new FlowJoin().PointTo(item3);
+        var join = new FlowJoin().FlowTo(AddString(stopString));
         var parallel = new FlowParallel()
-            .PointTo(
-                branch1.PointTo(join),
-                branch2.PointTo(join)
+            .FlowTo(
+                AddString(branch1Str).FlowTo(join),
+                AddString(branch2Str).FlowTo(join)
                 );
 
-        var flowchart = new Flowchart { StartNode = parallel };
-        var root = new Sequence() { Variables = { strings }, Activities = { flowchart } };
-        WorkflowInvoker.Invoke(root);
+        InvokeFlowChart(parallel);
+        _strings.ShouldBe(new() { branch1Str, branch2Str, stopString });
+    }
 
-        list.ShouldBe(new() { "branch2", "branch1", "item3" });
+    [Fact]
+    public void Should_join_branches_with_waitCount()
+    {
+        var branch1Str = "branch1";
+        var branch2Str = "branch2";
+        var stopString = "stop";
+
+        var join = new FlowJoin().FlowTo(AddString(stopString));
+        join.WaitCount = 1;
+        var parallel = new FlowParallel()
+            .FlowTo(
+                AddString(branch1Str).FlowTo(join),
+                AddString(branch2Str).FlowTo(join)
+                );
+
+        InvokeFlowChart(parallel);
+        _strings.ShouldBe(new() { branch1Str, stopString });
     }
 
     [InlineData(false)]
@@ -63,6 +87,12 @@ public class BpmParallelTest
     [Theory]
     public void Should_persist_join(bool resumeWithLegacy, bool startWithLegacy = false)
     {
+        var branch1Str = "branch1";
+        var branch2Str = "branch2";
+        var stopString = "stop";
+        var blockingContStr = "blockingContinuation";
+        const string blockingBookmark = "blocking";
+
         var root = ParallelActivities(startWithLegacy);
         var store = new JsonFileInstanceStore.FileInstanceStore(".\\~");
         WorkflowApplication app = new(root) { InstanceStore = store };
@@ -82,79 +112,28 @@ public class BpmParallelTest
         resumedApp.Aborted = args => args.Reason.ShouldBeNull();
         resumedApp.Load(appId);
         resumedApp.Run();
-        resumedApp.ResumeBookmark("blocking", null);
+        resumedApp.ResumeBookmark(blockingBookmark, null);
         manualResetEvent.WaitOne();
         completedArgs.TerminationException.ShouldBeNull();
-        ((ICollection<string>)completedArgs.Outputs["Result"]).ShouldBe(new[] { "branch2", "branch1", "blockingContinuation", "stop" });
-    }
+        ((ICollection<string>)completedArgs.Outputs["Result"]).ShouldBe(new[] { branch1Str, branch2Str, blockingContStr, stopString });
 
-    private static ActivityWithResult<ICollection<string>> ParallelActivities(bool useLegacyFlowchart)
-    {
-        Variable<ICollection<string>> strings = new("strings", c => new List<string>());
-        AddToCollection<string> stop = new() { Collection = strings, Item = "stop" };
-
-        AddToCollection<string> branch1 = new() { Collection = strings, Item = "branch1" };
-        AddToCollection<string> branch2 = new() { Collection = strings, Item = "branch2" };
-        AddToCollection<string> blockingContinuation = new() { Collection = strings, Item = "blockingContinuation" };
-        var blockingActivity = new BlockingActivity("blocking");
-
-        FlowParallel parallel = new();
-        FlowJoin join = new();
-        parallel.PointTo(
-            branch1.PointTo(join), 
-            branch2.PointTo(join),
-            blockingActivity.PointTo(blockingContinuation)
-                .PointTo(join));
-        join.PointTo(stop);
-
-        var flowchart = new Flowchart { StartNode = parallel };
-        flowchart.IsLegacyFlowchart = useLegacyFlowchart;
-
-        return new ActivityWithResult<ICollection<string>>() { In = strings, Body = flowchart };
-    }
-}
-
-public static class WorkflowExtensions
-{
-    public static FlowParallel PointTo(this FlowParallel parallel, params Activity[] nodes)
-    {
-        parallel.Branches.AddRange(nodes.Select(n => new FlowStep() { Action = n }).ToList());
-        return parallel;
-    }
-    public static FlowParallel PointTo(this FlowParallel parallel, params FlowNode[] nodes)
-    {
-        parallel.Branches.AddRange(nodes);
-        return parallel;
-    }
-    public static FlowStep PointTo(this Activity predeccessor, FlowNode successor)
-    {
-        return new FlowStep { Action = predeccessor }.PointTo(successor);
-    }
-    public static FlowStep PointTo(this Activity predeccessor, Activity successor)
-    {
-        return new FlowStep { Action = predeccessor }.PointTo(successor);
-    }
-    public static T PointTo<T>(this T predeccessor, Activity successor)
-        where T : FlowNode
-    {
-        return predeccessor.PointTo(new FlowStep { Action = successor });
-    }
-    public static T PointTo<T>(this T predeccessor, FlowNode successor)
-        where T: FlowNode
-    {
-        FlowNode current = predeccessor;
-        while (current != successor)
+        ActivityWithResult<ICollection<string>> ParallelActivities(bool useLegacyFlowchart)
         {
-            if (current is FlowStep step)
-            {
-                current = (step.Next ??= successor);
-            }
-            else if (current is FlowJoin join)
-            {
-                current = (join.Next ??= successor);
-            }
+            var blockingContinuation = AddString(blockingContStr);
+            var blockingActivity = new BlockingActivity(blockingBookmark);
+
+            FlowJoin join = new FlowJoin().FlowTo(AddString(stopString));
+            var parallel = new FlowParallel().FlowTo(
+                AddString(branch1Str).FlowTo(join),
+                AddString(branch2Str).FlowTo(join),
+                blockingActivity.FlowTo(blockingContinuation)
+                    .FlowTo(join));
+
+            var flowchart = new Flowchart { StartNode = parallel };
+            flowchart.IsLegacyFlowchart = useLegacyFlowchart;
+
+            return new ActivityWithResult<ICollection<string>>() { In = _stringsVariable, Body = flowchart };
         }
-        return predeccessor;
     }
 }
 
@@ -198,11 +177,5 @@ public class BlockingActivity : NativeActivity
         // No-op
     }
 
-    protected override bool CanInduceIdle
-    {
-        get
-        {
-            return true;
-        }
-    }
+    protected override bool CanInduceIdle => true;
 }

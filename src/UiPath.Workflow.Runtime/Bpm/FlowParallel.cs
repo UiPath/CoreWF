@@ -16,8 +16,9 @@ public class FlowParallel : FlowNodeExtensible
 
     internal override void Execute(NativeActivityContext context)
     {
-        foreach (FlowNode node in _branches)
+        for (int i = Branches.Count - 1; i >= 0; i--)
         {
+            var node = Branches[i];
             Owner.ExecuteNextNode(context, node, context.CurrentInstance);
         }
     }

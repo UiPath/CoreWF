@@ -20,7 +20,7 @@ public abstract class FlowNodeExtensible : FlowNode
         metadata.AddImplementationVariable(new Variable<Dictionary<string, object>>(FlowChartStateVariableName, c => new()));
     }
 
-    protected virtual void NotifyParent(FlowNode parent)
+    protected virtual void NotifyPredecessor(FlowNode predecesor)
     {
     }
 
@@ -91,7 +91,7 @@ public abstract class FlowNodeExtensible : FlowNode
         {
             foreach (var node in successors.OfType<FlowNodeExtensible>())
             {
-                node.NotifyParent(predecessor);
+                node.NotifyPredecessor(predecessor);
             }
         }
 
