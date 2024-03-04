@@ -98,7 +98,7 @@ public class BpmParallelTest
         WorkflowApplication app = new(root) { InstanceStore = store };
         app.Run();
         var appId = app.Id;
-        Thread.Sleep(100);
+        Thread.Sleep(1000);
         app.Unload();
         root = ParallelActivities(resumeWithLegacy);
         WorkflowApplication resumedApp = new(root) { InstanceStore = store };
