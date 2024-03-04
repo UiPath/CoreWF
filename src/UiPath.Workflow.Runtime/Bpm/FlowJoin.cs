@@ -17,6 +17,7 @@ public class FlowJoin : FlowNodeExtensible
         public int Count;
 
         public int WaitCount { get; internal set; }
+        public bool Done { get; internal set; }
     }
 
     internal override void GetConnectedNodes(IList<FlowNode> connections)
@@ -47,15 +48,17 @@ public class FlowJoin : FlowNodeExtensible
         {
             joinState.Count++;
         }
-        if (joinState.Count < joinState.WaitCount)
+        if (joinState.Count < joinState.WaitCount || joinState.Done)
         {
             return;
         }
-        joinStates.Remove(key);
+
+        joinState.Done = true;
+        context.CancelChildren();
         Owner.ExecuteNextNode(context, Next, context.CurrentInstance);
     }
 
-    protected override void NotifyParent(FlowNode predecessor)
+    protected override void NotifyPredecessor(FlowNode predecessor)
     {
         _connectedBranches.Add(predecessor);
     }

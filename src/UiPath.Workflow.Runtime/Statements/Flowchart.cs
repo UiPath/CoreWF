@@ -286,6 +286,11 @@ public sealed class Flowchart : NativeActivity
 
     private void ExecuteNodeChain(NativeActivityContext context, FlowNode node, ActivityInstance completedInstance)
     {
+        if (completedInstance?.IsCancellationRequested == true)
+        {
+            return;
+        }
+
         if (node == null)
         {
             if (context.IsCancellationRequested)
