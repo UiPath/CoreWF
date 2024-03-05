@@ -411,7 +411,7 @@ public sealed class ActivityInstance
         properties.Add("BPOId", (existing + "-" + Guid.NewGuid().ToString()).Trim('-'), true, false);
     }
 
-    public string GetAutomationTrackerId() => PropertyManager.GetPropertyAtCurrentScope("BPOId") as string;
+    public string GetAutomationTrackerId() => PropertyManager?.GetPropertyAtCurrentScope("BPOId") as string;
 
     internal static ActivityInstance CreateCompletedInstance(Activity activity)
     {
