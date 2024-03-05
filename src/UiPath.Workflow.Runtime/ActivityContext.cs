@@ -88,6 +88,10 @@ public class ActivityContext
 
     internal bool IsDisposed => _isDisposed;
 
+    public void AddAutomationTrackerId() => CurrentInstance.AddAutomationTrackerId();
+
+    public string GetAutomationTrackerId() => CurrentInstance.GetAutomationTrackerId();
+
     public T GetExtension<T>()
         where T : class
     {

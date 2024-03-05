@@ -73,7 +73,8 @@ public sealed class ParallelForEach<T> : NativeActivity
         {
             if (Body != null)
             {
-                context.ScheduleAction(Body, valueEnumerator.Current, onBodyComplete);
+                var instance = context.ScheduleAction(Body, valueEnumerator.Current, onBodyComplete);
+                instance.AddAutomationTrackerId();
             }
         }
         valueEnumerator.Dispose();

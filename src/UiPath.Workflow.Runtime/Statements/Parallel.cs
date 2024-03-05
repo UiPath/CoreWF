@@ -132,6 +132,7 @@ public sealed class Parallel : NativeActivity
             for (int i = Branches.Count - 1; i >= 0; i--)
             {
                 var instance = context.ScheduleActivity(Branches[i], onBranchComplete);
+                instance.AddAutomationTrackerId();
             }
         }
     }
