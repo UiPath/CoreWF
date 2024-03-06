@@ -408,7 +408,7 @@ public sealed class ActivityInstance
     {
         var properties = new ExecutionProperties(null, this, PropertyManager);
         var existing = properties.Find("BPOId") as string;
-        properties.Add("BPOId", (existing + "-" + Guid.NewGuid().ToString()).Trim('-'), true, false);
+        properties.Add("BPOId", (existing + "-" + Guid.NewGuid().ToString("N")).Trim('-'), true, false);
     }
 
     public string GetAutomationTrackerId() => PropertyManager?.GetPropertyAtCurrentScope("BPOId") as string;
