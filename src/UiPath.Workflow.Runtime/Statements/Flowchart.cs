@@ -1,12 +1,12 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Activities.Bpm;
 using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Markup;
+using static System.Activities.Statements.FlowNodeBase;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -17,8 +17,9 @@ namespace System.Activities.Statements;
 [ContentProperty("Nodes")]
 public sealed class Flowchart : NativeActivity
 {
-    internal readonly FlowNodeExtensible.FlowchartExtension _extension;
-    internal bool IsLegacyFlowchart;
+    private readonly FlowchartExtension _extension;
+    internal FlowchartExtension Extension => IsLegacyFlowchart ? null : _extension;
+    internal bool IsLegacyFlowchart = false;
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
@@ -30,7 +31,7 @@ public sealed class Flowchart : NativeActivity
     {
         _currentNode = new Variable<int>();
         _reachableNodes = new Collection<FlowNode>();
-        _extension = new (this);
+        _extension = new(this);
     }
 
     [DefaultValue(false)]
@@ -173,6 +174,7 @@ public sealed class Flowchart : NativeActivity
     {
         metadata.SetVariablesCollection(Variables);
         metadata.AddImplementationVariable(_currentNode);
+        Extension?.Install(metadata);
 
         GatherReachableNodes(metadata);
         if (ValidateUnconnectedNodes && (_reachableNodes.Count < Nodes.Count))
@@ -254,7 +256,7 @@ public sealed class Flowchart : NativeActivity
             {
                 connected.Clear();
                 current.GetConnectedNodes(connected);
-                _extension.RecordLinks(current, connected);
+                Extension?.RecordLinks(current, connected);
                 for (int i = 0; i < connected.Count; i++)
                 {
                     stack.Push(connected[i]);
@@ -271,7 +273,7 @@ public sealed class Flowchart : NativeActivity
             {
                 TD.FlowchartStart(DisplayName);
             }
-            _extension.OnExecute(context);
+            Extension?.OnExecute(context);
             ExecuteNodeChain(context, StartNode, null);
         }
         else
@@ -283,9 +285,15 @@ public sealed class Flowchart : NativeActivity
         }
     }
 
+    private void ValidateExtension(NativeActivityContext context)
+    {
+        if (true != Extension?.HasState(context))
+            IsLegacyFlowchart = true;
+    }
+
     private void ExecuteNodeChain(NativeActivityContext context, FlowNode node, ActivityInstance completedInstance)
     {
-        if (_extension.IsCancelRequested(context, completedInstance))
+        if (Extension?.IsCancelRequested(context, completedInstance) is true)
             return;
 
 
@@ -317,7 +325,7 @@ public sealed class Flowchart : NativeActivity
         var previousNode = GetCurrentNode(context, completedInstance);
         do
         {
-            if (current is FlowNodeExtensible nextExtensible)
+            if (current is FlowNodeBase nextExtensible)
             {
                 nextExtensible.Execute(context, completedInstance, previousNode);
                 current = null;
@@ -366,10 +374,9 @@ public sealed class Flowchart : NativeActivity
 
     private FlowNode GetCurrentNode(NativeActivityContext context, ActivityInstance completedInstance)
     {
-        if (IsLegacyFlowchart || !_extension.TryGetCurrentNode(context, completedInstance, out var index))
-        {
-            index = _currentNode.Get(context);
-        }
+        var index = _currentNode.Get(context);
+        ValidateExtension(context);
+        Extension?.TryGetCurrentNode(context, completedInstance, out index);
         FlowNode result = _reachableNodes[index];
         Fx.Assert(result != null, "corrupt internal state");
         return result;
@@ -401,7 +408,7 @@ public sealed class Flowchart : NativeActivity
 
     internal void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
-        var node = GetCurrentNode(context, completedInstance) as FlowNodeExtensible;
+        var node = GetCurrentNode(context, completedInstance) as FlowNodeBase;
         node.OnCompletionCallback(context, completedInstance, result);
     }
 }
