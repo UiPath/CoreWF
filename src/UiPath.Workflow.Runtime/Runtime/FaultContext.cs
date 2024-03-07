@@ -9,7 +9,7 @@ internal class FaultContext
     private Exception _exception;
     private ActivityInstanceReference _source;
 
-    internal FaultContext(Exception exception, ActivityInstanceReference sourceReference)
+    public FaultContext(Exception exception, ActivityInstanceReference sourceReference)
     {
         Fx.Assert(exception != null, "Must have an exception.");
         Fx.Assert(sourceReference != null, "Must have a source.");
