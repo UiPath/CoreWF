@@ -8,14 +8,25 @@ namespace TestCases.Activitiess.Bpm;
 
 public static class FlowchartExtensions
 {
-    public static FlowParallel FlowTo(this FlowParallel parallel, params Activity[] nodes)
+    public static FlowParallel SplitTo(this FlowParallel parallel, params Activity[] nodes)
     {
-        parallel.Branches.AddRange(nodes.Select(n => new FlowStep() { Action = n }).ToList());
+        foreach(var node in nodes)
+        {
+            var branch = System.Activities.Bpm.FlowParallel.Branch.New(parallel);
+            branch.StartNode = new FlowStep() { Action = node, Next = branch.StartNode };
+            parallel.Branches.Add(branch);
+        }
         return parallel;
     }
-    public static FlowParallel FlowTo(this FlowParallel parallel, params FlowNode[] nodes)
+    public static FlowParallel SplitTo(this FlowParallel parallel, params FlowNode[] nodes)
     {
-        parallel.Branches.AddRange(nodes);
+        foreach (var node in nodes)
+        {
+            var branch = System.Activities.Bpm.FlowParallel.Branch.New(parallel);
+            node.FlowTo(parallel.JoinNode);
+            branch.StartNode = node;
+            parallel.Branches.Add(branch);
+        }
         return parallel;
     }
     public static FlowStep FlowTo(this Activity predeccessor, FlowNode successor)
@@ -44,6 +55,10 @@ public static class FlowchartExtensions
             else if (current is FlowJoin join)
             {
                 current = (join.Next ??= successor);
+            }
+            else if (current is FlowParallel parallel)
+            {
+                current = (parallel.JoinNode.Next ??= successor);
             }
         }
         return predeccessor;

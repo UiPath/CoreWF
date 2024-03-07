@@ -2,24 +2,64 @@
 using System.Activities.Statements;
 using System.Activities.Validation;
 using System.Collections.ObjectModel;
+using System.Linq;
 namespace System.Activities.Bpm;
 
 public class FlowParallel : FlowNodeExtensible
 {
-    private ValidatingCollection<FlowNode> _branches;
+    public class Branch
+    {
+        public static Branch New(FlowParallel parallel)
+        {
+            return new()
+            {
+                StartNode = parallel.JoinNode
+            };
+        }
+
+        private Branch()
+        {
+            
+        }
+
+        public FlowNode StartNode { get; set; }
+        public Activity<bool> Condition { get; set; }
+        public string DisplayName {  get; set; }
+    }
+    public FlowJoin JoinNode { get; }
+    private ValidatingCollection<Branch> _branches;
     internal override Activity ChildActivity => null;
     [DefaultValue(null)]
-    public Collection<FlowNode> Branches => _branches ??= ValidatingCollection<FlowNode>.NullCheck();
+    public Collection<Branch> Branches => _branches ??= ValidatingCollection<Branch>.NullCheck();
 
+    private List<FlowNode> _runtimeBranches;
+
+    public FlowParallel()
+    {
+        JoinNode = new FlowJoin() { Parallel = this};
+    }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
-        => connections.AddRange(Branches);
+    {
+        var joinNode = JoinNode as FlowJoin;
+        joinNode.Parallel = this;
+        _runtimeBranches = new (Branches.Select(b => //(b.Condition is null) ? b.StartNode :
+                    new FlowDecision()
+                    {
+                        Condition = b.Condition ?? new Expressions.LambdaValue<bool>(c => true),
+                        DisplayName = b.DisplayName,
+                        True = b.StartNode,
+                        False = JoinNode
+                    }
+            ));
+        connections.AddRange(_runtimeBranches);
+    }
 
     internal override void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode)
     {
-        for (int i = Branches.Count - 1; i >= 0; i--)
+        for (int i = _runtimeBranches.Count - 1; i >= 0; i--)
         {
-            var node = Branches[i];
-            Owner.ExecuteNextNode(context, node, completedInstance);
+            var branch = _runtimeBranches[i];
+                Owner.ExecuteNextNode(context, branch, completedInstance);
         }
     }
 }

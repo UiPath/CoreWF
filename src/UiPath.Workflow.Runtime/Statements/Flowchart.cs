@@ -17,7 +17,7 @@ namespace System.Activities.Statements;
 [ContentProperty("Nodes")]
 public sealed class Flowchart : NativeActivity
 {
-    internal readonly FlowNodeExtensible.Extension _extension;
+    internal readonly FlowNodeExtensible.FlowchartExtension _extension;
     internal bool IsLegacyFlowchart;
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
@@ -366,7 +366,7 @@ public sealed class Flowchart : NativeActivity
 
     private FlowNode GetCurrentNode(NativeActivityContext context, ActivityInstance completedInstance)
     {
-        if (!_extension.TryGetCurrentNode(context, completedInstance, out var index))
+        if (IsLegacyFlowchart || !_extension.TryGetCurrentNode(context, completedInstance, out var index))
         {
             index = _currentNode.Get(context);
         }
@@ -397,5 +397,11 @@ public sealed class Flowchart : NativeActivity
         Fx.Assert(switchNode != null, "corrupt internal state");
         FlowNode next = switchNode.GetNextNode(result);
         ExecuteNodeChain(context, next, completedInstance);
+    }
+
+    internal void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
+    {
+        var node = GetCurrentNode(context, completedInstance) as FlowNodeExtensible;
+        node.OnCompletionCallback(context, completedInstance, result);
     }
 }
