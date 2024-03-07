@@ -1,21 +1,18 @@
-﻿using System.Activities.Statements;
-using System.Linq;
-namespace System.Activities.Bpm;
+﻿using System.Linq;
+namespace System.Activities.Statements;
 
-public class FlowJoin : FlowNodeExtensible
+public class FlowJoin : FlowNodeBase
 {
-    private readonly FlowchartState<Dictionary<string,JoinState>> _joinStates;
+    private readonly FlowchartState.Of<Dictionary<string,JoinState>> _joinStates;
     [DefaultValue(null)]
     public Activity<bool> Completion { get; set; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
+    public FlowParallel Parallel { get; internal set; }
 
     internal override Activity ChildActivity => Completion;
 
-    internal FlowParallel Parallel { get; set; }
-
-
-    record JoinState
+    private record JoinState
     {
         public int WaitCount { get; set; }
         public bool Done { get; set; }
@@ -24,7 +21,7 @@ public class FlowJoin : FlowNodeExtensible
         public Dictionary<string, int> PendingCompletionsInstanceIdToPredecessorIndex { get; set; }
     }
 
-    public FlowJoin()
+    internal FlowJoin()
     {
         _joinStates = new("FlowJoin", this, () => new());
     }
@@ -59,7 +56,7 @@ public class FlowJoin : FlowNodeExtensible
         joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
         if (Completion is not null)
         {
-            Extension.ScheduleWithCallback(context, Completion);
+            ScheduleWithCallback(context, Completion);
         }
         else
         {

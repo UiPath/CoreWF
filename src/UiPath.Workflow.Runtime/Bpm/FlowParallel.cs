@@ -1,11 +1,10 @@
 ﻿using System.Activities.Runtime.Collections;
-using System.Activities.Statements;
 using System.Activities.Validation;
 using System.Collections.ObjectModel;
 using System.Linq;
-namespace System.Activities.Bpm;
+namespace System.Activities.Statements;
 
-public class FlowParallel : FlowNodeExtensible
+public class FlowParallel : FlowNodeBase
 {
     public class Branch
     {
@@ -36,13 +35,11 @@ public class FlowParallel : FlowNodeExtensible
 
     public FlowParallel()
     {
-        JoinNode = new FlowJoin() { Parallel = this};
+        JoinNode = new FlowJoin() { Parallel = this };
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
-        var joinNode = JoinNode as FlowJoin;
-        joinNode.Parallel = this;
-        _runtimeBranches = new (Branches.Select(b => //(b.Condition is null) ? b.StartNode :
+        _runtimeBranches = new (Branches.Select(b => (b.Condition is null) ? b.StartNode :
                     new FlowDecision()
                     {
                         Condition = b.Condition ?? new Expressions.LambdaValue<bool>(c => true),
