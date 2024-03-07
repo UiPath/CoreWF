@@ -1,41 +1,54 @@
 ﻿using System.Activities.Statements;
 using System.Linq;
-using System.Reflection;
 namespace System.Activities.Bpm;
 
 public abstract class FlowNodeExtensible : FlowNode
 {
     public const string FlowChartStateVariableName = "flowchartState";
+    internal FlowchartExtension Extension => Owner._extension;
+
     internal abstract void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode);
 
     internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
     {
-        Install(metadata, owner);
+        FlowchartState.Install(metadata, owner);
     }
 
-    private static void Install(NativeActivityMetadata metadata, Flowchart owner)
+    internal virtual void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
-        if (owner.ImplementationVariables.Any( v => v.Name == FlowChartStateVariableName))
-            return;
-        
-        metadata.AddImplementationVariable(new Variable<Dictionary<string, object>>(FlowChartStateVariableName, c => new()));
+        if (result is bool b)
+            OnCompletionCallback(context, completedInstance, b);
     }
 
-    internal class FlowchartState<T>
+    protected virtual void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance, bool result)
+    {
+    }
+
+
+    internal abstract class FlowchartState
     {
         private readonly string _key;
-        private readonly Flowchart _owner;
-        private readonly Func<T> _addValue;
+        private Flowchart _owner;
+        private readonly Func<Flowchart> _getowner;
+        private readonly Func<object> _addValue;
 
-        public FlowchartState(string key, Flowchart owner, Func<T> addValue)
+        public FlowchartState(string key, Func<Flowchart> getOwner, Func<object> addValue)
         {
             _key = key;
-            _owner = owner;
+            _getowner = getOwner;
             _addValue = addValue;
         }
 
-        public T GetOrAdd(ActivityContext context)
+        public static void Install(NativeActivityMetadata metadata, Flowchart owner)
         {
+            if (owner.ImplementationVariables.Any(v => v.Name == FlowChartStateVariableName))
+                return;
+
+            metadata.AddImplementationVariable(new Variable<Dictionary<string, object>>(FlowChartStateVariableName, c => new()));
+        }
+        public object GetOrAdd(ActivityContext context)
+        {
+            _owner ??= _getowner();
             var variable = _owner.ImplementationVariables.Single(v => v.Name == FlowChartStateVariableName);
             var flowChartState = (Dictionary<string, object>)variable.Get(context);
             if (!flowChartState.TryGetValue(_key, out var value))
@@ -43,11 +56,22 @@ public abstract class FlowNodeExtensible : FlowNode
                 value = _addValue();
                 flowChartState[_key] = value;
             }
-            return (T)value;
+            return value;
         }
     }
+    internal class FlowchartState<T> : FlowchartState
+    {
+        public FlowchartState(string key, Flowchart owner, Func<T> addValue) : base(key, () => owner, () => addValue())
+        {
+        }
+        public FlowchartState(string key, FlowNodeExtensible node, Func<T> addValue) : base(key, () => node.Owner, () => addValue())
+        {
+        }
 
-    internal class Extension
+        public new T GetOrAdd(ActivityContext context) => (T)base.GetOrAdd(context);
+    }
+
+    internal class FlowchartExtension
     {
         public bool TryGetCurrentNode(NativeActivityContext context, ActivityInstance completedInstance, out int index)
         {
@@ -57,30 +81,27 @@ public abstract class FlowNodeExtensible : FlowNode
                 return false;
             }    
 
-            return _nodesByActivityId.GetOrAdd(context).TryGetValue(completedInstance.Activity.Id, out index);
+            return _nodeIndexByActivityId.GetOrAdd(context).TryGetValue(completedInstance.Activity.Id, out index);
         }
         private readonly List<(FlowNode predecessor, FlowNode successor)> _links = new();
-        private readonly FlowchartState<Dictionary<string,int>> _nodesByActivityId;
+        private readonly FlowchartState<Dictionary<string,int>> _nodeIndexByActivityId;
         private readonly FlowchartState<Dictionary<int, NodeState>> _nodesStatesByIndex;
 
-        public Extension(Flowchart flowchart)
+        public FlowchartExtension(Flowchart flowchart)
         {
             Flowchart = flowchart;
-            _nodesByActivityId = new("_nodeIndexByActivityId", flowchart, () => new());
+            _nodeIndexByActivityId = new("_nodeIndexByActivityId", flowchart, () => new());
             _nodesStatesByIndex = new("_nodesStatesByIndex", flowchart, () => new());
         }
         public Flowchart Flowchart { get; }
 
         public void OnExecute(NativeActivityContext context)
         {
-            if (Flowchart.IsLegacyFlowchart)
-                return;
-
             SaveLinks();
             SaveActivityIdToNodeIndex();
             void SaveActivityIdToNodeIndex()
             {
-                var nodesByActivityId = _nodesByActivityId.GetOrAdd(context);
+                var nodesByActivityId = _nodeIndexByActivityId.GetOrAdd(context);
                 foreach (var activityWithNode in _links)
                 {
                     SaveNode(activityWithNode.predecessor);
@@ -150,6 +171,11 @@ public abstract class FlowNodeExtensible : FlowNode
                 context.CancelChild(childToCancel);
 
             return true;
+        }
+
+        internal void ScheduleWithCallback<T>(NativeActivityContext context, Activity<T> activity)
+        {
+            context.ScheduleActivity(activity, new CompletionCallback<T>(Flowchart.OnCompletionCallback));
         }
 
         private class NodeState

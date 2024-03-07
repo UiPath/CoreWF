@@ -4,13 +4,16 @@ namespace System.Activities.Bpm;
 
 public class FlowJoin : FlowNodeExtensible
 {
-    private FlowchartState<Dictionary<string,JoinState>> _joinStates;
+    private readonly FlowchartState<Dictionary<string,JoinState>> _joinStates;
+    [DefaultValue(null)]
+    public Activity<bool> Completion { get; set; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
-    [DefaultValue(null)]
-    public int? WaitCount { get; set; }
 
-    internal override Activity ChildActivity => null;
+    internal override Activity ChildActivity => Completion;
+
+    internal FlowParallel Parallel { get; set; }
+
 
     record JoinState
     {
@@ -18,6 +21,12 @@ public class FlowJoin : FlowNodeExtensible
         public bool Done { get; set; }
         public HashSet<int> CompletedNodeIndeces { get; set; }
         public List<int> ConnectedBranches { get; set; }
+        public Dictionary<string, int> PendingCompletionsInstanceIdToPredecessorIndex { get; set; }
+    }
+
+    public FlowJoin()
+    {
+        _joinStates = new("FlowJoin", this, () => new());
     }
 
     internal override void GetConnectedNodes(IList<FlowNode> connections)
@@ -27,47 +36,56 @@ public class FlowJoin : FlowNodeExtensible
             connections.Add(Next);
         }
     }
-
-    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
-    {
-        _joinStates = new("FlowJoin", owner, () => new());
-        base.OnOpen(owner, metadata);
-    }
-
-    internal override void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode)
+    JoinState GetJoinState(NativeActivityContext context, Func<JoinState> add = null)
     {
         var key = $"{Index}";
         var joinStates = _joinStates.GetOrAdd(context);
         joinStates.TryGetValue(key, out var joinState);
-        if (joinState == null)
+        if (joinState is null)
         {
-            List<int> connectedBranches = new (Owner._extension.GetPredecessors(context, Index));
-            joinState = new() 
-            {
-                ConnectedBranches = connectedBranches,
-                CompletedNodeIndeces = new HashSet<int>(),
-                WaitCount = Math.Min(connectedBranches.Count, WaitCount ?? connectedBranches.Count) 
-            };
+            joinState = add();
             joinStates.Add(key, joinState);
         }
-        joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
+        return joinState;
+    }
 
-        if (joinState.CompletedNodeIndeces.Count < joinState.WaitCount || joinState.Done)
+    internal override void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode)
+    {
+        var joinState = GetJoinState(context, () => new()
         {
-            return;
+            ConnectedBranches = new(Extension.GetPredecessors(context, Index)),
+            CompletedNodeIndeces = new HashSet<int>(),
+        });
+        joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
+        if (Completion is not null)
+        {
+            Extension.ScheduleWithCallback(context, Completion);
         }
+        else
+        {
+            OnCompletionCallback(context, completedInstance, false);
+        }
+    }
+
+    protected override void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance, bool result)
+    {
+        var joinState = GetJoinState(context);
+
+        if (!result && joinState.CompletedNodeIndeces.Count < Parallel.Branches.Count)
+            return;
+
         joinState.Done = true;
         var toCancel = joinState.ConnectedBranches.Except(joinState.CompletedNodeIndeces);
         Cancel(toCancel);
         Owner.ExecuteNextNode(context, Next, completedInstance);
 
-        void Cancel(IEnumerable<int> toCancel) 
+        void Cancel(IEnumerable<int> toCancel)
         {
             foreach (var branch in toCancel)
             {
-                if (Owner._extension.Cancel(context, branch))
+                if (Extension.Cancel(context, branch))
                 {
-                    Cancel(Owner._extension.GetPredecessors(context, branch));
+                    Cancel(Extension.GetPredecessors(context, branch));
                 }
             }
         }

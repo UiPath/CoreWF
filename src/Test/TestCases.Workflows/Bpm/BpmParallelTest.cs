@@ -31,7 +31,7 @@ public class BpmParallelTest
     {
         var branch1Str = "branch1";
         var branch2Str = "branch2";
-        var parallel = new FlowParallel().FlowTo(AddString(branch1Str), AddString(branch2Str));
+        var parallel = new FlowParallel().SplitTo(AddString(branch1Str), AddString(branch2Str));
         InvokeFlowChart(parallel);
         _strings.ShouldBe(new() { branch1Str, branch2Str });
     }
@@ -43,12 +43,12 @@ public class BpmParallelTest
         var branch2Str = "branch2";
         var stopString = "stop";
 
-        var join = new FlowJoin().FlowTo(AddString(stopString));
         var parallel = new FlowParallel()
-            .FlowTo(
-                AddString(branch1Str).FlowTo(join),
-                AddString(branch2Str).FlowTo(join)
+            .SplitTo(
+                AddString(branch1Str),
+                AddString(branch2Str)
                 );
+        parallel.JoinNode.FlowTo(AddString(stopString));
 
         InvokeFlowChart(parallel);
         _strings.ShouldBe(new() { branch1Str, branch2Str, stopString });
@@ -61,13 +61,13 @@ public class BpmParallelTest
         var branch2Str = "branch2";
         var stopString = "stop";
 
-        var join = new FlowJoin().FlowTo(AddString(stopString));
-        join.WaitCount = 1;
         var parallel = new FlowParallel()
-            .FlowTo(
-                AddString(branch1Str).FlowTo(join),
-                AddString(branch2Str).FlowTo(join)
+            .SplitTo(
+                AddString(branch1Str),
+                AddString(branch2Str)
                 );
+        parallel.JoinNode.FlowTo(AddString(stopString));
+        parallel.JoinNode.Completion = new System.Activities.Expressions.LambdaValue<bool>(c => true);
 
         InvokeFlowChart(parallel);
         _strings.ShouldBe(new() { branch1Str, stopString });
@@ -122,13 +122,11 @@ public class BpmParallelTest
             var blockingContinuation = AddString(blockingContStr);
             var blockingActivity = new BlockingActivity(blockingBookmark);
 
-            FlowJoin join = new FlowJoin().FlowTo(AddString(stopString));
-            var parallel = new FlowParallel().FlowTo(
-                AddString(branch1Str).FlowTo(join),
-                AddString(branch2Str).FlowTo(join),
-                blockingActivity.FlowTo(blockingContinuation)
-                    .FlowTo(join));
-
+            var parallel = new FlowParallel().SplitTo(
+                AddString(branch1Str).FlowTo(new FlowStep()),
+                AddString(branch2Str).FlowTo(new FlowStep()),
+                blockingActivity.FlowTo(blockingContinuation).FlowTo(new FlowStep()));
+            parallel.JoinNode.FlowTo(AddString(stopString));
             var flowchart = new Flowchart { StartNode = parallel };
             flowchart.IsLegacyFlowchart = useLegacyFlowchart;
 
