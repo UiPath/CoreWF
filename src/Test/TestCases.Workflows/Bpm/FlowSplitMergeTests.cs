@@ -8,12 +8,12 @@ using System.Linq;
 using System.Activities.Expressions;
 
 namespace TestCases.Activitiess.Bpm;
-public class BpmParallelTest
+public class FlowSplitMergeTests
 {
     private readonly List<string> _strings = new();
     private readonly Variable<ICollection<string>> _stringsVariable;
 
-    public BpmParallelTest()
+    public FlowSplitMergeTests()
     {
         _stringsVariable = new("strings", c => _strings);
     }
@@ -32,7 +32,7 @@ public class BpmParallelTest
     {
         var branch1Str = "branch1";
         var branch2Str = "branch2";
-        var parallel = new FlowParallel().AddBranches(AddString(branch1Str), AddString(branch2Str));
+        var parallel = new FlowSplit().AddBranches(AddString(branch1Str), AddString(branch2Str));
         ExecuteFlowchart(parallel);
         _strings.ShouldBe(new() { branch1Str, branch2Str });
     }
@@ -44,12 +44,12 @@ public class BpmParallelTest
         var branch2Str = "branch2";
         var stopString = "stop";
 
-        var parallel = new FlowParallel()
+        var parallel = new FlowSplit()
             .AddBranches(
                 AddString(branch1Str),
                 AddString(branch2Str)
                 );
-        parallel.JoinNode.FlowTo(AddString(stopString));
+        parallel.MergeNode.FlowTo(AddString(stopString));
 
         ExecuteFlowchart(parallel);
         _strings.ShouldBe(new() { branch1Str, branch2Str, stopString });
@@ -62,13 +62,13 @@ public class BpmParallelTest
         var branch2Str = "branch2";
         var stopString = "stop";
 
-        var parallel = new FlowParallel()
+        var parallel = new FlowSplit()
             .AddBranches(
                 AddString(branch1Str),
                 AddString(branch2Str)
                 );
         parallel.Branches.First().Condition = new LambdaValue<bool>(c => false);
-        parallel.JoinNode.FlowTo(AddString(stopString));
+        parallel.MergeNode.FlowTo(AddString(stopString));
 
         ExecuteFlowchart(parallel);
         _strings.ShouldBe(new() { branch2Str, stopString });
@@ -81,13 +81,13 @@ public class BpmParallelTest
         var branch2Str = "branch2";
         var stopString = "stop";
 
-        var parallel = new FlowParallel()
+        var parallel = new FlowSplit()
             .AddBranches(
                 AddString(branch1Str),
                 AddString(branch2Str)
                 );
-        parallel.JoinNode.FlowTo(AddString(stopString));
-        parallel.JoinNode.Completion = new LambdaValue<bool>(c => true);
+        parallel.MergeNode.FlowTo(AddString(stopString));
+        parallel.MergeNode.Completion = new LambdaValue<bool>(c => true);
 
         ExecuteFlowchart(parallel);
         _strings.ShouldBe(new() { branch1Str, stopString });
@@ -187,11 +187,11 @@ public class BpmParallelTest
             var blockingContinuation = AddString(blockingContStr);
             var blockingActivity = new BlockingActivity(blockingBookmark);
 
-            var parallel = new FlowParallel().AddBranches(
+            var parallel = new FlowSplit().AddBranches(
                 AddString(branch1Str).FlowTo(new FlowStep()),
                 AddString(branch2Str).FlowTo(new FlowStep()),
                 blockingActivity.FlowTo(blockingContinuation).FlowTo(new FlowStep()));
-            parallel.JoinNode.FlowTo(AddString(stopString));
+            parallel.MergeNode.FlowTo(AddString(stopString));
             var flowchart = new Flowchart { StartNode = parallel };
             return new ActivityWithResult<ICollection<string>>() { In = _stringsVariable, Body = flowchart };
         }

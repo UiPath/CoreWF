@@ -4,15 +4,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 namespace System.Activities.Statements;
 
-public class FlowParallel : FlowNodeBase
+public class FlowSplit : FlowNodeBase
 {
     public class Branch
     {
-        public static Branch New(FlowParallel parallel)
+        public static Branch New(FlowSplit parallel)
         {
             return new()
             {
-                StartNode = parallel.JoinNode
+                StartNode = parallel.MergeNode
             };
         }
 
@@ -25,7 +25,7 @@ public class FlowParallel : FlowNodeBase
         public Activity<bool> Condition { get; set; }
         public string DisplayName {  get; set; }
     }
-    public FlowJoin JoinNode { get; }
+    public FlowMerge MergeNode { get; }
     private ValidatingCollection<Branch> _branches;
     internal override Activity ChildActivity => null;
     [DefaultValue(null)]
@@ -33,9 +33,9 @@ public class FlowParallel : FlowNodeBase
 
     private List<FlowNode> _runtimeBranches;
 
-    public FlowParallel()
+    public FlowSplit()
     {
-        JoinNode = new FlowJoin() { Parallel = this };
+        MergeNode = new FlowMerge() { Split = this };
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
@@ -45,7 +45,7 @@ public class FlowParallel : FlowNodeBase
                         Condition = b.Condition ?? new Expressions.LambdaValue<bool>(c => true),
                         DisplayName = b.DisplayName,
                         True = b.StartNode,
-                        False = JoinNode
+                        False = MergeNode
                     }
             ));
         connections.AddRange(_runtimeBranches);
