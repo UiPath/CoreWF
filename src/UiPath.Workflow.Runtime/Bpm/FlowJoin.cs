@@ -65,10 +65,10 @@ public class FlowJoin : FlowNodeBase
             connections.Add(Next);
         }
     }
-    JoinState GetJoinState(NativeActivityContext context, Func<JoinState> add = null)
+    JoinState GetJoinState(Func<JoinState> add = null)
     {
         var key = $"{Index}";
-        var joinStates = _joinStates.GetOrAdd(context);
+        var joinStates = _joinStates.GetOrAdd();
         joinStates.TryGetValue(key, out var joinState);
         if (joinState is null)
         {
@@ -77,9 +77,9 @@ public class FlowJoin : FlowNodeBase
         }
         return joinState;
     }
-    internal override void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode)
+    internal override void Execute(FlowNode predecessorNode)
     {
-        var joinState = GetJoinState(context, () => new()
+        var joinState = GetJoinState(() => new()
         {
             ConnectedBranches = new(Extension.GetPredecessors(this).Select(p => p.Index)),
             CompletedNodeIndeces = new HashSet<int>(),
@@ -87,16 +87,16 @@ public class FlowJoin : FlowNodeBase
         joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
         if (Completion is not null)
         {
-            ScheduleWithCallback(context, Completion);
+            Extension.ScheduleWithCallback(Completion);
         }
         else
         {
-            OnCompletionCallback(context, completedInstance, false);
+            OnCompletionCallback(false);
         }
     }
-    protected override void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance, bool result)
+    protected override void OnCompletionCallback(bool result)
     {
-        var joinState = GetJoinState(context);
+        var joinState = GetJoinState();
 
         if (!result && joinState.CompletedNodeIndeces.Count < Parallel.Branches.Count)
             return;
@@ -104,13 +104,13 @@ public class FlowJoin : FlowNodeBase
         joinState.Done = true;
         var toCancel = joinState.ConnectedBranches.Except(joinState.CompletedNodeIndeces);
         Cancel(toCancel);
-        Owner.ExecuteNextNode(context, Next, completedInstance);
+        Owner.ExecuteNextNode(Next);
 
         void Cancel(IEnumerable<int> toCancel)
         {
             foreach (var branch in toCancel)
             {
-                if (Extension.Cancel(context, branch))
+                if (Extension.Cancel(branch))
                 {
                     Cancel(Extension.GetPredecessors(branch).Select(p => p.Index));
                 }

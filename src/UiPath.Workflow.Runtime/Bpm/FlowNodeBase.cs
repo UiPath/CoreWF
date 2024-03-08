@@ -1,5 +1,4 @@
-﻿using System.Linq;
-namespace System.Activities.Statements;
+﻿namespace System.Activities.Statements;
 
 public abstract partial class FlowNodeBase : FlowNode
 {
@@ -8,7 +7,7 @@ public abstract partial class FlowNodeBase : FlowNode
 
     internal FlowchartExtension Extension => Owner.Extension;
 
-    internal abstract void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode);
+    internal abstract void Execute(FlowNode predecessorNode);
 
     internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
     {
@@ -21,18 +20,24 @@ public abstract partial class FlowNodeBase : FlowNode
 
     }
 
-    internal virtual void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
-    {
-        if (result is bool b)
-            OnCompletionCallback(context, completedInstance, b);
-    }
-
-    protected virtual void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance, bool result)
+    protected virtual void OnCompletionCallback()
     {
     }
 
-    protected void ScheduleWithCallback<T>(NativeActivityContext context, Activity<T> activity)
+    internal virtual void OnCompletionCallback<T>(T result)
     {
-        context.ScheduleActivity(activity, new CompletionCallback<T>(Owner.OnCompletionCallback));
+        switch (result)
+        {
+            case null:
+                OnCompletionCallback();
+                break;
+            case bool b:
+                OnCompletionCallback(b);
+                break;
+        }
+    }
+
+    protected virtual void OnCompletionCallback(bool result)
+    {
     }
 }

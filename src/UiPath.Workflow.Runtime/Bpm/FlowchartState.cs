@@ -28,7 +28,13 @@ public abstract partial class FlowNodeBase
 
             metadata.AddImplementationVariable(new Variable<Dictionary<string, object>>(FlowChartStateVariableName, c => new()));
         }
-        public object GetOrAdd(ActivityContext context)
+        public object GetOrAdd()
+        {
+            _owner ??= _getowner();
+            return GetOrAdd(_owner.Extension.context);
+        }
+
+        private object GetOrAdd(ActivityContext context)
         {
             _owner ??= _getowner();
             var variable = _owner.ImplementationVariables.Single(v => v.Name == FlowChartStateVariableName);
@@ -41,7 +47,7 @@ public abstract partial class FlowNodeBase
             return value;
         }
 
-        internal static bool HasState(Flowchart flowchart, NativeActivityContext context)
+        internal static bool HasState(Flowchart flowchart)
         {
             try
             {
@@ -49,7 +55,7 @@ public abstract partial class FlowNodeBase
                 if (variable == null)
                     return false;
 
-                variable.Get(context);
+                variable.Get(flowchart.Extension.context);
                 return true;
             }
             catch
@@ -67,7 +73,7 @@ public abstract partial class FlowNodeBase
             {
             }
 
-            public new T GetOrAdd(ActivityContext context) => (T)base.GetOrAdd(context);
+            public new T GetOrAdd() => (T)base.GetOrAdd();
         }
     }
 }
