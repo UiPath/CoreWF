@@ -3,12 +3,24 @@ namespace System.Activities.Statements;
 
 public class FlowMerge : FlowNodeBase
 {
-    private readonly FlowchartState.Of<Dictionary<string,MergeState>> _joinStates;
+    private FlowSplit _split;
     [DefaultValue(null)]
     public Activity<bool> Completion { get; set; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
-    public FlowSplit Split { get; internal set; }
+    public FlowSplit SplitNode
+    {
+        get => _split;
+        init
+        {
+            if (value?.MergeNode is { } merge && merge != this)
+                    throw new InvalidOperationException("Split and merge must be linked both ways.");
+            _split = value;
+        }
+    }
+
+
+    private readonly FlowchartState.Of<Dictionary<string, MergeState>> _joinStates;
     internal override Activity ChildActivity => Completion;
 
     private record MergeState
@@ -20,7 +32,13 @@ public class FlowMerge : FlowNodeBase
         public Dictionary<string, int> PendingCompletionsInstanceIdToPredecessorIndex { get; set; }
     }
 
-    internal FlowMerge()
+    public FlowMerge(FlowSplit split) : this()
+    {
+        SplitNode = split;
+    }
+
+
+    public FlowMerge()
     {
         _joinStates = new("FlowMerge", this, () => new());
     }
@@ -33,7 +51,7 @@ public class FlowMerge : FlowNodeBase
             HashSet<FlowNode> visited = new()
             {
                 this,
-                Split,
+                SplitNode,
             };
             List<FlowNode> toVisit = new(1) { this };
             do
@@ -53,7 +71,7 @@ public class FlowMerge : FlowNodeBase
                 }
             }
             while (toVisit.Any());
-            var allBranchesJoined = Split.Branches.All(b => visited.Contains(b.StartNode));
+            var allBranchesJoined = SplitNode.Branches.All(b => visited.Contains(b.StartNode));
             if (!allBranchesJoined)
                 Metadata.AddValidationError("All parallel branches should end in same join node.");
         }
@@ -98,7 +116,7 @@ public class FlowMerge : FlowNodeBase
     {
         var joinState = GetJoinState();
 
-        if (!result && joinState.CompletedNodeIndeces.Count < Split.Branches.Count)
+        if (!result && joinState.CompletedNodeIndeces.Count < SplitNode.Branches.Count)
             return;
 
         joinState.Done = true;

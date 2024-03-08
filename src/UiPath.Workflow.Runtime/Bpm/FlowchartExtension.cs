@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using static System.Activities.Runtime.Scheduler;
 namespace System.Activities.Statements;
 
 public abstract partial class FlowNodeBase
@@ -30,8 +29,6 @@ public abstract partial class FlowNodeBase
         public NativeActivityContext context { get; private set; }
         public Flowchart Flowchart { get; }
         public bool HasState() => FlowchartState.HasState(Flowchart);
-
-
 
         public FlowchartExtension(Flowchart flowchart)
         {
@@ -169,8 +166,11 @@ public abstract partial class FlowNodeBase
         internal List<FlowNode> GetPredecessors(int index)
             => _predecessors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
 
-        internal List<FlowNode> GetPredecessors(FlowNode node) 
-            => _predecessors[node].ToList();
+        internal List<FlowNode> GetPredecessors(FlowNode node)
+        {
+            _predecessors.TryGetValue(node, out var result);
+            return result?.ToList() ?? new();
+        }
 
         private class NodeState
         {
