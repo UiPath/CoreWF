@@ -199,6 +199,7 @@ public sealed class Flowchart : NativeActivity
         }
 
         metadata.SetChildrenCollection(new Collection<Activity>(children));
+        Extension?.EndCacheMetadata();
     }
 
     private void GatherReachableNodes(NativeActivityMetadata metadata)
