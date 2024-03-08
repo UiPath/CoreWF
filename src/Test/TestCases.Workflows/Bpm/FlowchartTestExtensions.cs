@@ -6,26 +6,26 @@ namespace TestCases.Activitiess.Bpm;
 
 public static class FlowchartTestExtensions
 {
-    public static FlowSplit AddBranches(this FlowSplit parallel, params Activity[] nodes)
+    public static FlowSplit AddBranches(this FlowSplit split, params Activity[] nodes)
     {
         foreach(var node in nodes)
         {
-            var branch = FlowSplit.Branch.New(parallel);
+            var branch = FlowSplitBranch.New(split);
             branch.StartNode = new FlowStep() { Action = node, Next = branch.StartNode };
-            parallel.Branches.Add(branch);
+            split.Branches.Add(branch);
         }
-        return parallel;
+        return split;
     }
-    public static FlowSplit AddBranches(this FlowSplit parallel, params FlowNode[] nodes)
+    public static FlowSplit AddBranches(this FlowSplit split, params FlowNode[] nodes)
     {
         foreach (var node in nodes)
         {
-            var branch = FlowSplit.Branch.New(parallel);
-            node.FlowTo(parallel.MergeNode);
+            var branch = FlowSplitBranch.New(split);
+            node.FlowTo(split.MergeNode);
             branch.StartNode = node;
-            parallel.Branches.Add(branch);
+            split.Branches.Add(branch);
         }
-        return parallel;
+        return split;
     }
     public static FlowStep FlowTo(this Activity predeccessor, FlowNode successor)
     {
@@ -53,8 +53,8 @@ public static class FlowchartTestExtensions
             case FlowMerge join:
                 (join.Next ??= successor).FlowTo(successor);
                 break;
-            case FlowSplit parallel:
-                (parallel.MergeNode.Next ??= successor).FlowTo(successor);
+            case FlowSplit split:
+                (split.MergeNode.Next ??= successor).FlowTo(successor);
                 break;
             case FlowDecision decision:
                 (decision.True ??= successor).FlowTo(successor);

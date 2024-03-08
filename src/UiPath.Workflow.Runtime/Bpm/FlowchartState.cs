@@ -19,7 +19,7 @@ public abstract partial class FlowNodeBase
             _addValue = addValue;
         }
         public static bool IsInstalled(Flowchart owner)
-            => owner.ImplementationVariables.Any(v => v.Name == FlowChartStateVariableName);
+            => owner.ImplementationVariables?.Any(v => v.Name == FlowChartStateVariableName) is true;
 
         public static void Install(NativeActivityMetadata metadata, Flowchart owner)
         {

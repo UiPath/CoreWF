@@ -18,18 +18,14 @@ namespace System.Activities.Statements;
 public sealed class Flowchart : NativeActivity
 {
     internal FlowchartExtension Extension { get; private set; }
-    private FlowchartExtension ExtensionMaybe => IsLegacyFlowchart ? null : Extension;
-    internal bool IsLegacyFlowchart = false;
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
     private CompletionCallback _onStepCompleted;
     private CompletionCallback<bool> _onDecisionCompleted;
-    private readonly Variable<int> _currentNode;
 
     public Flowchart()
     {
-        _currentNode = new Variable<int>();
         _reachableNodes = new Collection<FlowNode>();
         Extension = new(this);
     }
@@ -173,8 +169,7 @@ public sealed class Flowchart : NativeActivity
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         metadata.SetVariablesCollection(Variables);
-        metadata.AddImplementationVariable(_currentNode);
-        ExtensionMaybe?.Install(metadata);
+        Extension.Install(metadata);
 
         GatherReachableNodes(metadata);
         if (ValidateUnconnectedNodes && (_reachableNodes.Count < Nodes.Count))
@@ -199,7 +194,7 @@ public sealed class Flowchart : NativeActivity
         }
 
         metadata.SetChildrenCollection(new Collection<Activity>(children));
-        ExtensionMaybe?.EndCacheMetadata();
+        Extension.EndCacheMetadata();
     }
 
     private void GatherReachableNodes(NativeActivityMetadata metadata)
@@ -257,7 +252,7 @@ public sealed class Flowchart : NativeActivity
             {
                 connected.Clear();
                 current.GetConnectedNodes(connected);
-                ExtensionMaybe?.RecordLinks(current, connected);
+                Extension.RecordLinks(current, connected);
                 for (int i = 0; i < connected.Count; i++)
                 {
                     stack.Push(connected[i]);
@@ -275,7 +270,7 @@ public sealed class Flowchart : NativeActivity
             {
                 TD.FlowchartStart(DisplayName);
             }
-            ExtensionMaybe?.OnExecute();
+            Extension.OnExecute();
             ExecuteNodeChain(context, StartNode, null);
         }
         else
@@ -289,7 +284,7 @@ public sealed class Flowchart : NativeActivity
 
     private void ExecuteNodeChain(NativeActivityContext context, FlowNode node, ActivityInstance completedInstance)
     {
-        if (ExtensionMaybe?.IsCancelRequested() is true)
+        if (Extension.IsCancelRequested() is true)
             return;
 
 
@@ -334,7 +329,6 @@ public sealed class Flowchart : NativeActivity
             }
             else
             {
-                _currentNode.Set(context, current.Index);
                 current = null;
             }
         }
@@ -370,11 +364,7 @@ public sealed class Flowchart : NativeActivity
 
     private FlowNode GetCurrentNode()
     {
-        var index = _currentNode.Get(Extension.context);
-        if (!Extension.HasState())
-            IsLegacyFlowchart = true;
-
-        ExtensionMaybe?.TryGetCurrentNode(out index);
+        Extension.TryGetCurrentNode(out var index);
         FlowNode result = _reachableNodes[index];
         Fx.Assert(result != null, "corrupt internal state");
         return result;
