@@ -1,17 +1,17 @@
 ﻿using System.Linq;
 namespace System.Activities.Statements;
 
-public class FlowJoin : FlowNodeBase
+public class FlowMerge : FlowNodeBase
 {
-    private readonly FlowchartState.Of<Dictionary<string,JoinState>> _joinStates;
+    private readonly FlowchartState.Of<Dictionary<string,MergeState>> _joinStates;
     [DefaultValue(null)]
     public Activity<bool> Completion { get; set; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
-    public FlowParallel Parallel { get; internal set; }
+    public FlowSplit Split { get; internal set; }
     internal override Activity ChildActivity => Completion;
 
-    private record JoinState
+    private record MergeState
     {
         public int WaitCount { get; set; }
         public bool Done { get; set; }
@@ -20,9 +20,9 @@ public class FlowJoin : FlowNodeBase
         public Dictionary<string, int> PendingCompletionsInstanceIdToPredecessorIndex { get; set; }
     }
 
-    internal FlowJoin()
+    internal FlowMerge()
     {
-        _joinStates = new("FlowJoin", this, () => new());
+        _joinStates = new("FlowMerge", this, () => new());
     }
     internal override void EndCacheMetadata()
     {
@@ -33,7 +33,7 @@ public class FlowJoin : FlowNodeBase
             HashSet<FlowNode> visited = new()
             {
                 this,
-                Parallel,
+                Split,
             };
             List<FlowNode> toVisit = new(1) { this };
             do
@@ -53,7 +53,7 @@ public class FlowJoin : FlowNodeBase
                 }
             }
             while (toVisit.Any());
-            var allBranchesJoined = Parallel.Branches.All(b => visited.Contains(b.StartNode));
+            var allBranchesJoined = Split.Branches.All(b => visited.Contains(b.StartNode));
             if (!allBranchesJoined)
                 Metadata.AddValidationError("All parallel branches should end in same join node.");
         }
@@ -65,7 +65,7 @@ public class FlowJoin : FlowNodeBase
             connections.Add(Next);
         }
     }
-    JoinState GetJoinState(Func<JoinState> add = null)
+    MergeState GetJoinState(Func<MergeState> add = null)
     {
         var key = $"{Index}";
         var joinStates = _joinStates.GetOrAdd();
@@ -98,7 +98,7 @@ public class FlowJoin : FlowNodeBase
     {
         var joinState = GetJoinState();
 
-        if (!result && joinState.CompletedNodeIndeces.Count < Parallel.Branches.Count)
+        if (!result && joinState.CompletedNodeIndeces.Count < Split.Branches.Count)
             return;
 
         joinState.Done = true;
