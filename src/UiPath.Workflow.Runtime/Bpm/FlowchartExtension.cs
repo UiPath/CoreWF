@@ -1,8 +1,21 @@
 ﻿using System.Linq;
+using static System.Activities.Runtime.Scheduler;
 namespace System.Activities.Statements;
 
 public abstract partial class FlowNodeBase
 {
+    private class Disposable : IDisposable
+    {
+        private Action _onDispose;
+        public void Dispose()
+        {
+            _onDispose();
+        }
+
+        public static IDisposable Create(Action onDispose)
+            => new Disposable() { _onDispose = onDispose };
+    }
+
     internal class FlowchartExtension
     {
         private readonly HashSet<FlowNode> _nodes = new();
@@ -10,15 +23,34 @@ public abstract partial class FlowNodeBase
         private readonly FlowchartState.Of<Dictionary<int, NodeState>> _nodesStatesByIndex;
         private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
         private readonly Dictionary<FlowNode, HashSet<FlowNode>> _predecessors = new();
+        private readonly Dictionary<Type,object> _completionCallbacks = new();
+        private CompletionCallback _completionCallback;
 
+        public ActivityInstance completedInstance { get; private set; }
+        public NativeActivityContext context { get; private set; }
         public Flowchart Flowchart { get; }
-        public bool HasState(NativeActivityContext context) => FlowchartState.HasState(Flowchart, context);
+        public bool HasState() => FlowchartState.HasState(Flowchart);
+
+
 
         public FlowchartExtension(Flowchart flowchart)
         {
             Flowchart = flowchart;
             _nodeIndexByActivityId = new("_nodeIndexByActivityId", flowchart, () => new());
             _nodesStatesByIndex = new("_nodesStatesByIndex", flowchart, () => new());
+        }
+
+        public IDisposable WithContext(NativeActivityContext context, ActivityInstance completedInstance)
+        {
+            if (this.completedInstance is not null || this.context is not null)
+                throw new InvalidOperationException("Context already set.");
+            this.completedInstance = completedInstance;
+            this.context = context;
+            return Disposable.Create(() =>
+            {
+                this.context = null;
+                this.completedInstance = null;
+            });
         }
 
         public void EndCacheMetadata()
@@ -28,8 +60,22 @@ public abstract partial class FlowNodeBase
                 node.EndCacheMetadata();
             }
         }
+        public void ScheduleWithCallback(Activity activity)
+        {
+            _completionCallback ??= new CompletionCallback(Flowchart.OnCompletionCallback);
+            context.ScheduleActivity(activity, _completionCallback);
+        }
 
-        public bool TryGetCurrentNode(NativeActivityContext context, ActivityInstance completedInstance, out int index)
+        public void ScheduleWithCallback<T>(Activity<T> activity)
+        {
+            if (!_completionCallbacks.TryGetValue(typeof(T), out var callback))
+            {
+                _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(Flowchart.OnCompletionCallback);
+            }
+            context.ScheduleActivity(activity, callback as CompletionCallback<T>);
+        }
+
+        public bool TryGetCurrentNode(out int index)
         {
             if (completedInstance == null)
             {
@@ -37,16 +83,16 @@ public abstract partial class FlowNodeBase
                 return false;
             }
 
-            return _nodeIndexByActivityId.GetOrAdd(context).TryGetValue(completedInstance.Activity.Id, out index);
+            return _nodeIndexByActivityId.GetOrAdd().TryGetValue(completedInstance.Activity.Id, out index);
         }
 
-        public void OnExecute(NativeActivityContext context)
+        public void OnExecute()
         {
             SaveLinks();
             SaveActivityIdToNodeIndex();
             void SaveActivityIdToNodeIndex()
             {
-                var nodesByActivityId = _nodeIndexByActivityId.GetOrAdd(context);
+                var nodesByActivityId = _nodeIndexByActivityId.GetOrAdd();
                 foreach (var activityWithNode in _nodes)
                 {
                     SaveNode(activityWithNode);
@@ -62,7 +108,7 @@ public abstract partial class FlowNodeBase
 
             void SaveLinks()
             {
-                var nodesStates = _nodesStatesByIndex.GetOrAdd(context);
+                var nodesStates = _nodesStatesByIndex.GetOrAdd();
                 foreach (var node in _nodes)
                 {
                     nodesStates[node.Index] = new NodeState() { ActivityId = node.ChildActivity?.Id};
@@ -91,21 +137,21 @@ public abstract partial class FlowNodeBase
             }
         }
 
-        public bool IsCancelRequested(NativeActivityContext context, ActivityInstance completedInstance)
+        public bool IsCancelRequested()
         {
             if (completedInstance?.IsCancellationRequested == true 
-                || TryGetCurrentNode(context, completedInstance, out var index) && GetNodeState(context, index).IsCancelRequested)
+                || TryGetCurrentNode(out var index) && GetNodeState(index).IsCancelRequested)
             {
                 return true;
             }
             return false;
         }
 
-        private NodeState GetNodeState(NativeActivityContext context, int index) => _nodesStatesByIndex.GetOrAdd(context)[index];
+        private NodeState GetNodeState(int index) => _nodesStatesByIndex.GetOrAdd()[index];
 
-        public bool Cancel(NativeActivityContext context, int branch)
+        public bool Cancel(int branch)
         {
-            var nodeState = GetNodeState(context, branch);
+            var nodeState = GetNodeState(branch);
             if (nodeState.IsCancelRequested)
                 return false;
             nodeState.IsCancelRequested = true;

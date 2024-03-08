@@ -51,12 +51,12 @@ public class FlowParallel : FlowNodeBase
         connections.AddRange(_runtimeBranches);
     }
 
-    internal override void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode)
+    internal override void Execute(FlowNode predecessorNode)
     {
         for (int i = _runtimeBranches.Count - 1; i >= 0; i--)
         {
             var branch = _runtimeBranches[i];
-                Owner.ExecuteNextNode(context, branch, completedInstance);
+                Owner.ExecuteNextNode(branch);
         }
     }
 }
