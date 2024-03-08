@@ -9,7 +9,6 @@ public class FlowJoin : FlowNodeBase
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
     public FlowParallel Parallel { get; internal set; }
-
     internal override Activity ChildActivity => Completion;
 
     private record JoinState
@@ -25,7 +24,40 @@ public class FlowJoin : FlowNodeBase
     {
         _joinStates = new("FlowJoin", this, () => new());
     }
+    internal override void EndCacheMetadata()
+    {
+        ValidateAllBranches();
 
+        void ValidateAllBranches()
+        {
+            HashSet<FlowNode> visited = new()
+            {
+                this,
+                Parallel,
+            };
+            List<FlowNode> toVisit = new(1) { this };
+            do
+            {
+                var predecessors = toVisit.SelectMany(v => Extension.GetPredecessors(v)).ToList();
+                toVisit = new List<FlowNode>(predecessors.Count);
+                foreach (var predecessor in predecessors)
+                {
+                    if (!visited.Add(predecessor))
+                        continue;
+                    if (predecessor == null)
+                    {
+                        Metadata.AddValidationError("All join branches should start in the parent parallel node.");
+                        continue;
+                    }
+                    toVisit.Add(predecessor);
+                }
+            }
+            while (toVisit.Any());
+            var allBranchesJoined = Parallel.Branches.All(b => visited.Contains(b.StartNode));
+            if (!allBranchesJoined)
+                Metadata.AddValidationError("All parallel branches should end in same join node.");
+        }
+    }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
         if (Next != null)
@@ -45,12 +77,11 @@ public class FlowJoin : FlowNodeBase
         }
         return joinState;
     }
-
     internal override void Execute(NativeActivityContext context, ActivityInstance completedInstance, FlowNode predecessorNode)
     {
         var joinState = GetJoinState(context, () => new()
         {
-            ConnectedBranches = new(Extension.GetPredecessors(context, Index)),
+            ConnectedBranches = new(Extension.GetPredecessors(this).Select(p => p.Index)),
             CompletedNodeIndeces = new HashSet<int>(),
         });
         joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
@@ -63,7 +94,6 @@ public class FlowJoin : FlowNodeBase
             OnCompletionCallback(context, completedInstance, false);
         }
     }
-
     protected override void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance, bool result)
     {
         var joinState = GetJoinState(context);
@@ -82,7 +112,7 @@ public class FlowJoin : FlowNodeBase
             {
                 if (Extension.Cancel(context, branch))
                 {
-                    Cancel(Extension.GetPredecessors(context, branch));
+                    Cancel(Extension.GetPredecessors(branch).Select(p => p.Index));
                 }
             }
         }
