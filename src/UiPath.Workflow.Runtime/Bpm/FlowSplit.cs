@@ -2,47 +2,73 @@
 using System.Activities.Validation;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Markup;
 namespace System.Activities.Statements;
 
+public class FlowSplitBranch
+{
+    private string _displayName;
+
+    public FlowNode StartNode { get; set; }
+    [DefaultValue(null)]
+    public Activity<bool> Condition { get; set; }
+    [DefaultValue(null)]
+    [DependsOn(nameof(Condition))]
+    public string DisplayName
+    {
+        get => Condition?.DisplayName ?? _displayName;
+        set
+        {
+            if (Condition is not null)
+                Condition.DisplayName = value;
+
+            _displayName = value;
+        }
+    }
+
+    public static FlowSplitBranch New(FlowSplit splitNode)
+    {
+        return new()
+        {
+            StartNode = splitNode.MergeNode
+        };
+    }
+}
+
+[ContentProperty(nameof(Branches))]
 public class FlowSplit : FlowNodeBase
 {
-    public class Branch
+    private FlowMerge _merge;
+    public FlowMerge MergeNode
     {
-        public static Branch New(FlowSplit parallel)
+        get => _merge;
+        init
         {
-            return new()
-            {
-                StartNode = parallel.MergeNode
-            };
+            if (value?.SplitNode is { } split && split != this)
+                throw new InvalidOperationException("Split and merge must be linked both ways.");
+            _merge = value;
         }
-
-        private Branch()
-        {
-            
-        }
-
-        public FlowNode StartNode { get; set; }
-        public Activity<bool> Condition { get; set; }
-        public string DisplayName {  get; set; }
     }
-    public FlowMerge MergeNode { get; }
-    private ValidatingCollection<Branch> _branches;
-    internal override Activity ChildActivity => null;
-    [DefaultValue(null)]
-    public Collection<Branch> Branches => _branches ??= ValidatingCollection<Branch>.NullCheck();
 
+    [DefaultValue(null)]
+    public Collection<FlowSplitBranch> Branches => _branches ??= ValidatingCollection<FlowSplitBranch>.NullCheck();
+
+
+    private ValidatingCollection<FlowSplitBranch> _branches;
+    internal override Activity ChildActivity => null;
+ 
     private List<FlowNode> _runtimeBranches;
 
     public FlowSplit()
     {
-        MergeNode = new FlowMerge() { Split = this };
+        MergeNode = new FlowMerge() { SplitNode = this };
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
         _runtimeBranches = new (Branches.Select(b => (b.Condition is null) ? b.StartNode :
                     new FlowDecision()
                     {
-                        Condition = b.Condition ?? new Expressions.LambdaValue<bool>(c => true),
+                        Condition = b.Condition,
                         DisplayName = b.DisplayName,
                         True = b.StartNode,
                         False = MergeNode
