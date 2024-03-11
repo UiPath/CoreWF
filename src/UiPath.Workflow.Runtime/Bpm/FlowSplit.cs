@@ -57,7 +57,7 @@ public class FlowSplit : FlowNodeBase
     private ValidatingCollection<FlowSplitBranch> _branches;
     internal override Activity ChildActivity => null;
  
-    private List<FlowNode> _runtimeBranches;
+    internal List<FlowNode> RuntimeBranchesNodes { get; private set; }
 
     public FlowSplit()
     {
@@ -65,23 +65,28 @@ public class FlowSplit : FlowNodeBase
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
-        _runtimeBranches = new (Branches.Select(b => (b.Condition is null) ? b.StartNode :
-                    new FlowDecision()
-                    {
-                        Condition = b.Condition,
-                        DisplayName = b.DisplayName,
-                        True = b.StartNode,
-                        False = MergeNode
-                    }
-            ));
-        connections.AddRange(_runtimeBranches);
+        RuntimeBranchesNodes = Branches.Select(RuntimeBranch).ToList();
+        FlowNode RuntimeBranch(FlowSplitBranch splitBranch)
+        {
+            var node = (splitBranch.Condition is null) ? splitBranch.StartNode :
+                                new FlowDecision()
+                                {
+                                    Condition = splitBranch.Condition,
+                                    DisplayName = splitBranch.DisplayName,
+                                    True = splitBranch.StartNode,
+                                    False = MergeNode
+                                };
+            Extension.SaveBranch(node, splitBranch, this);
+            return node;
+        }
+        connections.AddRange(RuntimeBranchesNodes);
     }
 
     internal override void Execute(FlowNode predecessorNode)
     {
-        for (int i = _runtimeBranches.Count - 1; i >= 0; i--)
+        for (int i = RuntimeBranchesNodes.Count - 1; i >= 0; i--)
         {
-            var branch = _runtimeBranches[i];
+            var branch = RuntimeBranchesNodes[i];
                 Owner.ExecuteNextNode(branch);
         }
     }
