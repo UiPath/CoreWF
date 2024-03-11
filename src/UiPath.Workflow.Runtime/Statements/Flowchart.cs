@@ -312,31 +312,32 @@ public sealed class Flowchart : NativeActivity
 
 
         Fx.Assert(node != null, "caller should validate");
-        FlowNode current = node;
-        var previousNode = GetCurrentNode();
+        Extension.Current = node;
+        var previousNode = node;
         do
         {
-            if (current is FlowNodeBase nextExtensible)
+            if (Extension.Current is FlowNodeBase nextExtensible)
             {
-                nextExtensible.Execute( previousNode);
-                current = null;
+                nextExtensible.Execute(previousNode);
+                Extension.Current = null;
                 continue;
             }
-            if (ExecuteSingleNode(context, current, out FlowNode next))
+            if (ExecuteSingleNode(context, Extension.Current, out FlowNode next))
             {
-                previousNode = current;
-                current = next;
+                previousNode = Extension.Current;
+                Extension.Current = next;
             }
             else
             {
-                current = null;
+                Extension.Current = null;
             }
         }
-        while (current != null);
+        while (Extension.Current != null);
     }
 
     internal void ExecuteNextNode(FlowNode next)
     {
+        Extension.OnNodeCompleted();
         ExecuteNodeChain(Extension.context, next, Extension.completedInstance);
     }
 
@@ -362,39 +363,31 @@ public sealed class Flowchart : NativeActivity
         return switchNode.Execute(context, this);
     }
 
-    private FlowNode GetCurrentNode()
-    {
-        Extension.TryGetCurrentNode(out var index);
-        FlowNode result = _reachableNodes[index];
-        Fx.Assert(result != null, "corrupt internal state");
-        return result;
-    }
-
     private void OnStepCompleted(NativeActivityContext context, ActivityInstance completedInstance)
     {
         using var _ = Extension.WithContext(context, completedInstance);
-        FlowStep step = GetCurrentNode() as FlowStep;
+        FlowStep step = Extension.Current as FlowStep;
         Fx.Assert(step != null, "corrupt internal state");
         FlowNode next = step.Next;
-        ExecuteNodeChain(context, next, completedInstance);
+        ExecuteNextNode(next);
     }
 
     private void OnDecisionCompleted(NativeActivityContext context, ActivityInstance completedInstance, bool result)
     {
         using var _ = Extension.WithContext(context, completedInstance);
-        FlowDecision decision = GetCurrentNode() as FlowDecision;
+        FlowDecision decision = Extension.Current as FlowDecision;
         Fx.Assert(decision != null, "corrupt internal state");
         FlowNode next = result ? decision.True : decision.False;
-        ExecuteNodeChain(context, next, completedInstance);
+        ExecuteNextNode(next);
     }
 
     internal void OnSwitchCompleted<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
         using var _ = Extension.WithContext(context, completedInstance);
-        IFlowSwitch switchNode = GetCurrentNode() as IFlowSwitch;
+        IFlowSwitch switchNode = Extension.Current as IFlowSwitch;
         Fx.Assert(switchNode != null, "corrupt internal state");
         FlowNode next = switchNode.GetNextNode(result);
-        ExecuteNodeChain(context, next, completedInstance);
+        ExecuteNextNode(next);
     }
 
     internal void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance)
@@ -405,7 +398,6 @@ public sealed class Flowchart : NativeActivity
     internal void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
         using var _ = Extension.WithContext(context, completedInstance);
-        var node = GetCurrentNode() as FlowNodeBase;
-        node.OnCompletionCallback(result);
+        Extension.OnCompletionCallback(result);
     }
 }
