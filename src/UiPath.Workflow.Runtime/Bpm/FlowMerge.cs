@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Activities.Validation;
+using System.Linq;
 namespace System.Activities.Statements;
 
 public class FlowMerge : FlowNodeBase
@@ -23,13 +24,12 @@ public class FlowMerge : FlowNodeBase
     private readonly FlowchartState.Of<Dictionary<string, MergeState>> _joinStates;
     internal override Activity ChildActivity => Completion;
 
+    private List<int> ConnectedBranches { get; set; }
+
     private record MergeState
     {
-        public int WaitCount { get; set; }
         public bool Done { get; set; }
         public HashSet<int> CompletedNodeIndeces { get; set; }
-        public List<int> ConnectedBranches { get; set; }
-        public Dictionary<string, int> PendingCompletionsInstanceIdToPredecessorIndex { get; set; }
     }
 
     public FlowMerge(FlowSplit split) : this()
@@ -44,6 +44,10 @@ public class FlowMerge : FlowNodeBase
     }
     internal override void EndCacheMetadata()
     {
+        ConnectedBranches = SplitNode
+            .RuntimeBranchesNodes
+            .Select(b => b.Index).ToList();
+
         ValidateAllBranches();
 
         void ValidateAllBranches()
@@ -99,7 +103,6 @@ public class FlowMerge : FlowNodeBase
     {
         var joinState = GetJoinState(() => new()
         {
-            ConnectedBranches = new(Extension.GetPredecessors(this).Select(p => p.Index)),
             CompletedNodeIndeces = new HashSet<int>(),
         });
         joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
@@ -115,24 +118,44 @@ public class FlowMerge : FlowNodeBase
     protected override void OnCompletionCallback(bool result)
     {
         var joinState = GetJoinState();
+        var incompleteBranches = ConnectedBranches.Except(joinState.CompletedNodeIndeces).ToList();
+        if (result)
+        {
+            EndAllBranches();
+        }
 
-        if (!result && joinState.CompletedNodeIndeces.Count < SplitNode.Branches.Count)
+        if (incompleteBranches.Any())
             return;
 
         joinState.Done = true;
-        var toCancel = joinState.ConnectedBranches.Except(joinState.CompletedNodeIndeces);
-        Cancel(toCancel);
         Owner.ExecuteNextNode(Next);
-
-        void Cancel(IEnumerable<int> toCancel)
+        
+        void EndAllBranches()
         {
+            var toCancel = incompleteBranches;
+            if (Cancel(toCancel))
+            {
+                if (!Cancel(toCancel))
+                {
+                    joinState.CompletedNodeIndeces.AddRange(incompleteBranches);
+                    OnCompletionCallback(false);
+                }
+            }
+
+        }
+
+        bool Cancel(IEnumerable<int> toCancel)
+        {
+            var result = false;
             foreach (var branch in toCancel)
             {
                 if (Extension.Cancel(branch))
                 {
-                    Cancel(Extension.GetPredecessors(branch).Select(p => p.Index));
+                    result = true;
+                    Cancel(Extension.GetSuccessors(branch).Select(p => p.Index));
                 }
             }
+            return result;
         }
     }
 }

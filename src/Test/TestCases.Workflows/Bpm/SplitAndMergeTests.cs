@@ -135,14 +135,14 @@ public class SplitAndMergeTests
 
         var split = new FlowSplit()
             .AddBranches(
-                AddString(branch1Str),
-                AddString(branch2Str)
+                AddString(branch1Str).FlowTo(AddString(branch1Str)),
+                new BlockingActivity("whatever").FlowTo(AddString(branch2Str))
                 );
         split.MergeNode.FlowTo(AddString(stopString));
         split.MergeNode.Completion = new LambdaValue<bool>(c => true);
 
         ExecuteFlowchart(split);
-        Results.ShouldBe(new() { branch1Str, stopString });
+        Results.ShouldBe(new() { branch1Str, branch1Str, stopString });
     }
 
     [Fact]

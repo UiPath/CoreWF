@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Activities.Runtime;
+using System.Linq;
 namespace System.Activities.Statements;
 
 public abstract partial class FlowNodeBase
@@ -17,6 +18,7 @@ public abstract partial class FlowNodeBase
 
     internal class FlowchartExtension
     {
+        private readonly Dictionary<FlowNode, BranchLinks> _splitBranchesByNode = new();
         private readonly HashSet<FlowNode> _nodes = new();
         private readonly FlowchartState.Of<Dictionary<string,int>> _nodeIndexByActivityId;
         private readonly FlowchartState.Of<Dictionary<int, NodeState>> _nodesStatesByIndex;
@@ -28,6 +30,8 @@ public abstract partial class FlowNodeBase
         public ActivityInstance completedInstance { get; private set; }
         public NativeActivityContext context { get; private set; }
         public Flowchart Flowchart { get; }
+        public FlowNode Current { get; set; }
+
         public bool HasState() => FlowchartState.HasState(Flowchart);
 
         public FlowchartExtension(Flowchart flowchart)
@@ -43,15 +47,30 @@ public abstract partial class FlowNodeBase
                 throw new InvalidOperationException("Context already set.");
             this.completedInstance = completedInstance;
             this.context = context;
+            this.Current = GetCurrentNode();
             return Disposable.Create(() =>
             {
                 this.context = null;
                 this.completedInstance = null;
+                this.Current = null;
             });
+
+            FlowNode GetCurrentNode()
+            {
+                if (completedInstance is null)
+                    return _nodes.FirstOrDefault(n => n.Index == 0);
+                if (!_nodeIndexByActivityId.GetOrAdd().TryGetValue(completedInstance?.Activity.Id, out var index))
+                    return null;
+                FlowNode result = _nodes.FirstOrDefault(n => n.Index == index);
+                Fx.Assert(result != null, "corrupt internal state");
+                return result;
+            }
         }
 
         public void EndCacheMetadata()
         {
+            if (Flowchart.StartNode is not null)
+                _nodes.Add(Flowchart.StartNode);
             foreach(var node in _nodes.OfType<FlowNodeBase>())
             {
                 node.EndCacheMetadata();
@@ -70,17 +89,6 @@ public abstract partial class FlowNodeBase
                 _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(Flowchart.OnCompletionCallback);
             }
             context.ScheduleActivity(activity, callback as CompletionCallback<T>);
-        }
-
-        public bool TryGetCurrentNode(out int index)
-        {
-            if (completedInstance == null)
-            {
-                index = 0;
-                return false;
-            }
-
-            return _nodeIndexByActivityId.GetOrAdd().TryGetValue(completedInstance.Activity.Id, out index);
         }
 
         public void OnExecute()
@@ -131,37 +139,41 @@ public abstract partial class FlowNodeBase
                     _successors[predecessor] = successorsSaved = new();
                 }
                 successorsSaved.Add(successor);
+                PropagateBranchNode(predecessor, successor);
             }
         }
 
         public bool IsCancelRequested()
         {
-            if (completedInstance?.IsCancellationRequested == true 
-                || TryGetCurrentNode(out var index) && GetNodeState(index).IsCancelRequested)
-            {
+            if (completedInstance?.IsCancellationRequested == true)
                 return true;
-            }
-            return false;
+            var node = Current;
+            if (node == null)
+                return false;
+            return GetNodeState(node.Index).IsCancelRequested;
         }
 
         private NodeState GetNodeState(int index) => _nodesStatesByIndex.GetOrAdd()[index];
 
-        public bool Cancel(int branch)
+        public bool Cancel(int branchNodeIndex)
         {
-            var nodeState = GetNodeState(branch);
-            if (nodeState.IsCancelRequested)
-                return false;
-            nodeState.IsCancelRequested = true;
-            
+            var nodeState = GetNodeState(branchNodeIndex);
             var childToCancel = context.GetChildren().FirstOrDefault(c => c.Activity.Id == nodeState.ActivityId);
+            if (nodeState.IsCancelRequested 
+                && (childToCancel is null || childToCancel.IsCancellationRequested))
+                return false;
+
+            nodeState.IsCancelRequested = true;
             if (childToCancel is not null)
                 context.CancelChild(childToCancel);
-
             return true;
         }
 
         internal void Install(NativeActivityMetadata metadata)
             => FlowchartState.Install(metadata, Flowchart);
+
+        internal List<FlowNode> GetSuccessors(int index)
+            => _successors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
 
         internal List<FlowNode> GetPredecessors(int index)
             => _predecessors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
@@ -170,6 +182,46 @@ public abstract partial class FlowNodeBase
         {
             _predecessors.TryGetValue(node, out var result);
             return result?.ToList() ?? new();
+        }
+
+        internal void SaveBranch(FlowNode node, FlowSplitBranch splitBranch, FlowSplit parentSplit)
+        {
+            _splitBranchesByNode[node] = new BranchLinks 
+            {
+                Split = parentSplit,
+                Branch = splitBranch,
+                RuntimeNode = node
+            };
+        }
+
+        private void PropagateBranchNode(FlowNode predecessor, FlowNode successor)
+        {
+            if (!_splitBranchesByNode.TryGetValue(predecessor, out var pre))
+                return;
+            _splitBranchesByNode[successor] = pre;
+        }
+
+        internal BranchLinks GetBranch(FlowNode predecessorNode)
+        {
+            return _splitBranchesByNode[predecessorNode];
+        }
+
+        internal void OnCompletionCallback<T>(T result)
+        {
+            var node = Current as FlowNodeBase;
+            node.OnCompletionCallback(result);
+            OnNodeCompleted();
+        }
+
+        internal void OnNodeCompleted()
+        {
+        }
+
+        internal class BranchLinks
+        {
+            public FlowSplit Split { get; set; }
+            public FlowSplitBranch Branch { get; set; }
+            public FlowNode RuntimeNode { get; set; }
         }
 
         private class NodeState
