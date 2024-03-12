@@ -81,6 +81,6 @@ public sealed class FlowDecision : FlowNode
     }
     protected override void OnCompletionCallback(bool result)
     {
-        Extension.ExecuteNextNode(result ? True : False);
+        Extension.EnqueueNodeExecution(result ? True : False);
     }
 }

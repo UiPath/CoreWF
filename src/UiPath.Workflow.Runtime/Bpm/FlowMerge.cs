@@ -1,5 +1,4 @@
-﻿using System.Activities.Validation;
-using System.Linq;
+﻿using System.Linq;
 namespace System.Activities.Statements;
 
 public class FlowMerge : FlowNode
@@ -36,7 +35,6 @@ public class FlowMerge : FlowNode
     {
         SplitNode = split;
     }
-
 
     public FlowMerge()
     {
@@ -105,7 +103,9 @@ public class FlowMerge : FlowNode
         {
             CompletedNodeIndeces = new HashSet<int>(),
         });
-        joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
+        var branch = Extension.GetBranch(predecessorNode);
+        //joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
+        joinState.CompletedNodeIndeces.Add(branch.RuntimeNode.Index);
         if (Completion is not null)
         {
             Extension.ScheduleWithCallback(Completion);
@@ -128,34 +128,27 @@ public class FlowMerge : FlowNode
             return;
 
         joinState.Done = true;
-        Extension.ExecuteNextNode(Next);
+        Extension.EnqueueNodeExecution(Next);
         
         void EndAllBranches()
         {
             var toCancel = incompleteBranches;
-            if (Cancel(toCancel))
-            {
-                if (!Cancel(toCancel))
-                {
-                    joinState.CompletedNodeIndeces.AddRange(incompleteBranches);
-                    OnCompletionCallback(false);
-                }
-            }
-
+            Cancel(toCancel);
         }
 
-        bool Cancel(IEnumerable<int> toCancel)
+        void Cancel(List<int> toCancel)
         {
-            var result = false;
-            foreach (var branch in toCancel)
+            foreach (var branchNode in toCancel)
             {
-                if (Extension.Cancel(branch))
+                if (branchNode == Index)
+                    continue;
+                if (Extension.Cancel(branchNode))
                 {
-                    result = true;
-                    Cancel(Extension.GetSuccessors(branch).Select(p => p.Index));
+                    var successors = Extension.GetSuccessors(branchNode)
+                        .Select(p => p.Index).ToList();
+                    Cancel(successors);
                 }
             }
-            return result;
         }
     }
 }
