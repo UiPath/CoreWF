@@ -1,3 +1,5 @@
+using System.Activities.Statements;
+
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -20,6 +22,8 @@ public abstract class FlowNode
     internal bool IsOpen => _owner != null;
 
     internal Flowchart Owner => _owner;
+    protected NativeActivityMetadata Metadata { get; private set; }
+    internal FlowchartExtension Extension => Owner.Extension;
 
     // Returns true if this is the first time we've visited this node during this pass
     internal bool Open(Flowchart owner, NativeActivityMetadata metadata)
@@ -49,7 +53,8 @@ public abstract class FlowNode
         return true;
     }
 
-    internal abstract void OnOpen(Flowchart owner, NativeActivityMetadata metadata);
+    internal virtual void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
+    { }
 
     internal void GetChildActivities(ICollection<Activity> children)
     {
@@ -60,4 +65,30 @@ public abstract class FlowNode
     }
 
     internal abstract void GetConnectedNodes(IList<FlowNode> connections);
+    internal abstract void Execute(FlowNode predecessorNode);
+
+    internal void EndCacheMetadata(NativeActivityMetadata metadata) 
+    {
+        Metadata = metadata;
+        OnEndCacheMetadata();
+    }
+
+    protected virtual void OnEndCacheMetadata() { }
+
+    protected virtual void OnCompletionCallback() { }
+
+    internal virtual void OnCompletionCallback<T>(T result)
+    {
+        switch (result)
+        {
+            case null:
+                OnCompletionCallback();
+                break;
+            case bool b:
+                OnCompletionCallback(b);
+                break;
+        }
+    }
+
+    protected virtual void OnCompletionCallback(bool result) { }
 }

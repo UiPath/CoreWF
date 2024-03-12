@@ -6,7 +6,7 @@ using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Markup;
-using static System.Activities.Statements.FlowNodeBase;
+using static System.Activities.Statements.FlowNode;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -21,8 +21,6 @@ public sealed class Flowchart : NativeActivity
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
-    private CompletionCallback _onStepCompleted;
-    private CompletionCallback<bool> _onDecisionCompleted;
 
     public Flowchart()
     {
@@ -194,7 +192,7 @@ public sealed class Flowchart : NativeActivity
         }
 
         metadata.SetChildrenCollection(new Collection<Activity>(children));
-        Extension.EndCacheMetadata();
+        Extension.EndCacheMetadata(metadata);
     }
 
     private void GatherReachableNodes(NativeActivityMetadata metadata)
@@ -263,15 +261,13 @@ public sealed class Flowchart : NativeActivity
 
     protected override void Execute(NativeActivityContext context)
     {
-        using var _ = Extension.WithContext(context, null);
         if (StartNode != null)
         {
             if (TD.FlowchartStartIsEnabled())
             {
                 TD.FlowchartStart(DisplayName);
             }
-            Extension.OnExecute();
-            ExecuteNodeChain(context, StartNode, null);
+            Extension.OnExecute(context);
         }
         else
         {
@@ -282,114 +278,6 @@ public sealed class Flowchart : NativeActivity
         }
     }
 
-    private void ExecuteNodeChain(NativeActivityContext context, FlowNode node, ActivityInstance completedInstance)
-    {
-        if (Extension.IsCancelRequested() is true)
-            return;
-
-
-        if (node == null)
-        {
-            if (context.IsCancellationRequested)
-            {
-                Fx.Assert(completedInstance != null, "cannot request cancel if we never scheduled any children");
-                // we are done but the last child didn't complete successfully
-                if (completedInstance.State != ActivityInstanceState.Closed)
-                {
-                    context.MarkCanceled();
-                }
-            }
-
-            return;
-        }
-
-        if (context.IsCancellationRequested)
-        {
-            // we're not done and cancel has been requested
-            context.MarkCanceled();
-            return;
-        }
-
-
-        Fx.Assert(node != null, "caller should validate");
-        Extension.Current = node;
-        var previousNode = node;
-        do
-        {
-            if (Extension.Current is FlowNodeBase nextExtensible)
-            {
-                nextExtensible.Execute(previousNode);
-                Extension.Current = null;
-                continue;
-            }
-            if (ExecuteSingleNode(context, Extension.Current, out FlowNode next))
-            {
-                previousNode = Extension.Current;
-                Extension.Current = next;
-            }
-            else
-            {
-                Extension.Current = null;
-            }
-        }
-        while (Extension.Current != null);
-    }
-
-    internal void ExecuteNextNode(FlowNode next)
-    {
-        Extension.OnNodeCompleted();
-        ExecuteNodeChain(Extension.context, next, Extension.completedInstance);
-    }
-
-    private bool ExecuteSingleNode(NativeActivityContext context, FlowNode node, out FlowNode nextNode)
-    {
-        Fx.Assert(node != null, "caller should validate");
-        if (node is FlowStep step)
-        {
-            _onStepCompleted ??= new CompletionCallback(OnStepCompleted);
-            return step.Execute(context, _onStepCompleted, out nextNode);
-        }
-
-        nextNode = null;
-        if (node is FlowDecision decision)
-        {
-            _onDecisionCompleted ??= new CompletionCallback<bool>(OnDecisionCompleted);
-            return decision.Execute(context, _onDecisionCompleted);
-        }
-
-        IFlowSwitch switchNode = node as IFlowSwitch;
-        Fx.Assert(switchNode != null, "unrecognized FlowNode");
-
-        return switchNode.Execute(context, this);
-    }
-
-    private void OnStepCompleted(NativeActivityContext context, ActivityInstance completedInstance)
-    {
-        using var _ = Extension.WithContext(context, completedInstance);
-        FlowStep step = Extension.Current as FlowStep;
-        Fx.Assert(step != null, "corrupt internal state");
-        FlowNode next = step.Next;
-        ExecuteNextNode(next);
-    }
-
-    private void OnDecisionCompleted(NativeActivityContext context, ActivityInstance completedInstance, bool result)
-    {
-        using var _ = Extension.WithContext(context, completedInstance);
-        FlowDecision decision = Extension.Current as FlowDecision;
-        Fx.Assert(decision != null, "corrupt internal state");
-        FlowNode next = result ? decision.True : decision.False;
-        ExecuteNextNode(next);
-    }
-
-    internal void OnSwitchCompleted<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
-    {
-        using var _ = Extension.WithContext(context, completedInstance);
-        IFlowSwitch switchNode = Extension.Current as IFlowSwitch;
-        Fx.Assert(switchNode != null, "corrupt internal state");
-        FlowNode next = switchNode.GetNextNode(result);
-        ExecuteNextNode(next);
-    }
-
     internal void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance)
     {
         OnCompletionCallback<object>(context, completedInstance, null);
@@ -397,7 +285,6 @@ public sealed class Flowchart : NativeActivity
 
     internal void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
-        using var _ = Extension.WithContext(context, completedInstance);
-        Extension.OnCompletionCallback(result);
+        Extension.OnCompletionCallback(context, completedInstance, result);
     }
 }

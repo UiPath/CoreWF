@@ -52,11 +52,11 @@ public sealed class FlowDecision : FlowNode
         set => _displayName = value;
     }
 
-    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
+    protected override void OnEndCacheMetadata()
     {
         if (Condition == null)
         {
-            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName));
+            Metadata.AddValidationError(SR.FlowDecisionRequiresCondition(Owner.DisplayName));
         }
     }
 
@@ -75,9 +75,12 @@ public sealed class FlowDecision : FlowNode
 
     internal override Activity ChildActivity => Condition;
 
-    internal bool Execute(NativeActivityContext context, CompletionCallback<bool> onConditionCompleted)
+    internal override void Execute(FlowNode predecessorNode)
     {
-        context.ScheduleActivity(Condition, onConditionCompleted);
-        return false;
+        Extension.ScheduleWithCallback(Condition);
+    }
+    protected override void OnCompletionCallback(bool result)
+    {
+        Extension.ExecuteNextNode(result ? True : False);
     }
 }
