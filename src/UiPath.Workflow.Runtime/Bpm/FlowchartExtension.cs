@@ -5,6 +5,7 @@ namespace System.Activities.Statements;
 internal class FlowchartExtension
 {
     private readonly Flowchart _flowchart;
+    private readonly Queue<FlowNode> _executionQueue = new();
     private readonly Dictionary<FlowNode, BranchLinks> _splitBranchesByNode = new();
     private readonly HashSet<FlowNode> _nodes = new();
     private readonly FlowchartState.Of<Dictionary<string, int>> _nodeIndexByActivityInstanceId;
@@ -60,16 +61,18 @@ internal class FlowchartExtension
             node.EndCacheMetadata(metadata);
         }
     }
+    private void SaveNodeActivityLink(ActivityInstance activityInstance)
+    {
+        _nodeIndexByActivityInstanceId.GetOrAdd()[activityInstance.Id] = _current.Index;
+        var nodeState = GetNodeState(_current.Index);
+        nodeState.ActivityInstanceIds.Add(activityInstance.Id);
+    }
+
     public void ScheduleWithCallback(Activity activity)
     {
         _completionCallback ??= new CompletionCallback(_flowchart.OnCompletionCallback);
         var activityInstance = ActivityContext.ScheduleActivity(activity, _completionCallback);
         SaveNodeActivityLink(activityInstance);
-    }
-
-    private void SaveNodeActivityLink(ActivityInstance activityInstance)
-    {
-        _nodeIndexByActivityInstanceId.GetOrAdd()[activityInstance.Id] = _current.Index;
     }
 
     public void ScheduleWithCallback<T>(Activity<T> activity)
@@ -85,17 +88,8 @@ internal class FlowchartExtension
     public void OnExecute(NativeActivityContext context)
     {
         using var _ = WithContext(context, null);
-        SaveLinks();
-        ExecuteNodeChain(_flowchart.StartNode);
-
-        void SaveLinks()
-        {
-            var nodesStates = _nodesStatesByIndex.GetOrAdd();
-            foreach (var node in _nodes)
-            {
-                nodesStates[node.Index] = new NodeState() { ActivityId = node.ChildActivity?.Id };
-            }
-        }
+        EnqueueNodeExecution(_flowchart.StartNode);
+        ExecuteQueue();
     }
 
     public void RecordLinks(FlowNode predecessor, List<FlowNode> successors)
@@ -122,27 +116,33 @@ internal class FlowchartExtension
 
     public bool IsCancelRequested()
     {
-        if (_completedInstance?.IsCancellationRequested == true)
-            return true;
         var node = _current;
         if (node == null)
             return false;
         return GetNodeState(node.Index).IsCancelRequested;
     }
 
-    private NodeState GetNodeState(int index) => _nodesStatesByIndex.GetOrAdd()[index];
+    private NodeState GetNodeState(int index)
+    {
+        var nodesStatesByIndex = _nodesStatesByIndex.GetOrAdd();
+        if (!nodesStatesByIndex.TryGetValue(index, out var state))
+            nodesStatesByIndex[index] = state = new();
+
+        return state;
+    }
 
     public bool Cancel(int branchNodeIndex)
     {
         var nodeState = GetNodeState(branchNodeIndex);
-        var childToCancel = ActivityContext.GetChildren().FirstOrDefault(c => c.Activity.Id == nodeState.ActivityId);
-        if (nodeState.IsCancelRequested
-            && (childToCancel is null || childToCancel.IsCancellationRequested))
+        if (nodeState.IsCancelRequested || nodeState.IsCompleted)
             return false;
 
         nodeState.IsCancelRequested = true;
-        if (childToCancel is not null)
-            ActivityContext.CancelChild(childToCancel);
+        var childrenToCancel = ActivityContext.GetChildren()
+            .Where(c => nodeState.ActivityInstanceIds.Contains(c.Id))
+            .ToList();
+        foreach (var child in childrenToCancel)
+            ActivityContext.CancelChild(child);
         return true;
     }
 
@@ -186,27 +186,40 @@ internal class FlowchartExtension
     public void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
         using var _ = WithContext(context, completedInstance);
-        var node = _current as FlowNode;
-        node.OnCompletionCallback(result);
+        _current.OnCompletionCallback(result);
         OnNodeCompleted();
+        ExecuteQueue();
     }
 
+    public void EnqueueNodeExecution(FlowNode next)
+    {
+        if (next is null)
+            return;
+        _executionQueue.Enqueue(next);
+    }
+
+    private void ExecuteQueue()
+    {
+        while (_executionQueue.TryDequeue(out var next))
+        {
+            var state = GetNodeState(next.Index);
+            state.IsRunning = true;
+            ExecuteNodeChain(next);
+        }
+    }
     private void OnNodeCompleted()
     {
-    }
-
-    public void ExecuteNextNode(FlowNode next)
-    {
-        OnNodeCompleted();
-        ExecuteNodeChain(next);
+        var state = GetNodeState(_current.Index);
+        state.IsCompleted = true;
+        if (_completedInstance is not null)
+        {
+            state.IsCancelRequested = _completedInstance.IsCancellationRequested;
+        }
+        _completedInstance = null;
     }
 
     private void ExecuteNodeChain(FlowNode node)
     {
-        if (IsCancelRequested() is true)
-            return;
-
-
         if (node == null)
         {
             if (ActivityContext.IsCancellationRequested)
@@ -229,17 +242,31 @@ internal class FlowchartExtension
             return;
         }
 
-
         Fx.Assert(node != null, "caller should validate");
         var previousNode = _current;
         _current = node;
-        ((FlowNode)node).Execute(previousNode);
+        if (IsCancelRequested())
+        {
+            OnCurrentBranchCancelled();
+            return;
+        }
+        node.Execute(previousNode);
+    }
+
+    private void OnCurrentBranchCancelled()
+    {
+        var merge = GetBranch(_current)?.Split.MergeNode;
+        if (merge is null)
+            return;
+        EnqueueNodeExecution(merge);
     }
 
     private class NodeState
     {
         public bool IsCancelRequested { get; set; }
-        public string ActivityId { get; set; }
+        public bool IsRunning { get; set; }
+        public bool IsCompleted { get; set; }
+        public HashSet<string> ActivityInstanceIds { get; set; } = new();
     }
     private class Disposable : IDisposable
     {

@@ -47,6 +47,6 @@ public sealed class FlowStep : FlowNode
 
     protected override void OnCompletionCallback()
     {
-        Extension.ExecuteNextNode(Next);
+        Extension.EnqueueNodeExecution(Next);
     }
 }
