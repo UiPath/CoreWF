@@ -2,7 +2,7 @@
 using System.Linq;
 namespace System.Activities.Statements;
 
-public class FlowMerge : FlowNodeBase
+public class FlowMerge : FlowNode
 {
     private FlowSplit _split;
     [DefaultValue(null)]
@@ -42,7 +42,7 @@ public class FlowMerge : FlowNodeBase
     {
         _joinStates = new("FlowMerge", this, () => new());
     }
-    internal override void EndCacheMetadata()
+    protected override void OnEndCacheMetadata()
     {
         ConnectedBranches = SplitNode
             .RuntimeBranchesNodes
@@ -128,7 +128,7 @@ public class FlowMerge : FlowNodeBase
             return;
 
         joinState.Done = true;
-        Owner.ExecuteNextNode(Next);
+        Extension.ExecuteNextNode(Next);
         
         void EndAllBranches()
         {

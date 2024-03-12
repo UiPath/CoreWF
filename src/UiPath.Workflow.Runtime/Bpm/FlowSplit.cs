@@ -36,7 +36,7 @@ public class FlowSplitBranch
 }
 
 [ContentProperty(nameof(Branches))]
-public class FlowSplit : FlowNodeBase
+public class FlowSplit : FlowNode
 {
     private FlowMerge _merge;
     public FlowMerge MergeNode
@@ -87,7 +87,7 @@ public class FlowSplit : FlowNodeBase
         for (int i = RuntimeBranchesNodes.Count - 1; i >= 0; i--)
         {
             var branch = RuntimeBranchesNodes[i];
-                Owner.ExecuteNextNode(branch);
+                Extension.ExecuteNextNode(branch);
         }
     }
 }

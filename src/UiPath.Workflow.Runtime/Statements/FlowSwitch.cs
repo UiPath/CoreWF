@@ -8,11 +8,10 @@ using System.Windows.Markup;
 namespace System.Activities.Statements;
 
 [ContentProperty("Cases")]
-public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
+public sealed class FlowSwitch<T> : FlowNode
 {
     private const string DefaultDisplayName = "Switch";
     internal IDictionary<T, FlowNode> _cases;
-    private CompletionCallback<T> _onSwitchCompleted;
 
     public FlowSwitch()
     {
@@ -32,14 +31,6 @@ public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
     [DefaultValue(DefaultDisplayName)]
     public string DisplayName { get; set; }
 
-    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
-    {
-        if (Expression == null)
-        {
-            metadata.AddValidationError(SR.FlowSwitchRequiresExpression(owner.DisplayName));
-        }
-    }
-
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
         foreach (KeyValuePair<T, FlowNode> item in Cases)
@@ -52,24 +43,44 @@ public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
         }
     }
 
-    internal override Activity ChildActivity => Expression;
-
-    bool IFlowSwitch.Execute(NativeActivityContext context, Flowchart parent)
+    protected override void OnEndCacheMetadata()
     {
-        context.ScheduleActivity(Expression, GetSwitchCompletedCallback(parent));
-        return false;
+        if (Expression == null)
+        {
+            Metadata.AddValidationError(SR.FlowSwitchRequiresExpression(Owner.DisplayName));
+        }
     }
 
-    FlowNode IFlowSwitch.GetNextNode(object value)
+    internal override Activity ChildActivity => Expression;
+
+    internal override void Execute(FlowNode predecessorNode)
     {
-        T newValue = (T)value;
+        Extension.ScheduleWithCallback(Expression);
+    }
+
+    internal override void OnCompletionCallback<TResult>(TResult value)
+    {
+        T newValue;
+
+        switch (value)
+        {
+            case T castedValue:
+                newValue = castedValue;
+                break;
+            case null:
+                newValue = default;
+                break;
+            default:
+                throw new InvalidCastException();
+        }
+
         if (Cases.TryGetValue(newValue, out FlowNode result))
         {
             if (TD.FlowchartSwitchCaseIsEnabled())
             {
                 TD.FlowchartSwitchCase(Owner.DisplayName, newValue?.ToString());
             }
-            return result;
+            Extension.ExecuteNextNode(result);
         }
         else
         {
@@ -87,13 +98,7 @@ public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
                     TD.FlowchartSwitchCaseNotFound(Owner.DisplayName);
                 }
             }
-            return Default;
+            Extension.ExecuteNextNode(Default);
         }
-    }
-
-    private CompletionCallback<T> GetSwitchCompletedCallback(Flowchart parent)
-    {
-        _onSwitchCompleted ??= new CompletionCallback<T>(parent.OnSwitchCompleted);
-        return _onSwitchCompleted;
     }
 }
