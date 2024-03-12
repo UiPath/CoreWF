@@ -7,7 +7,7 @@ internal class FlowchartExtension
     private readonly Flowchart _flowchart;
     private readonly Dictionary<FlowNode, BranchLinks> _splitBranchesByNode = new();
     private readonly HashSet<FlowNode> _nodes = new();
-    private readonly FlowchartState.Of<Dictionary<string, int>> _nodeIndexByActivityId;
+    private readonly FlowchartState.Of<Dictionary<string, int>> _nodeIndexByActivityInstanceId;
     private readonly FlowchartState.Of<Dictionary<int, NodeState>> _nodesStatesByIndex;
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _predecessors = new();
@@ -21,7 +21,7 @@ internal class FlowchartExtension
     public FlowchartExtension(Flowchart flowchart)
     {
         _flowchart = flowchart;
-        _nodeIndexByActivityId = new("_nodeIndexByActivityId", flowchart, () => new());
+        _nodeIndexByActivityInstanceId = new("_nodeIndexByActivityId", flowchart, () => new());
         _nodesStatesByIndex = new("_nodesStatesByIndex", flowchart, () => new());
     }
 
@@ -43,7 +43,7 @@ internal class FlowchartExtension
         {
             if (completedInstance is null)
                 return _nodes.FirstOrDefault(n => n.Index == 0);
-            if (!_nodeIndexByActivityId.GetOrAdd().TryGetValue(completedInstance?.Activity.Id, out var index))
+            if (!_nodeIndexByActivityInstanceId.GetOrAdd().TryGetValue(completedInstance?.Id, out var index))
                 return null;
             FlowNode result = _nodes.FirstOrDefault(n => n.Index == index);
             Fx.Assert(result != null, "corrupt internal state");
@@ -63,7 +63,13 @@ internal class FlowchartExtension
     public void ScheduleWithCallback(Activity activity)
     {
         _completionCallback ??= new CompletionCallback(_flowchart.OnCompletionCallback);
-        ActivityContext.ScheduleActivity(activity, _completionCallback);
+        var activityInstance = ActivityContext.ScheduleActivity(activity, _completionCallback);
+        SaveNodeActivityLink(activityInstance);
+    }
+
+    private void SaveNodeActivityLink(ActivityInstance activityInstance)
+    {
+        _nodeIndexByActivityInstanceId.GetOrAdd()[activityInstance.Id] = _current.Index;
     }
 
     public void ScheduleWithCallback<T>(Activity<T> activity)
@@ -72,31 +78,15 @@ internal class FlowchartExtension
         {
             _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(_flowchart.OnCompletionCallback);
         }
-        ActivityContext.ScheduleActivity(activity, callback as CompletionCallback<T>);
+        var activityInstance = ActivityContext.ScheduleActivity(activity, callback as CompletionCallback<T>);
+        SaveNodeActivityLink(activityInstance);
     }
 
     public void OnExecute(NativeActivityContext context)
     {
         using var _ = WithContext(context, null);
         SaveLinks();
-        SaveActivityIdToNodeIndex();
         ExecuteNodeChain(_flowchart.StartNode);
-
-        void SaveActivityIdToNodeIndex()
-        {
-            var nodesByActivityId = _nodeIndexByActivityId.GetOrAdd();
-            foreach (var activityWithNode in _nodes)
-            {
-                SaveNode(activityWithNode);
-            }
-
-            void SaveNode(FlowNode node)
-            {
-                var activityId = node?.ChildActivity?.Id;
-                if (activityId != null)
-                    nodesByActivityId[activityId] = node.Index;
-            }
-        }
 
         void SaveLinks()
         {
