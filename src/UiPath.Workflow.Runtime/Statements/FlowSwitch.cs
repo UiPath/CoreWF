@@ -80,7 +80,7 @@ public sealed class FlowSwitch<T> : FlowNode
             {
                 TD.FlowchartSwitchCase(Owner.DisplayName, newValue?.ToString());
             }
-            Extension.ExecuteNextNode(result);
+            Extension.EnqueueNodeExecution(result);
         }
         else
         {
@@ -98,7 +98,7 @@ public sealed class FlowSwitch<T> : FlowNode
                     TD.FlowchartSwitchCaseNotFound(Owner.DisplayName);
                 }
             }
-            Extension.ExecuteNextNode(Default);
+            Extension.EnqueueNodeExecution(Default);
         }
     }
 }
