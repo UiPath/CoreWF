@@ -45,23 +45,6 @@ internal abstract class FlowchartState
         return value;
     }
 
-    internal static bool HasState(Flowchart flowchart)
-    {
-        try
-        {
-            var variable = flowchart.ImplementationVariables.SingleOrDefault(v => v.Name == FlowChartStateVariableName);
-            if (variable == null)
-                return false;
-
-            variable.Get(flowchart.Extension.ActivityContext);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     public class Of<T> : FlowchartState
     {
         public Of(string key, Flowchart owner, Func<T> addValue) : base(key, () => owner, () => addValue())
