@@ -17,8 +17,6 @@ public sealed class FlowStep : FlowNode
     [DependsOn("Action")]
     public FlowNode Next { get; set; }
 
-    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata) { }
-
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
         if (Next != null)
@@ -28,8 +26,7 @@ public sealed class FlowStep : FlowNode
     }
 
     internal override Activity ChildActivity => Action;
-
-    internal bool Execute(NativeActivityContext context, CompletionCallback onCompleted, out FlowNode nextNode)
+    internal override void Execute(FlowNode predecessorNode)
     {
         if (Next == null)
         {
@@ -40,14 +37,16 @@ public sealed class FlowStep : FlowNode
         }
         if (Action == null)
         {
-            nextNode = Next;
-            return true;
+            OnCompletionCallback();
         }
         else
         {
-            context.ScheduleActivity(Action, onCompleted);
-            nextNode = null;
-            return false;
+            Extension.ScheduleWithCallback(Action);
         }
+    }
+
+    protected override void OnCompletionCallback()
+    {
+        Extension.ExecuteNextNode(Next);
     }
 }
