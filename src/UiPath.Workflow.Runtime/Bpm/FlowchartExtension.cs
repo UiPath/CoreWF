@@ -28,7 +28,7 @@ internal class FlowchartExtension
 
     private IDisposable WithContext(NativeActivityContext context, ActivityInstance completedInstance)
     {
-        if (this._completedInstance is not null || this.ActivityContext is not null)
+        if (_completedInstance is not null || ActivityContext is not null)
             throw new InvalidOperationException("Context already set.");
         _completedInstance = completedInstance;
         ActivityContext = context;
@@ -187,7 +187,6 @@ internal class FlowchartExtension
     {
         using var _ = WithContext(context, completedInstance);
         _current.OnCompletionCallback(result);
-        OnNodeCompleted();
         ExecuteQueue();
     }
 
@@ -200,26 +199,34 @@ internal class FlowchartExtension
 
     private void ExecuteQueue()
     {
+        SetNodeCompleted();
+
         while (_executionQueue.TryDequeue(out var next))
         {
             var state = GetNodeState(next.Index);
             state.IsRunning = true;
-            ExecuteNodeChain(next);
+            ExecuteNode(next);
         }
     }
-    private void OnNodeCompleted()
+    private void SetNodeCompleted()
     {
         var state = GetNodeState(_current.Index);
-        state.IsCompleted = true;
-        if (_completedInstance is not null)
+        state.ActivityInstanceIds.Remove(_completedInstance?.Id);
+        if (!state.ActivityInstanceIds.Any())
         {
-            state.IsCancelRequested = _completedInstance.IsCancellationRequested;
+            state.IsCompleted = true;
+            if (_completedInstance is not null)
+            {
+                state.IsCancelRequested = _completedInstance.IsCancellationRequested;
+            }
         }
         _completedInstance = null;
     }
 
-    private void ExecuteNodeChain(FlowNode node)
+    private void ExecuteNode(FlowNode node)
     {
+        var previousNode = _current;
+        _current = node;
         if (node == null)
         {
             if (ActivityContext.IsCancellationRequested)
@@ -243,8 +250,6 @@ internal class FlowchartExtension
         }
 
         Fx.Assert(node != null, "caller should validate");
-        var previousNode = _current;
-        _current = node;
         if (IsCancelRequested())
         {
             OnCurrentBranchCancelled();
