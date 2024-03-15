@@ -48,6 +48,7 @@ partial class Flowchart
     private Dictionary<int, NodeState> NodesStatesByIndex 
         => GetPersistableState<Dictionary<int, NodeState>>("_nodesStatesByIndex");
     private NativeActivityContext _activeContext;
+    private bool _doNotCompleteNode;
 
     private IDisposable WithContext(NativeActivityContext context, ActivityInstance completedInstance)
     {
@@ -149,10 +150,9 @@ partial class Flowchart
 
     private bool IsCancelRequested()
     {
-        var node = _current;
-        if (node == null)
+        if (_current == null)
             return false;
-        return GetNodeState(node.Index).IsCancelRequested;
+        return GetNodeState(_current.Index).IsCancelRequested;
     }
 
     private NodeState GetNodeState(int index)
@@ -224,7 +224,6 @@ partial class Flowchart
     private void ExecuteQueue()
     {
         SetNodeCompleted();
-
         while (_executionQueue.TryDequeue(out var next))
         {
             var state = GetNodeState(next.Index);
@@ -232,21 +231,25 @@ partial class Flowchart
             ExecuteNode(next);
         }
     }
+    internal void MarkDoNotCompleteNode()
+    {
+        _doNotCompleteNode = true;
+    }
     private void SetNodeCompleted()
     {
         var state = GetNodeState(_current.Index);
         state.ActivityInstanceIds.Remove(_completedInstance?.Id);
         if (!state.ActivityInstanceIds.Any())
         {
-            state.IsCompleted = true;
+            state.IsCompleted = !_doNotCompleteNode;
             if (_completedInstance is not null)
             {
                 state.IsCancelRequested = _completedInstance.IsCancellationRequested;
             }
         }
         _completedInstance = null;
+        _doNotCompleteNode = false;
     }
-
     private void ExecuteNode(FlowNode node)
     {
         var previousNode = _current;
@@ -282,12 +285,29 @@ partial class Flowchart
         node.Execute(previousNode);
     }
 
+    private List<FlowMerge> GetRunningMerges()
+    {
+        var runningNodes = _reachableNodes
+            .OfType<FlowMerge>()
+            .Where(n =>
+        {
+            var state = GetNodeState(n.Index);
+            return state != null
+            && state.IsRunning
+            && !state.IsCompleted
+            ;
+        }).ToList();
+        return runningNodes;
+    }
+
     private void OnCurrentBranchCancelled()
     {
-        var merge = GetBranch(_current)?.Split.MergeNode;
-        if (merge is null)
-            return;
-        EnqueueNodeExecution(merge);
+        var runningMerges = GetRunningMerges()
+            .OfType<FlowMerge>();
+        foreach (var runningMerge in runningMerges)
+        {
+            runningMerge.OnBranchEnded(_current);
+        }
     }
 
     private class NodeState

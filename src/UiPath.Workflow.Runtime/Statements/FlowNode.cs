@@ -84,6 +84,8 @@ public abstract class FlowNode
             case bool b:
                 OnCompletionCallback(b);
                 break;
+            default:
+                throw new NotSupportedException();
         }
     }
 
