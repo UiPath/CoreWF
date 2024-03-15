@@ -86,18 +86,20 @@ public class FlowMerge : FlowNode
         joinStates.TryGetValue(key, out var joinState);
         if (joinState is null)
         {
-            joinState = add();
+            joinState = new()
+            {
+                CompletedNodeIndeces = new HashSet<int>(),
+            };
             joinStates.Add(key, joinState);
         }
         return joinState;
     }
     internal override void Execute(FlowNode predecessorNode)
     {
-        var joinState = GetJoinState(() => new()
-        {
-            CompletedNodeIndeces = new HashSet<int>(),
-        });
+        var joinState = GetJoinState();
         var branch = Owner.GetBranch(predecessorNode);
+        if (!ConnectedBranches.Contains(branch))
+            return;
         joinState.CompletedNodeIndeces.Add(branch.NodeIndex);
         if (Completion is not null)
         {
@@ -120,7 +122,10 @@ public class FlowMerge : FlowNode
         }
 
         if (incompleteBranches.Any())
+        {
+            Owner.MarkDoNotCompleteNode();
             return;
+        }
 
         joinState.Done = true;
         Owner.EnqueueNodeExecution(Next);
@@ -145,5 +150,13 @@ public class FlowMerge : FlowNode
                 }
             }
         }
+    }
+
+    internal void OnBranchEnded(FlowNode current)
+    {
+        var branch = Owner.GetBranch(current);
+        
+        if (ConnectedBranches.Contains(branch) && !GetJoinState().Done)
+            Owner.EnqueueNodeExecution(this);
     }
 }
