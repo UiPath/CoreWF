@@ -55,7 +55,7 @@ public class FlowSplit : FlowNode
 
     private ValidatingCollection<FlowSplitBranch> _branches;
     internal override Activity ChildActivity => null;
- 
+
     internal List<FlowNode> RuntimeBranchesNodes { get; private set; }
 
     public FlowSplit()
@@ -64,21 +64,27 @@ public class FlowSplit : FlowNode
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
-        RuntimeBranchesNodes = Branches.Select(RuntimeBranch).ToList();
-        FlowNode RuntimeBranch(FlowSplitBranch splitBranch)
-        {
-            var node = (splitBranch.Condition is null) ? splitBranch.StartNode :
-                                new FlowDecision()
-                                {
-                                    Condition = splitBranch.Condition,
-                                    DisplayName = splitBranch.DisplayName,
-                                    True = splitBranch.StartNode,
-                                    False = MergeNode
-                                };
-            Owner.SaveBranch(node, splitBranch, this);
-            return node;
-        }
+        RuntimeBranchesNodes ??= GetRuntimeNodes();
         connections.AddRange(RuntimeBranchesNodes);
+        List<FlowNode> GetRuntimeNodes()
+        {
+            var result = new List<FlowNode>();
+            foreach (var splitBranch in Branches)
+            {
+                var node = (splitBranch.Condition is null)
+                    ? splitBranch.StartNode
+                    : new FlowDecision()
+                    {
+                        Condition = splitBranch.Condition,
+                        DisplayName = splitBranch.DisplayName,
+                        True = splitBranch.StartNode,
+                        False = MergeNode
+                    };
+                result.Add(node);
+                Owner.AddBranch(node, splitBranch, this);
+            }
+            return result;
+        }
     }
 
     internal override void Execute(FlowNode predecessorNode)
@@ -86,7 +92,7 @@ public class FlowSplit : FlowNode
         for (int i = RuntimeBranchesNodes.Count - 1; i >= 0; i--)
         {
             var branch = RuntimeBranchesNodes[i];
-                Owner.EnqueueNodeExecution(branch);
+                Owner.EnqueueNodeExecution(node: branch, isNewBranch: true);
         }
     }
 }

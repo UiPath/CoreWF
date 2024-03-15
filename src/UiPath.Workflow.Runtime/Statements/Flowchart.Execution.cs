@@ -34,7 +34,6 @@ partial class Flowchart
         }
     }
 
-    private readonly Queue<FlowNode> _executionQueue = new();
     private readonly Dictionary<FlowNode, BranchLinks> _splitBranchesByNode = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _predecessors = new();
@@ -43,26 +42,25 @@ partial class Flowchart
     private ActivityInstance _completedInstance;
     private FlowNode _current;
 
+    private Queue<FlowNode> _executionQueue = new();
     private Dictionary<string, int> NodeIndexByActivityInstanceId 
         => GetPersistableState<Dictionary<string, int>>("_nodeIndexByActivityId");
     private Dictionary<int, NodeState> NodesStatesByIndex 
         => GetPersistableState<Dictionary<int, NodeState>>("_nodesStatesByIndex");
-    public NativeActivityContext ActivityContext { get; private set; }
+    private NativeActivityContext _activeContext;
 
     private IDisposable WithContext(NativeActivityContext context, ActivityInstance completedInstance)
     {
-        if (_completedInstance is not null || ActivityContext is not null)
+        if (_completedInstance is not null || _activeContext is not null)
             throw new InvalidOperationException("Context already set.");
         _completedInstance = completedInstance;
-        ActivityContext = context;
+        _activeContext = context;
         _current = GetCurrentNode();
-        var inherit = context.InheritVariables();
         return Disposable.Create(() =>
         {
-            ActivityContext = null;
+            _activeContext = null;
             _completedInstance = null;
             _current = null;
-            inherit.Dispose();
         });
 
         FlowNode GetCurrentNode()
@@ -77,11 +75,26 @@ partial class Flowchart
         }
     }
 
-    public void EndCacheMetadata(NativeActivityMetadata metadata)
+    private void EndCacheMetadata(NativeActivityMetadata metadata)
     {
         foreach (var node in _reachableNodes.OfType<FlowNode>())
         {
+            foreach (var successor in GetSuccessors(node.Index))
+            {
+                PropagateBranch(node, successor);
+            }
+        }
+        foreach (var node in _reachableNodes.OfType<FlowNode>())
+        {
             node.EndCacheMetadata(metadata);
+        }
+        void PropagateBranch(FlowNode predecessor, FlowNode successor)
+        {
+            if (!_splitBranchesByNode.TryGetValue(predecessor, out var pre)
+                || _splitBranchesByNode.ContainsKey(successor))
+                return;
+
+            _splitBranchesByNode[successor] = pre;
         }
     }
     private void SaveNodeActivityLink(ActivityInstance activityInstance)
@@ -91,31 +104,31 @@ partial class Flowchart
         nodeState.ActivityInstanceIds.Add(activityInstance.Id);
     }
 
-    public void ScheduleWithCallback(Activity activity)
+    internal void ScheduleWithCallback(Activity activity)
     {
         _completionCallback ??= new(OnCompletionCallback);
-        var activityInstance = ActivityContext.ScheduleActivity(activity, _completionCallback);
+        var activityInstance = _activeContext.ScheduleActivity(activity, _completionCallback);
         SaveNodeActivityLink(activityInstance);
     }
 
-    public void ScheduleWithCallback<T>(Activity<T> activity)
+    internal void ScheduleWithCallback<T>(Activity<T> activity)
     {
         if (!_completionCallbacks.TryGetValue(typeof(T), out var callback))
         {
             _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(OnCompletionCallback);
         }
-        var activityInstance = ActivityContext.ScheduleActivity(activity, (CompletionCallback<T>)callback);
+        var activityInstance = _activeContext.ScheduleActivity(activity, (CompletionCallback<T>)callback);
         SaveNodeActivityLink(activityInstance);
     }
 
-    public void OnExecute(NativeActivityContext context)
+    private void OnExecute(NativeActivityContext context)
     {
         using var _ = WithContext(context, null);
         EnqueueNodeExecution(StartNode);
         ExecuteQueue();
     }
 
-    public void RecordLinks(FlowNode predecessor, List<FlowNode> successors)
+    private void RecordLinks(FlowNode predecessor, List<FlowNode> successors)
     {
         if (predecessor == null)
             return;
@@ -131,11 +144,10 @@ partial class Flowchart
                 _successors[predecessor] = successorsSaved = new();
             }
             successorsSaved.Add(successor);
-            PropagateBranchNode(predecessor, successor);
         }
     }
 
-    public bool IsCancelRequested()
+    private bool IsCancelRequested()
     {
         var node = _current;
         if (node == null)
@@ -152,34 +164,31 @@ partial class Flowchart
         return state;
     }
 
-    public bool Cancel(int branchNodeIndex)
+    internal bool Cancel(int branchNodeIndex)
     {
         var nodeState = GetNodeState(branchNodeIndex);
         if (nodeState.IsCancelRequested || nodeState.IsCompleted)
             return false;
 
         nodeState.IsCancelRequested = true;
-        var childrenToCancel = ActivityContext.GetChildren()
+        var childrenToCancel = _activeContext.GetChildren()
             .Where(c => nodeState.ActivityInstanceIds.Contains(c.Id))
             .ToList();
         foreach (var child in childrenToCancel)
-            ActivityContext.CancelChild(child);
+            _activeContext.CancelChild(child);
         return true;
     }
 
-    public List<FlowNode> GetSuccessors(int index)
+    internal List<FlowNode> GetSuccessors(int index)
         => _successors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
 
-    public List<FlowNode> GetPredecessors(int index)
-        => _predecessors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
-
-    public List<FlowNode> GetPredecessors(FlowNode node)
+    internal List<FlowNode> GetPredecessors(FlowNode node)
     {
         _predecessors.TryGetValue(node, out var result);
         return result?.ToList() ?? new();
     }
 
-    public void SaveBranch(FlowNode node, FlowSplitBranch splitBranch, FlowSplit parentSplit)
+    internal void AddBranch(FlowNode node, FlowSplitBranch splitBranch, FlowSplit parentSplit)
     {
         _splitBranchesByNode[node] = new BranchLinks
         {
@@ -189,14 +198,7 @@ partial class Flowchart
         };
     }
 
-    private void PropagateBranchNode(FlowNode predecessor, FlowNode successor)
-    {
-        if (!_splitBranchesByNode.TryGetValue(predecessor, out var pre))
-            return;
-        _splitBranchesByNode[successor] = pre;
-    }
-
-    public BranchLinks GetBranch(FlowNode predecessorNode)
+    internal BranchLinks GetBranch(FlowNode predecessorNode)
     {
         return _splitBranchesByNode[predecessorNode];
     }
@@ -212,11 +214,11 @@ partial class Flowchart
         ExecuteQueue();
     }
 
-    public void EnqueueNodeExecution(FlowNode next)
+    internal void EnqueueNodeExecution(FlowNode node, bool isNewBranch = false)
     {
-        if (next is null)
+        if (node is null)
             return;
-        _executionQueue.Enqueue(next);
+        _executionQueue.Enqueue(node);
     }
 
     private void ExecuteQueue()
@@ -251,23 +253,23 @@ partial class Flowchart
         _current = node;
         if (node == null)
         {
-            if (ActivityContext.IsCancellationRequested)
+            if (_activeContext.IsCancellationRequested)
             {
                 Fx.Assert(_completedInstance != null, "cannot request cancel if we never scheduled any children");
                 // we are done but the last child didn't complete successfully
                 if (_completedInstance.State != ActivityInstanceState.Closed)
                 {
-                    ActivityContext.MarkCanceled();
+                    _activeContext.MarkCanceled();
                 }
             }
 
             return;
         }
 
-        if (ActivityContext.IsCancellationRequested)
+        if (_activeContext.IsCancellationRequested)
         {
             // we're not done and cancel has been requested
-            ActivityContext.MarkCanceled();
+            _activeContext.MarkCanceled();
             return;
         }
 
@@ -306,21 +308,21 @@ partial class Flowchart
         public static IDisposable Create(Action onDispose)
             => new Disposable() { _onDispose = onDispose };
     }
-    public class BranchLinks
+    internal class BranchLinks
     {
         public FlowSplit Split { get; set; }
         public FlowSplitBranch Branch { get; set; }
-        public FlowNode RuntimeNode { get; set; }
+        public FlowNode RuntimeNode { private get; set; }
+        public int NodeIndex => RuntimeNode.Index;
     }
-    internal T GetPersistableState<T>(string _key) where T: new()
+    internal T GetPersistableState<T>(string key) where T: new()
     {
-        var flowChartState = _flowchartState.Get(ActivityContext);
-        if (!flowChartState.TryGetValue(_key, out var value))
+        var flowChartState = _flowchartState.Get(_activeContext);
+        if (!flowChartState.TryGetValue(key, out var value))
         {
             value = new T();
-            flowChartState[_key] = value;
+            flowChartState[key] = value;
         }
         return (T)value;
     }
-
 }

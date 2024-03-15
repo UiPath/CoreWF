@@ -22,17 +22,12 @@ public class FlowMerge : FlowNode
 
     internal override Activity ChildActivity => Completion;
 
-    private List<int> ConnectedBranches { get; set; }
+    private List<Flowchart.BranchLinks> ConnectedBranches { get; set; }
 
     private record MergeState
     {
         public bool Done { get; set; }
         public HashSet<int> CompletedNodeIndeces { get; set; }
-    }
-
-    public FlowMerge(FlowSplit split) : this()
-    {
-        SplitNode = split;
     }
 
     public FlowMerge()
@@ -41,9 +36,8 @@ public class FlowMerge : FlowNode
 
     protected override void OnEndCacheMetadata()
     {
-        ConnectedBranches = SplitNode
-            .RuntimeBranchesNodes
-            .Select(b => b.Index).ToList();
+        var predecessors = Owner.GetPredecessors(this);
+        ConnectedBranches = predecessors.Select(p => Owner.GetBranch(p)).ToList();
 
         ValidateAllBranches();
 
@@ -52,7 +46,7 @@ public class FlowMerge : FlowNode
             HashSet<FlowNode> visited = new()
             {
                 this,
-                SplitNode,
+                _split,
             };
             List<FlowNode> toVisit = new(1) { this };
             do
@@ -72,7 +66,7 @@ public class FlowMerge : FlowNode
                 }
             }
             while (toVisit.Any());
-            var allBranchesJoined = SplitNode.Branches.All(b => visited.Contains(b.StartNode));
+            var allBranchesJoined = _split.Branches.All(b => visited.Contains(b.StartNode));
             if (!allBranchesJoined)
                 Metadata.AddValidationError("All parallel branches should end in same join node.");
         }
@@ -104,8 +98,7 @@ public class FlowMerge : FlowNode
             CompletedNodeIndeces = new HashSet<int>(),
         });
         var branch = Owner.GetBranch(predecessorNode);
-        //joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
-        joinState.CompletedNodeIndeces.Add(branch.RuntimeNode.Index);
+        joinState.CompletedNodeIndeces.Add(branch.NodeIndex);
         if (Completion is not null)
         {
             Owner.ScheduleWithCallback(Completion);
@@ -118,7 +111,9 @@ public class FlowMerge : FlowNode
     protected override void OnCompletionCallback(bool result)
     {
         var joinState = GetJoinState();
-        var incompleteBranches = ConnectedBranches.Except(joinState.CompletedNodeIndeces).ToList();
+        var incompleteBranches = ConnectedBranches
+            .Select(b => b.NodeIndex)
+            .Except(joinState.CompletedNodeIndeces).ToList();
         if (result)
         {
             EndAllBranches();
