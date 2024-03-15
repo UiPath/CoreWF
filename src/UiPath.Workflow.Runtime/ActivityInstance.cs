@@ -404,15 +404,6 @@ public sealed class ActivityInstance
     [DataMember(EmitDefaultValue = false)]
     public Version ImplementationVersion { get; internal set; }
 
-    public void AddAutomationTrackerId()
-    {
-        var properties = new ExecutionProperties(null, this, PropertyManager);
-        var existing = properties.Find("BPOId") as string;
-        properties.Add("BPOId", (existing + "-" + Guid.NewGuid().ToString("N")).Trim('-'), true, false);
-    }
-
-    public string GetAutomationTrackerId() => PropertyManager?.GetPropertyAtCurrentScope("BPOId") as string;
-
     internal static ActivityInstance CreateCompletedInstance(Activity activity)
     {
         ActivityInstance instance = new(activity)
