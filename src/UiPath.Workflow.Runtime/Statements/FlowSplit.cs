@@ -75,7 +75,7 @@ public class FlowSplit : FlowNode
                                     True = splitBranch.StartNode,
                                     False = MergeNode
                                 };
-            Extension.SaveBranch(node, splitBranch, this);
+            Owner.SaveBranch(node, splitBranch, this);
             return node;
         }
         connections.AddRange(RuntimeBranchesNodes);
@@ -86,7 +86,7 @@ public class FlowSplit : FlowNode
         for (int i = RuntimeBranchesNodes.Count - 1; i >= 0; i--)
         {
             var branch = RuntimeBranchesNodes[i];
-                Extension.EnqueueNodeExecution(branch);
+                Owner.EnqueueNodeExecution(branch);
         }
     }
 }

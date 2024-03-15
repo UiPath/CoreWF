@@ -108,6 +108,27 @@ public class SplitAndMergeTests
     }
 
     [Fact]
+    public void Should_join_branches_with_inner_split()
+    {
+        var innerSplit = new FlowSplit()
+            .AddBranches(
+                AddString("branch1Inner"),
+                AddString("branch2Inner")
+                );
+        innerSplit.MergeNode.FlowTo(AddString("innerMerged"));
+        var outerSplit = new FlowSplit()
+            .AddBranches(
+                innerSplit,
+                AddString("branch2Outer").Step()
+                );
+        outerSplit.MergeNode.FlowTo(AddString("stop"));
+
+        ExecuteFlowchart(outerSplit);
+        Results.ShouldBe(new() { "branch1Inner", "branch2Inner", "innerMerged", "branch2Outer", "stop"});
+    }
+
+
+    [Fact]
     public void Should_join_with_skiped_branches()
     {
         var branch1Str = "branch1";

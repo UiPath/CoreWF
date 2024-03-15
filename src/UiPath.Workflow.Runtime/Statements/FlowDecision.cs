@@ -77,10 +77,10 @@ public sealed class FlowDecision : FlowNode
 
     internal override void Execute(FlowNode predecessorNode)
     {
-        Extension.ScheduleWithCallback(Condition);
+        Owner.ScheduleWithCallback(Condition);
     }
     protected override void OnCompletionCallback(bool result)
     {
-        Extension.EnqueueNodeExecution(result ? True : False);
+        Owner.EnqueueNodeExecution(result ? True : False);
     }
 }
