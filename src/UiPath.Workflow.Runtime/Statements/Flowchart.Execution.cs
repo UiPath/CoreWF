@@ -1,30 +1,53 @@
-﻿using System.Activities.Runtime;
+// This file is part of Core WF which is licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
+using System.Activities.Runtime;
 using System.Linq;
+
+#if DYNAMICUPDATE
+using System.Activities.DynamicUpdate;
+#endif
+
 namespace System.Activities.Statements;
 
-internal class FlowchartExtension
+partial class Flowchart
 {
-    private readonly Flowchart _flowchart;
+    private const string FlowChartStateVariableName = "flowchartState";
+    private readonly Variable<Dictionary<string, object>> _flowchartState = new (FlowChartStateVariableName, c => new ());
+
+    protected override void Execute(NativeActivityContext context)
+    {
+        if (StartNode != null)
+        {
+            if (TD.FlowchartStartIsEnabled())
+            {
+                TD.FlowchartStart(DisplayName);
+            }
+            OnExecute(context);
+        }
+        else
+        {
+            if (TD.FlowchartEmptyIsEnabled())
+            {
+                TD.FlowchartEmpty(DisplayName);
+            }
+        }
+    }
+
     private readonly Queue<FlowNode> _executionQueue = new();
     private readonly Dictionary<FlowNode, BranchLinks> _splitBranchesByNode = new();
-    private readonly HashSet<FlowNode> _nodes = new();
-    private readonly FlowchartState.Of<Dictionary<string, int>> _nodeIndexByActivityInstanceId;
-    private readonly FlowchartState.Of<Dictionary<int, NodeState>> _nodesStatesByIndex;
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _predecessors = new();
-    private readonly Dictionary<Type, object> _completionCallbacks = new();
     private CompletionCallback _completionCallback;
+    private readonly Dictionary<Type, Delegate> _completionCallbacks = new();
     private ActivityInstance _completedInstance;
     private FlowNode _current;
 
+    private Dictionary<string, int> NodeIndexByActivityInstanceId 
+        => GetPersistableState<Dictionary<string, int>>("_nodeIndexByActivityId");
+    private Dictionary<int, NodeState> NodesStatesByIndex 
+        => GetPersistableState<Dictionary<int, NodeState>>("_nodesStatesByIndex");
     public NativeActivityContext ActivityContext { get; private set; }
-
-    public FlowchartExtension(Flowchart flowchart)
-    {
-        _flowchart = flowchart;
-        _nodeIndexByActivityInstanceId = new("_nodeIndexByActivityId", flowchart, () => new());
-        _nodesStatesByIndex = new("_nodesStatesByIndex", flowchart, () => new());
-    }
 
     private IDisposable WithContext(NativeActivityContext context, ActivityInstance completedInstance)
     {
@@ -33,20 +56,22 @@ internal class FlowchartExtension
         _completedInstance = completedInstance;
         ActivityContext = context;
         _current = GetCurrentNode();
+        var inherit = context.InheritVariables();
         return Disposable.Create(() =>
         {
             ActivityContext = null;
             _completedInstance = null;
             _current = null;
+            inherit.Dispose();
         });
 
         FlowNode GetCurrentNode()
         {
             if (completedInstance is null)
-                return _nodes.FirstOrDefault(n => n.Index == 0);
-            if (!_nodeIndexByActivityInstanceId.GetOrAdd().TryGetValue(completedInstance?.Id, out var index))
+                return _reachableNodes[0];
+            if (!NodeIndexByActivityInstanceId.TryGetValue(completedInstance?.Id, out var index))
                 return null;
-            FlowNode result = _nodes.FirstOrDefault(n => n.Index == index);
+            FlowNode result = _reachableNodes[index];
             Fx.Assert(result != null, "corrupt internal state");
             return result;
         }
@@ -54,23 +79,21 @@ internal class FlowchartExtension
 
     public void EndCacheMetadata(NativeActivityMetadata metadata)
     {
-        if (_flowchart.StartNode is not null)
-            _nodes.Add(_flowchart.StartNode);
-        foreach (var node in _nodes.OfType<FlowNode>())
+        foreach (var node in _reachableNodes.OfType<FlowNode>())
         {
             node.EndCacheMetadata(metadata);
         }
     }
     private void SaveNodeActivityLink(ActivityInstance activityInstance)
     {
-        _nodeIndexByActivityInstanceId.GetOrAdd()[activityInstance.Id] = _current.Index;
+        NodeIndexByActivityInstanceId[activityInstance.Id] = _current.Index;
         var nodeState = GetNodeState(_current.Index);
         nodeState.ActivityInstanceIds.Add(activityInstance.Id);
     }
 
     public void ScheduleWithCallback(Activity activity)
     {
-        _completionCallback ??= new CompletionCallback(_flowchart.OnCompletionCallback);
+        _completionCallback ??= new(OnCompletionCallback);
         var activityInstance = ActivityContext.ScheduleActivity(activity, _completionCallback);
         SaveNodeActivityLink(activityInstance);
     }
@@ -79,16 +102,16 @@ internal class FlowchartExtension
     {
         if (!_completionCallbacks.TryGetValue(typeof(T), out var callback))
         {
-            _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(_flowchart.OnCompletionCallback);
+            _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(OnCompletionCallback);
         }
-        var activityInstance = ActivityContext.ScheduleActivity(activity, callback as CompletionCallback<T>);
+        var activityInstance = ActivityContext.ScheduleActivity(activity, (CompletionCallback<T>)callback);
         SaveNodeActivityLink(activityInstance);
     }
 
     public void OnExecute(NativeActivityContext context)
     {
         using var _ = WithContext(context, null);
-        EnqueueNodeExecution(_flowchart.StartNode);
+        EnqueueNodeExecution(StartNode);
         ExecuteQueue();
     }
 
@@ -98,8 +121,6 @@ internal class FlowchartExtension
             return;
         foreach (var successor in successors.Where(s => s is not null))
         {
-            _nodes.Add(predecessor);
-            _nodes.Add(successor);
             if (!_predecessors.TryGetValue(successor, out var predecessors))
             {
                 _predecessors[successor] = predecessors = new();
@@ -124,7 +145,7 @@ internal class FlowchartExtension
 
     private NodeState GetNodeState(int index)
     {
-        var nodesStatesByIndex = _nodesStatesByIndex.GetOrAdd();
+        var nodesStatesByIndex = NodesStatesByIndex;
         if (!nodesStatesByIndex.TryGetValue(index, out var state))
             nodesStatesByIndex[index] = state = new();
 
@@ -145,9 +166,6 @@ internal class FlowchartExtension
             ActivityContext.CancelChild(child);
         return true;
     }
-
-    public void Install(NativeActivityMetadata metadata)
-        => FlowchartState.Install(metadata, _flowchart);
 
     public List<FlowNode> GetSuccessors(int index)
         => _successors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
@@ -182,8 +200,12 @@ internal class FlowchartExtension
     {
         return _splitBranchesByNode[predecessorNode];
     }
+    private void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance)
+    {
+        OnCompletionCallback<object>(context, completedInstance, null);
+    }
 
-    public void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
+    private void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
         using var _ = WithContext(context, completedInstance);
         _current.OnCompletionCallback(result);
@@ -290,4 +312,15 @@ internal class FlowchartExtension
         public FlowSplitBranch Branch { get; set; }
         public FlowNode RuntimeNode { get; set; }
     }
+    internal T GetPersistableState<T>(string _key) where T: new()
+    {
+        var flowChartState = _flowchartState.Get(ActivityContext);
+        if (!flowChartState.TryGetValue(_key, out var value))
+        {
+            value = new T();
+            flowChartState[_key] = value;
+        }
+        return (T)value;
+    }
+
 }

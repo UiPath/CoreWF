@@ -41,12 +41,12 @@ public sealed class FlowStep : FlowNode
         }
         else
         {
-            Extension.ScheduleWithCallback(Action);
+            Owner.ScheduleWithCallback(Action);
         }
     }
 
     protected override void OnCompletionCallback()
     {
-        Extension.EnqueueNodeExecution(Next);
+        Owner.EnqueueNodeExecution(Next);
     }
 }

@@ -1,5 +1,3 @@
-using System.Activities.Statements;
-
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -23,7 +21,6 @@ public abstract class FlowNode
 
     internal Flowchart Owner => _owner;
     protected NativeActivityMetadata Metadata { get; private set; }
-    internal FlowchartExtension Extension => Owner.Extension;
 
     // Returns true if this is the first time we've visited this node during this pass
     internal bool Open(Flowchart owner, NativeActivityMetadata metadata)
