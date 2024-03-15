@@ -20,7 +20,6 @@ public class FlowMerge : FlowNode
     }
 
 
-    private readonly FlowchartState.Of<Dictionary<string, MergeState>> _joinStates;
     internal override Activity ChildActivity => Completion;
 
     private List<int> ConnectedBranches { get; set; }
@@ -38,8 +37,8 @@ public class FlowMerge : FlowNode
 
     public FlowMerge()
     {
-        _joinStates = new("FlowMerge", this, () => new());
     }
+
     protected override void OnEndCacheMetadata()
     {
         ConnectedBranches = SplitNode
@@ -58,7 +57,7 @@ public class FlowMerge : FlowNode
             List<FlowNode> toVisit = new(1) { this };
             do
             {
-                var predecessors = toVisit.SelectMany(v => Extension.GetPredecessors(v)).ToList();
+                var predecessors = toVisit.SelectMany(v => Owner.GetPredecessors(v)).ToList();
                 toVisit = new List<FlowNode>(predecessors.Count);
                 foreach (var predecessor in predecessors)
                 {
@@ -85,10 +84,11 @@ public class FlowMerge : FlowNode
             connections.Add(Next);
         }
     }
+
     MergeState GetJoinState(Func<MergeState> add = null)
     {
         var key = $"{Index}";
-        var joinStates = _joinStates.GetOrAdd();
+        var joinStates = Owner.GetPersistableState<Dictionary<string, MergeState>>("FlowMerge");
         joinStates.TryGetValue(key, out var joinState);
         if (joinState is null)
         {
@@ -103,12 +103,12 @@ public class FlowMerge : FlowNode
         {
             CompletedNodeIndeces = new HashSet<int>(),
         });
-        var branch = Extension.GetBranch(predecessorNode);
+        var branch = Owner.GetBranch(predecessorNode);
         //joinState.CompletedNodeIndeces.Add(predecessorNode.Index);
         joinState.CompletedNodeIndeces.Add(branch.RuntimeNode.Index);
         if (Completion is not null)
         {
-            Extension.ScheduleWithCallback(Completion);
+            Owner.ScheduleWithCallback(Completion);
         }
         else
         {
@@ -128,7 +128,7 @@ public class FlowMerge : FlowNode
             return;
 
         joinState.Done = true;
-        Extension.EnqueueNodeExecution(Next);
+        Owner.EnqueueNodeExecution(Next);
         
         void EndAllBranches()
         {
@@ -142,9 +142,9 @@ public class FlowMerge : FlowNode
             {
                 if (branchNode == Index)
                     continue;
-                if (Extension.Cancel(branchNode))
+                if (Owner.Cancel(branchNode))
                 {
-                    var successors = Extension.GetSuccessors(branchNode)
+                    var successors = Owner.GetSuccessors(branchNode)
                         .Select(p => p.Index).ToList();
                     Cancel(successors);
                 }

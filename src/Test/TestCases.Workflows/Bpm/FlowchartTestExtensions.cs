@@ -27,6 +27,11 @@ public static class FlowchartTestExtensions
         }
         return split;
     }
+    public static FlowStep Step(this Activity activity)
+    {
+        return new FlowStep { Action = activity };
+    }
+
     public static FlowStep FlowTo(this Activity predeccessor, FlowNode successor)
     {
         return new FlowStep { Action = predeccessor }.FlowTo(successor);

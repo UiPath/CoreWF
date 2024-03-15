@@ -55,7 +55,7 @@ public sealed class FlowSwitch<T> : FlowNode
 
     internal override void Execute(FlowNode predecessorNode)
     {
-        Extension.ScheduleWithCallback(Expression);
+        Owner.ScheduleWithCallback(Expression);
     }
 
     internal override void OnCompletionCallback<TResult>(TResult value)
@@ -80,7 +80,7 @@ public sealed class FlowSwitch<T> : FlowNode
             {
                 TD.FlowchartSwitchCase(Owner.DisplayName, newValue?.ToString());
             }
-            Extension.EnqueueNodeExecution(result);
+            Owner.EnqueueNodeExecution(result);
         }
         else
         {
@@ -98,7 +98,7 @@ public sealed class FlowSwitch<T> : FlowNode
                     TD.FlowchartSwitchCaseNotFound(Owner.DisplayName);
                 }
             }
-            Extension.EnqueueNodeExecution(Default);
+            Owner.EnqueueNodeExecution(Default);
         }
     }
 }

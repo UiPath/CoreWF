@@ -6,7 +6,6 @@ using System.Activities.Runtime.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Markup;
-using static System.Activities.Statements.FlowNode;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -15,9 +14,8 @@ using System.Activities.DynamicUpdate;
 namespace System.Activities.Statements;
 
 [ContentProperty("Nodes")]
-public sealed class Flowchart : NativeActivity
+public sealed partial class Flowchart : NativeActivity
 {
-    internal FlowchartExtension Extension { get; private set; }
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
@@ -25,7 +23,6 @@ public sealed class Flowchart : NativeActivity
     public Flowchart()
     {
         _reachableNodes = new Collection<FlowNode>();
-        Extension = new(this);
     }
 
     [DefaultValue(false)]
@@ -167,8 +164,8 @@ public sealed class Flowchart : NativeActivity
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         metadata.SetVariablesCollection(Variables);
-        Extension.Install(metadata);
-
+        metadata.AddImplementationVariable(_flowchartState);
+        
         GatherReachableNodes(metadata);
         if (ValidateUnconnectedNodes && (_reachableNodes.Count < Nodes.Count))
         {
@@ -192,7 +189,7 @@ public sealed class Flowchart : NativeActivity
         }
 
         metadata.SetChildrenCollection(new Collection<Activity>(children));
-        Extension.EndCacheMetadata(metadata);
+        EndCacheMetadata(metadata);
     }
 
     private void GatherReachableNodes(NativeActivityMetadata metadata)
@@ -250,41 +247,12 @@ public sealed class Flowchart : NativeActivity
             {
                 connected.Clear();
                 current.GetConnectedNodes(connected);
-                Extension.RecordLinks(current, connected);
+                RecordLinks(current, connected);
                 for (int i = 0; i < connected.Count; i++)
                 {
                     stack.Push(connected[i]);
                 }
             }
         }
-    }
-
-    protected override void Execute(NativeActivityContext context)
-    {
-        if (StartNode != null)
-        {
-            if (TD.FlowchartStartIsEnabled())
-            {
-                TD.FlowchartStart(DisplayName);
-            }
-            Extension.OnExecute(context);
-        }
-        else
-        {
-            if (TD.FlowchartEmptyIsEnabled())
-            {
-                TD.FlowchartEmpty(DisplayName);
-            }
-        }
-    }
-
-    internal void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance)
-    {
-        OnCompletionCallback<object>(context, completedInstance, null);
-    }
-
-    internal void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
-    {
-        Extension.OnCompletionCallback(context, completedInstance, result);
     }
 }
