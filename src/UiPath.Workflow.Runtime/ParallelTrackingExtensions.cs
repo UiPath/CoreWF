@@ -3,6 +3,13 @@ using System.Activities;
 
 namespace UiPath.Workflow.Runtime.ParallelTracking
 {
+    /// <summary>
+    /// This feature introduces a context.GetCurrentParallelId() queryable from an activity,
+    /// which should identify a "parallelism" branch on which the activity executes.
+    /// Only containers which schedule concurrently (Parallel, ParallelForEach, Pick)
+    /// would induce a change of the background parallel id.
+    /// The initial parallel id, before using the above containers, is null.
+    /// </summary>
     public static class ParallelTrackingExtensions
     {
         public const string BranchIdPropertyName = "__ParallelBranchId";

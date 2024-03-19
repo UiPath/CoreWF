@@ -8,10 +8,13 @@ namespace WorkflowApplicationTestExtensions
 {
     /// <summary>
     /// Wrapper over one/multiple sequential activities.
-    /// Between scheduling the activity/activities, it induces persistence Idle
+    /// Between scheduling the activity/activities, it induces PersistableIdle
     /// by creating bookmarks.
     /// The idea is to induce unload/load as much as possible to test persistence
     /// serialization/deserialization.
+    /// When using <see cref="WorkflowApplicationTestExtensions"/>, the bookmarks
+    /// can be automatically resumed and workflow continued transparently until
+    /// completion.
     /// </summary>
     public class SuspendingWrapper : NativeActivity
     {

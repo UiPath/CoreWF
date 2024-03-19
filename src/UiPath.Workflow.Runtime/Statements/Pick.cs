@@ -6,6 +6,7 @@ using System.Activities.Runtime.Collections;
 using System.Activities.Validation;
 using System.Collections.ObjectModel;
 using System.Windows.Markup;
+using UiPath.Workflow.Runtime.ParallelTracking;
 
 namespace System.Activities.Statements;
 
@@ -262,7 +263,7 @@ public sealed class Pick : NativeActivity
         {
             Fx.Assert(Trigger != null, "We validate that the trigger is not null in Pick.CacheMetadata");
 
-            context.ScheduleActivity(Trigger, new CompletionCallback(OnTriggerCompleted));
+            context.ScheduleActivity(Trigger, new CompletionCallback(OnTriggerCompleted)).MarkNewParallelBranch();
         }
 
         private void OnTriggerCompleted(NativeActivityContext context, ActivityInstance completedInstance)
