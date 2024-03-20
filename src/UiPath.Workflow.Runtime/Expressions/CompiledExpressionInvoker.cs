@@ -209,11 +209,16 @@ public class CompiledExpressionInvoker
             current = current.Parent;
         }
 
+        bool requiresCompilation = _textExpression.Language != "VB";
+
         foreach (LocationReferenceEnvironment environment in environments)
         {
             foreach (LocationReference reference in environment.GetLocationReferences())
             {
-                _accessor.CreateLocationArgument(reference, false);
+                if (requiresCompilation)
+                {
+                    _accessor.CreateLocationArgument(reference, false);
+                }
                 _locationReferences.Add(new InlinedLocationReference(reference, _metadata.CurrentActivity));
             }
         }
@@ -238,7 +243,7 @@ public class CompiledExpressionInvoker
             // for locations that are referenced in the expressions. To maintain 
             // consistency the we call the CreateRequiredArguments method seperately to
             // generates auto arguments only for locations that are referenced.
-            if (_textExpression.Language == "VB")
+            if (!requiresCompilation)
             {
                 IList<string> requiredLocationNames = _compiledRoot.GetRequiredLocations(_expressionId);
                 CreateRequiredArguments(requiredLocationNames);
