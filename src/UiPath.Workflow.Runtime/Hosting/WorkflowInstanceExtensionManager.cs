@@ -90,7 +90,7 @@ public class WorkflowInstanceExtensionManager
         ExtensionProviders.Add(new KeyValuePair<Type, WorkflowInstanceExtensionProvider>(typeof(T), new WorkflowInstanceExtensionProvider<T>(extensionCreationFunction)));
     }
 
-    internal List<object> GetAllSingletonExtensions() => _allSingletonExtensions;
+    public List<object> GetAllSingletonExtensions() => _allSingletonExtensions;
 
     internal void AddAllExtensionTypes(HashSet<Type> extensionTypes)
     {

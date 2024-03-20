@@ -3,6 +3,7 @@
 
 using System.Collections.ObjectModel;
 using System.Windows.Markup;
+using UiPath.Workflow.Runtime.ParallelTracking;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -73,7 +74,7 @@ public sealed class ParallelForEach<T> : NativeActivity
         {
             if (Body != null)
             {
-                context.ScheduleAction(Body, valueEnumerator.Current, onBodyComplete);
+                context.ScheduleAction(Body, valueEnumerator.Current, onBodyComplete).MarkNewParallelBranch();
             }
         }
         valueEnumerator.Dispose();
