@@ -2,9 +2,9 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Runtime.Collections;
+using System.Activities.ParallelTracking;
 using System.Collections.ObjectModel;
 using System.Windows.Markup;
-using UiPath.Workflow.Runtime.ParallelTracking;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
