@@ -9,7 +9,7 @@ using System.Activities.Expressions;
 using TestObjects.XamlTestDriver;
 using System.IO;
 using System;
-
+using WorkflowApplicationTestExtensions;
 namespace TestCases.Activitiess.Bpm;
 
 public class AddStringActivity : NativeActivity
@@ -25,7 +25,7 @@ public class AddStringActivity : NativeActivity
     {
         using var _ = context.InheritVariables();
         var stringsLocation = context.GetInheritedLocation<List<string>>("strings");
-        stringsLocation.Value ??= new();
+        stringsLocation.Value ??= [];
         stringsLocation.Value.Add(Item);
     }
 }
@@ -37,7 +37,7 @@ public class SplitAndMergeTests
 
     private AddStringActivity AddString(string stringToAdd)
     {
-        var act = new AddStringActivity() { Item = stringToAdd };
+        var act = new AddStringActivity() { Item = stringToAdd, DisplayName = stringToAdd };
         return act;
     }
 
@@ -50,7 +50,8 @@ public class SplitAndMergeTests
     private List<string> ExecuteFlowchart(Flowchart flowchart)
     {
         var root = new ActivityWithResult<List<string>> { Body = flowchart, In = _stringsVariable };
-        return Results = WorkflowInvoker.Invoke(root);
+        var app = new WorkflowApplication(root);
+        return Results = (List<string>) app.RunUntilCompletion().Outputs["Result"];
     }
 
     [Fact]
@@ -101,7 +102,7 @@ public class SplitAndMergeTests
                 AddString(branch1Str),
                 AddString(branch2Str)
                 );
-        split.MergeNode.FlowTo(AddString(stopString));
+        split.MergeTo(AddString(stopString));
 
         ExecuteFlowchart(split);
         Results.ShouldBe(new() { branch1Str, branch2Str, stopString });
@@ -110,21 +111,27 @@ public class SplitAndMergeTests
     [Fact]
     public void Should_join_branches_with_inner_split()
     {
+        ///                      |--A--|
+        ///        |---A---Split<      Merge--|
+        ///  Split<              |--A--|      Merge---Stop
+        ///        |___A______________________|
+
+        var outerMerge = AddString("stop").Merge();
+        var innerMerge = AddString("innerMerged").Merge();
         var innerSplit = new FlowSplit()
             .AddBranches(
-                AddString("branch1Inner"),
-                AddString("branch2Inner")
+                AddString("branch1Inner").FlowTo(innerMerge),
+                AddString("branch2Inner").FlowTo(innerMerge)
                 );
-        innerSplit.MergeNode.FlowTo(AddString("innerMerged"));
+        innerMerge.FlowTo(outerMerge);
         var outerSplit = new FlowSplit()
             .AddBranches(
-                innerSplit,
-                AddString("branch2Outer").Step()
+                AddString("branch1Outer").FlowTo(innerSplit),
+                AddString("branch2Outer").Step().FlowTo(outerMerge)
                 );
-        outerSplit.MergeNode.FlowTo(AddString("stop"));
 
         ExecuteFlowchart(outerSplit);
-        Results.ShouldBe(new() { "branch1Inner", "branch2Inner", "innerMerged", "branch2Outer", "stop"});
+        Results.ShouldBe(["branch1Outer", "branch1Inner", "branch2Inner", "innerMerged", "branch2Outer", "stop"]);
     }
 
 
@@ -141,7 +148,7 @@ public class SplitAndMergeTests
                 AddString(branch2Str)
                 );
         split.Branches.First().Condition = new LambdaValue<bool>(c => false);
-        split.MergeNode.FlowTo(AddString(stopString));
+        split.MergeTo(AddString(stopString));
 
         ExecuteFlowchart(split);
         Results.ShouldBe(new() { branch2Str, stopString });
@@ -159,8 +166,8 @@ public class SplitAndMergeTests
                 AddString(branch1Str).FlowTo(AddString(branch1Str)),
                 new BlockingActivity("whatever").FlowTo(AddString(branch2Str))
                 );
-        split.MergeNode.FlowTo(AddString(stopString));
-        split.MergeNode.Completion = new LambdaValue<bool>(c => true);
+        split.MergeTo(AddString(stopString))
+            .Completion = new LambdaValue<bool>(c => true);
 
         ExecuteFlowchart(split);
         Results.ShouldBe(new() { branch1Str, branch1Str, stopString });
@@ -209,7 +216,7 @@ public class SplitAndMergeTests
                 AddString(branch1Str).FlowTo(new FlowStep()),
                 AddString(branch2Str).FlowTo(new FlowStep()),
                 blockingActivity.FlowTo(blockingContinuation).FlowTo(new FlowStep()));
-            split.MergeNode.FlowTo(AddString(stopString));
+            split.MergeTo(AddString(stopString));
             var flowchart = new Flowchart { StartNode = split };
             return new() { In = _stringsVariable, Body = flowchart };
         }

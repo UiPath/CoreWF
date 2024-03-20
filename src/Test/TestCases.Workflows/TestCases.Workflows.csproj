@@ -4,6 +4,7 @@
     <ProjectReference Include="..\CustomTestObjects\CustomTestObjects.csproj" />
     <ProjectReference Include="..\JsonFileInstanceStore\JsonFileInstanceStore.csproj" />
     <ProjectReference Include="..\TestObjects\TestObjects.csproj" />
+    <ProjectReference Include="..\WorkflowApplicationTestExtensions\WorkflowApplicationTestExtensions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Page Remove="**\*.xaml" />

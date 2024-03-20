@@ -1,28 +1,16 @@
-﻿using System.Linq;
+﻿using System.Activities.Validation;
+using System.Linq;
 namespace System.Activities.Statements;
 
 public class FlowMerge : FlowNode
 {
-    private FlowSplit _split;
     [DefaultValue(null)]
     public Activity<bool> Completion { get; set; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
-    public FlowSplit SplitNode
-    {
-        get => _split;
-        init
-        {
-            if (value?.MergeNode is { } merge && merge != this)
-                    throw new InvalidOperationException("Split and merge must be linked both ways.");
-            _split = value;
-        }
-    }
-
 
     internal override Activity ChildActivity => Completion;
-
-    private List<Flowchart.BranchLinks> ConnectedBranches { get; set; }
+    private List<FlowSplitBranch> ConnectedBranches { get; set; }
 
     private record MergeState
     {
@@ -37,37 +25,24 @@ public class FlowMerge : FlowNode
     protected override void OnEndCacheMetadata()
     {
         var predecessors = Owner.GetPredecessors(this);
-        ConnectedBranches = predecessors.Select(p => Owner.GetBranch(p)).ToList();
+        ConnectedBranches = predecessors.SelectMany(p => Owner.GetStaticBranches(p)).Distinct().ToList();
+        var outgoingBranches = ConnectedBranches.SelectMany(b => Owner.GetStaticBranches(b.SplitNode)).Distinct().ToList();
+        Owner.AddStaticBranches(this, outgoingBranches);
 
-        ValidateAllBranches();
+        //ValidateAllBranches();
 
         void ValidateAllBranches()
         {
-            HashSet<FlowNode> visited = new()
+            var splits = ConnectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
+            if (splits.Count() > 1)
             {
-                this,
-                _split,
-            };
-            List<FlowNode> toVisit = new(1) { this };
-            do
-            {
-                var predecessors = toVisit.SelectMany(v => Owner.GetPredecessors(v)).ToList();
-                toVisit = new List<FlowNode>(predecessors.Count);
-                foreach (var predecessor in predecessors)
-                {
-                    if (!visited.Add(predecessor))
-                        continue;
-                    if (predecessor == null)
-                    {
-                        Metadata.AddValidationError("All join branches should start in the parent parallel node.");
-                        continue;
-                    }
-                    toVisit.Add(predecessor);
-                }
+                Metadata.AddValidationError("All join branches should start in the same parallel node.");
             }
-            while (toVisit.Any());
-            var allBranchesJoined = _split.Branches.All(b => visited.Contains(b.StartNode));
-            if (!allBranchesJoined)
+            var split = splits.FirstOrDefault();
+            if (split is null)
+                return;
+            var branches = ConnectedBranches.Select(b => b.RuntimeNode.Index).Distinct().ToList();
+            if (branches.Count != split.Branches.Count) 
                 Metadata.AddValidationError("All parallel branches should end in same join node.");
         }
     }
@@ -79,7 +54,7 @@ public class FlowMerge : FlowNode
         }
     }
 
-    MergeState GetJoinState(Func<MergeState> add = null)
+    MergeState GetJoinState()
     {
         var key = $"{Index}";
         var joinStates = Owner.GetPersistableState<Dictionary<string, MergeState>>("FlowMerge");
@@ -100,7 +75,11 @@ public class FlowMerge : FlowNode
         var branch = Owner.GetBranch(predecessorNode);
         if (!ConnectedBranches.Contains(branch))
             return;
-        joinState.CompletedNodeIndeces.Add(branch.NodeIndex);
+        joinState.CompletedNodeIndeces.Add(branch.RuntimeNode.Index);
+        joinState.CompletedNodeIndeces
+            .AddRange(Owner
+            .GetCompletedBranches()
+            .Select(b => b.RuntimeNode.Index));
         if (Completion is not null)
         {
             Owner.ScheduleWithCallback(Completion);
@@ -114,7 +93,7 @@ public class FlowMerge : FlowNode
     {
         var joinState = GetJoinState();
         var incompleteBranches = ConnectedBranches
-            .Select(b => b.NodeIndex)
+            .Select(b => b.RuntimeNode.Index)
             .Except(joinState.CompletedNodeIndeces).ToList();
         if (result)
         {
