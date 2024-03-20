@@ -7,6 +7,8 @@ namespace System.Activities.Statements;
 
 public class FlowSplitBranch
 {
+    internal FlowNode RuntimeNode {get; set;}
+    internal FlowSplit SplitNode { get; set; }
     private string _displayName;
 
     public FlowNode StartNode { get; set; }
@@ -25,66 +27,37 @@ public class FlowSplitBranch
             _displayName = value;
         }
     }
-
-    public static FlowSplitBranch New(FlowSplit splitNode)
-    {
-        return new()
-        {
-            StartNode = splitNode.MergeNode
-        };
-    }
 }
 
 public class FlowSplit : FlowNode
 {
-    private FlowMerge _merge;
-    public FlowMerge MergeNode
-    {
-        get => _merge;
-        init
-        {
-            if (value?.SplitNode is { } split && split != this)
-                throw new InvalidOperationException("Split and merge must be linked both ways.");
-            _merge = value;
-        }
-    }
-
     [DefaultValue(null)]
-    public Collection<FlowSplitBranch> Branches => _branches ??= ValidatingCollection<FlowSplitBranch>.NullCheck();
-
+    public Collection<FlowSplitBranch> Branches
+        => _branches ??= new ValidatingCollection<FlowSplitBranch>
+        {
+            OnAddValidationCallback = item =>
+            {
+                if (item == null)
+                {
+                    throw FxTrace.Exception.ArgumentNull(nameof(item));
+                }
+                if (item.SplitNode != null)
+                    throw FxTrace.Exception.Argument(nameof(item), "Cannot add same branch to multiple Split nodes");
+                item.SplitNode = this;
+                if (item.StartNode == null)
+                    throw FxTrace.Exception.Argument(nameof(item.StartNode), "StartNode must not be null.");
+            }
+        };
 
     private ValidatingCollection<FlowSplitBranch> _branches;
     internal override Activity ChildActivity => null;
 
-    internal List<FlowNode> RuntimeBranchesNodes { get; private set; }
+    private List<StartBranch> RuntimeBranchesNodes { get; set; }
 
-    public FlowSplit()
-    {
-        MergeNode = new FlowMerge() { SplitNode = this };
-    }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
-        RuntimeBranchesNodes ??= GetRuntimeNodes();
+        RuntimeBranchesNodes ??= Branches.Select(b => new StartBranch(b)).ToList();
         connections.AddRange(RuntimeBranchesNodes);
-        List<FlowNode> GetRuntimeNodes()
-        {
-            var result = new List<FlowNode>();
-            foreach (var splitBranch in Branches)
-            {
-                var node = (splitBranch.Condition is null)
-                    ? splitBranch.StartNode
-                    : new FlowDecision()
-                    {
-                        Condition = splitBranch.Condition,
-                        DisplayName = splitBranch.DisplayName,
-                        True = splitBranch.StartNode,
-                        False = MergeNode
-                    };
-                result.Add(node);
-                Owner.AddBranch(node, splitBranch, this);
-            }
-            return result;
-        }
     }
 
     internal override void Execute(FlowNode predecessorNode)
@@ -92,7 +65,39 @@ public class FlowSplit : FlowNode
         for (int i = RuntimeBranchesNodes.Count - 1; i >= 0; i--)
         {
             var branch = RuntimeBranchesNodes[i];
-                Owner.EnqueueNodeExecution(node: branch, isNewBranch: true);
+                Owner.EnqueueNodeExecution(node: branch);
+        }
+    }
+    private class StartBranch : FlowNode
+    {
+
+        public StartBranch(FlowSplitBranch flowSplitBranch)
+        {
+            FlowSplitBranch = flowSplitBranch;
+        }
+
+        private FlowSplitBranch FlowSplitBranch { get; }
+
+        internal override Activity ChildActivity => null;
+
+        internal override void Execute(FlowNode predecessorNode)
+        {
+            Owner.StartBranch(FlowSplitBranch);
+            Owner.EnqueueNodeExecution(FlowSplitBranch.RuntimeNode, FlowSplitBranch);
+        }
+
+        internal override void GetConnectedNodes(IList<FlowNode> connections)
+        {
+            Owner.AddStaticBranches(this, new[] { FlowSplitBranch });
+            FlowSplitBranch.RuntimeNode ??= (FlowSplitBranch.Condition is null)
+                ? FlowSplitBranch.StartNode
+                : new FlowDecision()
+                {
+                    Condition = FlowSplitBranch.Condition,
+                    DisplayName = FlowSplitBranch.DisplayName,
+                    True = FlowSplitBranch.StartNode,
+                };
+            connections.Add(FlowSplitBranch.RuntimeNode);
         }
     }
 }

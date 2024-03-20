@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Runtime;
+using System.Activities.Validation;
 using System.Linq;
 
 #if DYNAMICUPDATE
@@ -34,7 +35,7 @@ partial class Flowchart
         }
     }
 
-    private readonly Dictionary<FlowNode, BranchLinks> _splitBranchesByNode = new();
+    private readonly Dictionary<FlowNode, HashSet<FlowSplitBranch>> _staticBranchesByNode = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _predecessors = new();
     private CompletionCallback _completionCallback;
@@ -47,6 +48,8 @@ partial class Flowchart
         => GetPersistableState<Dictionary<string, int>>("_nodeIndexByActivityId");
     private Dictionary<int, NodeState> NodesStatesByIndex 
         => GetPersistableState<Dictionary<int, NodeState>>("_nodesStatesByIndex");
+    private Dictionary<int, NodeState> RuntimeBranchesState 
+        => GetPersistableState<Dictionary<int, NodeState>>("_runtimeBranchesState");
     private NativeActivityContext _activeContext;
     private bool _doNotCompleteNode;
 
@@ -91,11 +94,11 @@ partial class Flowchart
         }
         void PropagateBranch(FlowNode predecessor, FlowNode successor)
         {
-            if (!_splitBranchesByNode.TryGetValue(predecessor, out var pre)
-                || _splitBranchesByNode.ContainsKey(successor))
+            if (!_staticBranchesByNode.TryGetValue(predecessor, out var pre)
+                || _staticBranchesByNode.ContainsKey(successor))
                 return;
 
-            _splitBranchesByNode[successor] = pre;
+            _staticBranchesByNode[successor] = new(pre);
         }
     }
     private void SaveNodeActivityLink(ActivityInstance activityInstance)
@@ -163,6 +166,14 @@ partial class Flowchart
 
         return state;
     }
+    private NodeState GetBranchState(int index)
+    {
+        var nodesStatesByIndex = RuntimeBranchesState;
+        if (!nodesStatesByIndex.TryGetValue(index, out var state))
+            nodesStatesByIndex[index] = state = new();
+
+        return state;
+    }
 
     internal bool Cancel(int branchNodeIndex)
     {
@@ -188,19 +199,47 @@ partial class Flowchart
         return result?.ToList() ?? new();
     }
 
-    internal void AddBranch(FlowNode node, FlowSplitBranch splitBranch, FlowSplit parentSplit)
+    internal void AddStaticBranches(FlowNode node, IEnumerable<FlowSplitBranch> splitBranches)
     {
-        _splitBranchesByNode[node] = new BranchLinks
-        {
-            Split = parentSplit,
-            Branch = splitBranch,
-            RuntimeNode = node
-        };
+        _staticBranchesByNode[node] = new(splitBranches);
     }
 
-    internal BranchLinks GetBranch(FlowNode predecessorNode)
+    internal IEnumerable<FlowSplitBranch> GetStaticBranches(FlowNode node)
     {
-        return _splitBranchesByNode[predecessorNode];
+        if (_staticBranchesByNode.ContainsKey(node))
+            return _staticBranchesByNode[node];
+        else 
+            return Array.Empty<FlowSplitBranch>();
+
+        HashSet<FlowSplitBranch> branches = new();
+        Action<FlowNode> act = ancestor =>
+        {
+            if (_staticBranchesByNode.ContainsKey(ancestor))
+            {
+                branches.AddRange(_staticBranchesByNode[ancestor]);
+            }
+            else if (ancestor is FlowMerge)
+            {
+
+            }
+        };
+
+        HashSet<FlowNode> visited = new() { node };
+        IEnumerable<FlowNode> toVisit;
+        while ((toVisit = GetPredecessors(node).Except(visited)).Any())
+        {
+            foreach (var ancestor in toVisit)
+            {
+                act(ancestor);
+                visited.Add(ancestor);
+            }
+        }
+
+    }
+
+    internal FlowSplitBranch GetBranch(FlowNode predecessorNode)
+    {
+        return _staticBranchesByNode[predecessorNode].First();
     }
     private void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance)
     {
@@ -214,10 +253,11 @@ partial class Flowchart
         ExecuteQueue();
     }
 
-    internal void EnqueueNodeExecution(FlowNode node, bool isNewBranch = false)
+    internal void EnqueueNodeExecution(FlowNode node, FlowSplitBranch startBranchBy = null)
     {
         if (node is null)
             return;
+
         _executionQueue.Enqueue(node);
     }
 
@@ -285,6 +325,15 @@ partial class Flowchart
         node.Execute(previousNode);
     }
 
+    internal List<FlowSplitBranch> GetCompletedBranches()
+    {
+        var completedBranches = RuntimeBranchesState
+            .Where(kv => kv.Value.IsCompleted)
+            .SelectMany(kv => _staticBranchesByNode[_reachableNodes[kv.Key]])
+            .ToList();
+        return completedBranches;
+    }
+
     private List<FlowMerge> GetRunningMerges()
     {
         var runningNodes = _reachableNodes
@@ -299,8 +348,7 @@ partial class Flowchart
         }).ToList();
         return runningNodes;
     }
-
-    private void OnCurrentBranchCancelled()
+    private void OnCurrentBranchEnded()
     {
         var runningMerges = GetRunningMerges()
             .OfType<FlowMerge>();
@@ -308,6 +356,22 @@ partial class Flowchart
         {
             runningMerge.OnBranchEnded(_current);
         }
+    }
+
+    private void OnCurrentBranchCancelled()
+        => OnCurrentBranchEnded();
+    
+    private class ExcecutingBranch
+    {
+        int StartedByRuntimeNodeIndex { get; set; }
+        string BranchId { get; set; }
+    }
+
+    private class NodeInstance
+    {
+        int NodeIndex { get; set; }
+        string BranchId { get; set; }
+        int InstanceId { get; set; }
     }
 
     private class NodeState
@@ -328,13 +392,6 @@ partial class Flowchart
         public static IDisposable Create(Action onDispose)
             => new Disposable() { _onDispose = onDispose };
     }
-    internal class BranchLinks
-    {
-        public FlowSplit Split { get; set; }
-        public FlowSplitBranch Branch { get; set; }
-        public FlowNode RuntimeNode { private get; set; }
-        public int NodeIndex => RuntimeNode.Index;
-    }
     internal T GetPersistableState<T>(string key) where T: new()
     {
         var flowChartState = _flowchartState.Get(_activeContext);
@@ -344,5 +401,20 @@ partial class Flowchart
             flowChartState[key] = value;
         }
         return (T)value;
+    }
+
+    internal void EndBranch(FlowSplitBranch flowSplitBranch)
+    {
+        var state = GetBranchState(flowSplitBranch.RuntimeNode.Index);
+        state.IsCompleted = true;
+        state.IsRunning = false;
+
+        OnCurrentBranchEnded();
+    }
+
+    internal void StartBranch(FlowSplitBranch flowSplitBranch)
+    {
+        var state = GetBranchState(flowSplitBranch.RuntimeNode.Index);
+        state.IsRunning = true;
     }
 }
