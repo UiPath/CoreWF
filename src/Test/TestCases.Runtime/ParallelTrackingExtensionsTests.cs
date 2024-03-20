@@ -2,9 +2,9 @@
 using System;
 using System.Activities;
 using System.Activities.Statements;
+using System.Activities.ParallelTracking;
 using System.Collections.Generic;
 using System.Linq;
-using UiPath.Workflow.Runtime.ParallelTracking;
 using WorkflowApplicationTestExtensions;
 using Xunit;
 
