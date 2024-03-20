@@ -8,8 +8,19 @@ using System.Linq.Expressions;
 
 namespace System.Activities.Expressions;
 
-internal static class BinaryExpressionHelper
+/// <summary>
+/// Helpers for binary expressions.
+/// </summary>
+public static class BinaryExpressionHelper
 {
+    /// <summary>
+    /// Binds metadata when getting arguments.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left argument.</typeparam>
+    /// <typeparam name="TRight">The type of the right argument.</typeparam>
+    /// <param name="metadata">The metadata.</param>
+    /// <param name="left">The left argument.</param>
+    /// <param name="right">The right argument.</param>
     public static void OnGetArguments<TLeft, TRight>(CodeActivityMetadata metadata, InArgument<TLeft> left, InArgument<TRight> right)
     {
         RuntimeArgument rightArgument = new("Right", typeof(TRight), ArgumentDirection.In, true);
@@ -26,6 +37,16 @@ internal static class BinaryExpressionHelper
             });
     }
 
+    /// <summary>
+    /// Generates a <see cref="System.Linq"/> delegate.
+    /// </summary>
+    /// <typeparam name="TLeft">The type of the left argument.</typeparam>
+    /// <typeparam name="TRight">The type of the right argument.</typeparam>
+    /// <typeparam name="TResult">The return type of the operation.</typeparam>
+    /// <param name="operatorType">The type of expression.</param>
+    /// <param name="function">The resulting <see cref="Func{T1, T2, TResult}"/>.</param>
+    /// <param name="validationError">If the operation failed, the error.</param>
+    /// <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
     public static bool TryGenerateLinqDelegate<TLeft, TRight, TResult>(ExpressionType operatorType, out Func<TLeft, TRight, TResult> function, out ValidationError validationError)
     {
         function = null;
