@@ -6,7 +6,7 @@ using System.Reflection;
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class CallbackWrapper
+public class CallbackWrapper
 {
     private static readonly BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
 
