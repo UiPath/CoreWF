@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal abstract class ActivityExecutionWorkItem : WorkItem
+public abstract class ActivityExecutionWorkItem : WorkItem
 {
     private bool _skipActivityInstanceAbort;
 

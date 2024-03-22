@@ -7,7 +7,7 @@ namespace System.Activities.Runtime;
 [KnownType(typeof(ActivityCompletionCallbackWrapper))]
 [KnownType(typeof(DelegateCompletionCallbackWrapper))]
 [DataContract]
-internal abstract class CompletionCallbackWrapper : CallbackWrapper
+public abstract class CompletionCallbackWrapper : CallbackWrapper
 {
     private bool _checkForCancelation;
     private bool _needsToGatherOutputs;
