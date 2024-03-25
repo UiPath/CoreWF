@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class ActivityCompletionCallbackWrapper : CompletionCallbackWrapper
+public class ActivityCompletionCallbackWrapper : CompletionCallbackWrapper
 {
     private static readonly Type completionCallbackType = typeof(CompletionCallback);
     private static readonly Type[] completionCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(ActivityInstance) };
