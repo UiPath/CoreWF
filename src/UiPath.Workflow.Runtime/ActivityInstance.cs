@@ -7,6 +7,7 @@ using System.Globalization;
 
 namespace System.Activities;
 using Internals;
+using Newtonsoft.Json;
 using Runtime;
 using Tracking;
 
@@ -23,32 +24,62 @@ public sealed class ActivityInstance
     : ActivityInstanceMap.IActivityReference
 #endif
 {
+    [JsonProperty]
     private Activity _activity;
+
+    [JsonProperty]
     private ChildList _childList;
+
+    [JsonProperty]
     private ReadOnlyCollection<ActivityInstance> _childCache;
+
+    [JsonProperty]
     private CompletionBookmark _completionBookmark;
+
+    [JsonProperty]
     private ActivityInstanceMap _instanceMap;
+
+    [JsonProperty]
     private ActivityInstance _parent;
+
+    [JsonProperty]
     private string _ownerName;
+
+    [JsonProperty]
     private int _busyCount;
+
+    [JsonProperty]
     private ExtendedData _extendedData;
 
     // most activities will have a symbol (either variable or argument, so optimize for that case)
+    [JsonProperty]
     private bool _noSymbols;
+
+    [JsonProperty]
     private ActivityInstanceState _state;
+
+    [JsonProperty]
     private bool _isCancellationRequested;
+
+    [JsonProperty]
     private bool _performingDefaultCancelation;
+
+    [JsonProperty]
     private Substate _substate;
+
+    [JsonProperty]
     private long _id;
+
+    [JsonProperty]
     private bool _initializationIncomplete;
 
     // This is serialized through the SerializedEnvironment property
     private LocationEnvironment _environment;
     private ExecutionPropertyManager _propertyManager;
 
-    internal ActivityInstance() { }
+    public ActivityInstance() { }
 
-    internal ActivityInstance(Activity activity)
+    public ActivityInstance(Activity activity)
     {
         _activity = activity;
         _state = ActivityInstanceState.Executing;
