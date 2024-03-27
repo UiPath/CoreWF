@@ -4,6 +4,7 @@
 using System.Activities.Expressions;
 using System.Linq.Expressions;
 using System.Windows.Markup;
+using static System.Activities.Statements.Flowchart;
 
 namespace System.Activities.Statements;
 
@@ -75,7 +76,7 @@ public sealed class FlowDecision : FlowNode
 
     internal override Activity ChildActivity => Condition;
 
-    internal override void Execute(FlowNode predecessorNode)
+    internal override void Execute()
     {
         Owner.ScheduleWithCallback(Condition);
     }

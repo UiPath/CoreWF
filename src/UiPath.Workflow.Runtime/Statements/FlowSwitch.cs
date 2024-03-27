@@ -4,6 +4,8 @@
 using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
 using System.Windows.Markup;
+using System.Xml.XPath;
+using static System.Activities.Statements.Flowchart;
 
 namespace System.Activities.Statements;
 
@@ -53,7 +55,7 @@ public sealed class FlowSwitch<T> : FlowNode
 
     internal override Activity ChildActivity => Expression;
 
-    internal override void Execute(FlowNode predecessorNode)
+    internal override void Execute()
     {
         Owner.ScheduleWithCallback(Expression);
     }

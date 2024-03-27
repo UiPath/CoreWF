@@ -10,6 +10,8 @@ using TestObjects.XamlTestDriver;
 using System.IO;
 using System;
 using WorkflowApplicationTestExtensions;
+using System.Reflection;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace TestCases.Activitiess.Bpm;
 
 public class AddStringActivity : NativeActivity
@@ -57,15 +59,14 @@ public class SplitAndMergeTests
     [Fact]
     public void RoundTrip_xaml()
     {
-        var branch1Str = "branch1";
-        var branch2Str = "branch2";
-        var split = new FlowSplit().AddBranches(AddString(branch1Str), AddString(branch2Str));
+        var merge = AddString("stop").Merge();
+        var split = new FlowSplit().AddBranches(AddString("branch1").FlowTo(merge), AddString("branch2").FlowTo(merge));
         var flowchart = new Flowchart { StartNode = split };
         var roundTrip = XamlRoundTrip(flowchart);
         ExecuteFlowchart(roundTrip);
-        Results.ShouldBe(new() { branch1Str, branch2Str });
-
-        static T XamlRoundTrip<T>(T obj)
+        Results.ShouldBe([ "branch1", "branch2", "stop" ]);
+        
+        T XamlRoundTrip<T>(T obj)
         {
             string filePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\testFlowchart.xaml";
             File.Delete(filePath);
@@ -73,6 +74,13 @@ public class SplitAndMergeTests
             {
                 XamlTestDriver.Serialize(obj, stream);
             }
+            var asm = GetType().Assembly;
+            var sampleStream = asm.GetManifestResourceStream($"{asm.GetName().Name}.TestXamls.{"testFlowchart"}.xaml");
+            using var sampleReader = new StreamReader(sampleStream);
+            var sampleXaml = sampleReader.ReadToEnd();
+            var currentXaml = File.ReadAllText(filePath);
+            currentXaml.ShouldBe(sampleXaml);
+
             using (var stream = File.OpenRead(filePath))
             {
                 return (T)XamlTestDriver.Deserialize(stream);
@@ -96,13 +104,13 @@ public class SplitAndMergeTests
         var branch1Str = "branch1";
         var branch2Str = "branch2";
         var stopString = "stop";
+        var merge = AddString(stopString).Merge();
 
         var split = new FlowSplit()
             .AddBranches(
-                AddString(branch1Str),
-                AddString(branch2Str)
+                AddString(branch1Str).FlowTo(merge),
+                AddString(branch2Str).FlowTo(merge)
                 );
-        split.MergeTo(AddString(stopString));
 
         ExecuteFlowchart(split);
         Results.ShouldBe(new() { branch1Str, branch2Str, stopString });
@@ -134,6 +142,25 @@ public class SplitAndMergeTests
         Results.ShouldBe(["branch1Outer", "branch1Inner", "branch2Inner", "innerMerged", "branch2Outer", "stop"]);
     }
 
+    [Fact]
+    public void Shared_merge_fails()
+    {
+        var outerMerge = AddString("stop").Merge();
+        var innerMerge = outerMerge;
+        var innerSplit = new FlowSplit()
+            .AddBranches(
+                AddString("branch1Inner").FlowTo(innerMerge),
+                AddString("branch2Inner").FlowTo(innerMerge)
+                );
+        innerMerge.FlowTo(outerMerge);
+        var outerSplit = new FlowSplit()
+            .AddBranches(
+                AddString("branch1Outer").FlowTo(innerSplit),
+                AddString("branch2Outer").Step().FlowTo(outerMerge)
+                );
+        var execute = () => ExecuteFlowchart(outerSplit);
+        execute.ShouldThrow<InvalidWorkflowException>();
+    }
 
     [Fact]
     public void Should_join_with_skiped_branches()
@@ -141,14 +168,13 @@ public class SplitAndMergeTests
         var branch1Str = "branch1";
         var branch2Str = "branch2";
         var stopString = "stop";
-
+        var merge = AddString(stopString).Merge();
         var split = new FlowSplit()
             .AddBranches(
-                AddString(branch1Str),
-                AddString(branch2Str)
+                AddString(branch1Str).FlowTo(merge),
+                AddString(branch2Str).FlowTo(merge)
                 );
         split.Branches.First().Condition = new LambdaValue<bool>(c => false);
-        split.MergeTo(AddString(stopString));
 
         ExecuteFlowchart(split);
         Results.ShouldBe(new() { branch2Str, stopString });
@@ -161,13 +187,13 @@ public class SplitAndMergeTests
         var branch2Str = "branch2";
         var stopString = "stop";
 
+        var merge = AddString(stopString).Merge();
+        merge.Completion = new LambdaValue<bool>(c => true);
         var split = new FlowSplit()
             .AddBranches(
-                AddString(branch1Str).FlowTo(AddString(branch1Str)),
-                new BlockingActivity("whatever").FlowTo(AddString(branch2Str))
+                AddString(branch1Str).FlowTo(AddString(branch1Str)).FlowTo(merge),
+                new BlockingActivity("whatever").FlowTo(AddString(branch2Str)).FlowTo(merge)
                 );
-        split.MergeTo(AddString(stopString))
-            .Completion = new LambdaValue<bool>(c => true);
 
         ExecuteFlowchart(split);
         Results.ShouldBe(new() { branch1Str, branch1Str, stopString });
@@ -211,12 +237,11 @@ public class SplitAndMergeTests
         {
             var blockingContinuation = AddString(blockingContStr);
             var blockingActivity = new BlockingActivity(blockingBookmark);
-
+            var merge = AddString(stopString).Merge();
             var split = new FlowSplit().AddBranches(
-                AddString(branch1Str).FlowTo(new FlowStep()),
-                AddString(branch2Str).FlowTo(new FlowStep()),
-                blockingActivity.FlowTo(blockingContinuation).FlowTo(new FlowStep()));
-            split.MergeTo(AddString(stopString));
+                AddString(branch1Str).FlowTo(new FlowStep()).FlowTo(merge),
+                AddString(branch2Str).FlowTo(new FlowStep()).FlowTo(merge),
+                blockingActivity.FlowTo(blockingContinuation).FlowTo(new FlowStep()).FlowTo(merge));
             var flowchart = new Flowchart { StartNode = split };
             return new() { In = _stringsVariable, Body = flowchart };
         }
@@ -239,6 +264,8 @@ public class ActivityWithResult<TResult> : NativeActivity<TResult>
 }
 public class BlockingActivity : NativeActivity
 {
+
+    private Variable<DateTime> _startExecute = new(); 
     public BlockingActivity()
     {
     }
@@ -250,17 +277,30 @@ public class BlockingActivity : NativeActivity
 
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
+        metadata.AddImplementationVariable(_startExecute);
         // nothing to do
     }
 
     protected override void Execute(NativeActivityContext context)
     {
+        _startExecute.Set(context, DateTime.Now);
         context.CreateBookmark(this.DisplayName, new BookmarkCallback(OnBookmarkResumed));
+    }
+
+    protected override void Cancel(NativeActivityContext context)
+    {
+        base.Cancel(context);
     }
 
     private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
     {
-        // No-op
+        if (context.CurrentInstance.IsCancellationRequested)
+            return;
+        var startExecutionTimestamp = _startExecute.Get(context);
+        if (startExecutionTimestamp + TimeSpan.FromSeconds(1) > DateTime.Now)
+            return;
+        Thread.Sleep(200);
+        context.CreateBookmark(this.DisplayName, new BookmarkCallback(OnBookmarkResumed));
     }
 
     protected override bool CanInduceIdle => true;

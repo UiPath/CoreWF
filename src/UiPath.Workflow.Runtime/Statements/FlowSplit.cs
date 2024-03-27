@@ -1,8 +1,10 @@
 ﻿using System.Activities.Runtime.Collections;
 using System.Activities.Validation;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Markup;
+using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
 public class FlowSplitBranch
@@ -52,52 +54,40 @@ public class FlowSplit : FlowNode
     private ValidatingCollection<FlowSplitBranch> _branches;
     internal override Activity ChildActivity => null;
 
-    private List<StartBranch> RuntimeBranchesNodes { get; set; }
+    private List<FlowNode> RuntimeBranchesNodes { get; set; }
 
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
-        RuntimeBranchesNodes ??= Branches.Select(b => new StartBranch(b)).ToList();
+
+        RuntimeBranchesNodes ??= Branches.Select(GetRuntimeNode).ToList();
         connections.AddRange(RuntimeBranchesNodes);
+
+        FlowNode GetRuntimeNode(FlowSplitBranch splitBranch)
+        {
+            splitBranch.RuntimeNode ??= (splitBranch.Condition is null)
+            ? splitBranch.StartNode
+            : new FlowDecision()
+            {
+                Condition = splitBranch.Condition,
+                DisplayName = splitBranch.DisplayName,
+                True = splitBranch.StartNode,
+            };
+            connections.Add(splitBranch.RuntimeNode);
+            var splitBranches = Owner.GetStaticBranches(splitBranch.SplitNode);
+            Owner.GetStaticBranches(splitBranch.RuntimeNode).Push(splitBranch, splitBranches);
+
+            return splitBranch.RuntimeNode;
+        }
     }
 
-    internal override void Execute(FlowNode predecessorNode)
+    internal override void Execute()
     {
         for (int i = RuntimeBranchesNodes.Count - 1; i >= 0; i--)
         {
             var branch = RuntimeBranchesNodes[i];
-                Owner.EnqueueNodeExecution(node: branch);
-        }
-    }
-    private class StartBranch : FlowNode
-    {
-
-        public StartBranch(FlowSplitBranch flowSplitBranch)
-        {
-            FlowSplitBranch = flowSplitBranch;
-        }
-
-        private FlowSplitBranch FlowSplitBranch { get; }
-
-        internal override Activity ChildActivity => null;
-
-        internal override void Execute(FlowNode predecessorNode)
-        {
-            Owner.StartBranch(FlowSplitBranch);
-            Owner.EnqueueNodeExecution(FlowSplitBranch.RuntimeNode, FlowSplitBranch);
-        }
-
-        internal override void GetConnectedNodes(IList<FlowNode> connections)
-        {
-            Owner.AddStaticBranches(this, new[] { FlowSplitBranch });
-            FlowSplitBranch.RuntimeNode ??= (FlowSplitBranch.Condition is null)
-                ? FlowSplitBranch.StartNode
-                : new FlowDecision()
-                {
-                    Condition = FlowSplitBranch.Condition,
-                    DisplayName = FlowSplitBranch.DisplayName,
-                    True = FlowSplitBranch.StartNode,
-                };
-            connections.Add(FlowSplitBranch.RuntimeNode);
+            Owner.EnqueueNodeExecution(branch, Owner.Current.BranchInstance.Push(
+                        branchId: $"{Owner.Current.NodeInstanceId}_{branch.Index}",
+                        splitInstanceId: Owner.Current.NodeInstanceId));
         }
     }
 }

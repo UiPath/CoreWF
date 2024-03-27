@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Windows.Markup;
+using static System.Activities.Statements.Flowchart;
 
 namespace System.Activities.Statements;
 
@@ -26,7 +27,7 @@ public sealed class FlowStep : FlowNode
     }
 
     internal override Activity ChildActivity => Action;
-    internal override void Execute(FlowNode predecessorNode)
+    internal override void Execute()
     {
         if (Next == null)
         {
