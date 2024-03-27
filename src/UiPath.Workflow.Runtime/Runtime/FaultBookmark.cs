@@ -14,7 +14,7 @@ public class FaultBookmark
     }
 
     [DataMember(Name = "callbackWrapper")]
-    internal FaultCallbackWrapper SerializedCallbackWrapper
+    public FaultCallbackWrapper SerializedCallbackWrapper
     {
         get => _callbackWrapper;
         set => _callbackWrapper = value;

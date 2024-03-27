@@ -19,7 +19,7 @@ public class CompletionBookmark
     }
 
     [DataMember(EmitDefaultValue = false, Name = "callbackWrapper")]
-    internal CompletionCallbackWrapper SerializedCallbackWrapper
+    public CompletionCallbackWrapper SerializedCallbackWrapper
     {
         get => _callbackWrapper;
         set => _callbackWrapper = value;
