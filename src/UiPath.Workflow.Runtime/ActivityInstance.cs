@@ -7,7 +7,6 @@ using System.Globalization;
 
 namespace System.Activities;
 using Internals;
-using Newtonsoft.Json;
 using Runtime;
 using Tracking;
 
