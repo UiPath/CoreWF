@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Windows.Markup;
+using static System.Activities.Statements.Flowchart;
 
 namespace System.Activities.Statements;
 
@@ -17,8 +18,6 @@ public sealed class FlowStep : FlowNode
     [DependsOn("Action")]
     public FlowNode Next { get; set; }
 
-    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata) { }
-
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
         if (Next != null)
@@ -28,8 +27,7 @@ public sealed class FlowStep : FlowNode
     }
 
     internal override Activity ChildActivity => Action;
-
-    internal bool Execute(NativeActivityContext context, CompletionCallback onCompleted, out FlowNode nextNode)
+    internal override void Execute()
     {
         if (Next == null)
         {
@@ -40,14 +38,16 @@ public sealed class FlowStep : FlowNode
         }
         if (Action == null)
         {
-            nextNode = Next;
-            return true;
+            OnCompletionCallback();
         }
         else
         {
-            context.ScheduleActivity(Action, onCompleted);
-            nextNode = null;
-            return false;
+            Owner.ScheduleWithCallback(Action);
         }
+    }
+
+    protected override void OnCompletionCallback()
+    {
+        Owner.EnqueueNodeExecution(Next);
     }
 }

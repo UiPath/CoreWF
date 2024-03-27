@@ -4,6 +4,7 @@
 using System.Activities.Expressions;
 using System.Linq.Expressions;
 using System.Windows.Markup;
+using static System.Activities.Statements.Flowchart;
 
 namespace System.Activities.Statements;
 
@@ -52,11 +53,11 @@ public sealed class FlowDecision : FlowNode
         set => _displayName = value;
     }
 
-    internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
+    protected override void OnEndCacheMetadata()
     {
         if (Condition == null)
         {
-            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName));
+            Metadata.AddValidationError(SR.FlowDecisionRequiresCondition(Owner.DisplayName));
         }
     }
 
@@ -75,9 +76,12 @@ public sealed class FlowDecision : FlowNode
 
     internal override Activity ChildActivity => Condition;
 
-    internal bool Execute(NativeActivityContext context, CompletionCallback<bool> onConditionCompleted)
+    internal override void Execute()
     {
-        context.ScheduleActivity(Condition, onConditionCompleted);
-        return false;
+        Owner.ScheduleWithCallback(Condition);
+    }
+    protected override void OnCompletionCallback(bool result)
+    {
+        Owner.EnqueueNodeExecution(result ? True : False);
     }
 }

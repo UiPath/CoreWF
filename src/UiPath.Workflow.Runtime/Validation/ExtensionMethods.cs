@@ -7,6 +7,13 @@ namespace System.Activities.Validation;
 
 internal static class ExtensionMethods
 {
+    public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> itemsToAdd)
+    {
+        foreach (var item in itemsToAdd)
+        {
+            collection.Add(item);
+        }
+    }
     public static bool IsNullOrEmpty(this ICollection c) => (c == null || c.Count == 0);
 
     public static string AsCommaSeparatedValues(this IEnumerable<string> c) => string.Join(", ", c);

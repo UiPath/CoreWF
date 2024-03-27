@@ -14,18 +14,14 @@ using System.Activities.DynamicUpdate;
 namespace System.Activities.Statements;
 
 [ContentProperty("Nodes")]
-public sealed class Flowchart : NativeActivity
+public sealed partial class Flowchart : NativeActivity
 {
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
-    private CompletionCallback _onStepCompleted;
-    private CompletionCallback<bool> _onDecisionCompleted;
-    private readonly Variable<int> _currentNode;
 
     public Flowchart()
     {
-        _currentNode = new Variable<int>();
         _reachableNodes = new Collection<FlowNode>();
     }
 
@@ -168,8 +164,8 @@ public sealed class Flowchart : NativeActivity
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         metadata.SetVariablesCollection(Variables);
-        metadata.AddImplementationVariable(_currentNode);
-
+        metadata.AddImplementationVariable(_flowchartState);
+        
         GatherReachableNodes(metadata);
         if (ValidateUnconnectedNodes && (_reachableNodes.Count < Nodes.Count))
         {
@@ -193,6 +189,7 @@ public sealed class Flowchart : NativeActivity
         }
 
         metadata.SetChildrenCollection(new Collection<Activity>(children));
+        EndCacheMetadata(metadata);
     }
 
     private void GatherReachableNodes(NativeActivityMetadata metadata)
@@ -226,7 +223,7 @@ public sealed class Flowchart : NativeActivity
         return false;
     }
 
-    private static void DepthFirstVisitNodes(Func<FlowNode, bool> visitNodeCallback, FlowNode start)
+    private void DepthFirstVisitNodes(Func<FlowNode, bool> visitNodeCallback, FlowNode start)
     {
         Fx.Assert(visitNodeCallback != null, "This must be supplied since it stops us from infinitely looping.");
 
@@ -250,128 +247,12 @@ public sealed class Flowchart : NativeActivity
             {
                 connected.Clear();
                 current.GetConnectedNodes(connected);
-
+                RecordLinks(current, connected);
                 for (int i = 0; i < connected.Count; i++)
                 {
                     stack.Push(connected[i]);
                 }
             }
         }
-    }
-
-
-    protected override void Execute(NativeActivityContext context)
-    {
-        if (StartNode != null)
-        {
-            if (TD.FlowchartStartIsEnabled())
-            {
-                TD.FlowchartStart(DisplayName);
-            }
-            ExecuteNodeChain(context, StartNode, null);
-        }
-        else
-        {
-            if (TD.FlowchartEmptyIsEnabled())
-            {
-                TD.FlowchartEmpty(DisplayName);
-            }
-        }
-    }
-
-    private void ExecuteNodeChain(NativeActivityContext context, FlowNode node, ActivityInstance completedInstance)
-    {
-        if (node == null)
-        {
-            if (context.IsCancellationRequested)
-            {
-                Fx.Assert(completedInstance != null, "cannot request cancel if we never scheduled any children");
-                // we are done but the last child didn't complete successfully
-                if (completedInstance.State != ActivityInstanceState.Closed)
-                {
-                    context.MarkCanceled();
-                }
-            }
-
-            return;
-        }
-
-        if (context.IsCancellationRequested)
-        {
-            // we're not done and cancel has been requested
-            context.MarkCanceled();
-            return;
-        }
-
-
-        Fx.Assert(node != null, "caller should validate");
-        FlowNode current = node;
-        do
-        {
-            if (ExecuteSingleNode(context, current, out FlowNode next))
-            {
-                current = next;
-            }
-            else
-            {
-                _currentNode.Set(context, current.Index);
-                current = null;
-            }
-        }
-        while (current != null);
-    }
-
-    private bool ExecuteSingleNode(NativeActivityContext context, FlowNode node, out FlowNode nextNode)
-    {
-        Fx.Assert(node != null, "caller should validate");
-        if (node is FlowStep step)
-        {
-            _onStepCompleted ??= new CompletionCallback(OnStepCompleted);
-            return step.Execute(context, _onStepCompleted, out nextNode);
-        }
-
-        nextNode = null;
-        if (node is FlowDecision decision)
-        {
-            _onDecisionCompleted ??= new CompletionCallback<bool>(OnDecisionCompleted);
-            return decision.Execute(context, _onDecisionCompleted);
-        }
-
-        IFlowSwitch switchNode = node as IFlowSwitch;
-        Fx.Assert(switchNode != null, "unrecognized FlowNode");
-
-        return switchNode.Execute(context, this);
-    }
-
-    private FlowNode GetCurrentNode(NativeActivityContext context)
-    {
-        int index = _currentNode.Get(context);
-        FlowNode result = _reachableNodes[index];
-        Fx.Assert(result != null, "corrupt internal state");
-        return result;
-    }
-
-    private void OnStepCompleted(NativeActivityContext context, ActivityInstance completedInstance)
-    {
-        FlowStep step = GetCurrentNode(context) as FlowStep;
-        Fx.Assert(step != null, "corrupt internal state");
-        FlowNode next = step.Next;
-        ExecuteNodeChain(context, next, completedInstance);
-    }
-
-    private void OnDecisionCompleted(NativeActivityContext context, ActivityInstance completedInstance, bool result)
-    {
-        FlowDecision decision = GetCurrentNode(context) as FlowDecision;
-        Fx.Assert(decision != null, "corrupt internal state");
-        FlowNode next = result ? decision.True : decision.False;
-        ExecuteNodeChain(context, next, completedInstance);
-    }
-
-    internal void OnSwitchCompleted<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
-    {
-        IFlowSwitch switchNode = GetCurrentNode(context) as IFlowSwitch;
-        Fx.Assert(switchNode != null, "corrupt internal state");
-        FlowNode next = switchNode.GetNextNode(result);
-        ExecuteNodeChain(context, next, completedInstance);
     }
 }
