@@ -1,5 +1,6 @@
 ﻿using System.Activities.Validation;
 using System.Linq;
+using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
 public class FlowMerge : FlowNode
@@ -15,7 +16,7 @@ public class FlowMerge : FlowNode
     private record MergeState
     {
         public bool Done { get; set; }
-        public HashSet<int> CompletedNodeIndeces { get; set; }
+        public HashSet<BranchInstance> CompletedBranches { get; set; }
     }
 
     public FlowMerge()
@@ -25,11 +26,11 @@ public class FlowMerge : FlowNode
     protected override void OnEndCacheMetadata()
     {
         var predecessors = Owner.GetPredecessors(this);
-        ConnectedBranches = predecessors.SelectMany(p => Owner.GetStaticBranches(p)).Distinct().ToList();
-        var outgoingBranches = ConnectedBranches.SelectMany(b => Owner.GetStaticBranches(b.SplitNode)).Distinct().ToList();
-        Owner.AddStaticBranches(this, outgoingBranches);
+        ConnectedBranches = predecessors
+            .Select(p => Owner.GetStaticBranches(p).GetTop())
+            .Distinct().ToList();
 
-        //ValidateAllBranches();
+        ValidateAllBranches();
 
         void ValidateAllBranches()
         {
@@ -51,35 +52,37 @@ public class FlowMerge : FlowNode
         if (Next != null)
         {
             connections.Add(Next);
+            PopBranchesStacks();
+        }
+
+        void PopBranchesStacks()
+        {
+            var nextStacks = Owner.GetStaticBranches(this);
+            Owner.GetStaticBranches(Next).AddPopFrom(nextStacks);
         }
     }
 
-    MergeState GetJoinState()
+    MergeState GetJoinState(NodeInstance mergeInstance)
     {
-        var key = $"{Index}";
+        var key = $"{Index}.{mergeInstance.BranchInstance.SplitInstanceId}";
         var joinStates = Owner.GetPersistableState<Dictionary<string, MergeState>>("FlowMerge");
         joinStates.TryGetValue(key, out var joinState);
         if (joinState is null)
         {
             joinState = new()
             {
-                CompletedNodeIndeces = new HashSet<int>(),
+                CompletedBranches = new(),
             };
             joinStates.Add(key, joinState);
         }
         return joinState;
     }
-    internal override void Execute(FlowNode predecessorNode)
+    internal override void Execute()
     {
-        var joinState = GetJoinState();
-        var branch = Owner.GetBranch(predecessorNode);
-        if (!ConnectedBranches.Contains(branch))
-            return;
-        joinState.CompletedNodeIndeces.Add(branch.RuntimeNode.Index);
-        joinState.CompletedNodeIndeces
-            .AddRange(Owner
-            .GetCompletedBranches()
-            .Select(b => b.RuntimeNode.Index));
+        var joinState = GetJoinState(Owner.Current);
+        var branch = Owner.Previous.BranchInstance;
+        joinState.CompletedBranches.Add(branch);
+
         if (Completion is not null)
         {
             Owner.ScheduleWithCallback(Completion);
@@ -91,51 +94,29 @@ public class FlowMerge : FlowNode
     }
     protected override void OnCompletionCallback(bool result)
     {
-        var joinState = GetJoinState();
-        var incompleteBranches = ConnectedBranches
-            .Select(b => b.RuntimeNode.Index)
-            .Except(joinState.CompletedNodeIndeces).ToList();
+        var joinState = GetJoinState(Owner.Current);
         if (result)
         {
             EndAllBranches();
         }
+        var runningBranches = Owner.GetOtherRunningBranches(joinState.CompletedBranches);
 
-        if (incompleteBranches.Any())
+        if (runningBranches.Count > 0)
         {
             Owner.MarkDoNotCompleteNode();
             return;
         }
-
+        if (joinState.Done)
+        {
+            return;
+        }
         joinState.Done = true;
-        Owner.EnqueueNodeExecution(Next);
+
+        Owner.EnqueueNodeExecution(Next, Owner.Current.BranchInstance.Pop()) ;
         
         void EndAllBranches()
         {
-            var toCancel = incompleteBranches;
-            Cancel(toCancel);
+            Owner.CancelOtherBranches(joinState.CompletedBranches);
         }
-
-        void Cancel(List<int> toCancel)
-        {
-            foreach (var branchNode in toCancel)
-            {
-                if (branchNode == Index)
-                    continue;
-                if (Owner.Cancel(branchNode))
-                {
-                    var successors = Owner.GetSuccessors(branchNode)
-                        .Select(p => p.Index).ToList();
-                    Cancel(successors);
-                }
-            }
-        }
-    }
-
-    internal void OnBranchEnded(FlowNode current)
-    {
-        var branch = Owner.GetBranch(current);
-        
-        if (ConnectedBranches.Contains(branch) && !GetJoinState().Done)
-            Owner.EnqueueNodeExecution(this);
     }
 }

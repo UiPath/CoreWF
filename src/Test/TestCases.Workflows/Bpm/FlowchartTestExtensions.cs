@@ -40,19 +40,6 @@ public static class FlowchartTestExtensions
     {
         return new FlowStep { Action = predeccessor }.FlowTo(successor);
     }
-    public static FlowMerge MergeTo(this FlowSplit split, FlowNode successor)
-    {
-        var merge = new FlowMerge() { Next = successor };
-        foreach (var branch in split.Branches)
-        {
-            branch.StartNode.FlowTo(merge);
-        }
-        return merge;
-    }
-    public static FlowMerge MergeTo(this FlowSplit split, Activity successor)
-    {
-        return split.MergeTo(new FlowStep { Action = successor });
-    }
     public static T FlowTo<T>(this T predeccessor, Activity successor)
         where T : FlowNode
     {
