@@ -1,6 +1,8 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using static System.Activities.Statements.Flowchart;
+
 namespace System.Activities.Statements;
 
 public abstract class FlowNode
@@ -62,7 +64,7 @@ public abstract class FlowNode
     }
 
     internal abstract void GetConnectedNodes(IList<FlowNode> connections);
-    internal abstract void Execute(FlowNode predecessorNode);
+    internal abstract void Execute();
 
     internal void EndCacheMetadata(NativeActivityMetadata metadata) 
     {
@@ -90,4 +92,9 @@ public abstract class FlowNode
     }
 
     protected virtual void OnCompletionCallback(bool result) { }
+
+    public override string ToString()
+    {
+        return ChildActivity?.DisplayName ?? $"{GetType().Name}.{Index}";
+    }
 }
