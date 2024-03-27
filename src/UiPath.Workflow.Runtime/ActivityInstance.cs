@@ -46,9 +46,9 @@ public sealed class ActivityInstance
     private LocationEnvironment _environment;
     private ExecutionPropertyManager _propertyManager;
 
-    public ActivityInstance() { }
+    internal ActivityInstance() { }
 
-    public ActivityInstance(Activity activity)
+    internal ActivityInstance(Activity activity)
     {
         _activity = activity;
         _state = ActivityInstanceState.Executing;
