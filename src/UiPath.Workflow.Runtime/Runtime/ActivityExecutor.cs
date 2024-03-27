@@ -22,7 +22,7 @@ namespace System.Activities.Runtime;
 
 
 [DataContract(Name = XD.Executor.Name, Namespace = XD.Runtime.Namespace)]
-internal partial class ActivityExecutor : IEnlistmentNotification
+public partial class ActivityExecutor : IEnlistmentNotification
 {
     private static ReadOnlyCollection<BookmarkInfo> s_emptyBookmarkInfoCollection;
 

@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class FaultBookmark
+public class FaultBookmark
 {
     private FaultCallbackWrapper _callbackWrapper;
 
@@ -14,7 +14,7 @@ internal class FaultBookmark
     }
 
     [DataMember(Name = "callbackWrapper")]
-    internal FaultCallbackWrapper SerializedCallbackWrapper
+    public FaultCallbackWrapper SerializedCallbackWrapper
     {
         get => _callbackWrapper;
         set => _callbackWrapper = value;

@@ -14,7 +14,7 @@ namespace System.Activities.Runtime;
 // pooled resources (like NativeActivityContext).
 
 
-internal abstract class Pool<T>
+public abstract class Pool<T>
 {
     private const int DefaultPoolSize = 10;
     private readonly T[] _items;

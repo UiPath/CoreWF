@@ -6,7 +6,7 @@ using System.Reflection;
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class CallbackWrapper
+public class CallbackWrapper
 {
     private static readonly BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
 
@@ -32,31 +32,31 @@ internal class CallbackWrapper
 
     protected bool IsCallbackNull => _callback == null && _callbackName == null;
 
-    protected Delegate Callback => _callback;
+    public Delegate Callback => _callback;
 
     [DataMember(Name = "callbackName")]
-    internal string SerializedCallbackName
+    public string SerializedCallbackName
     {
         get => _callbackName;
         set => _callbackName = value;
     }
 
     [DataMember(EmitDefaultValue = false, Name = "declaringAssemblyName")]
-    internal string SerializedDeclaringAssemblyName
+    public string SerializedDeclaringAssemblyName
     {
         get => _declaringAssemblyName;
         set => _declaringAssemblyName = value;
     }
 
     [DataMember(EmitDefaultValue = false, Name = "declaringTypeName")]
-    internal string SerializedDeclaringTypeName
+    public string SerializedDeclaringTypeName
     {
         get => _declaringTypeName;
         set => _declaringTypeName = value;
     }
 
     [DataMember(Name = "ActivityInstance")]
-    internal ActivityInstance SerializedActivityInstance
+    public ActivityInstance SerializedActivityInstance
     {
         get => ActivityInstance;
         set => ActivityInstance = value;

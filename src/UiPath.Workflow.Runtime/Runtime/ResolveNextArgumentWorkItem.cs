@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class ResolveNextArgumentWorkItem : ActivityExecutionWorkItem
+public class ResolveNextArgumentWorkItem : ActivityExecutionWorkItem
 {
     private int _nextArgumentIndex;
     private IDictionary<string, object> _argumentValueOverrides;
