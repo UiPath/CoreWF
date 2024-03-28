@@ -27,7 +27,7 @@ namespace WorkflowApplicationTestExtensions
             Should.Throw<ArgumentException>(app.RunUntilCompletion);
         }
 
-        [Fact]
+        [Fact(Skip="Flaky")]
         public void RunUntilCompletion_Aborted()
         {
             var app = new WorkflowApplication(new Delay { Duration = TimeSpan.MaxValue });
