@@ -12,6 +12,7 @@ using System;
 using WorkflowApplicationTestExtensions;
 using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Activities.Validation;
 namespace TestCases.Activitiess.Bpm;
 
 public class AddStringActivity : NativeActivity
@@ -59,7 +60,7 @@ public class SplitAndMergeTests
     [Fact]
     public void RoundTrip_xaml()
     {
-        var merge = AddString("stop").Merge();
+        var merge = AddString("stop").MergeAll();
         var split = new FlowSplit().AddBranches(AddString("branch1").FlowTo(merge), AddString("branch2").FlowTo(merge));
         var flowchart = new Flowchart { StartNode = split };
         var roundTrip = XamlRoundTrip(flowchart);
@@ -104,7 +105,7 @@ public class SplitAndMergeTests
         var branch1Str = "branch1";
         var branch2Str = "branch2";
         var stopString = "stop";
-        var merge = AddString(stopString).Merge();
+        var merge = AddString(stopString).MergeAll();
 
         var split = new FlowSplit()
             .AddBranches(
@@ -124,8 +125,8 @@ public class SplitAndMergeTests
         ///  Split<              |--A--|      Merge---Stop
         ///        |___A______________________|
 
-        var outerMerge = AddString("stop").Merge();
-        var innerMerge = AddString("innerMerged").Merge();
+        var outerMerge = AddString("stop").MergeAll();
+        var innerMerge = AddString("innerMerged").MergeAll();
         var innerSplit = new FlowSplit()
             .AddBranches(
                 AddString("branch1Inner").FlowTo(innerMerge),
@@ -145,50 +146,53 @@ public class SplitAndMergeTests
     [Fact]
     public void Shared_merge_fails()
     {
-        var outerMerge = AddString("stop").Merge();
-        var innerMerge = outerMerge;
+        var sharedMerge = AddString("stop").MergeAll();
         var innerSplit = new FlowSplit()
             .AddBranches(
-                AddString("branch1Inner").FlowTo(innerMerge),
-                AddString("branch2Inner").FlowTo(innerMerge)
+                AddString("branch1Inner").FlowTo(sharedMerge),
+                AddString("branch2Inner").FlowTo(sharedMerge)
                 );
-        innerMerge.FlowTo(outerMerge);
+        sharedMerge.FlowTo(sharedMerge);
         var outerSplit = new FlowSplit()
             .AddBranches(
                 AddString("branch1Outer").FlowTo(innerSplit),
-                AddString("branch2Outer").Step().FlowTo(outerMerge)
+                AddString("branch2Outer").Step().FlowTo(sharedMerge)
                 );
-        var execute = () => ExecuteFlowchart(outerSplit);
-        execute.ShouldThrow<InvalidWorkflowException>();
+        var errors = ActivityValidationServices.Validate(new Flowchart() { StartNode = outerSplit });
+        errors.Errors.ShouldNotBeEmpty();
+        errors.Errors.Where(e => e.SourceDetail == sharedMerge).ShouldNotBeEmpty();
     }
 
     [Fact]
     public void Should_join_with_skiped_branches()
     {
-        var branch1Str = "branch1";
-        var branch2Str = "branch2";
-        var stopString = "stop";
-        var merge = AddString(stopString).Merge();
+        var merge = AddString("stop").MergeAll();
+        var skippedBranch = AddString("executedPart")
+            .FlowTo(new FlowDecision()
+        {
+            Condition = new LambdaValue<bool>(c => false),
+            True = AddString("skippedPart").FlowTo(merge)
+        });
         var split = new FlowSplit()
-            .AddBranches(
-                AddString(branch1Str).FlowTo(merge),
-                AddString(branch2Str).FlowTo(merge)
-                );
-        split.Branches.First().Condition = new LambdaValue<bool>(c => false);
+        {
+            Branches = {
+                new() {StartNode = skippedBranch },
+                new() {StartNode = AddString("executedBranch").FlowTo(merge) }
+            }
+        };
 
         ExecuteFlowchart(split);
-        Results.ShouldBe(new() { branch2Str, stopString });
+        Results.ShouldBe(["executedPart", "executedBranch", "stop" ]);
     }
 
     [Fact]
-    public void Should_join_branches_when_condition_is_met()
+    public void MergeAny_continues_after_first_and_cancels_the_rest()
     {
         var branch1Str = "branch1";
         var branch2Str = "branch2";
         var stopString = "stop";
 
-        var merge = AddString(stopString).Merge();
-        merge.Completion = new LambdaValue<bool>(c => true);
+        var merge = new FlowMergeAny() { Next = AddString(stopString).Step() };
         var split = new FlowSplit()
             .AddBranches(
                 AddString(branch1Str).FlowTo(AddString(branch1Str)).FlowTo(merge),
@@ -237,7 +241,7 @@ public class SplitAndMergeTests
         {
             var blockingContinuation = AddString(blockingContStr);
             var blockingActivity = new BlockingActivity(blockingBookmark);
-            var merge = AddString(stopString).Merge();
+            var merge = AddString(stopString).MergeAll();
             var split = new FlowSplit().AddBranches(
                 AddString(branch1Str).FlowTo(new FlowStep()).FlowTo(merge),
                 AddString(branch2Str).FlowTo(new FlowStep()).FlowTo(merge),

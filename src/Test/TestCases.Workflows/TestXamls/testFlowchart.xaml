@@ -8,13 +8,13 @@
             <FlowStep>
               <tab:AddStringActivity DisplayName="branch1" Item="branch1" />
               <FlowStep.Next>
-                <FlowMerge x:Name="__ReferenceID0">
-                  <FlowMerge.Next>
+                <FlowMergeAll x:Name="__ReferenceID0">
+                  <FlowMergeAll.Next>
                     <FlowStep>
                       <tab:AddStringActivity DisplayName="stop" Item="stop" />
                     </FlowStep>
-                  </FlowMerge.Next>
-                </FlowMerge>
+                  </FlowMergeAll.Next>
+                </FlowMergeAll>
               </FlowStep.Next>
             </FlowStep>
           </FlowSplitBranch.StartNode>

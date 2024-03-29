@@ -27,7 +27,7 @@ public static class FlowchartTestExtensions
     {
         return new FlowStep { Action = activity };
     }
-    public static FlowMerge Merge(this Activity activity)
+    public static FlowMergeAll MergeAll(this Activity activity)
     {
         return new () { Next = new FlowStep() { Action = activity } };
     }

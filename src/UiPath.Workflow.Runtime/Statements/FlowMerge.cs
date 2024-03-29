@@ -3,15 +3,24 @@ using System.Linq;
 using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
-public class FlowMerge : FlowNode
+public class FlowMergeAny : FlowMerge
 {
-    [DefaultValue(null)]
-    public Activity<bool> Completion { get; set; }
+    internal override bool EnforceDone => true;
+}
+
+public class FlowMergeAll : FlowMerge
+{
+    internal override bool EnforceDone => false;
+}
+
+
+public abstract class FlowMerge : FlowNode
+{
+    internal abstract bool EnforceDone { get; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
 
-    internal override Activity ChildActivity => Completion;
-    private List<FlowSplitBranch> ConnectedBranches { get; set; }
+    internal override Activity ChildActivity => null;
 
     private record MergeState
     {
@@ -19,33 +28,28 @@ public class FlowMerge : FlowNode
         public HashSet<BranchInstance> CompletedBranches { get; set; } = new();
     }
 
-    public FlowMerge()
+    internal FlowMerge()
     {
     }
 
     protected override void OnEndCacheMetadata()
     {
         var predecessors = Owner.GetPredecessors(this);
-        ConnectedBranches = predecessors
+        var connectedBranches = predecessors
             .Select(p => Owner.GetStaticBranches(p).GetTop())
             .Distinct().ToList();
 
-        ValidateAllBranches();
-
-        void ValidateAllBranches()
+        var splits = connectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
+        if (splits.Count() > 1)
         {
-            var splits = ConnectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
-            if (splits.Count() > 1)
-            {
-                Metadata.AddValidationError(new ValidationError("All merge branches should start in the same Split node.") { SourceDetail = this });
-            }
-            var split = splits.FirstOrDefault();
-            if (split is null)
-                return;
-            var branches = ConnectedBranches.Select(b => b.RuntimeNode.Index).Distinct().ToList();
-            if (branches.Count != split.Branches.Count) 
-                Metadata.AddValidationError(new ValidationError("Split branches should end in same Merge node.") { SourceDetail = this});
+            Metadata.AddValidationError(new ValidationError("All merge branches should start in the same Split node.") { SourceDetail = this });
         }
+        var split = splits.FirstOrDefault();
+        if (split is null)
+            return;
+        var branches = connectedBranches.Select(b => b.RuntimeNode.Index).Distinct().ToList();
+        if (branches.Count != split.Branches.Count) 
+            Metadata.AddValidationError(new ValidationError("Split branches should end in same Merge node.") { SourceDetail = this});
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
@@ -78,15 +82,9 @@ public class FlowMerge : FlowNode
         var branch = Owner.Current.BranchInstance;
         joinState.CompletedBranches.Add(branch);
 
-        if (Completion is not null)
-        {
-            Owner.ScheduleWithCallback(Completion);
-        }
-        else
-        {
-            OnCompletionCallback(false);
-        }
+        OnCompletionCallback(EnforceDone);
     }
+
     protected override void OnCompletionCallback(bool result)
     {
         var joinState = GetJoinState();
