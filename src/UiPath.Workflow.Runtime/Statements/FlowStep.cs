@@ -2,7 +2,6 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Windows.Markup;
-using static System.Activities.Statements.Flowchart;
 
 namespace System.Activities.Statements;
 
