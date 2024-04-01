@@ -60,23 +60,6 @@ partial class Flowchart
         CurrentNodeState.ActivityInstanceIds.Add(activityInstance.Id);
     }
 
-    internal void ScheduleWithCallback(Activity activity)
-    {
-        _completionCallback ??= new(OnCompletionCallback);
-        var activityInstance = _activeContext.ScheduleActivity(activity, _completionCallback);
-        SaveNodeActivityLink(activityInstance);
-    }
-
-    internal void ScheduleWithCallback<T>(Activity<T> activity)
-    {
-        if (!_completionCallbacks.TryGetValue(typeof(T), out var callback))
-        {
-            _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(OnCompletionCallback);
-        }
-        var activityInstance = _activeContext.ScheduleActivity(activity, (CompletionCallback<T>)callback);
-        SaveNodeActivityLink(activityInstance);
-    }
-
     protected override void Execute(NativeActivityContext context)
     {
         if (StartNode != null)
@@ -160,6 +143,22 @@ partial class Flowchart
         return merges;
     }
 
+    internal void ScheduleWithCallback(Activity activity)
+    {
+        _completionCallback ??= new(OnCompletionCallback);
+        var activityInstance = _activeContext.ScheduleActivity(activity, _completionCallback);
+        SaveNodeActivityLink(activityInstance);
+    }
+
+    internal void ScheduleWithCallback<T>(Activity<T> activity)
+    {
+        if (!_completionCallbacks.TryGetValue(typeof(T), out var callback))
+        {
+            _completionCallbacks[typeof(T)] = callback = new CompletionCallback<T>(OnCompletionCallback);
+        }
+        var activityInstance = _activeContext.ScheduleActivity(activity, (CompletionCallback<T>)callback);
+        SaveNodeActivityLink(activityInstance);
+    }
 
     private void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance)
     {

@@ -6,7 +6,6 @@ namespace System.Activities.Statements;
 
 public class FlowSplitBranch
 {
-    internal FlowNode RuntimeNode => StartNode;
     internal FlowSplit SplitNode { get; set; }
     public FlowNode StartNode { get; set; }
 }
@@ -56,9 +55,9 @@ public class FlowSplit : FlowNode
 
     protected override void OnEndCacheMetadata()
     {
-        var merges = Branches.SelectMany(b => Owner.GetMerges(b.RuntimeNode)).Distinct().ToList();
+        var merges = Branches.SelectMany(b => Owner.GetMerges(b.StartNode)).Distinct().ToList();
         if (merges.Count != 1)
-            Metadata.AddValidationError(new ValidationError("Split branches should end in exactly one Merge node.") { SourceDetail = this });
+            AddValidationError("Split branches should end in exactly one Merge node.", merges);
     }
 
     internal override void Execute()

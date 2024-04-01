@@ -1,3 +1,8 @@
+using System.Activities.Runtime.Collections;
+using System.Activities.Statements;
+using System.Activities.Validation;
+using System.Collections.ObjectModel;
+using System.Linq;
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -94,5 +99,13 @@ public abstract class FlowNode
     public override string ToString()
     {
         return ChildActivity?.DisplayName ?? $"{GetType().Name}.{Index}";
+    }
+
+    protected void AddValidationError(string message, IEnumerable<FlowNode> nodes)
+    {
+        Metadata.AddValidationError(new ValidationError(message)
+        {
+            SourceDetail = nodes.OfType<FlowNode>().Concat(new[] { this }).ToArray()
+        });
     }
 }
