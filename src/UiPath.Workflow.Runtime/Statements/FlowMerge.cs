@@ -36,9 +36,7 @@ public abstract class FlowMerge : FlowNode
 
         var splits = connectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
         if (splits.Count > 1)
-        {
-            Metadata.AddValidationError(new ValidationError("All merge branches should start in the same Split node.") { SourceDetail = this });
-        }
+            AddValidationError("All merge branches should start in the same Split node.", splits); 
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
