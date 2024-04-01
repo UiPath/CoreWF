@@ -3,7 +3,6 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.PowerFx.Core.Public.Values;
 using Microsoft.VisualBasic.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
