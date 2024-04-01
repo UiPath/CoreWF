@@ -2,7 +2,6 @@
 using System.Activities;
 using System.Activities.Statements;
 using System.Collections.Generic;
-using System.Threading;
 using Xunit;
 using System.Linq;
 using System.Activities.Expressions;
@@ -10,13 +9,13 @@ using TestObjects.XamlTestDriver;
 using System.IO;
 using System;
 using WorkflowApplicationTestExtensions;
-using System.Reflection;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Activities.Validation;
 namespace TestCases.Activitiess.Bpm;
 
 public class AddStringActivity : NativeActivity
 {
+    protected override bool CanInduceIdle => true;
+
     public string Item { get; set; }
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
@@ -25,6 +24,11 @@ public class AddStringActivity : NativeActivity
     }
 
     protected override void Execute(NativeActivityContext context)
+    {
+        context.CreateBookmark(this.DisplayName, new BookmarkCallback(OnBookmarkResumed));
+    }
+
+    private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
     {
         using var _ = context.InheritVariables();
         var stringsLocation = context.GetInheritedLocation<List<string>>("strings");
@@ -90,31 +94,27 @@ public class SplitAndMergeTests
     }
 
     [Fact]
-    public void Should_execute_branches()
+    public void Should_not_execute_branches_without_merge()
     {
-        var branch1Str = "branch1";
-        var branch2Str = "branch2";
-        var parallel = new FlowSplit().AddBranches(AddString(branch1Str), AddString(branch2Str));
-        ExecuteFlowchart(parallel);
-        Results.ShouldBe(new() { branch1Str, branch2Str });
+        var split = new FlowSplit().AddBranches(AddString("branch1"), AddString("branch2"));
+        var errors = ActivityValidationServices.Validate(new Flowchart() { StartNode = split });
+        errors.Errors.ShouldNotBeEmpty();
+        errors.Errors.Where(e => e.SourceDetail == split).ShouldNotBeEmpty();
     }
 
     [Fact]
     public void Should_join_branches()
     {
-        var branch1Str = "branch1";
-        var branch2Str = "branch2";
-        var stopString = "stop";
-        var merge = AddString(stopString).MergeAll();
+        var merge = AddString("stop").MergeAll();
 
         var split = new FlowSplit()
             .AddBranches(
-                AddString(branch1Str).FlowTo(merge),
-                AddString(branch2Str).FlowTo(merge)
+                AddString("branch1").FlowTo(merge),
+                AddString("branch2").FlowTo(merge)
                 );
 
         ExecuteFlowchart(split);
-        Results.ShouldBe(new() { branch1Str, branch2Str, stopString });
+        Results.ShouldBe(["branch1", "branch2", "stop"]);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class SplitAndMergeTests
                 );
 
         ExecuteFlowchart(outerSplit);
-        Results.ShouldBe(["branch1Outer", "branch1Inner", "branch2Inner", "innerMerged", "branch2Outer", "stop"]);
+        Results.ShouldBe(["branch1Outer", "branch2Outer", "branch1Inner", "branch2Inner", "innerMerged", "stop"]);
     }
 
     [Fact]
@@ -186,69 +186,46 @@ public class SplitAndMergeTests
     }
 
     [Fact]
-    public void MergeAny_continues_after_first_and_cancels_the_rest()
+    public void MergeAny_continues_after_first_and_cancels_the_rest_even_unconnected()
     {
-        var branch1Str = "branch1";
-        var branch2Str = "branch2";
-        var stopString = "stop";
-
-        var merge = new FlowMergeAny() { Next = AddString(stopString).Step() };
+        var merge = new FlowMergeAny() { Next = AddString("stop").Step() };
         var split = new FlowSplit()
             .AddBranches(
-                AddString(branch1Str).FlowTo(AddString(branch1Str)).FlowTo(merge),
-                new BlockingActivity("whatever").FlowTo(AddString(branch2Str)).FlowTo(merge)
+                AddString("branch1").FlowTo(AddString("branch1")).FlowTo(merge),
+                new Delay() { Duration = new InArgument<TimeSpan>(TimeSpan.FromSeconds(5))}.FlowTo(AddString("delayedBranch"))
                 );
 
         ExecuteFlowchart(split);
-        Results.ShouldBe(new() { branch1Str, branch1Str, stopString });
+        Results.ShouldBe(["branch1", "branch1", "stop"]);
+    }
+    [Fact]
+    public void MergeAny_continues_after_first_and_cancels_the_rest()
+    {
+        var merge = new FlowMergeAny() { Next = AddString("stop").Step() };
+        var split = new FlowSplit()
+            .AddBranches(
+                AddString("branch1").FlowTo(AddString("branch1")).FlowTo(merge),
+                new Delay() { Duration = new InArgument<TimeSpan>(TimeSpan.FromSeconds(5)) }.FlowTo(AddString("delayedBranch")).FlowTo(merge)
+                );
+
+        ExecuteFlowchart(split);
+        Results.ShouldBe(["branch1", "branch1", "stop"]);
     }
 
     [Fact]
     public void Should_persist_join()
     {
-        var branch1Str = "branch1";
-        var branch2Str = "branch2";
-        var stopString = "stop";
-        var blockingContStr = "blockingContinuation";
-        const string blockingBookmark = "blocking";
+        var merge = AddString("stop").MergeAll();
+        var blockingActivity = new BlockingActivity()
+            .FlowTo(AddString("blockingContinuation"))
+            .FlowTo(new FlowStep());
+        var split = new FlowSplit().AddBranches(
+            AddString("branch1").FlowTo(new FlowStep()).FlowTo(merge),
+            AddString("branch2").FlowTo(new FlowStep()).FlowTo(merge),
+            blockingActivity.FlowTo(merge));
 
-        var root = ParallelActivities();
-        var store = new JsonFileInstanceStore.FileInstanceStore(".\\~");
-        WorkflowApplication app = new(root) { InstanceStore = store };
-        app.Run();
-        var appId = app.Id;
-        Thread.Sleep(1000);
-        app.Unload();
-        root = ParallelActivities();
-        WorkflowApplication resumedApp = new(root) { InstanceStore = store };
-        ManualResetEvent manualResetEvent = new(default);
-        WorkflowApplicationCompletedEventArgs completedArgs = null;
-        resumedApp.Completed = args =>
-        {
-            completedArgs = args;
-            manualResetEvent.Set();
-        };
-        resumedApp.Aborted = args => args.Reason.ShouldBeNull();
-        resumedApp.Load(appId);
-        resumedApp.Run();
-        resumedApp.ResumeBookmark(blockingBookmark, null);
-        manualResetEvent.WaitOne();
-        completedArgs.TerminationException.ShouldBeNull();
-        Results = (List<string>)completedArgs.Outputs["Result"];
-        Results.ShouldBe(new[] { branch1Str, branch2Str, blockingContStr, stopString });
-
-        ActivityWithResult<List<string>> ParallelActivities()
-        {
-            var blockingContinuation = AddString(blockingContStr);
-            var blockingActivity = new BlockingActivity(blockingBookmark);
-            var merge = AddString(stopString).MergeAll();
-            var split = new FlowSplit().AddBranches(
-                AddString(branch1Str).FlowTo(new FlowStep()).FlowTo(merge),
-                AddString(branch2Str).FlowTo(new FlowStep()).FlowTo(merge),
-                blockingActivity.FlowTo(blockingContinuation).FlowTo(new FlowStep()).FlowTo(merge));
-            var flowchart = new Flowchart { StartNode = split };
-            return new() { In = _stringsVariable, Body = flowchart };
-        }
+        ExecuteFlowchart(split);
+        Results.ShouldBe([ "branch1", "branch2", "blockingContinuation", "stop" ]);
     }
 }
 
@@ -269,26 +246,20 @@ public class ActivityWithResult<TResult> : NativeActivity<TResult>
 public class BlockingActivity : NativeActivity
 {
 
-    private Variable<DateTime> _startExecute = new(); 
     public BlockingActivity()
     {
+        DisplayName = "blocking";
     }
 
-    public BlockingActivity(string displayName)
-    {
-        this.DisplayName = displayName;
-    }
 
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
-        metadata.AddImplementationVariable(_startExecute);
         // nothing to do
     }
 
     protected override void Execute(NativeActivityContext context)
     {
-        _startExecute.Set(context, DateTime.Now);
-        context.CreateBookmark(this.DisplayName, new BookmarkCallback(OnBookmarkResumed));
+        context.CreateBookmark(DisplayName, new BookmarkCallback(OnBookmarkResumed));
     }
 
     protected override void Cancel(NativeActivityContext context)
@@ -298,13 +269,6 @@ public class BlockingActivity : NativeActivity
 
     private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
     {
-        if (context.CurrentInstance.IsCancellationRequested)
-            return;
-        var startExecutionTimestamp = _startExecute.Get(context);
-        if (startExecutionTimestamp + TimeSpan.FromSeconds(1) > DateTime.Now)
-            return;
-        Thread.Sleep(200);
-        context.CreateBookmark(this.DisplayName, new BookmarkCallback(OnBookmarkResumed));
     }
 
     protected override bool CanInduceIdle => true;

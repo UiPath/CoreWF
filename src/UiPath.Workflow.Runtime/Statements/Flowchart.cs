@@ -19,6 +19,7 @@ public sealed partial class Flowchart : NativeActivity
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
+    private readonly Dictionary<FlowNode, StaticBranchInfo> _staticBranchesByNode = new();
 
     public Flowchart()
     {
@@ -253,6 +254,52 @@ public sealed partial class Flowchart : NativeActivity
                     stack.Push(connected[i]);
                 }
             }
+        }
+    }
+
+    private void RecordLinks(FlowNode predecessor, List<FlowNode> successors)
+    {
+        if (predecessor == null)
+            return;
+
+        var preStacks = GetStaticBranches(predecessor);
+
+        foreach (var successor in successors.Where(s => s is not null))
+        {
+            if (!_predecessors.TryGetValue(successor, out var predecessors))
+            {
+                _predecessors[successor] = predecessors = new();
+            }
+            predecessors.Add(predecessor);
+            if (!_successors.TryGetValue(predecessor, out var successorsSaved))
+            {
+                _successors[predecessor] = successorsSaved = new();
+            }
+            successorsSaved.Add(successor);
+
+            var successorStacks = GetStaticBranches(successor);
+            successorStacks.AddStack(preStacks);
+        }
+    }
+
+    private void EndCacheMetadata(NativeActivityMetadata metadata)
+    {
+        foreach (var node in _reachableNodes.OfType<FlowNode>())
+        {
+            foreach (var successor in GetSuccessors(node.Index))
+            {
+                PropagateBranch(node, successor);
+            }
+        }
+        foreach (var node in _reachableNodes.OfType<FlowNode>())
+        {
+            node.EndCacheMetadata(metadata);
+        }
+        void PropagateBranch(FlowNode predecessor, FlowNode successor)
+        {
+            var predecessorBranches = GetStaticBranches(predecessor);
+            var successorBranches = GetStaticBranches(successor);
+            successorBranches.AddStack(predecessorBranches);
         }
     }
 }
