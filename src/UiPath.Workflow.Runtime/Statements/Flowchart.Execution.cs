@@ -2,10 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Runtime;
-using System.Activities.Validation;
-using System.Globalization;
 using System.Linq;
-using static System.Activities.Statements.Flowchart;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -18,26 +15,6 @@ partial class Flowchart
     private const string FlowChartStateVariableName = "flowchartState";
     private readonly Variable<Dictionary<string, object>> _flowchartState = new (FlowChartStateVariableName, c => new ());
 
-    protected override void Execute(NativeActivityContext context)
-    {
-        if (StartNode != null)
-        {
-            if (TD.FlowchartStartIsEnabled())
-            {
-                TD.FlowchartStart(DisplayName);
-            }
-            OnExecute(context);
-        }
-        else
-        {
-            if (TD.FlowchartEmptyIsEnabled())
-            {
-                TD.FlowchartEmpty(DisplayName);
-            }
-        }
-    }
-
-    private readonly Dictionary<FlowNode, StaticBranchInfo> _staticBranchesByNode = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _predecessors = new();
     private CompletionCallback _completionCallback;
@@ -78,26 +55,6 @@ partial class Flowchart
         }
     }
 
-    private void EndCacheMetadata(NativeActivityMetadata metadata)
-    {
-        foreach (var node in _reachableNodes.OfType<FlowNode>())
-        {
-            foreach (var successor in GetSuccessors(node.Index))
-            {
-                PropagateBranch(node, successor);
-            }
-        }
-        foreach (var node in _reachableNodes.OfType<FlowNode>())
-        {
-            node.EndCacheMetadata(metadata);
-        }
-        void PropagateBranch(FlowNode predecessor, FlowNode successor)
-        {
-            var predecessorBranches = GetStaticBranches(predecessor);
-            var successorBranches = GetStaticBranches(successor);
-            successorBranches.AddStack(predecessorBranches);
-        }
-    }
     private void SaveNodeActivityLink(ActivityInstance activityInstance)
     {
         CurrentNodeState.ActivityInstanceIds.Add(activityInstance.Id);
@@ -120,45 +77,27 @@ partial class Flowchart
         SaveNodeActivityLink(activityInstance);
     }
 
-    private void OnExecute(NativeActivityContext context)
+    protected override void Execute(NativeActivityContext context)
     {
-        using var _ = WithContext(context, null);
-        EnqueueNodeExecution(StartNode, new BranchInstance(BranchesStack: $"__0", SplitsStack: "_"));
-        ExecuteQueue();
-    }
-
-    private void RecordLinks(FlowNode predecessor, List<FlowNode> successors)
-    {
-        if (predecessor == null)
-            return;
-
-        var preStacks = GetStaticBranches(predecessor);
-
-        foreach (var successor in successors.Where(s => s is not null))
+        if (StartNode != null)
         {
-            if (!_predecessors.TryGetValue(successor, out var predecessors))
+            if (TD.FlowchartStartIsEnabled())
             {
-                _predecessors[successor] = predecessors = new();
+                TD.FlowchartStart(DisplayName);
             }
-            predecessors.Add(predecessor);
-            if (!_successors.TryGetValue(predecessor, out var successorsSaved))
+            using var _ = WithContext(context, null);
+            EnqueueNodeExecution(StartNode, new BranchInstance(BranchesStack: $"__0", SplitsStack: "_"));
+            ExecuteQueue();
+        }
+        else
+        {
+            if (TD.FlowchartEmptyIsEnabled())
             {
-                _successors[predecessor] = successorsSaved = new();
+                TD.FlowchartEmpty(DisplayName);
             }
-            successorsSaved.Add(successor);
-
-            var successorStacks = GetStaticBranches(successor);
-            successorStacks.AddStack(preStacks);
         }
     }
 
-    private NodeState GetNodeState(NodeInstance nodeInstance)
-    {
-        if (!NodesStatesByNodeInstanceId.TryGetValue(nodeInstance.NodeInstanceId, out var state))
-            NodesStatesByNodeInstanceId[nodeInstance.NodeInstanceId] = state = new() { NodeInstance = nodeInstance };
-        return state;
-    }
- 
     internal bool CancelOtherBranches(IEnumerable<BranchInstance> branchInstances)
     {
         var splitNodesStates = GetOtherBranchesNodes(branchInstances);
@@ -207,6 +146,21 @@ partial class Flowchart
             return _staticBranchesByNode[node] = new();
     }
 
+    internal List<FlowMerge> GetMerges(FlowNode flowNode)
+    {
+        var staticBranches = GetStaticBranches(flowNode);
+
+        var merges = (
+        from nodeInfo in _staticBranchesByNode
+        where nodeInfo.Key is FlowMerge
+        where nodeInfo.Value.IsOn(staticBranches)
+        select nodeInfo.Key as FlowMerge
+        ).Take(1).ToList();
+
+        return merges;
+    }
+
+
     private void OnCompletionCallback(NativeActivityContext context, ActivityInstance completedInstance)
     {
         OnCompletionCallback<object>(context, completedInstance, null);
@@ -243,9 +197,13 @@ partial class Flowchart
         NodeInstance nodeInstance = new(NodeIndex: node.Index,
                                         NodeInstanceId: $"{node.Index}.{node.GetType().Name}.{node.ChildActivity?.DisplayName}.{Guid.NewGuid()}",
                                         BranchInstance: branchInstance ?? CurrentNodeState.NodeInstance.BranchInstance);
-        var nodeState = GetNodeState(nodeInstance);
 
-        nodeState.IsQueued = true;
+        var nodeState = NodesStatesByNodeInstanceId[nodeInstance.NodeInstanceId] = new() 
+        {
+            NodeInstance = nodeInstance,
+            IsQueued = true
+        };
+
         _executionQueue.Enqueue(nodeState);
     }
 
@@ -372,6 +330,13 @@ partial class Flowchart
             var pops = nextStacks._branches.Select(b => Enumerable.Reverse(b).Skip(1).Reverse().ToList()).ToList();
             AddStack(pops);
         }
+
+        internal bool IsOn(StaticBranchInfo staticBranches)
+        {
+            ///todo
+            return true;
+        }
+
         public StaticBranchInfo() { }
     }
 

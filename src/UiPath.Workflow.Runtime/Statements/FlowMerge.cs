@@ -5,18 +5,17 @@ namespace System.Activities.Statements;
 
 public class FlowMergeAny : FlowMerge
 {
-    internal override bool EnforceDone => true;
+    private protected override bool IsMergeAny => true;
 }
 
 public class FlowMergeAll : FlowMerge
 {
-    internal override bool EnforceDone => false;
+    private protected override bool IsMergeAny => false;
 }
-
 
 public abstract class FlowMerge : FlowNode
 {
-    internal abstract bool EnforceDone { get; }
+    private protected abstract bool IsMergeAny { get; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
 
@@ -28,10 +27,6 @@ public abstract class FlowMerge : FlowNode
         public HashSet<BranchInstance> CompletedBranches { get; set; } = new();
     }
 
-    internal FlowMerge()
-    {
-    }
-
     protected override void OnEndCacheMetadata()
     {
         var predecessors = Owner.GetPredecessors(this);
@@ -40,16 +35,10 @@ public abstract class FlowMerge : FlowNode
             .Distinct().ToList();
 
         var splits = connectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
-        if (splits.Count() > 1)
+        if (splits.Count > 1)
         {
             Metadata.AddValidationError(new ValidationError("All merge branches should start in the same Split node.") { SourceDetail = this });
         }
-        var split = splits.FirstOrDefault();
-        if (split is null)
-            return;
-        var branches = connectedBranches.Select(b => b.RuntimeNode.Index).Distinct().ToList();
-        if (branches.Count != split.Branches.Count) 
-            Metadata.AddValidationError(new ValidationError("Split branches should end in same Merge node.") { SourceDetail = this});
     }
     internal override void GetConnectedNodes(IList<FlowNode> connections)
     {
@@ -82,7 +71,7 @@ public abstract class FlowMerge : FlowNode
         var branch = Owner.Current.BranchInstance;
         joinState.CompletedBranches.Add(branch);
 
-        OnCompletionCallback(EnforceDone);
+        OnCompletionCallback(IsMergeAny);
     }
 
     protected override void OnCompletionCallback(bool result)
