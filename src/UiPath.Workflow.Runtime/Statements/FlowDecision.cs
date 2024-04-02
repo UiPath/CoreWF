@@ -60,17 +60,19 @@ public sealed class FlowDecision : FlowNode
         }
     }
 
-    internal override void GetConnectedNodes(IList<FlowNode> connections)
+    internal override IReadOnlyList<FlowNode> GetSuccessors()
     {
+        var result = new List<FlowNode>(2);
         if (True != null)
         {
-            connections.Add(True);
+            result.Add(True);
         }
 
         if (False != null)
         {
-            connections.Add(False);
+            result.Add(False);
         }
+        return result;
     }
 
     internal override Activity ChildActivity => Condition;

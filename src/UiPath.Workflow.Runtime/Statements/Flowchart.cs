@@ -228,7 +228,6 @@ public sealed partial class Flowchart : NativeActivity
     {
         Fx.Assert(visitNodeCallback != null, "This must be supplied since it stops us from infinitely looping.");
 
-        List<FlowNode> connected = new();
         Stack<FlowNode> stack = new();
         if (start == null)
         {
@@ -246,23 +245,20 @@ public sealed partial class Flowchart : NativeActivity
 
             if (visitNodeCallback(current))
             {
-                connected.Clear();
-                current.GetConnectedNodes(connected);
-                RecordLinks(current, connected);
-                for (int i = 0; i < connected.Count; i++)
+                var successors = current.GetSuccessors();
+                RecordLinks(current, successors);
+                for (int i = 0; i < successors.Count; i++)
                 {
-                    stack.Push(connected[i]);
+                    stack.Push(successors[i]);
                 }
             }
         }
     }
 
-    private void RecordLinks(FlowNode predecessor, List<FlowNode> successors)
+    private void RecordLinks(FlowNode predecessor, IReadOnlyList<FlowNode> successors)
     {
         if (predecessor == null)
             return;
-
-        var preStacks = GetStaticBranches(predecessor);
 
         foreach (var successor in successors.Where(s => s is not null))
         {
@@ -276,22 +272,19 @@ public sealed partial class Flowchart : NativeActivity
                 _successors[predecessor] = successorsSaved = new();
             }
             successorsSaved.Add(successor);
-
-            var successorStacks = GetStaticBranches(successor);
-            successorStacks.AddStack(preStacks);
         }
     }
 
     private void EndCacheMetadata(NativeActivityMetadata metadata)
     {
-        foreach (var node in _reachableNodes.OfType<FlowNode>())
+        foreach (var node in _reachableNodes)
         {
             foreach (var successor in GetSuccessors(node.Index))
             {
                 PropagateBranch(node, successor);
             }
         }
-        foreach (var node in _reachableNodes.OfType<FlowNode>())
+        foreach (var node in _reachableNodes)
         {
             node.EndCacheMetadata(metadata);
         }
@@ -299,7 +292,8 @@ public sealed partial class Flowchart : NativeActivity
         {
             var predecessorBranches = GetStaticBranches(predecessor);
             var successorBranches = GetStaticBranches(successor);
-            successorBranches.AddStack(predecessorBranches);
+            if (predecessor is not FlowSplit)
+                successorBranches.PropagateStack(predecessorBranches);
         }
     }
 }

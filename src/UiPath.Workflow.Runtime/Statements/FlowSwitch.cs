@@ -31,8 +31,9 @@ public sealed class FlowSwitch<T> : FlowNode
     [DefaultValue(DefaultDisplayName)]
     public string DisplayName { get; set; }
 
-    internal override void GetConnectedNodes(IList<FlowNode> connections)
+    internal override IReadOnlyList<FlowNode> GetSuccessors()
     {
+        var connections = new List<FlowNode>(Cases.Count + 1);
         foreach (KeyValuePair<T, FlowNode> item in Cases)
         {
             connections.Add(item.Value);
@@ -41,6 +42,7 @@ public sealed class FlowSwitch<T> : FlowNode
         {
             connections.Add(Default);
         }
+        return connections;
     }
 
     protected override void OnEndCacheMetadata()
