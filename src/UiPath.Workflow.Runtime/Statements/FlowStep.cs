@@ -17,12 +17,13 @@ public sealed class FlowStep : FlowNode
     [DependsOn("Action")]
     public FlowNode Next { get; set; }
 
-    internal override void GetConnectedNodes(IList<FlowNode> connections)
+    internal override IReadOnlyList<FlowNode> GetSuccessors()
     {
         if (Next != null)
         {
-            connections.Add(Next);
+            return new[] { Next };
         }
+        return Array.Empty<FlowNode>();
     }
 
     internal override Activity ChildActivity => Action;

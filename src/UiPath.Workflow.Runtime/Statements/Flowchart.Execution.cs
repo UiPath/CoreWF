@@ -23,9 +23,11 @@ partial class Flowchart
 
     private ActivityInstance _completedInstance;
     private NodeState CurrentNodeState { get; set; }
-    internal NodeInstance Current => CurrentNodeState.NodeInstance;
 
-    private Dictionary<string, NodeState> NodesStatesByNodeInstanceId 
+    internal ExecutionBranchId CurrentBranch => CurrentNodeState.ExecutionBranch;
+    internal string CurrentNodeId => CurrentNodeState.ExecutionNodeId;
+
+    private Dictionary<string, NodeState> NodesStates 
         => GetPersistableState<Dictionary<string, NodeState>>("_nodesStatesByNodeInstanceId");
 
     private NativeActivityContext _activeContext;
@@ -49,7 +51,7 @@ partial class Flowchart
             CurrentNodeState = null;
             if (completedInstance is null)
                 return;
-            CurrentNodeState = NodesStatesByNodeInstanceId.Values
+            CurrentNodeState = NodesStates.Values
                 .Where(n => n.ActivityInstanceIds.Contains(completedInstance?.Id))
                 .FirstOrDefault();
         }
@@ -69,7 +71,7 @@ partial class Flowchart
                 TD.FlowchartStart(DisplayName);
             }
             using var _ = WithContext(context, null);
-            EnqueueNodeExecution(StartNode, new BranchInstance(BranchesStack: $"__0", SplitsStack: "_"));
+            EnqueueNodeExecution(StartNode, new ExecutionBranchId(BranchesStack: $"__0", SplitsStack: "_"));
             ExecuteQueue();
         }
         else
@@ -81,7 +83,7 @@ partial class Flowchart
         }
     }
 
-    internal bool CancelOtherBranches(IEnumerable<BranchInstance> branchInstances)
+    internal bool CancelOtherBranches(IEnumerable<ExecutionBranchId> branchInstances)
     {
         var splitNodesStates = GetOtherBranchesNodes(branchInstances);
 
@@ -96,17 +98,17 @@ partial class Flowchart
         }
         return splitNodesStates.Any();
     }
-    internal HashSet<BranchInstance> GetOtherRunningBranches(IEnumerable<BranchInstance> completedBranches)
+    internal HashSet<ExecutionBranchId> GetOtherRunningBranches(IEnumerable<ExecutionBranchId> completedBranches)
     {
         var runningNodes = GetOtherBranchesNodes(completedBranches);
-        return new (runningNodes.Select(n => n.NodeInstance.BranchInstance));
+        return new (runningNodes.Select(n => n.ExecutionBranch));
     }
-    private List<NodeState> GetOtherBranchesNodes(IEnumerable<BranchInstance> completedBranches)
+    private List<NodeState> GetOtherBranchesNodes(IEnumerable<ExecutionBranchId> completedBranches)
     {
         return (
-                from state in NodesStatesByNodeInstanceId.Values
-                where state.NodeInstance.BranchInstance.SplitsStack.StartsWith(completedBranches.First().SplitsStack)
-                where !completedBranches.Contains(state.NodeInstance.BranchInstance)
+                from state in NodesStates.Values
+                where state.ExecutionBranch.SplitsStack.StartsWith(completedBranches.First().SplitsStack)
+                where !completedBranches.Contains(state.ExecutionBranch)
                 where !(state.IsCancelRequested || state.IsCompleted)
                 select state
             ).ToList();
@@ -136,11 +138,11 @@ partial class Flowchart
         var merges = (
         from nodeInfo in _staticBranchesByNode
         where nodeInfo.Key is FlowMerge
-        where nodeInfo.Value.IsOn(staticBranches)
-        select nodeInfo.Key as FlowMerge
-        ).Take(1).ToList();
+        where nodeInfo.Value.IsOnBranch(staticBranches)
+        select nodeInfo
+        ).ToList();
 
-        return merges;
+        return merges.Select(ni => ni.Key as FlowMerge).ToList() ;
     }
 
     internal void ScheduleWithCallback(Activity activity)
@@ -168,7 +170,7 @@ partial class Flowchart
     private void OnCompletionCallback<T>(NativeActivityContext context, ActivityInstance completedInstance, T result)
     {
         using var _ = WithContext(context, completedInstance);
-        var currentNode = _reachableNodes[CurrentNodeState.NodeInstance.NodeIndex];
+        var currentNode = _reachableNodes[CurrentNodeState.StaticNodeIndex];
         currentNode.OnCompletionCallback(result);
         CurrentNodeState.ActivityInstanceIds.Remove(completedInstance.Id);
         SetNodeCompleted();
@@ -181,11 +183,11 @@ partial class Flowchart
             CurrentNodeState.IsCompleted = !CurrentNodeState.DoNotCompleteOnce;
             CurrentNodeState.DoNotCompleteOnce = false;
             if (CurrentNodeState.IsCompleted)
-                NodesStatesByNodeInstanceId.Remove(CurrentNodeState.NodeInstance.NodeInstanceId);
+                NodesStates.Remove(CurrentNodeState.ExecutionNodeId);
         }
     }
 
-    internal void EnqueueNodeExecution(FlowNode node, BranchInstance branchInstance = null)
+    internal void EnqueueNodeExecution(FlowNode node, ExecutionBranchId branchInstance = null)
     {
         if (node is null)
             return;
@@ -193,16 +195,19 @@ partial class Flowchart
         if (CurrentNodeState?.IsCancelRequested is true)
             return;
 
-        NodeInstance nodeInstance = new(NodeIndex: node.Index,
-                                        NodeInstanceId: $"{node.Index}.{node.GetType().Name}.{node.ChildActivity?.DisplayName}.{Guid.NewGuid()}",
-                                        BranchInstance: branchInstance ?? CurrentNodeState.NodeInstance.BranchInstance);
+        var executionNodeId = $"{node.Index}"; //+ Guid.NewGuid().ToString();
 
-        var nodeState = NodesStatesByNodeInstanceId[nodeInstance.NodeInstanceId] = new() 
+        if (!NodesStates.TryGetValue(executionNodeId, out var nodeState))
         {
-            NodeInstance = nodeInstance,
-            IsQueued = true
-        };
+            nodeState = NodesStates[executionNodeId] = new()
+            {
+                ExecutionBranch = branchInstance ?? CurrentNodeState.ExecutionBranch,
+                ExecutionNodeId = executionNodeId,
+                StaticNodeIndex = node.Index,
+            };
+        }
 
+        nodeState.IsQueued = true;
         _executionQueue.Enqueue(nodeState);
     }
 
@@ -217,7 +222,7 @@ partial class Flowchart
             ExecuteNode(nextNode);
         }
         
-        if (NodesStatesByNodeInstanceId.Values.All(ns => ns.IsCompleted))
+        if (NodesStates.Values.All(ns => ns.IsCompleted))
         {
             if (_activeContext.IsCancellationRequested)
             {
@@ -251,7 +256,7 @@ partial class Flowchart
             }
             else
             {
-                var node = _reachableNodes[nextNode.NodeInstance.NodeIndex];
+                var node = _reachableNodes[nextNode.StaticNodeIndex];
                 node.Execute();
                 SetNodeCompleted();
                 CheckBranchEnded();
@@ -259,8 +264,8 @@ partial class Flowchart
 
             void CheckBranchEnded()
             {
-                var sameBranchRunningNodes = NodesStatesByNodeInstanceId.Values
-                    .Where(ns => ns.NodeInstance.BranchInstance.BranchesStack.StartsWith(nextNode.NodeInstance.BranchInstance.BranchesStack))
+                var sameBranchRunningNodes = NodesStates.Values
+                    .Where(ns => ns.ExecutionBranch.BranchesStack.StartsWith(nextNode.ExecutionBranch.BranchesStack))
                     .Where(ns => !ns.IsCompleted)
                     .ToList();
 
@@ -273,10 +278,10 @@ partial class Flowchart
             void OnCurrentBranchEnded()
             {
                 var runningMerges = (
-                    from state in NodesStatesByNodeInstanceId.Values
-                    where _reachableNodes[state.NodeInstance.NodeIndex] is FlowMerge
+                    from state in NodesStates.Values
+                    where _reachableNodes[state.StaticNodeIndex] is FlowMerge
                     where state.StartedRunning && !state.IsCompleted
-                    where nextNode.NodeInstance.BranchInstance.SplitsStack == state.NodeInstance.BranchInstance.SplitsStack
+                    where nextNode.ExecutionBranch.SplitsStack == state.ExecutionBranch.SplitsStack
                     select state
                     ).ToList();
 
@@ -290,83 +295,117 @@ partial class Flowchart
 
     public class StaticBranchInfo
     {
-        private List<List<FlowSplitBranch>> _branches = new ();
-
-        public FlowSplitBranch GetTop()
+        List<List<FlowSplitBranch>> _branches;
+        private List<List<FlowSplitBranch>> Branches
         {
-            return _branches.FirstOrDefault()?.LastOrDefault();            
+            get
+            {
+                if (_branches != null)
+                    return _branches;
+                _branches = new List<List<FlowSplitBranch>>();
+                foreach(var inheritedStack in _inheritedStacks) 
+                {
+                    AddStack(inheritedStack.Branches);
+                }
+                foreach(var push in _pushes)
+                {
+                    var result = push.Item1.Branches.Select(
+                                stack => stack.Concat(new[] { push.Item2 }).ToList()
+                            ).ToList();
+                    if (result.Count == 0)
+                        result.Add(new() { push.Item2 });
+                }
+                if (_branches.Count == 0)
+                    _branches.Add(new List<FlowSplitBranch>());
+                return _branches;
+            }
+        }
+        private readonly HashSet<(StaticBranchInfo, FlowSplitBranch)> _pushes = new();
+        private readonly HashSet<StaticBranchInfo> _inheritedStacks = new();
+        private bool _hasPop = false;
+
+        public HashSet<FlowSplitBranch> GetTop()
+        {
+            return new (Branches.Select(b => b.LastOrDefault()).Where(b => b!= null));
         }
 
         public void Push(FlowSplitBranch newBranch, StaticBranchInfo splitBranchInfo)
         {
-            AddStack(splitBranchInfo._branches
-                    .Select(b => Enumerable.Concat(b, new[] { newBranch }))
-                    .Concat(new[] { new[] { newBranch } }));
+            _pushes.Add(new(splitBranchInfo, newBranch));
         }
 
-        public void AddStack(StaticBranchInfo preStacks)
+        public void PropagateStack(StaticBranchInfo preStacks)
         {
-            AddStack(preStacks._branches);
+            _inheritedStacks.Add(preStacks);
         }
 
-        private void AddStack(IEnumerable<IEnumerable<FlowSplitBranch>> stack)
+        private void AddStack(List<List<FlowSplitBranch>> stack)
         {
-            if (_branches.Count == 0)
-            {
-                _branches = stack.Select(b => b.ToList()).ToList();
-                return;
-            }
             foreach (var pre in stack)
             {
-                if (_branches.Any(b => pre.All(p => b.Contains(p))))
-                    continue;
-                _branches.Add(pre.ToList());
+                AddStack(pre);
+            }
+
+            void AddStack(IEnumerable<FlowSplitBranch> stack)
+            {
+                var pre = _hasPop 
+                        ? stack.Reverse().Skip(1).Reverse().ToList()
+                        : stack.ToList();
+                if (HasBranch(pre))
+                    return;
+
+                _branches.Add(pre);
             }
         }
 
-        public void AddPopFrom(StaticBranchInfo nextStacks)
+        public void AddPop()
         {
-            var pops = nextStacks._branches.Select(b => Enumerable.Reverse(b).Skip(1).Reverse().ToList()).ToList();
-            AddStack(pops);
+            _hasPop = true;
         }
 
-        internal bool IsOn(StaticBranchInfo staticBranches)
+        private bool HasBranch(List<FlowSplitBranch> branch)
+            => Branches.Any(b => branch.Count == b.Count && branch.All(p => b.Contains(p)));
+
+        internal bool IsOnBranch(StaticBranchInfo toConfirm)
         {
-            ///todo
-            return true;
+            foreach (var branchToConfirm in toConfirm.Branches)
+            {
+                if (HasBranch(branchToConfirm))
+                    return true;
+            }
+            return false;
         }
 
         public StaticBranchInfo() { }
     }
 
-    internal record NodeInstance(int NodeIndex, string NodeInstanceId, BranchInstance BranchInstance)
-    {
-        public override string ToString()
-        {
-            return $"{NodeInstanceId}/Branch={BranchInstance}";
-        }
-    }
-
-    internal record BranchInstance(string BranchesStack, string SplitsStack) 
+    internal record ExecutionBranchId
     {
         private const char StackDelimiter = ':';
-        public BranchInstance Push(string branchId, string splitInstanceId)
-        {
-            return new
-            (
-                BranchesStack: BranchesStack + StackDelimiter + branchId,
-                SplitsStack: SplitsStack + StackDelimiter + splitInstanceId
-            );
-        }
-        public BranchInstance Pop()
-        {
-            return new
-            (
-                BranchesStack: Pop(BranchesStack),
-                SplitsStack: Pop(SplitsStack)
-            );
-        }
+        public string BranchesStack { get; private init; }
+        public string SplitsStack { get; private init; }
 
+        public ExecutionBranchId(string BranchesStack, string SplitsStack)
+        {
+            this.BranchesStack = BranchesStack;
+            this.SplitsStack = SplitsStack;
+        }
+        public ExecutionBranchId Push(string branchId, string splitId)
+        {
+            return this with
+            {
+                BranchesStack = $"{BranchesStack}{StackDelimiter}{splitId}_{branchId}",
+                SplitsStack = $"{SplitsStack}{StackDelimiter}{splitId}"
+            };
+        }
+        public ExecutionBranchId Pop()
+        {
+            return this with
+            {
+                BranchesStack = Pop(BranchesStack),
+                SplitsStack = Pop(SplitsStack)
+            };
+        }
         private static string Pop(string stack)
         {
             var lastIndex = stack.LastIndexOf(StackDelimiter);
@@ -377,17 +416,20 @@ partial class Flowchart
 
     private class NodeState
     {
+        public ExecutionBranchId ExecutionBranch { get; init; }
+        public int StaticNodeIndex { get; init; }
+        public string ExecutionNodeId { get; init; }
         public bool DoNotCompleteOnce { get; internal set; }
         public bool IsCancelRequested { get; set; }
         public bool StartedRunning { get; set; }
         public bool IsCompleted { get; set; }
         public HashSet<string> ActivityInstanceIds { get; set; } = new();
-        public NodeInstance NodeInstance { get; set; }
+
         public bool IsQueued { get; set; }
 
         public override string ToString()
         {
-            return NodeInstance.ToString();
+            return $"{ExecutionNodeId}/{ExecutionBranch}";
         }
     }
     private class Disposable : IDisposable

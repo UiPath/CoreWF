@@ -35,19 +35,17 @@ public class FlowSplit : FlowNode
 
     private List<FlowNode> RuntimeBranchesNodes { get; set; }
 
-    internal override void GetConnectedNodes(IList<FlowNode> connections)
+    internal override IReadOnlyList<FlowNode> GetSuccessors()
     {
-
         RuntimeBranchesNodes ??= Branches.Select(SetupRuntimeNode).ToList();
-        connections.AddRange(RuntimeBranchesNodes);
+        return RuntimeBranchesNodes;
 
-        FlowNode SetupRuntimeNode(FlowSplitBranch splitBranch)
+        FlowNode SetupRuntimeNode(FlowSplitBranch splitBranchOut)
         {
-            var runtimeNode = splitBranch.StartNode;
+            var runtimeNode = splitBranchOut.StartNode;
 
-            connections.Add(runtimeNode);
-            var splitBranches = Owner.GetStaticBranches(splitBranch.SplitNode);
-            Owner.GetStaticBranches(runtimeNode).Push(splitBranch, splitBranches);
+            var splitIncomingBranches = Owner.GetStaticBranches(splitBranchOut.SplitNode);
+            Owner.GetStaticBranches(runtimeNode).Push(splitBranchOut, splitIncomingBranches);
 
             return runtimeNode;
         }
@@ -65,9 +63,9 @@ public class FlowSplit : FlowNode
         for (int i = RuntimeBranchesNodes.Count - 1; i >= 0; i--)
         {
             var branch = RuntimeBranchesNodes[i];
-            Owner.EnqueueNodeExecution(branch, Owner.Current.BranchInstance.Push(
-                        branchId: $"{Owner.Current.NodeInstanceId}_{branch.Index}",
-                        splitInstanceId: Owner.Current.NodeInstanceId));
+            Owner.EnqueueNodeExecution(branch, Owner.CurrentBranch.Push(
+                        branchId: $"{branch.Index}",
+                        splitId: Owner.CurrentNodeId));
         }
     }
 }

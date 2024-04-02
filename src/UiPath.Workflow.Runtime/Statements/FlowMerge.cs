@@ -24,38 +24,38 @@ public abstract class FlowMerge : FlowNode
     private record MergeState
     {
         public bool Done { get; set; }
-        public HashSet<BranchInstance> CompletedBranches { get; set; } = new();
+        public HashSet<ExecutionBranchId> CompletedBranches { get; set; } = new();
     }
 
     protected override void OnEndCacheMetadata()
     {
         var predecessors = Owner.GetPredecessors(this);
         var connectedBranches = predecessors
-            .Select(p => Owner.GetStaticBranches(p).GetTop())
+            .SelectMany(p => Owner.GetStaticBranches(p).GetTop())
             .Distinct().ToList();
 
         var splits = connectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
         if (splits.Count > 1)
             AddValidationError("All merge branches should start in the same Split node.", splits); 
     }
-    internal override void GetConnectedNodes(IList<FlowNode> connections)
+    internal override IReadOnlyList<FlowNode> GetSuccessors()
     {
         if (Next != null)
         {
-            connections.Add(Next);
             PopBranchesStacks();
+            return new [] { Next };
         }
+        return Array.Empty<FlowNode>();
 
         void PopBranchesStacks()
         {
-            var nextStacks = Owner.GetStaticBranches(this);
-            Owner.GetStaticBranches(Next).AddPopFrom(nextStacks);
+            Owner.GetStaticBranches(Next).AddPop();
         }
     }
 
     private MergeState GetJoinState()
     {
-        var key = $"FlowMerge.{Index}.{Owner.Current.BranchInstance.SplitsStack}";
+        var key = $"FlowMerge.{Index}.{Owner.CurrentBranch.SplitsStack}";
         var joinState = Owner.GetPersistableState<MergeState>(key);
         return joinState;
     }
@@ -66,7 +66,7 @@ public abstract class FlowMerge : FlowNode
         {
             return;
         }
-        var branch = Owner.Current.BranchInstance;
+        var branch = Owner.CurrentBranch;
         joinState.CompletedBranches.Add(branch);
 
         OnCompletionCallback(IsMergeAny);
@@ -88,7 +88,7 @@ public abstract class FlowMerge : FlowNode
         }
         joinState.Done = true;
 
-        Owner.EnqueueNodeExecution(Next, Owner.Current.BranchInstance.Pop()) ;
+        Owner.EnqueueNodeExecution(Next, Owner.CurrentBranch.Pop()) ;
         
         void EndAllBranches()
         {
