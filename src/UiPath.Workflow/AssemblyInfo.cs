@@ -31,3 +31,4 @@ using System.Windows.Markup;
 [assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "sads")]
 
 [assembly: InternalsVisibleTo("UiPath.Executor.Core")]
+[assembly: InternalsVisibleTo("UiPath.Executor.Persistence")]
