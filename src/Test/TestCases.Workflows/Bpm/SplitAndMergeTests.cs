@@ -6,6 +6,7 @@ using System.Activities.Expressions;
 using TestObjects.XamlTestDriver;
 using System.IO;
 using System;
+using System.Linq;
 namespace TestCases.Activitiess.Bpm;
 
 public class SplitAndMergeTests
@@ -77,7 +78,8 @@ public class SplitAndMergeTests
 
         var outerMerge = new FlowMergeAll().Text("stop");
         var innerMerge = new FlowMergeAll().Text("innerMerged");
-        var innerSplit = new FlowSplit()
+        var innerSplit = new FlowSplit();
+        innerSplit
             .AddBranches(
                 TestFlow.Text("branch1Inner").FlowTo(innerMerge),
                 TestFlow.Text("branch2Inner").FlowTo(innerMerge)
