@@ -7,7 +7,7 @@ namespace System.Activities;
 using Runtime;
 using Validation;
 
-public class ProcessActivityTreeOptions
+internal class ProcessActivityTreeOptions
 {
     private static ProcessActivityTreeOptions validationOptions;
     private static ProcessActivityTreeOptions validationAndPrepareForRuntimeOptions;

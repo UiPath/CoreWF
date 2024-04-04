@@ -12,7 +12,7 @@ using Internals;
 using Runtime;
 using Validation;
 
-public static class ActivityUtilities
+internal static class ActivityUtilities
 {
     private static readonly Pop popActivity = new();
     private static readonly Type activityType = typeof(Activity);

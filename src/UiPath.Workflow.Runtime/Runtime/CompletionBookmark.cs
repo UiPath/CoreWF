@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-public class CompletionBookmark
+internal class CompletionBookmark
 {
     private CompletionCallbackWrapper _callbackWrapper;
 

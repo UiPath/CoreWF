@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-public class ActivityInstanceReference : ActivityInstanceMap.IActivityReference
+internal class ActivityInstanceReference : ActivityInstanceMap.IActivityReference
 {
     private ActivityInstance _activityInstance;
     

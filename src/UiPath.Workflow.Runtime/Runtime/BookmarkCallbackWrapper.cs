@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-public class BookmarkCallbackWrapper : CallbackWrapper
+internal class BookmarkCallbackWrapper : CallbackWrapper
 {
     private static readonly Type bookmarkCallbackType = typeof(BookmarkCallback);
     private static readonly Type[] bookmarkCallbackParameters = new Type[] { typeof(NativeActivityContext), typeof(Bookmark), typeof(object) };

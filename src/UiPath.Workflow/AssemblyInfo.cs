@@ -1,6 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Windows.Markup;
 
 // General Information about an assembly is controlled through the following 
@@ -28,3 +29,5 @@ using System.Windows.Markup;
     XmlnsDefinition("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger",
         "System.Activities.Debugger.Symbol")]
 [assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "sads")]
+
+[assembly: InternalsVisibleTo("UiPath.Executor.Core")]

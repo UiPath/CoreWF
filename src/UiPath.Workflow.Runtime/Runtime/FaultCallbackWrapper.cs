@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-public class FaultCallbackWrapper : CallbackWrapper
+internal class FaultCallbackWrapper : CallbackWrapper
 {
     private static readonly Type faultCallbackType = typeof(FaultCallback);
     private static readonly Type[] faultCallbackParameters = new Type[] { typeof(NativeActivityFaultContext), typeof(Exception), typeof(ActivityInstance) };

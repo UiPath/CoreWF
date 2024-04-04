@@ -6,7 +6,7 @@ using System.Activities.Hosting;
 namespace System.Activities.Runtime;
 
 [DataContract(Name = XD.Runtime.BookmarkManager, Namespace = XD.Runtime.Namespace)]
-public class BookmarkManager
+internal class BookmarkManager
 {
     private long _nextId;
     private Dictionary<Bookmark, BookmarkCallbackWrapper> _bookmarks;
