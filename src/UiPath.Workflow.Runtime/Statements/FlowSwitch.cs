@@ -53,7 +53,8 @@ public sealed class FlowSwitch<T> : FlowNode
         }
     }
 
-    internal override Activity ChildActivity => Expression;
+    internal override IEnumerable<Activity> GetChildActivities()
+        => new[] { Expression };
 
     internal override void Execute()
     {

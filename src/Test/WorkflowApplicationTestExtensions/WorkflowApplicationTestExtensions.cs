@@ -2,6 +2,7 @@
 using System;
 using System.Activities;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using StringToObject = System.Collections.Generic.IDictionary<string, object>;
 
@@ -52,7 +53,7 @@ namespace WorkflowApplicationTestExtensions
                         }
                         application = CloneWorkflowApplication(application);
                         application.Load(args.InstanceId);
-                        foreach (var bookmark in bookmarks)
+                        foreach (var bookmark in bookmarks.Where(b => b.BookmarkName.StartsWith(AutoResumedBookmarkNamePrefix)))
                         {
                             application.ResumeBookmark(new Bookmark(bookmark.BookmarkName), null);
                         }

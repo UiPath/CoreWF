@@ -75,7 +75,8 @@ public sealed class FlowDecision : FlowNode
         return result;
     }
 
-    internal override Activity ChildActivity => Condition;
+    internal override IEnumerable<Activity> GetChildActivities()
+        => new[] { Condition };
 
     internal override void Execute()
     {

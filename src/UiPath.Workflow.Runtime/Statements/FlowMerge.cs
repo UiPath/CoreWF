@@ -1,30 +1,75 @@
 ﻿using System.Activities.Validation;
+using System.Diagnostics;
 using System.Linq;
 using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
-public class FlowMergeAny : FlowMerge
+public class FlowMergeFirst : FlowMerge
 {
-    private protected override bool IsMergeAny => true;
+    private protected override bool IsMergeFirst => true;
 }
 
 public class FlowMergeAll : FlowMerge
 {
-    private protected override bool IsMergeAny => false;
+    private protected override bool IsMergeFirst => false;
 }
 
 public abstract class FlowMerge : FlowNode
 {
-    private protected abstract bool IsMergeAny { get; }
+    private const string DefaultDisplayName = nameof(FlowMerge);
+
+    private protected abstract bool IsMergeFirst { get; }
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
+    [DefaultValue(DefaultDisplayName)]
+    public string DisplayName { get; set; }
 
-    internal override Activity ChildActivity => null;
-
-    private record MergeState
+    private class MergeInstance : NodeInstance<FlowMerge>
     {
         public bool Done { get; set; }
-        public HashSet<ExecutionBranchId> CompletedBranches { get; set; } = new();
+        bool set { get; set; }
+        private FlowMerge _merge;
+        public FlowMerge Merge 
+        {
+            get => _merge;
+            set => _merge = value;
+        }
+        internal override void Execute(Flowchart Flowchart, FlowMerge node)
+        {
+            if (set)
+            {
+                Debug.Assert(Merge == node);
+            }
+            else
+            {
+                Merge = node;
+                set = true;
+            }
+            if (Done)
+            {
+                return;
+            }
+
+            if (node.IsMergeFirst)
+            {
+                EndAllBranches();
+            }
+            var runningBranches = Flowchart.GetOtherNodes();
+
+            if (runningBranches.Count > 0)
+            {
+                Flowchart.MarkDoNotCompleteNode();
+                return;
+            }
+
+            Done = true;
+            Flowchart.EnqueueNodeExecution(node.Next, Flowchart.CurrentBranch.Pop());
+
+            void EndAllBranches()
+            {
+                Flowchart.CancelOtherBranches();
+            }
+        }
     }
 
     protected override void OnEndCacheMetadata()
@@ -49,50 +94,12 @@ public abstract class FlowMerge : FlowNode
 
         void PopBranchesStacks()
         {
-            Owner.GetStaticBranches(Next).AddPop();
+            Owner.GetStaticBranches(Next).AddPop(Owner.GetStaticBranches(this));
         }
     }
 
-    private MergeState GetJoinState()
+    internal override NodeInstance CreateInstance()
     {
-        var key = $"FlowMerge.{Index}.{Owner.CurrentBranch.SplitsStack}";
-        var joinState = Owner.GetPersistableState<MergeState>(key);
-        return joinState;
-    }
-    internal override void Execute()
-    {
-        var joinState = GetJoinState();
-        if (joinState.Done)
-        {
-            return;
-        }
-        var branch = Owner.CurrentBranch;
-        joinState.CompletedBranches.Add(branch);
-
-        OnCompletionCallback(IsMergeAny);
-    }
-
-    protected override void OnCompletionCallback(bool result)
-    {
-        var joinState = GetJoinState();
-        if (result)
-        {
-            EndAllBranches();
-        }
-        var runningBranches = Owner.GetOtherRunningBranches(joinState.CompletedBranches);
-
-        if (runningBranches.Count > 0)
-        {
-            Owner.MarkDoNotCompleteNode();
-            return;
-        }
-        joinState.Done = true;
-
-        Owner.EnqueueNodeExecution(Next, Owner.CurrentBranch.Pop()) ;
-        
-        void EndAllBranches()
-        {
-            Owner.CancelOtherBranches(joinState.CompletedBranches);
-        }
+        return new MergeInstance();
     }
 }
