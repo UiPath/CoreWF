@@ -31,7 +31,6 @@ public class FlowSplit : FlowNode
         };
 
     private ValidatingCollection<FlowSplitBranch> _branches;
-    internal override Activity ChildActivity => null;
 
     private List<FlowNode> RuntimeBranchesNodes { get; set; }
 

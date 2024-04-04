@@ -146,7 +146,7 @@ public class SplitAndMergeTests
     [Fact]
     public void MergeAny_cancels_unconnected()
     {
-        var merge = new FlowMergeAny().Text("stop");
+        var merge = new FlowMergeFirst().Text("stop");
         var split = new FlowSplit()
             .AddBranches(
                 TestFlow
@@ -165,16 +165,17 @@ public class SplitAndMergeTests
     [Fact]
     public void MergeAny_continues_after_first_and_cancels_the_rest()
     {
-        var merge = new FlowMergeAny().Text("stop");
+        var merge = new FlowMergeFirst().Text("stop");
         var split = new FlowSplit()
             .AddBranches(
                 TestFlow.Text("branch1")
+                    .Delay(TimeSpan.FromMilliseconds(1000))
                     .Text("branch1")
                     .FlowTo(merge),
                 TestFlow
                     .Text("branch2")
                     .Delay(TimeSpan.FromSeconds(5))
-                    .Text("delayedBranch")
+                    .Text("NodeIsNotExecuted")
                     .FlowTo(merge)
                 );
 
@@ -210,7 +211,7 @@ public class BlockingActivity : NativeActivity
 
     public BlockingActivity()
     {
-        DisplayName = "blocking";
+        DisplayName = WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + "blocking";
     }
 
 

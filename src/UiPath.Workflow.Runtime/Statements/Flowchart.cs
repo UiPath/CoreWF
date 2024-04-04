@@ -19,7 +19,7 @@ public sealed partial class Flowchart : NativeActivity
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
-    private readonly Dictionary<FlowNode, StaticBranchInfo> _staticBranchesByNode = new();
+    private readonly Dictionary<FlowNode, StaticNodeBranchInfo> _staticBranchesByNode = new();
 
     public Flowchart()
     {
@@ -180,16 +180,17 @@ public sealed partial class Flowchart : NativeActivity
             {
                 node.OnOpen(this, metadata);
             }
-            node.GetChildActivities(uniqueChildren);
+            var nodeActivities = node.GetChildActivities();
+            if (nodeActivities != null)
+            {
+                foreach (Activity activity in nodeActivities)
+                {
+                    uniqueChildren.Add(activity);
+                }
+            }
         }
 
-        List<Activity> children = new(uniqueChildren.Count);
-        foreach (Activity child in uniqueChildren)
-        {
-            children.Add(child);
-        }
-
-        metadata.SetChildrenCollection(new Collection<Activity>(children));
+        metadata.SetChildrenCollection(new Collection<Activity>(uniqueChildren.ToList()));
         EndCacheMetadata(metadata);
     }
 
@@ -292,8 +293,21 @@ public sealed partial class Flowchart : NativeActivity
         {
             var predecessorBranches = GetStaticBranches(predecessor);
             var successorBranches = GetStaticBranches(successor);
-            if (predecessor is not FlowSplit)
+            if (predecessor is not FlowSplit and not FlowMerge)
                 successorBranches.PropagateStack(predecessorBranches);
         }
+    }
+
+    public class NodeInstance
+    {
+        internal virtual void Execute(Flowchart Owner, FlowNode Node) { }
+    }
+    public abstract class NodeInstance<TFlowNode> : NodeInstance where TFlowNode : FlowNode
+    {
+        internal sealed override void Execute(Flowchart Owner, FlowNode Node)
+        {
+            Execute(Owner, (TFlowNode)Node);
+        }
+        internal abstract void Execute(Flowchart Owner, TFlowNode Node);
     }
 }

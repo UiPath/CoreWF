@@ -1,4 +1,5 @@
 using System.Activities.Validation;
+using System.Dynamic;
 using System.Linq;
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
@@ -14,8 +15,6 @@ public abstract class FlowNode
     {
         Index = -1;
     }
-
-    internal abstract Activity ChildActivity { get; }
 
     internal int Index { get; set; }
 
@@ -55,16 +54,11 @@ public abstract class FlowNode
     internal virtual void OnOpen(Flowchart owner, NativeActivityMetadata metadata)
     { }
 
-    internal void GetChildActivities(ICollection<Activity> children)
-    {
-        if (ChildActivity != null)
-        {
-            children.Add(ChildActivity);
-        }
-    }
+    internal virtual IEnumerable<Activity> GetChildActivities()
+        => Array.Empty<Activity>();
+    
 
     internal abstract IReadOnlyList<FlowNode> GetSuccessors();
-    internal abstract void Execute();
 
     internal void EndCacheMetadata(NativeActivityMetadata metadata) 
     {
@@ -73,6 +67,10 @@ public abstract class FlowNode
     }
 
     protected virtual void OnEndCacheMetadata() { }
+
+    internal virtual Flowchart.NodeInstance CreateInstance()
+        => null;
+    internal virtual void Execute() { }
 
     protected virtual void OnCompletionCallback() { }
 
@@ -92,11 +90,6 @@ public abstract class FlowNode
     }
 
     protected virtual void OnCompletionCallback(bool result) { }
-
-    public override string ToString()
-    {
-        return ChildActivity?.DisplayName ?? $"{GetType().Name}.{Index}";
-    }
 
     protected void AddValidationError(string message, IEnumerable<FlowNode> nodes)
     {

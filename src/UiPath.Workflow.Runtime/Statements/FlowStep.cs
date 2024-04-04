@@ -26,7 +26,6 @@ public sealed class FlowStep : FlowNode
         return Array.Empty<FlowNode>();
     }
 
-    internal override Activity ChildActivity => Action;
     internal override void Execute()
     {
         if (Next == null)
@@ -49,5 +48,10 @@ public sealed class FlowStep : FlowNode
     protected override void OnCompletionCallback()
     {
         Owner.EnqueueNodeExecution(Next);
+    }
+
+    public override string ToString()
+    {
+        return Action?.DisplayName ?? $"{GetType().Name}.{Index}";
     }
 }

@@ -6,6 +6,8 @@ using System.Activities.Validation;
 using Shouldly;
 using System.Linq;
 using WorkflowApplicationTestExtensions;
+using System.Activities.Runtime;
+using System.Threading;
 
 namespace TestCases.Activitiess.Bpm;
 
@@ -22,7 +24,7 @@ public class AddStringActivity : NativeActivity
 
     protected override void Execute(NativeActivityContext context)
     {
-        context.CreateBookmark(this.DisplayName, new BookmarkCallback(OnBookmarkResumed));
+        context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.DisplayName +":" + this.Id, new BookmarkCallback(OnBookmarkResumed));
     }
 
     private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
@@ -46,7 +48,7 @@ public static class TestFlow
     => new AddStringActivity() { Item = stringToAdd, DisplayName = stringToAdd }.Step();
 
     public static FlowStep Delay(TimeSpan delay)
-    => new Delay() { Duration = new InArgument<TimeSpan>(delay) }.Step();
+    => new DelayActivity() { Duration = delay }.Step();
 
     public static FlowSplit AddBranches(this FlowSplit split, params FlowNode[] nodes)
     {
@@ -121,6 +123,38 @@ public static class TestFlow
         var root = new ActivityWithResult<List<string>> { Body = flowchart, In = _stringsVariable };
         var app = new WorkflowApplication(root);
         return (List<string>)app.RunUntilCompletion().Outputs["Result"];
+    }
+
+    private class DelayActivity : NativeActivity
+    {
+        public TimeSpan Duration { get; set; }
+        private Variable<DateTime> StartTime { get; set; } = new Variable<DateTime>();
+        protected override bool CanInduceIdle => true;
+
+        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        {
+            metadata.AddImplementationVariable(StartTime);
+        }
+        protected override void Execute(NativeActivityContext context)
+        {
+            StartTime.Set(context, DateTime.Now);
+            context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.Id, new BookmarkCallback(OnBookmarkCallback));
+        }
+
+        private void OnBookmarkCallback(NativeActivityContext context, Bookmark bookmark, object value)
+        {
+            var starttime = StartTime.Get(context);
+            var duration = Duration;
+            if (starttime + duration < DateTime.Now) 
+                return;
+            Thread.Sleep(100);
+            context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.Id, new BookmarkCallback(OnBookmarkCallback));
+        }
+
+        protected override void Cancel(NativeActivityContext context)
+        {
+            //base.Cancel(context);
+        }
     }
 
     private class ActivityWithResult<TResult> : NativeActivity<TResult>
