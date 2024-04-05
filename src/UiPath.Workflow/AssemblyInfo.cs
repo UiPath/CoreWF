@@ -29,5 +29,3 @@ using System.Windows.Markup;
     XmlnsDefinition("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger",
         "System.Activities.Debugger.Symbol")]
 [assembly: XmlnsPrefix("http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger", "sads")]
-
-[assembly: InternalsVisibleTo("UiPath.Executor.Core")]
