@@ -29,4 +29,3 @@ using System.Windows.Markup;
 [assembly: InternalsVisibleTo("TestCases.Workflows")]
 [assembly: InternalsVisibleTo("TestCases.Runtime")]
 [assembly: InternalsVisibleTo("UiPath.Executor.Core")]
-[assembly: InternalsVisibleTo("UiPath.Executor.Persistence")]
