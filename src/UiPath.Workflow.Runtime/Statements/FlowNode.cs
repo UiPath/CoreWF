@@ -1,9 +1,11 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.Statements.Interfaces;
+
 namespace System.Activities.Statements;
 
-public abstract class FlowNode
+public abstract class FlowNode: IFlowNode
 {
     private Flowchart _owner;
     private int _cacheId;
@@ -60,4 +62,11 @@ public abstract class FlowNode
     }
 
     internal abstract void GetConnectedNodes(IList<FlowNode> connections);
+
+    IEnumerable<IFlowNode> IFlowNode.GetConnectedNodes()
+    {
+        var result = new List<FlowNode>();
+        GetConnectedNodes(result);
+        return result;
+    }
 }

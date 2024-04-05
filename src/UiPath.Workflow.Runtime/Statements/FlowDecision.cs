@@ -2,12 +2,13 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Expressions;
+using System.Activities.Statements.Interfaces;
 using System.Linq.Expressions;
 using System.Windows.Markup;
 
 namespace System.Activities.Statements;
 
-public sealed class FlowDecision : FlowNode
+public sealed class FlowDecision : FlowNode, IFlowDecision
 {
     private const string DefaultDisplayName = "Decision";
     private string _displayName;
@@ -44,6 +45,10 @@ public sealed class FlowDecision : FlowNode
     [DefaultValue(null)]
     [DependsOn("True")]
     public FlowNode False { get; set; }
+
+    IFlowNode IFlowDecision.True { get => this.True; set => this.True = value as FlowNode; }
+
+    IFlowNode IFlowDecision.False { get => this.False; set => this.False = value as FlowNode; }
 
     [DefaultValue(DefaultDisplayName)]
     public string DisplayName

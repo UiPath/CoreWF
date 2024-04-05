@@ -1,12 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.Statements.Interfaces;
 using System.Windows.Markup;
 
 namespace System.Activities.Statements;
 
 [ContentProperty("Action")]
-public sealed class FlowStep : FlowNode
+public sealed class FlowStep : FlowNode, IFlowStep
 {
     public FlowStep() { }
 
@@ -16,6 +17,8 @@ public sealed class FlowStep : FlowNode
     [DefaultValue(null)]
     [DependsOn("Action")]
     public FlowNode Next { get; set; }
+
+    IFlowNode IFlowStep.Next { get => this.Next; set => this.Next = value as FlowNode; }
 
     internal override void OnOpen(Flowchart owner, NativeActivityMetadata metadata) { }
 

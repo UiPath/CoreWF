@@ -3,6 +3,7 @@
 
 using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
+using System.Activities.Statements.Interfaces;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Markup;
@@ -14,7 +15,8 @@ using System.Activities.DynamicUpdate;
 namespace System.Activities.Statements;
 
 [ContentProperty("Nodes")]
-public sealed class Flowchart : NativeActivity
+[FlowStepType(typeof(FlowStep))]
+public sealed class Flowchart : NativeActivity, IFlowchart
 {
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
@@ -54,6 +56,8 @@ public sealed class Flowchart : NativeActivity
     [DependsOn("Variables")]
     public FlowNode StartNode { get; set; }
 
+    IFlowNode IFlowchart.StartNode { get => StartNode; set => StartNode = value as FlowNode; }
+
     [DependsOn("StartNode")]
     public Collection<FlowNode> Nodes
     {
@@ -73,6 +77,8 @@ public sealed class Flowchart : NativeActivity
             return _nodes;
         }
     }
+
+    IEnumerable<IFlowNode> IFlowchart.Nodes => Nodes;
 
 #if DYNAMICUPDATE
     protected override void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
