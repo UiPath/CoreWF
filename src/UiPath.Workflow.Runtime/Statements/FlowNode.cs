@@ -91,11 +91,11 @@ public abstract class FlowNode
 
     protected virtual void OnCompletionCallback(bool result) { }
 
-    protected void AddValidationError(string message, IEnumerable<FlowNode> nodes)
+    protected void AddValidationError(string message, IEnumerable<FlowNode> nodes = null)
     {
         Metadata.AddValidationError(new ValidationError(message)
         {
-            SourceDetail = nodes.OfType<FlowNode>().Concat(new[] { this }).ToArray()
+            SourceDetail = (nodes ?? Array.Empty<FlowNode>()).Concat(new[] { this }).ToArray()
         });
     }
 }
