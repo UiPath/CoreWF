@@ -263,11 +263,6 @@ public sealed partial class Flowchart : NativeActivity
 
         foreach (var successor in successors.Where(s => s is not null))
         {
-            if (!_predecessors.TryGetValue(successor, out var predecessors))
-            {
-                _predecessors[successor] = predecessors = new();
-            }
-            predecessors.Add(predecessor);
             if (!_successors.TryGetValue(predecessor, out var successorsSaved))
             {
                 _successors[predecessor] = successorsSaved = new();
