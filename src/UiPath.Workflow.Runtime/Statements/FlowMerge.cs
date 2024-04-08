@@ -74,10 +74,7 @@ public abstract class FlowMerge : FlowNode
 
     protected override void OnEndCacheMetadata()
     {
-        var predecessors = Owner.GetPredecessors(this);
-        var connectedBranches = predecessors
-            .SelectMany(p => Owner.GetStaticBranches(p).GetTop())
-            .Distinct().ToList();
+        var connectedBranches = Owner.GetStaticBranches(this).GetTop();
 
         var splits = connectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
         if (splits.Count > 1)

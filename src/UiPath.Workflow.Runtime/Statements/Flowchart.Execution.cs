@@ -16,7 +16,6 @@ partial class Flowchart
     private readonly Variable<Dictionary<string, object>> _flowchartState = new (FlowChartStateVariableName, c => new ());
 
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
-    private readonly Dictionary<FlowNode, HashSet<FlowNode>> _predecessors = new();
     private CompletionCallback _completionCallback;
     private readonly Dictionary<Type, Delegate> _completionCallbacks = new();
     private readonly Queue<NodeState> _executionQueue = new();
@@ -110,14 +109,8 @@ partial class Flowchart
             ).ToList();
     }
 
-    internal List<FlowNode> GetSuccessors(int index)
+    private List<FlowNode> GetSuccessors(int index)
         => _successors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
-
-    internal List<FlowNode> GetPredecessors(FlowNode node)
-    {
-        _predecessors.TryGetValue(node, out var result);
-        return result?.ToList() ?? new();
-    }
 
     internal StaticNodeBranchInfo GetStaticBranches(FlowNode node)
     {
