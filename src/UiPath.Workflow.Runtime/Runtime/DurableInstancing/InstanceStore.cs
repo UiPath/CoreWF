@@ -230,14 +230,14 @@ namespace System.Activities.Runtime.DurableInstancing
         }
 
         [Fx.Tag.InheritThrows(From = "TryCommand")]
-        protected internal virtual IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
+        public virtual IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
         {
             return new CompletedAsyncResult<bool>(false, callback, state);
         }
 
         [Fx.Tag.InheritThrows(From = "TryCommand")]
         [Fx.Tag.Blocking(CancelMethod = "Free", CancelDeclaringType = typeof(InstanceHandle), Conditional = "!result.IsCompleted")]
-        protected internal virtual bool EndTryCommand(IAsyncResult result)
+        public virtual bool EndTryCommand(IAsyncResult result)
         {
             return CompletedAsyncResult<bool>.End(result);
         }
