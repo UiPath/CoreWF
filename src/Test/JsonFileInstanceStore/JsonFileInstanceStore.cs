@@ -49,7 +49,7 @@ namespace JsonFileInstanceStore
             }
         }
 
-        public override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
+        protected override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
         {
             if (command is SaveWorkflowCommand saveWorkflowCommand)
             {
@@ -70,7 +70,7 @@ namespace JsonFileInstanceStore
             return new TypedCompletedAsyncResult<bool>(false, callback, state);
         }
 
-        public override bool EndTryCommand(IAsyncResult result) => TypedCompletedAsyncResult<bool>.End(result);
+        protected override bool EndTryCommand(IAsyncResult result) => TypedCompletedAsyncResult<bool>.End(result);
 
         private bool SaveWorkflow(InstancePersistenceContext context, SaveWorkflowCommand command)
         {

@@ -37,7 +37,7 @@ namespace Test.Common.TestObjects.Utilities
             PersistenceItemManager.StorePath = path;
         }
 
-        public override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
+        protected override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
         {
             SaveWorkflowCommand save = command as SaveWorkflowCommand;
             if (save != null)
@@ -108,7 +108,7 @@ namespace Test.Common.TestObjects.Utilities
             return base.BeginTryCommand(context, command, timeout, callback, state);
         }
 
-        public override bool EndTryCommand(IAsyncResult result)
+        protected override bool EndTryCommand(IAsyncResult result)
         {
             if (result is CompletedAsyncResult)
             {
