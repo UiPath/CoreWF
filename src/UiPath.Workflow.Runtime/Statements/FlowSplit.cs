@@ -52,9 +52,18 @@ public class FlowSplit : FlowNode
 
     protected override void OnEndCacheMetadata()
     {
-        var merges = Branches.SelectMany(b => Owner.GetMerges(b.StartNode)).Distinct().ToList();
-        if (merges.Count != 1)
-            AddValidationError("Split branches should end in exactly one Merge node.", merges);
+        HashSet<FlowMerge> allMerges = new();
+        foreach (var branch in Branches)
+        {
+            var merges = Owner.GetMerges(branch.StartNode).Distinct().ToList();
+            allMerges.AddRange(merges);
+            if (merges.Count >= 1)
+                AddValidationError("Split branch should end in only one Merge node.", new[] { branch.StartNode }.Concat(merges));
+        }
+        if (allMerges.Count == 0)
+            AddValidationError("Split should end in one Merge node.");
+        if (allMerges.Count > 1)
+            AddValidationError("All split branches should end in only one Merge node.", allMerges);
     }
 
     internal override void Execute()
