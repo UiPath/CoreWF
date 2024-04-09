@@ -7,6 +7,7 @@ using TestObjects.XamlTestDriver;
 using System.IO;
 using System;
 using System.Linq;
+using System.Diagnostics;
 namespace TestCases.Activitiess.Bpm;
 
 public class SplitAndMergeTests
@@ -14,12 +15,15 @@ public class SplitAndMergeTests
     [Fact]
     public void RoundTrip_xaml()
     {
-        var merge = new FlowMerge().Text("stop");
+        var outersplit = new FlowSplit() { DisplayName = "OuterSplit" };
+        var outerMerge = new FlowMerge() { DisplayName = "OuterMerge" }.Text("stop");
+        var merge = new FlowMerge().FlowTo(outerMerge);
         var split = new FlowSplit()
             .AddBranches(
                 TestFlow.Text("branch1").FlowTo(merge), 
                 TestFlow.Text("branch2").FlowTo(merge));
-        var flowchart = new Flowchart { StartNode = split };
+        outersplit.AddBranches(split);
+        var flowchart = new Flowchart { StartNode = outersplit };
         var roundTrip = XamlRoundTrip(flowchart);
         TestFlow.Results(roundTrip)
             .ShouldBe([ "branch1", "branch2", "stop" ]);
@@ -155,32 +159,41 @@ public class SplitAndMergeTests
                     .FlowTo(merge),
                 TestFlow
                     .Text("branch2")
-                    .Delay(TimeSpan.FromSeconds(5))
+                    .CancelableText(TimeSpan.FromSeconds(5), textOnCancel:"longDelay canceled")
                     .Text("delayedBranch")
                 );
 
         TestFlow.Results(split)
-            .ShouldBe(["branch1", "branch2", "branch1", "stop"]);
+            .ShouldBe(["branch1", "branch2", "branch1", "longDelay canceled", "stop"]);
     }
     [Fact]
     public void MergeAny_continues_after_first_and_cancels_the_rest()
     {
         var merge = new FlowMerge() { Behavior = new MergeFirstBehavior() }.Text("stop");
+        var nonCancelableDelay = TimeSpan.FromMilliseconds(200);
+        var cancelableDelay = nonCancelableDelay + TimeSpan.FromSeconds(2);
         var split = new FlowSplit()
             .AddBranches(
                 TestFlow.Text("branch1")
-                    .Delay(TimeSpan.FromMilliseconds(1000))
-                    .Text("branch1")
+                    .DelayedText(nonCancelableDelay/4, "branch1 delayed")
                     .FlowTo(merge),
                 TestFlow
                     .Text("branch2")
-                    .Delay(TimeSpan.FromSeconds(5))
+                    .DelayedText(nonCancelableDelay, "branch2 delayed")
                     .Text("NodeIsNotExecuted")
+                    .FlowTo(merge),
+                TestFlow
+                    .Text("branch3")
+                    .CancelableText(cancelableDelay, "branch3 canceled")
+                    .Text("NodeIsNotExecuted2")
                     .FlowTo(merge)
                 );
 
-        TestFlow.Results(split)
-            .ShouldBe(["branch1", "branch2", "branch1", "stop"]);
+        var sw = Stopwatch.StartNew();
+        var results = TestFlow.Results(split);
+        sw.Stop();
+        sw.Elapsed.ShouldBeInRange(nonCancelableDelay, cancelableDelay);
+        results.ShouldBe(["branch1", "branch2", "branch3", "branch1 delayed", "branch3 canceled", "branch2 delayed", "stop"]);
     }
 
     [Fact]

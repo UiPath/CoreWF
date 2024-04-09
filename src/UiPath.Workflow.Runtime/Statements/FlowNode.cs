@@ -20,7 +20,7 @@ public abstract class FlowNode
 
     internal bool IsOpen => _owner != null;
 
-    internal Flowchart Owner => _owner;
+    internal Flowchart Flowchart => _owner;
     protected NativeActivityMetadata Metadata { get; private set; }
 
     // Returns true if this is the first time we've visited this node during this pass
