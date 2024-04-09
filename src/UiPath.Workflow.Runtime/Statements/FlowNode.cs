@@ -69,7 +69,7 @@ public abstract class FlowNode
     protected virtual void OnEndCacheMetadata() { }
 
     internal virtual Flowchart.NodeInstance CreateInstance()
-        => null;
+        => new();
     internal virtual void Execute() { }
 
     protected virtual void OnCompletionCallback() { }
@@ -98,4 +98,6 @@ public abstract class FlowNode
             SourceDetail = (nodes ?? Array.Empty<FlowNode>()).Concat(new[] { this }).ToArray()
         });
     }
+
+    public override string ToString() => GetType().Name;
 }

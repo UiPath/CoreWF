@@ -1,82 +1,72 @@
-﻿using System.Activities.Validation;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
-public class FlowMergeFirst : FlowMerge
+
+public abstract class MergeBehavior
 {
-    private protected override bool IsMergeFirst => true;
+    private protected MergeBehavior()
+    {
+        
+    }
 }
 
-public class FlowMergeAll : FlowMerge
+public class MergeFirstBehavior : MergeBehavior
 {
-    private protected override bool IsMergeFirst => false;
+
 }
 
-public abstract class FlowMerge : FlowNode
+public class MergeAllBehavior : MergeBehavior
+{
+
+}
+
+public class FlowMerge : FlowNode
 {
     private const string DefaultDisplayName = nameof(FlowMerge);
 
-    private protected abstract bool IsMergeFirst { get; }
+    [DefaultValue(null)]
+    public MergeBehavior Behavior { get; set; } = new MergeAllBehavior();
     [DefaultValue(null)]
     public FlowNode Next { get; set; }
     [DefaultValue(DefaultDisplayName)]
-    public string DisplayName { get; set; }
+    public string DisplayName { get; set; } = DefaultDisplayName;
 
     private class MergeInstance : NodeInstance<FlowMerge>
     {
-        public bool Done { get; set; }
-        bool set { get; set; }
-        private FlowMerge _merge;
-        public FlowMerge Merge 
+        public MergeInstance()
         {
-            get => _merge;
-            set => _merge = value;
+            DoNotComplete = true;
         }
+        public bool CancelExecuted { get; set; }
         internal override void Execute(Flowchart Flowchart, FlowMerge node)
         {
-            if (set)
+            if (!DoNotComplete)
+                return;
+            var runningNodes = Flowchart.GetOtherNodes();
+            if (node.Behavior is MergeFirstBehavior && !CancelExecuted)
             {
-                Debug.Assert(Merge == node);
+                Flowchart.CancelNodes(runningNodes);
+                CancelExecuted = true;
             }
-            else
+
+            if (runningNodes.Count > 0)
             {
-                Merge = node;
-                set = true;
-            }
-            if (Done)
-            {
+                Debug.WriteLine($"{node}: DoNotComplete");
                 return;
             }
 
-            if (node.IsMergeFirst)
-            {
-                EndAllBranches();
-            }
-            var runningBranches = Flowchart.GetOtherNodes();
-
-            if (runningBranches.Count > 0)
-            {
-                Flowchart.MarkDoNotCompleteNode();
-                return;
-            }
-
-            Done = true;
+            DoNotComplete = false;
+            Debug.WriteLine($"{node}: Next queued");
             Flowchart.EnqueueNodeExecution(node.Next, Flowchart.CurrentBranch.Pop());
-
-            void EndAllBranches()
-            {
-                Flowchart.CancelOtherBranches();
-            }
         }
     }
 
     protected override void OnEndCacheMetadata()
     {
         var connectedBranches = Owner.GetStaticBranches(this).GetTop();
-
-        var splits = connectedBranches.Select(bl => bl.SplitNode).Distinct().ToList();
+        var splits = connectedBranches.Select(bl => bl).Distinct().ToList();
         if (splits.Count > 1)
             AddValidationError("All merge branches should start in the same Split node.", splits); 
     }
