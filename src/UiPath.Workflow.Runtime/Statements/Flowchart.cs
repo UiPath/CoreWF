@@ -3,6 +3,7 @@
 
 using System.Activities.Runtime;
 using System.Activities.Runtime.Collections;
+using System.Activities.Validation;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Markup;
@@ -183,10 +184,7 @@ public sealed partial class Flowchart : NativeActivity
             var nodeActivities = node.GetChildActivities();
             if (nodeActivities != null)
             {
-                foreach (Activity activity in nodeActivities)
-                {
-                    uniqueChildren.Add(activity);
-                }
+                uniqueChildren.AddRange(nodeActivities);
             }
         }
 
@@ -288,8 +286,19 @@ public sealed partial class Flowchart : NativeActivity
         {
             var predecessorBranches = GetStaticBranches(predecessor);
             var successorBranches = GetStaticBranches(successor);
-            if (predecessor is not FlowSplit and not FlowMerge)
-                successorBranches.PropagateStack(predecessorBranches);
+            switch(predecessor)
+            {
+                case FlowSplit _:
+                    //push is handled by FlowSplit to retain branch info
+                    break;
+                case FlowMerge _:
+                    successorBranches.AddPop(predecessorBranches);
+                    break;
+                default:
+                    successorBranches.PropagateStack(predecessorBranches);
+                    break;
+            }
+                
         }
     }
 

@@ -50,6 +50,9 @@ public sealed class FlowStep : FlowNode
         Owner.EnqueueNodeExecution(Next);
     }
 
+    internal override IEnumerable<Activity> GetChildActivities()
+    => Action!= null ? new[] { Action } : null;
+
     public override string ToString()
     {
         return Action?.DisplayName ?? $"{GetType().Name}.{Index}";
