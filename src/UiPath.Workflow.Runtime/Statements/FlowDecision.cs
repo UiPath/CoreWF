@@ -56,7 +56,7 @@ public sealed class FlowDecision : FlowNode
     {
         if (Condition == null)
         {
-            Metadata.AddValidationError(SR.FlowDecisionRequiresCondition(Owner.DisplayName));
+            Metadata.AddValidationError(SR.FlowDecisionRequiresCondition(Flowchart.DisplayName));
         }
     }
 
@@ -80,10 +80,10 @@ public sealed class FlowDecision : FlowNode
 
     internal override void Execute()
     {
-        Owner.ScheduleWithCallback(Condition);
+        Flowchart.ScheduleWithCallback(Condition);
     }
     protected override void OnCompletionCallback(bool result)
     {
-        Owner.EnqueueNodeExecution(result ? True : False);
+        Flowchart.EnqueueNodeExecution(result ? True : False);
     }
 }

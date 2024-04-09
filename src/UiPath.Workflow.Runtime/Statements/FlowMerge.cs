@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using System.Windows.Markup;
 using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
@@ -22,6 +23,7 @@ public class MergeAllBehavior : MergeBehavior
 
 }
 
+[ContentProperty(nameof(Behavior))]
 public class FlowMerge : FlowNode
 {
     private const string DefaultDisplayName = nameof(FlowMerge);
@@ -29,6 +31,7 @@ public class FlowMerge : FlowNode
     [DefaultValue(null)]
     public MergeBehavior Behavior { get; set; } = new MergeAllBehavior();
     [DefaultValue(null)]
+    [DependsOn(nameof(Behavior))]
     public FlowNode Next { get; set; }
     [DefaultValue(DefaultDisplayName)]
     public string DisplayName { get; set; } = DefaultDisplayName;
@@ -40,12 +43,12 @@ public class FlowMerge : FlowNode
             DoNotComplete = true;
         }
         public bool CancelExecuted { get; set; }
-        internal override void Execute(Flowchart Flowchart, FlowMerge node)
+        internal override void Execute()
         {
             if (!DoNotComplete)
                 return;
             var runningNodes = Flowchart.GetOtherNodes();
-            if (node.Behavior is MergeFirstBehavior && !CancelExecuted)
+            if (Node.Behavior is MergeFirstBehavior && !CancelExecuted)
             {
                 Flowchart.CancelNodes(runningNodes);
                 CancelExecuted = true;
@@ -53,19 +56,19 @@ public class FlowMerge : FlowNode
 
             if (runningNodes.Count > 0)
             {
-                Debug.WriteLine($"{node}: DoNotComplete");
+                Debug.WriteLine($"{Node}: DoNotComplete");
                 return;
             }
 
             DoNotComplete = false;
-            Debug.WriteLine($"{node}: Next queued");
-            Flowchart.EnqueueNodeExecution(node.Next, Flowchart.CurrentBranch.Pop());
+            Debug.WriteLine($"{Node}: Next queued");
+            Flowchart.EnqueueNodeExecution(Node.Next, Flowchart.CurrentBranch.Pop());
         }
     }
 
     protected override void OnEndCacheMetadata()
     {
-        var connectedBranches = Owner.GetStaticBranches(this).GetTop();
+        var connectedBranches = Flowchart.GetStaticBranches(this).GetTop();
         var splits = connectedBranches.Select(bl => bl).Distinct().ToList();
         if (splits.Count > 1)
             AddValidationError("All merge branches should start in the same Split node.", splits); 

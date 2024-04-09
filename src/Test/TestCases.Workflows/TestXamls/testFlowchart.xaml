@@ -1,29 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Flowchart xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:tab="clr-namespace:TestCases.Activitiess.Bpm;assembly=TestCases.Workflows" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Flowchart.StartNode>
-    <FlowSplit>
+    <FlowSplit DisplayName="OuterSplit">
       <FlowSplit.Branches>
-        <FlowStep>
-          <tab:AddStringActivity DisplayName="branch1" Item="branch1" />
-          <FlowStep.Next>
-            <FlowMerge x:Name="__ReferenceID0">
-              <FlowMerge.Behavior>
-                <MergeAllBehavior />
-              </FlowMerge.Behavior>
-              <FlowMerge.Next>
-                <FlowStep>
-                  <tab:AddStringActivity DisplayName="stop" Item="stop" />
-                </FlowStep>
-              </FlowMerge.Next>
-            </FlowMerge>
-          </FlowStep.Next>
-        </FlowStep>
-        <FlowStep>
-          <tab:AddStringActivity DisplayName="branch2" Item="branch2" />
-          <FlowStep.Next>
-            <x:Reference>__ReferenceID0</x:Reference>
-          </FlowStep.Next>
-        </FlowStep>
+        <FlowSplit>
+          <FlowSplit.Branches>
+            <FlowStep>
+              <tab:AddStringActivity DisplayName="branch1" Text="branch1" />
+              <FlowStep.Next>
+                <FlowMerge x:Name="__ReferenceID0">
+                  <MergeAllBehavior />
+                  <FlowMerge.Next>
+                    <FlowMerge DisplayName="OuterMerge">
+                      <MergeAllBehavior />
+                      <FlowMerge.Next>
+                        <FlowStep>
+                          <tab:AddStringActivity DisplayName="stop" Text="stop" />
+                        </FlowStep>
+                      </FlowMerge.Next>
+                    </FlowMerge>
+                  </FlowMerge.Next>
+                </FlowMerge>
+              </FlowStep.Next>
+            </FlowStep>
+            <FlowStep>
+              <tab:AddStringActivity DisplayName="branch2" Text="branch2" />
+              <FlowStep.Next>
+                <x:Reference>__ReferenceID0</x:Reference>
+              </FlowStep.Next>
+            </FlowStep>
+          </FlowSplit.Branches>
+        </FlowSplit>
       </FlowSplit.Branches>
     </FlowSplit>
   </Flowchart.StartNode>

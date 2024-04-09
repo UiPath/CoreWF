@@ -32,7 +32,7 @@ public sealed class FlowStep : FlowNode
         {
             if (TD.FlowchartNextNullIsEnabled())
             {
-                TD.FlowchartNextNull(Owner.DisplayName);
+                TD.FlowchartNextNull(Flowchart.DisplayName);
             }
         }
         if (Action == null)
@@ -41,13 +41,13 @@ public sealed class FlowStep : FlowNode
         }
         else
         {
-            Owner.ScheduleWithCallback(Action);
+            Flowchart.ScheduleWithCallback(Action);
         }
     }
 
     protected override void OnCompletionCallback()
     {
-        Owner.EnqueueNodeExecution(Next);
+        Flowchart.EnqueueNodeExecution(Next);
     }
 
     internal override IEnumerable<Activity> GetChildActivities()

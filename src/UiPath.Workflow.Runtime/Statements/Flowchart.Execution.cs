@@ -2,25 +2,18 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Runtime;
-using System.Activities.Runtime.Collections;
-using System.Activities.Statements;
-using System.Activities.Validation;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Markup;
-using System.Xml.Linq;
-
-#if DYNAMICUPDATE
-using System.Activities.DynamicUpdate;
-#endif
 
 namespace System.Activities.Statements;
 
 partial class Flowchart
 {
     private const string FlowChartStateVariableName = "flowchartState";
-    private readonly Variable<Dictionary<string, object>> _flowchartState = new (FlowChartStateVariableName, c => new ());
+    private readonly Variable<State> _flowchartState = new(FlowChartStateVariableName, c => new()
+    {
+        Version = FileVersionInfo.GetVersionInfo(typeof(Flowchart).Assembly.Location).ProductVersion ?? "Empty"
+    });
 
     private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
     private CompletionCallback _completionCallback;
@@ -33,8 +26,7 @@ partial class Flowchart
     internal ExecutionBranchId CurrentBranch => CurrentNode.ExecutionBranch;
     internal string CurrentNodeId => CurrentNode.ExecutionNodeId;
 
-    private Dictionary<string, NodeInstance> NodesInstances 
-        => GetPersistableState<Dictionary<string, NodeInstance>>("_nodesStatesByNodeInstanceId");
+    private Dictionary<string, NodeInstance> NodesInstances => _flowchartState.Get(_activeContext).NodesInstances;
 
     private NativeActivityContext _activeContext;
 
@@ -310,14 +302,18 @@ partial class Flowchart
     }
     internal abstract class NodeInstance<TFlowNode> : NodeInstance where TFlowNode : FlowNode
     {
-        internal sealed override void Execute(Flowchart Owner, FlowNode Node)
-        {
-            Execute(Owner, (TFlowNode)Node);
-        }
-        internal abstract void Execute(Flowchart Owner, TFlowNode Node);
-    }
+        protected Flowchart Flowchart { get; private set; }
+        protected TFlowNode Node { get; private set; }
 
-    
+        internal sealed override void Execute(Flowchart flowchart, FlowNode node)
+        {
+            Flowchart = flowchart;
+            Node = node as TFlowNode;
+
+            Execute();
+        }
+        internal abstract void Execute();
+    }
     internal class NodeInstance
     {
         public ExecutionBranchId ExecutionBranch { get; set; }
@@ -349,14 +345,9 @@ partial class Flowchart
         public static IDisposable Create(Action onDispose)
             => new Disposable() { _onDispose = onDispose };
     }
-    internal T GetPersistableState<T>(string key) where T: new()
+    private class State
     {
-        var flowChartState = _flowchartState.Get(_activeContext);
-        if (!flowChartState.TryGetValue(key, out var value))
-        {
-            value = new T();
-            flowChartState[key] = value;
-        }
-        return (T)value;
+        public string Version { get; init; }
+        public Dictionary<string, NodeInstance> NodesInstances { get; set; } = new();
     }
 }

@@ -6,6 +6,10 @@ namespace System.Activities.Statements;
 
 public class FlowSplit : FlowNode
 {
+    private const string DefaultDisplayName = nameof(FlowSplit);
+    [DefaultValue(DefaultDisplayName)]
+    public string DisplayName { get; set; } = DefaultDisplayName;
+
     [DefaultValue(null)]
     public Collection<FlowNode> Branches
         => _branches ??= ValidatingCollection<FlowNode>.NullCheck();
@@ -20,7 +24,7 @@ public class FlowSplit : FlowNode
         HashSet<FlowMerge> allMerges = new();
         foreach (var branch in Branches)
         {
-            var merges = Owner.GetMerges(branch).Distinct().ToList();
+            var merges = Flowchart.GetMerges(branch).Distinct().ToList();
             allMerges.AddRange(merges);
             if (merges.Count > 1)
                 AddValidationError("Split branch should end in only one Merge node.", new[] { branch }.Concat(merges));
@@ -36,14 +40,14 @@ public class FlowSplit : FlowNode
 
     private class SplitInstance : Flowchart.NodeInstance<FlowSplit>
     {
-        internal override void Execute(Flowchart Owner, FlowSplit Node)
+        internal override void Execute()
         {
             for (int i = Node.Branches.Count - 1; i >= 0; i--)
             {
                 var branch = Node.Branches[i];
-                Owner.EnqueueNodeExecution(branch, Owner.CurrentBranch.Push(
+                Flowchart.EnqueueNodeExecution(branch, Flowchart.CurrentBranch.Push(
                             branchId: $"{branch.Index}",
-                            splitId: Owner.CurrentNodeId));
+                            splitId: Flowchart.CurrentNodeId));
             }
         }
     }

@@ -49,7 +49,7 @@ public sealed class FlowSwitch<T> : FlowNode
     {
         if (Expression == null)
         {
-            Metadata.AddValidationError(SR.FlowSwitchRequiresExpression(Owner.DisplayName));
+            Metadata.AddValidationError(SR.FlowSwitchRequiresExpression(Flowchart.DisplayName));
         }
     }
 
@@ -58,7 +58,7 @@ public sealed class FlowSwitch<T> : FlowNode
 
     internal override void Execute()
     {
-        Owner.ScheduleWithCallback(Expression);
+        Flowchart.ScheduleWithCallback(Expression);
     }
 
     internal override void OnCompletionCallback<TResult>(TResult value)
@@ -81,9 +81,9 @@ public sealed class FlowSwitch<T> : FlowNode
         {
             if (TD.FlowchartSwitchCaseIsEnabled())
             {
-                TD.FlowchartSwitchCase(Owner.DisplayName, newValue?.ToString());
+                TD.FlowchartSwitchCase(Flowchart.DisplayName, newValue?.ToString());
             }
-            Owner.EnqueueNodeExecution(result);
+            Flowchart.EnqueueNodeExecution(result);
         }
         else
         {
@@ -91,17 +91,17 @@ public sealed class FlowSwitch<T> : FlowNode
             {
                 if (TD.FlowchartSwitchDefaultIsEnabled())
                 {
-                    TD.FlowchartSwitchDefault(Owner.DisplayName);
+                    TD.FlowchartSwitchDefault(Flowchart.DisplayName);
                 }
             }
             else
             {
                 if (TD.FlowchartSwitchCaseNotFoundIsEnabled())
                 {
-                    TD.FlowchartSwitchCaseNotFound(Owner.DisplayName);
+                    TD.FlowchartSwitchCaseNotFound(Flowchart.DisplayName);
                 }
             }
-            Owner.EnqueueNodeExecution(Default);
+            Flowchart.EnqueueNodeExecution(Default);
         }
     }
 }

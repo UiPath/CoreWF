@@ -6,33 +6,64 @@ using System.Activities.Validation;
 using Shouldly;
 using System.Linq;
 using WorkflowApplicationTestExtensions;
-using System.Activities.Runtime;
 using System.Threading;
+using System.ComponentModel;
 
 namespace TestCases.Activitiess.Bpm;
 
 public class AddStringActivity : NativeActivity
 {
+    [DefaultValue(null)]
+    public TimeSpan? Duration { get; set; }
+    [DefaultValue(null)]
+    public string Text { get; set; }
+    [DefaultValue(null)]
+    public string TextOnCancel { get; set; }
+    private Variable<DateTime> StartTime { get; set; } = new Variable<DateTime>();
+
     protected override bool CanInduceIdle => true;
 
-    public string Item { get; set; }
     protected override void CacheMetadata(NativeActivityMetadata metadata)
     {
         base.CacheMetadata(metadata);
         metadata.AddImplementationVariable(new Variable<List<string>>("strings"));
+        metadata.AddImplementationVariable(StartTime);
+
     }
 
     protected override void Execute(NativeActivityContext context)
     {
+        StartTime.Set(context, DateTime.Now);
         context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.DisplayName +":" + this.Id, new BookmarkCallback(OnBookmarkResumed));
     }
 
     private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
     {
+        var starttime = StartTime.Get(context);
+        var duration = Duration;
+        if (starttime + duration > DateTime.Now)
+        {
+            Thread.Sleep(5);
+            context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + DisplayName + ":" + Id, new BookmarkCallback(OnBookmarkResumed));
+            return;
+        }
+        AddString(context, Text);
+    }
+
+    protected override void Cancel(NativeActivityContext context)
+    {
+        if (TextOnCancel is not null)
+        {
+            AddString(context, TextOnCancel);
+            base.Cancel(context);
+        }
+    }
+    private void AddString(NativeActivityContext context, string text)
+    {
         using var _ = context.InheritVariables();
         var stringsLocation = context.GetInheritedLocation<List<string>>("strings");
         stringsLocation.Value ??= [];
-        stringsLocation.Value.Add(Item);
+        stringsLocation.Value.Add(text);
     }
 }
 
@@ -41,14 +72,16 @@ public static class TestFlow
     public static FlowNode Text(this FlowNode flowstep, string stringToAdd)
     => flowstep.FlowTo(Text(stringToAdd));
 
-    public static FlowNode Delay(this FlowNode flowstep, TimeSpan delay)
-    => flowstep.FlowTo(Delay(delay));
+    public static FlowNode CancelableText(this FlowNode flowstep, TimeSpan delay, string textOnCancel = null)
+    => flowstep.FlowTo(DelayedText(delay:delay, text: "[waited]" + textOnCancel, textOnCancel:textOnCancel));
+    public static FlowNode DelayedText(this FlowNode flowstep, TimeSpan delay, string text)
+    => flowstep.FlowTo(DelayedText(delay, text));
 
     public static FlowStep Text(string stringToAdd)
-    => new AddStringActivity() { Item = stringToAdd, DisplayName = stringToAdd }.Step();
+    => new AddStringActivity() { Text = stringToAdd, DisplayName = stringToAdd }.Step();
 
-    public static FlowStep Delay(TimeSpan delay)
-    => new DelayActivity() { Duration = delay }.Step();
+    public static FlowStep DelayedText(TimeSpan delay, string text, string textOnCancel = null)
+    => new AddStringActivity() { Duration = delay, Text = text, TextOnCancel = textOnCancel, DisplayName = text }.Step();
 
     public static FlowSplit AddBranches(this FlowSplit split, params FlowNode[] nodes)
     {
@@ -119,38 +152,6 @@ public static class TestFlow
         var root = new ActivityWithResult<List<string>> { Body = flowchart, In = _stringsVariable };
         var app = new WorkflowApplication(root);
         return (List<string>)app.RunUntilCompletion().Outputs["Result"];
-    }
-
-    private class DelayActivity : NativeActivity
-    {
-        public TimeSpan Duration { get; set; }
-        private Variable<DateTime> StartTime { get; set; } = new Variable<DateTime>();
-        protected override bool CanInduceIdle => true;
-
-        protected override void CacheMetadata(NativeActivityMetadata metadata)
-        {
-            metadata.AddImplementationVariable(StartTime);
-        }
-        protected override void Execute(NativeActivityContext context)
-        {
-            StartTime.Set(context, DateTime.Now);
-            context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.Id, new BookmarkCallback(OnBookmarkCallback));
-        }
-
-        private void OnBookmarkCallback(NativeActivityContext context, Bookmark bookmark, object value)
-        {
-            var starttime = StartTime.Get(context);
-            var duration = Duration;
-            if (starttime + duration < DateTime.Now) 
-                return;
-            Thread.Sleep(100);
-            context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.Id, new BookmarkCallback(OnBookmarkCallback));
-        }
-
-        protected override void Cancel(NativeActivityContext context)
-        {
-            //base.Cancel(context);
-        }
     }
 
     private class ActivityWithResult<TResult> : NativeActivity<TResult>
