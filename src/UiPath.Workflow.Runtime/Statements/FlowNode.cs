@@ -55,7 +55,7 @@ public abstract class FlowNode
     { }
 
     internal virtual IEnumerable<Activity> GetChildActivities()
-        => Array.Empty<Activity>();
+        => null;
     
 
     internal abstract IReadOnlyList<FlowNode> GetSuccessors();

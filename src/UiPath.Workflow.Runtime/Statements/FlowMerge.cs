@@ -84,15 +84,9 @@ public abstract class FlowMerge : FlowNode
     {
         if (Next != null)
         {
-            PopBranchesStacks();
             return new [] { Next };
         }
         return Array.Empty<FlowNode>();
-
-        void PopBranchesStacks()
-        {
-            Owner.GetStaticBranches(Next).AddPop(Owner.GetStaticBranches(this));
-        }
     }
 
     internal override NodeInstance CreateInstance()

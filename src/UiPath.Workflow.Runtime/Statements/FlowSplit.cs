@@ -57,7 +57,7 @@ public class FlowSplit : FlowNode
         {
             var merges = Owner.GetMerges(branch.StartNode).Distinct().ToList();
             allMerges.AddRange(merges);
-            if (merges.Count >= 1)
+            if (merges.Count > 1)
                 AddValidationError("Split branch should end in only one Merge node.", new[] { branch.StartNode }.Concat(merges));
         }
         if (allMerges.Count == 0)
