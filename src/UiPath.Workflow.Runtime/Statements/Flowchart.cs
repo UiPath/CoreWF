@@ -288,8 +288,8 @@ public sealed partial class Flowchart : NativeActivity
             var successorBranches = GetStaticBranches(successor);
             switch(predecessor)
             {
-                case FlowSplit _:
-                    //push is handled by FlowSplit to retain branch info
+                case FlowSplit split:
+                    successorBranches.Push(split, predecessorBranches);
                     break;
                 case FlowMerge _:
                     successorBranches.AddPop(predecessorBranches);
@@ -298,20 +298,6 @@ public sealed partial class Flowchart : NativeActivity
                     successorBranches.PropagateStack(predecessorBranches);
                     break;
             }
-                
         }
-    }
-
-    public class NodeInstance
-    {
-        internal virtual void Execute(Flowchart Owner, FlowNode Node) { }
-    }
-    public abstract class NodeInstance<TFlowNode> : NodeInstance where TFlowNode : FlowNode
-    {
-        internal sealed override void Execute(Flowchart Owner, FlowNode Node)
-        {
-            Execute(Owner, (TFlowNode)Node);
-        }
-        internal abstract void Execute(Flowchart Owner, TFlowNode Node);
     }
 }

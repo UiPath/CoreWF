@@ -3,32 +3,27 @@
   <Flowchart.StartNode>
     <FlowSplit>
       <FlowSplit.Branches>
-        <FlowSplitBranch>
-          <FlowSplitBranch.StartNode>
-            <FlowStep>
-              <tab:AddStringActivity DisplayName="branch1" Item="branch1" />
-              <FlowStep.Next>
-                <FlowMergeAll x:Name="__ReferenceID0">
-                  <FlowMergeAll.Next>
-                    <FlowStep>
-                      <tab:AddStringActivity DisplayName="stop" Item="stop" />
-                    </FlowStep>
-                  </FlowMergeAll.Next>
-                </FlowMergeAll>
-              </FlowStep.Next>
-            </FlowStep>
-          </FlowSplitBranch.StartNode>
-        </FlowSplitBranch>
-        <FlowSplitBranch>
-          <FlowSplitBranch.StartNode>
-            <FlowStep>
-              <tab:AddStringActivity DisplayName="branch2" Item="branch2" />
-              <FlowStep.Next>
-                <x:Reference>__ReferenceID0</x:Reference>
-              </FlowStep.Next>
-            </FlowStep>
-          </FlowSplitBranch.StartNode>
-        </FlowSplitBranch>
+        <FlowStep>
+          <tab:AddStringActivity DisplayName="branch1" Item="branch1" />
+          <FlowStep.Next>
+            <FlowMerge x:Name="__ReferenceID0">
+              <FlowMerge.Behavior>
+                <MergeAllBehavior />
+              </FlowMerge.Behavior>
+              <FlowMerge.Next>
+                <FlowStep>
+                  <tab:AddStringActivity DisplayName="stop" Item="stop" />
+                </FlowStep>
+              </FlowMerge.Next>
+            </FlowMerge>
+          </FlowStep.Next>
+        </FlowStep>
+        <FlowStep>
+          <tab:AddStringActivity DisplayName="branch2" Item="branch2" />
+          <FlowStep.Next>
+            <x:Reference>__ReferenceID0</x:Reference>
+          </FlowStep.Next>
+        </FlowStep>
       </FlowSplit.Branches>
     </FlowSplit>
   </Flowchart.StartNode>

@@ -54,11 +54,7 @@ public static class TestFlow
     {
         foreach (var node in nodes)
         {
-            var branch = new FlowSplitBranch()
-            {
-                StartNode = node,
-            };
-            split.Branches.Add(branch);
+            split.Branches.Add(node);
         }
         return split;
     }
@@ -86,7 +82,7 @@ public static class TestFlow
             case FlowSplit split:
                 foreach (var branch in split.Branches)
                 {
-                    branch.StartNode.FlowTo(successor);
+                    branch.FlowTo(successor);
                 }
                 break;
             case FlowDecision decision:

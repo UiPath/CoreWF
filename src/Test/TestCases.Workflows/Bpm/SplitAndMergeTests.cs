@@ -14,7 +14,7 @@ public class SplitAndMergeTests
     [Fact]
     public void RoundTrip_xaml()
     {
-        var merge = new FlowMergeAll().Text("stop");
+        var merge = new FlowMerge().Text("stop");
         var split = new FlowSplit()
             .AddBranches(
                 TestFlow.Text("branch1").FlowTo(merge), 
@@ -56,7 +56,7 @@ public class SplitAndMergeTests
     [Fact]
     public void Should_join_branches()
     {
-        var merge = new FlowMergeAll().Text("stop");
+        var merge = new FlowMerge().Text("stop");
 
         var split = new FlowSplit()
             .AddBranches(
@@ -76,8 +76,8 @@ public class SplitAndMergeTests
         ///  Split<              |--A--|      Merge---Stop
         ///        |___A______________________|
 
-        var outerMerge = new FlowMergeAll().Text("stop");
-        var innerMerge = new FlowMergeAll().Text("innerMerged");
+        var outerMerge = new FlowMerge().Text("stop");
+        var innerMerge = new FlowMerge().Text("innerMerged");
         var innerSplit = new FlowSplit();
         innerSplit
             .AddBranches(
@@ -98,7 +98,7 @@ public class SplitAndMergeTests
     [Fact]
     public void Shared_merge_fails()
     {
-        var sharedMerge = new FlowMergeAll().Text("stop");
+        var sharedMerge = new FlowMerge().Text("stop");
         var innerSplit = new FlowSplit().AddBranches(
             TestFlow
                 .Text("branch1Inner")
@@ -124,7 +124,7 @@ public class SplitAndMergeTests
     [Fact]
     public void Should_join_with_skiped_branches()
     {
-        var merge = new FlowMergeAll().Text("stop");
+        var merge = new FlowMerge().Text("stop");
         var skippedBranch = TestFlow.Text("executedPart")
             .FlowTo(new FlowDecision()
             {
@@ -134,8 +134,8 @@ public class SplitAndMergeTests
         var split = new FlowSplit()
         {
             Branches = {
-                new() {StartNode = skippedBranch },
-                new() {StartNode = TestFlow.Text("executedBranch").FlowTo(merge) }
+                skippedBranch ,
+                TestFlow.Text("executedBranch").FlowTo(merge) 
             }
         };
 
@@ -146,7 +146,7 @@ public class SplitAndMergeTests
     [Fact]
     public void MergeAny_cancels_unconnected()
     {
-        var merge = new FlowMergeFirst().Text("stop");
+        var merge = new FlowMerge() { Behavior = new MergeFirstBehavior()}.Text("stop");
         var split = new FlowSplit()
             .AddBranches(
                 TestFlow
@@ -165,7 +165,7 @@ public class SplitAndMergeTests
     [Fact]
     public void MergeAny_continues_after_first_and_cancels_the_rest()
     {
-        var merge = new FlowMergeFirst().Text("stop");
+        var merge = new FlowMerge() { Behavior = new MergeFirstBehavior() }.Text("stop");
         var split = new FlowSplit()
             .AddBranches(
                 TestFlow.Text("branch1")
@@ -186,7 +186,7 @@ public class SplitAndMergeTests
     [Fact]
     public void Should_persist_join()
     {
-        var merge = new FlowMergeAll().Text("stop");
+        var merge = new FlowMerge().Text("stop");
         var split = new FlowSplit().AddBranches(
             TestFlow
                 .Text("branch1")

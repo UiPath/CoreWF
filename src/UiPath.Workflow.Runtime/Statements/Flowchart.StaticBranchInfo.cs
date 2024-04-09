@@ -9,21 +9,21 @@ partial class Flowchart
 {
     public class StaticNodeBranchInfo
     {
-        List<List<FlowSplitBranch>> _branches;
-        private List<List<FlowSplitBranch>> Branches
+        List<List<FlowSplit>> _branches;
+        private List<List<FlowSplit>> SplitsStack
         {
             get
             {
                 if (_branches != null)
                     return _branches;
-                _branches = new List<List<FlowSplitBranch>>();
+                _branches = new List<List<FlowSplit>>();
                 foreach(var inheritedStack in _inheritedStacks) 
                 {
-                    AddStack(inheritedStack.Branches);
+                    AddStack(inheritedStack.SplitsStack);
                 }
                 foreach(var push in _pushes)
                 {
-                    var result = push.Item1.Branches.Select(
+                    var result = push.Item1.SplitsStack.Select(
                                 stack => stack.Concat(new[] { push.Item2 }).ToList()
                             ).ToList();
                     if (result.Count == 0)
@@ -32,22 +32,22 @@ partial class Flowchart
                 }
                 foreach (var pop in _pops)
                 {
-                    var result = pop.Branches.Select(s => Enumerable.Reverse(s).Skip(1).Reverse().ToList()).ToList();
+                    var result = pop.SplitsStack.Select(s => Enumerable.Reverse(s).Skip(1).Reverse().ToList()).ToList();
                     AddStack(result);
                 }
                 return _branches;
             }
         }
-        private readonly HashSet<(StaticNodeBranchInfo, FlowSplitBranch)> _pushes = new();
+        private readonly HashSet<(StaticNodeBranchInfo, FlowSplit)> _pushes = new();
         private readonly HashSet<StaticNodeBranchInfo> _inheritedStacks = new();
         private readonly HashSet<StaticNodeBranchInfo> _pops = new();
 
-        public HashSet<FlowSplitBranch> GetTop()
+        public HashSet<FlowSplit> GetTop()
         {
-            return new (Branches.Select(b => b.LastOrDefault()).Where(b => b!= null));
+            return new (SplitsStack.Select(b => b.LastOrDefault()).Where(b => b!= null));
         }
 
-        public void Push(FlowSplitBranch newBranch, StaticNodeBranchInfo splitBranchInfo)
+        public void Push(FlowSplit newBranch, StaticNodeBranchInfo splitBranchInfo)
         {
             _pushes.Add(new(splitBranchInfo, newBranch));
         }
@@ -57,7 +57,7 @@ partial class Flowchart
             _inheritedStacks.Add(preStacks);
         }
 
-        private void AddStack(List<List<FlowSplitBranch>> stack)
+        private void AddStack(List<List<FlowSplit>> stack)
         {
             foreach (var pre in stack)
             {
@@ -72,12 +72,12 @@ partial class Flowchart
             _pops.Add(popFrom);
         }
 
-        private bool HasBranch(List<FlowSplitBranch> branch)
-            => Branches.Any(b => branch.Count == b.Count && branch.All(p => b.Contains(p)));
+        private bool HasBranch(List<FlowSplit> branch)
+            => SplitsStack.Any(b => branch.Count == b.Count && branch.All(p => b.Contains(p)));
 
         internal bool IsOnBranch(StaticNodeBranchInfo toConfirm)
         {
-            foreach (var branchToConfirm in toConfirm.Branches)
+            foreach (var branchToConfirm in toConfirm.SplitsStack)
             {
                 if (HasBranch(branchToConfirm))
                     return true;
