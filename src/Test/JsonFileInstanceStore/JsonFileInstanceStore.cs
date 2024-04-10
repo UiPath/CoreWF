@@ -18,7 +18,6 @@ namespace JsonFileInstanceStore
         private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             ObjectCreationHandling = ObjectCreationHandling.Replace,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects,
