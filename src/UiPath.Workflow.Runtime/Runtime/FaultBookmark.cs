@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class FaultBookmark
+public class FaultBookmark
 {
     private FaultCallbackWrapper _callbackWrapper;
 
@@ -20,6 +20,6 @@ internal class FaultBookmark
         set => _callbackWrapper = value;
     }
 
-    public WorkItem GenerateWorkItem(Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
+    internal WorkItem GenerateWorkItem(Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
         => _callbackWrapper.CreateWorkItem(propagatedException, propagatedFrom, originalExceptionSource);
 }

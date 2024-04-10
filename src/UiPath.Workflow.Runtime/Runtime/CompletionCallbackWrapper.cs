@@ -7,7 +7,7 @@ namespace System.Activities.Runtime;
 [KnownType(typeof(ActivityCompletionCallbackWrapper))]
 [KnownType(typeof(DelegateCompletionCallbackWrapper))]
 [DataContract]
-internal abstract class CompletionCallbackWrapper : CallbackWrapper
+public abstract class CompletionCallbackWrapper : CallbackWrapper
 {
     private bool _checkForCancelation;
     private bool _needsToGatherOutputs;
@@ -68,7 +68,7 @@ internal abstract class CompletionCallbackWrapper : CallbackWrapper
     protected internal abstract void Invoke(NativeActivityContext context, ActivityInstance completedInstance);
 
     [DataContract]
-    public class CompletionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
+    internal class CompletionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
     {
         private CompletionCallbackWrapper _callbackWrapper;
         private ActivityInstance _completedInstance;

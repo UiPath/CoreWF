@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class CompletionBookmark
+public class CompletionBookmark
 {
     private CompletionCallbackWrapper _callbackWrapper;
 
@@ -31,7 +31,7 @@ internal class CompletionBookmark
         _callbackWrapper.CheckForCancelation();
     }
 
-    public WorkItem GenerateWorkItem(ActivityInstance completedInstance, ActivityExecutor executor)
+    internal WorkItem GenerateWorkItem(ActivityInstance completedInstance, ActivityExecutor executor)
     {
         if (_callbackWrapper != null)
         {
