@@ -21,6 +21,7 @@ namespace JsonFileInstanceStore
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             ObjectCreationHandling = ObjectCreationHandling.Replace,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             Converters = new[] { new TypeJsonConverter() }
         };
 
