@@ -15,7 +15,6 @@ partial class Flowchart
         Version = FileVersionInfo.GetVersionInfo(typeof(Flowchart).Assembly.Location).ProductVersion ?? "Empty"
     });
 
-    private readonly Dictionary<FlowNode, HashSet<FlowNode>> _successors = new();
     private CompletionCallback _completionCallback;
     private readonly Dictionary<Type, Delegate> _completionCallbacks = new();
     private readonly Queue<NodeInstance> _executionQueue = new();
@@ -105,9 +104,6 @@ partial class Flowchart
                 select state
             ).ToList();
     }
-
-    private List<FlowNode> GetSuccessors(int index)
-        => _successors.FirstOrDefault(l => l.Key.Index == index).Value?.ToList() ?? new();
 
     internal StaticNodeBranchInfo GetStaticBranches(FlowNode node)
     {
