@@ -21,7 +21,7 @@ public sealed partial class Flowchart : NativeActivity
     private Collection<Variable> _variables;
     private Collection<FlowNode> _nodes;
     private readonly Collection<FlowNode> _reachableNodes;
-    private readonly Dictionary<FlowNode, StaticNodeBranchInfo> _staticBranchesByNode = new();
+    private readonly Dictionary<FlowNode, StaticNodeStackInfo> _staticBranchesByNode = new();
 
     public Flowchart()
     {
@@ -262,23 +262,23 @@ public sealed partial class Flowchart : NativeActivity
 
         foreach (var successor in successors.Where(s => s is not null))
         {
-            PropagateBranch(predecessor, successor);
+            PropagateStack(predecessor, successor);
         }
 
-        void PropagateBranch(FlowNode predecessor, FlowNode successor)
+        void PropagateStack(FlowNode predecessor, FlowNode successor)
         {
-            var predecessorBranches = GetStaticBranches(predecessor);
-            var successorBranches = GetStaticBranches(successor);
+            var predecessorStack = GetStaticStack(predecessor);
+            var successorStack = GetStaticStack(successor);
             switch (predecessor)
             {
                 case FlowSplit split:
-                    successorBranches.Push(split, predecessorBranches);
+                    successorStack.Push(split, predecessorStack);
                     break;
                 case FlowMerge _:
-                    successorBranches.AddPop(predecessorBranches);
+                    successorStack.AddPop(predecessorStack);
                     break;
                 default:
-                    successorBranches.PropagateStack(predecessorBranches);
+                    successorStack.PropagateStack(predecessorStack);
                     break;
             }
         }

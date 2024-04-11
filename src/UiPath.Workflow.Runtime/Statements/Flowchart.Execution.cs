@@ -22,7 +22,7 @@ partial class Flowchart
     private ActivityInstance _completedInstance;
     internal NodeInstance CurrentNode { get; set; }
 
-    internal ExecutionBranchId CurrentBranch => CurrentNode.ExecutionBranch;
+    internal ExecutionBranchId CurrentBranch => CurrentNode.SplitsStack;
     internal string CurrentNodeId => CurrentNode.ExecutionNodeId;
 
     private Dictionary<string, NodeInstance> NodesInstances => _flowchartState.Get(_activeContext).NodesInstances;
@@ -95,17 +95,17 @@ partial class Flowchart
     }
     internal List<NodeInstance> GetOtherNodes()
     {
-        var currentBranch = CurrentNode.ExecutionBranch;
+        var currentBranch = CurrentNode.SplitsStack;
         return (
                 from state in NodesInstances.Values
                 where state != CurrentNode
-                where state.ExecutionBranch.SplitsStack.StartsWith(currentBranch.SplitsStack)
+                where state.SplitsStack.SplitsStack.StartsWith(currentBranch.SplitsStack)
                 where state.ActivityInstanceIds.Any() || !(state.IsCancelRequested)
                 select state
             ).ToList();
     }
 
-    internal StaticNodeBranchInfo GetStaticBranches(FlowNode node)
+    internal StaticNodeStackInfo GetStaticStack(FlowNode node)
     {
         if (_staticBranchesByNode.ContainsKey(node))
             return _staticBranchesByNode[node];
@@ -115,7 +115,7 @@ partial class Flowchart
 
     internal List<FlowMerge> GetMerges(FlowNode flowNode)
     {
-        var staticBranches = GetStaticBranches(flowNode);
+        var staticBranches = GetStaticStack(flowNode);
 
         var merges = (
         from nodeInfo in _staticBranchesByNode
@@ -175,7 +175,7 @@ partial class Flowchart
             where _reachableNodes[state.StaticNodeIndex] is FlowMerge
             where state != CurrentNode
             where state.StartedRunning
-            where CurrentNode.ExecutionBranch.SplitsStack == state.ExecutionBranch.SplitsStack
+            where CurrentNode.SplitsStack.SplitsStack == state.SplitsStack.SplitsStack
             select state
             ).ToList();
 
@@ -193,16 +193,21 @@ partial class Flowchart
 
         if (CurrentNode?.IsCancelRequested is true)
         {
-            Debug.WriteLine($"skipping queue:{node} because cancelled:{CurrentNode} ");
+            Debug.WriteLine($"skipping queue for {node} because cancelled:{CurrentNode} ");
             return;
         }
+        branchInstance ??= CurrentNode.SplitsStack;
+        var executionNodeId = $"{node.Index}-{node}" + Guid.NewGuid().ToString();
 
-        var executionNodeId = $"{node.Index}-{node}"; //+ Guid.NewGuid().ToString();
+        if (node is FlowMerge)
+        {
+            executionNodeId = $"{node.Index}-{node}" + branchInstance.SplitsStack;
+        }
 
         if (!NodesInstances.TryGetValue(executionNodeId, out var nodeInstance))
         {
             nodeInstance = node.CreateInstance();
-            nodeInstance.ExecutionBranch = branchInstance ?? CurrentNode.ExecutionBranch;
+            nodeInstance.SplitsStack = branchInstance;
             nodeInstance.ExecutionNodeId = executionNodeId;
             nodeInstance.StaticNodeIndex = node.Index;
             NodesInstances[executionNodeId] = nodeInstance;
@@ -312,7 +317,7 @@ partial class Flowchart
     }
     internal class NodeInstance
     {
-        public ExecutionBranchId ExecutionBranch { get; set; }
+        public ExecutionBranchId SplitsStack { get; set; }
         public int StaticNodeIndex { get; set; }
         public string ExecutionNodeId { get; set; }
         public bool DoNotComplete { get; set; }
@@ -324,7 +329,7 @@ partial class Flowchart
 
         public override string ToString()
         {
-            return $"{ExecutionNodeId}/{ExecutionBranch}";
+            return $"{ExecutionNodeId}/{SplitsStack}";
         }
         internal virtual void Execute(Flowchart Owner, FlowNode Node) {
             Node.Execute();
