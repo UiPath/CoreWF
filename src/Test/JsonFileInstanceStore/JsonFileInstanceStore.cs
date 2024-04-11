@@ -51,21 +51,21 @@ namespace JsonFileInstanceStore
 
         protected override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
         {
-            if (command is SaveWorkflowCommand)
+            if (command is SaveWorkflowCommand saveWorkflowCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(SaveWorkflow(context, (SaveWorkflowCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(SaveWorkflow(context, saveWorkflowCommand), callback, state);
             }
-            else if (command is LoadWorkflowCommand)
+            else if (command is LoadWorkflowCommand loadWorkflowCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(LoadWorkflow(context, (LoadWorkflowCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(LoadWorkflow(context, loadWorkflowCommand), callback, state);
             }
-            else if (command is CreateWorkflowOwnerCommand)
+            else if (command is CreateWorkflowOwnerCommand createWorkflowOwnerCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(CreateWorkflowOwner(context, (CreateWorkflowOwnerCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(CreateWorkflowOwner(context, createWorkflowOwnerCommand), callback, state);
             }
-            else if (command is DeleteWorkflowOwnerCommand)
+            else if (command is DeleteWorkflowOwnerCommand deleteWorkflowOwnerCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(DeleteWorkflowOwner(context, (DeleteWorkflowOwnerCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(DeleteWorkflowOwner(context, deleteWorkflowOwnerCommand), callback, state);
             }
             return new TypedCompletedAsyncResult<bool>(false, callback, state);
         }
