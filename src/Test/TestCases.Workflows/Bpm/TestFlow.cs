@@ -146,7 +146,7 @@ public static class TestFlow
         return Results(flowchart);
     }
 
-    public static List<string> Results(Flowchart flowchart)
+    public static List<string> Results(Activity flowchart)
     {
         Variable<List<string>> _stringsVariable = new("strings", c => new());
         var root = new ActivityWithResult<List<string>> { Body = flowchart, In = _stringsVariable };
