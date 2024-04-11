@@ -38,26 +38,14 @@ namespace WorkflowApplicationTestExtensions
                 application = null;
             };
 
-            application.Aborted += args =>
-            {
-                output.TrySetException(args.Reason);
-            };
+            application.Aborted += args => output.TrySetException(args.Reason);
+            application.PersistableIdle += static _ => PersistableIdleAction.Unload;
             application.InstanceStore = new FileInstanceStore(Environment.CurrentDirectory);
             application.Unloaded += uargs =>
             {
                 Debug.WriteLine("Unloaded");
                 if (application == null)
                     return;
-                application.Load(applicationId);
-                
-                foreach (var bookmark in application.GetBookmarks().Where(b => b.BookmarkName.StartsWith(AutoResumedBookmarkNamePrefix)))
-                {
-                    application.ResumeBookmark(new Bookmark(bookmark.BookmarkName), null);
-                }
-            };
-            application.PersistableIdle += (WorkflowApplicationIdleEventArgs args) =>
-            {
-                Debug.WriteLine("PersistableIdle");
                 try
                 {
                     if (++persistenceCount > 1000)
@@ -65,12 +53,19 @@ namespace WorkflowApplicationTestExtensions
                         throw new Exception("Persisting too many times, aborting test.");
                     }
                     application = CloneWorkflowApplication(application);
+                    application.Load(applicationId);
+
+                    var bookmarks = application.GetBookmarks()
+                        .Where(b => b.BookmarkName.StartsWith(AutoResumedBookmarkNamePrefix));
+                    foreach (var bookmark in bookmarks)
+                    {
+                        application.ResumeBookmark(new Bookmark(bookmark.BookmarkName), null);
+                    }
                 }
                 catch (Exception ex)
                 {
                     output.TrySetException(ex);
                 }
-                return PersistableIdleAction.Unload;
             };
 
             application.Run();
