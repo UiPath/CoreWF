@@ -15,7 +15,7 @@ namespace JsonFileInstanceStore
     {
         private readonly string _storeDirectoryPath;
 
-        private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+        public static readonly JsonSerializerSettings JsonSerializerSettings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
@@ -92,10 +92,10 @@ namespace JsonFileInstanceStore
                 Dictionary<string, InstanceValue> instanceData = SerializeablePropertyBagConvertXNameInstanceValue(command.InstanceData);
                 Dictionary<string, InstanceValue> instanceMetadata = SerializeInstanceMetadataConvertXNameInstanceValue(context, command);
 
-                var serializedInstanceData = JsonConvert.SerializeObject(instanceData, Formatting.Indented, _jsonSerializerSettings);
+                var serializedInstanceData = JsonConvert.SerializeObject(instanceData, Formatting.Indented, JsonSerializerSettings);
                 File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceData", serializedInstanceData);
 
-                var serializedInstanceMetadata = JsonConvert.SerializeObject(instanceMetadata, Formatting.Indented, _jsonSerializerSettings);
+                var serializedInstanceMetadata = JsonConvert.SerializeObject(instanceMetadata, Formatting.Indented, JsonSerializerSettings);
                 File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceMetadata", serializedInstanceMetadata);
 
                 foreach (KeyValuePair<XName, InstanceValue> property in command.InstanceMetadataChanges)
@@ -139,10 +139,10 @@ namespace JsonFileInstanceStore
             try
             {
                 var serializedInstanceData = File.ReadAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceData");
-                serializableInstanceData = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceData, _jsonSerializerSettings);
+                serializableInstanceData = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceData, JsonSerializerSettings);
 
                 var serializedInstanceMetadata = File.ReadAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceMetadata");
-                serializableInstanceMetadata = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceMetadata, _jsonSerializerSettings);
+                serializableInstanceMetadata = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceMetadata, JsonSerializerSettings);
             }
             catch (Exception)
             {
