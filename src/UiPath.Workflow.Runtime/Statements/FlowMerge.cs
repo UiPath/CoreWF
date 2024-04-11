@@ -68,7 +68,7 @@ public class FlowMerge : FlowNode
 
     protected override void OnEndCacheMetadata()
     {
-        var connectedBranches = Flowchart.GetStaticBranches(this).GetTop();
+        var connectedBranches = Flowchart.GetStaticStack(this).GetTop();
         var splits = connectedBranches.Select(bl => bl).Distinct().ToList();
         if (splits.Count > 1)
             AddValidationError("All merge branches should start in the same Split node.", splits); 
