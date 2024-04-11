@@ -7,6 +7,7 @@ using System.Activities.Validation;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Markup;
+using System.Xml.Linq;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -245,7 +246,7 @@ public sealed partial class Flowchart : NativeActivity
             if (visitNodeCallback(current))
             {
                 var successors = current.GetSuccessors();
-                RecordLinks(current, successors);
+                PropagateBranches(current, successors);
                 for (int i = 0; i < successors.Count; i++)
                 {
                     stack.Push(successors[i]);
@@ -254,39 +255,21 @@ public sealed partial class Flowchart : NativeActivity
         }
     }
 
-    private void RecordLinks(FlowNode predecessor, IReadOnlyList<FlowNode> successors)
+    private void PropagateBranches(FlowNode predecessor, IReadOnlyList<FlowNode> successors)
     {
         if (predecessor == null)
             return;
 
         foreach (var successor in successors.Where(s => s is not null))
         {
-            if (!_successors.TryGetValue(predecessor, out var successorsSaved))
-            {
-                _successors[predecessor] = successorsSaved = new();
-            }
-            successorsSaved.Add(successor);
+            PropagateBranch(predecessor, successor);
         }
-    }
 
-    private void EndCacheMetadata(NativeActivityMetadata metadata)
-    {
-        foreach (var node in _reachableNodes)
-        {
-            foreach (var successor in GetSuccessors(node.Index))
-            {
-                PropagateBranch(node, successor);
-            }
-        }
-        foreach (var node in _reachableNodes)
-        {
-            node.EndCacheMetadata(metadata);
-        }
         void PropagateBranch(FlowNode predecessor, FlowNode successor)
         {
             var predecessorBranches = GetStaticBranches(predecessor);
             var successorBranches = GetStaticBranches(successor);
-            switch(predecessor)
+            switch (predecessor)
             {
                 case FlowSplit split:
                     successorBranches.Push(split, predecessorBranches);
@@ -298,6 +281,14 @@ public sealed partial class Flowchart : NativeActivity
                     successorBranches.PropagateStack(predecessorBranches);
                     break;
             }
+        }
+    }
+
+    private void EndCacheMetadata(NativeActivityMetadata metadata)
+    {
+        foreach (var node in _reachableNodes)
+        {
+            node.EndCacheMetadata(metadata);
         }
     }
 }
