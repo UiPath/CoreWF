@@ -6,6 +6,7 @@ using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.Activities;
@@ -22,7 +23,38 @@ internal class CSharpHelper : JitCompilerHelper<CSharpHelper>
     public CSharpHelper(string expressionText, HashSet<AssemblyReference> assemblyReferences,
         HashSet<string> namespaceImportsNames) : base(expressionText, assemblyReferences, namespaceImportsNames) { }
 
+    private CSharpHelper(string expressionText) : base(expressionText) { }
+
     internal const string Language = "C#";
+
+    public static Expression<Func<ActivityContext, T>> Compile<T>(string expressionText, CodeActivityPublicEnvironmentAccessor publicAccessor, bool isLocationExpression)
+    {
+        GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false,
+            out var localNamespaces,
+            out var localAssemblies);
+
+        var helper = new CSharpHelper(expressionText);
+        var localReferenceAssemblies = new HashSet<AssemblyReference>();
+        var localImports = new HashSet<string>(localNamespaces);
+        foreach (var assemblyReference in localAssemblies)
+        {
+            if (assemblyReference.Assembly != null)
+            {
+                // directly add the Assembly to the list
+                // so that we don't have to go through 
+                // the assembly resolution process
+                helper.ReferencedAssemblies ??= new HashSet<Assembly>();
+                helper.ReferencedAssemblies.Add(assemblyReference.Assembly);
+            }
+            else if (assemblyReference.AssemblyName != null)
+            {
+                localReferenceAssemblies.Add(assemblyReference);
+            }
+        }
+
+        helper.Initialize(localReferenceAssemblies, localImports);
+        return helper.Compile<T>(publicAccessor, isLocationExpression);
+    }
 }
 
 internal class CSharpExpressionFactory<T> : ExpressionFactory
