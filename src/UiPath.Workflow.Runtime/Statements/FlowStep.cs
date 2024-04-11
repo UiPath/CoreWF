@@ -17,14 +17,7 @@ public sealed class FlowStep : FlowNode
     [DependsOn("Action")]
     public FlowNode Next { get; set; }
 
-    internal override IReadOnlyList<FlowNode> GetSuccessors()
-    {
-        if (Next != null)
-        {
-            return new[] { Next };
-        }
-        return Array.Empty<FlowNode>();
-    }
+    internal override IReadOnlyList<FlowNode> GetSuccessors() => new[] { Next };
 
     internal override void Execute()
     {

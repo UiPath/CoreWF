@@ -33,11 +33,7 @@ public sealed class FlowSwitch<T> : FlowNode
 
     internal override IReadOnlyList<FlowNode> GetSuccessors()
     {
-        var connections = new List<FlowNode>(Cases.Count + 1);
-        foreach (KeyValuePair<T, FlowNode> item in Cases)
-        {
-            connections.Add(item.Value);
-        }
+        var connections = new List<FlowNode>(Cases.Values);
         if (Default != null)
         {
             connections.Add(Default);
@@ -45,7 +41,7 @@ public sealed class FlowSwitch<T> : FlowNode
         return connections;
     }
 
-    protected override void OnEndCacheMetadata()
+    protected override void OnCacheMetadata()
     {
         if (Expression == null)
         {
@@ -53,8 +49,7 @@ public sealed class FlowSwitch<T> : FlowNode
         }
     }
 
-    internal override IEnumerable<Activity> GetChildActivities()
-        => new[] { Expression };
+    internal override IEnumerable<Activity> GetChildActivities() => new[] { Expression };
 
     internal override void Execute()
     {
@@ -63,19 +58,12 @@ public sealed class FlowSwitch<T> : FlowNode
 
     internal override void OnCompletionCallback<TResult>(TResult value)
     {
-        T newValue;
-
-        switch (value)
+        var newValue = value switch
         {
-            case T castedValue:
-                newValue = castedValue;
-                break;
-            case null:
-                newValue = default;
-                break;
-            default:
-                throw new InvalidCastException();
-        }
+            T castedValue => castedValue,
+            null => default,
+            _ => throw new InvalidCastException(),
+        };
 
         if (Cases.TryGetValue(newValue, out FlowNode result))
         {

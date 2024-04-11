@@ -52,7 +52,7 @@ public sealed class FlowDecision : FlowNode
         set => _displayName = value;
     }
 
-    protected override void OnEndCacheMetadata()
+    protected override void OnCacheMetadata()
     {
         if (Condition == null)
         {
@@ -60,23 +60,9 @@ public sealed class FlowDecision : FlowNode
         }
     }
 
-    internal override IReadOnlyList<FlowNode> GetSuccessors()
-    {
-        var result = new List<FlowNode>(2);
-        if (True != null)
-        {
-            result.Add(True);
-        }
+    internal override IReadOnlyList<FlowNode> GetSuccessors() => new[] { True, False };
 
-        if (False != null)
-        {
-            result.Add(False);
-        }
-        return result;
-    }
-
-    internal override IEnumerable<Activity> GetChildActivities()
-        => new[] { Condition };
+    internal override IEnumerable<Activity> GetChildActivities() => new[] { Condition };
 
     internal override void Execute()
     {

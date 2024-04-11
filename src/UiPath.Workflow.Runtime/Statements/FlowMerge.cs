@@ -62,13 +62,13 @@ public class FlowMerge : FlowNode
 
             DoNotComplete = false;
             Debug.WriteLine($"{Node}: Next queued");
-            Flowchart.EnqueueNodeExecution(Node.Next, Flowchart.CurrentBranch.Pop());
+            Flowchart.EnqueueNodeExecution(Node.Next, EnqueueType.Pop);
         }
     }
 
     protected override void OnEndCacheMetadata()
     {
-        var connectedBranches = Flowchart.GetStaticStack(this).GetTop();
+        var connectedBranches = Flowchart.GetStaticSplitsStack(this).GetTop();
         var splits = connectedBranches.Select(bl => bl).Distinct().ToList();
         if (splits.Count > 1)
             AddValidationError("All merge branches should start in the same Split node.", splits); 
