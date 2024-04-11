@@ -45,9 +45,7 @@ public class FlowSplit : FlowNode
             for (int i = Node.Branches.Count - 1; i >= 0; i--)
             {
                 var branch = Node.Branches[i];
-                Flowchart.EnqueueNodeExecution(branch, Flowchart.CurrentBranch.Push(
-                            branchId: $"{branch.Index}",
-                            splitId: Flowchart.CurrentNodeId));
+                Flowchart.EnqueueNodeExecution(branch, Flowchart.EnqueueType.Push);
             }
         }
     }
