@@ -56,7 +56,7 @@ public sealed class Pick : NativeActivity
 
     protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
     {
-        PickState pickState = updateContext.GetValue(this.pickStateVariable);
+        PickState pickState = updateContext.GetValue(this._pickStateVariable);
         Fx.Assert(pickState != null, "Pick's Execute must have run by now.");
 
         if (updateContext.IsCancellationRequested || pickState.TriggerCompletionBookmark == null)
@@ -66,7 +66,7 @@ public sealed class Pick : NativeActivity
         }
 
         CompletionCallback onBranchCompleteCallback = new CompletionCallback(OnBranchComplete);
-        foreach (PickBranchBody body in this.branchBodies)
+        foreach (PickBranchBody body in this._branchBodies)
         {
             if (updateContext.IsNewlyAdded(body))
             {

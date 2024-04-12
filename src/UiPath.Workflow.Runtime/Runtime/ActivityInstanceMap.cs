@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 
+using System.Collections.ObjectModel;
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
 #endif
@@ -248,7 +249,7 @@ internal class ActivityInstanceMap
     private IList<InstanceListNeedingUpdate> GetInstanceListsNeedingUpdate(DynamicUpdateMap updateMap, Activity targetDefinition, List<ActivityInstance> secondaryRootInstances, ref Collection<ActivityBlockingUpdate> updateErrors)
     {
         IList<InstanceListNeedingUpdate> instanceListsToUpdate = new List<InstanceListNeedingUpdate>();
-        if (this.rawDeserializedLists == null)
+        if (this._rawDeserializedLists == null)
         {
             // This instance doesn't have any active instances (it is complete).
             return instanceListsToUpdate;
@@ -260,9 +261,9 @@ internal class ActivityInstanceMap
             rootIdSpace = targetDefinition.MemberOf;
         }
 
-        for (int i = 0; i < this.rawDeserializedLists.Length; i++)
+        for (int i = 0; i < this._rawDeserializedLists.Length; i++)
         {
-            InstanceList list = this.rawDeserializedLists[i];
+            InstanceList list = this._rawDeserializedLists[i];
             QualifiedId oldQualifiedId = new QualifiedId(list.ActivityId);
 
             if (updateMap.IsImplementationAsRoot)

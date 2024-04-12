@@ -1528,11 +1528,11 @@ public sealed partial class WorkflowApplication : WorkflowInstance
 
         TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-        if (this.instanceIdSet)
+        if (this._instanceIdSet)
         {
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
         }
-        if (this.initialWorkflowArguments != null)
+        if (this._initialWorkflowArguments != null)
         {
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
         }
@@ -1552,11 +1552,11 @@ public sealed partial class WorkflowApplication : WorkflowInstance
 
             ValidateStateForLoad();
 
-            this.instanceId = instance.InstanceId;
-            this.instanceIdSet = true;
-            if (this.instanceStore == null)
+            this._instanceId = instance.InstanceId;
+            this._instanceIdSet = true;
+            if (this._instanceStore == null)
             {
-                this.instanceStore = instance.InstanceStore;
+                this._instanceStore = instance.InstanceStore;
             }
 
             PersistenceManager newManager = (PersistenceManager)instance.PersistenceManager;
@@ -2072,11 +2072,11 @@ public sealed partial class WorkflowApplication : WorkflowInstance
 
         TimeoutHelper.ThrowIfNegativeArgument(timeout);
 
-        if (this.instanceIdSet)
+        if (this._instanceIdSet)
         {
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WorkflowApplicationAlreadyHasId));
         }
-        if (this.initialWorkflowArguments != null)
+        if (this._initialWorkflowArguments != null)
         {
             throw FxTrace.Exception.AsError(new InvalidOperationException(SR.CannotUseInputsWithLoad));
         }

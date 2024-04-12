@@ -15,22 +15,22 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\UiPath.Workflow.Runtime\UiPath.Workflow.Runtime.csproj"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
-        <PackageReference Include="ReflectionMagic" Version="4.1.0"/>
-        <ProjectReference Include="..\VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj" PrivateAssets="All"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="$(RoslynPackageVersion)"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynPackageVersion)"/>
-        <PackageReference Include="System.CodeDom" Version="6.0.0"/>
-        <PackageReference Include="Nito.AsyncEx.Tasks" Version="5.1.2"/>
-        <None Include="..\..\README.md" Pack="true" PackagePath=""/>
+        <ProjectReference Include="..\UiPath.Workflow.Runtime\UiPath.Workflow.Runtime.csproj" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="ReflectionMagic" Version="4.1.0" />
+        <ProjectReference Include="..\VisualBasic\Microsoft.CodeAnalysis.VisualBasic.Scripting.vbproj" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="$(RoslynPackageVersion)" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(RoslynPackageVersion)" />
+        <PackageReference Include="System.CodeDom" Version="6.0.0" />
+        <PackageReference Include="Nito.AsyncEx.Tasks" Version="5.1.2" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="" />
     </ItemGroup>
     <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
         <ItemGroup>
-            <BuildOutputInPackage Include="$(OutputPath)Microsoft.CodeAnalysis.VisualBasic.Scripting.*"/>
+            <BuildOutputInPackage Include="$(OutputPath)Microsoft.CodeAnalysis.VisualBasic.Scripting.*" />
         </ItemGroup>
     </Target>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration)=='Release'">
-        <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)"/>
+        <Exec Command="rd /S /Q %25UserProfile%25\.nuget\packages\$(TargetName)" />
     </Target>
 </Project>

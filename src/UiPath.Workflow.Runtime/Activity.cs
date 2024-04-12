@@ -1076,5 +1076,5 @@ public abstract class Activity<TResult> : ActivityWithResult
 
 
 #if DYNAMICUPDATE
-namespace DynamicUpdate { }
+//namespace DynamicUpdate { }
 #endif

@@ -1,6 +1,7 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.DynamicUpdate;
 using System.Threading;
 using System.Transactions;
 using System.Xml.Linq;
@@ -1503,10 +1504,10 @@ public partial class WorkflowApplication
             if (_application != null)
             {
 #if DYNAMICUPDATE
-                this.application.Initialize(this.deserializedRuntimeState, this.updateMap);
+                this._application.Initialize(this._deserializedRuntimeState, this.updateMap);
                 if (this.updateMap != null)
                 {
-                    this.application.UpdateInstanceMetadata();
+                    this._application.UpdateInstanceMetadata();
                 } 
 #else
                 _application.Initialize(_deserializedRuntimeState);

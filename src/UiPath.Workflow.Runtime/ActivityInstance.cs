@@ -1216,23 +1216,23 @@ public sealed class ActivityInstance
 
     void ActivityInstanceMap.IActivityReferenceWithEnvironment.UpdateEnvironment(EnvironmentUpdateMap map, Activity activity)
     {            
-        Fx.Assert(substate != Substate.ResolvingVariables, "We must have already performed the same validations in advance.");
-        Fx.Assert(substate != Substate.ResolvingArguments, "We must have already performed the same validations in advance.");
+        Fx.Assert(_substate != Substate.ResolvingVariables, "We must have already performed the same validations in advance.");
+        Fx.Assert(_substate != Substate.ResolvingArguments, "We must have already performed the same validations in advance.");
 
-        if (noSymbols)
+        if (_noSymbols)
         {
             // create a new LocationReference and this ActivityInstance becomes the owner of the created environment.
-            LocationEnvironment oldParentEnvironment = environment;
+            LocationEnvironment oldParentEnvironment = _environment;
 
             Fx.Assert(oldParentEnvironment != null, "environment must never be null.");
 
-            environment = new LocationEnvironment(oldParentEnvironment, map.NewArgumentCount + map.NewVariableCount + map.NewPrivateVariableCount + map.RuntimeDelegateArgumentCount);
-            noSymbols = false;
+            _environment = new LocationEnvironment(oldParentEnvironment, map.NewArgumentCount + map.NewVariableCount + map.NewPrivateVariableCount + map.RuntimeDelegateArgumentCount);
+            _noSymbols = false;
 
             // traverse the activity instance chain.
             // Update all its non-environment-owning decedent instances to point to the newly created enviroment,
             // and, update all its environment-owning decendent instances to have their environment's parent to point to the newly created environment.
-            UpdateLocationEnvironmentHierarchy(oldParentEnvironment, environment, this);
+            UpdateLocationEnvironmentHierarchy(oldParentEnvironment, _environment, this);
         }
 
         Environment.Update(map, activity);

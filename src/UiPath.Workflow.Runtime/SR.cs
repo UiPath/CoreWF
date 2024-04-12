@@ -505,7 +505,7 @@ public class SR : StringResourceBase
     internal static string XamlBuildTaskResourceNotFound(object p0) => Instance["XamlBuildTaskResourceNotFound", p0];
 
 
-#if DYNAMICUPDATE
+
     // These are all unused. Some of them are for dynamic update, but some may be used 
     // by components that were not ported from the .NET Framework version.
 
@@ -736,5 +736,5 @@ public class SR : StringResourceBase
     internal static string WrongOriginalEnvironmentCount(object p0, object p1, object p2, object p3, object p4, object p5, object p6) => Instance["WrongOriginalEnvironmentCount", p0, p1, p2, p3, p4, p5, p6];
     internal static string XamlElementExpected => Instance["XamlElementExpected"];
     internal static string XamlElementExpectedAt(object p0, object p1) => Instance["XamlElementExpectedAt", p0, p1];
-#endif
+
 }

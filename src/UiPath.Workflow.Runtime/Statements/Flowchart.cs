@@ -79,7 +79,7 @@ public sealed class Flowchart : NativeActivity
     {
         Flowchart originalFlowchart = (Flowchart)originalActivity;
         Dictionary<Activity, int> originalActivities = new Dictionary<Activity, int>();
-        foreach (FlowNode node in originalFlowchart.reachableNodes)
+        foreach (FlowNode node in originalFlowchart._reachableNodes)
         {
             if (node.ChildActivity == null)
             {
@@ -103,7 +103,7 @@ public sealed class Flowchart : NativeActivity
         }
 
         HashSet<Activity> updatedActivities = new HashSet<Activity>();
-        foreach (FlowNode node in this.reachableNodes)
+        foreach (FlowNode node in this._reachableNodes)
         {
             if (node.ChildActivity != null)
             {
@@ -127,7 +127,7 @@ public sealed class Flowchart : NativeActivity
                 int originalIndex;
                 if (originalChild != null && originalActivities.TryGetValue(originalChild, out originalIndex))
                 {
-                    if (originalFlowchart.reachableNodes[originalIndex].GetType() != node.GetType())
+                    if (originalFlowchart._reachableNodes[originalIndex].GetType() != node.GetType())
                     {
                         metadata.DisallowUpdateInsideThisActivity(SR.CannotMoveChildAcrossDifferentFlowNodeTypes);
                         return;
@@ -144,9 +144,9 @@ public sealed class Flowchart : NativeActivity
 
     protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
     {
-        int oldNodeIndex = updateContext.GetValue(this.currentNode);
+        int oldNodeIndex = updateContext.GetValue(this._currentNode);
 
-        foreach (FlowNode node in this.reachableNodes)
+        foreach (FlowNode node in this._reachableNodes)
         {
             if (node.ChildActivity != null)
             {
@@ -156,7 +156,7 @@ public sealed class Flowchart : NativeActivity
                     int originalIndex = (int)originalValue;
                     if (originalIndex == oldNodeIndex)
                     {
-                        updateContext.SetValue(this.currentNode, node.Index);
+                        updateContext.SetValue(this._currentNode, node.Index);
                         break;
                     }
                 }

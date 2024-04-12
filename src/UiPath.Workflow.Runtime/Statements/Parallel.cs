@@ -74,12 +74,12 @@ public sealed class Parallel : NativeActivity
 
     protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
     {
-        if (updateContext.IsCancellationRequested || this.branches == null)
+        if (updateContext.IsCancellationRequested || this._branches == null)
         {
             return;
         }
 
-        if (this.CompletionCondition != null && updateContext.GetValue(this.hasCompleted))
+        if (this.CompletionCondition != null && updateContext.GetValue(this._hasCompleted))
         {
             // when CompletionCondition exists, schedule newly added branches only if "hasCompleted" variable evaluates to false
             return;
@@ -87,7 +87,7 @@ public sealed class Parallel : NativeActivity
 
         CompletionCallback onBranchComplete = new CompletionCallback(OnBranchComplete);
 
-        foreach (Activity branch in this.branches)
+        foreach (Activity branch in this._branches)
         {
             if (updateContext.IsNewlyAdded(branch))
             {

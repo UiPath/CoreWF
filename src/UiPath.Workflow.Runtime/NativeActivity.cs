@@ -1,6 +1,8 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace System.Activities;
 using Internals;
 using Runtime;
@@ -106,8 +108,7 @@ public abstract class NativeActivity : Activity
         throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongOnCreateDynamicUpdateMapForNativeActivity));
     }
 
-    [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        Justification = "Runtime passes in derived class to make more functionality availble to overriders")]
+    //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters, Justification = "Runtime passes in derived class to make more functionality availble to overriders")]
     protected virtual void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
     {
         // default UpdateMapMetadata.AllowUpdateInsideThisActivity is TRUE 
@@ -278,8 +279,7 @@ public abstract class NativeActivity<TResult> : Activity<TResult>
         throw FxTrace.Exception.AsError(new InvalidOperationException(SR.WrongOnCreateDynamicUpdateMapForNativeActivity));
     }
 
-    [SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters,
-        Justification = "Runtime passes in derived class to make more functionality availble to overriders")]
+    //[SuppressMessage(FxCop.Category.Design, FxCop.Rule.ConsiderPassingBaseTypesAsParameters, Justification = "Runtime passes in derived class to make more functionality availble to overriders")]
     protected virtual void OnCreateDynamicUpdateMap(NativeActivityUpdateMapMetadata metadata, Activity originalActivity)
     {
         // default UpdateMapMetadata.AllowUpdateInsideThisActivity is TRUE 

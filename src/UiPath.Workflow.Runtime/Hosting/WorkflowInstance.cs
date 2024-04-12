@@ -28,7 +28,6 @@ public abstract class WorkflowInstance
     private int _isPerformingOperation;
     private bool _isInitialized;
     private WorkflowInstanceExtensionCollection _extensions;
-
     // Tracking for one-time actions per in-memory instance
     private bool _hasTrackedResumed;
     private bool _hasTrackedCompletion;
@@ -206,17 +205,17 @@ public abstract class WorkflowInstance
     {
         ThrowIfAborted();
         ThrowIfReadOnly();
-        this.executor = deserializedRuntimeState as ActivityExecutor;
+        this._executor = deserializedRuntimeState as ActivityExecutor;
 
-        if (this.executor == null)
+        if (this._executor == null)
         {
             throw FxTrace.Exception.Argument("deserializedRuntimeState", SR.InvalidRuntimeState);
         }
-        this.executor.ThrowIfNonSerializable();
+        this._executor.ThrowIfNonSerializable();
 
         EnsureDefinitionReady();
 
-        WorkflowIdentity originalDefinitionIdentity = this.executor.WorkflowIdentity;
+        WorkflowIdentity originalDefinitionIdentity = this._executor.WorkflowIdentity;
         bool success = false;
         Collection<ActivityBlockingUpdate> updateErrors = null;
         try
@@ -240,9 +239,9 @@ public abstract class WorkflowInstance
 
                 updateMap.ThrowIfInvalid(this.WorkflowDefinition);
 
-                this.executor.WorkflowIdentity = this.DefinitionIdentity;
+                this._executor.WorkflowIdentity = this.DefinitionIdentity;
 
-                this.executor.UpdateInstancePhase1(updateMap, this.WorkflowDefinition, ref updateErrors);
+                this._executor.UpdateInstancePhase1(updateMap, this.WorkflowDefinition, ref updateErrors);
                 ThrowIfDynamicUpdateErrorExists(updateErrors);
             }
 
@@ -250,12 +249,12 @@ public abstract class WorkflowInstance
 
             if (updateMap != null)
             {
-                this.executor.UpdateInstancePhase2(updateMap, ref updateErrors);
+                this._executor.UpdateInstancePhase2(updateMap, ref updateErrors);
                 ThrowIfDynamicUpdateErrorExists(updateErrors);
                 // Track that dynamic update is successful
                 if (this.Controller.TrackingEnabled)
                 {
-                    this.Controller.Track(new WorkflowInstanceUpdatedRecord(this.Id, this.WorkflowDefinition.DisplayName, originalDefinitionIdentity, this.executor.WorkflowIdentity));
+                    this.Controller.Track(new WorkflowInstanceUpdatedRecord(this.Id, this.WorkflowDefinition.DisplayName, originalDefinitionIdentity, this._executor.WorkflowIdentity));
                 }
             }
 
@@ -282,7 +281,7 @@ public abstract class WorkflowInstance
         {
             if (updateMap != null && !success)
             {
-                executor.MakeNonSerializable();
+                _executor.MakeNonSerializable();
             }
         }
     }

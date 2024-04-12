@@ -217,9 +217,10 @@ internal class ExceptionTrace
                     // This is intended to "crash" the process so that a debugger can be attached.  If a managed
                     // debugger is already attached, it will already be able to hook these exceptions.  We don't
                     // want to simulate an unmanaged crash (DebugBreak) in that case.
-                    if (!Debugger.IsAttached)
+                    if (!System.Diagnostics.Debugger.IsAttached)
                     {
-                        Debugger.Break();
+
+                        System.Diagnostics.Debugger.Break();
                     }
                 }
             }

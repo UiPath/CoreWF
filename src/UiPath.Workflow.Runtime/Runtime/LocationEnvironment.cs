@@ -15,6 +15,7 @@ internal sealed class LocationEnvironment
             : ActivityInstanceMap.IActivityReference
 #endif
 {
+    static DummyLocation _dummyLocation = new DummyLocation();
     private bool _isDisposed;
     private bool _hasHandles;
     private ActivityExecutor _executor;
@@ -503,9 +504,9 @@ internal sealed class LocationEnvironment
         int expectedLocationCount = map.OldArgumentCount + map.OldVariableCount + map.OldPrivateVariableCount + map.RuntimeDelegateArgumentCount;
 
         int actualLocationCount;
-        if (this.locations == null)
+        if (this._locations == null)
         {
-            if (this.singleLocation == null)
+            if (this._singleLocation == null)
             {
                 // we can hit this condition when the root activity instance has zero symbol.
                 actualLocationCount = 0;
@@ -515,14 +516,14 @@ internal sealed class LocationEnvironment
                 actualLocationCount = 1;
 
                 // temporarily normalize to locations array for the sake of environment update processing
-                this.locations = new Location[] { this.singleLocation };
-                this.singleLocation = null;
+                this._locations = new Location[] { this._singleLocation };
+                this._singleLocation = null;
             }
         }
         else
         {
-            Fx.Assert(this.singleLocation == null, "locations and singleLocations cannot be non-null at the same time.");
-            actualLocationCount = this.locations.Length;
+            Fx.Assert(this._singleLocation == null, "locations and singleLocations cannot be non-null at the same time.");
+            actualLocationCount = this._locations.Length;
         }
 
         if (expectedLocationCount != actualLocationCount)
@@ -556,8 +557,8 @@ internal sealed class LocationEnvironment
             newLocations = null;
         }
 
-        this.singleLocation = newSingleLocation;
-        this.locations = newLocations;
+        this._singleLocation = newSingleLocation;
+        this._locations = newLocations;
     }
 
     void UpdateArguments(EnvironmentUpdateMap map, Location[] newLocations)
@@ -574,15 +575,15 @@ internal sealed class LocationEnvironment
                 {
                     // Location allocation will be performed later during ResolveDynamicallyAddedArguments().
                     // for now, simply assign a dummy location so we know not to copy over the old value.
-                    newLocations[entry.NewOffset] = dummyLocation;
+                    newLocations[entry.NewOffset] = _dummyLocation;
                 }
                 else
                 {
-                    Fx.Assert(this.locations != null && this.singleLocation == null, "Caller should have copied singleLocation into locations array");
+                    Fx.Assert(this._locations != null && this._singleLocation == null, "Caller should have copied singleLocation into locations array");
 
                     // rearrangement of existing arguments
                     // this entry here doesn't describe argument removal
-                    newLocations[entry.NewOffset] = this.locations[entry.OldOffset];
+                    newLocations[entry.NewOffset] = this._locations[entry.OldOffset];
                 }
             }
         }
@@ -592,10 +593,10 @@ internal sealed class LocationEnvironment
         {
             if (newLocations[i] == null)
             {
-                Fx.Assert(this.locations != null && this.locations.Length > i, "locations must be non-null and index i must be within the range of locations.");
-                newLocations[i] = this.locations[i];
+                Fx.Assert(this._locations != null && this._locations.Length > i, "locations must be non-null and index i must be within the range of locations.");
+                newLocations[i] = this._locations[i];
             }
-            else if (newLocations[i] == dummyLocation)
+            else if (newLocations[i] == _dummyLocation)
             {
                 newLocations[i] = null;
             }
@@ -644,16 +645,16 @@ internal sealed class LocationEnvironment
                     newLocations[newVariablesOffset + entry.NewOffset] = location;
                     if (location.CanBeMapped)
                     {
-                        ActivityUtilities.Add(ref this.locationsToRegister, newVariable);
+                        ActivityUtilities.Add(ref this._locationsToRegister, newVariable);
                     }
                 }
                 else
                 {
-                    Fx.Assert(this.locations != null && this.singleLocation == null, "Caller should have copied singleLocation into locations array");
+                    Fx.Assert(this._locations != null && this._singleLocation == null, "Caller should have copied singleLocation into locations array");
 
                     // rearrangement of existing variable
                     // this entry here doesn't describe variable removal
-                    newLocations[newVariablesOffset + entry.NewOffset] = this.locations[oldVariablesOffset + entry.OldOffset];
+                    newLocations[newVariablesOffset + entry.NewOffset] = this._locations[oldVariablesOffset + entry.OldOffset];
                 }
             }
         }
@@ -664,9 +665,9 @@ internal sealed class LocationEnvironment
             if (newLocations[newVariablesOffset + i] == null)
             {
                 Fx.Assert(i < oldVariableCount, "New variable should have a location");
-                Fx.Assert(this.locations != null && this.locations.Length > oldVariablesOffset + i, "locations must be non-null and index i + oldVariableOffset must be within the range of locations.");
+                Fx.Assert(this._locations != null && this._locations.Length > oldVariablesOffset + i, "locations must be non-null and index i + oldVariableOffset must be within the range of locations.");
 
-                newLocations[newVariablesOffset + i] = this.locations[oldVariablesOffset + i];
+                newLocations[newVariablesOffset + i] = this._locations[oldVariablesOffset + i];
             }
         }
     }
@@ -675,7 +676,7 @@ internal sealed class LocationEnvironment
     {
         for (int i = 1; i <= map.RuntimeDelegateArgumentCount; i++)
         {
-            newLocations[newLocations.Length - i] = this.locations[this.locations.Length - i];
+            newLocations[newLocations.Length - i] = this._locations[this._locations.Length - i];
         }
     }
 
@@ -690,7 +691,7 @@ internal sealed class LocationEnvironment
 
         FindVariablesToUnregister(true, map, map.OldPrivateVariableCount, offset, ref hasMappableLocationsRemaining);
 
-        this.hasMappableLocations = hasMappableLocationsRemaining;
+        this._hasMappableLocations = hasMappableLocationsRemaining;
     }
 
     delegate int? GetNewVariableIndex(int oldIndex);
@@ -698,7 +699,7 @@ internal sealed class LocationEnvironment
     {
         for (int i = 0; i < oldVariableCount; i++)
         {
-            Location location = this.locations[i + offset];
+            Location location = this._locations[i + offset];
             if (location.CanBeMapped)
             {
                 if ((forImplementation && map.GetNewPrivateVariableIndex(i).HasValue) || (!forImplementation && map.GetNewVariableIndex(i).HasValue))
@@ -707,7 +708,7 @@ internal sealed class LocationEnvironment
                 }
                 else
                 {
-                    ActivityUtilities.Add(ref this.locationsToUnregister, location);
+                    ActivityUtilities.Add(ref this._locationsToUnregister, location);
                 }
             }
         }

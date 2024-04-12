@@ -5,9 +5,14 @@ using System.Activities.DurableInstancing;
 using System.Activities.Runtime.DurableInstancing;
 using Newtonsoft.Json;
 using System;
+using System.Activities;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Xml;
 using System.Xml.Linq;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace JsonFileInstanceStore
 {
@@ -29,6 +34,17 @@ namespace JsonFileInstanceStore
         {
             _storeDirectoryPath = storeDirectoryPath;
             Directory.CreateDirectory(storeDirectoryPath);
+        }
+
+        public IReadOnlyList<Guid> GetIds()
+        {
+            return Directory.GetFiles(_storeDirectoryPath)
+                .Select(f=>Path.GetFileName(f))
+                .Select(f => f[0..f.LastIndexOf('-')])
+                .Where(f => Guid.TryParse(f, out _))
+                .Select(f => Guid.Parse(f))
+                .Distinct()
+                .ToList();
         }
 
         public bool KeepInstanceDataAfterCompletion
@@ -68,6 +84,10 @@ namespace JsonFileInstanceStore
             {
                 return new TypedCompletedAsyncResult<bool>(DeleteWorkflowOwner(context, (DeleteWorkflowOwnerCommand)command), callback, state);
             }
+            if (command is CreateWorkflowOwnerWithIdentityCommand)
+            {
+                return new TypedCompletedAsyncResult<bool>(CreateWorkflowOwner(context, (CreateWorkflowOwnerWithIdentityCommand)command), callback, state);
+            }
             return new TypedCompletedAsyncResult<bool>(false, callback, state);
         }
 
@@ -92,13 +112,13 @@ namespace JsonFileInstanceStore
             {
                 Dictionary<string, InstanceValue> instanceData = SerializeablePropertyBagConvertXNameInstanceValue(command.InstanceData);
                 Dictionary<string, InstanceValue> instanceMetadata = SerializeInstanceMetadataConvertXNameInstanceValue(context, command);
-
+                
                 var serializedInstanceData = JsonConvert.SerializeObject(instanceData, Formatting.Indented, _jsonSerializerSettings);
                 File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceData", serializedInstanceData);
 
                 var serializedInstanceMetadata = JsonConvert.SerializeObject(instanceMetadata, Formatting.Indented, _jsonSerializerSettings);
                 File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceMetadata", serializedInstanceMetadata);
-
+                
                 foreach (KeyValuePair<XName, InstanceValue> property in command.InstanceMetadataChanges)
                 {
                     context.WroteInstanceMetadataValue(property.Key, property.Value);
@@ -166,6 +186,14 @@ namespace JsonFileInstanceStore
             return true;
         }
 
+        private bool CreateWorkflowOwner(InstancePersistenceContext context, CreateWorkflowOwnerWithIdentityCommand command)
+        {
+            Guid instanceOwnerId = Guid.NewGuid();
+            context.BindInstanceOwner(instanceOwnerId, instanceOwnerId);
+            context.BindEvent(HasRunnableWorkflowEvent.Value);
+            return true;
+        }
+
         private bool DeleteWorkflowOwner(InstancePersistenceContext context, DeleteWorkflowOwnerCommand command)
         {
             return true;
@@ -193,6 +221,8 @@ namespace JsonFileInstanceStore
 
             foreach (var property in command.InstanceMetadataChanges)
             {
+                if(property.Key.LocalName == "WorkflowHostType")
+                    continue;
                 if (!property.Value.Options.HasFlag(InstanceValueOptions.WriteOnly))
                 {
                     if (metadata == null)

@@ -4,6 +4,7 @@
 using System.Activities.Runtime;
 using System.Activities.Statements.Tracking;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 #if DYNAMICUPDATE
 using System.Activities.DynamicUpdate;
@@ -181,7 +182,7 @@ internal sealed class InternalState : NativeActivity<string>
 
         int originalTriggerInUpdatedDefinition = 0;
 
-        foreach (InternalTransition originalTransition in originalInternalState.internalTransitions)
+        foreach (InternalTransition originalTransition in originalInternalState._internalTransitions)
         {
             if (metadata.IsReferenceToImportedChild(originalTransition.Trigger))
             {
@@ -203,7 +204,7 @@ internal sealed class InternalState : NativeActivity<string>
             }
         }
 
-        foreach (InternalTransition updatedTransition in this.internalTransitions)
+        foreach (InternalTransition updatedTransition in _internalTransitions)
         {
             if (metadata.IsReferenceToImportedChild(updatedTransition.Trigger))
             {
@@ -218,7 +219,7 @@ internal sealed class InternalState : NativeActivity<string>
             {
                 InternalTransition originalTransition;
 
-                if (originalInternalState.triggerInternalTransitionMapping.TryGetValue(triggerMatch, out originalTransition))
+                if (originalInternalState._triggerInternalTransitionMapping.TryGetValue(triggerMatch, out originalTransition))
                 {
                     originalTriggerInUpdatedDefinition++;
 
@@ -278,7 +279,7 @@ internal sealed class InternalState : NativeActivity<string>
             }
         }
 
-        if (originalTriggerInUpdatedDefinition != originalInternalState.internalTransitions.Count)
+        if (originalTriggerInUpdatedDefinition != originalInternalState._internalTransitions.Count)
         {
             // NOTE: in general, if the transition is removed when there are pending triggers,
             // runtime would be able to detect the missing child activities.  However, in cases,
@@ -312,14 +313,14 @@ internal sealed class InternalState : NativeActivity<string>
                 return;
             }
 
-            if (updateContext.GetValue(this.isExiting) != true)
+            if (updateContext.GetValue(this._isExiting) != true)
             {
                 this.RescheduleNewlyAddedTriggers(updateContext);
             }
         }
-        else if (updateContext.GetValue(this.currentRunningTriggers) > 0)
+        else if (updateContext.GetValue(this._currentRunningTriggers) > 0)
         {
-            Fx.Assert(updateContext.GetValue(this.isExiting) != true, "No triggers have completed, state should not be transitioning.");
+            Fx.Assert(updateContext.GetValue(this._isExiting) != true, "No triggers have completed, state should not be transitioning.");
 
             // the state is not transitioning yet and is persisted at trigger.
             this.RescheduleNewlyAddedTriggers(updateContext);
@@ -462,10 +463,10 @@ internal sealed class InternalState : NativeActivity<string>
     private void RescheduleNewlyAddedTriggers(NativeActivityUpdateContext updateContext)
     {
         // NOTE: triggers are scheduled already, so the state has completed executing State.Entry
-        Fx.Assert(this.internalTransitions.Count == this.triggerInternalTransitionMapping.Count, "Triggers mappings are correct.");
+        Fx.Assert(this._internalTransitions.Count == this._triggerInternalTransitionMapping.Count, "Triggers mappings are correct.");
         List<Activity> newTriggers = new List<Activity>();
 
-        foreach (InternalTransition transition in this.internalTransitions)
+        foreach (InternalTransition transition in this._internalTransitions)
         {
             if (updateContext.IsNewlyAdded(transition.Trigger))
             {
@@ -477,10 +478,10 @@ internal sealed class InternalState : NativeActivity<string>
 
         foreach (Activity newTrigger in newTriggers)
         {
-            updateContext.ScheduleActivity(newTrigger, this.onTriggerComplete);
+            updateContext.ScheduleActivity(newTrigger, this._onTriggerComplete);
         }
 
-        updateContext.SetValue<int>(this.currentRunningTriggers, updateContext.GetValue(this.currentRunningTriggers) + newTriggers.Count);
+        updateContext.SetValue<int>(this._currentRunningTriggers, updateContext.GetValue(this._currentRunningTriggers) + newTriggers.Count);
     }
 
     /// <summary>
@@ -502,7 +503,7 @@ internal sealed class InternalState : NativeActivity<string>
         int originalConditionIndex = int.MinValue;
         bool updateCurrentEventSucceed = null == eventManager.CurrentBeingProcessedEvent ? true : false;
 
-        foreach (InternalTransition transition in this.internalTransitions)
+        foreach (InternalTransition transition in this._internalTransitions)
         {
             object savedTriggerIndex = updateContext.GetSavedOriginalValue(transition.Trigger);
             if (savedTriggerIndex != null)
@@ -510,7 +511,7 @@ internal sealed class InternalState : NativeActivity<string>
                 Fx.Assert(!updateContext.IsNewlyAdded(transition.Trigger), "the trigger in transition already exist.");
 
                 if (null != eventManager.CurrentBeingProcessedEvent &&
-                    eventManager.CurrentBeingProcessedEvent.TriggedId == (int)savedTriggerIndex)
+                    eventManager.CurrentBeingProcessedEvent.TriggerId == (int)savedTriggerIndex)
                 {
                     // found a match of the running trigger update the current processed event
                     // Don't match the trigger ID, match only when the Condition is also matched.
@@ -519,11 +520,11 @@ internal sealed class InternalState : NativeActivity<string>
                         if (transition.IsUnconditional)
                         {
                             // executing transition before persist is unconditional
-                            originalTriggerId = eventManager.CurrentBeingProcessedEvent.TriggedId;
+                            originalTriggerId = eventManager.CurrentBeingProcessedEvent.TriggerId;
                             originalConditionIndex = 0;
-                            eventManager.CurrentBeingProcessedEvent.TriggedId = transition.InternalTransitionIndex;
+                            eventManager.CurrentBeingProcessedEvent.TriggerId = transition.InternalTransitionIndex;
 
-                            if (updateContext.GetValue(this.isExiting))
+                            if (updateContext.GetValue(this._isExiting))
                             {
                                 Fx.Assert(eventManager.OnTransition, "The state is transitioning.");
                                 updateContext.SetValue(this.Result, GetTo(transition.InternalTransitionIndex));
@@ -552,12 +553,12 @@ internal sealed class InternalState : NativeActivity<string>
 
                                 if (eventManager.CurrentConditionIndex == savedCondIndex)
                                 {
-                                    originalTriggerId = eventManager.CurrentBeingProcessedEvent.TriggedId;
+                                    originalTriggerId = eventManager.CurrentBeingProcessedEvent.TriggerId;
                                     originalConditionIndex = eventManager.CurrentConditionIndex;
-                                    eventManager.CurrentBeingProcessedEvent.TriggedId = transition.InternalTransitionIndex;
+                                    eventManager.CurrentBeingProcessedEvent.TriggerId = transition.InternalTransitionIndex;
                                     eventManager.CurrentConditionIndex = updatedIndex;
 
-                                    if (updateContext.GetValue(this.isExiting))
+                                    if (updateContext.GetValue(this._isExiting))
                                     {
                                         Fx.Assert(eventManager.OnTransition, "The state is transitioning.");
                                         updateContext.SetValue(this.Result, this.GetTo(transition.InternalTransitionIndex, (int)updatedIndex));
@@ -573,9 +574,9 @@ internal sealed class InternalState : NativeActivity<string>
 
                 foreach (TriggerCompletedEvent completedEvent in eventManager.Queue)
                 {
-                    if ((int)savedTriggerIndex == completedEvent.TriggedId)
+                    if ((int)savedTriggerIndex == completedEvent.TriggerId)
                     {
-                        completedEvent.TriggedId = transition.InternalTransitionIndex;
+                        completedEvent.TriggerId = transition.InternalTransitionIndex;
                         updatedEventsInQueue++;
                     }
                 }

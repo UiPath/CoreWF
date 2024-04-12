@@ -81,7 +81,7 @@ public sealed class TryCatch : NativeActivity
 
     protected override void UpdateInstance(NativeActivityUpdateContext updateContext)
     {
-        TryCatchState state = updateContext.GetValue(this.state);
+        TryCatchState state = updateContext.GetValue(this._state);
         if (state != null && !state.SuppressCancel && state.CaughtException != null && this.FindCatch(state.CaughtException.Exception) == null)
         {
             // This is a very small window of time in which we want to block update inside TryCatch.  
