@@ -45,6 +45,57 @@ public abstract class AbstractInstanceStore(IWorkflowSerializer instanceSerializ
     private Guid _lockId = Guid.NewGuid();
     private readonly IWorkflowSerializer _instanceSerializer = instanceSerializer;
 
+    private class StreamWrapperWithDiposeEvent(Stream stream, Action onDispose) : Stream
+    {
+        public override async ValueTask DisposeAsync()
+        {
+            await base.DisposeAsync();
+            onDispose?.Invoke();
+        }
+        public override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            onDispose?.Invoke();
+        }
+
+        public override bool CanRead => stream.CanRead;
+
+        public override bool CanSeek => stream.CanSeek;
+
+        public override bool CanWrite => stream.CanWrite;
+
+        public override long Length => stream.Length;
+
+        public override long Position { get => stream.Position; set => stream.Position = value; }
+
+        public override void Flush()
+        {
+            stream.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            return stream.Read(buffer, offset, count);
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return stream.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value)
+        {
+            stream.SetLength(value);
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            stream.Write(buffer, offset, count);
+        }
+    }
+
+    protected Stream OnStreamDispose(Stream stream, Action onDispose) => new StreamWrapperWithDiposeEvent(stream, onDispose);
+
     protected abstract Task<Stream> GetReadStream(Guid instanceId);
     protected abstract Task<Stream> GetWriteStream(Guid instanceId);
 
