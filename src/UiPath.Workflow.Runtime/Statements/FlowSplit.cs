@@ -33,6 +33,7 @@ public class FlowSplit : FlowNode
             AddValidationError("Split should end in one Merge node.");
         if (allMerges.Count > 1)
             AddValidationError("All split branches should end in only one Merge node.", allMerges);
+        ValidateSingleSplitInAmonte();
     }
 
     internal override Flowchart.NodeInstance CreateInstance()
