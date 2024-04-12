@@ -535,4 +535,35 @@ public class ExpressionTests
         var result = ActivityValidationServices.Validate(sequence, _useValidator);
         result.Errors.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void CS_IsCaseSensitive_WhenSearchingForVariable_Throws()
+    {
+        var seq = new Sequence();
+        seq.Variables.Add(new Variable<string>("ABC"));
+        seq.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("abc")) });
+        var valid = ActivityValidationServices.Validate(seq, _useValidator);
+        valid.Errors.Count.ShouldBe(1);
+        valid.Errors.First().Message.ShouldBe("CS0103: The name 'abc' does not exist in the current context");
+    }
+
+    [Fact]
+    public void CS_IsCaseSensitive_WhenSearchingForVariable_Succeeds()
+    {
+        var seq = new Sequence();
+        seq.Variables.Add(new Variable<string>("ABC"));
+        seq.Activities.Add(new WriteLine { Text = new InArgument<string>(new CSharpValue<string>("ABC")) });
+        var valid = ActivityValidationServices.Validate(seq, _useValidator);
+        valid.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void VB_IsCaseInsensitive()
+    {
+        var seq = new Sequence();
+        seq.Variables.Add(new Variable<string>("ABC"));
+        seq.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("abc")) });
+        var valid = ActivityValidationServices.Validate(seq, _useValidator);
+        valid.Errors.ShouldBeEmpty();
+    }
 }

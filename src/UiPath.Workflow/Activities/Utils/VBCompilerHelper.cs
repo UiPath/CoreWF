@@ -17,6 +17,8 @@ namespace System.Activities
 
         public override StringComparer IdentifierNameComparer { get; } = StringComparer.OrdinalIgnoreCase;
 
+        public override StringComparison IdentifierNameComparison { get; } = StringComparison.OrdinalIgnoreCase;
+
         public override VisualBasicParseOptions ScriptParseOptions { get; } = new VisualBasicParseOptions(kind: SourceCodeKind.Script, languageVersion: LanguageVersion.Latest);
 
 
