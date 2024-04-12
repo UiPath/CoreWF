@@ -47,11 +47,6 @@ public abstract class AbstractInstanceStore(IWorkflowSerializer instanceSerializ
 
     private class StreamWrapperWithDiposeEvent(Stream stream, Action onDispose) : Stream
     {
-        public override async ValueTask DisposeAsync()
-        {
-            await base.DisposeAsync();
-            onDispose?.Invoke();
-        }
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
