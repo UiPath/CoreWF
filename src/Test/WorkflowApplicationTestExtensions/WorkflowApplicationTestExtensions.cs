@@ -1,5 +1,4 @@
-﻿using JsonFileInstanceStore;
-using JsonFileInstanceStore.Persistence;
+﻿using JsonFileInstanceStore.Persistence;
 using System;
 using System.Activities;
 using System.Diagnostics;
@@ -41,7 +40,7 @@ namespace WorkflowApplicationTestExtensions
 
             application.Aborted += args => output.TrySetException(args.Reason);
             application.PersistableIdle += static _ => PersistableIdleAction.Unload;
-            application.InstanceStore ??= new FileStore(new JsonWorkflowSerializer(), Environment.CurrentDirectory);
+            application.InstanceStore ??= new FileStore(new DataContractWorkflowSerializer(), Environment.CurrentDirectory);
             application.Unloaded += uargs =>
             {
                 Debug.WriteLine("Unloaded");
