@@ -24,7 +24,7 @@ public class MergeAllBehavior : MergeBehavior
 }
 
 [ContentProperty(nameof(Behavior))]
-public class FlowMerge : FlowNode
+public partial class FlowMerge : FlowNode
 {
     private const string DefaultDisplayName = nameof(FlowMerge);
 
@@ -35,36 +35,6 @@ public class FlowMerge : FlowNode
     public FlowNode Next { get; set; }
     [DefaultValue(DefaultDisplayName)]
     public string DisplayName { get; set; } = DefaultDisplayName;
-
-    public class MergeInstance : NodeInstance<FlowMerge>
-    {
-        public MergeInstance()
-        {
-            DoNotComplete = true;
-        }
-        public bool CancelExecuted { get; set; }
-        internal override void Execute()
-        {
-            if (!DoNotComplete)
-                return;
-            var runningNodes = Flowchart.GetOtherNodes();
-            if (Node.Behavior is MergeFirstBehavior && !CancelExecuted)
-            {
-                Flowchart.CancelNodes(runningNodes);
-                CancelExecuted = true;
-            }
-
-            if (runningNodes.Count > 0)
-            {
-                Debug.WriteLine($"{Node}: DoNotComplete");
-                return;
-            }
-
-            DoNotComplete = false;
-            Debug.WriteLine($"{Node}: Next queued");
-            Flowchart.EnqueueNodeExecution(Node.Next, EnqueueType.Pop);
-        }
-    }
 
     protected override void OnEndCacheMetadata()
     {

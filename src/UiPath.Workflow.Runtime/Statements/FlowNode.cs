@@ -47,27 +47,7 @@ public abstract class FlowNode
     internal abstract IReadOnlyList<FlowNode> GetSuccessors();
 
 
-    internal virtual Flowchart.NodeInstance CreateInstance() => new();
-    internal virtual void Execute() { }
-
-    protected virtual void OnCompletionCallback() { }
-
-    internal virtual void OnCompletionCallback<T>(T result)
-    {
-        switch (result)
-        {
-            case null:
-                OnCompletionCallback();
-                break;
-            case bool b:
-                OnCompletionCallback(b);
-                break;
-            default:
-                throw new NotSupportedException();
-        }
-    }
-
-    protected virtual void OnCompletionCallback(bool result) { }
+    internal abstract Flowchart.NodeInstance CreateInstance();
 
     protected void AddValidationError(string message, IEnumerable<FlowNode> nodes = null)
     {

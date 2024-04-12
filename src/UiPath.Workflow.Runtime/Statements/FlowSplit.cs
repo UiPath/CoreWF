@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 namespace System.Activities.Statements;
 
-public class FlowSplit : FlowNode
+public partial class FlowSplit : FlowNode
 {
     private const string DefaultDisplayName = nameof(FlowSplit);
     [DefaultValue(DefaultDisplayName)]
@@ -38,16 +38,4 @@ public class FlowSplit : FlowNode
 
     internal override Flowchart.NodeInstance CreateInstance()
         => new SplitInstance();
-
-    private class SplitInstance : Flowchart.NodeInstance<FlowSplit>
-    {
-        internal override void Execute()
-        {
-            for (int i = Node.Branches.Count - 1; i >= 0; i--)
-            {
-                var branch = Node.Branches[i];
-                Flowchart.EnqueueNodeExecution(branch, Flowchart.EnqueueType.Push);
-            }
-        }
-    }
 }

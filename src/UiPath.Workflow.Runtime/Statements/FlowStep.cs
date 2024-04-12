@@ -6,7 +6,7 @@ using System.Windows.Markup;
 namespace System.Activities.Statements;
 
 [ContentProperty("Action")]
-public sealed class FlowStep : FlowNode
+public sealed partial class FlowStep : FlowNode
 {
     public FlowStep() { }
 
@@ -19,29 +19,7 @@ public sealed class FlowStep : FlowNode
 
     internal override IReadOnlyList<FlowNode> GetSuccessors() => new[] { Next };
 
-    internal override void Execute()
-    {
-        if (Next == null)
-        {
-            if (TD.FlowchartNextNullIsEnabled())
-            {
-                TD.FlowchartNextNull(Flowchart.DisplayName);
-            }
-        }
-        if (Action == null)
-        {
-            OnCompletionCallback();
-        }
-        else
-        {
-            Flowchart.ScheduleWithCallback(Action);
-        }
-    }
-
-    protected override void OnCompletionCallback()
-    {
-        Flowchart.EnqueueNodeExecution(Next);
-    }
+    internal override Flowchart.NodeInstance CreateInstance() => new StepInstance();
 
     internal override IEnumerable<Activity> GetChildActivities()
     => Action!= null ? new[] { Action } : null;

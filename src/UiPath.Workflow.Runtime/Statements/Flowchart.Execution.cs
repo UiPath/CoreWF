@@ -131,7 +131,7 @@ partial class Flowchart
         using var _ = WithContext(context, completedInstance);
         var currentNode = _reachableNodes[CurrentNode.StaticNodeIndex];
         Debug.WriteLine($"completionCallback:{currentNode}");
-        currentNode.OnCompletionCallback(result);
+        CurrentNode.OnCompletionCallback(this, currentNode, result);
         CurrentNode.ActivityInstanceIds.Remove(completedInstance.Id);
         SetNodeCompleted();
         ExecuteQueue();
@@ -292,6 +292,21 @@ partial class Flowchart
 
         public override string ToString() => SplitsStack;
     }
+    public abstract class NodeInstance<TFlowNode, TCompletionResult> : NodeInstance<TFlowNode> where TFlowNode : FlowNode
+    {
+        protected override void OnCompletionCallback<T>(T result)
+        {
+            if (!typeof(T).Equals(typeof(TCompletionResult)))
+            {
+                throw new ArgumentException("Invalid argument type.");
+            }
+            
+            OnCompletionCallback(result is TCompletionResult typedResult ? typedResult : default);
+        }
+
+        protected abstract void OnCompletionCallback(TCompletionResult result);
+    }
+
     public abstract class NodeInstance<TFlowNode> : NodeInstance where TFlowNode : FlowNode
     {
         protected Flowchart Flowchart { get; private set; }
@@ -304,9 +319,24 @@ partial class Flowchart
 
             Execute();
         }
-        internal abstract void Execute();
+        internal sealed override void OnCompletionCallback<T>(Flowchart flowchart, FlowNode node, T result)
+        {
+            Flowchart = flowchart;
+            Node = node as TFlowNode;
+
+            OnCompletionCallback(result);
+        }
+
+        protected virtual void OnCompletionCallback<T>(T result)
+        {
+            OnCompletionCallback();
+        }
+
+        protected virtual void OnCompletionCallback() { }
+
+        protected abstract void Execute();
     }
-    public class NodeInstance
+    public abstract class NodeInstance
     {
         public ExecutionStackInfo ExecutionStack { get; set; }
         public int StaticNodeIndex { get; set; }
@@ -322,9 +352,8 @@ partial class Flowchart
         {
             return $"{ExecutionNodeId}/{ExecutionStack}";
         }
-        internal virtual void Execute(Flowchart Owner, FlowNode Node) {
-            Node.Execute();
-        }
+        internal abstract void Execute(Flowchart Owner, FlowNode Node);
+        internal virtual void OnCompletionCallback<T>(Flowchart Owner, FlowNode Node, T result) { }
     }
     private class Disposable : IDisposable
     {

@@ -7,7 +7,7 @@ using System.Windows.Markup;
 
 namespace System.Activities.Statements;
 
-public sealed class FlowDecision : FlowNode
+public sealed partial class FlowDecision : FlowNode
 {
     private const string DefaultDisplayName = "Decision";
     private string _displayName;
@@ -64,12 +64,5 @@ public sealed class FlowDecision : FlowNode
 
     internal override IEnumerable<Activity> GetChildActivities() => new[] { Condition };
 
-    internal override void Execute()
-    {
-        Flowchart.ScheduleWithCallback(Condition);
-    }
-    protected override void OnCompletionCallback(bool result)
-    {
-        Flowchart.EnqueueNodeExecution(result ? True : False);
-    }
+    internal override Flowchart.NodeInstance CreateInstance() => new DecisionInstance();
 }

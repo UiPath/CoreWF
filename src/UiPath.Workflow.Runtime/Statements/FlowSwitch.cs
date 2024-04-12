@@ -8,7 +8,7 @@ using System.Windows.Markup;
 namespace System.Activities.Statements;
 
 [ContentProperty("Cases")]
-public sealed class FlowSwitch<T> : FlowNode
+public sealed partial class FlowSwitch<T> : FlowNode
 {
     private const string DefaultDisplayName = "Switch";
     internal IDictionary<T, FlowNode> _cases;
@@ -51,45 +51,5 @@ public sealed class FlowSwitch<T> : FlowNode
 
     internal override IEnumerable<Activity> GetChildActivities() => new[] { Expression };
 
-    internal override void Execute()
-    {
-        Flowchart.ScheduleWithCallback(Expression);
-    }
-
-    internal override void OnCompletionCallback<TResult>(TResult value)
-    {
-        var newValue = value switch
-        {
-            T castedValue => castedValue,
-            null => default,
-            _ => throw new InvalidCastException(),
-        };
-
-        if (Cases.TryGetValue(newValue, out FlowNode result))
-        {
-            if (TD.FlowchartSwitchCaseIsEnabled())
-            {
-                TD.FlowchartSwitchCase(Flowchart.DisplayName, newValue?.ToString());
-            }
-            Flowchart.EnqueueNodeExecution(result);
-        }
-        else
-        {
-            if (Default != null)
-            {
-                if (TD.FlowchartSwitchDefaultIsEnabled())
-                {
-                    TD.FlowchartSwitchDefault(Flowchart.DisplayName);
-                }
-            }
-            else
-            {
-                if (TD.FlowchartSwitchCaseNotFoundIsEnabled())
-                {
-                    TD.FlowchartSwitchCaseNotFound(Flowchart.DisplayName);
-                }
-            }
-            Flowchart.EnqueueNodeExecution(Default);
-        }
-    }
+    internal override Flowchart.NodeInstance CreateInstance() => new SwitchInstance();
 }
