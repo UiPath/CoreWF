@@ -36,7 +36,7 @@ public class FlowMerge : FlowNode
     [DefaultValue(DefaultDisplayName)]
     public string DisplayName { get; set; } = DefaultDisplayName;
 
-    private class MergeInstance : NodeInstance<FlowMerge>
+    public class MergeInstance : NodeInstance<FlowMerge>
     {
         public MergeInstance()
         {

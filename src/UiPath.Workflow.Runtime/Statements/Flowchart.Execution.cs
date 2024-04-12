@@ -258,10 +258,11 @@ partial class Flowchart
         Pop
     }
 
-    internal record ExecutionStackInfo
+    public record ExecutionStackInfo
     {
         private const char StackDelimiter = ':';
-        public string SplitsStack { get; private init; }
+        public string SplitsStack { get; init; }
+        public ExecutionStackInfo() : this("_"){ }
 
         public ExecutionStackInfo(string SplitsStack)
         {
@@ -291,7 +292,7 @@ partial class Flowchart
 
         public override string ToString() => SplitsStack;
     }
-    internal abstract class NodeInstance<TFlowNode> : NodeInstance where TFlowNode : FlowNode
+    public abstract class NodeInstance<TFlowNode> : NodeInstance where TFlowNode : FlowNode
     {
         protected Flowchart Flowchart { get; private set; }
         protected TFlowNode Node { get; private set; }
@@ -305,7 +306,7 @@ partial class Flowchart
         }
         internal abstract void Execute();
     }
-    internal class NodeInstance
+    public class NodeInstance
     {
         public ExecutionStackInfo ExecutionStack { get; set; }
         public int StaticNodeIndex { get; set; }
@@ -336,7 +337,7 @@ partial class Flowchart
         public static IDisposable Create(Action onDispose)
             => new Disposable() { _onDispose = onDispose };
     }
-    private class State
+    public class State
     {
         public string Version { get; init; }
         public Dictionary<string, NodeInstance> NodesInstances { get; set; } = new();
