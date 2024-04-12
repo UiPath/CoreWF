@@ -28,13 +28,17 @@ public class AddStringActivity : NativeActivity
         base.CacheMetadata(metadata);
         metadata.AddImplementationVariable(new Variable<List<string>>("strings"));
         metadata.AddImplementationVariable(StartTime);
-
     }
 
     protected override void Execute(NativeActivityContext context)
     {
         StartTime.Set(context, DateTime.Now);
-        context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.DisplayName +":" + this.Id, new BookmarkCallback(OnBookmarkResumed));
+        SuspendLoop(context);
+    }
+
+    private void SuspendLoop(NativeActivityContext context)
+    {
+        context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + this.DisplayName + ":" + context.ActivityInstanceId, new BookmarkCallback(OnBookmarkResumed));
     }
 
     private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
@@ -44,7 +48,7 @@ public class AddStringActivity : NativeActivity
         if (starttime + duration > DateTime.Now)
         {
             Thread.Sleep(5);
-            context.CreateBookmark(WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + DisplayName + ":" + Id, new BookmarkCallback(OnBookmarkResumed));
+            SuspendLoop(context);
             return;
         }
         AddString(context, Text);
