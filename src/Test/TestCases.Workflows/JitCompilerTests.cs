@@ -50,7 +50,7 @@ namespace TestCases.Workflows
         [Fact]
         public void VisualBasicJitCompiler_PropertyAccess_SameNameAsVariable()
         {
-            static Type VariableTypeGetter(string name)
+            static Type VariableTypeGetter(string name, StringComparison stringComparison)
             {
                 return name switch
                 {
@@ -69,7 +69,7 @@ namespace TestCases.Workflows
         [InlineData(17)]
         public void VisualBasicJitCompiler_ExpressionWithMultipleVariablesVariables(int noOfVar)
         {
-            static Type VariableTypeGetter(string name)
+            static Type VariableTypeGetter(string name, StringComparison stringComparison)
             {
                 return name switch
                 {
@@ -85,7 +85,7 @@ namespace TestCases.Workflows
         [Fact]
         public void CSharpJitCompiler_PropertyAccess()
         {
-            static Type VariableTypeGetter(string name)
+            static Type VariableTypeGetter(string name, StringComparison stringComparison)
             {
                 return name switch
                 {
@@ -108,7 +108,7 @@ namespace TestCases.Workflows
         [InlineData(17)]
         public void CSharpJitCompiler_ExpressionWithMultipleVariablesVariables(int noOfVar)
         {
-            static Type VariableTypeGetter(string name)
+            static Type VariableTypeGetter(string name, StringComparison stringComparison)
             {
                 return name switch
                 {
@@ -125,7 +125,7 @@ namespace TestCases.Workflows
         public void VbExpression_UndeclaredObject()
         {
             var expressionToCompile = "new UndeclaredClass()";
-            var sut = () => _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s)=>null, typeof(object)));
+            var sut = () => _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s, c)=>null, typeof(object)));
 
             Assert.ThrowsAny<SourceExpressionException>(sut);
         }
@@ -134,7 +134,7 @@ namespace TestCases.Workflows
         public void VbExpression_WithObjectInitializer()
         {
             var expressionToCompile = "new TestIndexerClass() With {.Field=\"1\"}";
-            var result = _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s)=>null, typeof(TestIndexerClass)));
+            var result = _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s, c)=>null, typeof(TestIndexerClass)));
             result.ReturnType.ShouldBe(typeof(TestIndexerClass));
         }
 
@@ -142,11 +142,11 @@ namespace TestCases.Workflows
         public void VbExpression_UndeclaredObjectWithObjectInitializer()
         {
             var expressionToCompile = "new UndeclaredClass() With {.Field=\"1\"}";
-            var sut = () => _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s)=>null, typeof(object)));
+            var sut = () => _vbJitCompiler.CompileExpression(new ExpressionToCompile(expressionToCompile, _namespaces, (s, c)=>null, typeof(object)));
 
             Assert.ThrowsAny<SourceExpressionException>(sut);
         }
-        private static Type VariableTypeGetter(string name)
+        private static Type VariableTypeGetter(string name, StringComparison stringComparison)
             => name switch
             {
                 "testIndexerClass" => typeof(TestIndexerClass),

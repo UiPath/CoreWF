@@ -51,6 +51,7 @@ internal abstract class JitCompilerHelper
     private static readonly FindMatch s_delegateFindAllLocationReferenceMatch = FindAllLocationReferenceMatch;
 
     protected LocationReferenceEnvironment Environment;
+    protected abstract StringComparison StringComparison { get; }
 
     // this is a flag to differentiate the cached short-cut Rewrite from the normal post-compilation Rewrite
     protected bool IsShortCutRewrite;
@@ -190,10 +191,10 @@ internal abstract class JitCompilerHelper
     }
 
     private static bool FindLocationReferenceMatchShortcut(LocationReference reference, string targetName,
-        Type targetType, out bool terminateSearch)
+        Type targetType, StringComparison stringComparison, out bool terminateSearch)
     {
         terminateSearch = false;
-        if (string.Equals(reference.Name, targetName, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(reference.Name, targetName, stringComparison))
         {
             if (targetType != reference.Type)
             {
@@ -207,11 +208,11 @@ internal abstract class JitCompilerHelper
         return false;
     }
 
-    private static bool FindFirstLocationReferenceMatch(LocationReference reference, string targetName, Type targetType,
+    private static bool FindFirstLocationReferenceMatch(LocationReference reference, string targetName, Type targetType, StringComparison stringComparison,
         out bool terminateSearch)
     {
         terminateSearch = false;
-        if (string.Equals(reference.Name, targetName, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(reference.Name, targetName, stringComparison))
         {
             terminateSearch = true;
             return true;
@@ -220,11 +221,11 @@ internal abstract class JitCompilerHelper
         return false;
     }
 
-    private static bool FindAllLocationReferenceMatch(LocationReference reference, string targetName, Type targetType,
+    private static bool FindAllLocationReferenceMatch(LocationReference reference, string targetName, Type targetType, StringComparison stringComparison,
         out bool terminateSearch)
     {
         terminateSearch = false;
-        if (string.Equals(reference.Name, targetName, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(reference.Name, targetName, stringComparison))
         {
             return true;
         }
@@ -434,6 +435,7 @@ internal abstract class JitCompilerHelper
                     findMatch,
                     variableExpression.Name,
                     variableExpression.Type,
+                    StringComparison,
                     out var foundMultiple);
 
                 if (finalReference != null && !foundMultiple)
@@ -1082,7 +1084,7 @@ internal abstract class JitCompilerHelper
     }
 
     private static LocationReference FindLocationReferencesFromEnvironment(LocationReferenceEnvironment environment,
-        FindMatch findMatch, string targetName, Type targetType, out bool foundMultiple)
+        FindMatch findMatch, string targetName, Type targetType, StringComparison stringComparison, out bool foundMultiple)
     {
         var currentEnvironment = environment;
         foundMultiple = false;
@@ -1091,7 +1093,7 @@ internal abstract class JitCompilerHelper
             LocationReference toReturn = null;
             foreach (var reference in currentEnvironment.GetLocationReferences())
             {
-                if (findMatch(reference, targetName, targetType, out var terminateSearch))
+                if (findMatch(reference, targetName, targetType, stringComparison, out var terminateSearch))
                 {
                     if (toReturn != null)
                     {
@@ -1119,7 +1121,7 @@ internal abstract class JitCompilerHelper
         return null;
     }
 
-    private delegate bool FindMatch(LocationReference reference, string targetName, Type targetType,
+    private delegate bool FindMatch(LocationReference reference, string targetName, Type targetType, StringComparison stringComparison,
         out bool terminateSearch);
 
     // this is a place holder for LambdaExpression(raw Expression Tree) that is to be stored in the cache
@@ -1192,12 +1194,12 @@ internal abstract class JitCompilerHelper
 
         public string ErrorMessage { get; private set; }
 
-        public Type FindVariable(string name)
+        public Type FindVariable(string name, StringComparison stringComparison)
         {
             LocationReference referenceToReturn = null;
             var findMatch = s_delegateFindAllLocationReferenceMatch;
             referenceToReturn =
-                FindLocationReferencesFromEnvironment(_environmentProvider, findMatch, name, null, out var foundMultiple);
+                FindLocationReferencesFromEnvironment(_environmentProvider, findMatch, name, null, stringComparison, out var foundMultiple);
             if (referenceToReturn != null)
             {
                 if (foundMultiple)
@@ -1489,7 +1491,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         return Expression.Lambda(finalBody, lambda.Parameters);
     }
 
-    private ExpressionToCompile ExpressionToCompile(Func<string, Type> variableTypeGetter, Type lambdaReturnType)
+    private ExpressionToCompile ExpressionToCompile(Func<string, StringComparison, Type> variableTypeGetter, Type lambdaReturnType)
     {
         return new ExpressionToCompile(TextToCompile, NamespaceImports, variableTypeGetter, lambdaReturnType);
     }

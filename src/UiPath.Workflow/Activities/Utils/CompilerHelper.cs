@@ -17,6 +17,8 @@ namespace System.Activities
 
         public abstract StringComparer IdentifierNameComparer { get; }
 
+        public abstract StringComparison IdentifierNameComparison { get; }
+
         public abstract int IdentifierKind { get; }
 
         public abstract (string, string) DefineDelegate(string types);

@@ -23,6 +23,8 @@ namespace System.Activities
 
         public override StringComparer IdentifierNameComparer { get; } = StringComparer.Ordinal;
 
+        public override StringComparison IdentifierNameComparison { get; } = StringComparison.Ordinal;
+
         public override string GetTypeName(Type type) =>
             (string)s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
 

@@ -45,7 +45,7 @@ internal sealed class VisualBasicExpressionCompiler : ExpressionCompiler
         var identifiers = syntaxTree.GetRoot().DescendantNodesAndSelf().Where(n => n.RawKind == (int)SyntaxKind.IdentifierName)
                                     .Select(n => n.ToString()).Distinct(_compilerHelper.IdentifierNameComparer);
         var resolvedIdentifiers = identifiers
-                .Select(name => (Name: name, Type: new ScriptAndTypeScope(environment).FindVariable(name)))
+                .Select(name => (Name: name, Type: new ScriptAndTypeScope(environment).FindVariable(name, _compilerHelper.IdentifierNameComparison)))
                 .Where(var => var.Type != null)
                 .ToArray();
 

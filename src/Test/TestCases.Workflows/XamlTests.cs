@@ -317,8 +317,8 @@ namespace TestCases.Workflows
         public void Should_compile_CSharp()
         {
             var compiler = new CSharpJitCompiler(new[] { typeof(Expression).Assembly, typeof(Enumerable).Assembly }.ToHashSet());
-            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", new[] { "System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic" },
-                name => name == "source" ? typeof(List<int>) : null, typeof(int)));
+            var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", ["System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic"],
+                (name, comparer )=> name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
 
@@ -326,7 +326,7 @@ namespace TestCases.Workflows
         public void Should_Fail_VBConversion()
         {
             var compiler = new VbJitCompiler(new[] { typeof(int).Assembly, typeof(Expression).Assembly, typeof(Conversions).Assembly }.ToHashSet());
-            new Action(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" }, _ => typeof(int), typeof(string))))
+            new Action(() => compiler.CompileExpression(new ExpressionToCompile("1", new[] { "System", "System.Linq", "System.Linq.Expressions" }, (_, __) => typeof(int), typeof(string))))
                 .ShouldThrow<SourceExpressionException>().Message.ShouldContain("BC30512: Option Strict On disallows implicit conversions");
         }
 
@@ -391,6 +391,7 @@ namespace TestCases.Workflows
                 </Activity>";
         [Fact]
         public void CompileExpressionsDefault() => InvokeWorkflow(CSharpExpressions);
+
         [Fact]
         public void CompileExpressionsWithCompiler() =>
             new Action(() => ActivityXamlServices.Load(new StringReader(CSharpExpressions),
@@ -414,6 +415,7 @@ namespace TestCases.Workflows
             new Action(() => InvokeWorkflow(xaml)).ShouldThrow<InvalidOperationException>().Data.Values.Cast<string>()
                 .ShouldAllBe(error => error.Contains("error CS0103: The name 'constant' does not exist in the current context"));
         }
+
         [Fact]
         public void SetCompiledExpressionRootForImplementation()
         {
@@ -421,6 +423,7 @@ namespace TestCases.Workflows
             CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(writeLine, new Expressions());
             WorkflowInvoker.Invoke(writeLine);
         }
+
         [Fact]
         public void ValidateSkipCompilation()
         {
@@ -428,6 +431,7 @@ namespace TestCases.Workflows
             var results = ActivityValidationServices.Validate(writeLine, new() { SkipExpressionCompilation = true });
             results.Errors.ShouldBeEmpty();
         }
+
         [Fact]
         public void DuplicateVariable()
         {
@@ -439,6 +443,7 @@ xmlns:hw='clr-namespace:TestCases.Workflows;assembly=TestCases.Workflows'>
             var withMyVar = (WithMyVar)WorkflowInspectionServices.Resolve(root, "1.1");
             ((ITextExpression)((Sequence)withMyVar.Body.Handler).Activities[0]).GetExpressionTree();
         }
+
         [Fact]
         public void CSharpInputOutput()
         {

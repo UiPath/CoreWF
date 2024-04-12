@@ -14,11 +14,13 @@ namespace Microsoft.CSharp.Activities;
 
 internal class CSharpHelper : JitCompilerHelper<CSharpHelper>
 {
+    protected override StringComparison StringComparison => StringComparison.Ordinal;
+
+    protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) =>
+        new CSharpJitCompiler(references);
+
     public CSharpHelper(string expressionText, HashSet<AssemblyReference> assemblyReferences,
         HashSet<string> namespaceImportsNames) : base(expressionText, assemblyReferences, namespaceImportsNames) { }
-
-    protected override JustInTimeCompiler CreateCompiler(HashSet<Assembly> references) => 
-        new CSharpJitCompiler(references);
 
     internal const string Language = "C#";
 }

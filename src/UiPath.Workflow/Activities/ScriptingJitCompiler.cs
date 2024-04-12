@@ -29,7 +29,7 @@ public abstract class JustInTimeCompiler
 public record CompilerInput(string Code, IReadOnlyCollection<string> ImportedNamespaces) { }
 
 public record ExpressionToCompile(string Code, IReadOnlyCollection<string> ImportedNamespaces,
-    Func<string, Type> VariableTypeGetter, Type LambdaReturnType)
+    Func<string, StringComparison, Type> VariableTypeGetter, Type LambdaReturnType)
     : CompilerInput(Code, ImportedNamespaces)
 { }
 
@@ -57,7 +57,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         var identifiers = GetIdentifiers(syntaxTree);
         var resolvedIdentifiers =
             identifiers
-                .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name)))
+                .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name, CompilerHelper.IdentifierNameComparison)))
                 .Where(var => var.Type != null)
                 .ToArray();
         var names = string.Join(CompilerHelper.Comma, resolvedIdentifiers.Select(var => var.Name));

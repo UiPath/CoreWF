@@ -14,6 +14,8 @@ namespace Microsoft.VisualBasic.Activities;
 
 internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
 {
+    protected override StringComparison StringComparison => StringComparison.OrdinalIgnoreCase;
+
     public VisualBasicHelper(string expressionText, HashSet<AssemblyReference> assemblyReferences,
         HashSet<string> namespaceImportsNames) : base(expressionText, assemblyReferences, namespaceImportsNames) { }
 

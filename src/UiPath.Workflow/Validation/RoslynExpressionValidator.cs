@@ -241,7 +241,7 @@ public abstract class RoslynExpressionValidator
                                     .Select(n => n.ToString()).Distinct(CompilerHelper.IdentifierNameComparer);
         var resolvedIdentifiers =
             identifiers
-                .Select(name => (Name: name, Type: new ScriptAndTypeScope(expressionToValidate.Environment).FindVariable(name)))
+                .Select(name => (Name: name, Type: new ScriptAndTypeScope(expressionToValidate.Environment).FindVariable(name, CompilerHelper.IdentifierNameComparison)))
                 .Where(var => var.Type != null)
                 .ToArray();
 
