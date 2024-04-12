@@ -52,7 +52,7 @@ public abstract class AbstractInstanceStore(IWorkflowSerializer instanceSerializ
             await base.DisposeAsync();
             onDispose?.Invoke();
         }
-        public override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
             onDispose?.Invoke();

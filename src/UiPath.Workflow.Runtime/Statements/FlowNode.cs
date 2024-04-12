@@ -31,7 +31,17 @@ public abstract class FlowNode
         OnEndCacheMetadata();
     }
     protected virtual void OnCacheMetadata() { }
-    protected virtual void OnEndCacheMetadata() { }
+    protected virtual void OnEndCacheMetadata()
+    {
+        ValidateSingleSplitInAmonte();
+    }
+
+    protected void ValidateSingleSplitInAmonte()
+    {
+        var splits = Flowchart.GetStaticSplitsStack(this).GetTop();
+        if (splits.Count > 1)
+            AddValidationError($"Node has multiple splits incoming branches. Please precede with a Merge node.", splits);
+    }
 
     internal virtual IEnumerable<Activity> GetChildActivities() => null;
     internal abstract IReadOnlyList<FlowNode> GetSuccessors();
