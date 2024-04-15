@@ -130,7 +130,7 @@ public sealed partial class Flowchart : NativeActivity
             switch (predecessor)
             {
                 case FlowSplit split:
-                    successorStack.Push(split, predecessorStack);
+                    successorStack.AddPush(split, predecessorStack);
                     break;
                 case FlowMerge _:
                     successorStack.AddPop(predecessorStack);
@@ -159,16 +159,11 @@ public sealed partial class Flowchart : NativeActivity
         }
         void ValidateSplit(FlowSplit split)
         {
-            HashSet<FlowMerge> allMerges = new();
-            foreach (var branch in split.Branches)
-            {
-                var merges = GetMerges(branch).Distinct().ToList();
-                allMerges.AddRange(merges);
-            }
-            if (allMerges.Count == 0)
+            var splitMerges = GetMerges(split);
+            if (splitMerges.Count == 0)
                 AddValidationError("Split should end in one Merge node.", split);
-            if (allMerges.Count > 1)
-                AddValidationError("All split branches should end in only one Merge node.", split, allMerges);
+            if (splitMerges.Count > 1)
+                AddValidationError("All split branches should end in only one Merge node.", split, splitMerges);
         }
         void ValidateMerge(FlowMerge node)
         {
@@ -183,18 +178,13 @@ public sealed partial class Flowchart : NativeActivity
                 SourceDetail = new[] { node }.Concat(otherNodes ?? Array.Empty<FlowNode>()).ToArray()
             });
         }
-        List<FlowMerge> GetMerges(FlowNode flowNode)
+        List<FlowMerge> GetMerges(FlowSplit flowSplit)
         {
-            var staticBranches = GetStaticSplitsStack(flowNode);
-
-            var merges = (
-            from nodeInfo in _staticBranchesByNode
-            where nodeInfo.Key is FlowMerge
-            where nodeInfo.Value.IsOnStack(staticBranches)
-            select nodeInfo
-            ).ToList();
-
-            return merges.Select(ni => ni.Key as FlowMerge).ToList();
+            return (from nodeInfo in _staticBranchesByNode 
+                    where nodeInfo.Key is FlowMerge 
+                    where nodeInfo.Value.GetTop().Contains(flowSplit) 
+                    select nodeInfo.Key as FlowMerge)
+                    .ToList();
         }
     }
 
