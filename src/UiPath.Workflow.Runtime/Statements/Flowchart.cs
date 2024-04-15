@@ -88,7 +88,6 @@ public sealed partial class Flowchart : NativeActivity
             }
             else if (StartNode is not null)
             {
-                _staticBranchesByNode[StartNode] = StaticNodeStackInfo.EmptyStack;
                 DepthFirstVisitNodes();
             }
         }
@@ -97,6 +96,7 @@ public sealed partial class Flowchart : NativeActivity
         {
             Stack<FlowNode> toVisit = new();
             toVisit.Push(StartNode);
+            GetStaticSplitsStack(StartNode).PropagateStack(StaticNodeStackInfo.EmptyStack);
             while (toVisit.TryPop(out var current))
             {
                 if (WasVisited(current))
