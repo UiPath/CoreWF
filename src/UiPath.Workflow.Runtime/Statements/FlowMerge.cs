@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Windows.Markup;
+﻿using System.Windows.Markup;
 using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
@@ -36,13 +34,6 @@ public partial class FlowMerge : FlowNode
     [DefaultValue(DefaultDisplayName)]
     public string DisplayName { get; set; } = DefaultDisplayName;
 
-    protected override void OnEndCacheMetadata()
-    {
-        var connectedBranches = Flowchart.GetStaticSplitsStack(this).GetTop();
-        var splits = connectedBranches.Select(bl => bl).Distinct().ToList();
-        if (splits.Count > 1)
-            AddValidationError("All merge branches should start in the same Split node.", splits); 
-    }
     internal override IReadOnlyList<FlowNode> GetSuccessors()
     {
         if (Next != null)

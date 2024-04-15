@@ -7,22 +7,21 @@ namespace System.Activities.Statements;
 
 partial class Flowchart
 {
-    public class StaticNodeStackInfo
+    private sealed class StaticNodeStackInfo
     {
-        private List<List<FlowSplit>> SplitsStack { get; } = new();
+        private List<List<FlowSplit>> SplitsStack { get; init; } = new();
+        public static StaticNodeStackInfo EmptyStack { get; } = new StaticNodeStackInfo(){SplitsStack = new() { new() } };
 
         public HashSet<FlowSplit> GetTop()
         {
-            return new (SplitsStack.Select(b => b.LastOrDefault()).Where(b => b!= null));
+            return new (SplitsStack.Select(b => b.LastOrDefault()));
         }
 
-        public void Push(FlowSplit newBranch, StaticNodeStackInfo splitBranchInfo)
+        public void Push(FlowSplit newSplit, StaticNodeStackInfo splitsStackInfo)
         {
-            var result = splitBranchInfo.SplitsStack.Select(
-                        stack => stack.Concat(new[] { newBranch }).ToList()
+            var result = splitsStackInfo.SplitsStack.Select(
+                        stack => stack.Concat(new[] { newSplit }).ToList()
                     ).ToList();
-            if (result.Count == 0)
-                result.Add(new() { newBranch });
             AddStack(result);
         }
 
@@ -35,7 +34,7 @@ partial class Flowchart
         {
             foreach (var pre in stack)
             {
-                if (HasBranch(pre))
+                if (HasStack(pre))
                     continue;
                 SplitsStack.Add(pre);
             }
@@ -47,14 +46,14 @@ partial class Flowchart
             AddStack(result);
         }
 
-        private bool HasBranch(List<FlowSplit> branch)
-            => SplitsStack.Any(b => branch.Count == b.Count && branch.All(p => b.Contains(p)));
+        private bool HasStack(List<FlowSplit> stack)
+            => SplitsStack.Any(b => stack.Count == b.Count && stack.All(p => b.Contains(p)));
 
-        internal bool IsOnBranch(StaticNodeStackInfo toConfirm)
+        internal bool IsOnStack(StaticNodeStackInfo toConfirm)
         {
-            foreach (var branchToConfirm in toConfirm.SplitsStack)
+            foreach (var stackToConfirm in toConfirm.SplitsStack)
             {
-                if (HasBranch(branchToConfirm))
+                if (HasStack(stackToConfirm))
                     return true;
             }
             return false;

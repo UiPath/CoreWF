@@ -52,11 +52,12 @@ public sealed partial class Flowchart : NativeActivity
             {
                 uniqueChildren.AddRange(nodeActivities);
             }
-            node.EndCacheMetadata(metadata);
+
+
+            ValidateSplitsAndMerges(metadata, node);
         }
 
         metadata.SetChildrenCollection(new Collection<Activity>(uniqueChildren.ToList()));
-
         bool WasVisited(FlowNode node)
         {
             if (node is null)
@@ -79,6 +80,7 @@ public sealed partial class Flowchart : NativeActivity
         {
             // Clear out our cached list of all nodes
             _reachableNodes.Clear();
+            _staticBranchesByNode.Clear();
 
             if (StartNode == null && Nodes.Count > 0)
             {
@@ -86,6 +88,7 @@ public sealed partial class Flowchart : NativeActivity
             }
             else if (StartNode is not null)
             {
+                _staticBranchesByNode[StartNode] = StaticNodeStackInfo.EmptyStack;
                 DepthFirstVisitNodes();
             }
         }
@@ -139,25 +142,67 @@ public sealed partial class Flowchart : NativeActivity
         }
     }
 
-    internal StaticNodeStackInfo GetStaticSplitsStack(FlowNode node)
+    private void ValidateSplitsAndMerges(NativeActivityMetadata metadata, FlowNode node)
+    {
+        ValidateSingleSplitInAmonte(node);
+        switch (node)
+        {
+            case FlowMerge merge: ValidateMerge(merge); break;
+            case FlowSplit split: ValidateSplit(split); break;
+        }
+
+        void ValidateSingleSplitInAmonte(FlowNode node)
+        {
+            var splits = GetStaticSplitsStack(node).GetTop();
+            if (splits.Count > 1)
+                AddValidationError($"Node has multiple splits incoming branches. Please precede with a Merge node.", node, splits);
+        }
+        void ValidateSplit(FlowSplit split)
+        {
+            HashSet<FlowMerge> allMerges = new();
+            foreach (var branch in split.Branches)
+            {
+                var merges = GetMerges(branch).Distinct().ToList();
+                allMerges.AddRange(merges);
+            }
+            if (allMerges.Count == 0)
+                AddValidationError("Split should end in one Merge node.", split);
+            if (allMerges.Count > 1)
+                AddValidationError("All split branches should end in only one Merge node.", split, allMerges);
+        }
+        void ValidateMerge(FlowMerge node)
+        {
+            var splits = GetStaticSplitsStack(node).GetTop();
+            if (splits.Count == 1 && splits.First() is null)
+                AddValidationError("A merge must be preceded by a Split node.", node);
+        }
+        void AddValidationError(string message, FlowNode node, IEnumerable<FlowNode> otherNodes = null)
+        {
+            metadata.AddValidationError(new ValidationError(message)
+            {
+                SourceDetail = new[] { node }.Concat(otherNodes ?? Array.Empty<FlowNode>()).ToArray()
+            });
+        }
+        List<FlowMerge> GetMerges(FlowNode flowNode)
+        {
+            var staticBranches = GetStaticSplitsStack(flowNode);
+
+            var merges = (
+            from nodeInfo in _staticBranchesByNode
+            where nodeInfo.Key is FlowMerge
+            where nodeInfo.Value.IsOnStack(staticBranches)
+            select nodeInfo
+            ).ToList();
+
+            return merges.Select(ni => ni.Key as FlowMerge).ToList();
+        }
+    }
+
+    private StaticNodeStackInfo GetStaticSplitsStack(FlowNode node)
     {
         if (_staticBranchesByNode.ContainsKey(node))
             return _staticBranchesByNode[node];
         else
             return _staticBranchesByNode[node] = new();
-    }
-
-    internal List<FlowMerge> GetMerges(FlowNode flowNode)
-    {
-        var staticBranches = GetStaticSplitsStack(flowNode);
-
-        var merges = (
-        from nodeInfo in _staticBranchesByNode
-        where nodeInfo.Key is FlowMerge
-        where nodeInfo.Value.IsOnBranch(staticBranches)
-        select nodeInfo
-        ).ToList();
-
-        return merges.Select(ni => ni.Key as FlowMerge).ToList();
     }
 }

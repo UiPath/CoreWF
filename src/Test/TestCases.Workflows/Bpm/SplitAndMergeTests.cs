@@ -282,7 +282,7 @@ public class SplitAndMergeTests
         };
 
         TestFlow.Results(split)
-            .ShouldBe(["branch1", "branch2", "sharedPart", "sharedPart2", "sharedPart", "sharedPart2"]);
+            .ShouldBe(["branch1", "branch2", "sharedPart", "sharedPart", "sharedPart2", "sharedPart2", "stop"]);
     }
 
     private void Merge_executed_at_least_one(MergeBehavior mergeBehavior)
