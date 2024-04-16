@@ -79,8 +79,8 @@ public sealed partial class Flowchart : NativeActivity
         void DepthFirstVisitNodes()
         {
             Stack<FlowNode> toVisit = new();
+            toVisit.Push(StartNode);
             GetStaticSplitsStack(StartNode).PropagateStack(StaticNodeStackInfo.EmptyStack);
-            VisitNode(StartNode, toVisit);
             while (toVisit.TryPop(out var current))
             {
                 VisitNode(current, toVisit);

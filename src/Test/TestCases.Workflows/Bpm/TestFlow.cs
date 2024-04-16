@@ -134,7 +134,12 @@ public static class TestFlow
 
     public static ValidationResults Validate(FlowNode startNode)
     {
-        return ActivityValidationServices.Validate(new Flowchart() { StartNode = startNode });
+        var flowchart = new Flowchart() { StartNode = startNode };
+        //double validate to make sure CacheMetadata is reentrant
+        var initial  = ActivityValidationServices.Validate(flowchart);
+        var validationResult = ActivityValidationServices.Validate(flowchart);
+        validationResult.ShouldBeEquivalentTo(initial);
+        return validationResult;
     }
 
     public static ValidationResults HasErrorFor(this ValidationResults results, FlowNode errorNode)
