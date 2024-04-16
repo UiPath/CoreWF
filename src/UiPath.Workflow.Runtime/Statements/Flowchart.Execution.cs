@@ -93,13 +93,12 @@ partial class Flowchart
         }
         return otherNodes.Any();
     }
-    internal List<NodeInstance> GetOtherNodes()
+    internal List<NodeInstance> GetSameStackNodes()
     {
         return (
                 from state in NodesInstances.Values
                 where state != CurrentNode
                 where state.ExecutionStack.IsSameOrInnerStackOf(CurrentNode.ExecutionStack)
-                where state.ActivityInstanceIds.Any() || !(state.IsCancelRequested)
                 select state
             ).ToList();
     }
@@ -149,10 +148,9 @@ partial class Flowchart
     {
         var runningMerges = (
             from nodeInstance in NodesInstances.Values
-            where _reachableNodes[nodeInstance.StaticNodeIndex] is FlowMerge
             where nodeInstance != CurrentNode
-            where nodeInstance.StartedRunning
-            where CurrentNode.ExecutionStack.SharesMergeOrOuterMerge(nodeInstance.ExecutionStack)
+            where _reachableNodes[nodeInstance.StaticNodeIndex] is FlowMerge
+            where CurrentNode.ExecutionStack.IsSameOrInnerStackOf(nodeInstance.ExecutionStack)
             select nodeInstance
             ).ToList();
 
@@ -283,9 +281,6 @@ partial class Flowchart
             };
         }
         private static string Pop(string stack) => stack[..stack.LastIndexOf(StackDelimiter)];
-
-        internal bool SharesMergeOrOuterMerge(ExecutionStackInfo executionStack)
-            => IsSameOrInnerStackOf(executionStack);
 
         internal bool IsSameOrInnerStackOf(ExecutionStackInfo outerStack)
             => SplitsStack.StartsWith(outerStack.SplitsStack);

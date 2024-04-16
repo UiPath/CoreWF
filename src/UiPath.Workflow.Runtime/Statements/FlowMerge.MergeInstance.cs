@@ -14,7 +14,7 @@ public partial class FlowMerge
         {
             if (!DoNotComplete)
                 return;
-            var runningNodes = Flowchart.GetOtherNodes();
+            var runningNodes = Flowchart.GetSameStackNodes();
             if (Node.Behavior is MergeFirstBehavior && !CancelExecuted)
             {
                 Flowchart.CancelNodes(runningNodes);
