@@ -13,7 +13,7 @@ partial class Flowchart
         public static StaticNodeStackInfo EmptyStack { get; } = new() { SplitsStacks = [[]] };
 
         public HashSet<FlowSplit> GetTop()
-            => new (SplitsStacks.Select(b => b.LastOrDefault()));
+            => [..SplitsStacks.Select(b => b.LastOrDefault())];
 
         public void AddPush(FlowSplit newSplit, StaticNodeStackInfo splitsStackInfo)
             => AddUniqueStack(splitsStackInfo.SplitsStacks

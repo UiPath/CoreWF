@@ -287,7 +287,7 @@ partial class Flowchart
         public int StaticNodeIndex { get; set; }
         public string ExecutionNodeId { get; set; }
         public bool IsCancelRequested { get; set; }
-        public HashSet<string> ActivityInstanceIds { get; set; } = new();
+        public HashSet<string> ActivityInstanceIds { get; set; } = [];
 
         public override string ToString()
         {
