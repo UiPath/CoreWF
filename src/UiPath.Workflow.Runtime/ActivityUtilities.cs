@@ -735,7 +735,7 @@ public static class ActivityUtilities
 
     // We explicitly call this CacheRootMetadata since it treats the provided
     // activity as the root of the tree.
-    internal static void CacheRootMetadata(Activity activity, LocationReferenceEnvironment hostEnvironment, ProcessActivityTreeOptions options, ProcessActivityCallback callback, ref IList<ValidationError> validationErrors)
+    public static void CacheRootMetadata(Activity activity, LocationReferenceEnvironment hostEnvironment, ProcessActivityTreeOptions options, ProcessActivityCallback callback, ref IList<ValidationError> validationErrors)
     {
         if (TD.CacheRootMetadataStartIsEnabled())
         {
