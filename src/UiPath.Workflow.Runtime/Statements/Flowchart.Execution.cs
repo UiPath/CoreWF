@@ -136,7 +136,8 @@ partial class Flowchart
     }
     private void SetNodeCompleted()
     {
-        if (CurrentNode is FlowMerge.MergeInstance merge && !merge.MergeCompleted || CurrentNode.ActivityInstanceIds.Any())
+        if (CurrentNode is FlowMerge.MergeInstance merge && !merge.MergeCompleted 
+            || CurrentNode.ActivityInstanceIds.Any())
             return;
 
         NodesInstances.Remove(CurrentNode.ExecutionNodeId);
@@ -192,7 +193,6 @@ partial class Flowchart
             NodesInstances[executionNodeId] = nodeInstance;
         }
 
-        nodeInstance.IsQueued = true;
         _executionQueue.Enqueue(nodeInstance);
     }
 
@@ -219,8 +219,6 @@ partial class Flowchart
         void ExecuteNode(NodeInstance nextNode)
         {
             CurrentNode = nextNode;
-            nextNode.IsQueued = false;
-            nextNode.StartedRunning = true;
 
             if (_activeContext.IsCancellationRequested)
             {
@@ -289,10 +287,7 @@ partial class Flowchart
         public int StaticNodeIndex { get; set; }
         public string ExecutionNodeId { get; set; }
         public bool IsCancelRequested { get; set; }
-        public bool StartedRunning { get; set; }
         public HashSet<string> ActivityInstanceIds { get; set; } = new();
-
-        public bool IsQueued { get; set; }
 
         public override string ToString()
         {
