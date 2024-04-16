@@ -5,7 +5,7 @@ namespace System.Activities.Statements;
 
 public sealed partial class FlowDecision
 {
-    public class DecisionInstance : Flowchart.NodeInstance<FlowDecision, bool>
+    public class DecisionInstance : NodeInstance<FlowDecision, bool>
     {
 
         protected override void Execute()

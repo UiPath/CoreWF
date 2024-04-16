@@ -2,7 +2,7 @@
 
 public partial class FlowSplit
 {
-    public class SplitInstance : Flowchart.NodeInstance<FlowSplit>
+    public class SplitInstance : NodeInstance<FlowSplit>
     {
         protected override void Execute()
         {

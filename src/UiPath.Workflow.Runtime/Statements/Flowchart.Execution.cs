@@ -292,50 +292,6 @@ partial class Flowchart
 
         public override string ToString() => SplitsStack;
     }
-    public abstract class NodeInstance<TFlowNode, TCompletionResult> : NodeInstance<TFlowNode> where TFlowNode : FlowNode
-    {
-        protected override void OnCompletionCallback<T>(T result)
-        {
-            if (!typeof(T).Equals(typeof(TCompletionResult)))
-            {
-                throw new ArgumentException("Invalid argument type.");
-            }
-            
-            OnCompletionCallback(result is TCompletionResult typedResult ? typedResult : default);
-        }
-
-        protected abstract void OnCompletionCallback(TCompletionResult result);
-    }
-
-    public abstract class NodeInstance<TFlowNode> : NodeInstance where TFlowNode : FlowNode
-    {
-        protected Flowchart Flowchart { get; private set; }
-        protected TFlowNode Node { get; private set; }
-
-        internal sealed override void Execute(Flowchart flowchart, FlowNode node)
-        {
-            Flowchart = flowchart;
-            Node = node as TFlowNode;
-
-            Execute();
-        }
-        internal sealed override void OnCompletionCallback<T>(Flowchart flowchart, FlowNode node, T result)
-        {
-            Flowchart = flowchart;
-            Node = node as TFlowNode;
-
-            OnCompletionCallback(result);
-        }
-
-        protected virtual void OnCompletionCallback<T>(T result)
-        {
-            OnCompletionCallback();
-        }
-
-        protected virtual void OnCompletionCallback() { }
-
-        protected abstract void Execute();
-    }
     public abstract class NodeInstance
     {
         public ExecutionStackInfo ExecutionStack { get; set; }

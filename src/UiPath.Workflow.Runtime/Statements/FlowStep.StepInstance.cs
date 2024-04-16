@@ -5,7 +5,7 @@ namespace System.Activities.Statements;
 
 public sealed partial class FlowStep
 {
-    public class StepInstance : Flowchart.NodeInstance<FlowStep>
+    public class StepInstance : NodeInstance<FlowStep>
     {
         protected override void Execute()
         {

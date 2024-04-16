@@ -5,7 +5,7 @@ namespace System.Activities.Statements;
 
 public sealed partial class FlowSwitch<T>
 {
-    public class SwitchInstance : Flowchart.NodeInstance<FlowSwitch<T>, T>
+    public class SwitchInstance : NodeInstance<FlowSwitch<T>, T>
     {
 
         protected override void Execute()
