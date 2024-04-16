@@ -22,8 +22,6 @@ partial class Flowchart
     private ActivityInstance _completedInstance;
     internal NodeInstance CurrentNode { get; set; }
 
-    internal string CurrentNodeId => CurrentNode.ExecutionNodeId;
-
     private Dictionary<string, NodeInstance> NodesInstances => _flowchartState.Get(_activeContext).NodesInstances;
     private int NextExecutionNodeId => ++_flowchartState.Get(_activeContext).NextExecutionNodeId;
 
@@ -173,7 +171,7 @@ partial class Flowchart
         var executionStack = enqueueType switch
             {
                 EnqueueType.Propagate => CurrentNode?.ExecutionStack ?? new() { SplitsStack = "_" },
-                EnqueueType.Push => CurrentNode.ExecutionStack.Push(CurrentNodeId),
+                EnqueueType.Push => CurrentNode.ExecutionStack.Push(CurrentNode.ExecutionNodeId),
                 EnqueueType.Pop => CurrentNode.ExecutionStack.Pop(),
                 _ => throw new NotImplementedException()
             };
