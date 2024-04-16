@@ -413,7 +413,7 @@ public class SplitAndMergeTests
         TestFlow.Results(split)
             .ShouldBe(["branch1", "branch2", "branch1Inner", "branch2Inner", "shortDelay", "delayedBranch", "longDelay canceled", "stop"]);
     }
-
+    [Fact]
     public void MergeAny_cancels_inner_inner_waiting_merge()
     {
         var merge = new FlowMerge() { Behavior = new MergeFirstBehavior() }.Text("stop");
@@ -423,10 +423,10 @@ public class SplitAndMergeTests
         {
             Branches = {
                 TestFlow.Text("branch1Inner")
-                    .FlowTo(innerMerge),
+                    .FlowTo(innerInnerMerge),
                 TestFlow.Text("branch2Inner")
                     .CancelableText(TimeSpan.FromSeconds(5), "longDelay canceled")
-                    .FlowTo(innerMerge)
+                    .FlowTo(innerInnerMerge)
             }
         };
         var innerSplit = new FlowSplit()
