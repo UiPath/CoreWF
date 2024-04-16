@@ -12,7 +12,8 @@ partial class Flowchart
     private const string FlowChartStateVariableName = "flowchartState";
     private readonly Variable<State> _flowchartState = new(FlowChartStateVariableName, c => new()
     {
-        Version = FileVersionInfo.GetVersionInfo(typeof(Flowchart).Assembly.Location).ProductVersion ?? "Empty"
+        SchemaVersion = "0.0",
+        ProductVersion = FileVersionInfo.GetVersionInfo(typeof(Flowchart).Assembly.Location).ProductVersion ?? "Empty"
     });
 
     private CompletionCallback _completionCallback;
@@ -313,7 +314,8 @@ partial class Flowchart
     }
     public class State
     {
-        public string Version { get; init; }
+        public string ProductVersion { get; init; }
+        public string SchemaVersion { get; init; }
         public Dictionary<string, NodeInstance> NodesInstances { get; set; } = new();
         public int NextExecutionNodeId { get; set; } = 0;
     }
