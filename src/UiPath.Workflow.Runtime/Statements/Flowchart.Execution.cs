@@ -180,8 +180,8 @@ partial class Flowchart
         
         var executionNodeId = node switch
         {
-            FlowMerge => $"{node.Index}-{node}_{executionStack}",
-            _ => $"{node.Index}-{node}-{NextExecutionNodeId}",
+            FlowMerge => $"{node.Index}_{executionStack}",
+            _ => $"{node.Index}_{NextExecutionNodeId}",
         };
 
         if (!NodesInstances.TryGetValue(executionNodeId, out var nodeInstance))
