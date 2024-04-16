@@ -414,6 +414,45 @@ public class SplitAndMergeTests
             .ShouldBe(["branch1", "branch2", "branch1Inner", "branch2Inner", "shortDelay", "delayedBranch", "longDelay canceled", "stop"]);
     }
 
+    public void MergeAny_cancels_inner_inner_waiting_merge()
+    {
+        var merge = new FlowMerge() { Behavior = new MergeFirstBehavior() }.Text("stop");
+        var innerMerge = new FlowMerge().FlowTo(merge);
+        var innerInnerMerge = new FlowMerge().FlowTo(innerMerge);
+        var innerInnerSplit = new FlowSplit()
+        {
+            Branches = {
+                TestFlow.Text("branch1Inner")
+                    .FlowTo(innerMerge),
+                TestFlow.Text("branch2Inner")
+                    .CancelableText(TimeSpan.FromSeconds(5), "longDelay canceled")
+                    .FlowTo(innerMerge)
+            }
+        };
+        var innerSplit = new FlowSplit()
+        {
+            Branches =
+            {
+                innerInnerSplit
+            }
+        };
+        var split = new FlowSplit()
+        {
+            Branches = {
+                TestFlow
+                    .Text("branch1")
+                    .FlowTo(innerSplit),
+                TestFlow
+                    .Text("branch2")
+                    .DelayedText(TimeSpan.FromMilliseconds(200), "shortDelay")
+                    .Text("delayedBranch")
+                    .FlowTo (merge)
+            }
+        };
+
+        TestFlow.Results(split)
+            .ShouldBe(["branch1", "branch2", "branch1Inner", "branch2Inner", "shortDelay", "delayedBranch", "longDelay canceled", "stop"]);
+    }
     [Fact]
     /// <image url="./Diagrams/MergeAny_continues_after_first_and_cancels_the_rest.png" scale="0.15" />
     public void MergeAny_continues_after_first_and_cancels_the_rest()

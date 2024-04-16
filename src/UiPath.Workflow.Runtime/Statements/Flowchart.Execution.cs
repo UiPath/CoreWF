@@ -137,7 +137,7 @@ partial class Flowchart
     }
     private void SetNodeCompleted()
     {
-        if (CurrentNode.DoNotComplete || CurrentNode.ActivityInstanceIds.Any())
+        if (CurrentNode is FlowMerge.MergeInstance merge && !merge.MergeCompleted || CurrentNode.ActivityInstanceIds.Any())
             return;
 
         NodesInstances.Remove(CurrentNode.ExecutionNodeId);
@@ -150,7 +150,6 @@ partial class Flowchart
             from nodeInstance in NodesInstances.Values
             where nodeInstance != CurrentNode
             where _reachableNodes[nodeInstance.StaticNodeIndex] is FlowMerge
-            where CurrentNode.ExecutionStack.IsSameOrInnerStackOf(nodeInstance.ExecutionStack)
             select nodeInstance
             ).ToList();
 
@@ -292,7 +291,6 @@ partial class Flowchart
         public ExecutionStackInfo ExecutionStack { get; set; }
         public int StaticNodeIndex { get; set; }
         public string ExecutionNodeId { get; set; }
-        public bool DoNotComplete { get; set; }
         public bool IsCancelRequested { get; set; }
         public bool StartedRunning { get; set; }
         public HashSet<string> ActivityInstanceIds { get; set; } = new();

@@ -5,14 +5,11 @@ public partial class FlowMerge
 {
     public class MergeInstance : NodeInstance<FlowMerge>
     {
-        public MergeInstance()
-        {
-            DoNotComplete = true;
-        }
+        public bool MergeCompleted { get; set; }
         public bool CancelExecuted { get; set; }
         protected override void Execute()
         {
-            if (!DoNotComplete)
+            if (MergeCompleted)
                 return;
             var runningNodes = Flowchart.GetSameStackNodes();
             if (Node.Behavior is MergeFirstBehavior && !CancelExecuted)
@@ -27,9 +24,9 @@ public partial class FlowMerge
                 return;
             }
 
-            DoNotComplete = false;
             Debug.WriteLine($"{Node}: Next queued");
             Flowchart.EnqueueNodeExecution(Node.Next, Flowchart.EnqueueType.Pop);
+            MergeCompleted = true;
         }
     }
 }
