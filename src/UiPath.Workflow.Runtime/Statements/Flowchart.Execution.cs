@@ -17,7 +17,7 @@ partial class Flowchart
     });
 
     private CompletionCallback _completionCallback;
-    private readonly Dictionary<Type, Delegate> _completionCallbacks = new();
+    private readonly Dictionary<Type, Delegate> _completionCallbacks = [];
     private readonly Queue<NodeInstance> _executionQueue = new();
 
     private ActivityInstance _completedInstance;
@@ -30,7 +30,7 @@ partial class Flowchart
 
     private IDisposable WithContext(NativeActivityContext context, ActivityInstance completedInstance)
     {
-        if (_completedInstance is not null || _activeContext is not null)
+        if (_activeContext is not null)
             throw new InvalidOperationException("Context already set.");
         _completedInstance = completedInstance;
         _activeContext = context;
@@ -48,8 +48,8 @@ partial class Flowchart
             if (completedInstance is null)
                 return;
             CurrentNode = NodesInstances.Values
-                .Where(n => n.ActivityInstanceIds.Contains(completedInstance?.Id))
-                .FirstOrDefault();
+                .Where(n => n.ActivityInstanceIds.Contains(completedInstance.Id))
+                .First();
         }
     }
 
