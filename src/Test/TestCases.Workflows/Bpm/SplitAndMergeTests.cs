@@ -285,6 +285,41 @@ public class SplitAndMergeTests
             .ShouldBe(["branch1", "branch2", "sharedPart", "sharedPart", "sharedPart2", "sharedPart2", "stop"]);
     }
 
+    [Fact]
+    /// <image url="./Diagrams/Should_join_with_shared_inner_split.png" scale="0.15" />
+    public void Should_join_with_shared_inner_split()
+    {
+        var merge = new FlowMerge().Text("stop");
+        var sharedSplitMerge = new FlowSplit()
+        {
+            Branches = {
+            TestFlow
+                .Text("branchShared")
+                .FlowTo(new FlowMerge().FlowTo(merge))
+            }
+        };
+
+        var split = new FlowSplit()
+        {
+            Branches = {
+                TestFlow
+                    .Text("branch1")
+                    .FlowTo(sharedSplitMerge),
+                TestFlow
+                    .Text("branch2")
+                    .FlowTo(new FlowDecision()
+                    {
+                        Condition = new Literal<bool>(false),
+                        True = TestFlow.Text("skippedPart").FlowTo(merge),
+                        False = sharedSplitMerge
+                    })
+        }
+        };
+
+        TestFlow.Results(split)
+            .ShouldBe(["branch1", "branch2", "branchShared", "branchShared", "stop"]);
+    }
+
     private void Merge_executed_at_least_one(MergeBehavior mergeBehavior)
     {
         var merge = new FlowMerge() { Behavior = mergeBehavior }.Text("stop");
@@ -343,6 +378,40 @@ public class SplitAndMergeTests
 
         TestFlow.Results(split)
             .ShouldBe(["branch1", "branch2", "branch1", "longDelay canceled", "stop"]);
+    }
+
+    [Fact]
+    /// <image url="./Diagrams/MergeAny_cancels_inner_waiting_merge.png" scale="0.15" />
+    public void MergeAny_cancels_inner_waiting_merge()
+    {
+        var merge = new FlowMerge() { Behavior = new MergeFirstBehavior() }.Text("stop");
+        var innerMerge = new FlowMerge().FlowTo(merge);
+        var innerSplit = new FlowSplit()
+        {
+            Branches = {
+                TestFlow.Text("branch1Inner")
+                    .FlowTo(innerMerge),
+                TestFlow.Text("branch2Inner")
+                    .CancelableText(TimeSpan.FromSeconds(5), "longDelay canceled")
+                    .FlowTo(innerMerge)
+            }
+        };
+        var split = new FlowSplit()
+        {
+            Branches = {
+                TestFlow
+                    .Text("branch1")
+                    .FlowTo(innerSplit),
+                TestFlow
+                    .Text("branch2")
+                    .DelayedText(TimeSpan.FromMilliseconds(200), "shortDelay")
+                    .Text("delayedBranch")
+                    .FlowTo (merge)
+            }
+        };
+
+        TestFlow.Results(split)
+            .ShouldBe(["branch1", "branch2", "branch1Inner", "branch2Inner", "shortDelay", "delayedBranch", "longDelay canceled", "stop"]);
     }
 
     [Fact]
