@@ -172,7 +172,7 @@ partial class Flowchart
         }
         var executionStack = enqueueType switch
             {
-                EnqueueType.Propagate => CurrentNode?.ExecutionStack ?? new("_"),
+                EnqueueType.Propagate => CurrentNode?.ExecutionStack ?? new() { SplitsStack = "_" },
                 EnqueueType.Push => CurrentNode.ExecutionStack.Push(CurrentNodeId),
                 EnqueueType.Pop => CurrentNode.ExecutionStack.Pop(),
                 _ => throw new NotImplementedException()
@@ -259,12 +259,10 @@ partial class Flowchart
     {
         private const char StackDelimiter = ':';
         public string SplitsStack { get; init; }
-        public ExecutionStackInfo() : this("_"){ }
-
-        public ExecutionStackInfo(string SplitsStack)
+        public ExecutionStackInfo() 
         {
-            this.SplitsStack = SplitsStack;
         }
+
         public ExecutionStackInfo Push(string splitId)
         {
             return this with
