@@ -4,29 +4,28 @@
 using System.Linq;
 
 namespace System.Activities.Statements;
-using SplitsStack = List<FlowSplit>;
 
 partial class Flowchart
 {
     private sealed class StaticNodeStackInfo
     {
-        private List<SplitsStack> SplitsStacks { get; init; } = new();
-        public static StaticNodeStackInfo EmptyStack { get; } = new() { SplitsStacks = new() { new() } };
+        private List<FlowSplit[]> SplitsStacks { get; init; } = new();
+        public static StaticNodeStackInfo EmptyStack { get; } = new() { SplitsStacks = [[]] };
 
         public HashSet<FlowSplit> GetTop()
             => new (SplitsStacks.Select(b => b.LastOrDefault()));
 
         public void AddPush(FlowSplit newSplit, StaticNodeStackInfo splitsStackInfo)
             => AddUniqueStack(splitsStackInfo.SplitsStacks
-                .Select(stack => stack.Concat(new[] { newSplit }).ToList()));
+                .Select<FlowSplit[], FlowSplit[]>(stack => [.. stack, newSplit]));
         public void AddPop(StaticNodeStackInfo popFrom)
             => AddUniqueStack(popFrom.SplitsStacks
-                .Select(s => new SplitsStack(s.Take(s.Count - 1))));
+                .Select<FlowSplit[], FlowSplit[]>(s => [..s.Take(s.Length - 1)]));
 
         public void PropagateStack(StaticNodeStackInfo preStacks)
             => AddUniqueStack(preStacks.SplitsStacks);
 
-        private void AddUniqueStack(IEnumerable<SplitsStack> stack)
+        private void AddUniqueStack(IEnumerable<FlowSplit[]> stack)
         {
             foreach (var pre in stack)
             {
@@ -36,7 +35,7 @@ partial class Flowchart
             }
         }
 
-        private bool HasStack(SplitsStack stack)
+        private bool HasStack(FlowSplit[] stack)
             => SplitsStacks.Any(s => s.SequenceEqual(stack));
     }
 }

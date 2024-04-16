@@ -58,23 +58,7 @@ public sealed partial class Flowchart : NativeActivity
         }
 
         metadata.SetChildrenCollection(new Collection<Activity>(uniqueChildren.ToList()));
-        bool WasVisited(FlowNode node)
-        {
-            if (node is null)
-            {
-                return true;
-            }
-
-            if (node.Flowchart != null)
-            {
-                if (node.Flowchart != this)
-                {
-                    metadata.AddValidationError(SR.FlowNodeCannotBeShared(node.Flowchart.DisplayName, DisplayName));
-                }
-                return true;
-            }
-            return false;
-        }
+        bool WasVisited(FlowNode node) => node is null || _staticBranchesByNode.ContainsKey(node);
 
         void GatherReachableNodes()
         {
@@ -95,32 +79,28 @@ public sealed partial class Flowchart : NativeActivity
         void DepthFirstVisitNodes()
         {
             Stack<FlowNode> toVisit = new();
-            toVisit.Push(StartNode);
             GetStaticSplitsStack(StartNode).PropagateStack(StaticNodeStackInfo.EmptyStack);
+            VisitNode(StartNode, toVisit);
             while (toVisit.TryPop(out var current))
             {
-                if (WasVisited(current))
-                    continue;
-
-                var successors = VisitNode(current, toVisit);
-                foreach (var successor in successors)
-                {
-                    toVisit.Push(successor);
-                    PropagateSplitsStack(current, successor);
-                }
+                VisitNode(current, toVisit);
             }
         }
-
-        IReadOnlyList<FlowNode> VisitNode(FlowNode node, Stack<FlowNode> toVisit)
+        void VisitNode(FlowNode current, Stack<FlowNode> toVisit)
         {
-            Fx.Assert(node.Index == -1 && !_reachableNodes.Contains(node), "Corrupt Flowchart.reachableNodes.");
-            node.Index = _reachableNodes.Count;
-            _reachableNodes.Add(node);
-            node.CacheMetadata(this, metadata);
+            Fx.Assert(current.Index == -1 && !_reachableNodes.Contains(current), "Corrupt Flowchart.reachableNodes.");
+            current.Index = _reachableNodes.Count;
+            _reachableNodes.Add(current);
+            current.CacheMetadata(this, metadata);
+            var successors = current.GetSuccessors();
 
-            return node.GetSuccessors();
+            foreach (var successor in successors)
+            {
+                if (!WasVisited(successor))
+                    toVisit.Push(successor);
+                PropagateSplitsStack(current, successor);
+            }
         }
-
         void PropagateSplitsStack(FlowNode predecessor, FlowNode successor)
         {
             if (predecessor is null || successor is null)

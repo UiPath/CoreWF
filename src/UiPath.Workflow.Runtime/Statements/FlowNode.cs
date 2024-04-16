@@ -17,9 +17,13 @@ public abstract class FlowNode
     internal Flowchart Flowchart => _owner;
     protected NativeActivityMetadata Metadata { get; private set; }
  
-    internal void CacheMetadata(Flowchart owner, NativeActivityMetadata metadata)
+    internal void CacheMetadata(Flowchart flowchart, NativeActivityMetadata metadata)
     { 
-        _owner = owner;
+        if (_owner != null && !ReferenceEquals(flowchart, _owner))
+        {
+            metadata.AddValidationError(SR.FlowNodeCannotBeShared(_owner.DisplayName, flowchart.DisplayName));
+        }
+        _owner = flowchart;
         Metadata = metadata;
         OnCacheMetadata();
     }
