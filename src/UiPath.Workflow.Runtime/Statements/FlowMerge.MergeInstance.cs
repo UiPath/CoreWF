@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using static System.Activities.Statements.Flowchart;
 namespace System.Activities.Statements;
 
 public partial class FlowMerge
@@ -30,7 +29,7 @@ public partial class FlowMerge
 
             DoNotComplete = false;
             Debug.WriteLine($"{Node}: Next queued");
-            Flowchart.EnqueueNodeExecution(Node.Next, EnqueueType.Pop);
+            Flowchart.EnqueueNodeExecution(Node.Next, Flowchart.EnqueueType.Pop);
         }
     }
 }

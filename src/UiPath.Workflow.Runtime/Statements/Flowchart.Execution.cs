@@ -98,7 +98,7 @@ partial class Flowchart
         return (
                 from state in NodesInstances.Values
                 where state != CurrentNode
-                where state.ExecutionStack.IsSubStackOf(CurrentNode.ExecutionStack)
+                where state.ExecutionStack.IsSameOrInnerStackOf(CurrentNode.ExecutionStack)
                 where state.ActivityInstanceIds.Any() || !(state.IsCancelRequested)
                 select state
             ).ToList();
@@ -152,7 +152,7 @@ partial class Flowchart
             where _reachableNodes[nodeInstance.StaticNodeIndex] is FlowMerge
             where nodeInstance != CurrentNode
             where nodeInstance.StartedRunning
-            where CurrentNode.ExecutionStack.SharesMerge(nodeInstance.ExecutionStack)
+            where CurrentNode.ExecutionStack.SharesMergeOrOuterMerge(nodeInstance.ExecutionStack)
             select nodeInstance
             ).ToList();
 
@@ -284,11 +284,11 @@ partial class Flowchart
         }
         private static string Pop(string stack) => stack[..stack.LastIndexOf(StackDelimiter)];
 
-        internal bool SharesMerge(ExecutionStackInfo executionStack)
-            => executionStack.SplitsStack == SplitsStack;
+        internal bool SharesMergeOrOuterMerge(ExecutionStackInfo executionStack)
+            => IsSameOrInnerStackOf(executionStack);
 
-        internal bool IsSubStackOf(ExecutionStackInfo executionStack)
-            => SplitsStack.StartsWith(executionStack.SplitsStack);
+        internal bool IsSameOrInnerStackOf(ExecutionStackInfo outerStack)
+            => SplitsStack.StartsWith(outerStack.SplitsStack);
 
         public override string ToString() => SplitsStack;
     }
