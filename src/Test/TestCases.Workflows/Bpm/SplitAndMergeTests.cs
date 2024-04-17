@@ -7,9 +7,17 @@ using TestObjects.XamlTestDriver;
 using System.IO;
 using System;
 using System.Diagnostics;
+using JsonFileInstanceStore.Persistence;
 namespace TestCases.Activitiess.Bpm;
 
-public class SplitAndMergeTests
+public class SplitAndMergeTestsJson : SplitAndMergeTests
+{
+    public SplitAndMergeTestsJson()
+    {
+        Serializer = new JsonWorkflowSerializer();
+    }
+}
+public class SplitAndMergeTests : FlowTestsBase
 {
     [Fact]
     public void RoundTrip_xaml()
@@ -24,7 +32,7 @@ public class SplitAndMergeTests
         outersplit.AddBranches(split);
         var flowchart = new Flowchart { StartNode = outersplit };
         var roundTrip = XamlRoundTrip(flowchart);
-        TestFlow.Results(roundTrip)
+        TestFlowResults(roundTrip)
             .ShouldBe(["branch1", "branch2", "stop"]);
 
         T XamlRoundTrip<T>(T obj)
@@ -203,7 +211,7 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2", "stop"]);
     }
 
@@ -228,7 +236,7 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(outerSplit)
+        TestFlowResults(outerSplit)
             .ShouldBe(["branch1Outer", "branch2Outer", "branch1Inner", "branch2Inner", "innerMerged", "stop"]);
     }
 
@@ -252,7 +260,7 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["executedPart", "executedBranch", "stop"]);
     }
 
@@ -281,7 +289,7 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2", "sharedPart", "sharedPart", "sharedPart2", "sharedPart2", "stop"]);
     }
 
@@ -316,7 +324,7 @@ public class SplitAndMergeTests
         }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2", "branchShared", "branchShared", "stop"]);
     }
 
@@ -342,7 +350,7 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2"]);
     }
 
@@ -376,7 +384,7 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2", "branch1", "longDelay canceled", "stop"]);
     }
 
@@ -410,15 +418,14 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2", "branch1Inner", "branch2Inner", "shortDelay", "delayedBranch", "longDelay canceled", "stop"]);
     }
     [Fact]
     public void MergeAny_cancels_inner_inner_waiting_merge()
     {
         var merge = new FlowMerge() { Behavior = new MergeFirstBehavior() }.Text("stop");
-        var innerMerge = new FlowMerge().FlowTo(merge);
-        var innerInnerMerge = new FlowMerge().FlowTo(innerMerge);
+        var innerInnerMerge = new FlowMerge().FlowTo(new FlowMerge().FlowTo(merge));
         var innerInnerSplit = new FlowSplit()
         {
             Branches = {
@@ -450,7 +457,7 @@ public class SplitAndMergeTests
             }
         };
 
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2", "branch1Inner", "branch2Inner", "shortDelay", "delayedBranch", "longDelay canceled", "stop"]);
     }
     [Fact]
@@ -480,7 +487,7 @@ public class SplitAndMergeTests
         };
 
         var sw = Stopwatch.StartNew();
-        var results = TestFlow.Results(split);
+        var results = TestFlowResults(split);
         sw.Stop();
         sw.Elapsed.ShouldBeInRange(nonCancelableDelay, cancelableDelay);
         results.ShouldBe(["branch1", "branch2", "branch3", "branch1 delayed", "branch3 canceled", "branch2 delayed", "stop"]);
@@ -504,38 +511,38 @@ public class SplitAndMergeTests
                 .FlowTo(new BlockingActivity())
                 .Text("blockingContinuation")
                 .FlowTo(merge));
-        TestFlow.Results(split)
+        TestFlowResults(split)
             .ShouldBe(["branch1", "branch2", "branch3", "blockingContinuation", "stop"]);
     }
+    private class BlockingActivity : NativeActivity
+    {
+
+        public BlockingActivity()
+        {
+            DisplayName = WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + "blocking";
+        }
+
+
+        protected override void CacheMetadata(NativeActivityMetadata metadata)
+        {
+            // nothing to do
+        }
+
+        protected override void Execute(NativeActivityContext context)
+        {
+            context.CreateBookmark(DisplayName, new BookmarkCallback(OnBookmarkResumed));
+        }
+
+        protected override void Cancel(NativeActivityContext context)
+        {
+            base.Cancel(context);
+        }
+
+        private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
+        {
+        }
+
+        protected override bool CanInduceIdle => true;
+    }
 }
 
-public class BlockingActivity : NativeActivity
-{
-
-    public BlockingActivity()
-    {
-        DisplayName = WorkflowApplicationTestExtensions.WorkflowApplicationTestExtensions.AutoResumedBookmarkNamePrefix + "blocking";
-    }
-
-
-    protected override void CacheMetadata(NativeActivityMetadata metadata)
-    {
-        // nothing to do
-    }
-
-    protected override void Execute(NativeActivityContext context)
-    {
-        context.CreateBookmark(DisplayName, new BookmarkCallback(OnBookmarkResumed));
-    }
-
-    protected override void Cancel(NativeActivityContext context)
-    {
-        base.Cancel(context);
-    }
-
-    private void OnBookmarkResumed(NativeActivityContext context, Bookmark bookmark, object value)
-    {
-    }
-
-    protected override bool CanInduceIdle => true;
-}

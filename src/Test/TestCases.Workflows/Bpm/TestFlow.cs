@@ -148,34 +148,4 @@ public static class TestFlow
         results.Errors.Where(e => (e.SourceDetail as IList<FlowNode>).Contains(errorNode)).ShouldNotBeEmpty();
         return results;
     }
-
-    public static List<string> Results(FlowNode startNode)
-    {
-        var flowchart = new Flowchart { StartNode = startNode };
-        return Results(flowchart);
-    }
-
-    public static List<string> Results(Activity flowchart)
-    {
-        Variable<List<string>> _stringsVariable = new("strings", c => new());
-        var root = new ActivityWithResult<List<string>> { Body = flowchart, In = _stringsVariable };
-        var app = new WorkflowApplication(root);
-        return (List<string>)app.RunUntilCompletion().Outputs["Result"];
-    }
-
-    private class ActivityWithResult<TResult> : NativeActivity<TResult>
-    {
-        public Variable<TResult> In { get; set; } = new();
-        public Activity Body { get; set; }
-        protected override void Execute(NativeActivityContext context) => context.ScheduleActivity(Body, (context, _) =>
-        {
-            TResult value;
-            using (context.InheritVariables())
-            {
-                value = In.Get(context);
-            }
-            context.SetValue(Result, value);
-        });
-    }
-
 }
