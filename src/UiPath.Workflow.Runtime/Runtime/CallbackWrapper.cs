@@ -18,13 +18,13 @@ public class CallbackWrapper
 
     protected internal CallbackWrapper() { }
 
-    public CallbackWrapper(Delegate callback, ActivityInstance owningInstance)
+    internal CallbackWrapper(Delegate callback, ActivityInstance owningInstance)
     {
         ActivityInstance = owningInstance;
         _callback = callback;
     }
 
-    public ActivityInstance ActivityInstance
+    internal ActivityInstance ActivityInstance
     {
         get => _activityInstance;
         private set => _activityInstance = value;
@@ -35,21 +35,21 @@ public class CallbackWrapper
     public Delegate Callback => _callback;
 
     [DataMember(Name = "callbackName")]
-    public string SerializedCallbackName
+    internal string SerializedCallbackName
     {
         get => _callbackName;
         set => _callbackName = value;
     }
 
     [DataMember(EmitDefaultValue = false, Name = "declaringAssemblyName")]
-    public string SerializedDeclaringAssemblyName
+    internal string SerializedDeclaringAssemblyName
     {
         get => _declaringAssemblyName;
         set => _declaringAssemblyName = value;
     }
 
     [DataMember(EmitDefaultValue = false, Name = "declaringTypeName")]
-    public string SerializedDeclaringTypeName
+    internal string SerializedDeclaringTypeName
     {
         get => _declaringTypeName;
         set => _declaringTypeName = value;
@@ -62,7 +62,7 @@ public class CallbackWrapper
         set => ActivityInstance = value;
     }
 
-    public static bool IsValidCallback(Delegate callback, ActivityInstance owningInstance)
+    internal static bool IsValidCallback(Delegate callback, ActivityInstance owningInstance)
     {
         Fx.Assert(callback != null, "This should only be called with non-null callbacks");
 

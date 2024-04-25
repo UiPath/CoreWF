@@ -9,10 +9,10 @@ public class FaultCallbackWrapper : CallbackWrapper
     private static readonly Type faultCallbackType = typeof(FaultCallback);
     private static readonly Type[] faultCallbackParameters = new Type[] { typeof(NativeActivityFaultContext), typeof(Exception), typeof(ActivityInstance) };
 
-    public FaultCallbackWrapper(FaultCallback callback, ActivityInstance owningInstance)
+    internal FaultCallbackWrapper(FaultCallback callback, ActivityInstance owningInstance)
         : base(callback, owningInstance) { }
 
-    public void Invoke(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
+    internal void Invoke(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
     {
         EnsureCallback(faultCallbackType, faultCallbackParameters);
         FaultCallback faultCallback = (FaultCallback)Callback;

@@ -8,7 +8,7 @@ public class FaultBookmark
 {
     private FaultCallbackWrapper _callbackWrapper;
 
-    public FaultBookmark(FaultCallbackWrapper callbackWrapper)
+    internal FaultBookmark(FaultCallbackWrapper callbackWrapper)
     {
         _callbackWrapper = callbackWrapper;
     }

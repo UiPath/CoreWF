@@ -8,12 +8,12 @@ public class CompletionBookmark
 {
     private CompletionCallbackWrapper _callbackWrapper;
 
-    public CompletionBookmark()
+    internal CompletionBookmark()
     {
         // Called when we want to use the special completion callback
     }
 
-    public CompletionBookmark(CompletionCallbackWrapper callbackWrapper)
+    internal CompletionBookmark(CompletionCallbackWrapper callbackWrapper)
     {
         _callbackWrapper = callbackWrapper;
     }
@@ -25,7 +25,7 @@ public class CompletionBookmark
         set => _callbackWrapper = value;
     }
 
-    public void CheckForCancelation()
+    internal void CheckForCancelation()
     {
         Fx.Assert(_callbackWrapper != null, "We must have a callback wrapper if we are calling this.");
         _callbackWrapper.CheckForCancelation();
