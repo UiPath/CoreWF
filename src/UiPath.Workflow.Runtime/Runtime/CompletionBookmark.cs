@@ -8,12 +8,12 @@ public class CompletionBookmark
 {
     private CompletionCallbackWrapper _callbackWrapper;
 
-    internal CompletionBookmark()
+    public CompletionBookmark()
     {
         // Called when we want to use the special completion callback
     }
 
-    internal CompletionBookmark(CompletionCallbackWrapper callbackWrapper)
+    public CompletionBookmark(CompletionCallbackWrapper callbackWrapper)
     {
         _callbackWrapper = callbackWrapper;
     }
