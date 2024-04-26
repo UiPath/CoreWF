@@ -377,6 +377,7 @@ internal abstract class DesignerHelperImpl
         IEnumerable<AssemblyReference> referencedAssemblies,
         LocationReferenceEnvironment environment)
     {
+        System.Diagnostics.Debugger.Launch();
         SourceExpressionException compileError = null;
         var returnType = typeof(object);
         var vbSettings = new VisualBasicSettings();

@@ -35,6 +35,19 @@ namespace System.Activities
         protected static Type GetSystemType(ITypeSymbol typeSymbol, Assembly assembly)
         {
             StringBuilder typeName = new();
+
+            if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
+            {
+                if (namedTypeSymbol.IsGenericType)
+                {
+                    var arguments = namedTypeSymbol.TypeArguments.Select(t => GetSystemType(t, GetAssemblyForType(t))).ToArray();
+                    var fullyQualifiedName = $"{namedTypeSymbol.ContainingNamespace.ToDisplayString()}.{namedTypeSymbol.MetadataName}";
+                    var genericDefinitionType = assembly.GetType(fullyQualifiedName);
+
+                    return genericDefinitionType.MakeGenericType(arguments);
+                }
+            }
+
             typeName.Append(GetTypeName(typeSymbol));
             return assembly.GetType(typeName.ToString());
         }
