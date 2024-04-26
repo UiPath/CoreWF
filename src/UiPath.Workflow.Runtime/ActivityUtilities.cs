@@ -12,7 +12,7 @@ using Internals;
 using Runtime;
 using Validation;
 
-public static class ActivityUtilities
+internal static class ActivityUtilities
 {
     private static readonly Pop popActivity = new();
     private static readonly Type activityType = typeof(Activity);
@@ -783,13 +783,13 @@ public static class ActivityUtilities
 
     // This API is only valid from ProcessActivityCallbacks.  It will cache the rest of the subtree rooted at the
     // provided activity allowing inspection of child metadata before the normal caching pass hits it.
-    internal static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options)
+    public static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options)
     {
         IList<ValidationError> discardedValidationErrors = null;
         ProcessActivityTreeCore(subtreeRoot, parentChain, ProcessActivityTreeOptions.GetFinishCachingSubtreeOptions(options), new ProcessActivityCallback(NoOpCallback), ref discardedValidationErrors);
     }
 
-    internal static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options, ProcessActivityCallback callback)
+    public static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options, ProcessActivityCallback callback)
     {
         IList<ValidationError> discardedValidationErrors = null;
         ProcessActivityTreeCore(subtreeRoot, parentChain, ProcessActivityTreeOptions.GetFinishCachingSubtreeOptions(options), callback, ref discardedValidationErrors);
@@ -913,7 +913,7 @@ public static class ActivityUtilities
         nextActivity = new ChildActivity(activity, canBeExecuted);
     }
 
-    internal static void ProcessActivityInstanceTree(ActivityInstance rootInstance, ActivityExecutor executor, Func<ActivityInstance, ActivityExecutor, bool> callback)
+    public static void ProcessActivityInstanceTree(ActivityInstance rootInstance, ActivityExecutor executor, Func<ActivityInstance, ActivityExecutor, bool> callback)
     {
         Queue<IList<ActivityInstance>> instancesRemaining = null;
 
