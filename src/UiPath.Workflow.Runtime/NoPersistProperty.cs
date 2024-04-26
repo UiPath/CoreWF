@@ -5,7 +5,7 @@ namespace System.Activities;
 using Runtime;
 
 // This does not need to be data contract since we'll never persist while one of these is active
-internal class NoPersistProperty : IPropertyRegistrationCallback
+public class NoPersistProperty : IPropertyRegistrationCallback
 {
     public const string Name = "System.Activities.NoPersistProperty";
     private readonly ActivityExecutor _executor;

@@ -9,7 +9,7 @@ namespace System.Activities.Runtime;
 /// Evaluates a new-fast-path (SkipArgumentsResolution and Not UseOldFastPath) expression
 /// </summary>
 [DataContract]
-internal class ExecuteSynchronousExpressionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
+public class ExecuteSynchronousExpressionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
 {
     private ActivityWithResult _expressionActivity;
     private long _instanceId;

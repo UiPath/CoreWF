@@ -8,7 +8,7 @@ using System.Activities.DynamicUpdate;
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal sealed class LocationEnvironment
+public sealed class LocationEnvironment
 #if DYNAMICUPDATE
             : ActivityInstanceMap.IActivityReferenceWithEnvironment
 #else

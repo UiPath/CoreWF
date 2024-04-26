@@ -5,7 +5,7 @@ namespace System.Activities;
 using Internals;
 using Runtime;
 
-internal class AsyncOperationContext
+public class AsyncOperationContext
 {
     private static AsyncCallback onResumeAsyncCodeActivityBookmark;
     private readonly ActivityExecutor _executor;
