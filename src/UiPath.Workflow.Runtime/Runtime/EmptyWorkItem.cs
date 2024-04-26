@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-public class EmptyWorkItem : ActivityExecutionWorkItem
+internal class EmptyWorkItem : ActivityExecutionWorkItem
 {
     // Called by the Pool.
     public EmptyWorkItem()

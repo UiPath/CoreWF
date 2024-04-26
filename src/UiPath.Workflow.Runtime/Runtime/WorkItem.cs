@@ -6,7 +6,7 @@ using System.Activities.Runtime.DurableInstancing;
 namespace System.Activities.Runtime;
 
 [DataContract]
-public abstract class WorkItem
+internal abstract class WorkItem
 {
     private static AsyncCallback associateCallback;
     private static AsyncCallback trackingCallback;

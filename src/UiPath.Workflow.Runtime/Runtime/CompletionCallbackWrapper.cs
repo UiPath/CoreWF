@@ -68,7 +68,7 @@ public abstract class CompletionCallbackWrapper : CallbackWrapper
     protected internal abstract void Invoke(NativeActivityContext context, ActivityInstance completedInstance);
 
     [DataContract]
-    public class CompletionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
+    internal class CompletionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
     {
         private CompletionCallbackWrapper _callbackWrapper;
         private ActivityInstance _completedInstance;

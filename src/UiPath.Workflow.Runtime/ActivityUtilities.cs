@@ -783,13 +783,13 @@ public static class ActivityUtilities
 
     // This API is only valid from ProcessActivityCallbacks.  It will cache the rest of the subtree rooted at the
     // provided activity allowing inspection of child metadata before the normal caching pass hits it.
-    public static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options)
+    internal static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options)
     {
         IList<ValidationError> discardedValidationErrors = null;
         ProcessActivityTreeCore(subtreeRoot, parentChain, ProcessActivityTreeOptions.GetFinishCachingSubtreeOptions(options), new ProcessActivityCallback(NoOpCallback), ref discardedValidationErrors);
     }
 
-    public static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options, ProcessActivityCallback callback)
+    internal static void FinishCachingSubtree(ChildActivity subtreeRoot, ActivityCallStack parentChain, ProcessActivityTreeOptions options, ProcessActivityCallback callback)
     {
         IList<ValidationError> discardedValidationErrors = null;
         ProcessActivityTreeCore(subtreeRoot, parentChain, ProcessActivityTreeOptions.GetFinishCachingSubtreeOptions(options), callback, ref discardedValidationErrors);
@@ -913,7 +913,7 @@ public static class ActivityUtilities
         nextActivity = new ChildActivity(activity, canBeExecuted);
     }
 
-    public static void ProcessActivityInstanceTree(ActivityInstance rootInstance, ActivityExecutor executor, Func<ActivityInstance, ActivityExecutor, bool> callback)
+    internal static void ProcessActivityInstanceTree(ActivityInstance rootInstance, ActivityExecutor executor, Func<ActivityInstance, ActivityExecutor, bool> callback)
     {
         Queue<IList<ActivityInstance>> instancesRemaining = null;
 

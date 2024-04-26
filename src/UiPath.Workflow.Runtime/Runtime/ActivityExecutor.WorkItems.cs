@@ -7,7 +7,7 @@ using System.Transactions;
 
 namespace System.Activities.Runtime;
 
-public partial class ActivityExecutor
+internal partial class ActivityExecutor
 {
     [DataContract]
     internal class AbortActivityWorkItem : WorkItem
