@@ -51,7 +51,7 @@ public static class ActivityUtilities
     // Can't delay create this one because we use object.ReferenceEquals on it in WorkflowInstance
     private static readonly ReadOnlyDictionary<string, object> emptyParameters = new(new Dictionary<string, object>(0));
 
-    internal static ReadOnlyDictionary<string, object> EmptyParameters => emptyParameters;
+    public static ReadOnlyDictionary<string, object> EmptyParameters => emptyParameters;
 
     internal static PropertyChangedEventArgs ValuePropertyChangedEventArgs
     {
@@ -75,7 +75,7 @@ public static class ActivityUtilities
         }
     }
 
-    internal static bool IsInScope(ActivityInstance potentialChild, ActivityInstance scope)
+    public static bool IsInScope(ActivityInstance potentialChild, ActivityInstance scope)
     {
         if (scope == null)
         {
@@ -93,11 +93,11 @@ public static class ActivityUtilities
         return walker != null;
     }
 
-    internal static bool IsHandle(Type type) => handleType.IsAssignableFrom(type);
+    public static bool IsHandle(Type type) => handleType.IsAssignableFrom(type);
 
-    internal static bool IsCompletedState(ActivityInstanceState state) => state != ActivityInstanceState.Executing;
+    public static bool IsCompletedState(ActivityInstanceState state) => state != ActivityInstanceState.Executing;
 
-    internal static bool TryGetArgumentDirectionAndType(Type propertyType, out ArgumentDirection direction, out Type argumentType)
+    public static bool TryGetArgumentDirectionAndType(Type propertyType, out ArgumentDirection direction, out Type argumentType)
     {
         direction = ArgumentDirection.In; // default to In
         argumentType = TypeHelper.ObjectType;  // default to object
@@ -148,11 +148,11 @@ public static class ActivityUtilities
         return false;
     }
 
-    internal static bool IsArgumentType(Type propertyType) => TypeHelper.AreTypesCompatible(propertyType, argumentType);
+    public static bool IsArgumentType(Type propertyType) => TypeHelper.AreTypesCompatible(propertyType, argumentType);
 
-    internal static bool IsRuntimeArgumentType(Type propertyType) => TypeHelper.AreTypesCompatible(propertyType, runtimeArgumentType);
+    public static bool IsRuntimeArgumentType(Type propertyType) => TypeHelper.AreTypesCompatible(propertyType, runtimeArgumentType);
 
-    internal static bool IsArgumentDictionaryType(Type type, out Type innerType)
+    public static bool IsArgumentDictionaryType(Type type, out Type innerType)
     {
         if (type.IsGenericType)
         {
@@ -194,7 +194,7 @@ public static class ActivityUtilities
         return false;
     }
 
-    internal static bool IsKnownCollectionType(Type type, out Type innerType)
+    public static bool IsKnownCollectionType(Type type, out Type innerType)
     {
         if (type.IsGenericType)
         {
@@ -245,11 +245,11 @@ public static class ActivityUtilities
         return false;
     }
 
-    internal static bool IsActivityDelegateType(Type propertyType) => TypeHelper.AreTypesCompatible(propertyType, activityDelegateType);
+    public static bool IsActivityDelegateType(Type propertyType) => TypeHelper.AreTypesCompatible(propertyType, activityDelegateType);
 
-    internal static bool IsActivityType(Type propertyType) => IsActivityType(propertyType, true);
+    public static bool IsActivityType(Type propertyType) => IsActivityType(propertyType, true);
 
-    internal static bool IsActivityType(Type propertyType, bool includeConstraints)
+    public static bool IsActivityType(Type propertyType, bool includeConstraints)
     {
         if (!TypeHelper.AreTypesCompatible(propertyType, activityType))
         {
@@ -260,7 +260,7 @@ public static class ActivityUtilities
         return includeConstraints || !TypeHelper.AreTypesCompatible(propertyType, constraintType);
     }
 
-    internal static bool TryGetDelegateArgumentDirectionAndType(Type propertyType, out ArgumentDirection direction, out Type argumentType)
+    public static bool TryGetDelegateArgumentDirectionAndType(Type propertyType, out ArgumentDirection direction, out Type argumentType)
     {
         direction = ArgumentDirection.In; // default to In
         argumentType = TypeHelper.ObjectType;  // default to object
@@ -299,7 +299,7 @@ public static class ActivityUtilities
         return false;
     }
 
-    internal static bool IsVariableType(Type propertyType, out Type innerType)
+    public static bool IsVariableType(Type propertyType, out Type innerType)
     {
         if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == variableGenericType)
         {
@@ -311,7 +311,7 @@ public static class ActivityUtilities
         return TypeHelper.AreTypesCompatible(propertyType, variableType);
     }
 
-    internal static bool IsVariableType(Type propertyType)
+    public static bool IsVariableType(Type propertyType)
     {
         if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == variableGenericType)
         {
@@ -321,7 +321,7 @@ public static class ActivityUtilities
         return TypeHelper.AreTypesCompatible(propertyType, variableType);
     }
 
-    internal static bool IsLocationGenericType(Type type, out Type genericArgumentType)
+    public static bool IsLocationGenericType(Type type, out Type genericArgumentType)
     {
         if (type.IsGenericType && type.GetGenericTypeDefinition() == locationGenericType)
         {
@@ -333,7 +333,7 @@ public static class ActivityUtilities
         return false;
     }
 
-    internal static object CreateVariableReference(Variable variable)
+    public static object CreateVariableReference(Variable variable)
     {
         Type genericVariableReferenceType = variableReferenceGenericType.MakeGenericType(variable.Type);
         object variableReference = Activator.CreateInstance(genericVariableReferenceType);
@@ -341,10 +341,10 @@ public static class ActivityUtilities
         return variableReference;
     }
 
-    internal static ActivityWithResult CreateLocationAccessExpression(LocationReference locationReference, bool isReference, bool useLocationReferenceValue)
+    public static ActivityWithResult CreateLocationAccessExpression(LocationReference locationReference, bool isReference, bool useLocationReferenceValue)
         => LocationAccessExpressionTypeDefinitionsCache.CreateNewLocationAccessExpression(locationReference.Type, isReference, useLocationReferenceValue, locationReference);
 
-    internal static Argument CreateArgument(Type type, ArgumentDirection direction)
+    public static Argument CreateArgument(Type type, ArgumentDirection direction)
     {
         Type argumentType = ArgumentTypeDefinitionsCache.GetArgumentType(type, direction);
 
@@ -353,7 +353,7 @@ public static class ActivityUtilities
         return argument;
     }
 
-    internal static Argument CreateArgumentOfObject(ArgumentDirection direction)
+    public static Argument CreateArgumentOfObject(ArgumentDirection direction)
     {
         Argument argument = direction switch
         {
@@ -364,11 +364,11 @@ public static class ActivityUtilities
         return argument;
     }
 
-    internal static Type CreateLocation(Type locationType) => locationGenericType.MakeGenericType(locationType);
+    public static Type CreateLocation(Type locationType) => locationGenericType.MakeGenericType(locationType);
 
-    internal static Type CreateActivityWithResult(Type resultType) => activityGenericType.MakeGenericType(resultType);
+    public static Type CreateActivityWithResult(Type resultType) => activityGenericType.MakeGenericType(resultType);
 
-    internal static Argument CreateReferenceArgument(Type argumentType, ArgumentDirection direction, string referencedArgumentName)
+    public static Argument CreateReferenceArgument(Type argumentType, ArgumentDirection direction, string referencedArgumentName)
     {
         Argument argument = Argument.Create(argumentType, direction);
 
@@ -389,7 +389,7 @@ public static class ActivityUtilities
         return argument;
     }
 
-    internal static Variable CreateVariable(string name, Type type, VariableModifiers modifiers)
+    public static Variable CreateVariable(string name, Type type, VariableModifiers modifiers)
     {
         Type variableType = variableGenericType.MakeGenericType(type);
         Variable variable = (Variable)Activator.CreateInstance(variableType);
@@ -402,7 +402,7 @@ public static class ActivityUtilities
     // The argumentConsumer is the activity that is attempting to reference the argument
     // with argumentName.  That means that argumentConsumer must be in the Implementation
     // of an activity that defines an argument with argumentName.
-    internal static RuntimeArgument FindArgument(string argumentName, Activity argumentConsumer)
+    public static RuntimeArgument FindArgument(string argumentName, Activity argumentConsumer)
     {
         if (argumentConsumer.MemberOf != null && argumentConsumer.MemberOf.Owner != null)
         {
@@ -422,13 +422,13 @@ public static class ActivityUtilities
         return null;
     }
 
-    internal static string GetDisplayName(object source)
+    public static string GetDisplayName(object source)
     {
         Fx.Assert(source != null, "caller must verify");
         return GetDisplayName(source.GetType());
     }
 
-    internal static string GetDisplayName(Type sourceType)
+    private static string GetDisplayName(Type sourceType)
     {
         if (sourceType.IsGenericType)
         {
@@ -985,7 +985,7 @@ public static class ActivityUtilities
         return null;
     }
 
-    internal static string GetTraceString(Bookmark bookmark)
+    public static string GetTraceString(Bookmark bookmark)
     {
         if (bookmark.IsNamed)
         {
@@ -997,7 +997,7 @@ public static class ActivityUtilities
         }
     }
 
-    internal static string GetTraceString(BookmarkScope bookmarkScope)
+    public static string GetTraceString(BookmarkScope bookmarkScope)
     {
         if (bookmarkScope == null)
         {
@@ -1013,7 +1013,7 @@ public static class ActivityUtilities
         }
     }
 
-    internal static void RemoveNulls(IList list)
+    public static void RemoveNulls(IList list)
     {
         if (list != null)
         {
@@ -1027,7 +1027,7 @@ public static class ActivityUtilities
         }
     }
 
-    internal static void Add<T>(ref Collection<T> collection, T data)
+    public static void Add<T>(ref Collection<T> collection, T data)
     {
         if (data != null)
         {
@@ -1036,7 +1036,7 @@ public static class ActivityUtilities
         }
     }
 
-    internal static void Add<T>(ref IList<T> list, T data)
+    public static void Add<T>(ref IList<T> list, T data)
     {
         if (data != null)
         {
@@ -1045,7 +1045,7 @@ public static class ActivityUtilities
         }
     }
 
-    internal class TreeProcessingList
+    public class TreeProcessingList
     {
         private ActivityInstance _singleItem;
         private IList<ActivityInstance> _multipleItems;
@@ -1158,18 +1158,18 @@ public static class ActivityUtilities
 
     public struct ChildActivity : IEquatable<ChildActivity>
     {
-        internal ChildActivity(Activity activity, bool canBeExecuted)
+        public ChildActivity(Activity activity, bool canBeExecuted)
             : this()
         {
             Activity = activity;
             CanBeExecuted = canBeExecuted;
         }
 
-        internal static ChildActivity Empty => new();
+        public static ChildActivity Empty => new();
 
-        internal Activity Activity { get; set; }
+        public Activity Activity { get; set; }
 
-        internal bool CanBeExecuted { get; set; }
+        public bool CanBeExecuted { get; set; }
 
         public bool Equals(ChildActivity other)
             => ReferenceEquals(Activity, other.Activity) && CanBeExecuted == other.CanBeExecuted;
@@ -1184,18 +1184,18 @@ public static class ActivityUtilities
         private int _nonExecutingParentCount;
         private readonly Quack<ChildActivity> _callStack;
 
-        internal ActivityCallStack()
+        public ActivityCallStack()
         {
             _callStack = new Quack<ChildActivity>();
         }
 
-        internal bool WillExecute => _nonExecutingParentCount == 0;
+        public bool WillExecute => _nonExecutingParentCount == 0;
 
-        internal ChildActivity this[int index] => _callStack[index];
+        public ChildActivity this[int index] => _callStack[index];
 
-        internal int Count => _callStack.Count;
+        public int Count => _callStack.Count;
 
-        internal void Push(ChildActivity childActivity)
+        public void Push(ChildActivity childActivity)
         {
             if (!childActivity.CanBeExecuted)
             {
@@ -1205,7 +1205,7 @@ public static class ActivityUtilities
             _callStack.PushFront(childActivity);
         }
 
-        internal ChildActivity Pop()
+        public ChildActivity Pop()
         {
             ChildActivity childActivity = _callStack.Dequeue();
 
