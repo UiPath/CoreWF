@@ -18,7 +18,7 @@ public class CallbackWrapper
 
     protected internal CallbackWrapper() { }
 
-    internal CallbackWrapper(Delegate callback, ActivityInstance owningInstance)
+    public CallbackWrapper(Delegate callback, ActivityInstance owningInstance)
     {
         ActivityInstance = owningInstance;
         _callback = callback;

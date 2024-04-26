@@ -12,7 +12,7 @@ public abstract class CompletionCallbackWrapper : CallbackWrapper
     private bool _checkForCancelation;
     private bool _needsToGatherOutputs;
 
-    internal CompletionCallbackWrapper(Delegate callback, ActivityInstance owningInstance)
+    public CompletionCallbackWrapper(Delegate callback, ActivityInstance owningInstance)
         : base(callback, owningInstance) { }
 
     protected bool NeedsToGatherOutputs
