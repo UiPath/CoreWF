@@ -24,7 +24,7 @@ namespace WorkflowApplicationTestExtensions
         public void RunUntilCompletion_Faulted()
         {
             var app = new WorkflowApplication(new Throw { Exception = new InArgument<Exception>(_ => new ArgumentException()) });
-            Should.Throw<ArgumentException>(app.RunUntilCompletion);
+            Should.Throw<ArgumentException>(() => app.RunUntilCompletion());
         }
 
         [Fact(Skip="Flaky")]
@@ -32,7 +32,7 @@ namespace WorkflowApplicationTestExtensions
         {
             var app = new WorkflowApplication(new Delay { Duration = TimeSpan.MaxValue });
             Task.Delay(10).ContinueWith(_ => app.Abort());
-            Should.Throw<WorkflowApplicationAbortedException>(app.RunUntilCompletion);
+            Should.Throw<WorkflowApplicationAbortedException>(() => app.RunUntilCompletion());
         }
 
         [Fact]
