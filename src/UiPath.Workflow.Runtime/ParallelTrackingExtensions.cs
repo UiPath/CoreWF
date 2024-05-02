@@ -1,20 +1,30 @@
-﻿using System.Diagnostics;
-namespace System.Activities.ParallelTracking;
+﻿namespace System.Activities.ParallelTracking;
 
 [DataContract]
 public record struct ParallelBranch
 {
-    [DataMember]
-    internal string InstanceId { get; init; }
+    private const char StackDelimiter = '.';
 
     [DataMember]
     internal string BranchesStackString { get; init; }
+    [DataMember]
+    internal string InstanceId { get; init; }
 
-    public readonly ParallelBranch Push() => new()
+    public readonly ParallelBranch Push() =>
+        new()
+        {
+            BranchesStackString = $"{BranchesStackString}.{Guid.NewGuid():N}".Trim('.'),
+            InstanceId = InstanceId
+        };
+
+    internal bool IsAncestorOf(ParallelBranch descendantBranch)
     {
-        BranchesStackString = $"{BranchesStackString}.{Guid.NewGuid():N}".Trim('.'),
-        InstanceId = InstanceId
-    };
+        var descendantStack = descendantBranch.BranchesStackString ?? string.Empty;
+        var lastIndex = descendantStack.LastIndexOf(StackDelimiter);
+        var thisStack = BranchesStackString ?? string.Empty;
+        return thisStack.StartsWith(descendantStack, StringComparison.Ordinal) 
+            && descendantBranch.InstanceId == InstanceId;
+    }
 }
 
 /// <summary>
@@ -43,23 +53,26 @@ public static class ParallelTrackingExtensions
          context.CurrentInstance?.GetCurrentParallelBranchId();
 
     public static ParallelBranch GetCurrentParallelBranch(this ActivityInstance instance) =>
-        new()
-        {
-            BranchesStackString = instance.GetCurrentParallelBranchId(),
-            InstanceId = instance.Id
-        };
+        new() { BranchesStackString = instance.GetCurrentParallelBranchId() };
 
     public static void SetCurrentParallelBranch(this ActivityInstance currentOrChildInstance, ParallelBranch parallelBranch)
     {
-        if (currentOrChildInstance.Id != parallelBranch.InstanceId && currentOrChildInstance?.Parent?.Id != parallelBranch.InstanceId)
-            throw new ArgumentException($"{nameof(ParallelBranch)} must be obtained from this activity instance or it's parent.", nameof(currentOrChildInstance));
+        var currentBranch = currentOrChildInstance.GetCurrentParallelBranch();
+        if (!parallelBranch.IsAncestorOf(currentBranch)
+            && !currentBranch.IsAncestorOf(parallelBranch))
+            throw new ArgumentException($"{nameof(parallelBranch)} must be a pop or a push.", nameof(currentOrChildInstance));
 
         currentOrChildInstance.SetCurrentParallelBranchId(parallelBranch.BranchesStackString);
     }
 
-    private static void SetCurrentParallelBranchId(this ActivityInstance instance, string branchId) =>
-        GetExecutionProperties(instance)
-            .Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
+    private static void SetCurrentParallelBranchId(this ActivityInstance instance, string branchId)
+    {
+        var props = GetExecutionProperties(instance);
+        if (props.Find(BranchIdPropertyName) is not null)
+            props.Remove(BranchIdPropertyName, skipValidations: true);
+
+        props.Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
+    }
 
     private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) => 
         new(null, instance, instance.PropertyManager);
