@@ -43,7 +43,7 @@ public static class WorkflowApplicationTestExtensions
             output.TrySetException(args.Reason);
         };
 
-        application.InstanceStore ??= new FileInstanceStore(Environment.CurrentDirectory);
+        application.InstanceStore ??= new MemoryInstanceStore(new DataContractWorkflowSerializer());
         application.Unloaded += uargs =>
         {
             Debug.WriteLine("Unloaded");

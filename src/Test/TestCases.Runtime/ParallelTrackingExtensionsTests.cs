@@ -7,11 +7,19 @@ using System.Collections.Generic;
 using System.Linq;
 using WorkflowApplicationTestExtensions;
 using Xunit;
+using WorkflowApplicationTestExtensions.Persistence;
 
 namespace TestCases.Runtime
 {
+    public class ParallelTrackingExtensionsTestsJson : ParallelTrackingExtensionsTests
+    {
+        protected override IWorkflowSerializer Serializer => new JsonWorkflowSerializer();
+    }
+
     public class ParallelTrackingExtensionsTests
     {
+        protected virtual IWorkflowSerializer Serializer => new DataContractWorkflowSerializer();
+
         [Fact]
         public void ParallelActivity()
         {
@@ -89,8 +97,12 @@ namespace TestCases.Runtime
             trigger1Id.ShouldNotBe(trigger2Id);
         }
 
-        private static void Run(Activity activity) =>
-            new WorkflowApplication(activity).RunUntilCompletion();
+        private void Run(Activity activity) =>
+            new WorkflowApplication(activity)
+            {
+                InstanceStore = new MemoryInstanceStore(Serializer)
+            }
+            .RunUntilCompletion();
 
         private static void ValidateId(string id, int expectedNesting, string shouldStartWith = null)
         {

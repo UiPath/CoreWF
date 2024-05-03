@@ -18,14 +18,18 @@ public class FileInstanceStore : AbstractInstanceStore
 
     protected override Task<Stream> GetReadStream(Guid instanceId)
     {
-        return Task.FromResult<Stream>(File.OpenRead(_storeDirectoryPath + "\\" + instanceId + "-InstanceData"));
+        return Task.FromResult<Stream>(File.OpenRead(GetFilePath(instanceId)));
     }
 
     protected override Task<Stream> GetWriteStream(Guid instanceId)
     {
-        var filePath = _storeDirectoryPath + "\\" + instanceId + "-InstanceData";
+        string filePath = GetFilePath(instanceId);
         File.Delete(filePath);
         return Task.FromResult<Stream>(File.OpenWrite(filePath));
     }
 
+    private string GetFilePath(Guid instanceId)
+    {
+        return _storeDirectoryPath + "\\" + instanceId + "-InstanceData";
+    }
 }

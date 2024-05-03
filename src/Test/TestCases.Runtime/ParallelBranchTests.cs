@@ -4,9 +4,16 @@ using System.Activities;
 using System.Activities.ParallelTracking;
 using System.Linq;
 using WorkflowApplicationTestExtensions;
+using WorkflowApplicationTestExtensions.Persistence;
 using Xunit;
 
 namespace TestCases.Runtime;
+
+
+public class ParallelBranchTestsJson : ParallelBranchTests
+{
+    protected override IWorkflowSerializer Serializer => new JsonWorkflowSerializer();
+}
 
 public class ParallelBranchTests
 {
@@ -18,12 +25,16 @@ public class ParallelBranchTests
         }
     }
 
+    protected virtual IWorkflowSerializer Serializer => new DataContractWorkflowSerializer();
     ParallelBranch parentLevel = default;
     private void Run(params Action<CodeActivityContext>[] onExecute)
     {
         var execs = new Action<CodeActivityContext>[] { new(SetParent) }
             .Concat(onExecute);
-        new WorkflowApplication(new SuspendingWrapper(execs.Select(c => new TestCodeActivity(c))))
+        new WorkflowApplication(new SuspendingWrapper(execs.Select(c => new TestCodeActivity(c)))) 
+        {
+            InstanceStore = new MemoryInstanceStore(Serializer)
+        }
             .RunUntilCompletion();
 
         void SetParent(CodeActivityContext context)
