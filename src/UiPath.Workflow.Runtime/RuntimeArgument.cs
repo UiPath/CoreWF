@@ -78,6 +78,8 @@ public sealed class RuntimeArgument : LocationReference
 
     public ArgumentDirection Direction { get; private set; }
 
+    public string DisplayName => _bindingProperty?.DisplayName ?? Name;
+
     public bool IsRequired { get; private set; }
 
     public ReadOnlyCollection<string> OverloadGroupNames
