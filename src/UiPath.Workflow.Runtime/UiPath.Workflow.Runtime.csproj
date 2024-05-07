@@ -26,7 +26,7 @@
 	<ProjectCapability Include="ConfigurableFileNesting" />
 	<ProjectCapability Include="ConfigurableFileNestingFeatureEnabled" />
   </ItemGroup>
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences" Condition="$(Configuration)=='Release'">
     <ItemGroup>
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
     </ItemGroup>
