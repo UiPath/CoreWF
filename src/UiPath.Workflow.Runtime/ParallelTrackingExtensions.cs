@@ -1,10 +1,8 @@
 ﻿namespace System.Activities.ParallelTracking;
 
 [DataContract]
-public record struct ParallelBranch
+public readonly record struct ParallelBranch
 {
-    private const char StackDelimiter = '.';
-
     [DataMember]
     internal string BranchesStackString { get; init; }
     [DataMember]
@@ -13,17 +11,9 @@ public record struct ParallelBranch
     public readonly ParallelBranch Push() =>
         new()
         {
-            BranchesStackString = $"{BranchesStackString}.{Guid.NewGuid():N}".Trim(StackDelimiter),
+            BranchesStackString = ParallelTrackingExtensions.PushNewBranch(BranchesStackString),
             InstanceId = InstanceId
         };
-
-    internal readonly bool IsAncestorOf(ParallelBranch descendantBranch)
-    {
-        var descendantStack = descendantBranch.BranchesStackString ?? string.Empty;
-        var thisStack = BranchesStackString ?? string.Empty;
-        return thisStack.StartsWith(descendantStack, StringComparison.Ordinal) 
-            && descendantBranch.InstanceId == InstanceId;
-    }
 }
 
 /// <summary>
@@ -36,12 +26,13 @@ public record struct ParallelBranch
 public static class ParallelTrackingExtensions
 {
     public const string BranchIdPropertyName = "__ParallelBranchId";
+    private const char StackDelimiter = '.';
+
 
     public static ActivityInstance MarkNewParallelBranch(this ActivityInstance instance)
     {
         var parentId = instance.GetCurrentParallelBranchId();
-        var newBranch = new ParallelBranch() { BranchesStackString = parentId }.Push();
-        instance.SetCurrentParallelBranchId(newBranch.BranchesStackString);
+        instance.SetCurrentParallelBranchId(PushNewBranch(parentId));
         return instance;
     }
 
@@ -56,9 +47,7 @@ public static class ParallelTrackingExtensions
 
     public static void SetCurrentParallelBranch(this ActivityInstance currentOrChildInstance, ParallelBranch parallelBranch)
     {
-        var currentBranch = currentOrChildInstance.GetCurrentParallelBranch();
-        if (!parallelBranch.IsAncestorOf(currentBranch)
-            && !currentBranch.IsAncestorOf(parallelBranch))
+        if (parallelBranch.InstanceId is not null && parallelBranch.InstanceId != currentOrChildInstance.Id)
             throw new ArgumentException($"{nameof(parallelBranch)} must be a pop or a push.", nameof(currentOrChildInstance));
 
         currentOrChildInstance.SetCurrentParallelBranchId(parallelBranch.BranchesStackString);
@@ -66,6 +55,11 @@ public static class ParallelTrackingExtensions
 
     private static void SetCurrentParallelBranchId(this ActivityInstance instance, string branchId)
     {
+        var currentBranchId = instance.GetCurrentParallelBranchId();
+
+        if (!IsAncestorOf(thisStack: branchId, descendantStack: currentBranchId)
+            && !IsAncestorOf(thisStack: currentBranchId, descendantStack: branchId))
+            throw new ArgumentException($"{nameof(branchId)} must be a pop or a push.", nameof(instance));
         RemoveIfExists();
         GetExecutionProperties(instance).Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
 
@@ -77,7 +71,11 @@ public static class ParallelTrackingExtensions
         }
     }
 
-
     private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) =>
         new(null, instance, instance.PropertyManager?.IsOwner(instance) is true ? instance.PropertyManager : null);
+    private static bool IsAncestorOf(string thisStack, string descendantStack) =>
+        (thisStack ?? string.Empty)
+                .StartsWith(descendantStack ?? string.Empty, StringComparison.Ordinal);
+    internal static string PushNewBranch(string thisStack) =>
+        $"{thisStack}.{Guid.NewGuid():N}".Trim(StackDelimiter);
 }
