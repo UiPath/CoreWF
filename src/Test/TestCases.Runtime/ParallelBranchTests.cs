@@ -59,6 +59,26 @@ public class ParallelBranchTests
     }
 
     [Fact]
+    public void SetToNullWhenNull() => Run(
+    context =>
+    {
+        context.CurrentInstance.SetCurrentParallelBranch(default);
+        context.CurrentInstance.SetCurrentParallelBranch(default);
+        context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
+    });
+
+    [Fact]
+    public void SetToNullWhenNotNull() => Run(
+    context =>
+    {
+        context.CurrentInstance.SetCurrentParallelBranch(default);
+        context.CurrentInstance.SetCurrentParallelBranch(default(ParallelBranch).Push());
+        context.CurrentInstance.SetCurrentParallelBranch(default);
+        context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
+    });
+
+
+    [Fact]
     public void ParallelBranchPersistence() => Run(
     context =>
     {

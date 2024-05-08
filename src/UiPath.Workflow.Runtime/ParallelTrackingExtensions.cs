@@ -13,14 +13,13 @@ public record struct ParallelBranch
     public readonly ParallelBranch Push() =>
         new()
         {
-            BranchesStackString = $"{BranchesStackString}.{Guid.NewGuid():N}".Trim('.'),
+            BranchesStackString = $"{BranchesStackString}.{Guid.NewGuid():N}".Trim(StackDelimiter),
             InstanceId = InstanceId
         };
 
-    internal bool IsAncestorOf(ParallelBranch descendantBranch)
+    internal readonly bool IsAncestorOf(ParallelBranch descendantBranch)
     {
         var descendantStack = descendantBranch.BranchesStackString ?? string.Empty;
-        var lastIndex = descendantStack.LastIndexOf(StackDelimiter);
         var thisStack = BranchesStackString ?? string.Empty;
         return thisStack.StartsWith(descendantStack, StringComparison.Ordinal) 
             && descendantBranch.InstanceId == InstanceId;
@@ -67,13 +66,18 @@ public static class ParallelTrackingExtensions
 
     private static void SetCurrentParallelBranchId(this ActivityInstance instance, string branchId)
     {
-        var props = GetExecutionProperties(instance);
-        if (props.Find(BranchIdPropertyName) is not null)
-            props.Remove(BranchIdPropertyName, skipValidations: true);
+        RemoveIfExists();
+        GetExecutionProperties(instance).Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
 
-        props.Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
+        void RemoveIfExists()
+        {
+            if (instance.PropertyManager?.IsOwner(instance) is true
+                && instance.PropertyManager.Properties.ContainsKey(BranchIdPropertyName))
+                instance.PropertyManager.Remove(BranchIdPropertyName);
+        }
     }
 
-    private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) => 
-        new(null, instance, instance.PropertyManager);
+
+    private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) =>
+        new(null, instance, instance.PropertyManager?.IsOwner(instance) is true ? instance.PropertyManager : null);
 }
