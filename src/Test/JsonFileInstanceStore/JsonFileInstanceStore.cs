@@ -15,14 +15,13 @@ namespace JsonFileInstanceStore
     {
         private readonly string _storeDirectoryPath;
 
-        private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+        public static readonly JsonSerializerSettings JsonSerializerSettings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             ObjectCreationHandling = ObjectCreationHandling.Replace,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-            Converters = new[] { new TypeJsonConverter() }
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize
         };
 
         public FileInstanceStore(string storeDirectoryPath)
@@ -52,21 +51,21 @@ namespace JsonFileInstanceStore
 
         protected override IAsyncResult BeginTryCommand(InstancePersistenceContext context, InstancePersistenceCommand command, TimeSpan timeout, AsyncCallback callback, object state)
         {
-            if (command is SaveWorkflowCommand)
+            if (command is SaveWorkflowCommand saveWorkflowCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(SaveWorkflow(context, (SaveWorkflowCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(SaveWorkflow(context, saveWorkflowCommand), callback, state);
             }
-            else if (command is LoadWorkflowCommand)
+            else if (command is LoadWorkflowCommand loadWorkflowCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(LoadWorkflow(context, (LoadWorkflowCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(LoadWorkflow(context, loadWorkflowCommand), callback, state);
             }
-            else if (command is CreateWorkflowOwnerCommand)
+            else if (command is CreateWorkflowOwnerCommand createWorkflowOwnerCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(CreateWorkflowOwner(context, (CreateWorkflowOwnerCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(CreateWorkflowOwner(context, createWorkflowOwnerCommand), callback, state);
             }
-            else if (command is DeleteWorkflowOwnerCommand)
+            else if (command is DeleteWorkflowOwnerCommand deleteWorkflowOwnerCommand)
             {
-                return new TypedCompletedAsyncResult<bool>(DeleteWorkflowOwner(context, (DeleteWorkflowOwnerCommand)command), callback, state);
+                return new TypedCompletedAsyncResult<bool>(DeleteWorkflowOwner(context, deleteWorkflowOwnerCommand), callback, state);
             }
             return new TypedCompletedAsyncResult<bool>(false, callback, state);
         }
@@ -93,10 +92,10 @@ namespace JsonFileInstanceStore
                 Dictionary<string, InstanceValue> instanceData = SerializeablePropertyBagConvertXNameInstanceValue(command.InstanceData);
                 Dictionary<string, InstanceValue> instanceMetadata = SerializeInstanceMetadataConvertXNameInstanceValue(context, command);
 
-                var serializedInstanceData = JsonConvert.SerializeObject(instanceData, Formatting.Indented, _jsonSerializerSettings);
+                var serializedInstanceData = JsonConvert.SerializeObject(instanceData, Formatting.Indented, JsonSerializerSettings);
                 File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceData", serializedInstanceData);
 
-                var serializedInstanceMetadata = JsonConvert.SerializeObject(instanceMetadata, Formatting.Indented, _jsonSerializerSettings);
+                var serializedInstanceMetadata = JsonConvert.SerializeObject(instanceMetadata, Formatting.Indented, JsonSerializerSettings);
                 File.WriteAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceMetadata", serializedInstanceMetadata);
 
                 foreach (KeyValuePair<XName, InstanceValue> property in command.InstanceMetadataChanges)
@@ -140,10 +139,10 @@ namespace JsonFileInstanceStore
             try
             {
                 var serializedInstanceData = File.ReadAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceData");
-                serializableInstanceData = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceData, _jsonSerializerSettings);
+                serializableInstanceData = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceData, JsonSerializerSettings);
 
                 var serializedInstanceMetadata = File.ReadAllText(_storeDirectoryPath + "\\" + context.InstanceView.InstanceId + "-InstanceMetadata");
-                serializableInstanceMetadata = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceMetadata, _jsonSerializerSettings);
+                serializableInstanceMetadata = JsonConvert.DeserializeObject<Dictionary<string, InstanceValue>>(serializedInstanceMetadata, JsonSerializerSettings);
             }
             catch (Exception)
             {
@@ -234,12 +233,5 @@ namespace JsonFileInstanceStore
 
             return destination;
         }
-    }
-    class TypeJsonConverter : JsonConverter
-    {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => throw new NotImplementedException();
-        public override bool CanRead => true;
-        public override bool CanConvert(Type objectType) => typeof(Type).IsAssignableFrom(objectType);
     }
 }
