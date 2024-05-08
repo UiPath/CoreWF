@@ -25,7 +25,7 @@ internal static class ValidationHelper
             {
                 if (CheckIfArgumentIsNotBound(argument, inputs))
                 {
-                    ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.RequiredArgumentValueNotSupplied(argument.Name), false, argument.Name, activity));
+                    ActivityUtilities.Add(ref validationErrors, new ValidationError(SR.RequiredArgumentValueNotSupplied(argument.DisplayName), false, argument.Name, activity));
                 }
             }
         }
