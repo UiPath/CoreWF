@@ -43,11 +43,12 @@ public static class ParallelTrackingExtensions
          context.CurrentInstance?.GetCurrentParallelBranchId();
 
     public static ParallelBranch GetCurrentParallelBranch(this ActivityInstance instance) =>
-        new() { BranchesStackString = instance.GetCurrentParallelBranchId() };
+        new() { BranchesStackString = instance.GetCurrentParallelBranchId(), InstanceId = instance.Id };
 
     public static void SetCurrentParallelBranch(this ActivityInstance currentOrChildInstance, ParallelBranch parallelBranch)
     {
-        if (parallelBranch.InstanceId is not null && parallelBranch.InstanceId != currentOrChildInstance.Id)
+        if (parallelBranch.InstanceId != currentOrChildInstance.Id 
+            && parallelBranch.InstanceId != currentOrChildInstance.Parent?.Id)
             throw new ArgumentException($"{nameof(parallelBranch)} must be a pop or a push.", nameof(currentOrChildInstance));
 
         currentOrChildInstance.SetCurrentParallelBranchId(parallelBranch.BranchesStackString);
@@ -65,17 +66,18 @@ public static class ParallelTrackingExtensions
 
         void RemoveIfExists()
         {
-            if (instance.PropertyManager?.IsOwner(instance) is true
-                && instance.PropertyManager.Properties.ContainsKey(BranchIdPropertyName))
+            if (instance.PropertyManager?.IsOwner(instance) is true)
                 instance.PropertyManager.Remove(BranchIdPropertyName);
         }
     }
 
     private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) =>
-        new(null, instance, instance.PropertyManager?.IsOwner(instance) is true ? instance.PropertyManager : null);
+        new(null, instance, instance.PropertyManager);
+
     private static bool IsAncestorOf(string thisStack, string descendantStack) =>
         (thisStack ?? string.Empty)
                 .StartsWith(descendantStack ?? string.Empty, StringComparison.Ordinal);
+
     internal static string PushNewBranch(string thisStack) =>
         $"{thisStack}.{Guid.NewGuid():N}".Trim(StackDelimiter);
 }

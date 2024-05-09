@@ -27,6 +27,7 @@ public class ParallelBranchTests
 
     protected virtual IWorkflowSerializer Serializer => new DataContractWorkflowSerializer();
     ParallelBranch parentLevel = default;
+    ParallelBranch noBranch = default;
     private void Run(params Action<CodeActivityContext>[] onExecute)
     {
         var execs = new Action<CodeActivityContext>[] { new(SetParent) }
@@ -39,7 +40,9 @@ public class ParallelBranchTests
 
         void SetParent(CodeActivityContext context)
         {
+            
             var parent = context.CurrentInstance.Parent;
+            noBranch = parent.GetCurrentParallelBranch();
             parent.MarkNewParallelBranch();
             parentLevel = parent.GetCurrentParallelBranch();
         }
@@ -62,8 +65,8 @@ public class ParallelBranchTests
     public void SetToNullWhenNull() => Run(
     context =>
     {
-        context.CurrentInstance.SetCurrentParallelBranch(default);
-        context.CurrentInstance.SetCurrentParallelBranch(default);
+        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
+        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
     });
 
@@ -71,9 +74,9 @@ public class ParallelBranchTests
     public void SetToNullWhenNotNull() => Run(
     context =>
     {
-        context.CurrentInstance.SetCurrentParallelBranch(default);
-        context.CurrentInstance.SetCurrentParallelBranch(default(ParallelBranch).Push());
-        context.CurrentInstance.SetCurrentParallelBranch(default);
+        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
+        context.CurrentInstance.SetCurrentParallelBranch(noBranch.Push());
+        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
     });
 
