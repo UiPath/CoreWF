@@ -26,17 +26,15 @@ public class ParallelBranchTests
     }
 
     protected virtual IWorkflowSerializer Serializer => new DataContractWorkflowSerializer();
-    ParallelBranch parentLevel = default;
-    ParallelBranch noBranch = default;
+    string _parentLevel = default;
+    readonly string _noBranch = default;
 
     private void Run(params Action<CodeActivityContext>[] onExecute)
     {
         new WorkflowApplication(new SuspendingWrapper(onExecute.Select(c => new TestCodeActivity(c))))
         {
             InstanceStore = new MemoryInstanceStore(Serializer)
-        }
-            .RunUntilCompletion();
-
+        }.RunUntilCompletion();
     }
 
     private void RunWithParent(params Action<CodeActivityContext>[] onExecute)
@@ -44,34 +42,32 @@ public class ParallelBranchTests
         Run([new(SetParent), .. onExecute]);
         void SetParent(CodeActivityContext context)
         {
-
             var parent = context.CurrentInstance.Parent;
-            noBranch = parent.GetCurrentParallelBranch();
+            parent.GetCurrentParallelBranchId().ShouldBe(_noBranch);
             parent.MarkNewParallelBranch();
-            parentLevel = parent.GetCurrentParallelBranch();
+            _parentLevel = parent.GetCurrentParallelBranchId();
         }
     }
 
     [Fact]
     public void Push()
     {
-        var level1 = new ParallelBranch().Push();
-        var level2 = level1.Push();
-        var level3 = level2.Push();
-        level2.BranchesStackString.ShouldStartWith(level1.BranchesStackString);
-        level3.BranchesStackString.ShouldStartWith(level2.BranchesStackString);
-        var l3Splits = level3.BranchesStackString.Split('.');
+        var level1 = default(string).PushNewBranch();
+        var level2 = level1.PushNewBranch();
+        var level3 = level2.PushNewBranch();
+        level2.ShouldStartWith(level1);
+        level3.ShouldStartWith(level2);
+        var l3Splits = level3.Split('.');
         l3Splits.Length.ShouldBe(3);
-        l3Splits.First().ShouldBe(level1.BranchesStackString);
+        l3Splits.First().ShouldBe(level1);
     }
 
     [Fact]
-    public void RestoreToNullWhenNull() => Run(
+    public void SetToNullWhenNull() => Run(
     context =>
     {
-        var noBranch = context.CurrentInstance.GetCurrentParallelBranch();
-        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
-        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
+        context.CurrentInstance.SetCurrentParallelBranchId(_noBranch);
+        context.CurrentInstance.SetCurrentParallelBranchId(_noBranch);
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
     });
 
@@ -79,60 +75,33 @@ public class ParallelBranchTests
     public void SetToNullWhenNotNull() => Run(
     context =>
     {   
-        var noBranch = context.CurrentInstance.GetCurrentParallelBranch();
-        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
-        context.CurrentInstance.SetCurrentParallelBranch(noBranch.Push());
-        context.CurrentInstance.SetCurrentParallelBranch(noBranch);
+        context.CurrentInstance.SetCurrentParallelBranchId(_noBranch);
+        context.CurrentInstance.SetCurrentParallelBranchId(_noBranch.PushNewBranch());
+        context.CurrentInstance.SetCurrentParallelBranchId(_noBranch);
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
     });
 
-
-    [Fact]
-    public void ParallelBranchPersistence() => RunWithParent(
-    context =>
-    {
-        PersistParallelBranch();
-
-        void PersistParallelBranch()
-        {
-            new ExecutionProperties(null, context.CurrentInstance.Parent, context.CurrentInstance.Parent.PropertyManager)
-            .Add("localParallelBranch", parentLevel, skipValidations: true, onlyVisibleToPublicChildren: false);
-        }
-    },
-    context =>
-    {
-        var persistedParent = GetPersistedParallelBranch();
-        var branchId = context.GetCurrentParallelBranchId();
-        persistedParent.BranchesStackString.ShouldBe(parentLevel.BranchesStackString);
-        branchId.ShouldBe(persistedParent.BranchesStackString);
-
-        ParallelBranch GetPersistedParallelBranch()
-        {
-            return (ParallelBranch)new ExecutionProperties(null, context.CurrentInstance.Parent, context.CurrentInstance.Parent.PropertyManager)
-            .Find("localParallelBranch");
-        }
-    });
 
     [Fact]
     public void GetCurrentParallelBranch_InheritsFromParent() => RunWithParent(
     context =>
     {
         var branchId = context.GetCurrentParallelBranchId();
-        var currentBranch = context.CurrentInstance.GetCurrentParallelBranch();
-        currentBranch.BranchesStackString.ShouldBe(branchId);
-        currentBranch.BranchesStackString.ShouldBe(parentLevel.BranchesStackString);
+        var currentBranch = context.CurrentInstance.GetCurrentParallelBranchId();
+        currentBranch.ShouldBe(branchId);
+        currentBranch.ShouldBe(_parentLevel);
     });
 
     [Fact]
     public void PushAndSetParallelBranch() => RunWithParent(
     context =>
     {
-        var pushLevelOnSchedule = parentLevel.Push();
+        var pushLevelOnSchedule = _parentLevel.PushNewBranch();
         var scheduledInstance = context.CurrentInstance;
-        scheduledInstance.SetCurrentParallelBranch(pushLevelOnSchedule);
-        var getPushedLevel = scheduledInstance.GetCurrentParallelBranch();
-        getPushedLevel.BranchesStackString.ShouldBe(pushLevelOnSchedule.BranchesStackString);
-        scheduledInstance.GetCurrentParallelBranchId().ShouldBe(pushLevelOnSchedule.BranchesStackString);
+        scheduledInstance.SetCurrentParallelBranchId(pushLevelOnSchedule);
+        var getPushedLevel = scheduledInstance.GetCurrentParallelBranchId();
+        getPushedLevel.ShouldBe(pushLevelOnSchedule);
+        scheduledInstance.GetCurrentParallelBranchId().ShouldBe(pushLevelOnSchedule);
     });
 
     [Fact]
@@ -140,8 +109,8 @@ public class ParallelBranchTests
     context =>
     {
         var instance = context.CurrentInstance;
-        instance.SetCurrentParallelBranch(parentLevel.Push());
-        Should.Throw<ArgumentException>(() => instance.SetCurrentParallelBranch(parentLevel.Push().Push()));
+        instance.SetCurrentParallelBranchId(_parentLevel.PushNewBranch());
+        Should.Throw<ArgumentException>(() => instance.SetCurrentParallelBranchId(_parentLevel.PushNewBranch().PushNewBranch()));
     });
 
     [Fact]
@@ -149,7 +118,7 @@ public class ParallelBranchTests
     context =>
     {
         var instance = context.CurrentInstance;
-        instance.SetCurrentParallelBranch(parentLevel.Push().Push());
+        instance.SetCurrentParallelBranchId(_parentLevel.PushNewBranch().PushNewBranch());
     });
 
     [Fact]
@@ -157,8 +126,8 @@ public class ParallelBranchTests
     context =>
     {
         var instance = context.CurrentInstance;
-        instance.SetCurrentParallelBranch(parentLevel.Push().Push());
-        instance.SetCurrentParallelBranch(parentLevel);
+        instance.SetCurrentParallelBranchId(_parentLevel.PushNewBranch().PushNewBranch());
+        instance.SetCurrentParallelBranchId(_parentLevel);
     });
 
     [Fact]
@@ -166,17 +135,23 @@ public class ParallelBranchTests
     context =>
     {
         var scheduledInstance = context.CurrentInstance;
-        scheduledInstance.SetCurrentParallelBranch(parentLevel.Push().Push());
-        Should.Throw<ArgumentException>(() => scheduledInstance.SetCurrentParallelBranch(parentLevel.Push()));
+        scheduledInstance.SetCurrentParallelBranchId(_parentLevel.PushNewBranch().PushNewBranch());
+        Should.Throw<ArgumentException>(() => scheduledInstance.SetCurrentParallelBranchId(_parentLevel.PushNewBranch()));
     });
 
     [Fact]
     public void ParallelBranchDoesNotLeakToSiblings() => RunWithParent(
     context =>
     {
-        var readLevel = context.CurrentInstance.GetCurrentParallelBranch();
+        context.CurrentInstance.SetCurrentParallelBranchId(context.CurrentInstance.GetCurrentParallelBranchId().PushNewBranch());
+        context.CurrentInstance.GetCurrentParallelBranchId().ShouldNotBe(_parentLevel);
+        context.CurrentInstance.GetCurrentParallelBranchId().ShouldStartWith(_parentLevel);
+    },
+    context =>
+    {
+        var readLevel = context.CurrentInstance.GetCurrentParallelBranchId();
         var branchId = context.GetCurrentParallelBranchId();
-        readLevel.BranchesStackString.ShouldBe(parentLevel.BranchesStackString);
-        branchId.ShouldBe(parentLevel.BranchesStackString);
+        readLevel.ShouldBe(_parentLevel);
+        branchId.ShouldBe(_parentLevel);
     });
 }
