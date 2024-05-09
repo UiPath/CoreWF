@@ -37,7 +37,7 @@ public static class ParallelTrackingExtensions
     }
 
     public static string GetCurrentParallelBranchId(this ActivityInstance instance) =>
-        instance.PropertyManager?.GetPropertyAtCurrentScope(BranchIdPropertyName) as string;
+        GetExecutionProperties(instance).Find(BranchIdPropertyName) as string;
 
     public static string GetCurrentParallelBranchId(this ActivityContext context) =>
          context.CurrentInstance?.GetCurrentParallelBranchId();
@@ -54,6 +54,11 @@ public static class ParallelTrackingExtensions
         currentOrChildInstance.SetCurrentParallelBranchId(parallelBranch.BranchesStackString);
     }
 
+    /// <summary>
+    /// Sets the parallelBranchId for the current activity instance
+    /// </summary>
+    /// <param name="branchId">null or empty removes the branch setting from current instance</param>
+    /// <exception cref="ArgumentException">when not a pop or a push</exception>
     private static void SetCurrentParallelBranchId(this ActivityInstance instance, string branchId)
     {
         var currentBranchId = instance.GetCurrentParallelBranchId();
@@ -61,14 +66,13 @@ public static class ParallelTrackingExtensions
         if (!IsAncestorOf(thisStack: branchId, descendantStack: currentBranchId)
             && !IsAncestorOf(thisStack: currentBranchId, descendantStack: branchId))
             throw new ArgumentException($"{nameof(branchId)} must be a pop or a push.", nameof(instance));
-        RemoveIfExists();
-        GetExecutionProperties(instance).Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
 
-        void RemoveIfExists()
-        {
-            if (instance.PropertyManager?.IsOwner(instance) is true)
-                instance.PropertyManager.Remove(BranchIdPropertyName);
-        }
+        var props = GetExecutionProperties(instance);
+        props.Remove(BranchIdPropertyName, skipValidations: true);
+        if (string.IsNullOrEmpty(branchId))
+            return;
+        
+        props.Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
     }
 
     private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) =>

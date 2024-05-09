@@ -28,19 +28,23 @@ public class ParallelBranchTests
     protected virtual IWorkflowSerializer Serializer => new DataContractWorkflowSerializer();
     ParallelBranch parentLevel = default;
     ParallelBranch noBranch = default;
+
     private void Run(params Action<CodeActivityContext>[] onExecute)
     {
-        var execs = new Action<CodeActivityContext>[] { new(SetParent) }
-            .Concat(onExecute);
-        new WorkflowApplication(new SuspendingWrapper(execs.Select(c => new TestCodeActivity(c)))) 
+        new WorkflowApplication(new SuspendingWrapper(onExecute.Select(c => new TestCodeActivity(c))))
         {
             InstanceStore = new MemoryInstanceStore(Serializer)
         }
             .RunUntilCompletion();
 
+    }
+
+    private void RunWithParent(params Action<CodeActivityContext>[] onExecute)
+    {
+        Run([new(SetParent), .. onExecute]);
         void SetParent(CodeActivityContext context)
         {
-            
+
             var parent = context.CurrentInstance.Parent;
             noBranch = parent.GetCurrentParallelBranch();
             parent.MarkNewParallelBranch();
@@ -62,9 +66,10 @@ public class ParallelBranchTests
     }
 
     [Fact]
-    public void SetToNullWhenNull() => Run(
+    public void RestoreToNullWhenNull() => Run(
     context =>
     {
+        var noBranch = context.CurrentInstance.GetCurrentParallelBranch();
         context.CurrentInstance.SetCurrentParallelBranch(noBranch);
         context.CurrentInstance.SetCurrentParallelBranch(noBranch);
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
@@ -73,7 +78,8 @@ public class ParallelBranchTests
     [Fact]
     public void SetToNullWhenNotNull() => Run(
     context =>
-    {
+    {   
+        var noBranch = context.CurrentInstance.GetCurrentParallelBranch();
         context.CurrentInstance.SetCurrentParallelBranch(noBranch);
         context.CurrentInstance.SetCurrentParallelBranch(noBranch.Push());
         context.CurrentInstance.SetCurrentParallelBranch(noBranch);
@@ -82,7 +88,7 @@ public class ParallelBranchTests
 
 
     [Fact]
-    public void ParallelBranchPersistence() => Run(
+    public void ParallelBranchPersistence() => RunWithParent(
     context =>
     {
         PersistParallelBranch();
@@ -108,7 +114,7 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void GetCurrentParallelBranch_InheritsFromParent() => Run(
+    public void GetCurrentParallelBranch_InheritsFromParent() => RunWithParent(
     context =>
     {
         var branchId = context.GetCurrentParallelBranchId();
@@ -118,7 +124,7 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void PushAndSetParallelBranch() => Run(
+    public void PushAndSetParallelBranch() => RunWithParent(
     context =>
     {
         var pushLevelOnSchedule = parentLevel.Push();
@@ -130,7 +136,7 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void UnparentedPushFails() => Run(
+    public void UnparentedPushFails() => RunWithParent(
     context =>
     {
         var instance = context.CurrentInstance;
@@ -139,7 +145,7 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void DoublePush() => Run(
+    public void DoublePush() => RunWithParent(
     context =>
     {
         var instance = context.CurrentInstance;
@@ -147,7 +153,7 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void DoublePop() => Run(
+    public void DoublePop() => RunWithParent(
     context =>
     {
         var instance = context.CurrentInstance;
@@ -156,7 +162,7 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void UnparentedPopFails() => Run(
+    public void UnparentedPopFails() => RunWithParent(
     context =>
     {
         var scheduledInstance = context.CurrentInstance;
@@ -165,7 +171,7 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void ParallelBranchDoesNotLeakToSiblings() => Run(
+    public void ParallelBranchDoesNotLeakToSiblings() => RunWithParent(
     context =>
     {
         var readLevel = context.CurrentInstance.GetCurrentParallelBranch();
