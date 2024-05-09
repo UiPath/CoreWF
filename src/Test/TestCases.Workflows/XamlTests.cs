@@ -11,6 +11,7 @@ using System.Activities.Statements;
 using System.Activities.Validation;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -264,6 +265,64 @@ namespace TestCases.Workflows
             result.SourceExpressionException?.Errors.ShouldBeEmpty();
             result.ReturnType.ShouldBe(typeof(string));
             result.Activity.ShouldNotBeNull();
+        }
+
+        [Theory]
+        [InlineData(typeof(bool), "Nothing", false)]
+        [InlineData(typeof(string), "Nothing", false)]
+        [InlineData(typeof(DataTable), "Nothing", true)]
+        [InlineData(typeof(Func<bool>), "Nothing", false)]
+        [InlineData(typeof(Func<string>), "Function() (1 + 1)", true)]
+        [InlineData(typeof(Func<string>), "Function() (Nothing)", false)]
+        [InlineData(typeof(Func<string>), "Function() (\"test\")", false)]
+        public async Task VB_CreatePrecompiedValueAsync_CorrectReturnType(Type targetType, string expressionText, bool shouldExpectError)
+        {
+            var location = new ActivityLocationReferenceEnvironment();
+            WorkflowInspectionServices.CacheMetadata(new Sequence(), location);
+
+            var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(targetType, expressionText, null, null, location);
+
+            result.Activity.ShouldNotBeNull();
+
+            if (shouldExpectError)
+            {
+                result.ReturnType.ShouldBe(typeof(object));
+                result.SourceExpressionException?.Errors.Any().ShouldBeTrue();
+            }
+            else
+            {
+                result.ReturnType.ShouldBe(targetType);
+                result.SourceExpressionException?.Errors.ShouldBeEmpty();
+            }
+        }
+
+        [Theory]
+        [InlineData(typeof(bool), "null", true)]
+        [InlineData(typeof(string), "null", false)]
+        [InlineData(typeof(DataTable), "null", true)]
+        [InlineData(typeof(Func<bool>), "null", false)]
+        [InlineData(typeof(Func<string>), "() => null", false)]
+        [InlineData(typeof(Func<string>), "() => 1 + 1", true)]
+        [InlineData(typeof(Func<string>), "() => \"test\"", false)]
+        public async Task CS_CreatePrecompiedValueAsync_CorrectReturnType(Type targetType, string expressionText, bool shouldExpectError)
+        {
+            var location = new ActivityLocationReferenceEnvironment();
+            WorkflowInspectionServices.CacheMetadata(new Sequence(), location);
+
+            var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(targetType, expressionText, null, null, location);
+
+            result.Activity.ShouldNotBeNull();
+
+            if (shouldExpectError)
+            {
+                result.ReturnType.ShouldBe(typeof(object));
+                result.SourceExpressionException?.Errors.Any().ShouldBeTrue();
+            }
+            else
+            {
+                result.ReturnType.ShouldBe(targetType);
+                result.SourceExpressionException?.Errors.ShouldBeEmpty();
+            }
         }
 
         public static IEnumerable<object[]> GetCSharpTestData

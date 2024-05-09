@@ -33,7 +33,9 @@ internal sealed class CSharpExpressionCompiler : ExpressionCompiler
 
         var para = allNodes.First(n => n.GetType() == typeof(ParenthesizedLambdaExpressionSyntax));
         var node = allNodes.Skip(allNodes.IndexOf(para) + 1).OfType<ExpressionSyntax>().First();
-        var typeSymbol = semanticModel.GetTypeInfo(node).Type;
+        var typeInfo = semanticModel.GetTypeInfo(node);
+        var typeSymbol = typeInfo.Type ?? typeInfo.ConvertedType;
+
         return GetSystemType(typeSymbol, GetAssemblyForType(typeSymbol));
     }
 

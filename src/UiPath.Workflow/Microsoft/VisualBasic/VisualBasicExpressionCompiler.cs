@@ -24,10 +24,10 @@ internal sealed class VisualBasicExpressionCompiler : ExpressionCompiler
 
         var para = allNodes.First(n => n.GetType() == typeof(SingleLineLambdaExpressionSyntax));
         var node = allNodes.Skip(allNodes.IndexOf(para) + 1).OfType<ExpressionSyntax>().First();
+        var typeInfo = semanticModel.GetTypeInfo(node);
+        var typeSymbol = typeInfo.Type ?? typeInfo.ConvertedType;
 
-        var typeInfo = semanticModel.GetTypeInfo(node).Type;
-
-        return GetSystemType(typeInfo, GetAssemblyForType(typeInfo));
+        return GetSystemType(typeSymbol, GetAssemblyForType(typeSymbol));
     }
 
     protected override Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces)
