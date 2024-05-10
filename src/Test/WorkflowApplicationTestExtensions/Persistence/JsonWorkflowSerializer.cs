@@ -28,9 +28,10 @@ public class JsonWorkflowSerializer : IWorkflowSerializer
     {
         Formatting = Formatting.Indented,
         TypeNameHandling = TypeNameHandling.Auto,
-        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
         ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-        ObjectCreationHandling = ObjectCreationHandling.Replace
+        ObjectCreationHandling = ObjectCreationHandling.Replace,
+        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+        ReferenceLoopHandling = ReferenceLoopHandling.Serialize
     };
 
 }

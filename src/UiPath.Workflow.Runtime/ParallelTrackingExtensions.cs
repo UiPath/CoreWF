@@ -44,8 +44,8 @@ public static class ParallelTrackingExtensions
         
         props.Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
     }
-    public static string PushNewBranch(this string thisStack) =>
-        $"{thisStack}.{Guid.NewGuid():N}".Trim('.');
+    public static string PushNewBranch(string branchId) =>
+        $"{branchId}.{Guid.NewGuid():N}".Trim('.');
 
     private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) =>
         new(null, instance, instance.PropertyManager);
