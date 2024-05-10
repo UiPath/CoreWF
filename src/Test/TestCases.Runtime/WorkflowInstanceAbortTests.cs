@@ -218,7 +218,7 @@ public class WorkflowInstanceAbortTests
             }
         };
 
-        JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
         TestWorkflowRuntime runtime = TestRuntime.CreateTestWorkflowRuntime(sequence, null, jsonStore, PersistableIdleAction.Persist);
         runtime.ExecuteWorkflow();
         runtime.WaitForActivityStatusChange("Read", TestActivityInstanceState.Executing);
@@ -277,7 +277,7 @@ public class WorkflowInstanceAbortTests
             parallel.Branches.Add(sequence);
         }
 
-        JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
         TestWorkflowRuntime runtime = TestRuntime.CreateTestWorkflowRuntime(parallel, null, jsonStore, PersistableIdleAction.Persist);
         runtime.ExecuteWorkflow();
 

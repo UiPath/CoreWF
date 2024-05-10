@@ -16,12 +16,12 @@ public class FileInstanceStore : AbstractInstanceStore
         Directory.CreateDirectory(storeDirectoryPath);
     }
 
-    protected override Task<Stream> GetReadStream(Guid instanceId)
+    protected override Task<Stream> GetLoadStream(Guid instanceId)
     {
         return Task.FromResult<Stream>(File.OpenRead(GetFilePath(instanceId)));
     }
 
-    protected override Task<Stream> GetWriteStream(Guid instanceId)
+    protected override Task<Stream> GetSaveStream(Guid instanceId)
     {
         string filePath = GetFilePath(instanceId);
         File.Delete(filePath);

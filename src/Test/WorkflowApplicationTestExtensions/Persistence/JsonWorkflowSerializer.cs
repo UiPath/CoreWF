@@ -24,7 +24,21 @@ public class JsonWorkflowSerializer : IWorkflowSerializer
         Serializer().Serialize(writer, workflowInstanceState.ToSave());
         writer.Flush();
     }
-    private static JsonSerializer Serializer() => new()
+    private static JsonSerializer Serializer()
+    {
+        var settings = SerializerSettings();
+        return new()
+        {
+            Formatting = Formatting.Indented,
+            TypeNameHandling = settings.TypeNameHandling,
+            ConstructorHandling = settings.ConstructorHandling,
+            ObjectCreationHandling = settings.ObjectCreationHandling,
+            PreserveReferencesHandling = settings.PreserveReferencesHandling,
+            ReferenceLoopHandling = settings.ReferenceLoopHandling
+        };
+    }
+
+    public static JsonSerializerSettings SerializerSettings() => new()
     {
         Formatting = Formatting.Indented,
         TypeNameHandling = TypeNameHandling.Auto,
@@ -33,5 +47,4 @@ public class JsonWorkflowSerializer : IWorkflowSerializer
         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
         ReferenceLoopHandling = ReferenceLoopHandling.Serialize
     };
-
 }
