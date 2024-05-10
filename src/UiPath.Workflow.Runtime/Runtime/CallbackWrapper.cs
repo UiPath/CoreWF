@@ -13,7 +13,6 @@ public class CallbackWrapper
     private string _callbackName;
     private string _declaringAssemblyName;
     private string _declaringTypeName;
-    private Delegate _callback;
     private ActivityInstance _activityInstance;
 
     protected internal CallbackWrapper() { }
@@ -21,8 +20,10 @@ public class CallbackWrapper
     public CallbackWrapper(Delegate callback, ActivityInstance owningInstance)
     {
         ActivityInstance = owningInstance;
-        _callback = callback;
+        Callback = callback;
     }
+
+    public Delegate Callback { get; set; }
 
     internal ActivityInstance ActivityInstance
     {
@@ -30,9 +31,7 @@ public class CallbackWrapper
         private set => _activityInstance = value;
     }
 
-    protected bool IsCallbackNull => _callback == null && _callbackName == null;
-
-    public Delegate Callback => _callback;
+    protected bool IsCallbackNull => Callback == null && _callbackName == null;
 
     [DataMember(Name = "callbackName")]
     internal string SerializedCallbackName
@@ -82,20 +81,20 @@ public class CallbackWrapper
     protected void EnsureCallback(Type delegateType, Type[] parameterTypes, Type genericParameter)
     {
         // We were unloaded and have some work to do to rebuild the callback
-        if (_callback == null)
+        if (Callback == null)
         {
-            _callback = GenerateCallback(delegateType, parameterTypes, genericParameter);
-            Fx.Assert(_callback != null, "GenerateCallback should have been able to produce a non-null callback.");
+            Callback = GenerateCallback(delegateType, parameterTypes, genericParameter);
+            Fx.Assert(Callback != null, "GenerateCallback should have been able to produce a non-null callback.");
         }
     }
 
     protected void ValidateCallbackResolution(Type delegateType, Type[] parameterTypes, Type genericParameter)
     {
-        Fx.Assert(_callback != null && _callbackName != null, "We must have a callback and a callback name");
+        Fx.Assert(Callback != null && _callbackName != null, "We must have a callback and a callback name");
 
-        if (!_callback.Equals(GenerateCallback(delegateType, parameterTypes, genericParameter)))
+        if (!Callback.Equals(GenerateCallback(delegateType, parameterTypes, genericParameter)))
         {
-            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.Method, null)));
+            throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(Callback.Method, null)));
         }
     }
 
@@ -163,13 +162,13 @@ public class CallbackWrapper
     protected void EnsureCallback(Type delegateType, Type[] parameters)
     {
         // We were unloaded and have some work to do to rebuild the callback
-        if (_callback == null)
+        if (Callback == null)
         {
             MethodInfo methodInfo = GetMatchingMethod(parameters, out _);
 
             Fx.Assert(methodInfo != null, "We must have a method info by now");
 
-            _callback = RecreateCallback(delegateType, methodInfo);
+            Callback = RecreateCallback(delegateType, methodInfo);
         }
     }
 
@@ -227,7 +226,7 @@ public class CallbackWrapper
     {
         if (_callbackName == null && !IsCallbackNull)
         {
-            MethodInfo method = _callback.Method;
+            MethodInfo method = Callback.Method;
             _callbackName = method.Name;
             Type declaringType = method.DeclaringType;
             Type activityType = ActivityInstance.Activity.GetType();
@@ -254,6 +253,6 @@ public class CallbackWrapper
     protected virtual void OnSerializingGenericCallback()
     {
         // Generics are invalid by default
-        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(_callback.Method, null)));
+        throw FxTrace.Exception.AsError(new InvalidOperationException(SR.InvalidExecutionCallback(Callback.Method, null)));
     }
 }
