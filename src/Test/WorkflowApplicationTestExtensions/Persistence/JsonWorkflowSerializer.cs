@@ -24,7 +24,7 @@ public class JsonWorkflowSerializer : IWorkflowSerializer
         Serializer().Serialize(writer, workflowInstanceState.ToSave());
         writer.Flush();
     }
-    private static JsonSerializer Serializer()
+    protected virtual JsonSerializer Serializer()
     {
         var settings = SerializerSettings();
         return new()

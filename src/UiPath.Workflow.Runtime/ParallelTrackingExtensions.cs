@@ -13,29 +13,29 @@ public static class ParallelTrackingExtensions
 
     public static ActivityInstance MarkNewParallelBranch(this ActivityInstance instance)
     {
-        var parentId = instance.GetCurrentParallelBranchId();
-        instance.SetCurrentParallelBranchId(GenerateChildParallelBranchId(parentId));
+        var parentId = instance.GetParallelBranchId();
+        instance.SetParallelBranchId(GenerateChildParallelBranchId(parentId));
         return instance;
     }
 
-    public static string GetCurrentParallelBranchId(this ActivityInstance instance) =>
+    public static string GetParallelBranchId(this ActivityInstance instance) =>
         GetExecutionProperties(instance).Find(BranchIdPropertyName) as string;
 
     public static string GetCurrentParallelBranchId(this ActivityContext context) =>
-         context.CurrentInstance?.GetCurrentParallelBranchId();
+         context.CurrentInstance?.GetParallelBranchId();
 
     /// <summary>
     /// Sets the parallelBranchId for the current activity instance
     /// </summary>
     /// <param name="branchId">null or empty removes the branch setting from current instance</param>
     /// <exception cref="ArgumentException">when not a pop or a push</exception>
-    public static void SetCurrentParallelBranchId(this ActivityInstance instance, string branchId)
+    public static void SetParallelBranchId(this ActivityInstance instance, string branchId)
     {
-        var currentBranchId = instance.GetCurrentParallelBranchId();
+        var currentBranchId = instance.GetParallelBranchId();
 
         if (!IsAncestorOf(thisStack: branchId, descendantStack: currentBranchId)
             && !IsAncestorOf(thisStack: currentBranchId, descendantStack: branchId))
-            throw new ArgumentException($"{nameof(branchId)} must be a pop or a push.", nameof(instance));
+            throw new ArgumentException($"{nameof(branchId)} must be a pop or a push.", nameof(branchId));
 
         var props = GetExecutionProperties(instance);
         props.Remove(BranchIdPropertyName, skipValidations: true);
