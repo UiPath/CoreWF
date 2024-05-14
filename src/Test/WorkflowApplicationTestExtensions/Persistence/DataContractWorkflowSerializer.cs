@@ -66,7 +66,6 @@ public sealed class DataContractWorkflowSerializer : IWorkflowSerializer
     {
         private const string FaultWrapperTypeName = "System.Activities.Runtime.FaultCallbackWrapper";
         private const string CompletionWrapperTypeName = "System.Activities.Runtime.ActivityCompletionCallbackWrapper";
-        private const string NewtonsoftUnserializableNamespace = "Newtonsoft.Json.Linq";
 
         private static bool IsWrapperType(Type type) => type.FullName == FaultWrapperTypeName || type.FullName == CompletionWrapperTypeName;
         public Type GetSurrogateType(Type type) => IsWrapperType(type) ? typeof(SurrogateWrapper) : null;
@@ -75,11 +74,6 @@ public sealed class DataContractWorkflowSerializer : IWorkflowSerializer
         {
             var typeToSerialize = obj.GetType();
             System.Diagnostics.Trace.TraceInformation($"TypeToSerialize = {typeToSerialize.FullName}");
-            //to be removed after .NET8 upgrade ROBO-2615
-            if (typeToSerialize.FullName.Contains(NewtonsoftUnserializableNamespace))
-            {
-                throw new InvalidDataContractException(string.Format(Resources.NewtonsoftTypesSerializationError, NewtonsoftUnserializableNamespace, typeToSerialize.FullName));
-            }
 
             if (!IsWrapperType(typeToSerialize))
             {

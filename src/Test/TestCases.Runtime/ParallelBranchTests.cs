@@ -50,11 +50,11 @@ public class ParallelBranchTests
     }
 
     [Fact]
-    public void Push()
+    public void GenerateChildParallelBranchId()
     {
-        var level1 = ParallelTrackingExtensions.PushNewBranch(null);
-        var level2 = ParallelTrackingExtensions.PushNewBranch(level1);
-        var level3 = ParallelTrackingExtensions.PushNewBranch(level2);
+        var level1 = ParallelTrackingExtensions.GenerateChildParallelBranchId(null);
+        var level2 = ParallelTrackingExtensions.GenerateChildParallelBranchId(level1);
+        var level3 = ParallelTrackingExtensions.GenerateChildParallelBranchId(level2);
         level2.ShouldStartWith(level1);
         level3.ShouldStartWith(level2);
         var l3Splits = level3.Split('.');
@@ -76,7 +76,7 @@ public class ParallelBranchTests
     context =>
     {   
         context.CurrentInstance.SetCurrentParallelBranchId(_noBranch);
-        context.CurrentInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(_noBranch));
+        context.CurrentInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(_noBranch));
         context.CurrentInstance.SetCurrentParallelBranchId(_noBranch);
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldBeNull();
     });
@@ -93,10 +93,10 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void PushAndSetParallelBranch() => RunWithParent(
+    public void Generate_Set_And_Get_BranchId() => RunWithParent(
     context =>
     {
-        var pushLevelOnSchedule = ParallelTrackingExtensions.PushNewBranch(_parentLevel);
+        var pushLevelOnSchedule = ParallelTrackingExtensions.GenerateChildParallelBranchId(_parentLevel);
         var scheduledInstance = context.CurrentInstance;
         scheduledInstance.SetCurrentParallelBranchId(pushLevelOnSchedule);
         var getPushedLevel = scheduledInstance.GetCurrentParallelBranchId();
@@ -105,45 +105,45 @@ public class ParallelBranchTests
     });
 
     [Fact]
-    public void UnparentedPushFails() => RunWithParent(
+    public void Unrelated_Set_Fails() => RunWithParent(
     context =>
     {
         var instance = context.CurrentInstance;
-        instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(_parentLevel));
-        Should.Throw<ArgumentException>(() => instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(ParallelTrackingExtensions.PushNewBranch(_parentLevel))));
+        instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(_parentLevel));
+        Should.Throw<ArgumentException>(() => instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(_parentLevel))));
     });
 
     [Fact]
-    public void DoublePush() => RunWithParent(
+    public void Set_Descendant_level2() => RunWithParent(
     context =>
     {
         var instance = context.CurrentInstance;
-        instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(ParallelTrackingExtensions.PushNewBranch(_parentLevel)));
+        instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(_parentLevel)));
     });
 
     [Fact]
-    public void DoublePop() => RunWithParent(
+    public void Restore_Ancestor_level2() => RunWithParent(
     context =>
     {
         var instance = context.CurrentInstance;
-        instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(ParallelTrackingExtensions.PushNewBranch(_parentLevel)));
+        instance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(_parentLevel)));
         instance.SetCurrentParallelBranchId(_parentLevel);
     });
 
     [Fact]
-    public void UnparentedPopFails() => RunWithParent(
+    public void Unrelated_Restore_Fails() => RunWithParent(
     context =>
     {
         var scheduledInstance = context.CurrentInstance;
-        scheduledInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(ParallelTrackingExtensions.PushNewBranch(_parentLevel)));
-        Should.Throw<ArgumentException>(() => scheduledInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(_parentLevel)));
+        scheduledInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(_parentLevel)));
+        Should.Throw<ArgumentException>(() => scheduledInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(_parentLevel)));
     });
 
     [Fact]
     public void ParallelBranchDoesNotLeakToSiblings() => RunWithParent(
     context =>
     {
-        context.CurrentInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.PushNewBranch(context.CurrentInstance.GetCurrentParallelBranchId()));
+        context.CurrentInstance.SetCurrentParallelBranchId(ParallelTrackingExtensions.GenerateChildParallelBranchId(context.CurrentInstance.GetCurrentParallelBranchId()));
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldNotBe(_parentLevel);
         context.CurrentInstance.GetCurrentParallelBranchId().ShouldStartWith(_parentLevel);
     },

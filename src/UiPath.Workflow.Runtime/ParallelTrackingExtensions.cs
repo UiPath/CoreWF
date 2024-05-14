@@ -14,7 +14,7 @@ public static class ParallelTrackingExtensions
     public static ActivityInstance MarkNewParallelBranch(this ActivityInstance instance)
     {
         var parentId = instance.GetCurrentParallelBranchId();
-        instance.SetCurrentParallelBranchId(PushNewBranch(parentId));
+        instance.SetCurrentParallelBranchId(GenerateChildParallelBranchId(parentId));
         return instance;
     }
 
@@ -44,7 +44,7 @@ public static class ParallelTrackingExtensions
         
         props.Add(BranchIdPropertyName, branchId, skipValidations: true, onlyVisibleToPublicChildren: false);
     }
-    public static string PushNewBranch(string branchId) =>
+    public static string GenerateChildParallelBranchId(string branchId) =>
         $"{branchId}.{Guid.NewGuid():N}".Trim('.');
 
     private static ExecutionProperties GetExecutionProperties(ActivityInstance instance) =>

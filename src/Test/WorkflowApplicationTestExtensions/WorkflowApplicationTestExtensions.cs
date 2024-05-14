@@ -88,8 +88,7 @@ public static class WorkflowApplicationTestExtensions
     }
 
     private static WorkflowApplication CloneWorkflowApplication(WorkflowApplication application)
-    {
-        var clone = new WorkflowApplication(application.WorkflowDefinition, application.DefinitionIdentity)
+    => new(application.WorkflowDefinition, application.DefinitionIdentity)
         {
             Aborted = application.Aborted,
             Completed = application.Completed,
@@ -97,6 +96,4 @@ public static class WorkflowApplicationTestExtensions
             Unloaded = application.Unloaded,
             InstanceStore = application.InstanceStore,
         };
-        return clone;
-    }
 }
