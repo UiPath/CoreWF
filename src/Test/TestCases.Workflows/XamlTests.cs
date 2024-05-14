@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic.Activities;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Shouldly;
 using System;
 using System.Activities;
@@ -324,6 +325,37 @@ namespace TestCases.Workflows
                 result.SourceExpressionException?.Errors.ShouldBeEmpty();
             }
         }
+
+        [Fact]
+        public async Task CSharp_CreatePrecompiedValueAsync_ProperlyIdentifiesGenericTypesVariables()
+        {
+            var seq = new Sequence();
+            var location = new ActivityLocationReferenceEnvironment();
+            WorkflowInspectionServices.CacheMetadata(seq, location);
+            IList<ValidationError> errors = new List<ValidationError>();
+
+            location.Declare(new Variable<List<JToken>>("variable1"), seq, ref errors);
+            var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(List<JToken>), "new List<JToken>()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, location);
+            result.ReturnType.ShouldBe(typeof(List<JToken>));
+            result.SourceExpressionException?.Errors.ShouldBeEmpty();
+            result.Activity.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task VB_CreatePrecompiedValueAsync_ProperlyIdentifiesGenericTypesVariables()
+        {
+            var seq = new Sequence();
+            var location = new ActivityLocationReferenceEnvironment();
+            WorkflowInspectionServices.CacheMetadata(seq, location);
+            IList<ValidationError> errors = new List<ValidationError>();
+
+            location.Declare(new Variable<List<JToken>>("variable1"), seq, ref errors);
+            var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(typeof(List<JToken>), "new List(Of JToken)()", new[] { "System.Collections.Generic", "Newtonsoft.Json", "Newtonsoft.Json.Linq" }, new[] { (AssemblyReference)new AssemblyName("Newtonsoft.Json") }, location);
+            result.ReturnType.ShouldBe(typeof(List<JToken>));
+            result.SourceExpressionException?.Errors.ShouldBeEmpty();
+            result.Activity.ShouldNotBeNull();
+        }
+
 
         public static IEnumerable<object[]> GetCSharpTestData
         {
