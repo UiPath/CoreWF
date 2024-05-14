@@ -117,14 +117,8 @@ public abstract class AbstractInstanceStore(IWorkflowSerializer instanceSerializ
 
     private async Task SaveWorkflow(InstancePersistenceContext context, SaveWorkflowCommand command)
     {
-        if (context.InstanceVersion == -1)
-        {
-            context.BindAcquiredLock(0);
-        }
-
         using var originalStream = await GetSaveStream(context.InstanceView.InstanceId);
         _instanceSerializer.SaveWorkflowInstance(command.InstanceData, originalStream);
-        context.PersistedInstance(command.InstanceData);
         OnSaveDone(context.InstanceView.InstanceId, originalStream);
     }
 
