@@ -49,13 +49,6 @@ public class DataContractWorkflowSerializer : IWorkflowSerializer
 
         public override bool TryResolveType(Type type, Type declaredType, DataContractResolver knownTypeResolver, out XmlDictionaryString typeName, out XmlDictionaryString typeNamespace)
         {
-            if (typeof(IEnumerable) == declaredType) //ROBO-2904
-            {
-                typeName = null;
-                typeNamespace = null;
-                return true;
-            }
-
             typeName = new XmlDictionaryString(XmlDictionary.Empty, type.AssemblyQualifiedName, 0);
             typeNamespace = new XmlDictionaryString(XmlDictionary.Empty, type.Namespace, 0);
 

@@ -24,23 +24,10 @@ public class JsonWorkflowSerializer : IWorkflowSerializer
         Serializer().Serialize(writer, workflowInstanceState.ToSave());
         writer.Flush();
     }
-    protected virtual JsonSerializer Serializer()
-    {
-        var settings = SerializerSettings();
-        return new()
-        {
-            Formatting = Formatting.Indented,
-            TypeNameHandling = settings.TypeNameHandling,
-            ConstructorHandling = settings.ConstructorHandling,
-            ObjectCreationHandling = settings.ObjectCreationHandling,
-            PreserveReferencesHandling = settings.PreserveReferencesHandling,
-            ReferenceLoopHandling = settings.ReferenceLoopHandling
-        };
-    }
+    protected virtual JsonSerializer Serializer() => JsonSerializer.Create(SerializerSettings());
 
     public static JsonSerializerSettings SerializerSettings() => new()
     {
-        Formatting = Formatting.Indented,
         TypeNameHandling = TypeNameHandling.Auto,
         ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
         ObjectCreationHandling = ObjectCreationHandling.Replace,

@@ -109,7 +109,7 @@ public abstract class AbstractInstanceStore(IWorkflowSerializer instanceSerializ
 
     private async Task LoadWorkflow(InstancePersistenceContext context)
     {
-        var originalStream = await GetLoadStream(context.InstanceView.InstanceId);
+        using var originalStream = await GetLoadStream(context.InstanceView.InstanceId);
         var deserializedInstanceData = _instanceSerializer.LoadWorkflowInstance(originalStream);
         context.LoadedInstance(InstanceState.Initialized, deserializedInstanceData, null, null, null);
         OnLoadDone(context.InstanceView.InstanceId, originalStream);
