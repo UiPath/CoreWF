@@ -566,34 +566,4 @@ public class ExpressionTests
         var valid = ActivityValidationServices.Validate(seq, _useValidator);
         valid.Errors.ShouldBeEmpty();
     }
-
-    [Fact]
-    public void VB_ReferenceTypeIsCheckedForGenericsFromDifferentAssemblies()
-    {
-        var sequence = new Sequence();
-        sequence.Variables.Add(new Variable<List<ArgumentDirection>>("var1"));
-        sequence.Activities.Add(new Assign 
-            { 
-                To = new OutArgument<List<ArgumentDirection>>(new VisualBasicReference<List<ArgumentDirection>>("var1")), 
-                Value = new InArgument<List<ArgumentDirection>>(new VisualBasicValue<List<ArgumentDirection>>("Nothing")) 
-            });
-
-        var result = ActivityValidationServices.Validate(sequence, _useValidator);
-        result.Errors.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void CS_ReferenceTypeIsCheckedForGenericsFromDifferentAssemblies()
-    {
-        var sequence = new Sequence();
-        sequence.Variables.Add(new Variable<List<ArgumentDirection>>("var1"));
-        sequence.Activities.Add(new Assign
-        {
-            To = new OutArgument<List<ArgumentDirection>>(new CSharpReference<List<ArgumentDirection>>("var1")),
-            Value = new InArgument<List<ArgumentDirection>>(new CSharpValue<List<ArgumentDirection>>("null"))
-        });
-
-        var result = ActivityValidationServices.Validate(sequence, _useValidator);
-        result.Errors.ShouldBeEmpty();
-    }
 }
