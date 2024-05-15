@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -325,6 +326,20 @@ namespace TestCases.Workflows
             }
         }
 
+        [Fact]
+        public async Task CSharp_CreatePrecompiedValueAsync_ProperlyResolvesGenericTypesFromAnotherLoadContext()
+        {
+            // Same applies to VB, they both go through the shared code, so no point in duplicating the test.
+            var location = new ActivityLocationReferenceEnvironment();
+            var loadContext = new AssemblyLoadContext("MyCollectibleALC", true);
+            loadContext.LoadFromAssemblyPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"TestData\JsonFileInstanceStore.dll"));
+
+            var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(object), "new List<Dictionary<string, FileInstanceStore[]>>()", new[] { "System.Collections.Generic", "JsonFileInstanceStore" }, new[] { (AssemblyReference)new AssemblyName("JsonFileInstanceStore") }, location);
+            result.ReturnType.FullName.ShouldBe("System.Collections.Generic.List`1[[System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[JsonFileInstanceStore.FileInstanceStore[], JsonFileInstanceStore, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]");
+            result.SourceExpressionException?.Errors.ShouldBeEmpty();
+            result.Activity.ShouldNotBeNull();
+        }
+
         public static IEnumerable<object[]> GetCSharpTestData
         {
             get
@@ -377,7 +392,7 @@ namespace TestCases.Workflows
         {
             var compiler = new CSharpJitCompiler(new[] { typeof(Expression).Assembly, typeof(Enumerable).Assembly }.ToHashSet());
             var result = compiler.CompileExpression(new ExpressionToCompile("source.Select(s=>s).Sum()", ["System", "System.Linq", "System.Linq.Expressions", "System.Collections.Generic"],
-                (name, comparer )=> name == "source" ? typeof(List<int>) : null, typeof(int)));
+                (name, comparer) => name == "source" ? typeof(List<int>) : null, typeof(int)));
             ((Func<List<int>, int>)result.Compile())(new List<int> { 1, 2, 3 }).ShouldBe(6);
         }
 

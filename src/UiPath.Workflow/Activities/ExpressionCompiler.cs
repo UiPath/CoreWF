@@ -34,46 +34,24 @@ namespace System.Activities
 
         protected static Type GetSystemType(ITypeSymbol typeSymbol, Assembly assembly)
         {
-            StringBuilder typeName = new();
-            typeName.Append(GetTypeName(typeSymbol));
-            return assembly.GetType(typeName.ToString());
-        }
-
-        private static string GetTypeName(ITypeSymbol typeSymbol)
-        {
             if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
             {
-                var elementType = GetTypeName(arrayTypeSymbol.ElementType);
-                return elementType + "[]";
+                return GetSystemType(arrayTypeSymbol.ElementType, assembly).MakeArrayType();
             }
-            else if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
+
+            if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
             {
                 if (namedTypeSymbol.IsGenericType)
                 {
-                    var typeArguments = namedTypeSymbol.TypeArguments.Select(t => GetTypeFQDN(t)).ToArray();
-                    var typeName = $"{namedTypeSymbol.MetadataName}[{string.Join(CompilerHelper.Comma, typeArguments)}]";
-                    var fullName = $"{namedTypeSymbol.ContainingNamespace.ToDisplayString()}.{typeName}";
-                    return fullName;
-                }
-                else
-                {
-                    return $"{typeSymbol.ContainingNamespace.ToDisplayString()}.{typeSymbol.Name}";
+                    return assembly.GetType($"{namedTypeSymbol.ContainingNamespace}.{namedTypeSymbol.MetadataName}").MakeGenericType(namedTypeSymbol.TypeArguments.Select(t=> GetSystemType(t, GetAssemblyForType(t))).ToArray());
                 }
             }
-            else
-            {
-                return $"{typeSymbol.ContainingNamespace.ToDisplayString()}.{typeSymbol.Name}";
-            }
+
+            return assembly.GetType($"{typeSymbol.ContainingNamespace}.{typeSymbol.MetadataName}");
         }
 
         protected abstract Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces);
 
         protected abstract SyntaxTree GetSyntaxTreeForExpression(string expression, bool isLocation, Type returnType, LocationReferenceEnvironment environment);
-
-        private static object GetTypeFQDN(ITypeSymbol t)
-        {
-            var assembly = GetAssemblyForType(t);
-            return $"[{GetTypeName(t)}, {assembly.FullName}]";
-        }
     }
 }
