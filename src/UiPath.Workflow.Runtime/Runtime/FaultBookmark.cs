@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-public class FaultBookmark
+internal class FaultBookmark
 {
     private FaultCallbackWrapper _callbackWrapper;
 
