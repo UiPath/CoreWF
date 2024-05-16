@@ -473,8 +473,8 @@ namespace TestCases.Activities.Flowchart
         /// Five level deep nested flowchart with blocking activity
         /// </summary>   
         /// Disabled and failed in desktop     
-        //[Fact]
-        private void FiveLevelDeepNestedFlowchartWithBlockingActivity()
+        [Fact]
+        public void FiveLevelDeepNestedFlowchartWithBlockingActivity()
         {
             TestFlowchart parent = new TestFlowchart();
             TestFlowchart child1 = new TestFlowchart();
