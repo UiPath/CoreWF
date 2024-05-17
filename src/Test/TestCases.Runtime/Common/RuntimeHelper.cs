@@ -392,7 +392,7 @@ namespace TestCases.Runtime.Common
             };
 
             WorkflowApplicationInstance waInstance;
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime workflowRuntime = TestRuntime.CreateTestWorkflowRuntime(wfDefinition, null, jsonStore, PersistableIdleAction.Unload))
             {

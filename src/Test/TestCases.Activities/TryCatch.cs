@@ -929,7 +929,7 @@ namespace TestCases.Activities
                 Catches = { { new TestCatch<Exception> { Body = blocking } } }
             };
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(tcf, null, jsonStore, PersistableIdleAction.None))
             {
@@ -978,7 +978,7 @@ namespace TestCases.Activities
                 Finally = new TestWriteLine("Finally", "Finally")
             };
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(tryCatch, null, jsonStore, PersistableIdleAction.None))
             {
@@ -1008,7 +1008,7 @@ namespace TestCases.Activities
                 Finally = new TestSequence { Activities = { blocking, new TestWriteLine("Finally", "Finally") } }
             };
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(tcf, null, jsonStore, PersistableIdleAction.None))
             {

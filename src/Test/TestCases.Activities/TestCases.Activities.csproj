@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="../JsonFileInstanceStore/JsonFileInstanceStore.csproj" />
     <ProjectReference Include="../TestObjects/TestObjects.csproj" />
+    <ProjectReference Include="..\WorkflowApplicationTestExtensions\WorkflowApplicationTestExtensions.csproj" />
   </ItemGroup>
 </Project>

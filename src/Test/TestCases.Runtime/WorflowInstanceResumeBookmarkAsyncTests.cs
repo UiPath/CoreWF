@@ -11,6 +11,7 @@ using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Utilities;
 using Test.Common.TestObjects.Utilities.Validation;
 using TestCases.Runtime.Common.Activities;
+using WorkflowApplicationTestExtensions.Persistence;
 using Xunit;
 namespace TestCases.Runtime.WorkflowInstanceTest;
 public class WorflowInstanceResumeBookmarkAsyncTests
@@ -51,7 +52,7 @@ public class WorflowInstanceResumeBookmarkAsyncTests
             }
         };
 
-        JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
         TestWorkflowRuntime workflowRuntime = TestRuntime.CreateTestWorkflowRuntime(testSequence, null, jsonStore, PersistableIdleAction.Unload);
         workflowRuntime.ExecuteWorkflow();
         workflowRuntime.WaitForActivityStatusChange("WaitActivity", TestActivityInstanceState.Executing);
@@ -171,7 +172,7 @@ public class WorflowInstanceResumeBookmarkAsyncTests
         string message = "";
 
         //Execute Workflow
-        JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
         // using PersistableIdleAction.None here because the idle unload was racing with the resume bookmark after the wait for the BeforeWait trace.
         TestWorkflowRuntime workflowRuntime = TestRuntime.CreateTestWorkflowRuntime(testSequence, null, jsonStore, PersistableIdleAction.None);
         workflowRuntime.ExecuteWorkflow();
@@ -335,13 +336,17 @@ public class WorflowInstanceResumeBookmarkAsyncTests
             }
         };
 
-        JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        var jsonStore = new MemoryInstanceStore();
+        var unloadEvent = new ManualResetEvent(false);
         TestWorkflowRuntime workflowRuntime = TestRuntime.CreateTestWorkflowRuntime(testSequence, null, jsonStore, PersistableIdleAction.Unload);
+        workflowRuntime.OnWorkflowUnloaded += (_, __) => unloadEvent.Set();
+
         workflowRuntime.ExecuteWorkflow();
         workflowRuntime.WaitForActivityStatusChange("WaitActivity", TestActivityInstanceState.Executing);
         TestTraceManager.Instance.AddTrace(workflowRuntime.CurrentWorkflowInstanceId, new SynchronizeTrace(WaitMessage));
         SynchronizeTrace.Trace(workflowRuntime.CurrentWorkflowInstanceId, WaitMessage);
 
+        unloadEvent.Reset();
         if (isSync)
         {
             workflowRuntime.ResumeBookMark("Read", 9999);
@@ -357,7 +362,7 @@ public class WorflowInstanceResumeBookmarkAsyncTests
         }
 
         workflowRuntime.WaitForActivityStatusChange("PersistBookmark", TestActivityInstanceState.Executing);
-        workflowRuntime.WaitForUnloaded(1);
+        unloadEvent.WaitOne();
         workflowRuntime.LoadWorkflow();
         workflowRuntime.ResumeBookMark("PersistBookmark", "Yes");
         workflowRuntime.WaitForCompletion(false);
@@ -376,7 +381,7 @@ public class WorflowInstanceResumeBookmarkAsyncTests
                 },
             }
         };
-        JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
         TestWorkflowRuntime workflowRuntime = TestRuntime.CreateTestWorkflowRuntime(testSequence, null, jsonStore, PersistableIdleAction.Unload);
         workflowRuntime.ExecuteWorkflow();
         workflowRuntime.PersistWorkflow();
@@ -389,7 +394,7 @@ public class WorflowInstanceResumeBookmarkAsyncTests
     public static void TestNoPersistSerialization()
     {
         TestSequence testSequence = new() { Activities = { new TestNoPersist() }};
-        JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+        WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
         TestWorkflowRuntime workflowRuntime = TestRuntime.CreateTestWorkflowRuntime(testSequence, null, jsonStore, PersistableIdleAction.Unload);
         workflowRuntime.ExecuteWorkflow();
         workflowRuntime.PersistWorkflow();

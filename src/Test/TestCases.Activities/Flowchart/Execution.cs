@@ -150,7 +150,7 @@ namespace TestCases.Activities.Flowchart
             flowchart.AddLink(writeLine1, blocking);
             flowchart.AddLink(blocking, writeLine2);
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(flowchart, null, jsonStore, PersistableIdleAction.None))
             {
@@ -473,8 +473,8 @@ namespace TestCases.Activities.Flowchart
         /// Five level deep nested flowchart with blocking activity
         /// </summary>   
         /// Disabled and failed in desktop     
-        //[Fact]
-        private void FiveLevelDeepNestedFlowchartWithBlockingActivity()
+        [Fact]
+        public void FiveLevelDeepNestedFlowchartWithBlockingActivity()
         {
             TestFlowchart parent = new TestFlowchart();
             TestFlowchart child1 = new TestFlowchart();
@@ -556,7 +556,7 @@ namespace TestCases.Activities.Flowchart
                                          new TestWriteLine("False", "False Action"));
 
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(System.Environment.CurrentDirectory);
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(System.Environment.CurrentDirectory);
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(flowchart, null, jsonStore, PersistableIdleAction.Unload))
             {
@@ -604,7 +604,7 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.AddSwitchLink(writeStart, cases, hints, expressionActivity, new TestWriteLine("Default", "Will not execute"));
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(flowchart, null, jsonStore, PersistableIdleAction.Unload))
             {
@@ -693,7 +693,7 @@ namespace TestCases.Activities.Flowchart
 
             flowchart.AddStartLink(blocking);
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime testWorkflowRuntime = TestRuntime.CreateTestWorkflowRuntime(flowchart, null, jsonStore, PersistableIdleAction.Unload))
             {

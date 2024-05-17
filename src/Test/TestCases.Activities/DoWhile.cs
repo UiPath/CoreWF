@@ -813,7 +813,7 @@ namespace TestCases.Activities
                 HintIterationCount = 1
             };
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime runtime = TestRuntime.CreateTestWorkflowRuntime(doWhile, null, jsonStore, PersistableIdleAction.None))
             {

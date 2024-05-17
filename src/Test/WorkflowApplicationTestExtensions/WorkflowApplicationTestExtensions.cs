@@ -1,96 +1,99 @@
-﻿using JsonFileInstanceStore;
+﻿using WorkflowApplicationTestExtensions.Persistence;
 using System;
 using System.Activities;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using StringToObject = System.Collections.Generic.IDictionary<string, object>;
 
-namespace WorkflowApplicationTestExtensions
+namespace WorkflowApplicationTestExtensions;
+
+public static class WorkflowApplicationTestExtensions
 {
-    public static class WorkflowApplicationTestExtensions
+    public const string AutoResumedBookmarkNamePrefix = "AutoResumedBookmark_";
+
+    public record WorkflowApplicationResult(StringToObject Outputs, int PersistenceCount);
+
+    /// <summary>
+    /// Simple API to wait for the workflow to complete or propagate to the caller any error.
+    /// Also, when PersistableIdle, will automatically Unload, Load, resume some bookmarks
+    /// (those named "AutoResumedBookmark_...") and continue execution.
+    /// </summary>
+    public static WorkflowApplicationResult RunUntilCompletion(this WorkflowApplication application, Action<WorkflowApplication> beforeResume = null)
     {
-        public const string AutoResumedBookmarkNamePrefix = "AutoResumedBookmark_";
-
-        public record WorkflowApplicationResult(StringToObject Outputs, int PersistenceCount);
-
-        /// <summary>
-        /// Simple API to wait for the workflow to complete or propagate to the caller any error.
-        /// Also, when PersistableIdle, will automatically Unload, Load, resume some bookmarks
-        /// (those named "AutoResumedBookmark_...") and continue execution.
-        /// </summary>
-        public static WorkflowApplicationResult RunUntilCompletion(this WorkflowApplication application)
+        var applicationId = application.Id;
+        var persistenceCount = 0;
+        var output = new TaskCompletionSource<WorkflowApplicationResult>();
+        application.Completed += (WorkflowApplicationCompletedEventArgs args) =>
         {
-            var persistenceCount = 0;
-            var output = new TaskCompletionSource<WorkflowApplicationResult>();
-            application.Completed += (WorkflowApplicationCompletedEventArgs args) =>
+            if (args.TerminationException is { } ex)
             {
-                if (args.TerminationException is { } ex)
-                {
-                    output.TrySetException(ex);
-                }
-                if (args.CompletionState == ActivityInstanceState.Canceled)
-                {
-                    throw new OperationCanceledException("Workflow canceled.");
-                }
-                output.TrySetResult(new(args.Outputs, persistenceCount));
-            };
-
-            application.Aborted += args => output.TrySetException(args.Reason);
-
-            application.InstanceStore = new FileInstanceStore(Environment.CurrentDirectory);
-            application.PersistableIdle += (WorkflowApplicationIdleEventArgs args) =>
+                output.TrySetException(ex);
+            }
+            if (args.CompletionState == ActivityInstanceState.Canceled)
             {
-                Debug.WriteLine("PersistableIdle");
-                var bookmarks = args.Bookmarks;
-                Task.Delay(100).ContinueWith(_ =>
-                {
-                    try
-                    {
-                        if (++persistenceCount > 100)
-                        {
-                            throw new Exception("Persisting too many times, aborting test.");
-                        }
-                        application = CloneWorkflowApplication(application);
-                        application.Load(args.InstanceId);
-                        foreach (var bookmark in bookmarks)
-                        {
-                            application.ResumeBookmark(new Bookmark(bookmark.BookmarkName), null);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        output.TrySetException(ex);
-                    }
-                });
-                return PersistableIdleAction.Unload;
-            };
+                throw new OperationCanceledException("Workflow canceled.");
+            }
+            output.TrySetResult(new(args.Outputs, persistenceCount));
+            application = null;
+        };
 
-            application.BeginRun(null, null);
+        application.Aborted += args =>
+        {
+            output.TrySetException(args.Reason);
+        };
 
+        application.InstanceStore ??= new MemoryInstanceStore(new DataContractWorkflowSerializer());
+        application.Unloaded += uargs =>
+        {
+            Debug.WriteLine("Unloaded");
+            if (application == null)
+                return;
+            application.Load(applicationId);
+
+            foreach (var bookmark in application.GetBookmarks().Where(b => b.BookmarkName.StartsWith(AutoResumedBookmarkNamePrefix)))
+            {
+                application.ResumeBookmark(new Bookmark(bookmark.BookmarkName), null);
+            }
+        };
+        application.PersistableIdle += (WorkflowApplicationIdleEventArgs args) =>
+        {
+            Debug.WriteLine("PersistableIdle");
             try
             {
-                output.Task.Wait(TimeSpan.FromSeconds(15));
+                if (++persistenceCount > 1000)
+                {
+                    throw new Exception("Persisting too many times, aborting test.");
+                }
+                application = CloneWorkflowApplication(application);
+                beforeResume?.Invoke(application);
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            catch (Exception ex)
             {
+                output.TrySetException(ex);
             }
-            return output.Task.GetAwaiter().GetResult();
-        }
+            return PersistableIdleAction.Unload;
+        };
 
-        private static WorkflowApplication CloneWorkflowApplication(WorkflowApplication application)
+        application.Run();
+
+        try
         {
-            var clone = new WorkflowApplication(application.WorkflowDefinition, application.DefinitionIdentity)
-            {
-                Aborted = application.Aborted,
-                Completed = application.Completed,
-                PersistableIdle = application.PersistableIdle,
-                InstanceStore = application.InstanceStore,
-            };
-            foreach (var extension in application.Extensions.GetAllSingletonExtensions())
-            {
-                clone.Extensions.Add(extension);
-            }
-            return clone;
+            output.Task.Wait(TimeSpan.FromSeconds(15));
         }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+        }
+        return output.Task.GetAwaiter().GetResult();
     }
+
+    private static WorkflowApplication CloneWorkflowApplication(WorkflowApplication application)
+    => new(application.WorkflowDefinition, application.DefinitionIdentity)
+        {
+            Aborted = application.Aborted,
+            Completed = application.Completed,
+            PersistableIdle = application.PersistableIdle,
+            Unloaded = application.Unloaded,
+            InstanceStore = application.InstanceStore,
+        };
 }

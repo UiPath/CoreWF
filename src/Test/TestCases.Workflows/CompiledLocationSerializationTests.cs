@@ -1,5 +1,4 @@
-﻿using JsonFileInstanceStore;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Shouldly;
 using System.Activities;
 using System.Activities.Statements;
@@ -7,6 +6,7 @@ using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
+using WorkflowApplicationTestExtensions.Persistence;
 using Xunit;
 
 namespace TestCases.Workflows
@@ -35,8 +35,8 @@ namespace TestCases.Workflows
             {
                 if (useJsonSerialization)
                 {
-                    var json = JsonConvert.SerializeObject(compiledLocation, FileInstanceStore.JsonSerializerSettings);
-                    return JsonConvert.DeserializeObject<CompiledLocation<string>>(json, FileInstanceStore.JsonSerializerSettings);
+                    var json = JsonConvert.SerializeObject(compiledLocation, JsonWorkflowSerializer.SerializerSettings());
+                    return JsonConvert.DeserializeObject<CompiledLocation<string>>(json, JsonWorkflowSerializer.SerializerSettings());
                 }
                 else
                 {

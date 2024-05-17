@@ -339,7 +339,7 @@ namespace TestCases.Activities
                 }
             };
 
-            JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+            WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
             using (TestWorkflowRuntime runtime = TestRuntime.CreateTestWorkflowRuntime(parallel, null, jsonStore, PersistableIdleAction.None))
             {

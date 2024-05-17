@@ -522,7 +522,7 @@ namespace TestCases.Activities
 
                 TestBlockingActivity blocking = new TestBlockingActivity("BlockingActivity");
 
-                JsonFileInstanceStore.FileInstanceStore jsonStore = new JsonFileInstanceStore.FileInstanceStore(".\\~");
+                WorkflowApplicationTestExtensions.Persistence.FileInstanceStore jsonStore = new WorkflowApplicationTestExtensions.Persistence.FileInstanceStore(".\\~");
 
                 using (TestWorkflowRuntime workflow = TestRuntime.CreateTestWorkflowRuntime(writeLine1, null, jsonStore, PersistableIdleAction.None))
                 {

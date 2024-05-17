@@ -185,7 +185,7 @@ internal class TimerTable : IDisposable
         foreach (TimerData timerData in _sortedTimerList.Timers)
         {
             //timerData.IOThreadTimer.Cancel();
-            timerData.DelayTimer.Cancel();
+            timerData.DelayTimer?.Cancel();
         }
 
         // And we clear the table and other member variables that might cause the retry logic
