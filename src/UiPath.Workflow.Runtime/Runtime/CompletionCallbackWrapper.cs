@@ -35,7 +35,7 @@ internal abstract class CompletionCallbackWrapper : CallbackWrapper
         set => _needsToGatherOutputs = value;
     }
 
-    internal void CheckForCancelation() => _checkForCancelation = true;
+    public void CheckForCancelation() => _checkForCancelation = true;
 
     protected virtual void GatherOutputs(ActivityInstance completedInstance) { }
 
@@ -68,7 +68,7 @@ internal abstract class CompletionCallbackWrapper : CallbackWrapper
     protected internal abstract void Invoke(NativeActivityContext context, ActivityInstance completedInstance);
 
     [DataContract]
-    internal class CompletionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
+    public class CompletionWorkItem : ActivityExecutionWorkItem, ActivityInstanceMap.IActivityReference
     {
         private CompletionCallbackWrapper _callbackWrapper;
         private ActivityInstance _completedInstance;

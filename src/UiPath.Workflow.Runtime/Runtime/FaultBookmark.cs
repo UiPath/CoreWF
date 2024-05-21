@@ -14,12 +14,12 @@ internal class FaultBookmark
     }
 
     [DataMember(Name = "callbackWrapper")]
-    public FaultCallbackWrapper SerializedCallbackWrapper
+    internal FaultCallbackWrapper SerializedCallbackWrapper
     {
         get => _callbackWrapper;
         set => _callbackWrapper = value;
     }
 
-    internal WorkItem GenerateWorkItem(Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
+    public WorkItem GenerateWorkItem(Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
         => _callbackWrapper.CreateWorkItem(propagatedException, propagatedFrom, originalExceptionSource);
 }

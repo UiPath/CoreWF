@@ -19,19 +19,19 @@ internal class CompletionBookmark
     }
 
     [DataMember(EmitDefaultValue = false, Name = "callbackWrapper")]
-    public CompletionCallbackWrapper SerializedCallbackWrapper
+    internal CompletionCallbackWrapper SerializedCallbackWrapper
     {
         get => _callbackWrapper;
         set => _callbackWrapper = value;
     }
 
-    internal void CheckForCancelation()
+    public void CheckForCancelation()
     {
         Fx.Assert(_callbackWrapper != null, "We must have a callback wrapper if we are calling this.");
         _callbackWrapper.CheckForCancelation();
     }
 
-    internal WorkItem GenerateWorkItem(ActivityInstance completedInstance, ActivityExecutor executor)
+    public WorkItem GenerateWorkItem(ActivityInstance completedInstance, ActivityExecutor executor)
     {
         if (_callbackWrapper != null)
         {
