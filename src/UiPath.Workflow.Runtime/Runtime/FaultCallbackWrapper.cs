@@ -4,7 +4,7 @@
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class FaultCallbackWrapper : CallbackWrapper
+public class FaultCallbackWrapper : CallbackWrapper
 {
     private static readonly Type faultCallbackType = typeof(FaultCallback);
     private static readonly Type[] faultCallbackParameters = new Type[] { typeof(NativeActivityFaultContext), typeof(Exception), typeof(ActivityInstance) };
@@ -12,14 +12,14 @@ internal class FaultCallbackWrapper : CallbackWrapper
     public FaultCallbackWrapper(FaultCallback callback, ActivityInstance owningInstance)
         : base(callback, owningInstance) { }
 
-    public void Invoke(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
+    internal void Invoke(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
     {
         EnsureCallback(faultCallbackType, faultCallbackParameters);
         FaultCallback faultCallback = (FaultCallback)Callback;
         faultCallback(faultContext, propagatedException, propagatedFrom);
     }
 
-    public WorkItem CreateWorkItem(Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
+    internal WorkItem CreateWorkItem(Exception propagatedException, ActivityInstance propagatedFrom, ActivityInstanceReference originalExceptionSource)
         => new FaultWorkItem(this, propagatedException, propagatedFrom, originalExceptionSource);
 
     [DataContract]

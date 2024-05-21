@@ -6,7 +6,7 @@ using System.Reflection;
 namespace System.Activities.Runtime;
 
 [DataContract]
-internal class CallbackWrapper
+public class CallbackWrapper
 {
     private static readonly BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
 
@@ -24,15 +24,19 @@ internal class CallbackWrapper
         _callback = callback;
     }
 
+    public Delegate Callback
+    {
+        get => _callback;
+        set => _callback = value;
+    }
+
     public ActivityInstance ActivityInstance
     {
         get => _activityInstance;
         private set => _activityInstance = value;
     }
 
-    protected bool IsCallbackNull => _callback == null && _callbackName == null;
-
-    protected Delegate Callback => _callback;
+    protected bool IsCallbackNull => Callback == null && _callbackName == null;
 
     [DataMember(Name = "callbackName")]
     internal string SerializedCallbackName
@@ -62,7 +66,7 @@ internal class CallbackWrapper
         set => ActivityInstance = value;
     }
 
-    public static bool IsValidCallback(Delegate callback, ActivityInstance owningInstance)
+    internal static bool IsValidCallback(Delegate callback, ActivityInstance owningInstance)
     {
         Fx.Assert(callback != null, "This should only be called with non-null callbacks");
 
