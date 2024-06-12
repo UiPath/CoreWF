@@ -54,7 +54,11 @@ public abstract class Variable : LocationReference
 
     protected override string NameCore => _name;
 
-    internal int CacheId => _cacheId;
+    internal int CacheId
+    {
+        get => _cacheId;
+        set => _cacheId = value;
+    }
 
     internal abstract ActivityWithResult DefaultCore { get; set; }
 

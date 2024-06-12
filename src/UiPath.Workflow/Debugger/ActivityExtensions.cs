@@ -49,14 +49,32 @@ public static class ActivityExtensions
     /// </summary>
     private static void ClearCacheIds(this Activity activity)
     {
-        if (activity.RuntimeArguments == null)
-            return;
-
-        foreach (var item in activity
-                                .RuntimeArguments
-                                .Where(a => a?.BoundArgument?.Expression?.CacheId == activity.CacheId))
+        if (activity.RuntimeArguments != null)
         {
-            item.BoundArgument.Expression.CacheId = 0;
+            foreach (var item in activity
+                                    .RuntimeArguments
+                                    .Where(a => a?.BoundArgument?.Expression?.CacheId == activity.CacheId))
+            {
+                item.BoundArgument.Expression.CacheId = 0;
+            }
+        }
+
+        ResetVariablesCacheId(activity.RuntimeVariables);
+        ResetVariablesCacheId(activity.ImplementationVariables);
+
+        void ResetVariablesCacheId(IList<Variable> variables)
+        {
+            if (variables == null)
+                return;
+
+            foreach (var item in variables.Where(v => v?.CacheId == activity.CacheId))
+            {
+                item.CacheId = 0;
+                if (item.Default != null)
+                {
+                    item.Default.CacheId = 0;
+                }
+            }
         }
     }
 
