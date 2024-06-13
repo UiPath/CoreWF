@@ -35,8 +35,10 @@ namespace WorkflowApplicationTestExtensions
             Should.Throw<WorkflowApplicationAbortedException>(() => app.RunUntilCompletion());
         }
 
-        [Fact]
-        public void RunUntilCompletion_AutomaticPersistence()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void RunUntilCompletion_AutomaticPersistence(bool useJsonSerialization)
         {
             var app = new WorkflowApplication(new SuspendingWrapper
             {
@@ -47,8 +49,56 @@ namespace WorkflowApplicationTestExtensions
                     new WriteLine()
                 }
             });
-            var result = app.RunUntilCompletion();
+            var result = app.RunUntilCompletion(useJsonSerialization: useJsonSerialization);
             result.PersistenceCount.ShouldBe(4);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void ShouldPersistFaultContextInCatchBlock(bool useJsonSerialization)
+        {
+            var app = new WorkflowApplication(
+                new SuspendingWrapper
+                {
+                    Activities =
+                    {
+                        new TryCatch
+                        {
+                            Try = new Throw
+                            {
+                                Exception = new InArgument<Exception>(
+                                    activityContext => new ArgumentException("CustomArgumentException")
+                                )
+                            },
+                            Catches =
+                            {
+                                new Catch<ArgumentException> {
+                                    Action = new ActivityAction<ArgumentException>
+                                    {
+                                        Argument = new DelegateInArgument<ArgumentException>
+                                        {
+                                            Name = "exception"
+                                        },
+                                        Handler = new SuspendingWrapper
+                                        {
+                                            Activities =
+                                            {
+                                                new WriteLine(),
+                                                new NoPersistAsyncActivity(),
+                                                new WriteLine()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+
+            var result = app.RunUntilCompletion(useJsonSerialization: useJsonSerialization);
+            result.PersistenceCount.ShouldBe(6);
         }
     }
 }

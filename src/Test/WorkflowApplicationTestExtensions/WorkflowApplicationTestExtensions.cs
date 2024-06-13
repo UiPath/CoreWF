@@ -19,7 +19,8 @@ public static class WorkflowApplicationTestExtensions
     /// Also, when PersistableIdle, will automatically Unload, Load, resume some bookmarks
     /// (those named "AutoResumedBookmark_...") and continue execution.
     /// </summary>
-    public static WorkflowApplicationResult RunUntilCompletion(this WorkflowApplication application, Action<WorkflowApplication> beforeResume = null)
+    public static WorkflowApplicationResult RunUntilCompletion(this WorkflowApplication application,
+        Action<WorkflowApplication> beforeResume = null, bool useJsonSerialization = false)
     {
         var applicationId = application.Id;
         var persistenceCount = 0;
@@ -43,7 +44,12 @@ public static class WorkflowApplicationTestExtensions
             output.TrySetException(args.Reason);
         };
 
-        application.InstanceStore ??= new MemoryInstanceStore(new DataContractWorkflowSerializer());
+        application.InstanceStore ??= new MemoryInstanceStore(
+            useJsonSerialization
+            ? new JsonWorkflowSerializer()
+            : new DataContractWorkflowSerializer()
+        );
+
         application.Unloaded += uargs =>
         {
             Debug.WriteLine("Unloaded");
