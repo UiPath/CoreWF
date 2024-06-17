@@ -22,6 +22,7 @@ public class CompiledExpressionInvoker
     private readonly IList<LocationReference> _locationReferences;
     private CodeActivityMetadata _metadata;
     private CodeActivityPublicEnvironmentAccessor _accessor;
+    private bool _locationsInitialized;
 
     public CompiledExpressionInvoker(ITextExpression expression, bool isReference, CodeActivityMetadata metadata)
     {
@@ -40,7 +41,10 @@ public class CompiledExpressionInvoker
 
         _metadataRoot = metadata.Environment.Root;
 
-        ProcessLocationReferences();
+        if (!metadata.Environment.IsValidating)
+        {
+            ProcessLocationReferences();
+        }
     }
 
     public object InvokeExpression(ActivityContext activityContext)
@@ -48,6 +52,11 @@ public class CompiledExpressionInvoker
         if (activityContext == null)
         {
             throw FxTrace.Exception.ArgumentNull(nameof(activityContext));
+        }
+
+        if (!_locationsInitialized)
+        {
+            ProcessLocationReferences();
         }
 
         if (_compiledRoot == null || _expressionId < 0)
@@ -154,6 +163,11 @@ public class CompiledExpressionInvoker
 
     internal Expression GetExpressionTree()
     {
+        if (!_locationsInitialized)
+        {
+            ProcessLocationReferences();
+        }
+
         if (_compiledRoot == null || _expressionId < 0)
         {
             if (!TryGetCompiledExpressionRootAtDesignTime(_expressionActivity, _metadataRoot, out _compiledRoot, out _expressionId))
@@ -244,6 +258,8 @@ public class CompiledExpressionInvoker
                 CreateRequiredArguments(requiredLocationNames);
             }
         }
+
+        _locationsInitialized = true;
     }
 
     private bool TryGetCompiledExpressionRootAtDesignTime(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot, out int exprId)
