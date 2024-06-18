@@ -212,6 +212,8 @@ public class CompiledExpressionInvoker
 
     private void ProcessLocationReferences()
     {
+        _locationsInitialized = true;
+
         Stack<LocationReferenceEnvironment> environments = new();
         //
         // Build list of location by enumerating environments
@@ -258,8 +260,6 @@ public class CompiledExpressionInvoker
                 CreateRequiredArguments(requiredLocationNames);
             }
         }
-
-        _locationsInitialized = true;
     }
 
     private bool TryGetCompiledExpressionRootAtDesignTime(Activity expression, Activity target, out ICompiledExpressionRoot compiledExpressionRoot, out int exprId)
