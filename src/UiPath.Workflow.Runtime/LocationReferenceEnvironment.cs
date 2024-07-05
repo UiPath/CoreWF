@@ -16,6 +16,11 @@ public abstract class LocationReferenceEnvironment
     /// </summary>
     internal bool IsValidating { get; set; }
 
+    /// <summary>
+    /// True if we want to skip calculating location references. This is useful if we are validating expressions which don't depend on other expressions.
+    /// </summary>
+    internal bool SkipCalculatingLocationReferences { get; set; } = false;
+
     internal EnvironmentExtensions Extensions { get; set; }
 
     public abstract Activity Root { get; }

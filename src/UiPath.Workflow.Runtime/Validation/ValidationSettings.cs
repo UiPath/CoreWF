@@ -81,4 +81,9 @@ public class ValidationSettings
     /// Defaulting to true until validation path is proven.
     /// </remarks>
     public bool ForceExpressionCache { get; set; } = true;
+
+    /// <summary>
+    /// True if we want to skip calculating location references. This is useful if we are validating expressions which don't depend on other expressions.
+    /// </summary>
+    public bool SkipCalculatingLocationReferences { get; set; } = false;
 }

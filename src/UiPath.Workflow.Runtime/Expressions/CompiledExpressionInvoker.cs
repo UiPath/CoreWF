@@ -41,7 +41,7 @@ public class CompiledExpressionInvoker
 
         _metadataRoot = metadata.Environment.Root;
 
-        if (!metadata.Environment.IsValidating)
+        if (!metadata.Environment.SkipCalculatingLocationReferences)
         {
             ProcessLocationReferences();
         }

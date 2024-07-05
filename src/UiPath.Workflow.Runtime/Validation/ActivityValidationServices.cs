@@ -431,6 +431,7 @@ public static class ActivityValidationServices
             _rootToValidate = toValidate;
             _environment = settings.Environment ?? new ActivityLocationReferenceEnvironment();
             _environment.IsValidating = !settings.ForceExpressionCache;
+            _environment.SkipCalculatingLocationReferences = settings.SkipCalculatingLocationReferences;
             if (settings.SkipExpressionCompilation)
             {
                 _environment.CompileExpressions = true;
