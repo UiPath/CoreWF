@@ -385,7 +385,7 @@ internal abstract class DesignerHelperImpl
 
         // execute compiler
         var compilation = Compiler.Compile(expressionText, isLocation, targetType ?? typeof(object), namespaces.ToList(), referencedAssemblies.ToList(), environment);
-        var diagnostics = await compilation.WithAnalyzers(_usedTypesAnalizerList).GetAllDiagnosticsAsync();
+        var diagnostics = await compilation.WithAnalyzers(_usedTypesAnalizerList).GetAllDiagnosticsAsync().ConfigureAwait(false);
 
         if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
         {
