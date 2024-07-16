@@ -337,6 +337,7 @@ internal partial class ActivityExecutor : IEnlistmentNotification
         }
     }
 
+    // TODO Research why null when InvokeWorkflowActivity is used.
     [DataMember(Name = XD.Executor.BookmarkManager, EmitDefaultValue = false)]
     internal BookmarkManager SerializedBookmarkManager
     {
@@ -2090,12 +2091,14 @@ internal partial class ActivityExecutor : IEnlistmentNotification
                     }
                 }
 
+                // TODO Research.
                 if (_executingSecondaryRootInstances == null || _executingSecondaryRootInstances.Count == 0)
                 {
                     // if we got to this point we're completely done from the executor's point of view.
                     // outputs have been gathered, no more work is happening. Clear out some fields to shrink our 
                     // "completed instance" persistence size
-                    Dispose(false);
+                    //Dispose(false);
+                    Dispose(true);
                 }
             }
         }

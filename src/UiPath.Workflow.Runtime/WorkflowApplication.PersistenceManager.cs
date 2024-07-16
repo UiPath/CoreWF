@@ -299,6 +299,7 @@ public partial class WorkflowApplication
             Fx.AssertAndThrow(instance.Controller.State != WorkflowInstanceState.Aborted, "Cannot generate data for an aborted instance.");
             if (instance.Controller.State != WorkflowInstanceState.Complete)
             {
+                // TODO Research.
                 data[WorkflowNamespace.Workflow] = new InstanceValue(instance.Controller.PrepareForSerialization());
                 data[WorkflowNamespace.Status] = new InstanceValue(instance.Controller.State == WorkflowInstanceState.Idle ? "Idle" : "Executing", InstanceValueOptions.WriteOnly);
             }
