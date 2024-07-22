@@ -15,6 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Xml.Linq;
 using Microsoft.VisualBasic.Activities;
 
 namespace System.Activities.XamlIntegration;
@@ -26,6 +28,8 @@ public class TextExpressionCompiler
     private const string ExpressionSetString = "__Expr{0}Set";
     private const string ExpressionStatementString = "__Expr{0}Statement";
     private const string ExpressionGetTreeString = "__Expr{0}GetTree";
+    private const string ExpressionGetTreeStringNoRewrite = "__Expr{0}GetTreeNoRewrite";
+    
     private const string GetValueTypeValuesString = "GetValueTypeValues";
     private const string SetValueTypeValuesString = "SetValueTypeValues";
     private const string ValueTypeAccessorString = "ValueType_";
@@ -1453,8 +1457,9 @@ public class TextExpressionCompiler
 
         descriptor.ResultType = resultType;
 
-        GenerateExpressionGetTreeMethod(activity, descriptor, dataContextDescriptor, isValue, isStatement,
-            nextExpressionId);
+        GenerateExpressionGetTreeMethod(activity, descriptor, dataContextDescriptor, isValue, isStatement, nextExpressionId);
+
+        GenerateExpressionGetTreeNoRewriteMethod(activity, descriptor, dataContextDescriptor, isValue, isStatement, nextExpressionId);
 
         if (isValue || isReference)
         {
@@ -1557,6 +1562,67 @@ public class TextExpressionCompiler
         }
     }
 
+    
+ private void GenerateExpressionGetTreeNoRewriteMethod(Activity activity, CompiledExpressionDescriptor expressionDescriptor,
+        CompiledDataContextDescriptor dataContextDescriptor, bool isValue, bool isStatement, int nextExpressionId)
+    {
+        var expressionMethod = new CodeMemberMethod
+        {
+            Attributes = MemberAttributes.Assembly | MemberAttributes.Final,
+            Name = string.Format(CultureInfo.InvariantCulture, ExpressionGetTreeStringNoRewrite, nextExpressionId),
+            ReturnType = new CodeTypeReference(typeof(Expression))
+        };
+        expressionDescriptor.GetExpressionTreeMethodName = expressionMethod.Name;
+
+        if (isStatement)
+        {
+            // Can't generate expression tree for a statement
+            expressionMethod.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(null)));
+            dataContextDescriptor.CodeTypeDeclaration.Members.Add(expressionMethod);
+            return;
+        }
+
+        var coreExpressionText = expressionDescriptor.ExpressionText;
+        AlignText(activity, ref coreExpressionText, out var pragma);
+
+        var returnType =
+            typeof(Expression<>).MakeGenericType(typeof(Func<>).MakeGenericType(expressionDescriptor.ResultType));
+        string expressionText = null;
+        if (IsVb)
+        {
+            expressionText = string.Concat(VbLambdaString, coreExpressionText);
+        }
+        else if (IsCs)
+        {
+            expressionText = string.Concat(CSharpLambdaString, coreExpressionText);
+        }
+
+        if (expressionText != null)
+        {
+            var statement =
+                new CodeVariableDeclarationStatement(returnType, "expression",
+                    new CodeSnippetExpression(expressionText));
+            statement.LinePragma = pragma;
+            expressionMethod.Statements.Add(statement);
+            var retExpr = new CodeMethodReturnStatement(new CodeVariableReferenceExpression("expression"));
+
+            expressionMethod.Statements.Add(retExpr);
+        }
+        else
+        {
+            expressionMethod.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(null)));
+        }
+
+        if (isValue)
+        {
+            dataContextDescriptor.CodeTypeDeclarationForReadOnly.Members.Add(expressionMethod);
+        }
+        else
+        {
+            dataContextDescriptor.CodeTypeDeclaration.Members.Add(expressionMethod);
+        }
+    }
+
     private CodeMemberMethod GenerateGetMethod(Activity activity, Type resultType, string expressionText,
         int nextExpressionId)
     {
@@ -1600,8 +1666,7 @@ public class TextExpressionCompiler
         return wrapperMethod;
     }
 
-    private CodeMemberMethod GenerateSetMethod(Activity activity, Type resultType, string expressionText,
-        int nextExpressionId)
+    private CodeMemberMethod GenerateSetMethod(Activity activity, Type resultType, string expressionText, int nextExpressionId)
     {
         var paramName = "value";
 
@@ -1625,8 +1690,14 @@ public class TextExpressionCompiler
         var statement = new CodeAssignStatement(new CodeSnippetExpression(expressionText),
             new CodeArgumentReferenceExpression(paramName));
         statement.LinePragma = pragma;
-        expressionMethod.Statements.Add(statement);
 
+        expressionMethod.Statements.Add(statement);
+        var getTree = string.Format(CultureInfo.InvariantCulture, ExpressionGetTreeStringNoRewrite, nextExpressionId);
+        var invokeExpression = new CodeMethodInvokeExpression(
+            new CodeTypeReferenceExpression("TestCases.Apps.AppsNotifier"),
+            "Notify", new CodeMethodInvokeExpression(new CodeThisReferenceExpression(),getTree));
+        
+        expressionMethod.Statements.Add(invokeExpression);
         return expressionMethod;
     }
 

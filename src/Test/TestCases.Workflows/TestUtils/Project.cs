@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Activities;
 using System.Activities.ExpressionParser;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -30,8 +31,8 @@ namespace TestCases.Workflows.TestUtils
             var scriptProject = _workspace.AddProject(scriptProjectInfo);
             _workspace.AddDocument(scriptProject.Id, className, SourceText.From(classCode));
             var compilation = await _workspace.CurrentSolution.Projects.First().GetCompilationAsync();
-            //using var output = File.OpenWrite("Output.dll");
-            var results = ScriptingAotCompiler.BuildAssembly(compilation, className, AssemblyLoadContext.Default/*, output*/);
+            using var output = File.OpenWrite("Output.dll");
+            var results = ScriptingAotCompiler.BuildAssembly(compilation, className, AssemblyLoadContext.Default, output);
             if (results.HasErrors)
             {
                 throw new SourceExpressionException(results.ToString());
