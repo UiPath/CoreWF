@@ -244,6 +244,14 @@ namespace System.Windows.Markup
             {
                 converterType = typeof(DateTimeConverter2);
             }
+            else if (typeof(DateOnly).IsAssignableFrom(type))
+            {
+                typeConverter = typeof(DateOnlyConverter2);
+            }
+            else if (typeof(TimeOnly).IsAssignableFrom(type))
+            {
+                typeConverter = typeof(TimeOnlyConverter2);
+            }
 
             return converterType;
         }
@@ -338,6 +346,14 @@ namespace System.Windows.Markup
             else if (ReflectionHelper.IsNullableType(type))
             {
                 typeConverter = new System.ComponentModel.NullableConverter(type);
+            }
+            else if (type == typeof(DateOnly))
+            {
+                typeConverter = new DateOnlyConverter2();
+            }
+            else if (type == typeof(TimeOnly))
+            {
+                typeConverter = new TimeOnlyConverter2();
             }
 
             return typeConverter;
@@ -438,6 +454,14 @@ namespace System.Windows.Markup
             else if (typeof(Uri).IsAssignableFrom(type))
             {
                 typeConverter = new System.Xaml.Replacements.UriTypeConverter();
+            }
+            else if (typeof(DateOnly).IsAssignableFrom(type))
+            {
+                typeConverter = new DateOnlyConverter2();
+            }
+            else if (typeof(TimeOnly).IsAssignableFrom(type))
+            {
+                typeConverter = new TimeOnlyConverter2();
             }
 
             return typeConverter;

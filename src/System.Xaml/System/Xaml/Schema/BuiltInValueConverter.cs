@@ -56,6 +56,8 @@ namespace System.Xaml.Schema
         private static XamlValueConverter<TypeConverter> s_TypeList;
         private static XamlValueConverter<TypeConverter> s_DateTime;
         private static XamlValueConverter<TypeConverter> s_DateTimeOffset;
+        private static XamlValueConverter<TypeConverter> s_DateOnly;
+        private static XamlValueConverter<TypeConverter> s_TimeOnly;
         private static XamlValueConverter<TypeConverter> s_CultureInfo;
         private static XamlValueConverter<ValueSerializer> s_StringSerializer;
         private static XamlValueConverter<TypeConverter> s_Delegate;
@@ -266,6 +268,22 @@ namespace System.Xaml.Schema
                     s_DateTimeOffset = new BuiltInValueConverter<TypeConverter>(typeof(DateTimeOffsetConverter2), () => new DateTimeOffsetConverter2());
                 }
                 return s_DateTimeOffset;
+            }
+            if (typeof(DateOnly) == targetType)
+            {
+                if (s_DateOnly is null)
+                {
+                    s_DateOnly = new BuiltInValueConverter<TypeConverter>(typeof(DateOnlyConverter2), () => new DateOnlyConverter2());
+                }
+                return s_DateOnly;
+            }
+            if (typeof(TimeOnly) == targetType)
+            {
+                if (s_TimeOnly is null)
+                {
+                    s_TimeOnly = new BuiltInValueConverter<TypeConverter>(typeof(TimeOnlyConverter2), () => new TimeOnlyConverter2());
+                }
+                return s_TimeOnly;
             }
             if (typeof(CultureInfo).IsAssignableFrom(targetType))
             {
