@@ -56,6 +56,12 @@ internal abstract class CompiledExpressionActivityVisitor
         {
             return;
         }
+
+        VisitImplementationChildren(activity, out exit);
+        if (exit)
+        {
+            return;
+        }
     }
 
     protected virtual void VisitRoot(Activity activity, out bool exit)
@@ -196,6 +202,22 @@ internal abstract class CompiledExpressionActivityVisitor
             for (int i = 0; i < activity.ImportedChildren.Count; i++)
             {
                 VisitCore(activity.ImportedChildren[i], out exit);
+                if (exit)
+                {
+                    return;
+                }
+            }
+        }
+        exit = false;
+    }
+
+    protected virtual void VisitImplementationChildren(Activity activity, out bool exit)
+    {
+        if (activity.ImplementationChildren is not null)
+        {
+            for (int i = 0; i < activity.ImplementationChildren.Count; i++)
+            {
+                VisitCore(activity.ImplementationChildren[i], out exit);
                 if (exit)
                 {
                     return;
@@ -370,18 +392,11 @@ internal abstract class CompiledExpressionActivityVisitor
             return;
         }
 
-        if (activity.ImplementationChildren != null)
+        VisitImplementationChildren(activity, out exit);
+        if (exit)
         {
-            for (int i = 0; i < activity.ImplementationChildren.Count; i++)
-            {
-                VisitCore(activity.ImplementationChildren[i], out exit);
-                if (exit)
-                {
-                    return;
-                }
-            }
+            return;
         }
-        exit = false;
     }
 
     private void VisitPublicActivities(Activity activity, out bool exit)

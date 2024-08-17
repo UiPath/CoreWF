@@ -1,0 +1,778 @@
+Imports System
+Imports System.Collections
+Imports System.Collections.Generic
+Imports System.Activities
+Imports System.Activities.Expressions
+Imports System.Activities.Statements
+Imports System.Activities.XamlIntegration
+
+Namespace TestNamespace
+    
+    Public Class TestClass
+        Implements System.Activities.XamlIntegration.ICompiledExpressionRoot
+        
+        Private rootActivity As System.Activities.Activity
+        
+        Private dataContextActivities As Object
+        
+        Private forImplementation As Boolean = true
+        
+        Public Sub New(ByVal rootActivity As System.Activities.Activity)
+            MyBase.New
+            If (rootActivity Is Nothing) Then
+                Throw New System.ArgumentNullException("rootActivity")
+            End If
+            Me.rootActivity = rootActivity
+        End Sub
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Public Function GetLanguage() As String Implements System.Activities.XamlIntegration.ICompiledExpressionRoot.GetLanguage
+            Return "VB"
+        End Function
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Public Overloads Function InvokeExpression(ByVal expressionId As Integer, ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext) As Object Implements System.Activities.XamlIntegration.ICompiledExpressionRoot.InvokeExpression
+            If (Me.dataContextActivities Is Nothing) Then
+                Me.dataContextActivities = TestClass_TypedDataContext2_ForReadOnly.GetDataContextActivitiesHelper(Me.rootActivity, Me.forImplementation)
+            End If
+            If (expressionId = 0) Then
+                Dim cachedCompiledDataContext() As System.Activities.XamlIntegration.CompiledDataContext = TestClass_TypedDataContext2_ForReadOnly.GetCompiledDataContextCacheHelper(Me.dataContextActivities, activityContext, Me.rootActivity, Me.forImplementation, 4)
+                If (cachedCompiledDataContext(0) Is Nothing) Then
+                    cachedCompiledDataContext(0) = New TestClass_TypedDataContext2_ForReadOnly(locations, activityContext, true)
+                End If
+                Dim valDataContext0 As TestClass_TypedDataContext2_ForReadOnly = CType(cachedCompiledDataContext(0),TestClass_TypedDataContext2_ForReadOnly)
+                Return valDataContext0.ValueType___Expr0Get
+            End If
+            If (expressionId = 1) Then
+                Dim cachedCompiledDataContext() As System.Activities.XamlIntegration.CompiledDataContext = TestClass_TypedDataContext2.GetCompiledDataContextCacheHelper(Me.dataContextActivities, activityContext, Me.rootActivity, Me.forImplementation, 4)
+                If (cachedCompiledDataContext(1) Is Nothing) Then
+                    cachedCompiledDataContext(1) = New TestClass_TypedDataContext2(locations, activityContext, true)
+                End If
+                Dim refDataContext1 As TestClass_TypedDataContext2 = CType(cachedCompiledDataContext(1),TestClass_TypedDataContext2)
+                Return refDataContext1.GetLocation(Of String)(AddressOf refDataContext1.ValueType___Expr1Get, AddressOf refDataContext1.ValueType___Expr1Set, expressionId, Me.rootActivity, activityContext)
+            End If
+            If (expressionId = 2) Then
+                Dim cachedCompiledDataContext() As System.Activities.XamlIntegration.CompiledDataContext = TestClass_TypedDataContext2_ForReadOnly.GetCompiledDataContextCacheHelper(Me.dataContextActivities, activityContext, Me.rootActivity, Me.forImplementation, 4)
+                If (cachedCompiledDataContext(0) Is Nothing) Then
+                    cachedCompiledDataContext(0) = New TestClass_TypedDataContext2_ForReadOnly(locations, activityContext, true)
+                End If
+                Dim valDataContext2 As TestClass_TypedDataContext2_ForReadOnly = CType(cachedCompiledDataContext(0),TestClass_TypedDataContext2_ForReadOnly)
+                Return valDataContext2.ValueType___Expr2Get
+            End If
+            If (expressionId = 3) Then
+                Dim cachedCompiledDataContext() As System.Activities.XamlIntegration.CompiledDataContext = TestClass_TypedDataContext3.GetCompiledDataContextCacheHelper(Me.dataContextActivities, activityContext, Me.rootActivity, Me.forImplementation, 4)
+                If (cachedCompiledDataContext(2) Is Nothing) Then
+                    cachedCompiledDataContext(2) = New TestClass_TypedDataContext3(locations, activityContext, true)
+                End If
+                Dim refDataContext3 As TestClass_TypedDataContext3 = CType(cachedCompiledDataContext(2),TestClass_TypedDataContext3)
+                Return refDataContext3.GetLocation(Of String)(AddressOf refDataContext3.ValueType___Expr3Get, AddressOf refDataContext3.ValueType___Expr3Set, expressionId, Me.rootActivity, activityContext)
+            End If
+            If (expressionId = 4) Then
+                Dim cachedCompiledDataContext() As System.Activities.XamlIntegration.CompiledDataContext = TestClass_TypedDataContext3_ForReadOnly.GetCompiledDataContextCacheHelper(Me.dataContextActivities, activityContext, Me.rootActivity, Me.forImplementation, 4)
+                If (cachedCompiledDataContext(3) Is Nothing) Then
+                    cachedCompiledDataContext(3) = New TestClass_TypedDataContext3_ForReadOnly(locations, activityContext, true)
+                End If
+                Dim valDataContext4 As TestClass_TypedDataContext3_ForReadOnly = CType(cachedCompiledDataContext(3),TestClass_TypedDataContext3_ForReadOnly)
+                Return valDataContext4.ValueType___Expr4Get
+            End If
+            If (expressionId = 5) Then
+                Dim cachedCompiledDataContext() As System.Activities.XamlIntegration.CompiledDataContext = TestClass_TypedDataContext2_ForReadOnly.GetCompiledDataContextCacheHelper(Me.dataContextActivities, activityContext, Me.rootActivity, Me.forImplementation, 4)
+                If (cachedCompiledDataContext(0) Is Nothing) Then
+                    cachedCompiledDataContext(0) = New TestClass_TypedDataContext2_ForReadOnly(locations, activityContext, true)
+                End If
+                Dim valDataContext5 As TestClass_TypedDataContext2_ForReadOnly = CType(cachedCompiledDataContext(0),TestClass_TypedDataContext2_ForReadOnly)
+                Return valDataContext5.ValueType___Expr5Get
+            End If
+            Return Nothing
+        End Function
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Public Overloads Function InvokeExpression(ByVal expressionId As Integer, ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location)) As Object Implements System.Activities.XamlIntegration.ICompiledExpressionRoot.InvokeExpression
+            If (expressionId = 0) Then
+                Dim valDataContext0 As TestClass_TypedDataContext2_ForReadOnly = New TestClass_TypedDataContext2_ForReadOnly(locations, true)
+                Return valDataContext0.ValueType___Expr0Get
+            End If
+            If (expressionId = 1) Then
+                Dim refDataContext1 As TestClass_TypedDataContext2 = New TestClass_TypedDataContext2(locations, true)
+                Return refDataContext1.GetLocation(Of String)(AddressOf refDataContext1.ValueType___Expr1Get, AddressOf refDataContext1.ValueType___Expr1Set)
+            End If
+            If (expressionId = 2) Then
+                Dim valDataContext2 As TestClass_TypedDataContext2_ForReadOnly = New TestClass_TypedDataContext2_ForReadOnly(locations, true)
+                Return valDataContext2.ValueType___Expr2Get
+            End If
+            If (expressionId = 3) Then
+                Dim refDataContext3 As TestClass_TypedDataContext3 = New TestClass_TypedDataContext3(locations, true)
+                Return refDataContext3.GetLocation(Of String)(AddressOf refDataContext3.ValueType___Expr3Get, AddressOf refDataContext3.ValueType___Expr3Set)
+            End If
+            If (expressionId = 4) Then
+                Dim valDataContext4 As TestClass_TypedDataContext3_ForReadOnly = New TestClass_TypedDataContext3_ForReadOnly(locations, true)
+                Return valDataContext4.ValueType___Expr4Get
+            End If
+            If (expressionId = 5) Then
+                Dim valDataContext5 As TestClass_TypedDataContext2_ForReadOnly = New TestClass_TypedDataContext2_ForReadOnly(locations, true)
+                Return valDataContext5.ValueType___Expr5Get
+            End If
+            Return Nothing
+        End Function
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Public Overloads Function CanExecuteExpression(ByVal type As System.Type, ByVal expressionText As String, ByVal isReference As Boolean, ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByRef expressionId As Integer) As Boolean Implements System.Activities.XamlIntegration.ICompiledExpressionRoot.CanExecuteExpression
+            If (((isReference = false)  _
+                        AndAlso (type = GetType(String)))  _
+                        AndAlso ((expressionText = "var1")  _
+                        AndAlso (TestClass_TypedDataContext2_ForReadOnly.Validate(locations, true, 0) = true))) Then
+                expressionId = 0
+                Return true
+            End If
+            If (((isReference = true)  _
+                        AndAlso (type = GetType(String)))  _
+                        AndAlso ((expressionText = "var1")  _
+                        AndAlso (TestClass_TypedDataContext2.Validate(locations, true, 0) = true))) Then
+                expressionId = 1
+                Return true
+            End If
+            If (((isReference = false)  _
+                        AndAlso (type = GetType(Boolean)))  _
+                        AndAlso ((expressionText = "var1 != ""test""")  _
+                        AndAlso (TestClass_TypedDataContext2_ForReadOnly.Validate(locations, true, 0) = true))) Then
+                expressionId = 2
+                Return true
+            End If
+            If (((isReference = true)  _
+                        AndAlso (type = GetType(String)))  _
+                        AndAlso ((expressionText = "var2")  _
+                        AndAlso (TestClass_TypedDataContext3.Validate(locations, true, 0) = true))) Then
+                expressionId = 3
+                Return true
+            End If
+            If (((isReference = false)  _
+                        AndAlso (type = GetType(String)))  _
+                        AndAlso ((expressionText = "var2")  _
+                        AndAlso (TestClass_TypedDataContext3_ForReadOnly.Validate(locations, true, 0) = true))) Then
+                expressionId = 4
+                Return true
+            End If
+            If (((isReference = false)  _
+                        AndAlso (type = GetType(String)))  _
+                        AndAlso ((expressionText = "test3")  _
+                        AndAlso (TestClass_TypedDataContext2_ForReadOnly.Validate(locations, true, 0) = true))) Then
+                expressionId = 5
+                Return true
+            End If
+            expressionId = -1
+            Return false
+        End Function
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Public Overloads Function CanExecuteExpression(ByVal expressionText As String, ByVal isReference As Boolean, ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByRef expressionId As Integer) As Boolean Implements System.Activities.XamlIntegration.ICompiledExpressionRoot.CanExecuteExpression
+            Throw New System.NotImplementedException()
+        End Function
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Public Function GetRequiredLocations(ByVal expressionId As Integer) As System.Collections.Generic.IList(Of String) Implements System.Activities.XamlIntegration.ICompiledExpressionRoot.GetRequiredLocations
+            Dim returnLocations As System.Collections.Generic.List(Of String) = New System.Collections.Generic.List(Of String)()
+            If (expressionId = 0) Then
+            End If
+            If (expressionId = 1) Then
+            End If
+            If (expressionId = 2) Then
+            End If
+            If (expressionId = 3) Then
+            End If
+            If (expressionId = 4) Then
+            End If
+            If (expressionId = 5) Then
+            End If
+            Return returnLocations
+        End Function
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Public Function GetExpressionTreeForExpression(ByVal expressionId As Integer, ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference)) As System.Linq.Expressions.Expression Implements System.Activities.XamlIntegration.ICompiledExpressionRoot.GetExpressionTreeForExpression
+            If (expressionId = 0) Then
+                Return New TestClass_TypedDataContext2_ForReadOnly(locationReferences).__Expr0GetTree
+            End If
+            If (expressionId = 1) Then
+                Return New TestClass_TypedDataContext2(locationReferences).__Expr1GetTree
+            End If
+            If (expressionId = 2) Then
+                Return New TestClass_TypedDataContext2_ForReadOnly(locationReferences).__Expr2GetTree
+            End If
+            If (expressionId = 3) Then
+                Return New TestClass_TypedDataContext3(locationReferences).__Expr3GetTree
+            End If
+            If (expressionId = 4) Then
+                Return New TestClass_TypedDataContext3_ForReadOnly(locationReferences).__Expr4GetTree
+            End If
+            If (expressionId = 5) Then
+                Return New TestClass_TypedDataContext2_ForReadOnly(locationReferences).__Expr5GetTree
+            End If
+            Return Nothing
+        End Function
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext0
+            Inherits System.Activities.XamlIntegration.CompiledDataContext
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Friend Shared Function GetDataContextActivitiesHelper(ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean) As Object
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetDataContextActivities(compiledRoot, forImplementation)
+            End Function
+            
+            Friend Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+            End Sub
+            
+            Public Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 0)) Then
+                    Return false
+                End If
+                expectedLocationsCount = 0
+                Return true
+            End Function
+        End Class
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext0_ForReadOnly
+            Inherits System.Activities.XamlIntegration.CompiledDataContext
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Friend Shared Function GetDataContextActivitiesHelper(ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean) As Object
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetDataContextActivities(compiledRoot, forImplementation)
+            End Function
+            
+            Friend Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+            End Sub
+            
+            Public Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 0)) Then
+                    Return false
+                End If
+                expectedLocationsCount = 0
+                Return true
+            End Function
+        End Class
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext1
+            Inherits TestClass_TypedDataContext0
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Friend Shadows Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Shadows Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+                MyBase.SetLocationsOffset(locationsOffset)
+            End Sub
+            
+            Public Shadows Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 0)) Then
+                    Return false
+                End If
+                expectedLocationsCount = 0
+                Return TestClass_TypedDataContext0.Validate(locationReferences, false, offset)
+            End Function
+        End Class
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext1_ForReadOnly
+            Inherits TestClass_TypedDataContext0_ForReadOnly
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Friend Shadows Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Shadows Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+                MyBase.SetLocationsOffset(locationsOffset)
+            End Sub
+            
+            Public Shadows Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 0)) Then
+                    Return false
+                End If
+                expectedLocationsCount = 0
+                Return TestClass_TypedDataContext0_ForReadOnly.Validate(locationReferences, false, offset)
+            End Function
+        End Class
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext2
+            Inherits TestClass_TypedDataContext1
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Protected Property var1() As String
+                Get
+                    Return CType(Me.GetVariableValue((0 + locationsOffset)),String)
+                End Get
+                Set
+                    Me.SetVariableValue((0 + locationsOffset), value)
+                End Set
+            End Property
+            
+            Friend Shadows Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Shadows Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+                MyBase.SetLocationsOffset(locationsOffset)
+            End Sub
+            
+            Friend Function __Expr1GetTree() As System.Linq.Expressions.Expression
+                Dim expression As System.Linq.Expressions.Expression(Of System.Func(Of String)) = Function() var1
+                Return MyBase.RewriteExpressionTree(expression)
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Function __Expr1Get() As String
+                Return var1
+            End Function
+            
+            Public Function ValueType___Expr1Get() As String
+                Me.GetValueTypeValues
+                Return Me.__Expr1Get
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Sub __Expr1Set(ByVal value As String)
+                var1 = value
+            End Sub
+            
+            Public Sub ValueType___Expr1Set(ByVal value As String)
+                Me.GetValueTypeValues
+                Me.__Expr1Set(value)
+                Me.SetValueTypeValues
+            End Sub
+            
+            Public Shadows Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 1)) Then
+                    Return false
+                End If
+                If (validateLocationCount = true) Then
+                    offset = (locationReferences.Count - 1)
+                End If
+                expectedLocationsCount = 1
+                If ((locationReferences((offset + 0)).Name <> "var1")  _
+                            OrElse (locationReferences((offset + 0)).Type <> GetType(String))) Then
+                    Return false
+                End If
+                Return TestClass_TypedDataContext1.Validate(locationReferences, false, offset)
+            End Function
+        End Class
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext2_ForReadOnly
+            Inherits TestClass_TypedDataContext1_ForReadOnly
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Protected ReadOnly Property var1() As String
+                Get
+                    Return CType(Me.GetVariableValue((0 + locationsOffset)),String)
+                End Get
+            End Property
+            
+            Friend Shadows Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Shadows Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+                MyBase.SetLocationsOffset(locationsOffset)
+            End Sub
+            
+            Friend Function __Expr0GetTree() As System.Linq.Expressions.Expression
+                Dim expression As System.Linq.Expressions.Expression(Of System.Func(Of String)) = Function() var1
+                Return MyBase.RewriteExpressionTree(expression)
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Function __Expr0Get() As String
+                Return var1
+            End Function
+            
+            Public Function ValueType___Expr0Get() As String
+                Me.GetValueTypeValues
+                Return Me.__Expr0Get
+            End Function
+            
+            Friend Function __Expr2GetTree() As System.Linq.Expressions.Expression
+                Dim expression As System.Linq.Expressions.Expression(Of System.Func(Of Boolean)) = Function() var1 != "test"
+                Return MyBase.RewriteExpressionTree(expression)
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Function __Expr2Get() As Boolean
+                Return var1 != "test"
+            End Function
+            
+            Public Function ValueType___Expr2Get() As Boolean
+                Me.GetValueTypeValues
+                Return Me.__Expr2Get
+            End Function
+            
+            Friend Function __Expr5GetTree() As System.Linq.Expressions.Expression
+                Dim expression As System.Linq.Expressions.Expression(Of System.Func(Of String)) = Function() test3
+                Return MyBase.RewriteExpressionTree(expression)
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Function __Expr5Get() As String
+                Return test3
+            End Function
+            
+            Public Function ValueType___Expr5Get() As String
+                Me.GetValueTypeValues
+                Return Me.__Expr5Get
+            End Function
+            
+            Public Shadows Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 1)) Then
+                    Return false
+                End If
+                If (validateLocationCount = true) Then
+                    offset = (locationReferences.Count - 1)
+                End If
+                expectedLocationsCount = 1
+                If ((locationReferences((offset + 0)).Name <> "var1")  _
+                            OrElse (locationReferences((offset + 0)).Type <> GetType(String))) Then
+                    Return false
+                End If
+                Return TestClass_TypedDataContext1_ForReadOnly.Validate(locationReferences, false, offset)
+            End Function
+        End Class
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext3
+            Inherits TestClass_TypedDataContext2
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Protected Property var2() As String
+                Get
+                    Return CType(Me.GetVariableValue((1 + locationsOffset)),String)
+                End Get
+                Set
+                    Me.SetVariableValue((1 + locationsOffset), value)
+                End Set
+            End Property
+            
+            Friend Shadows Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Shadows Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+                MyBase.SetLocationsOffset(locationsOffset)
+            End Sub
+            
+            Friend Function __Expr3GetTree() As System.Linq.Expressions.Expression
+                Dim expression As System.Linq.Expressions.Expression(Of System.Func(Of String)) = Function() var2
+                Return MyBase.RewriteExpressionTree(expression)
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Function __Expr3Get() As String
+                Return var2
+            End Function
+            
+            Public Function ValueType___Expr3Get() As String
+                Me.GetValueTypeValues
+                Return Me.__Expr3Get
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Sub __Expr3Set(ByVal value As String)
+                var2 = value
+            End Sub
+            
+            Public Sub ValueType___Expr3Set(ByVal value As String)
+                Me.GetValueTypeValues
+                Me.__Expr3Set(value)
+                Me.SetValueTypeValues
+            End Sub
+            
+            Public Shadows Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 2)) Then
+                    Return false
+                End If
+                If (validateLocationCount = true) Then
+                    offset = (locationReferences.Count - 2)
+                End If
+                expectedLocationsCount = 2
+                If ((locationReferences((offset + 1)).Name <> "var2")  _
+                            OrElse (locationReferences((offset + 1)).Type <> GetType(String))) Then
+                    Return false
+                End If
+                Return TestClass_TypedDataContext2.Validate(locationReferences, false, offset)
+            End Function
+        End Class
+        
+        <System.CodeDom.Compiler.GeneratedCodeAttribute("UiPath.Workflow", "6.0.0.0"),  _
+         System.ComponentModel.BrowsableAttribute(false),  _
+         System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)>  _
+        Private Class TestClass_TypedDataContext3_ForReadOnly
+            Inherits TestClass_TypedDataContext2_ForReadOnly
+            
+            Private locationsOffset As Integer
+            
+            Private Shared expectedLocationsCount As Integer
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal activityContext As System.Activities.ActivityContext, ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, activityContext, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locations As System.Collections.Generic.IList(Of System.Activities.Location), ByVal computelocationsOffset As Boolean)
+                MyBase.New(locations, false)
+                If (computelocationsOffset = true) Then
+                    Me.SetLocationsOffset((locations.Count - expectedLocationsCount))
+                End If
+            End Sub
+            
+            Public Sub New(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference))
+                MyBase.New(locationReferences)
+            End Sub
+            
+            Protected ReadOnly Property var2() As String
+                Get
+                    Return CType(Me.GetVariableValue((1 + locationsOffset)),String)
+                End Get
+            End Property
+            
+            Friend Shadows Shared Function GetCompiledDataContextCacheHelper(ByVal dataContextActivities As Object, ByVal activityContext As System.Activities.ActivityContext, ByVal compiledRoot As System.Activities.Activity, ByVal forImplementation As Boolean, ByVal compiledDataContextCount As Integer) As System.Activities.XamlIntegration.CompiledDataContext()
+                Return System.Activities.XamlIntegration.CompiledDataContext.GetCompiledDataContextCache(dataContextActivities, activityContext, compiledRoot, forImplementation, compiledDataContextCount)
+            End Function
+            
+            Public Shadows Overridable Sub SetLocationsOffset(ByVal locationsOffsetValue As Integer)
+                locationsOffset = locationsOffsetValue
+                MyBase.SetLocationsOffset(locationsOffset)
+            End Sub
+            
+            Friend Function __Expr4GetTree() As System.Linq.Expressions.Expression
+                Dim expression As System.Linq.Expressions.Expression(Of System.Func(Of String)) = Function() var2
+                Return MyBase.RewriteExpressionTree(expression)
+            End Function
+            
+            <System.Diagnostics.DebuggerHiddenAttribute()>  _
+            Public Function __Expr4Get() As String
+                Return var2
+            End Function
+            
+            Public Function ValueType___Expr4Get() As String
+                Me.GetValueTypeValues
+                Return Me.__Expr4Get
+            End Function
+            
+            Public Shadows Shared Function Validate(ByVal locationReferences As System.Collections.Generic.IList(Of System.Activities.LocationReference), ByVal validateLocationCount As Boolean, ByVal offset As Integer) As Boolean
+                If ((validateLocationCount = true)  _
+                            AndAlso (locationReferences.Count < 2)) Then
+                    Return false
+                End If
+                If (validateLocationCount = true) Then
+                    offset = (locationReferences.Count - 2)
+                End If
+                expectedLocationsCount = 2
+                If ((locationReferences((offset + 1)).Name <> "var2")  _
+                            OrElse (locationReferences((offset + 1)).Type <> GetType(String))) Then
+                    Return false
+                End If
+                Return TestClass_TypedDataContext2_ForReadOnly.Validate(locationReferences, false, offset)
+            End Function
+        End Class
+    End Class
+End Namespace
