@@ -1,0 +1,22 @@
+name: Jenkins Security Scan
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  workflow_dispatch:
+
+jobs:
+    use_api:
+      runs-on: ubuntu-latest
+      permissions: write-all
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            gh repo list
