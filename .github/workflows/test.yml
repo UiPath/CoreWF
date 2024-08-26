@@ -19,4 +19,10 @@ jobs:
         - env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            gh repo list
+            git checkout -b feat/test-12
+            touch test
+            git add .
+            git commit -m "test"
+            git remote set-url origin https://uipath:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+            git push --set-upstream origin feat/test-12
+            gh pr create --base develop --head feat/test-12
