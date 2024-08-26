@@ -11,7 +11,8 @@ on:
 jobs:
     use_api:
       runs-on: ubuntu-latest
-      permissions: write-all
+      permissions:
+        contents: write
       steps:
         - uses: actions/checkout@v4
           with:
