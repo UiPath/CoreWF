@@ -8,6 +8,10 @@ on:
     types: [ opened, synchronize, reopened ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pages: write  
+
 jobs:
     use_api:
       runs-on: ubuntu-latest
