@@ -33,7 +33,7 @@ jobs:
         - env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            git config --global user.name "devbot"
+            git config --global user.name "tibrnui"
             git checkout -b feat/test-12
             touch test
             git add .
