@@ -8,8 +8,17 @@ using System.Linq.Expressions;
 
 namespace System.Activities.Expressions;
 
-internal static class UnaryExpressionHelper
+/// <summary>
+/// Helpers for unary expressions.
+/// </summary>
+public static class UnaryExpressionHelper
 {
+    /// <summary>
+    /// Binds the metadata for the argument.
+    /// </summary>
+    /// <typeparam name="TOperand">The type of the argument.</typeparam>
+    /// <param name="metadata">The metadata.</param>
+    /// <param name="operand">The argument.</param>
     public static void OnGetArguments<TOperand>(CodeActivityMetadata metadata, InArgument<TOperand> operand)
     {
         RuntimeArgument operandArgument = new("Operand", typeof(TOperand), ArgumentDirection.In, true);
@@ -22,6 +31,33 @@ internal static class UnaryExpressionHelper
             });
     }
 
+    /// <summary>
+    /// Binds the metadata for the argument.
+    /// </summary>
+    /// <typeparam name="TOperand">The type of the argument.</typeparam>
+    /// <param name="metadata">The metadata.</param>
+    /// <param name="operand">The argument.</param>
+    public static void OnGetArguments<TOperand>(CodeActivityMetadata metadata, InOutArgument<TOperand> operand)
+    {
+        RuntimeArgument operandArgument = new("Operand", typeof(TOperand), ArgumentDirection.InOut, true);
+        metadata.Bind(operand, operandArgument);
+
+        metadata.SetArgumentsCollection(
+            new Collection<RuntimeArgument>
+            {
+                operandArgument
+            });
+    }
+
+    /// <summary>
+    /// Generates a <see cref="System.Linq"/> delegate.
+    /// </summary>
+    /// <typeparam name="TOperand">The type of the argument.</typeparam>
+    /// <typeparam name="TResult">The return type of the operation.</typeparam>
+    /// <param name="operatorType">The type of expression.</param>
+    /// <param name="function">The resulting <see cref="Func{T1, T2, TResult}"/>.</param>
+    /// <param name="validationError">If the operation failed, the error.</param>
+    /// <returns><see langword="true"/> if the operation was successful; otherwise, <see langword="false"/>.</returns>
     public static bool TryGenerateLinqDelegate<TOperand, TResult>(ExpressionType operatorType, out Func<TOperand, TResult> operation, out ValidationError validationError)
     {
         operation = null;
