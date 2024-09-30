@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CSharp.Activities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using static System.Activities.CompilerHelper;
 
@@ -53,14 +54,14 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
         return CompilerHelper.DefaultCompilationUnit.WithOptions(options.WithUsings(namespaces)).WithReferences(metadataReferences);
     }
 
-    protected override string CreateValueCode(string types, string names, string code, string activityId, int index)
+    protected override string CreateValueCode(IEnumerable<string> types, string names, string code, string activityId, int index)
     {
-        var arrayType = types.Split(",");
-        if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return string.Format(_valueValidationTemplate, types, index, names, code, activityId, _expressionEnder);
+        var serializedArgumentTypes = string.Join(Comma, types);
+        if (types.Count() <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
+            return string.Format(_valueValidationTemplate, serializedArgumentTypes, index, names, code, activityId, _expressionEnder);
 
         var (myDelegate, name) = CompilerHelper.DefineDelegate(types);
-        return string.Format(_delegateValueValidationTemplate, myDelegate, name, types, index, names, code, activityId, _expressionEnder);
+        return string.Format(_delegateValueValidationTemplate, myDelegate, name, serializedArgumentTypes, index, names, code, activityId, _expressionEnder);
     }
 
     protected override string CreateReferenceCode(string types, string names, string code, string activityId, string returnType, int index)

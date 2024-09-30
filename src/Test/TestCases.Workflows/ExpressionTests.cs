@@ -414,6 +414,20 @@ public class ExpressionTests
     }
 
     [Fact]
+    public void VBRoslynValidator_ValidatesMoreThan16Arguments_WithGenericReturnType()
+    {
+        var sequence = new Sequence();
+        for (int i = 0; i < 16; i++)
+        {
+            sequence.Variables.Add(new Variable<string>($"variable{i}"));
+        }
+        var testActivity = new VisualBasicValue<Dictionary<string, InArgument<string>>>(@"new System.Collections.Generic.Dictionary(Of System.String, System.Activities.InArgument(Of System.String)) From   { { ""0"", variable0 },{ ""1"", variable1 },{ ""2"", variable2 },{ ""3"", variable3 },  { ""4"", variable4 },{ ""5"", variable5 },{ ""6"", variable6 },{ ""7"", variable7 },  { ""8"", variable8 },{ ""9"", variable9 },{ ""10"", variable10 },{ ""11"", variable11 },  { ""12"", variable12 },{ ""13"", variable13 },{ ""14"", variable14 }, { ""15"", variable15 } }");
+        sequence.Activities.Add(testActivity);
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
     public void CSRoslynValidator_ValidatesMoreThan16Arguments()
     {
         var sequence = new Sequence();
@@ -426,6 +440,22 @@ public class ExpressionTests
         var result = ActivityValidationServices.Validate(sequence, _useValidator);
         result.Errors.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void CSRoslynValidator_ValidatesMoreThan16Arguments_WithGenericReturnType()
+    {
+        var sequence = new Sequence();
+        for (int i = 0; i < 20; i++)
+        {
+            sequence.Variables.Add(new Variable<string>($"variable{i}"));
+        }
+        var testActivity = new CSharpValue<Dictionary<string, InArgument<string>>>((@"new System.Collections.Generic.Dictionary<System.String, System.Activities.InArgument<System.String>>()  { { ""0"", variable0 },{ ""1"", variable1 },{ ""2"", variable2 },{ ""3"", variable3 },  { ""4"", variable4 },{ ""5"", variable5 },{ ""6"", variable6 },{ ""7"", variable7 },  { ""8"", variable8 },{ ""9"", variable9 },{ ""10"", variable10 },{ ""11"", variable11 },  { ""12"", variable12 },{ ""13"", variable13 },{ ""14"", variable14 }, { ""15"", variable15 } }"));
+
+        sequence.Activities.Add(testActivity);
+        var result = ActivityValidationServices.Validate(sequence, _useValidator);
+        result.Errors.ShouldBeEmpty();
+    }
+
     [Fact]
     public void VB_Multithreaded_NoError()
     {
