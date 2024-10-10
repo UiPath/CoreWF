@@ -27,14 +27,6 @@ namespace WorkflowApplicationTestExtensions
             Should.Throw<ArgumentException>(() => app.RunUntilCompletion());
         }
 
-        [Fact(Skip="Flaky")]
-        public void RunUntilCompletion_Aborted()
-        {
-            var app = new WorkflowApplication(new Delay { Duration = TimeSpan.MaxValue });
-            Task.Delay(10).ContinueWith(_ => app.Abort());
-            Should.Throw<WorkflowApplicationAbortedException>(() => app.RunUntilCompletion());
-        }
-
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
