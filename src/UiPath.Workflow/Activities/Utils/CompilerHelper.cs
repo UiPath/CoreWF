@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace System.Activities
 {
@@ -21,7 +22,14 @@ namespace System.Activities
 
         public abstract int IdentifierKind { get; }
 
-        public abstract (string, string) DefineDelegate(string types);
+        [Obsolete("DefineDelegate(string types) is deprecated, please use DefineDelegate(IEnumerable<string> types) instead.")]
+        public (string, string) DefineDelegate(string types)
+            => DefineDelegateCommon(types.Split(",").Length - 1);
+
+        public (string, string) DefineDelegate(IEnumerable<string> types)
+            => DefineDelegateCommon(types.Count() - 1);
+
+        protected abstract (string, string) DefineDelegateCommon(int argumentsCount);
 
         public abstract Compilation DefaultCompilationUnit { get; }
 

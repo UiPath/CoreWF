@@ -34,15 +34,13 @@ namespace System.Activities
             return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
         }
 
-        public override (string, string) DefineDelegate(string types)
+        protected override (string, string) DefineDelegateCommon(int argumentsCount)
         {
             var crtValue = Interlocked.Add(ref crt, 1);
-
-            var arrayType = types.Split(",");
             var part1 = new StringBuilder();
             var part2 = new StringBuilder();
 
-            for (var i = 0; i < arrayType.Length - 1; i++)
+            for (var i = 0; i < argumentsCount; i++)
             {
                 part1.Append($" In T{i},");
                 part2.Append($" ByVal arg as T{i},");

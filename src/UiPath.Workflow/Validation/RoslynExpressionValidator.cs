@@ -99,12 +99,15 @@ public abstract class RoslynExpressionValidator
     /// <returns>expression wrapped in a method or function that returns a LambdaExpression</returns>
     protected string CreateValidationCode(IEnumerable<string> types, string returnType, string names, string code, bool isLocation, string activityId, int index)
     {
+        var typesWithReturnType = types.ToList();
+        typesWithReturnType.Add(returnType);
+
         return isLocation
             ? CreateReferenceCode(string.Join(CompilerHelper.Comma, types), names, code, activityId, returnType, index)
-            : CreateValueCode(string.Join(CompilerHelper.Comma, types.Concat(new[] { returnType })), names, code, activityId, index);
+            : CreateValueCode(typesWithReturnType, names, code, activityId, index);
     }
 
-    protected abstract string CreateValueCode(string types, string names, string code, string activityId, int index);
+    protected abstract string CreateValueCode(IEnumerable<string> types, string names, string code, string activityId, int index);
 
     protected abstract string CreateReferenceCode(string types, string names, string code, string activityId, string returnType, int index);
 
