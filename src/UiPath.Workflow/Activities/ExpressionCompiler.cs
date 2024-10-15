@@ -24,7 +24,7 @@ namespace System.Activities
         {
             if (type is IArrayTypeSymbol arrayTypeSymbol)
             {
-                return AssemblyReference.GetAssembly(new AssemblyName(arrayTypeSymbol.ElementType.ContainingAssembly.Name));
+                return AssemblyReference.GetAssembly(new AssemblyName(GetAssemblyForType(arrayTypeSymbol.ElementType).GetName().Name));
             }
             else
             {
