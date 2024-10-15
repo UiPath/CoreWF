@@ -276,6 +276,8 @@ namespace TestCases.Workflows
         [InlineData(typeof(Func<string>), "Function() (1 + 1)", true)]
         [InlineData(typeof(Func<string>), "Function() (Nothing)", false)]
         [InlineData(typeof(Func<string>), "Function() (\"test\")", false)]
+        [InlineData(typeof(string[][]), "Nothing", false)]
+        [InlineData(typeof(string[][][][]), "Nothing", false)]
         public async Task VB_CreatePrecompiedValueAsync_CorrectReturnType(Type targetType, string expressionText, bool shouldExpectError)
         {
             var location = new ActivityLocationReferenceEnvironment();
@@ -305,6 +307,8 @@ namespace TestCases.Workflows
         [InlineData(typeof(Func<string>), "() => null", false)]
         [InlineData(typeof(Func<string>), "() => 1 + 1", true)]
         [InlineData(typeof(Func<string>), "() => \"test\"", false)]
+        [InlineData(typeof(string[][]), "default", false)]
+        [InlineData(typeof(string[][][][]), "default", false)]
         public async Task CS_CreatePrecompiedValueAsync_CorrectReturnType(Type targetType, string expressionText, bool shouldExpectError)
         {
             var location = new ActivityLocationReferenceEnvironment();
