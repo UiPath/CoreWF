@@ -4,11 +4,14 @@
 using System.Activities.ExpressionParser;
 using System.Activities.Internals;
 using System.Activities.XamlIntegration;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Runtime.Collections;
 using System.Runtime.Loader;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -33,6 +36,133 @@ public record ExpressionToCompile(string Code, IReadOnlyCollection<string> Impor
     : CompilerInput(Code, ImportedNamespaces)
 { }
 
+public sealed class CachedMetadataReferenceResolver : MetadataReferenceResolver
+{
+    public static CachedMetadataReferenceResolver Default = new CachedMetadataReferenceResolver(ScriptMetadataResolver.Default);
+
+    ScriptMetadataResolver _resolver;
+
+    private class ResolveCacheKey
+    {
+        private string _reference;
+        private string _baseFilePath;
+        private MetadataReferenceProperties _properties;
+
+        private readonly int _hashCode;
+
+        public ResolveCacheKey(string reference, string baseFilePath, MetadataReferenceProperties properties)
+        {
+            _reference = reference;
+            _baseFilePath = baseFilePath;
+            _properties = properties;
+
+            _hashCode = reference?.GetHashCode() ?? 0;
+            _hashCode = CombineHashCodes(_hashCode, _baseFilePath?.GetHashCode() ?? 0);
+            _hashCode = CombineHashCodes(_hashCode, properties.GetHashCode());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not ResolveCacheKey rtcKey || _hashCode != rtcKey._hashCode)
+            {
+                return false;
+            }
+
+            return _reference == rtcKey._reference &&
+                _baseFilePath == rtcKey._baseFilePath &&
+                _properties.Equals(rtcKey._properties);
+        }
+
+        public override int GetHashCode() => _hashCode;
+    }
+    ConcurrentDictionary<ResolveCacheKey, ImmutableArray<PortableExecutableReference>> _resolveCache = new ConcurrentDictionary<ResolveCacheKey, ImmutableArray<PortableExecutableReference>>();
+
+    private class ResolveMissingCacheKey
+    {
+        private MetadataReference _definition;
+        private AssemblyIdentity _referenceIdentity;
+
+        private readonly int _hashCode;
+
+        public ResolveMissingCacheKey(MetadataReference definition, AssemblyIdentity referenceIdentity)
+        {
+            _definition = definition;
+            this._referenceIdentity = referenceIdentity;
+
+            _hashCode = definition.GetHashCode();
+            _hashCode = CombineHashCodes(_hashCode, _referenceIdentity.GetHashCode());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not ResolveMissingCacheKey rtcKey || _hashCode != rtcKey._hashCode)
+            {
+                return false;
+            }
+
+            return _definition.Equals(rtcKey._definition) &&
+                _referenceIdentity.Equals(rtcKey._referenceIdentity);
+        }
+
+        public override int GetHashCode() => _hashCode;
+    }
+    ConcurrentDictionary<ResolveMissingCacheKey, PortableExecutableReference> _resolveMissingCache = new ConcurrentDictionary<ResolveMissingCacheKey, PortableExecutableReference>();
+
+    public CachedMetadataReferenceResolver(ScriptMetadataResolver resolver)
+    {
+        _resolver = resolver;
+    }
+
+    public override bool Equals(object other)
+    {
+        return ReferenceEquals(this, other) ||
+            other != null && other is CachedMetadataReferenceResolver &&
+            Equals(_resolver, ((CachedMetadataReferenceResolver)other)._resolver) &&
+            Equals(_resolveCache, ((CachedMetadataReferenceResolver)other)._resolveCache) &&
+            Equals(_resolveMissingCache, ((CachedMetadataReferenceResolver)other)._resolveMissingCache);
+    }
+
+    public override int GetHashCode()
+    {
+        return CombineHashCodes(_resolver.GetHashCode(),
+            CombineHashCodes(_resolveCache.GetHashCode(),
+            _resolveMissingCache.GetHashCode()));
+    }
+    private static int CombineHashCodes(int h1, int h2) => ((h1 << 5) + h1) ^ h2;
+
+    public override ImmutableArray<PortableExecutableReference> ResolveReference(string reference, string baseFilePath, MetadataReferenceProperties properties)
+    {
+        ImmutableArray<PortableExecutableReference> ret;
+
+        var cacheKey = new ResolveCacheKey(reference, baseFilePath, properties);
+
+        if (!_resolveCache.TryGetValue(cacheKey, out ret))
+        {
+            ret = _resolver.ResolveReference(reference, baseFilePath, properties);
+            _resolveCache.TryAdd(cacheKey, ret);
+        }
+
+        return ret;
+    }
+
+    public override bool ResolveMissingAssemblies => _resolver.ResolveMissingAssemblies;
+
+    public override PortableExecutableReference ResolveMissingAssembly(MetadataReference definition, AssemblyIdentity referenceIdentity)
+    {
+        PortableExecutableReference ret;
+
+        var cacheKey = new ResolveMissingCacheKey(definition, referenceIdentity);
+
+        if (!_resolveMissingCache.TryGetValue(cacheKey, out ret))
+        {
+            ret = _resolver.ResolveMissingAssembly(definition, referenceIdentity);
+            _resolveMissingCache.TryAdd(cacheKey, ret);
+        }
+
+        return ret;
+    }
+}
+
 public abstract class ScriptingJitCompiler : JustInTimeCompiler
 {
     protected ScriptingJitCompiler(HashSet<Assembly> referencedAssemblies)
@@ -50,7 +180,8 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         var options = ScriptOptions.Default
                                    .WithReferences(MetadataReferences)
                                    .WithImports(expressionToCompile.ImportedNamespaces)
-                                   .WithOptimizationLevel(OptimizationLevel.Release);
+                                   .WithOptimizationLevel(OptimizationLevel.Release)
+                                   .WithMetadataResolver(CachedMetadataReferenceResolver.Default);
         var untypedExpressionScript = Create(expressionToCompile.Code, options);
         var compilation = untypedExpressionScript.GetCompilation();
         var syntaxTree = compilation.SyntaxTrees.First();
