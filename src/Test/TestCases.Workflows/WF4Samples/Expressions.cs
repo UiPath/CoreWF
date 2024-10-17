@@ -87,7 +87,7 @@ Iterate ArrayList
         static readonly string CSharpCalculationResult = "Result == XX^2" + Environment.NewLine;
         static readonly StringDictionary CSharpCalculationInputs = new() { ["XX"] = 16, ["YY"] = 16 };
         [Fact]
-        public void SameTextDifferentTypes()
+        public void VBSameTextDifferentTypes()
         {
             var text = new VisualBasicValue<string>("var");
             var values = new VisualBasicValue<IEnumerable<char>>("var");
@@ -96,6 +96,23 @@ Iterate ArrayList
                 Variables = { new Variable<string>("var") },
                 Activities = { new ForEach<char> { Values = new InArgument<IEnumerable<char>>(values) }, new WriteLine { Text = new InArgument<string>(text) } }
             }};
+            ActivityXamlServices.Compile(root, new());
+            ((LambdaExpression)text.GetExpressionTree()).ReturnType.ShouldBe(typeof(string));
+            ((LambdaExpression)values.GetExpressionTree()).ReturnType.ShouldBe(typeof(IEnumerable<char>));
+        }
+        [Fact]
+        public void CSSameTextDifferentTypes()
+        {
+            var text = new CSharpValue<string>("var");
+            var values = new CSharpValue<IEnumerable<char>>("var");
+            var root = new DynamicActivity
+            {
+                Implementation = () => new Sequence
+                {
+                    Variables = { new Variable<string>("var") },
+                    Activities = { new ForEach<char> { Values = new InArgument<IEnumerable<char>>(values) }, new WriteLine { Text = new InArgument<string>(text) } }
+                }
+            };
             ActivityXamlServices.Compile(root, new());
             ((LambdaExpression)text.GetExpressionTree()).ReturnType.ShouldBe(typeof(string));
             ((LambdaExpression)values.GetExpressionTree()).ReturnType.ShouldBe(typeof(IEnumerable<char>));
