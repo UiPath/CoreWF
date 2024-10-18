@@ -6,6 +6,7 @@ using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
 using System.Activities.Validation;
+using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -595,5 +596,99 @@ public class ExpressionTests
         seq.Activities.Add(new WriteLine { Text = new InArgument<string>(new VisualBasicValue<string>("abc")) });
         var valid = ActivityValidationServices.Validate(seq, _useValidator);
         valid.Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void VB_CompileAndInvokeActivityWithValueInImplementation()
+    {
+        foreach (var activity in GetActivitiesWithVBValues())
+        {
+            var root = new DynamicActivity { Implementation = () => activity };
+            ActivityXamlServices.Compile(root, new() { CompileExpressions = true });
+            WorkflowInvoker.Invoke(root);
+        }
+    }
+
+    [Fact]
+    public void CS_CompileAndInvokeActivityWithValueInImplementation()
+    {
+        foreach (var activity in GetActivitiesWithCSValues())
+        {
+            var root = new DynamicActivity { Implementation = () => activity };
+            ActivityXamlServices.Compile(root, new() { CompileExpressions = true });
+            WorkflowInvoker.Invoke(root);
+        }
+    }
+
+    private static IEnumerable<Activity> GetActivitiesWithVBValues()
+    {
+        yield return new ActivityWithVBValue("(1 + 2).ToString");
+        yield return new ActivityWithMultipleNestedVBValues();
+    }
+
+    private static IEnumerable<Activity> GetActivitiesWithCSValues()
+    {
+        yield return new ActivityWithCSValue("(1 + 2).ToString()");
+        yield return new ActivityWithMultipleNestedCSValues();
+    }
+
+    private class ActivityWithVBValue : Activity
+    {
+        public ActivityWithVBValue(string expressionText)
+        {
+            Implementation = () => new WriteLine() { Text = new InArgument<string>(new VisualBasicValue<string>(expressionText)) };
+        }
+    }
+
+    private class ActivityWithCSValue : Activity
+    {
+        public ActivityWithCSValue(string expressionText)
+        {
+            Implementation = () => new WriteLine() { Text = new InArgument<string>(new CSharpValue<string>(expressionText)) };
+        }
+    }
+
+    private class ActivityWithMultipleNestedVBValues : Activity
+    {
+        public ActivityWithMultipleNestedVBValues()
+        {
+            Implementation = () => new Sequence()
+            {
+                Activities =
+                {
+                    new ActivityWithVBValue("99.ToString"),
+                    new Sequence()
+                    {
+                        Activities =
+                        {
+                            new ActivityWithVBValue("(1 + 2).ToString"),
+                        }
+                    },
+                    new ActivityWithVBValue("{1, 2, 3}.ToString")
+                }
+            };
+        }
+    }
+
+    private class ActivityWithMultipleNestedCSValues : Activity
+    {
+        public ActivityWithMultipleNestedCSValues()
+        {
+            Implementation = () => new Sequence()
+            {
+                Activities =
+                {
+                    new ActivityWithCSValue("99.ToString()"),
+                    new Sequence()
+                    {
+                        Activities =
+                        {
+                            new ActivityWithCSValue("(1 + 2).ToString()"),
+                        }
+                    },
+                    new ActivityWithCSValue("(new int[] {1, 2, 3}).ToString()") 
+                }
+            };
+        }
     }
 }

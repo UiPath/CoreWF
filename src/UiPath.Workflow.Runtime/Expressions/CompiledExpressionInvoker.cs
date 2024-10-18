@@ -169,16 +169,14 @@ public class CompiledExpressionInvoker
     {
         ActivityInstance current = activityContext.CurrentInstance;
 
-        while (current != null && current.Activity != _metadataRoot)
+        while (current != null)
         {
-
-            if (TryGetCompiledExpressionRoot(current.Activity, true, out ICompiledExpressionRoot currentCompiledExpressionRoot))
+            if (current.Activity != _metadataRoot 
+                && TryGetCompiledExpressionRoot(current.Activity, true, out ICompiledExpressionRoot currentCompiledExpressionRoot)
+                && CanExecuteExpression(currentCompiledExpressionRoot, out expressionId))
             {
-                if (CanExecuteExpression(currentCompiledExpressionRoot, out expressionId))
-                {
-                    compiledExpressionRoot = currentCompiledExpressionRoot;
-                    return true;
-                }
+                compiledExpressionRoot = currentCompiledExpressionRoot;
+                return true;
             }
             current = current.Parent;
         }
