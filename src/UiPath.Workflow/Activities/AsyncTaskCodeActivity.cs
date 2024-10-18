@@ -1,68 +1,110 @@
 ﻿// This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx.Interop;
 
 namespace System.Activities;
 
-public abstract class AsyncTaskCodeActivity : TaskCodeActivity<object>
+
+/// <summary>
+/// An asynchronous task-based <see cref="AsyncCodeActivity"/>
+/// </summary>
+public abstract class AsyncTaskCodeActivity : AsyncCodeActivity
 {
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Browsable(false)]
-    public new object Result { get; set; }
-
-    protected abstract Task ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
-
-    private protected sealed override async Task<object> ExecuteAsyncCore(AsyncCodeActivityContext context,
-        CancellationToken cancellationToken)
-    {
-        await ExecuteAsync(context, cancellationToken);
-        return null;
-    }
-}
-
-public abstract class AsyncTaskCodeActivity<TResult> : TaskCodeActivity<TResult>
-{
-    protected abstract Task<TResult>
-        ExecuteAsync(AsyncCodeActivityContext context, CancellationToken cancellationToken);
-
-    private protected sealed override Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context,
-        CancellationToken cancellationToken)
-    {
-        return ExecuteAsync(context, cancellationToken);
-    }
-}
-
-[EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class TaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
-{
-    protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback,
-        object state)
+    protected override IAsyncResult BeginExecute
+    (
+        AsyncCodeActivityContext context,
+        AsyncCallback callback,
+        object state
+    )
     {
         var cts = new CancellationTokenSource();
         context.UserState = cts;
 
-        var task = ExecuteAsyncCore(context, cts.Token);
+        var task = ExecuteAsync(context, cts.Token);
 
         return ApmAsyncFactory.ToBegin(task, callback, state);
     }
 
-    protected sealed override TResult EndExecute(AsyncCodeActivityContext context, IAsyncResult result)
+    protected override void EndExecute
+    (
+        AsyncCodeActivityContext context,
+        IAsyncResult result
+    )
     {
-        using ((CancellationTokenSource) context.UserState)
+        using ((CancellationTokenSource)context.UserState)
         {
-            return ((Task<TResult>) result).Result;
+            ((Task)result).Wait();
+        }
+    }
+
+    protected override void Cancel(AsyncCodeActivityContext context)
+    {
+        ((CancellationTokenSource)context.UserState).Cancel();
+    }
+
+    /// <summary>
+    /// The operation executed at runtime.
+    /// </summary>
+    /// <param name="context">The context for this activity.</param>
+    /// <param name="cancellationToken">A cancellation token for this operation.</param>
+    /// <returns>A <see cref="Task"/> representing the lifetime of this operation.</returns>
+    private protected abstract Task ExecuteAsync
+    (
+        AsyncCodeActivityContext context,
+        CancellationToken cancellationToken
+    );
+}
+
+/// <summary>
+/// An asynchronous task-based <see cref="AsyncCodeActivity{TResult}"/>.
+/// </summary>
+/// <typeparam name="TResult">The type of the result this activity returns.</typeparam>
+public abstract class AsyncTaskCodeActivity<TResult> : AsyncCodeActivity<TResult>
+{
+    protected sealed override IAsyncResult BeginExecute
+    (
+        AsyncCodeActivityContext context,
+        AsyncCallback callback,
+        object state
+    )
+    {
+        var cts = new CancellationTokenSource();
+        context.UserState = cts;
+
+        var task = ExecuteAsync(context, cts.Token);
+
+        return ApmAsyncFactory.ToBegin(task, callback, state);
+    }
+
+    protected sealed override TResult EndExecute
+    (
+        AsyncCodeActivityContext context,
+        IAsyncResult result
+    )
+    {
+        using ((CancellationTokenSource)context.UserState)
+        {
+            return ((Task<TResult>)result).Result;
         }
     }
 
     protected sealed override void Cancel(AsyncCodeActivityContext context)
     {
-        ((CancellationTokenSource) context.UserState).Cancel();
+        ((CancellationTokenSource)context.UserState).Cancel();
     }
 
-    private protected abstract Task<TResult> ExecuteAsyncCore(AsyncCodeActivityContext context,
-        CancellationToken cancellationToken);
+    /// <summary>
+    /// The operation executed at runtime.
+    /// </summary>
+    /// <param name="context">The context for this activity.</param>
+    /// <param name="cancellationToken">A cancellation token for this operation.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the lifetime and containing the result of this operation.</returns>
+    private protected abstract Task<TResult> ExecuteAsync
+    (
+        AsyncCodeActivityContext context,
+        CancellationToken cancellationToken
+    );
 }
