@@ -81,4 +81,11 @@ public class ValidationSettings
     /// Defaulting to true until validation path is proven.
     /// </remarks>
     public bool ForceExpressionCache { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether skipping validation/metadata caching for implementation children.
+    /// Implementation children are usually encapsulated, and are considered an implementation detail of an activity, so
+    /// in particular situation (such as design-time validation), validating them is not necessary.
+    /// </summary>
+    public bool SkipImplementationChildren { get; set; } = false;
 }
