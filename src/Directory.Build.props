@@ -1,7 +1,7 @@
 <Project>
     <PropertyGroup>
         <Version>6.0.0</Version>
-        <RoslynPackageVersion>4.5.0-2.22527.10</RoslynPackageVersion>
+        <RoslynPackageVersion>4.13.0-3.24620.4</RoslynPackageVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <UseWPF Condition="$(TargetFramework) == 'net6.0-windows'">true</UseWPF>
     </PropertyGroup>
