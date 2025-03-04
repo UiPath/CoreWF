@@ -147,7 +147,9 @@ public sealed class Literal<T> : CodeActivity<T>, ILiteral, IExpressionContainer
             string originalString = Convert.ToString(Value);
             if (originalString.EndsWith("]", StringComparison.Ordinal) && ExpressionEscapeRegex.IsMatch(originalString))
             {
-                return "%" + originalString;
+                //Not used anywhere, no failing test, but brings more trouble: 
+                //return "%" + originalString;
+                return originalString;
             }
         }
         return converter.ConvertToString(context, Value);
