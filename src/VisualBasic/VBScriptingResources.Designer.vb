@@ -22,7 +22,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
     '''<summary>
     '''  A strongly-typed resource class, for looking up localized strings, etc.
     '''</summary>
-    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0"),  _
+    <Global.System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0"),  _
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute()>  _
     Friend Class VBScriptingResources
@@ -82,7 +82,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
         '''  /help                          Display this usage message (Short form: /?)
         '''  /version                       Display the version and exit
         '''  /reference:&lt;alias&gt;=&lt;file&gt;      Reference metadata from the specified assembly file using the given alias (Short form: /r)
-        '''  /reference:&lt;file list&gt;         Reference metadata from the spec [rest of string was truncated]&quot;;.
+        '''  /reference:&lt;file list&gt;         Reference metadata from  [rest of string was truncated]&quot;;.
         '''</summary>
         Friend Shared ReadOnly Property InteractiveHelp() As String
             Get

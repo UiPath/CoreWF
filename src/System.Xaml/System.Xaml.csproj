@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.SDK">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <NoWarn>$(NoWarn);0618;NU5125;</NoWarn>
     <DefineConstants>$(DefineConstants);SYSTEM_XAML</DefineConstants>
   </PropertyGroup>
