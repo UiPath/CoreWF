@@ -67,8 +67,8 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
     protected override string CreateReferenceCode(string types, string names, string code, string activityId, string returnType, int index)
     {
         var actionDefinition = !string.IsNullOrWhiteSpace(types)
-            ? $"Action<{string.Join(Comma, types)}>"
-            : "Action";
+            ? $"System.Action<{string.Join(Comma, types)}>"
+            : "System.Action";
         return string.Format(_referenceValidationTemplate, actionDefinition, index, names, code, returnType, activityId, _expressionEnder);
     }
 

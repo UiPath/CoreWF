@@ -75,8 +75,8 @@ public class VbExpressionValidator : RoslynExpressionValidator
     protected override string CreateReferenceCode(string types, string names, string code, string activityId, string returnType, int index)
     {
         var actionDefinition = !string.IsNullOrWhiteSpace(types)
-            ? $"Action(Of {string.Join(Comma, types)})"
-            : "Action";
+            ? $"System.Action(Of {string.Join(Comma, types)})"
+            : "System.Action";
         return string.Format(_referenceValidationTemplate, index, actionDefinition, names, code, returnType, activityId, _expressionEnder);
     }
 }
