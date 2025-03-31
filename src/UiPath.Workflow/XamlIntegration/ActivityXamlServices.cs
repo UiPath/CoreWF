@@ -266,7 +266,10 @@ public static class ActivityXamlServices
         }
 
         var aotCompiler = settings.GetCompiler(language);
-        var compiler = new TextExpressionCompiler(GetCompilerSettings(dynamicActivity, language, aotCompiler));
+        var compilerSettings = GetCompilerSettings(dynamicActivity, language, aotCompiler);
+        compilerSettings.EnableFunctionParameterRename = settings.EnableFunctionParameterRename;
+        var compiler = new TextExpressionCompiler(compilerSettings);
+        
         var results = compiler.Compile();
 
         if (results.HasErrors)

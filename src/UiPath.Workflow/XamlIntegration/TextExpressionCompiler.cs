@@ -1610,6 +1610,12 @@ public class TextExpressionCompiler
             paramName += "1";
         }
 
+        if (_settings.EnableFunctionParameterRename)
+        {
+            // Use a prefix and GUID to avoid conflicts with variables in the expression
+            paramName = "param_" + Guid.NewGuid().ToString("N"); 
+        }
+
         var expressionMethod = new CodeMemberMethod
         {
             Attributes = MemberAttributes.Public | MemberAttributes.Final,

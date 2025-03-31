@@ -43,6 +43,8 @@ namespace TestCases.Workflows
         IfThenElseBranchWithVars,
         NestedSequencesWithVars,
         WorkflowWithReadonlyValueTypeVar,
-        SpecialCharacters
+        SpecialCharacters,
+        ValueSpecialCharacterCSharp,
+        ValueSpecialCharacterVb,
     }
 }

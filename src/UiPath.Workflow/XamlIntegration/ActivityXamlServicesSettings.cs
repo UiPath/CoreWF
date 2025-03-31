@@ -41,4 +41,11 @@ public class ActivityXamlServicesSettings
             _    => throw new ArgumentOutOfRangeException(nameof(language), language, "Supported values: C# and VB.")
         };
     }
+
+    /// <summary>
+    /// When using compiled expressions, if this is set to true, the compiled expressions functions parameter names are renamed. 
+    /// In rare cases, the function parameter name which is "value" by default, conflicts with variables with the same name.
+    /// (it could be value, or value1, etc.. ) 
+    /// </summary>
+    public bool EnableFunctionParameterRename { get; set; } = false;
 }
