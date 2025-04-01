@@ -383,10 +383,19 @@ namespace TestCases.Workflows
             // Same applies to VB, they both go through the shared code, so no point in duplicating the test.
             var location = new ActivityLocationReferenceEnvironment();
             var loadContext = new AssemblyLoadContext("MyCollectibleALC", true);
-            loadContext.LoadFromAssemblyPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"TestData\JsonFileInstanceStore.dll"));
+            loadContext.LoadFromAssemblyPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TestData\JsonFileInstanceStore.dll"));
 
             var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(object), "new List<Dictionary<string, FileInstanceStore[]>>()", new[] { "System.Collections.Generic", "JsonFileInstanceStore" }, new[] { (AssemblyReference)new AssemblyName("JsonFileInstanceStore") }, location);
-            result.ReturnType.FullName.ShouldBe("System.Collections.Generic.List`1[[System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[JsonFileInstanceStore.FileInstanceStore[], JsonFileInstanceStore, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]");
+
+#if NET8_0
+            var expectedVersion = "8.0.0.0";
+#else
+            var expectedVersion = "6.0.0.0";
+#endif
+
+            var expectedFullName = $"System.Collections.Generic.List`1[[System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version={expectedVersion}, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[JsonFileInstanceStore.FileInstanceStore[], JsonFileInstanceStore, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version={expectedVersion}, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]";
+
+            result.ReturnType.FullName.ShouldBe(expectedFullName);
             result.SourceExpressionException?.Errors.ShouldBeEmpty();
             result.Activity.ShouldNotBeNull();
         }
