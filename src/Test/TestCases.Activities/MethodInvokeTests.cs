@@ -176,8 +176,7 @@ namespace TestCases.Activities
         {
             try
             {
-                var methodInfo = typeof(System.Console).GetMethod("WriteLine");
-                TestInvokeMethod simpleMethodInvoke = new TestInvokeMethod(methodInfo)
+                TestInvokeMethod simpleMethodInvoke = new TestInvokeMethod(typeof(System.Console).GetMethod("WriteLine"))
                 {
                     TargetType = typeof(System.Console),
                     Arguments =
@@ -190,7 +189,8 @@ namespace TestCases.Activities
             catch (Exception exception)
             {
                 Dictionary<string, string> exceptionProperty = new Dictionary<string, string>();
-                exceptionProperty.Add("Message", "Ambiguous match found.");
+                exceptionProperty.Add("Message", string.Format("Ambiguous match found."));
+
                 ExceptionHelpers.ValidateException(exception, typeof(System.Reflection.AmbiguousMatchException), exceptionProperty);
             }
         }
@@ -721,6 +721,10 @@ namespace TestCases.Activities
         [Fact]
         public void OverloadedMethodsWithSameParamNames()
         {
+            //  OverloadedMethodsWithSameParamNamesOverloaded methods with same param names and param count but param types are different. (i.e. method1(int str, string i) method2 (int I, string str))
+            //  Test case description:
+            //  Overloaded methods with same param names and param count but param types are different. (i.e.
+            //  method1(int str, string i) method2 (int I, string str))
             try
             {
                 TestInvokeMethod simpleMethodInvoke = new TestInvokeMethod(typeof(NonGenericClass).GetMethod("OverloadingMethod"))
@@ -739,7 +743,8 @@ namespace TestCases.Activities
             catch (Exception exception)
             {
                 Dictionary<string, string> exceptionProperty = new Dictionary<string, string>();
-                exceptionProperty.Add("Message", "Ambiguous match found.");
+                exceptionProperty.Add("Message", string.Format("Ambiguous match found."));
+
                 ExceptionHelpers.ValidateException(exception, typeof(System.Reflection.AmbiguousMatchException), exceptionProperty);
             }
         }
