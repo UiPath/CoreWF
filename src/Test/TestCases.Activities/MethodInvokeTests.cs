@@ -190,13 +190,7 @@ namespace TestCases.Activities
             catch (Exception exception)
             {
                 Dictionary<string, string> exceptionProperty = new Dictionary<string, string>();
-
-#if NET8_0
-                exceptionProperty.Add("Message", "Ambiguous match found for 'System.Console Void WriteLine()'.");
-#else
                 exceptionProperty.Add("Message", "Ambiguous match found.");
-#endif
-
                 ExceptionHelpers.ValidateException(exception, typeof(System.Reflection.AmbiguousMatchException), exceptionProperty);
             }
         }
@@ -745,13 +739,7 @@ namespace TestCases.Activities
             catch (Exception exception)
             {
                 Dictionary<string, string> exceptionProperty = new Dictionary<string, string>();
-
-#if NET8_0
-                exceptionProperty.Add("Message", "Ambiguous match found for 'TestCases.Activities.NonGenericClass Void OverloadingMethod(Int32, System.String)'.");
-#else
                 exceptionProperty.Add("Message", "Ambiguous match found.");
-#endif
-
                 ExceptionHelpers.ValidateException(exception, typeof(System.Reflection.AmbiguousMatchException), exceptionProperty);
             }
         }
