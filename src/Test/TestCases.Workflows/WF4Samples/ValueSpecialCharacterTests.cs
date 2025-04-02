@@ -13,7 +13,7 @@ namespace TestCases.Workflows.WF4Samples
 {
     //https://uipath.atlassian.net/browse/STUD-74571
     //Tests a workflow that uses "Value" keyword (both C# and vb.net).  Steps:
-    //1. Define a variable named "value" (or "Value" for vb.net, since it's not case sensitive). Wt it to "KeyName"
+    //1. Define a variable named "value" (or "Value" for vb.net, since it's not case sensitive). Set it to "KeyName"
     //2. Define a Dictionary as variable - Dict.
     //3. Assign: Dict(Value) = "ValueName"    (Dict[value] = "ValueName")
     //4. Assign: output = Dict.First.Key. => we expect the key is "KeyName" 
