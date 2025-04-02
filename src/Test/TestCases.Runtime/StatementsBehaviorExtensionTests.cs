@@ -4,7 +4,6 @@ using System.Activities.Statements;
 using System.Threading;
 using Shouldly;
 using Test.Common.TestObjects.CustomActivities;
-using UiPath.Workflow.Runtime.Statements;
 using WorkflowApplicationTestExtensions.Persistence;
 using Xunit;
 
@@ -21,12 +20,12 @@ namespace TestCases.Runtime
             var testSequence = new Sequence()
             {
                 Activities =
-            {
-                new Delay()
                 {
-                    Duration = TimeSpan.FromMilliseconds(100)
-                },
-            }
+                    new Delay()
+                    {
+                        Duration = TimeSpan.FromMilliseconds(100)
+                    },
+                }
             };
             bool workflowIdleAndPersistable = false;
             var completed = new ManualResetEvent(false);
@@ -49,12 +48,12 @@ namespace TestCases.Runtime
             var testSequence = new Sequence()
             {
                 Activities =
-            {
-                new Delay()
                 {
-                    Duration = TimeSpan.FromMilliseconds(100)
-                },
-            }
+                    new Delay()
+                    {
+                        Duration = TimeSpan.FromMilliseconds(100)
+                    },
+                }
             };
             bool workflowIdleAndPersistable = false;
             var completed = new ManualResetEvent(false);
@@ -79,16 +78,16 @@ namespace TestCases.Runtime
             var testSequence = new Sequence()
             {
                 Activities =
-            {
-                new Parallel()
                 {
-                    Branches =
+                    new Parallel()
                     {
-                        new Delay() { Duration = delayDuration  },
-                        new BlockingActivity("B")
-                    }
-                },
-            }
+                        Branches =
+                        {
+                            new Delay() { Duration = delayDuration  },
+                            new BlockingActivity("B")
+                        }
+                    },
+                }
             };
             bool workflowIdleAndPersistable = false;
             var completed = new ManualResetEvent(false);
