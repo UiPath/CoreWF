@@ -3,7 +3,9 @@
 
 using System.Activities.Runtime;
 using System.Activities.XamlIntegration;
+using System.Activities.Validation;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Windows.Markup;
 
 namespace System.Activities.Expressions;
@@ -43,7 +45,8 @@ public sealed class LambdaValue<TResult> : CodeActivity<TResult>, IExpressionCon
 
     protected override TResult Execute(CodeActivityContext context)
     {
-        _compiledLambdaValue ??= _rewrittenTree.Compile();
+        var settings = context.GetExtension<ExpressionEvaluationSettings>();
+        _compiledLambdaValue ??= _rewrittenTree.Compile(settings?.PreferExpressionInterpretation ?? false);
         return _compiledLambdaValue(context);
     }
 

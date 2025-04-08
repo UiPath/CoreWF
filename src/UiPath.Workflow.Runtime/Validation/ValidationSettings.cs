@@ -88,4 +88,10 @@ public class ValidationSettings
     /// in particular situation (such as design-time validation), validating them is not necessary.
     /// </summary>
     public bool SkipImplementationChildren { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether lambda expressions should prefer interpretation over compilation.
+    /// When true, lambda expressions will be interpreted at runtime rather than compiled to IL.
+    /// </summary>
+    public bool PreferExpressionInterpretation { get; set; } = false;
 }

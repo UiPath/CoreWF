@@ -1,9 +1,11 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Activities.Expressions;
 using System.Activities.Runtime;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 
 namespace System.Activities.Validation;
@@ -350,7 +352,15 @@ public static class ActivityValidationServices
 
                 try
                 {
-                    results = WorkflowInvoker.Invoke(constraint, inputDictionary);
+                    var invoker = new WorkflowInvoker(constraint);
+                    foreach (var e in validationContext.Environment.Extensions.All)
+                    {
+                        invoker.Extensions.Add(e);
+                    }
+                    
+                    //add extensions to the invoker
+
+                    results = invoker.Invoke(inputDictionary);
                 }
                 catch (Exception e)
                 {
@@ -430,6 +440,14 @@ public static class ActivityValidationServices
             _settings = settings;
             _rootToValidate = toValidate;
             _environment = settings.Environment ?? new ActivityLocationReferenceEnvironment();
+
+            // Add the expression evaluation extension based on Validation settings
+            var expressionSettings = new ExpressionEvaluationSettings
+            {
+                PreferExpressionInterpretation = settings.PreferExpressionInterpretation
+            };
+            _environment.Extensions.Add(expressionSettings);
+
             _environment.IsValidating = !settings.ForceExpressionCache;
             if (settings.SkipExpressionCompilation)
             {
