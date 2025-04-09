@@ -353,16 +353,12 @@ public static class ActivityValidationServices
                 try
                 {
                     var invoker = new WorkflowInvoker(constraint);
-
                     var extensions = validationContext.Environment.Extensions?.All;
                     if (extensions != null)
                     foreach (var e in extensions)
                     {
                         invoker.Extensions.Add(e);
                     }
-                    
-                    //add extensions to the invoker
-
                     results = invoker.Invoke(inputDictionary);
                 }
                 catch (Exception e)
