@@ -353,9 +353,10 @@ public static class ActivityValidationServices
                 try
                 {
                     var invoker = new WorkflowInvoker(constraint);
-                    
-                    if (validationContext.Environment.Extensions != null)
-                    foreach (var e in validationContext.Environment.Extensions?.All)
+
+                    var extensions = validationContext.Environment.Extensions?.All;
+                    if (extensions != null)
+                    foreach (var e in extensions)
                     {
                         invoker.Extensions.Add(e);
                     }
