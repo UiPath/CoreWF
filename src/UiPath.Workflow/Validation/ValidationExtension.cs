@@ -6,10 +6,10 @@ namespace System.Activities.Validation
 {
     internal sealed class ValidationExtension : IValidationExtension
     {
-        public IEnumerable<ValidationError> PostValidate(Activity activity)
+        public IEnumerable<ValidationError> PostValidate(Activity activity, ValidationSettings validationSettings)
         {
             var validator = GetValidator(Scope.Language);
-            return validator.Validate(activity, Scope);
+            return validator.Validate(activity, Scope, validationSettings);
         }
 
         private static RoslynExpressionValidator GetValidator(string language)

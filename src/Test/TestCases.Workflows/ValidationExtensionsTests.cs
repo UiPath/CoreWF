@@ -70,7 +70,7 @@ public class ValidationExtensionsTests
 
     class MockValidationExtension : IValidationExtension
     {
-        public IEnumerable<ValidationError> PostValidate(Activity activity) =>
+        public IEnumerable<ValidationError> PostValidate(Activity activity, ValidationSettings validationSettings) =>
             new List<ValidationError>() { new ValidationError(nameof(MockValidationExtension)) };
     }
 }

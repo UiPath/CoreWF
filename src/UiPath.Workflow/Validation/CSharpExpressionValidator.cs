@@ -7,6 +7,7 @@ using Microsoft.CSharp.Activities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UiPath.Workflow.Validation;
 using static System.Activities.CompilerHelper;
 
 namespace System.Activities.Validation;
@@ -46,12 +47,19 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
         : base(referencedAssemblies)
     { }
 
-    protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces)
+    protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings)
     {
         var metadataReferences = GetMetadataReferencesForExpression(assemblies);
 
         var options = CompilerHelper.DefaultCompilationUnit.Options as CSharpCompilationOptions;
-        return CompilerHelper.DefaultCompilationUnit.WithOptions(options.WithUsings(namespaces)).WithReferences(metadataReferences);
+        var compilation = CompilerHelper.DefaultCompilationUnit.WithOptions(options.WithUsings(namespaces)).WithReferences(metadataReferences);
+
+        if(validationSettings?.MissingAssemblyResolver is Func<AssemblyName, Assembly> resolver)
+        {
+            compilation = compilation.WithOptions(options.WithMetadataReferenceResolver(new ExternalMetadataReferenceResolver(resolver)));
+        }
+
+        return compilation;
     }
 
     protected override string CreateValueCode(IEnumerable<string> types, string names, string code, string activityId, int index)

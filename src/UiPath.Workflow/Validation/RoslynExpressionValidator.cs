@@ -116,7 +116,7 @@ public abstract class RoslynExpressionValidator
     /// </summary>
     /// <param name="assemblies">The list of assemblies</param>
     /// <param name="namespaces">The list of namespaces</param>
-    protected abstract Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces);
+    protected abstract Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings);
 
     /// <summary>
     ///     Gets the <see cref="SyntaxTree" /> for the expression.
@@ -187,7 +187,7 @@ public abstract class RoslynExpressionValidator
         }
     }
 
-    internal IList<ValidationError> Validate(Activity currentActivity, ValidationScope validationScope)
+    internal IList<ValidationError> Validate(Activity currentActivity, ValidationScope validationScope, ValidationSettings validationSettings)
     {
         if (validationScope is null)
         {
@@ -200,7 +200,7 @@ public abstract class RoslynExpressionValidator
         requiredAssemblies.UnionWith(localAssemblies.Where(aref => aref is not null).Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
         localNamespaces.AddRange(CompilerHelper.DefaultNamespaces);
 
-        var compilation = GetCompilation(requiredAssemblies, localNamespaces);
+        var compilation = GetCompilation(requiredAssemblies, localNamespaces, validationSettings);
         var expressionsTextBuilder = new StringBuilder();
         int index = 0;
         foreach (var expressionToValidate in validationScope.GetAllExpressions())

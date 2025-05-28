@@ -474,7 +474,7 @@ public static class ActivityValidationServices
             return new ValidationResults(GetValidationExtensionResults().Concat(_errors ?? Array.Empty<ValidationError>()).ToList());
 
             IEnumerable<ValidationError> GetValidationExtensionResults() =>
-                _environment.Extensions.All.OfType<IValidationExtension>().SelectMany(validationExtension => validationExtension.PostValidate(_rootToValidate));
+                _environment.Extensions.All.OfType<IValidationExtension>().SelectMany(validationExtension => validationExtension.PostValidate(_rootToValidate, _settings));
         }
 
         private void ValidateElement(ActivityUtilities.ChildActivity childActivity, ActivityUtilities.ActivityCallStack parentChain)

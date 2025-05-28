@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Activities.Runtime;
+using System.Reflection;
 using System.Threading;
 
 namespace System.Activities.Validation;
@@ -94,4 +95,9 @@ public class ValidationSettings
     /// When true, lambda expressions will be interpreted at runtime rather than compiled to IL.
     /// </summary>
     public bool PreferExpressionInterpretation { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a function that resolves missing assemblies during compilation for validation.
+    /// </summary>
+    public Func<AssemblyName, Assembly> MissingAssemblyResolver { get; set; }
 }
