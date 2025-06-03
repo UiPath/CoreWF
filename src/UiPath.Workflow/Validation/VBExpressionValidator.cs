@@ -46,7 +46,7 @@ public class VbExpressionValidator : RoslynExpressionValidator
 
     protected override string ActivityIdentifierRegex { get; } = "('activityId):(.*)";
 
-    protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings)
+    protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null)
     {
         var globalImports = GlobalImport.Parse(namespaces);
         var metadataReferences = GetMetadataReferencesForExpression(assemblies);

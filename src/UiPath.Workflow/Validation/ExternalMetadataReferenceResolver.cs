@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace UiPath.Workflow.Validation
 {
-    public class ExternalMetadataReferenceResolver : MetadataReferenceResolver
+    internal sealed class ExternalMetadataReferenceResolver : MetadataReferenceResolver
     {
         private readonly Func<AssemblyName, Assembly> _resolver;
 
@@ -33,7 +33,7 @@ namespace UiPath.Workflow.Validation
 
                 assemblyName.SetPublicKeyToken(referenceIdentity.PublicKeyToken.ToArray());
 
-                var assembly = _resolver?.Invoke(assemblyName);
+                var assembly = _resolver.Invoke(assemblyName);
 
                 if (string.IsNullOrEmpty(assembly?.Location))
                     return null;

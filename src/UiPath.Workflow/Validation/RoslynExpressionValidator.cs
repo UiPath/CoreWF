@@ -116,7 +116,7 @@ public abstract class RoslynExpressionValidator
     /// </summary>
     /// <param name="assemblies">The list of assemblies</param>
     /// <param name="namespaces">The list of namespaces</param>
-    protected abstract Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings);
+    protected abstract Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null);
 
     /// <summary>
     ///     Gets the <see cref="SyntaxTree" /> for the expression.

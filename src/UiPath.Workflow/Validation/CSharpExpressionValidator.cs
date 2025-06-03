@@ -47,7 +47,7 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
         : base(referencedAssemblies)
     { }
 
-    protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings)
+    protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null)
     {
         var metadataReferences = GetMetadataReferencesForExpression(assemblies);
 
