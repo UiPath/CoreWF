@@ -1,4 +1,14 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using Azure.Storage.Blobs;
+using BenchmarkDotNet.Attributes;
+using ClosedXML.Excel;
+using CsvHelper.Configuration;
+using HtmlAgilityPack;
+using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
+using NodaTime;
 using Polly;
 using Serilog;
 using System.Activities.Expressions;
@@ -16,7 +26,7 @@ namespace Perf.AssemblyReference.Benchmarks
     [MemoryDiagnoser(true)]
     public class AssemblyReferenceBenchmarks
     {
-        const int lookupCount = 1000;
+        const int lookupCount = 10000;
         int[] lookupArray = new int[lookupCount];
         AssemblyName[] lookupAssemblies;
         ParallelOptions parallelOptions_4Cores = new ParallelOptions { MaxDegreeOfParallelism = 4 };
@@ -51,6 +61,38 @@ namespace Perf.AssemblyReference.Benchmarks
             var validator = new FluentValidation.InlineValidator<object>();
             var policy = Polly.Policy.Handle<Exception>().Retry(1);
             var date = NodaTime.SystemClock.Instance.GetCurrentInstant();
+
+            _ = Policy.Handle<Exception>().Retry(1);
+            _ = new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture);
+            _ = new HtmlDocument();
+            _ = SystemClock.Instance.GetCurrentInstant();
+            _ = new SmtpClient();
+            _ = new XLWorkbook();
+            _ = new BlobClient(new Uri("https://fake.blob.core.windows.net/test"), new Azure.AzureSasCredential("token"));
+            _ = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true).Build();
+            _ = new ServiceCollection().AddLogging().BuildServiceProvider();
+            _ = new DefaultHttpContext();
+
+            var deps = DependencyContext.Default;
+            var assemblies = deps.RuntimeLibraries;
+
+            foreach (var lib in assemblies)
+            {
+                foreach (var assemblyName in lib.GetDefaultAssemblyNames(deps))
+                {
+                    try
+                    {
+                        if (AppDomain.CurrentDomain.GetAssemblies().All(a => a.GetName().Name != assemblyName.Name))
+                        {
+                            Assembly.Load(assemblyName);
+                        }
+                    }
+                    catch
+                    {
+                        // Skip failed loads
+                    }
+                }
+            }
         }
 
         [Benchmark]
