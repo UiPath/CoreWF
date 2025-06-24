@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyModel;
 using NodaTime;
 using Polly;
 using Serilog;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 using System.Activities.Expressions;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -57,7 +59,7 @@ namespace Perf.AssemblyReference.Benchmarks
             var document = new HtmlAgilityPack.HtmlDocument();
 
             var sheet = new ClosedXML.Excel.XLWorkbook();
-            SixLabors.ImageSharp.Image.Load("C:\\Users\\marius.bughiu\\Downloads\\IMG_6914.jpg");
+            using Image<Rgba32> image = new Image<Rgba32>(400, 400);
             var validator = new FluentValidation.InlineValidator<object>();
             var policy = Polly.Policy.Handle<Exception>().Retry(1);
             var date = NodaTime.SystemClock.Instance.GetCurrentInstant();
