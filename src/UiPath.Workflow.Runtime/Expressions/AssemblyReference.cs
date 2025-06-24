@@ -202,7 +202,8 @@ public class AssemblyReference
             {
                 if (ex is FileNotFoundException ||
                     ex is FileLoadException ||
-                    (ex is TargetInvocationException exception && exception.InnerException is FileNotFoundException))
+                    (ex is TargetInvocationException exception && 
+                        (exception.InnerException is FileNotFoundException || ex is FileLoadException)))
                 {
                     loaded = null;
                     ExceptionTrace.AsWarning(ex);
