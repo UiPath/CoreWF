@@ -18,7 +18,7 @@ public class AssemblyReference
     private const int AssemblyCacheInitialSize = 128;
 
     private static readonly ConcurrentDictionary<Assembly, AssemblyName> assemblyToAssemblyNameCache = new(Environment.ProcessorCount, AssemblyToAssemblyNameCacheInitSize);
-    private static readonly ConcurrentDictionary<AssemblyName, Assembly> assemblyCache = new(Environment.ProcessorCount, AssemblyCacheInitialSize);
+    private static readonly ConcurrentDictionary<AssemblyName, Assembly> assemblyCache = new(Environment.ProcessorCount, AssemblyCacheInitialSize, new AssemblyNameEqualityComparer());
 
     private Assembly _assembly;
     private AssemblyName _assemblyName;
@@ -60,12 +60,8 @@ public class AssemblyReference
         }
     }
 
-    //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.OperatorOverloadsHaveNamedAlternates,
-    //    Justification = "A named method provides no advantage over the property setter.")]
     public static implicit operator AssemblyReference(Assembly assembly) => new() { Assembly = assembly };
 
-    //[SuppressMessage(FxCop.Category.Usage, FxCop.Rule.OperatorOverloadsHaveNamedAlternates,
-    //    Justification = "A named method provides no advantage over the property setter.")]
     public static implicit operator AssemblyReference(AssemblyName assemblyName) => new() { AssemblyName = assemblyName };
 
     public void LoadAssembly()
@@ -76,7 +72,6 @@ public class AssemblyReference
         }
     }
 
-    // this code is borrowed from XamlSchemaContext
     internal static bool AssemblySatisfiesReference(AssemblyName assemblyName, AssemblyName reference)
     {
         if (reference.Name != assemblyName.Name)
@@ -129,6 +124,10 @@ public class AssemblyReference
         // For collectible assemblies, we need to ensure that they
         // are not cached, but are usable in expressions.
         var collectibleAssemblies = new Dictionary<string, Assembly>();
+        Version reqVersion = assemblyName.Version;
+        CultureInfo reqCulture = assemblyName.CultureInfo;
+        byte[] reqKeyToken = assemblyName.GetPublicKeyToken();
+
         for (int i = currentAssemblies.Length - 1; i >= 0; i--)
         {
             Assembly curAsm = currentAssemblies[i];
@@ -150,10 +149,6 @@ public class AssemblyReference
             Version curVersion = curAsmName.Version;
             CultureInfo curCulture = curAsmName.CultureInfo;
             byte[] curKeyToken = curAsmName.GetPublicKeyToken();
-
-            Version reqVersion = assemblyName.Version;
-            CultureInfo reqCulture = assemblyName.CultureInfo;
-            byte[] reqKeyToken = assemblyName.GetPublicKeyToken();
 
             if ((string.Compare(curAsmName.Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase) == 0) &&
                         (reqVersion == null || reqVersion.Equals(curVersion)) &&
@@ -199,7 +194,6 @@ public class AssemblyReference
         Assembly loaded;
         if (assemblyName.Version != null || assemblyName.CultureInfo != null || publicKeyToken != null)
         {
-            // Assembly.Load(string)
             try
             {
                 loaded = Assembly.Load(assemblyName.FullName);
@@ -208,9 +202,7 @@ public class AssemblyReference
             {
                 if (ex is FileNotFoundException ||
                     ex is FileLoadException ||
-                    (ex is TargetInvocationException exception &&
-                    (exception.InnerException is FileNotFoundException ||
-                    exception.InnerException is FileNotFoundException)))
+                    (ex is TargetInvocationException exception && exception.InnerException is FileNotFoundException))
                 {
                     loaded = null;
                     ExceptionTrace.AsWarning(ex);
