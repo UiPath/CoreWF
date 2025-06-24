@@ -168,7 +168,10 @@ public class AssemblyReference
         }
 
         assembly = LoadAssembly(assemblyName);
-        assemblyCache.TryAdd(assemblyName, assembly);
+        if (assembly != null)
+        {
+            assemblyCache.TryAdd(assemblyName, assembly);
+        }
 
         return assembly;
     }
