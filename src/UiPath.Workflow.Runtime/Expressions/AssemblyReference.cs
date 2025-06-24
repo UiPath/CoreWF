@@ -19,10 +19,16 @@ public class AssemblyReference
 
     private static readonly ConcurrentDictionary<Assembly, AssemblyName> assemblyToAssemblyNameCache = new(Environment.ProcessorCount, AssemblyToAssemblyNameCacheInitSize);
     private static readonly ConcurrentDictionary<AssemblyName, Assembly> assemblyCache = new(Environment.ProcessorCount, AssemblyCacheInitialSize, new AssemblyNameEqualityComparer());
+    private static readonly Lazy<ConcurrentDictionary<AssemblyName, bool>> notFoundAssemblyCache = new(() => new(Environment.ProcessorCount, AssemblyCacheInitialSize, new AssemblyNameEqualityComparer()));
 
     private Assembly _assembly;
     private AssemblyName _assemblyName;
     private readonly bool _isImmutable;
+
+    static AssemblyReference()
+    {
+        AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
+    }
 
     public AssemblyReference() { }
 
@@ -113,6 +119,11 @@ public class AssemblyReference
             return assembly;
         }
 
+        if (notFoundAssemblyCache.IsValueCreated && notFoundAssemblyCache.Value.TryGetValue(assemblyName, out var _))
+        {
+            return null;
+        }
+
         // search current AppDomain first
         // this for-loop part is to ensure that 
         // loose AssemblyNames get resolved in the same way 
@@ -171,6 +182,10 @@ public class AssemblyReference
         if (assembly != null)
         {
             assemblyCache.TryAdd(assemblyName, assembly);
+        }
+        else
+        {
+            notFoundAssemblyCache.Value.TryAdd(assemblyName, false);
         }
 
         return assembly;
@@ -233,5 +248,15 @@ public class AssemblyReference
         {
             throw FxTrace.Exception.AsError(new NotSupportedException(SR.AssemblyReferenceIsImmutable));
         }
+    }
+
+    private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+    {
+        if (!notFoundAssemblyCache.IsValueCreated)
+        {
+            return;
+        }
+
+        notFoundAssemblyCache.Value.Clear();
     }
 }
