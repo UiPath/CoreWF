@@ -216,20 +216,12 @@ public class AssemblyReference
             {
                 loaded = Assembly.Load(assemblyName.FullName);
             }
-            catch (Exception ex)
+            catch (Exception ex) 
+                when (ex is FileNotFoundException or FileLoadException
+                || ex is TargetInvocationException exception && exception.InnerException is FileNotFoundException or FileLoadException)
             {
-                if (ex is FileNotFoundException ||
-                    ex is FileLoadException ||
-                    (ex is TargetInvocationException exception && 
-                        (exception.InnerException is FileNotFoundException || ex is FileLoadException)))
-                {
-                    loaded = null;
-                    ExceptionTrace.AsWarning(ex);
-                }
-                else
-                {
-                    throw;
-                }
+                loaded = null;
+                ExceptionTrace.AsWarning(ex);
             }
         }
         else
