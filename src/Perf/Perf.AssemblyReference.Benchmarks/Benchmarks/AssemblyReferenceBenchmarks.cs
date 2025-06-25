@@ -30,6 +30,7 @@ namespace Perf.AssemblyReference.Benchmarks
     {
         const int lookupCount = 10000;
         int[] lookupArray = new int[lookupCount];
+        AssemblyName nonExistentAssemblyName = new AssemblyName("NonExistent.Assembly");
         AssemblyName[] lookupAssemblies;
         ParallelOptions parallelOptions_4Cores = new ParallelOptions { MaxDegreeOfParallelism = 4 };
         ParallelOptions parallelOptions_16Cores = new ParallelOptions { MaxDegreeOfParallelism = 16 };
@@ -107,6 +108,15 @@ namespace Perf.AssemblyReference.Benchmarks
         }
 
         [Benchmark]
+        public void SequentialLookup_CacheMiss()
+        {
+            for (int i = 0; i < lookupCount; i++)
+            {
+                AssemblyReferenceOG.GetAssembly(nonExistentAssemblyName);
+            }
+        }
+
+        [Benchmark]
         public void ParallelLookup4Cores()
         {
             Parallel.ForEach(lookupArray, parallelOptions_4Cores, (i, token) =>
@@ -124,12 +134,30 @@ namespace Perf.AssemblyReference.Benchmarks
             });
         }
 
+        [Benchmark]
+        public void ParallelLookup16Cores_CacheMiss()
+        {
+            Parallel.ForEach(lookupArray, parallelOptions_16Cores, (i, token) =>
+            {
+                AssemblyReferenceOG.GetAssembly(nonExistentAssemblyName);
+            });
+        }
+
         //[Benchmark]
         //public void SequentialLookup_V2()
         //{
         //    for (int i = 0; i < lookupCount; i++)
         //    {
         //        AssemblyReferenceV2.GetAssembly(lookupAssemblies[i % lookupAssemblies.Length]);
+        //    }
+        //}
+
+        //[Benchmark]
+        //public void SequentialLookup_CacheMiss_V2()
+        //{
+        //    for (int i = 0; i < lookupCount; i++)
+        //    {
+        //        AssemblyReferenceV2.GetAssembly(nonExistentAssemblyName);
         //    }
         //}
 
@@ -148,6 +176,15 @@ namespace Perf.AssemblyReference.Benchmarks
         //    Parallel.ForEach(lookupArray, parallelOptions_16Cores, (i, token) =>
         //    {
         //        AssemblyReferenceV2.GetAssembly(lookupAssemblies[i % lookupAssemblies.Length]);
+        //    });
+        //}
+
+        //[Benchmark]
+        //public void ParallelLookup16Cores_CacheMiss_V2()
+        //{
+        //    Parallel.ForEach(lookupArray, parallelOptions_16Cores, (i, token) =>
+        //    {
+        //        AssemblyReferenceV2.GetAssembly(nonExistentAssemblyName);
         //    });
         //}
     }
