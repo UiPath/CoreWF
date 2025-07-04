@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +10,8 @@ namespace UiPath.Workflow.Validation
     internal sealed class ExternalMetadataReferenceResolver : MetadataReferenceResolver
     {
         private readonly Func<AssemblyName, Assembly> _resolver;
+
+        private static readonly ConcurrentDictionary<string, PortableExecutableReference> _referenceCache = new();
 
         public override bool ResolveMissingAssemblies => true;
 
@@ -38,7 +41,15 @@ namespace UiPath.Workflow.Validation
                 if (string.IsNullOrEmpty(assembly?.Location))
                     return null;
 
-                return MetadataReference.CreateFromFile(assembly.Location);
+                if (_referenceCache.TryGetValue(assembly.Location, out var cachedReference))
+                {
+                    return cachedReference;
+                }
+
+                var reference = MetadataReference.CreateFromFile(assembly.Location);
+                _referenceCache.TryAdd(assembly.Location, reference);
+
+                return reference;
             }
             catch
             {
@@ -46,6 +57,8 @@ namespace UiPath.Workflow.Validation
                 return null;
             }
         }
+
+        public static void ClearReferenceCache() => _referenceCache.Clear();
 
         public override ImmutableArray<PortableExecutableReference> ResolveReference(
             string reference, string? baseFilePath, MetadataReferenceProperties properties)
