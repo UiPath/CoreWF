@@ -12,10 +12,13 @@ using Validation;
 public sealed class RuntimeArgument : LocationReference
 {
     private static InternalEvaluationOrderComparer evaluationOrderComparer;
+    private static readonly ReadOnlyCollection<string> emptyOverloadGroups = new(Array.Empty<string>());
+
     private Argument _boundArgument;
     private readonly PropertyDescriptor _bindingProperty;
     private readonly object _bindingPropertyOwner;
     private List<string> _overloadGroupNames;
+    private ReadOnlyCollection<string> _overloadGroupNamesReadOnly;
     private int _cacheId;
     private readonly string _name;
     private uint _nameHash;
@@ -86,8 +89,19 @@ public sealed class RuntimeArgument : LocationReference
     {
         get
         {
-            _overloadGroupNames ??= new List<string>(0);
-            return new ReadOnlyCollection<string>(_overloadGroupNames);
+            if (_overloadGroupNamesReadOnly == null)
+            {
+                if (_overloadGroupNames == null || _overloadGroupNames.Count == 0)
+                {
+                    _overloadGroupNamesReadOnly = emptyOverloadGroups;
+                }
+                else
+                {
+                    _overloadGroupNamesReadOnly = new ReadOnlyCollection<string>(_overloadGroupNames);
+                }
+            }
+
+            return _overloadGroupNamesReadOnly;
         }
     }
 
