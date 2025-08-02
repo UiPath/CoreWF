@@ -26,7 +26,7 @@ public sealed class ValidationContext
 
     internal IEnumerable<Activity> GetParents()
     {
-        List<Activity> parentsList = new();
+        List<Activity> parentsList = new(_parentChain.Count);
 
         for (int i = 0; i < _parentChain.Count; i++)
         {
