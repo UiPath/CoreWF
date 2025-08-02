@@ -658,10 +658,10 @@ internal static class ActivityUtilities
 
             callback?.Invoke(childActivity, parentChain);
 
-            // copy validation errors in ValidationErrors list
+            // Copy validation errors in ValidationErrors list
             if (tempValidationErrors != null)
             {
-                validationErrors ??= new List<ValidationError>();
+                validationErrors ??= new List<ValidationError>(tempValidationErrors.Count);
                 string prefix = ActivityValidationServices.GenerateValidationErrorPrefix(childActivity.Activity, parentChain, options, out Activity source);
 
                 for (int i = 0; i < tempValidationErrors.Count; i++)
