@@ -11,6 +11,7 @@ using Expressions;
 using Internals;
 using Runtime;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Validation;
 
 internal static class ActivityUtilities
@@ -112,6 +113,7 @@ internal static class ActivityUtilities
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryGetArgumentDirectionAndType(Type propertyType, out ArgumentDirection direction, out Type argumentType)
     {
         direction = ArgumentDirection.In; // default to In
