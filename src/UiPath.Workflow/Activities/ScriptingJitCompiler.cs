@@ -61,7 +61,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
                 .Where(var => var.Type != null)
                 .ToArray();
         var names = string.Join(CompilerHelper.Comma, resolvedIdentifiers.Select(var => var.Name));
-        var types = string.Join(CompilerHelper.Comma,
+        var types = string.Join(CompilerHelper.Pipe,
             resolvedIdentifiers
                 .Select(var => var.Type)
                 .Concat(new[] { expressionToCompile.LambdaReturnType })
