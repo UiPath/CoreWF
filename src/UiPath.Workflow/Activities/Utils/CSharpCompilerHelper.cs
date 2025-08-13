@@ -30,12 +30,14 @@ namespace System.Activities
 
         public override string CreateExpressionCode(string types, string names, string code)
         {
-            var arrayType = types.Split(Comma);
-            if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-                return $"public static Expression<Func<{types}>> CreateExpression() => ({names}) => {code};";
+            var arrayType = types.Split(Pipe);
+            var normTypeStr = string.Join(CompilerHelper.Comma, arrayType);
 
-            var (myDelegate, name) = DefineDelegate(types);
-            return $"{myDelegate} \n public static Expression<{name}<{types}>> CreateExpression() => ({names}) => {code};";
+            if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
+                return $"public static Expression<Func<{normTypeStr}>> CreateExpression() => ({names}) => {code};";
+
+            var (myDelegate, name) = DefineDelegate(arrayType);
+            return $"{myDelegate} \n public static Expression<{name}<{normTypeStr}>> CreateExpression() => ({names}) => {code};";
         }
 
         protected override (string, string) DefineDelegateCommon(int argumentsCount)

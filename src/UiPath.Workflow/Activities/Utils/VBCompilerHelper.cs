@@ -26,12 +26,14 @@ namespace System.Activities
 
         public override string CreateExpressionCode(string types, string names, string code)
         {
-            var arrayType = types.Split(Comma);
-            if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-                return $"Public Shared Function CreateExpression() As Expression(Of Func(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+            var arrayType = types.Split(Pipe);
+            var normTypeStr = string.Join(CompilerHelper.Comma, arrayType);
 
-            var (myDelegate, name) = DefineDelegate(types);
-            return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {types}))\nReturn Function({names}) ({code})\nEnd Function";
+            if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
+                return $"Public Shared Function CreateExpression() As Expression(Of Func(Of {normTypeStr}))\nReturn Function({names}) ({code})\nEnd Function";
+
+            var (myDelegate, name) = DefineDelegate(arrayType);
+            return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {normTypeStr}))\nReturn Function({names}) ({code})\nEnd Function";
         }
 
         protected override (string, string) DefineDelegateCommon(int argumentsCount)
