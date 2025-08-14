@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Test.TestCases.Activities
+namespace TestCases.Workflows
 {
     public class CSharpCompilerHelperTests
     {
@@ -124,6 +124,23 @@ namespace Test.TestCases.Activities
 
             // Assert
             result.ShouldContain("public delegate TResult Func");
+            result.ShouldContain("public static Expression<Func");
+            result.ShouldContain(code);
+        }
+
+        [Fact]
+        public void CreateExpressionCode_WithLessThan16Parameters_ShouldNotGenerateCustomDelegate()
+        {
+            // Arrange
+            var types = Enumerable.Range(0, 5).Select(i => $"T{i}").ToArray();
+            var names = Enumerable.Range(0, 5).Select(i => $"arg{i}").ToArray();
+            var code = "arg0";
+
+            // Act
+            var result = _compilerHelper.CreateExpressionCode(types, names, code);
+
+            // Assert
+            result.ShouldNotContain("public delegate TResult Func");
             result.ShouldContain("public static Expression<Func");
             result.ShouldContain(code);
         }

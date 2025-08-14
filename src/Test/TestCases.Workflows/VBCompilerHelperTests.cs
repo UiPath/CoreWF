@@ -127,6 +127,23 @@ namespace TestCases.Workflows
             result.ShouldContain(code);
         }
 
+        [Fact]
+        public void CreateExpressionCode_WithLessThan16Parameters_ShouldNotGenerateCustomVBDelegate()
+        {
+            // Arrange
+            var types = Enumerable.Range(0, 5).Select(i => $"T{i}").ToArray();
+            var names = Enumerable.Range(0, 5).Select(i => $"arg{i}").ToArray();
+            var code = "arg0";
+
+            // Act
+            var result = _compilerHelper.CreateExpressionCode(types, names, code);
+
+            // Assert
+            result.ShouldNotContain("Public Delegate Function Func");
+            result.ShouldContain("Public Shared Function CreateExpression() As Expression(Of Func");
+            result.ShouldContain(code);
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(5)]
