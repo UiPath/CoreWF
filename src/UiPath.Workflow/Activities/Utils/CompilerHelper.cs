@@ -14,6 +14,7 @@ namespace System.Activities
 
         public const string Comma = ", ";
 
+
         public abstract string CreateExpressionCode(string types, string names, string code);
 
         public abstract StringComparer IdentifierNameComparer { get; }
