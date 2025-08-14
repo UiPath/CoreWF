@@ -9,7 +9,7 @@ namespace System.Activities
 {
     public sealed class VBCompilerHelper : CompilerHelper
     {
-        private static int crt = 0;
+        private int crt = 0;
 
         public override Compilation DefaultCompilationUnit { get; } = InitDefaultCompilationUnit();
 
@@ -24,16 +24,15 @@ namespace System.Activities
 
         public override string GetTypeName(Type type) => VisualBasicObjectFormatter.FormatTypeName(type);
 
-        public override string CreateExpressionCode(string types, string names, string code)
+        public override string CreateExpressionCode(string[] types, string[] names, string code)
         {
-            var arrayType = types.Split(Pipe);
-            var normTypeStr = string.Join(CompilerHelper.Comma, arrayType);
+            var typesStr = string.Join(CompilerHelper.Comma, types);
+            var namesStr = string.Join(CompilerHelper.Comma, names);
+            if (types.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
+                return $"Public Shared Function CreateExpression() As Expression(Of Func(Of {typesStr}))\nReturn Function({namesStr}) ({code})\nEnd Function";
 
-            if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-                return $"Public Shared Function CreateExpression() As Expression(Of Func(Of {normTypeStr}))\nReturn Function({names}) ({code})\nEnd Function";
-
-            var (myDelegate, name) = DefineDelegate(arrayType);
-            return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {normTypeStr}))\nReturn Function({names}) ({code})\nEnd Function";
+            var (myDelegate, name) = DefineDelegate(types);
+            return $"{myDelegate} \n Public Shared Function CreateExpression() As Expression(Of {name}(Of {typesStr}))\nReturn Function({namesStr}) ({code})\nEnd Function";
         }
 
         protected override (string, string) DefineDelegateCommon(int argumentsCount)
@@ -45,7 +44,7 @@ namespace System.Activities
             for (var i = 0; i < argumentsCount; i++)
             {
                 part1.Append($" In T{i},");
-                part2.Append($" ByVal arg as T{i},");
+                part2.Append($" ByVal arg{i} as T{i},");
             }
             part2.Remove(part2.Length - 1, 1);
 

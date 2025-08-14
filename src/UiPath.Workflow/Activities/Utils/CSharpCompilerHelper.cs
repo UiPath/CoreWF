@@ -28,16 +28,15 @@ namespace System.Activities
         public override string GetTypeName(Type type) =>
             (string)s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
 
-        public override string CreateExpressionCode(string types, string names, string code)
+        public override string CreateExpressionCode(string[] types, string[] names, string code)
         {
-            var arrayType = types.Split(Pipe);
-            var normTypeStr = string.Join(CompilerHelper.Comma, arrayType);
+            var typesStr = string.Join(CompilerHelper.Comma, types);
+            var namesStr = string.Join(CompilerHelper.Comma, names);
+            if (types.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
+                return $"public static Expression<Func<{typesStr}>> CreateExpression() => ({namesStr}) => {code};";
 
-            if (arrayType.Length <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-                return $"public static Expression<Func<{normTypeStr}>> CreateExpression() => ({names}) => {code};";
-
-            var (myDelegate, name) = DefineDelegate(arrayType);
-            return $"{myDelegate} \n public static Expression<{name}<{normTypeStr}>> CreateExpression() => ({names}) => {code};";
+            var (myDelegate, name) = DefineDelegate(types);
+            return $"{myDelegate} \n public static Expression<{name}<{typesStr}>> CreateExpression() => ({namesStr}) => {code};";
         }
 
         protected override (string, string) DefineDelegateCommon(int argumentsCount)

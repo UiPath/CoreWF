@@ -13,9 +13,8 @@ namespace System.Activities
         };
 
         public const string Comma = ", ";
-        public const string Pipe = "| ";
 
-        public abstract string CreateExpressionCode(string types, string names, string code);
+        public abstract string CreateExpressionCode(string[] types, string[] names, string code);
 
         public abstract StringComparer IdentifierNameComparer { get; }
 

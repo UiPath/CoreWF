@@ -49,9 +49,8 @@ internal sealed class CSharpExpressionCompiler : ExpressionCompiler
                 .Where(var => var.Type != null)
                 .ToArray();
 
-        var names = string.Join(CompilerHelper.Comma, resolvedIdentifiers.Select(var => var.Name));
-        // We use a Pipe (|) as a separator because certain types can contain commas (e.g., tuples).
-        var types = string.Join(CompilerHelper.Pipe, resolvedIdentifiers.Select(var => var.Type).Concat(new[] { returnType }).Select(_compilerHelper.GetTypeName));
+        var names = resolvedIdentifiers.Select(var => var.Name).ToArray();
+        var types = resolvedIdentifiers.Select(var => var.Type).Concat(new[] { returnType }).Select(_compilerHelper.GetTypeName).ToArray();
         var lambdaFuncCode = _compilerHelper.CreateExpressionCode(types, names, expression);
         return CSharpSyntaxTree.ParseText(lambdaFuncCode, _compilerHelper.ScriptParseOptions);
     }

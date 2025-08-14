@@ -60,12 +60,8 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
                 .Select(name => (Name: name, Type: expressionToCompile.VariableTypeGetter(name, CompilerHelper.IdentifierNameComparison)))
                 .Where(var => var.Type != null)
                 .ToArray();
-        var names = string.Join(CompilerHelper.Comma, resolvedIdentifiers.Select(var => var.Name));
-        var types = string.Join(CompilerHelper.Pipe,
-            resolvedIdentifiers
-                .Select(var => var.Type)
-                .Concat(new[] { expressionToCompile.LambdaReturnType })
-                .Select(GetTypeName));
+        var names = resolvedIdentifiers.Select(var => var.Name).ToArray();
+        var types = resolvedIdentifiers.Select(var => var.Type).Concat(new[] { expressionToCompile.LambdaReturnType }).Select(GetTypeName).ToArray();
         var finalCompilation = compilation.ReplaceSyntaxTree(syntaxTree, syntaxTree.WithChangedText(SourceText.From(
             CompilerHelper.CreateExpressionCode(types, names, expressionToCompile.Code))));
 
