@@ -9,7 +9,7 @@ namespace System.Activities
 {
     public sealed class VBCompilerHelper : CompilerHelper
     {
-        private int crt = 0;
+        private static int crt = 0;
 
         public override Compilation DefaultCompilationUnit { get; } = InitDefaultCompilationUnit();
 
@@ -44,7 +44,7 @@ namespace System.Activities
             for (var i = 0; i < argumentsCount; i++)
             {
                 part1.Append($" In T{i},");
-                part2.Append($" ByVal arg{i} as T{i},");
+                part2.Append($" ByVal arg as T{i},");
             }
             part2.Remove(part2.Length - 1, 1);
 
