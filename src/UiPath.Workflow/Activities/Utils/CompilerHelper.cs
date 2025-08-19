@@ -16,6 +16,7 @@ namespace System.Activities
 
         public abstract string CreateExpressionCode(string types, string names, string code);
 
+
         public abstract StringComparer IdentifierNameComparer { get; }
 
         public abstract StringComparison IdentifierNameComparison { get; }
