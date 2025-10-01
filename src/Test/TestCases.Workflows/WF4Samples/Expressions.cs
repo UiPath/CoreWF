@@ -21,7 +21,7 @@ namespace TestCases.Workflows.WF4Samples
 {
     using StringDictionary = Dictionary<string, object>;
 
-    public abstract class ExpressionsBase
+    public abstract class ExpressionsBaseCommon
     {
         protected abstract bool CompileExpressions { get; }
         protected Activity GetActivityFromXamlResource(TestXamls xamlName) => TestHelper.GetActivityFromXamlResource(xamlName, CompileExpressions);
@@ -31,6 +31,10 @@ namespace TestCases.Workflows.WF4Samples
             Compiler.Run(activity);
             return activity;
         }
+    }
+
+    public abstract class ExpressionsBase : ExpressionsBaseCommon
+    {
         protected const string CorrectOutput = @"John Doe earns $55000.00
 Frank Kimono earns $89000.00
 Salary statistics: minimum salary is $55000.00, maximum salary is $89000.00, average salary is $72000.00

@@ -225,6 +225,16 @@ namespace TestCases.Workflows
             Assert.Equal(typeof(IEnumerable<object>), compilationResult.ReturnType);
         }
 
+        [Fact]
+        public async Task CSharp_CompileReferenceType()
+        {
+            SetupCompilation(out var location, out var namespaces, out var assemblyReferences);
+
+            var result = await CSharpDesignerHelper.CreatePrecompiledReferenceAsync(typeof(List<string>), "myEnumerable", namespaces, assemblyReferences, location);
+
+            Assert.Equal(typeof(IEnumerable<string>), result.ReturnType);
+        }
+
         private static void SetupCompilation(out ActivityLocationReferenceEnvironment location, out string[] namespaces, out AssemblyReference[] assemblyReferences)
         {
             var seq = new Sequence();
@@ -233,7 +243,8 @@ namespace TestCases.Workflows
             WorkflowInspectionServices.CacheMetadata(seq, location);
             location.Declare(new Variable<string>("in_CountryName"), seq, ref errors);
             location.Declare(new Variable<DataTable>("in_dt_OrderExport"), seq, ref errors);
-            namespaces = ["System", "System.Linq", "System.Data"];
+            location.Declare(new Variable<IEnumerable<string>>("myEnumerable"), seq, ref errors);
+            namespaces = ["System", "System.Linq", "System.Data", "System.Collections.Generic"];
             assemblyReferences =
             [
                 new AssemblyReference() { Assembly = typeof(string).Assembly },
@@ -242,7 +253,8 @@ namespace TestCases.Workflows
                 new AssemblyReference() { Assembly = typeof(System.ComponentModel.TypeConverter).Assembly },
                 new AssemblyReference() { Assembly = typeof(IServiceProvider).Assembly },
                 new AssemblyReference() { Assembly = Assembly.Load("System.Xml.ReaderWriter") },
-                new AssemblyReference() { Assembly = Assembly.Load("System.Private.Xml") }
+                new AssemblyReference() { Assembly = Assembly.Load("System.Private.Xml") },
+                new AssemblyReference() { Assembly = typeof(IEnumerable<>).Assembly }
             ];
         }
 

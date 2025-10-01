@@ -50,8 +50,23 @@ internal sealed class CSharpExpressionCompiler : ExpressionCompiler
                 .ToArray();
 
         var names = resolvedIdentifiers.Select(var => var.Name).ToArray();
-        var types = resolvedIdentifiers.Select(var => var.Type).Concat(new[] { returnType }).Select(_compilerHelper.GetTypeName).ToArray();
-        var lambdaFuncCode = _compilerHelper.CreateExpressionCode(types, names, expression);
-        return CSharpSyntaxTree.ParseText(lambdaFuncCode, _compilerHelper.ScriptParseOptions);
+        var types = resolvedIdentifiers.Select(var => var.Type).Select(_compilerHelper.GetTypeName).ToArray();
+        string expressionCode;
+        if (isLocation)
+        {
+            expressionCode = _compilerHelper.CreateReferenceCode(types: types,
+                returnType: _compilerHelper.GetTypeName(returnType),
+                names: names,
+                code: expression);
+        }
+        else
+        {
+            types = types.Concat(new[] { _compilerHelper.GetTypeName(returnType) }).ToArray();
+            expressionCode = _compilerHelper.CreateValueCode(types: types,
+                names: names,
+                code: expression);
+        }
+
+        return CSharpSyntaxTree.ParseText(expressionCode, _compilerHelper.ScriptParseOptions);
     }
 }

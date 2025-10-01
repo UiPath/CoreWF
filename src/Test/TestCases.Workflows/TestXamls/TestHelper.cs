@@ -46,5 +46,6 @@ namespace TestCases.Workflows
         SpecialCharacters,
         ValueSpecialCharacterCSharp,
         ValueSpecialCharacterVb,
+        ImproveAssignabilityOutArgumentActivity
     }
 }

@@ -65,6 +65,8 @@ public class TextExpressionCompiler
     private bool? _isVb;
     private int _nextContextId;
 
+    private readonly Lazy<CodeDomProvider> _lazyProvider;
+
     public TextExpressionCompiler(TextExpressionCompilerSettings settings)
     {
         if (settings == null)
@@ -99,6 +101,8 @@ public class TextExpressionCompiler
 
         _lineNumbersForNSes = new Dictionary<string, int>();
         _lineNumbersForNSesForImpl = new Dictionary<string, int>();
+
+        _lazyProvider = new Lazy<CodeDomProvider>(() => CodeDomProvider.CreateProvider(_settings.Language));
     }
 
     private bool IsCs
@@ -1458,7 +1462,7 @@ public class TextExpressionCompiler
 
         if (isValue || isReference)
         {
-            var expressionGetMethod = GenerateGetMethod(activity, resultType, expressionText, nextExpressionId);
+            var expressionGetMethod = GenerateGetMethod(activity, resultType, expressionText, nextExpressionId, isReference);
             typeDeclaration.Members.Add(expressionGetMethod);
 
             var expressionGetValueTypeAccessorMethod = GenerateGetMethodWrapper(expressionGetMethod);
@@ -1525,7 +1529,15 @@ public class TextExpressionCompiler
         }
         else if (IsCs)
         {
-            expressionText = string.Concat(CSharpLambdaString, coreExpressionText);
+            if (!isValue)
+            {
+                var safeCastText = SafeCastText(coreExpressionText, expressionDescriptor.ResultType);
+                expressionText = string.Concat(CSharpLambdaString, safeCastText);
+            }
+            else
+            {
+                expressionText = string.Concat(CSharpLambdaString, coreExpressionText);
+            }
         }
 
         if (expressionText != null)
@@ -1558,7 +1570,7 @@ public class TextExpressionCompiler
     }
 
     private CodeMemberMethod GenerateGetMethod(Activity activity, Type resultType, string expressionText,
-        int nextExpressionId)
+        int nextExpressionId, bool isReference)
     {
         var expressionMethod = new CodeMemberMethod
         {
@@ -1570,7 +1582,16 @@ public class TextExpressionCompiler
             new CodeAttributeDeclaration(new CodeTypeReference(typeof(DebuggerHiddenAttribute))));
 
         AlignText(activity, ref expressionText, out var pragma);
-        CodeStatement statement = new CodeMethodReturnStatement(new CodeSnippetExpression(expressionText));
+        CodeStatement statement;
+        if (IsCs && isReference)
+        {
+            statement = new CodeMethodReturnStatement(SafeCast(expressionText, resultType));
+        }
+        else
+        {
+            statement = new CodeMethodReturnStatement(new CodeSnippetExpression(expressionText));
+        }
+        
         statement.LinePragma = pragma;
         expressionMethod.Statements.Add(statement);
 
@@ -2510,6 +2531,54 @@ public class TextExpressionCompiler
         }
 
         return activityFullName;
+    }
+
+    /// <summary>
+    /// Creates a CodeSnippetExpression like: "variableName as TargetType".
+    /// If variableName or targetType is null/empty, falls back to "null".
+    /// </summary>
+    private CodeSnippetExpression SafeCast(string variableName, Type targetType)
+        => new CodeSnippetExpression(SafeCastText(variableName, targetType));
+
+    /// <summary>
+    /// Safely formats a string representation of a variable name and its target type.
+    /// Validates that the 'as' operator is only applied to reference types or nullable value types.
+    /// For non-nullable value types, returns the variable name without any casting.
+    /// </summary>
+    /// <param name="variableName">The name of the variable to be cast. If null or whitespace, "null" is used instead.</param>
+    /// <param name="targetType">The target <see cref="Type"/> to which the variable is being cast.</param>
+    /// <returns>A string in the format "<paramref name="variableName"/> as <paramref name="targetType"/>" for valid types, otherwise just the variable name.</returns>
+    private string SafeCastText(string variableName, Type targetType)
+    {
+        string varName = string.IsNullOrWhiteSpace(variableName) ? "null" : variableName;
+        
+        // Early exit if targetType is null or if it's a non-nullable value type
+        if (targetType == null || (targetType.IsValueType && !IsNullableValueType(targetType)))
+        {
+            return varName;
+        }
+
+        string typeName = GetFriendlyTypeName(targetType);
+        if (typeName == null)
+        {
+            return varName;
+        }
+
+        // Use 'as' operator for reference types and nullable value types
+        return $"{varName} as {typeName}";
+    }
+
+    /// <summary>
+    /// Helper method to check if a type is a nullable value type (e.g., int?, DateTime?)
+    /// </summary>
+    private static bool IsNullableValueType(Type type)
+    {
+        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+    }
+
+    private string GetFriendlyTypeName(Type type)
+    {
+        return type is null ? null : _lazyProvider.Value.GetTypeOutput(new CodeTypeReference(type));
     }
 
     private class ExpressionCompilerActivityVisitor : CompiledExpressionActivityVisitor

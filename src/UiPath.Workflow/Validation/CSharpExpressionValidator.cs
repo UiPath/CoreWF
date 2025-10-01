@@ -18,13 +18,6 @@ namespace System.Activities.Validation;
 /// </summary>
 public class CSharpExpressionValidator : RoslynExpressionValidator
 {
-    // This is used in case the expression does not properly close (e.g. missing quotes, or multiline comment not closed)
-    private const string _expressionEnder = "// */ // \"";
-
-    private const string _valueValidationTemplate = "public static System.Linq.Expressions.Expression<System.Func<{0}>> CreateExpression{1}()//activityId:{4}\n => ({2}) => {3}; {5}";
-    private const string _delegateValueValidationTemplate = "{0}\npublic static System.Linq.Expressions.Expression<{1}<{2}>> CreateExpression{3}()//activityId:{6}\n => ({4}) => {5}; {7}";
-    private const string _referenceValidationTemplate = "public static {0} IsLocation{1}()//activityId:{5}\n => ({2}) => {3} = default({4}); {6}";
-
     private static readonly Lazy<CSharpExpressionValidator> s_instance = new(() => new());
     public override string Language => CSharpHelper.Language;
 
@@ -66,22 +59,10 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
     }
 
     protected override string CreateValueCode(IEnumerable<string> types, string names, string code, string activityId, int index)
-    {
-        var serializedArgumentTypes = string.Join(Comma, types);
-        if (types.Count() <= 16) // .net defines Func<TResult>...Funct<T1,...T16,TResult)
-            return string.Format(_valueValidationTemplate, serializedArgumentTypes, index, names, code, activityId, _expressionEnder);
-
-        var (myDelegate, name) = CompilerHelper.DefineDelegate(types);
-        return string.Format(_delegateValueValidationTemplate, myDelegate, name, serializedArgumentTypes, index, names, code, activityId, _expressionEnder);
-    }
+        => CSharpValidatorCommon.CreateValueCode(types, names, code, activityId, index);
 
     protected override string CreateReferenceCode(string types, string names, string code, string activityId, string returnType, int index)
-    {
-        var actionDefinition = !string.IsNullOrWhiteSpace(types)
-            ? $"System.Action<{string.Join(Comma, types)}>"
-            : "System.Action";
-        return string.Format(_referenceValidationTemplate, actionDefinition, index, names, code, returnType, activityId, _expressionEnder);
-    }
+        => CSharpValidatorCommon.CreateReferenceCode(types, returnType, names, code, activityId, index);
 
     protected override SyntaxTree GetSyntaxTreeForExpression(string expressionText) =>
         CSharpSyntaxTree.ParseText(expressionText, CompilerHelper.ScriptParseOptions);

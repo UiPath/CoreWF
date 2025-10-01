@@ -19,7 +19,7 @@ namespace TestCases.Workflows.WF4Samples
     //4. Assign: output = Dict.First.Key. => we expect the key is "KeyName" 
     //Results: the output has the unexpected value of "ValueName", instead of "KeyName", but if we enable parameter rename,
     //everything works as expected
-    public class ValueSpecialCharacterTests : ExpressionsBase
+    public class ValueSpecialCharacterTests : ExpressionsBaseCommon
     {
         protected override bool CompileExpressions => true;
 

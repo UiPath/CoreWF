@@ -4,14 +4,11 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
 using ReflectionMagic;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 
 namespace System.Activities
 {
     public sealed class CSharpCompilerHelper : CompilerHelper
     {
-        private static int crt = 0;
         private static readonly dynamic s_typeNameFormatter = GetTypeNameFormatter();
         private static readonly dynamic s_typeOptions = GetTypeOptions();
 
@@ -39,21 +36,18 @@ namespace System.Activities
             return $"{myDelegate} \n public static Expression<{name}<{typesStr}>> CreateExpression() => ({namesStr}) => {code};";
         }
 
-        protected override (string, string) DefineDelegateCommon(int argumentsCount)
+        internal string CreateReferenceCode(string[] types, string returnType, string[] names, string code)
         {
-            var crtValue = Interlocked.Add(ref crt, 1);
-
-            var part1 = new StringBuilder();
-            var part2 = new StringBuilder();
-            for (var i = 0; i < argumentsCount; i++)
-            {
-                part1.Append($"in T{i}, ");
-                part2.Append($" T{i} arg{i},");
-            }
-            part2.Remove(part2.Length - 1, 1);
-            var name = $"Func{crtValue}";
-            return ($"public delegate TResult {name}<{part1} out TResult>({part2});", name);
+            var strTypes = string.Join(Comma, types);
+            var strNames = string.Join(Comma, names);
+            return CSharpValidatorCommon.CreateReferenceCode(strTypes, returnType, strNames, code, string.Empty, 0);
         }
+
+        internal string CreateValueCode(string[] types, string[] names, string code)
+            => CSharpValidatorCommon.CreateValueCode(types, string.Join(Comma, names), code, string.Empty, 0);
+
+        protected override (string, string) DefineDelegateCommon(int argumentsCount)
+            => CSharpValidatorCommon.DefineDelegateCommon(argumentsCount);
 
         private static object GetTypeNameFormatter()
         {

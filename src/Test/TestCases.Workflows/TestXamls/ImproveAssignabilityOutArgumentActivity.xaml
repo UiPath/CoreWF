@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Activity x:Class="TestWorkflow" mc:Ignorable="sap sap2010"
+          xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+          xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:local="clr-namespace:TestCases.Workflows.WF4Samples;assembly=TestCases.Workflows"
+		  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib"
+		  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib"
+		  xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib">
+	<x:Members>
+		<x:Property Name="myEnumerable" Type="OutArgument(scg:IEnumerable(x:String))" />
+		<x:Property Name="dateTimeOutArgument" Type="OutArgument(s:DateTime)" />
+		<x:Property Name="nullableDateTimeOutArgument" Type="OutArgument(s:Nullable(s:DateTime))" />
+	</x:Members>
+	<sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
+	<Sequence DisplayName="RootSequence">
+		<Sequence.Variables>
+			<Variable x:TypeArguments="x:String" Name="big" />
+		</Sequence.Variables>
+
+		<!-- Use your custom activity -->
+		<local:ImproveAssignabilityOutArgumentActivity>
+
+			<local:ImproveAssignabilityOutArgumentActivity.Result>
+				<OutArgument x:TypeArguments="scg:List(x:String)">
+					<CSharpReference x:TypeArguments="scg:List(x:String)">
+						myEnumerable
+					</CSharpReference>
+				</OutArgument>
+			</local:ImproveAssignabilityOutArgumentActivity.Result>
+
+			<local:ImproveAssignabilityOutArgumentActivity.DateTimeOutArgument>
+				<OutArgument x:TypeArguments="s:DateTime">
+					<CSharpReference x:TypeArguments="s:DateTime">
+						dateTimeOutArgument
+					</CSharpReference>
+				</OutArgument>
+			</local:ImproveAssignabilityOutArgumentActivity.DateTimeOutArgument>
+
+			<local:ImproveAssignabilityOutArgumentActivity.NullableDateTimeOutArgument>
+				<OutArgument x:TypeArguments="s:Nullable(s:DateTime)">
+					<CSharpReference x:TypeArguments="s:Nullable(s:DateTime)">
+						nullableDateTimeOutArgument
+					</CSharpReference>
+				</OutArgument>
+			</local:ImproveAssignabilityOutArgumentActivity.NullableDateTimeOutArgument>
+
+		</local:ImproveAssignabilityOutArgumentActivity>
+
+		<Assign sap2010:WorkflowViewState.IdRef="Assign_1">
+			<Assign.To>
+				<OutArgument x:TypeArguments="x:String">
+					<CSharpReference x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpReference`1_1">big</CSharpReference>
+				</OutArgument>
+			</Assign.To>
+			<Assign.Value>
+				<InArgument x:TypeArguments="x:String">
+					<CSharpValue x:TypeArguments="x:String" sap2010:WorkflowViewState.IdRef="CSharpValue`1_13">new string('A', 100) ;</CSharpValue>
+				</InArgument>
+			</Assign.Value>
+		</Assign>
+	</Sequence>
+</Activity>
