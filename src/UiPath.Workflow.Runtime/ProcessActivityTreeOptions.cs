@@ -265,6 +265,12 @@ internal class ProcessActivityTreeOptions
             result = ValidationOptions;
         }
 
+        if (settings.SkipImplementationChildren)
+        {
+            result = result.Clone();
+            result.SkipPrivateChildren = true;
+        }
+       
         return settings.CancellationToken == CancellationToken.None
             ? result
             : AttachCancellationToken(result, settings.CancellationToken);
