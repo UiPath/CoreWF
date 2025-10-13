@@ -225,14 +225,37 @@ namespace TestCases.Workflows
             Assert.Equal(typeof(IEnumerable<object>), compilationResult.ReturnType);
         }
 
-        [Fact]
-        public async Task CSharp_CompileReferenceType()
+        [Theory]
+        [InlineData(null)]
+        [InlineData(typeof(List<string>))]
+        public async Task CSharp_CompileReferenceType(Type targetType)
         {
             SetupCompilation(out var location, out var namespaces, out var assemblyReferences);
 
-            var result = await CSharpDesignerHelper.CreatePrecompiledReferenceAsync(typeof(List<string>), "myEnumerable", namespaces, assemblyReferences, location);
-
+            var result = await CSharpDesignerHelper.CreatePrecompiledReferenceAsync(targetType, "myEnumerable", namespaces, assemblyReferences, location);
             Assert.Equal(typeof(IEnumerable<string>), result.ReturnType);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData(typeof(string))]
+        public async Task CSharp_CompileReferenceType_AssignToProperty(Type targetType)
+        {
+            SetupCompilation(out var location, out var namespaces, out var assemblyReferences);
+
+            var result = await CSharpDesignerHelper.CreatePrecompiledReferenceAsync(targetType, "in_CountryName", namespaces, assemblyReferences, location);
+            Assert.Equal(typeof(string), result.ReturnType);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData(typeof(string))]
+        public async Task CSharp_CompileValueType_AssignValueProperty(Type targetType)
+        {
+            SetupCompilation(out var location, out var namespaces, out var assemblyReferences);
+
+            var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(targetType, "new string('A', 11000000) ;", namespaces, assemblyReferences, location);
+            Assert.Equal(typeof(string), result.ReturnType);
         }
 
         private static void SetupCompilation(out ActivityLocationReferenceEnvironment location, out string[] namespaces, out AssemblyReference[] assemblyReferences)
