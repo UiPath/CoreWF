@@ -1,10 +1,13 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Microsoft.VisualBasic.Activities;
 using System;
 using System.Activities;
 using System.Collections.Generic;
 using Test.Common.TestObjects.Activities;
+using Test.Common.TestObjects.Activities.Tracing;
+using Test.Common.TestObjects.Activities.Variables;
 using Test.Common.TestObjects.Runtime;
 using Test.Common.TestObjects.Runtime.ConstraintValidation;
 using Test.Common.TestObjects.Utilities;
@@ -53,6 +56,8 @@ namespace TestCases.Activities
             };
             TestRuntime.RunAndValidateWorkflow(seq);
         }
+
+
         /// <summary>
         /// Assign to collections
         /// Assign to data types like lists, dictionaries…etc
@@ -336,6 +341,78 @@ namespace TestCases.Activities
             TestAssignNG assign = new TestAssignNG(typeof(string));
             TestRuntime.ValidateInstantiationException(assign, typeof(System.ArgumentException), string.Format(ErrorStrings.RequiredArgumentValueNotSupplied, "Value"));
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task old_MultipleAssign_UsingVBValueActivity()
+        {
+            int n = 100;
+            var seq = new TestSequence();
+
+            // Recommended: attach VB settings to the root
+            var vb = new VisualBasicSettings();
+            vb.ImportReferences.Add(new VisualBasicImportReference
+            {
+                Assembly = typeof(string).Assembly.GetName().Name,
+                Import = "System"
+            });
+            VisualBasic.SetSettings(seq, vb);
+
+            var vars = new Variable<string>[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                var v = VariableHelper.CreateInitialized<string>($"var{i}", $"I'm variable {i}");
+                vars[i] = v;
+                seq.Variables.Add(v);
+
+                // Build VB expression text (remember to quote string literals in VB)
+                string vbText =
+                    (i == 0)
+                    ? "\"I'm variable 0\""
+                    : $"var{i - 1} & \" -> I'm variable {i}\"";  // VB uses & for string concat
+
+                seq.Activities.Add(new TestAssign<string>
+                {
+                    // EITHER keep using a WF variable on the left:
+                    ToVariable = v,
+
+                    // OR, if you prefer VB on the left as well:
+                    // ToLocation = new TestVBReference<string>($"var{i}"),
+
+                    // ✅ Supply the VB expression via ValueActivity
+                    ValueActivity = new TestVBValue<string>(vbText)
+                });
+            }
+
+            seq.Activities.Add(new TestDelay
+            {
+                Duration = TimeSpan.FromSeconds(60),
+                DisplayName = "Delay"
+            });
+
+            TestRuntime.RunAndValidateWorkflow(seq);
+        }
+
+public sealed class TestVBValue<T> : TestActivity
+{
+    public TestVBValue(string expressionText)
+    {
+        // RHS (r-value) VB expression
+        this.ProductActivity = new VisualBasicValue<T>(expressionText);
+                ExpectedOutcome = Outcome.None;
+            }
+}
+
+public sealed class TestVBReference<T> : TestActivity
+{
+    public TestVBReference(string expressionText)
+    {
+        // LHS (l-value) VB reference, if you ever want the left side in VB too
+        this.ProductActivity = new VisualBasicReference<T>(expressionText);
+                ExpectedOutcome = Outcome.None;
+            }
+}
+
 
         //[Fact]
         //public void DifferentArguments()

@@ -52,21 +52,26 @@ internal sealed class CSharpExpressionCompiler : ExpressionCompiler
         var names = resolvedIdentifiers.Select(var => var.Name).ToArray();
         var types = resolvedIdentifiers.Select(var => var.Type).Select(_compilerHelper.GetTypeName).ToArray();
         string expressionCode;
-        if (isLocation)
+
+        bool hasReturnType = returnType != null;
+        if (!hasReturnType)
         {
-            expressionCode = _compilerHelper.CreateReferenceCode(types: types,
-                returnType: _compilerHelper.GetTypeName(returnType),
-                names: names,
-                code: expression);
-        }
-        else
-        {
-            types = types.Concat(new[] { _compilerHelper.GetTypeName(returnType) }).ToArray();
-            expressionCode = _compilerHelper.CreateValueCode(types: types,
-                names: names,
-                code: expression);
+            returnType = typeof(object);
         }
 
+        // Use expression code if there is no return type, or if this is not a location (i.e., not an l-value reference).
+        bool shouldUseExpressionCode = !hasReturnType || !isLocation;
+        if (shouldUseExpressionCode)
+        {
+            types = types.Concat(new[] { _compilerHelper.GetTypeName(returnType) }).ToArray();
+            var lambdaFuncCode = _compilerHelper.CreateExpressionCode(types, names, expression);
+            return CSharpSyntaxTree.ParseText(lambdaFuncCode, _compilerHelper.ScriptParseOptions);
+        }
+
+        expressionCode = _compilerHelper.CreateReferenceCode(types: types,
+            returnType: _compilerHelper.GetTypeName(returnType),
+            names: names,
+            code: expression);
         return CSharpSyntaxTree.ParseText(expressionCode, _compilerHelper.ScriptParseOptions);
     }
 }

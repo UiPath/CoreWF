@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="../TestObjects/TestObjects.csproj" />
+    <ProjectReference Include="..\..\UiPath.Workflow\UiPath.Workflow.csproj" />
     <ProjectReference Include="..\WorkflowApplicationTestExtensions\WorkflowApplicationTestExtensions.csproj" />
   </ItemGroup>
 </Project>

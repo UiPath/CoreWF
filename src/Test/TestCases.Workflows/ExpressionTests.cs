@@ -51,6 +51,20 @@ public class ExpressionTests
         VbExpressionValidator.Instance.AddRequiredAssembly(typeof(ClassWithCollectionProperties).Assembly);
         CSharpExpressionValidator.Instance.AddRequiredAssembly(typeof(ClassWithCollectionProperties).Assembly);
     }
+    [Fact]
+    public async Task MultipleExpressions()
+    {
+        Sequence workflow = new();
+        foreach(int i in Enumerable.Range(0, 10000))
+        { 
+            workflow.AddArgument(new RuntimeArgument($"arg{i}", typeof(string), ArgumentDirection.In), true);
+            
+            //workflow.Variables.Add(new Variable<string>($"v{i}", $"I'm variable {i}"));
+        }
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+    }
 
     [Theory]
     [MemberData(nameof(ValidVbExpressions))]

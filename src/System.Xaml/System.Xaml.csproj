@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.SDK">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net48</TargetFrameworks>
+	  <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);0618;NU5125;</NoWarn>
     <DefineConstants>$(DefineConstants);SYSTEM_XAML</DefineConstants>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<PackageReference Include="Portable.System.DateTimeOnly" Version="9.0.1" />
+		<PackageReference Include="System.Memory" Version="4.6.3" />
+	</ItemGroup>
 </Project>

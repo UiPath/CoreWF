@@ -1,0 +1,167 @@
+<Playlist Version="2.0">
+  <Rule Name="Includes" Match="Any">
+    <Rule Match="All">
+      <Property Name="Solution" />
+      <Rule Match="Any">
+        <Rule Match="All">
+          <Property Name="Project" Value="MemoryTest (net48)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="MemoryTest" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="CSharpExpressionTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpReferenceOnLeft_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpReferenceOnLeft_net48" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity_IntMath_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity_IntMath_net48" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity_net48" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="LambdaExpressionTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaReferenceOnLeft_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaReferenceOnLeft_net48" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue_IntMath_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue_IntMath_net48" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue_net48" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="VisualBasicExpressions" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBReferenceOnLeft_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBReferenceOnLeft_net48" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity_IntMath_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity_IntMath_net48" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity_net48" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity_net48" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="MemoryTest (net6.0)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="MemoryTest" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="CSharpExpressionTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpReferenceOnLeft" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpReferenceOnLeft" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity_IntMath" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.CSharpExpressionTests.MultipleAssign_UsingCSharpValueActivity_IntMath" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="LambdaExpressionTests" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaReferenceOnLeft" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaReferenceOnLeft" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue_IntMath" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.LambdaExpressionTests.MultipleAssign_UsingLambdaValue_IntMath" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="VisualBasicExpressions" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBReferenceOnLeft" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBReferenceOnLeft" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity_IntMath" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="MemoryTest.VisualBasicExpressions.MultipleAssign_UsingVBValueActivity_IntMath" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+      </Rule>
+    </Rule>
+  </Rule>
+</Playlist>

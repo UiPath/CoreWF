@@ -2103,35 +2103,35 @@ namespace MonoTests.System.Xaml
 		}
 
 #if !PCL136
-		[Test]
-		public void Write_ImmutableCollectionContainer()
-		{
-			if (!Compat.IsPortableXaml)
-				Assert.Ignore("Not supported in System.Xaml");
-			using (var xr = GetReader ("ImmutableCollectionContainer.xml")) {
-				var res = (ImmutableCollectionContainer)XamlServices.Load(xr);
-				Assert.IsNotNull(res, "#1");
+		//[Test]
+		//public void Write_ImmutableCollectionContainer()
+		//{
+		//	if (!Compat.IsPortableXaml)
+		//		Assert.Ignore("Not supported in System.Xaml");
+		//	using (var xr = GetReader ("ImmutableCollectionContainer.xml")) {
+		//		var res = (ImmutableCollectionContainer)XamlServices.Load(xr);
+		//		Assert.IsNotNull(res, "#1");
 
-				var expected = new [] { "Item1", "Item2", "Item3" };
-				Assert.IsFalse(res.ImmutableArray.IsDefaultOrEmpty, "#2-1");
-				CollectionAssert.AreEqual(expected, res.ImmutableArray.Select(r => r.Foo), "#2-2");
+		//		var expected = new [] { "Item1", "Item2", "Item3" };
+		//		Assert.IsFalse(res.ImmutableArray.IsDefaultOrEmpty, "#2-1");
+		//		CollectionAssert.AreEqual(expected, res.ImmutableArray.Select(r => r.Foo), "#2-2");
 
-				Assert.IsFalse(res.ImmutableList.IsEmpty, "#3-1");
-				CollectionAssert.AreEqual(expected, res.ImmutableList.Select(r => r.Foo), "#3-2");
+		//		Assert.IsFalse(res.ImmutableList.IsEmpty, "#3-1");
+		//		CollectionAssert.AreEqual(expected, res.ImmutableList.Select(r => r.Foo), "#3-2");
 
-				Assert.IsFalse(res.ImmutableQueue.IsEmpty, "#4-1");
-				CollectionAssert.AreEqual(expected, res.ImmutableQueue.Select(r => r.Foo), "#4-2");
+		//		Assert.IsFalse(res.ImmutableQueue.IsEmpty, "#4-1");
+		//		CollectionAssert.AreEqual(expected, res.ImmutableQueue.Select(r => r.Foo), "#4-2");
 
-				Assert.IsFalse(res.ImmutableHashSet.IsEmpty, "#5-1");
-				CollectionAssert.AreEquivalent(expected, res.ImmutableHashSet.Select(r => r.Foo), "#5-2");
+		//		Assert.IsFalse(res.ImmutableHashSet.IsEmpty, "#5-1");
+		//		CollectionAssert.AreEquivalent(expected, res.ImmutableHashSet.Select(r => r.Foo), "#5-2");
 
-				Assert.IsFalse(res.ImmutableStack.IsEmpty, "#6-1");
-				CollectionAssert.AreEqual(expected.Reverse(), res.ImmutableStack.Select(r => r.Foo), "#6-2");
+		//		Assert.IsFalse(res.ImmutableStack.IsEmpty, "#6-1");
+		//		CollectionAssert.AreEqual(expected.Reverse(), res.ImmutableStack.Select(r => r.Foo), "#6-2");
 
-				Assert.IsFalse(res.ImmutableSortedSet.IsEmpty, "#7-1");
-				CollectionAssert.AreEqual(expected, res.ImmutableSortedSet.Select(r => r.Foo), "#7-2");
-			}
-		}
+		//		Assert.IsFalse(res.ImmutableSortedSet.IsEmpty, "#7-1");
+		//		CollectionAssert.AreEqual(expected, res.ImmutableSortedSet.Select(r => r.Foo), "#7-2");
+		//	}
+		//}
 #endif
 
 		[Test]

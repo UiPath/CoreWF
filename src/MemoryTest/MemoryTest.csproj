@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net48</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<IsTestProject>true</IsTestProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Needed for .NET Framework test projects -->
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	</PropertyGroup>
+
+	<!-- Packages that work for BOTH targets -->
+	<ItemGroup>
+		<PackageReference Include="xunit" Version="2.6.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.5" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+	</ItemGroup>
+
+	<!-- Only for .NET (CoreWF) side -->
+	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
+		<PackageReference Include="coverlet.collector" Version="6.0.0"  />
+		<ProjectReference Include="..\Test\TestObjects\TestObjects.csproj" />
+		<ProjectReference Include="..\Test\WorkflowApplicationTestExtensions\WorkflowApplicationTestExtensions.csproj" />
+		<ProjectReference Include="..\UiPath.Workflow\UiPath.Workflow.csproj" />
+	</ItemGroup>
+
+	<!-- Only for .NET Framework (classic WF) -->
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<!-- Classic WF assemblies come from the .NET Framework / GAC -->
+		<Reference Include="System.Activities" />
+		<Reference Include="System.Xaml" />
+		<Reference Include="Microsoft.VisualBasic" />
+		<Reference Include="Microsoft.VisualBasic.Activities" />
+	</ItemGroup>
+
+</Project>
