@@ -1531,8 +1531,7 @@ public class TextExpressionCompiler
         {
             if (!isValue)
             {
-                var safeCastText = SafeCastText(coreExpressionText, expressionDescriptor.ResultType);
-                expressionText = string.Concat(CSharpLambdaString, safeCastText);
+                expressionText = string.Concat(CSharpLambdaString, FormatWithTypeCast(coreExpressionText, expressionDescriptor.ResultType));
             }
             else
             {
@@ -1582,16 +1581,12 @@ public class TextExpressionCompiler
             new CodeAttributeDeclaration(new CodeTypeReference(typeof(DebuggerHiddenAttribute))));
 
         AlignText(activity, ref expressionText, out var pragma);
-        CodeStatement statement;
         if (IsCs && isReference)
         {
-            statement = new CodeMethodReturnStatement(SafeCast(expressionText, resultType));
+            expressionText = FormatWithTypeCast(expressionText, resultType);
         }
-        else
-        {
-            statement = new CodeMethodReturnStatement(new CodeSnippetExpression(expressionText));
-        }
-        
+        CodeStatement statement = new CodeMethodReturnStatement(new CodeSnippetExpression(expressionText));
+
         statement.LinePragma = pragma;
         expressionMethod.Statements.Add(statement);
 
@@ -2533,39 +2528,45 @@ public class TextExpressionCompiler
         return activityFullName;
     }
 
-    /// <summary>
-    /// Creates a CodeSnippetExpression like: "variableName as TargetType".
-    /// If variableName or targetType is null/empty, falls back to "null".
-    /// </summary>
-    private CodeSnippetExpression SafeCast(string variableName, Type targetType)
-        => new CodeSnippetExpression(SafeCastText(variableName, targetType));
-
-    /// <summary>
-    /// Safely formats a string representation of a variable name and its target type.
-    /// Validates that the 'as' operator is only applied to reference types or nullable value types.
-    /// For non-nullable value types, returns the variable name without any casting.
-    /// </summary>
-    /// <param name="variableName">The name of the variable to be cast. If null or whitespace, "null" is used instead.</param>
-    /// <param name="targetType">The target <see cref="Type"/> to which the variable is being cast.</param>
-    /// <returns>A string in the format "<paramref name="variableName"/> as <paramref name="targetType"/>" for valid types, otherwise just the variable name.</returns>
-    private string SafeCastText(string variableName, Type targetType)
+    private string FormatWithTypeCast(string coreExpressionText, Type resultType)
     {
-        string varName = string.IsNullOrWhiteSpace(variableName) ? "null" : variableName;
-        
-        // Early exit if targetType is null or if it's a non-nullable value type
-        if (targetType == null || (targetType.IsValueType && !IsNullableValueType(targetType)))
+        if (resultType == null)
         {
-            return varName;
+            return coreExpressionText;
         }
 
+        if (CanUseSafeCastOperator(resultType))
+        {
+            return SafeCastText(coreExpressionText, resultType);
+        }
+
+        return ExplicitCastText(coreExpressionText, resultType);
+    }
+
+    private static bool CanUseSafeCastOperator(Type targetType)
+        => !targetType.IsValueType || IsNullableValueType(targetType);
+
+    private string SafeCastText(string expressionText, Type targetType)
+    {
         string typeName = GetFriendlyTypeName(targetType);
         if (typeName == null)
         {
-            return varName;
+            return expressionText;
         }
 
         // Use 'as' operator for reference types and nullable value types
-        return $"{varName} as {typeName}";
+        return $"{expressionText} as {typeName}";
+    }
+
+    private string ExplicitCastText(string expressionText, Type targetType)
+    {
+        string typeName = GetFriendlyTypeName(targetType);
+        if (typeName == null)
+        {
+            return expressionText;
+        }
+
+        return $"(({typeName}){expressionText})";
     }
 
     /// <summary>

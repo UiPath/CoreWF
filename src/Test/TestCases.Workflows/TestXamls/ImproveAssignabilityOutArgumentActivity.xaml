@@ -13,6 +13,7 @@
 		<x:Property Name="myEnumerable" Type="OutArgument(scg:IEnumerable(x:String))" />
 		<x:Property Name="dateTimeOutArgument" Type="OutArgument(s:DateTime)" />
 		<x:Property Name="nullableDateTimeOutArgument" Type="OutArgument(s:Nullable(s:DateTime))" />
+		<x:Property Name="nullableIntOutArgument" Type="OutArgument(s:Nullable(x:Int32))" />
 	</x:Members>
 	<sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
 	<Sequence DisplayName="RootSequence">
@@ -46,6 +47,14 @@
 					</CSharpReference>
 				</OutArgument>
 			</local:ImproveAssignabilityOutArgumentActivity.NullableDateTimeOutArgument>
+
+			<local:ImproveAssignabilityOutArgumentActivity.IntOutArgument>
+				<OutArgument x:TypeArguments="x:Int32">
+					<CSharpReference x:TypeArguments="x:Int32">
+						nullableIntOutArgument
+					</CSharpReference>
+				</OutArgument>
+			</local:ImproveAssignabilityOutArgumentActivity.IntOutArgument>
 
 		</local:ImproveAssignabilityOutArgumentActivity>
 

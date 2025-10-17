@@ -29,5 +29,6 @@ public class ImproveAssignabilityOutArgumentTests : ExpressionsBaseCommon
         var invoker = new WorkflowInvoker(activity);
         var result = invoker.Invoke();
         result["myEnumerable"].ShouldBe(new List<string> { "aaa", "bbb", "ccc" });
+        result["nullableIntOutArgument"].ShouldBe(999);
     }
 }

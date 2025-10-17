@@ -65,7 +65,9 @@ namespace TestCases.Workflows
             var fullLocationExpression = visitor.Visit(expressionTree.Body);
             var locationName = visitor.LocationName;
             var locationParameter = visitor.Parameter;
-            if (fullLocationExpression == locationParameter)
+            if (fullLocationExpression == locationParameter
+                ||
+                (fullLocationExpression is UnaryExpression unary && unary.NodeType == ExpressionType.Convert && unary.Operand == locationParameter))
             {
                 arguments = new[] { locationName };
                 activityType = typeof(Reference<>);

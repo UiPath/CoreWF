@@ -12,6 +12,7 @@ public class ImproveAssignabilityOutArgumentActivity : NativeActivity
     // Additional OutArguments
     public OutArgument<DateTime> DateTimeOutArgument { get; set; }
     public OutArgument<DateTime?> NullableDateTimeOutArgument { get; set; }
+    public OutArgument<int> IntOutArgument { get; set; }
 
     public ImproveAssignabilityOutArgumentActivity() : base()
     {
@@ -42,6 +43,14 @@ public class ImproveAssignabilityOutArgumentActivity : NativeActivity
             ArgumentDirection.Out);
         metadata.Bind(this.NullableDateTimeOutArgument, nullableDateTimeArg);
         metadata.AddArgument(nullableDateTimeArg);
+
+        // IntOutArgument
+        var intArg = new RuntimeArgument(
+            "IntOutArgument",
+            typeof(int),
+            ArgumentDirection.Out);
+        metadata.Bind(this.IntOutArgument, intArg);
+        metadata.AddArgument(intArg);
     }
 
     protected override void Execute(NativeActivityContext context)
@@ -56,5 +65,6 @@ public class ImproveAssignabilityOutArgumentActivity : NativeActivity
         Result.Set(context, result);
         DateTimeOutArgument.Set(context, DateTime.Now);
         NullableDateTimeOutArgument.Set(context, DateTime.Now);
+        IntOutArgument.Set(context, 999);
     }
 }
