@@ -21,10 +21,11 @@
 
 	<!-- Only for .NET (CoreWF) side -->
 	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-		<PackageReference Include="coverlet.collector" Version="6.0.0"  />
+		<PackageReference Include="coverlet.collector" Version="6.0.0" />
 		<ProjectReference Include="..\Test\TestObjects\TestObjects.csproj" />
 		<ProjectReference Include="..\Test\WorkflowApplicationTestExtensions\WorkflowApplicationTestExtensions.csproj" />
 		<ProjectReference Include="..\UiPath.Workflow\UiPath.Workflow.csproj" />
+		<ProjectReference Include="..\Test\TestCases.Activities\TestCases.Activities.csproj" />
 	</ItemGroup>
 
 	<!-- Only for .NET Framework (classic WF) -->
@@ -34,6 +35,8 @@
 		<Reference Include="System.Xaml" />
 		<Reference Include="Microsoft.VisualBasic" />
 		<Reference Include="Microsoft.VisualBasic.Activities" />
+	</ItemGroup>
+	<ItemGroup>
 	</ItemGroup>
 
 </Project>

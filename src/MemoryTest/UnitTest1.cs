@@ -22,13 +22,12 @@ using Microsoft.VisualBasic.Activities;            // VisualBasic*, VisualBasicS
 
 namespace MemoryTest
 {
-    public class UnitTest1
+    public class UnitTest1 : BaseMemoryTest
     {
 #if NET6_0_OR_GREATER
         [Fact]
         public void MultipleAssign_UsingVBValueActivity()
         {
-            int n = 100;
             var seq = new TestSequence();
 
             // Recommended: attach VB settings to the root
@@ -40,9 +39,9 @@ namespace MemoryTest
             });
             VisualBasic.SetSettings(seq, vb);
 
-            var vars = new Variable<string>[n];
+            var vars = new Variable<string>[VariableAndArgumentCount];
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < VariableAndArgumentCount; i++)
             {
                 var v = VariableHelper.CreateInitialized<string>($"var{i}", $"I'm variable {i}");
                 vars[i] = v;
@@ -73,7 +72,7 @@ namespace MemoryTest
                 DisplayName = "Delay"
             });
 
-            TestRuntime.RunAndValidateWorkflow(seq);
+            Validate(seq);
         }
 
         public sealed class TestVBValue<T> : TestActivity
@@ -100,8 +99,6 @@ namespace MemoryTest
         [Fact]
         public void MultipleAssign_UsingVBValueActivity_net48()
         {
-            const int n = 100;
-
             // Root is an Activity<string> so we can assert the final value easily.
             var wf = new DynamicActivity<string>
             {
@@ -119,9 +116,9 @@ namespace MemoryTest
                     });
                     VisualBasic.SetSettings(seq, vb);
 
-                    var vars = new Variable<string>[n];
+                    var vars = new Variable<string>[VariableAndArgumentCount];
 
-                    for (int i = 0; i < n; i++)
+                    for (int i = 0; i < VariableAndArgumentCount; i++)
                     {
                         // Create the WF variable and give it an initial default.
                         var v = new Variable<string>($"var{i}")
@@ -157,18 +154,13 @@ namespace MemoryTest
                     {
                         // ArgumentReference targets the root activity's "Result" argument by name.
                         To = new OutArgument<string>(new ArgumentReference<string>("Result")),
-                        Value = new InArgument<string>(new VisualBasicValue<string>($"var{n - 1}"))
+                        Value = new InArgument<string>(new VisualBasicValue<string>($"var{VariableAndArgumentCount - 1}"))
                     });
 
                     return seq;
                 }
             };
-
-            // Invoke and assert the composed string.
-            string actual = WorkflowInvoker.Invoke(wf);
-            string expected = string.Join(" -> ", Enumerable.Range(0, n).Select(i => $"I'm variable {i}"));
-
-            Assert.Equal(expected, actual);
+            Validate(wf);
         }
 #endif
     }

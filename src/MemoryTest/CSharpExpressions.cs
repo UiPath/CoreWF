@@ -24,7 +24,7 @@ using Microsoft.CSharp.Activities;               // CSharpValue<T>, CSharpRefere
 
 namespace MemoryTest
 {
-    public class CSharpExpressionTests
+    public class CSharpExpressionTests : BaseMemoryTest
     {
 #if NET6_0_OR_GREATER
         // Helper to compile C# expressions for CoreWF TestSequence roots.
@@ -60,12 +60,11 @@ namespace MemoryTest
         [Fact]
         public void MultipleAssign_UsingCSharpValueActivity()
         {
-            int n = 100;
             var seq = new CompilableTestSequence();
 
-            var vars = new Variable<string>[n];
+            var vars = new Variable<string>[VariableAndArgumentCount];
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < VariableAndArgumentCount; i++)
             {
                 var v = VariableHelper.CreateInitialized<string>($"var{i}", $"I'm variable {i}");
                 vars[i] = v;
@@ -93,10 +92,9 @@ namespace MemoryTest
         [Fact]
         public void MultipleAssign_UsingCSharpReferenceOnLeft()
         {
-            int n = 100;
             var seq = new CompilableTestSequence();
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < VariableAndArgumentCount; i++)
             {
                 var v = VariableHelper.CreateInitialized<string>($"var{i}", $"I'm variable {i}");
                 seq.Variables.Add(v);
@@ -124,10 +122,9 @@ namespace MemoryTest
         [Fact]
         public void MultipleAssign_UsingCSharpValueActivity_IntMath()
         {
-            int n = 100;
             var seq = new CompilableTestSequence();
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < VariableAndArgumentCount; i++)
             {
                 var v = VariableHelper.CreateInitialized<int>($"var{i}", 0);
                 seq.Variables.Add(v);
@@ -196,17 +193,15 @@ namespace MemoryTest
         [Fact]
         public void MultipleAssign_UsingCSharpValueActivity_net48()
         {
-            const int n = 100;
-
             var wf = new DynamicActivity<string>
             {
                 DisplayName = "MultipleAssign_CSharpValue_SystemActivities",
                 Implementation = () =>
                 {
                     var seq = new Sequence();
-                    var vars = new Variable<string>[n];
+                    var vars = new Variable<string>[VariableAndArgumentCount];
 
-                    for (int i = 0; i < n; i++)
+                    for (int i = 0; i < VariableAndArgumentCount; i++)
                     {
                         var v = new Variable<string>($"var{i}") { Default = new Literal<string>($"I'm variable {i}") };
                         vars[i] = v;
@@ -228,7 +223,7 @@ namespace MemoryTest
                     seq.Activities.Add(new Assign<string>
                     {
                         To = new OutArgument<string>(new ArgumentReference<string>("Result")),
-                        Value = new InArgument<string>(new CSharpValue<string>($"var{n - 1}"))
+                        Value = new InArgument<string>(new CSharpValue<string>($"var{VariableAndArgumentCount - 1}"))
                     });
 
                     return seq;
@@ -239,7 +234,7 @@ namespace MemoryTest
             CompileCSharpExpressions(wf, "CSharpValue_StringChain");
 
             string actual = WorkflowInvoker.Invoke(wf);
-            string expected = string.Join(" -> ", Enumerable.Range(0, n).Select(i => $"I'm variable {i}"));
+            string expected = string.Join(" -> ", Enumerable.Range(0, VariableAndArgumentCount).Select(i => $"I'm variable {i}"));
             Assert.Equal(expected, actual);
         }
 
@@ -247,8 +242,6 @@ namespace MemoryTest
         [Fact]
         public void MultipleAssign_UsingCSharpReferenceOnLeft_net48()
         {
-            const int n = 100;
-
             var wf = new DynamicActivity<string>
             {
                 DisplayName = "MultipleAssign_CSharpReference_OnLeft_SystemActivities",
@@ -256,7 +249,7 @@ namespace MemoryTest
                 {
                     var seq = new Sequence();
 
-                    for (int i = 0; i < n; i++)
+                    for (int i = 0; i < VariableAndArgumentCount; i++)
                     {
                         var v = new Variable<string>($"var{i}") { Default = new Literal<string>($"I'm variable {i}") };
                         seq.Variables.Add(v);
@@ -277,7 +270,7 @@ namespace MemoryTest
                     seq.Activities.Add(new Assign<string>
                     {
                         To = new OutArgument<string>(new ArgumentReference<string>("Result")),
-                        Value = new InArgument<string>(new CSharpValue<string>($"var{n - 1}"))
+                        Value = new InArgument<string>(new CSharpValue<string>($"var{VariableAndArgumentCount - 1}"))
                     });
 
                     return seq;
@@ -288,7 +281,7 @@ namespace MemoryTest
             CompileCSharpExpressions(wf, "CSharpReference_StringChain");
 
             string actual = WorkflowInvoker.Invoke(wf);
-            string expected = string.Join(" -> ", Enumerable.Range(0, n).Select(i => $"I'm variable {i}"));
+            string expected = string.Join(" -> ", Enumerable.Range(0, VariableAndArgumentCount).Select(i => $"I'm variable {i}"));
             Assert.Equal(expected, actual);
         }
 
@@ -296,8 +289,6 @@ namespace MemoryTest
         [Fact]
         public void MultipleAssign_UsingCSharpValueActivity_IntMath_net48()
         {
-            const int n = 100;
-
             var wf = new DynamicActivity<int>
             {
                 DisplayName = "MultipleAssign_CSharpValue_Int_SystemActivities",
@@ -305,7 +296,7 @@ namespace MemoryTest
                 {
                     var seq = new Sequence();
 
-                    for (int i = 0; i < n; i++)
+                    for (int i = 0; i < VariableAndArgumentCount; i++)
                     {
                         var v = new Variable<int>($"var{i}") { Default = new Literal<int>(0) };
                         seq.Variables.Add(v);
@@ -324,7 +315,7 @@ namespace MemoryTest
                     seq.Activities.Add(new Assign<int>
                     {
                         To = new OutArgument<int>(new ArgumentReference<int>("Result")),
-                        Value = new InArgument<int>(new CSharpValue<int>($"var{n - 1}"))
+                        Value = new InArgument<int>(new CSharpValue<int>($"var{VariableAndArgumentCount - 1}"))
                     });
 
                     return seq;
@@ -335,7 +326,7 @@ namespace MemoryTest
             CompileCSharpExpressions(wf, "CSharpValue_IntChain");
 
             int actual = WorkflowInvoker.Invoke(wf);
-            int expected = n * (n - 1) / 2;
+            int expected = VariableAndArgumentCount * (VariableAndArgumentCount - 1) / 2;
             Assert.Equal(expected, actual);
         }
 #endif

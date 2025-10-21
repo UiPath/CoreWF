@@ -95,6 +95,7 @@ public sealed class VisualBasicValue<TResult> : TextExpressionBase<TResult>, IVa
         {
             var publicAccessor = CodeActivityPublicEnvironmentAccessor.Create(metadata);
             _expressionTree = VisualBasicHelper.Compile<TResult>(ExpressionText, publicAccessor, false);
+            ExpressionText = null;
         }
         catch (SourceExpressionException e)
         {

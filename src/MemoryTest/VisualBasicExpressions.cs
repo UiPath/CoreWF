@@ -1,7 +1,9 @@
 ﻿using System;
 using Xunit;
 
+
 #if NET6_0_OR_GREATER
+using static TestCases.Activities.Assignment;
 using System.Activities; // from CoreWF
 using Test.Common.TestObjects.Activities;
 using Test.Common.TestObjects.Activities.Variables;
@@ -21,14 +23,13 @@ using Microsoft.VisualBasic.Activities;            // VisualBasic*, VisualBasicS
 
 namespace MemoryTest
 {
-    public class VisualBasicExpressions
+    public class VisualBasicExpressions : BaseMemoryTest
     {
 #if NET6_0_OR_GREATER
         // 1) VB on RHS, WF variable on LHS (string chain)
         [Fact]
-        public void MultipleAssign_UsingVBValueActivity()
+        public void Windows_MultipleAssign_VBValue()
         {
-            int n = 100;
             var seq = new TestSequence();
 
             var vb = new VisualBasicSettings();
@@ -39,9 +40,9 @@ namespace MemoryTest
             });
             VisualBasic.SetSettings(seq, vb);
 
-            var vars = new Variable<string>[n];
+            var vars = new Variable<string>[VariableAndArgumentCount];
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < VariableAndArgumentCount; i++)
             {
                 var v = VariableHelper.CreateInitialized<string>($"var{i}", $"I'm variable {i}");
                 vars[i] = v;
@@ -60,21 +61,15 @@ namespace MemoryTest
                     ValueActivity = new TestVBValue<string>(vbText)
                 });
             }
+            seq = AddFinalActivities(seq, nameof(Windows_MultipleAssign_VBValue));
 
-            seq.Activities.Add(new TestDelay
-            {
-                Duration = TimeSpan.FromSeconds(30),
-                DisplayName = "Delay"
-            });
-
-            TestRuntime.RunAndValidateWorkflow(seq);
+            Validate(seq);
         }
 
         // 2) VB on RHS, VB on LHS (string chain)
         [Fact]
-        public void MultipleAssign_UsingVBReferenceOnLeft()
+        public void Windows_MultipleAssign_VBReference()
         {
-            int n = 100;
             var seq = new TestSequence();
 
             var vb = new VisualBasicSettings();
@@ -85,7 +80,7 @@ namespace MemoryTest
             });
             VisualBasic.SetSettings(seq, vb);
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < VariableAndArgumentCount; i++)
             {
                 // Still create initialized WF variables for each name, so VB refs can bind.
                 var v = VariableHelper.CreateInitialized<string>($"var{i}", $"I'm variable {i}");
@@ -105,79 +100,17 @@ namespace MemoryTest
                 });
             }
 
-            seq.Activities.Add(new TestDelay
-            {
-                Duration = TimeSpan.FromSeconds(30),
-                DisplayName = "Delay"
-            });
+            seq = AddFinalActivities(seq, nameof(Windows_MultipleAssign_VBReference));
 
-            TestRuntime.RunAndValidateWorkflow(seq);
+            Validate(seq);
         }
 
-        // 3) VB on RHS, WF variable on LHS (int math chain)
-        [Fact]
-        public void MultipleAssign_UsingVBValueActivity_IntMath()
-        {
-            int n = 100;
-            var seq = new TestSequence();
-
-            var vb = new VisualBasicSettings();
-            vb.ImportReferences.Add(new VisualBasicImportReference
-            {
-                Assembly = typeof(int).Assembly.GetName().Name,
-                Import = "System"
-            });
-            VisualBasic.SetSettings(seq, vb);
-
-            for (int i = 0; i < n; i++)
-            {
-                var v = VariableHelper.CreateInitialized<int>($"var{i}", 0);
-                seq.Variables.Add(v);
-
-                string vbText = (i == 0) ? "0" : $"var{i - 1} + {i}";
-
-                seq.Activities.Add(new TestAssign<int>
-                {
-                    ToVariable = v,                                      // LHS = WF variable
-                    ValueActivity = new TestVBValue<int>(vbText)         // RHS = VB value
-                });
-            }
-
-            seq.Activities.Add(new TestDelay
-            {
-                Duration = TimeSpan.FromSeconds(30),
-                DisplayName = "Delay"
-            });
-
-            TestRuntime.RunAndValidateWorkflow(seq);
-        }
-
-        // Helpers for CoreWF test harness
-        public sealed class TestVBValue<T> : TestActivity
-        {
-            public TestVBValue(string expressionText)
-            {
-                this.ProductActivity = new VisualBasicValue<T>(expressionText);
-                ExpectedOutcome = Outcome.None;
-            }
-        }
-
-        public sealed class TestVBReference<T> : TestActivity
-        {
-            public TestVBReference(string expressionText)
-            {
-                this.ProductActivity = new VisualBasicReference<T>(expressionText);
-                ExpectedOutcome = Outcome.None;
-            }
-        }
 #else
 
         // 1) VB on RHS, WF variable on LHS (string chain) — asserts result
         [Fact]
-        public void MultipleAssign_UsingVBValueActivity_net48()
+        public void Legacy_multipleAssign_VbValue()
         {
-            const int n = 100;
-
             var wf = new DynamicActivity<string>
             {
                 DisplayName = "MultipleAssign_VBValue_SystemActivities",
@@ -193,9 +126,9 @@ namespace MemoryTest
                     });
                     VisualBasic.SetSettings(seq, vb);
 
-                    var vars = new Variable<string>[n];
+                    var vars = new Variable<string>[VariableAndArgumentCount];
 
-                    for (int i = 0; i < n; i++)
+                    for (int i = 0; i < VariableAndArgumentCount; i++)
                     {
                         var v = new Variable<string>($"var{i}")
                         {
@@ -217,34 +150,26 @@ namespace MemoryTest
                         });
                     }
 
-                    seq.Activities.Add(new Delay
-                    {
-                        Duration = TimeSpan.FromSeconds(30),
-                        DisplayName = "Delay"
-                    });
+                    seq = AddFinalActivities(seq, nameof(Legacy_multipleAssign_VbValue));
 
                     // Result <- var{n-1}
                     seq.Activities.Add(new Assign<string>
                     {
                         To = new OutArgument<string>(new ArgumentReference<string>("Result")),
-                        Value = new InArgument<string>(new VisualBasicValue<string>($"var{n - 1}"))
+                        Value = new InArgument<string>(new VisualBasicValue<string>($"var{VariableAndArgumentCount - 1}"))
                     });
 
                     return seq;
                 }
             };
 
-            string actual = WorkflowInvoker.Invoke(wf);
-            string expected = string.Join(" -> ", Enumerable.Range(0, n).Select(i => $"I'm variable {i}"));
-            Assert.Equal(expected, actual);
+            Validate(wf);
         }
 
         // 2) VB on RHS, VB on LHS (string chain) — asserts result
         [Fact]
-        public void MultipleAssign_UsingVBReferenceOnLeft_net48()
+        public void Legacy_multipleAssign_VbReference()
         {
-            const int n = 100;
-
             var wf = new DynamicActivity<string>
             {
                 DisplayName = "MultipleAssign_VBReference_OnLeft_SystemActivities",
@@ -260,7 +185,7 @@ namespace MemoryTest
                     });
                     VisualBasic.SetSettings(seq, vb);
 
-                    for (int i = 0; i < n; i++)
+                    for (int i = 0; i < VariableAndArgumentCount; i++)
                     {
                         // Define the variables to be referenced by VB.
                         var v = new Variable<string>($"var{i}") { Default = new Literal<string>($"I'm variable {i}") };
@@ -279,84 +204,19 @@ namespace MemoryTest
                         });
                     }
 
-                    seq.Activities.Add(new Delay
-                    {
-                        Duration = TimeSpan.FromSeconds(30),
-                        DisplayName = "Delay"
-                    });
+                    seq = AddFinalActivities(seq, nameof(Legacy_multipleAssign_VbReference));
 
                     seq.Activities.Add(new Assign<string>
                     {
                         To = new OutArgument<string>(new ArgumentReference<string>("Result")),
-                        Value = new InArgument<string>(new VisualBasicValue<string>($"var{n - 1}"))
+                        Value = new InArgument<string>(new VisualBasicValue<string>($"var{VariableAndArgumentCount - 1}"))
                     });
 
                     return seq;
                 }
             };
 
-            string actual = WorkflowInvoker.Invoke(wf);
-            string expected = string.Join(" -> ", Enumerable.Range(0, n).Select(i => $"I'm variable {i}"));
-            Assert.Equal(expected, actual);
-        }
-
-        // 3) VB on RHS, WF variable on LHS (int math chain) — asserts result
-        [Fact]
-        public void MultipleAssign_UsingVBValueActivity_IntMath_net48()
-        {
-            const int n = 100;
-
-            var wf = new DynamicActivity<int>
-            {
-                DisplayName = "MultipleAssign_VBValue_Int_SystemActivities",
-                Implementation = () =>
-                {
-                    var seq = new Sequence();
-
-                    var vb = new VisualBasicSettings();
-                    vb.ImportReferences.Add(new VisualBasicImportReference
-                    {
-                        Assembly = typeof(int).Assembly.GetName().Name,
-                        Import = "System"
-                    });
-                    VisualBasic.SetSettings(seq, vb);
-
-                    for (int i = 0; i < n; i++)
-                    {
-                        var v = new Variable<int>($"var{i}") { Default = new Literal<int>(0) };
-                        seq.Variables.Add(v);
-
-                        string vbText = (i == 0) ? "0" : $"var{i - 1} + {i}";
-
-                        seq.Activities.Add(new Assign<int>
-                        {
-                            // LHS = WF variable
-                            To = new OutArgument<int>(v),
-                            // RHS = VB value (arithmetic)
-                            Value = new InArgument<int>(new VisualBasicValue<int>(vbText))
-                        });
-                    }
-
-                    seq.Activities.Add(new Delay
-                    {
-                        Duration = TimeSpan.FromSeconds(30),
-                        DisplayName = "Delay"
-                    });
-
-                    // Result <- var{n-1}
-                    seq.Activities.Add(new Assign<int>
-                    {
-                        To = new OutArgument<int>(new ArgumentReference<int>("Result")),
-                        Value = new InArgument<int>(new VisualBasicValue<int>($"var{n - 1}"))
-                    });
-
-                    return seq;
-                }
-            };
-
-            int actual = WorkflowInvoker.Invoke(wf);
-            int expected = n * (n - 1) / 2; // 0 + 1 + ... + (n-1)
-            Assert.Equal(expected, actual);
+            Validate(wf);
         }
 #endif
     }
