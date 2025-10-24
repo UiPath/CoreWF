@@ -40,7 +40,7 @@ public class CompiledExpressionInvoker
 
         _metadataRoot = metadata.Environment.Root;
 
-        ProcessLocationReferences();
+        //ProcessLocationReferences();
     }
 
     public object InvokeExpression(ActivityContext activityContext)

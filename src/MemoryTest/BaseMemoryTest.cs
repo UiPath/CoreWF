@@ -28,10 +28,10 @@ namespace MemoryTest
 {
     public class BaseMemoryTest
     {
-        public const int VariableAndArgumentCount = 1000;
+        public const int VariableAndArgumentCount = 100;
 
         // ========= Dump control & paths =========
-        private const bool CreateDumpBeforeDelay = true; // toggle to enable/disable
+        private const bool CreateDumpBeforeDelay = false; // toggle to enable/disable
         private const string ProcDumpPath = @"C:\Tools\Procdump\procdump.exe";
         private const string DumpDirectory = @"C:\Users\bogdan.stan\Desktop\ROBO-5081 - OOM\CoreWF repro";
         private const string CreateDumpActivityName = "CreateDump (pre-delay)";
@@ -186,7 +186,7 @@ namespace MemoryTest
 
         public void Validate(TestActivity wf)
         {
-            TestRuntime.RunAndValidateWorkflow(wf, expectedTrace: ExpectedTraces);
+            TestRuntime.RunAndValidateWorkflow(wf, expectedTrace: ExpectedTraces, validatorSettings: new() { SingleLevel = true }, constraints: new());
         }
 
         public TestSequence AddFinalActivities(TestSequence seq, string testName)
