@@ -9,7 +9,26 @@ namespace System.Activities.Expressions;
 
 public class CompiledExpressionInvoker
 {
-    private static readonly AttachableMemberIdentifier compiledExpressionRootProperty =
+    private enum LocationHandling
+    {
+        ORIGINAL,
+        SKIP_PROCESS,
+        REMOVE_DUPLICATES,
+    }
+    private static LocationHandling _locationHandling = (
+#if WINDOWS
+Environment.GetEnvironmentVariable("UIPATH_EXPRESSION_HANDLING", EnvironmentVariableTarget.User)
+#else
+null
+#endif
+        ?? Environment.GetEnvironmentVariable("UIPATH_EXPRESSION_HANDLING")) switch
+        {
+            "ORIGINAL" => LocationHandling.ORIGINAL,
+            "SKIP_PROCESS" => LocationHandling.SKIP_PROCESS,
+            _ => LocationHandling.REMOVE_DUPLICATES,
+        };
+
+private static readonly AttachableMemberIdentifier compiledExpressionRootProperty =
         new(typeof(CompiledExpressionInvoker), "CompiledExpressionRoot");
     private static readonly AttachableMemberIdentifier compiledExpressionRootForImplementationProperty =
         new(typeof(CompiledExpressionInvoker), "CompiledExpressionRootForImplementation");
@@ -40,6 +59,10 @@ public class CompiledExpressionInvoker
 
         _metadataRoot = metadata.Environment.Root;
 
+        if (_locationHandling == LocationHandling.SKIP_PROCESS)
+        {
+            return;
+        }
         ProcessLocationReferences();
     }
 
@@ -209,13 +232,22 @@ public class CompiledExpressionInvoker
             current = current.Parent;
         }
 
+        var references = new List<LocationReference>();
         foreach (LocationReferenceEnvironment environment in environments)
         {
             foreach (LocationReference reference in environment.GetLocationReferences())
             {
-                _accessor.CreateLocationArgument(reference, false);
-                _locationReferences.Add(new InlinedLocationReference(reference, _metadata.CurrentActivity));
+                if (_locationHandling == LocationHandling.REMOVE_DUPLICATES)
+                {
+                    references.RemoveAll(r => r.Name == reference.Name);
+                }
+                references.Add(reference);
             }
+        }
+        foreach (var reference in references)
+        {
+            _accessor.CreateLocationArgument(reference, false);
+            _locationReferences.Add(new InlinedLocationReference(reference, _metadata.CurrentActivity));
         }
 
         // Scenarios like VBV/R needs to know if they should run their own compiler
