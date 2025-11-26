@@ -9,6 +9,8 @@ namespace System.Activities.Expressions;
 
 public class CompiledExpressionInvoker
 {
+    private static bool DisableLocationArgumentCreation = Environment.GetEnvironmentVariable("UIPATH_EXPRESSION_DISABLE_LOCATION_ARGUMENT") != null;
+
     internal static readonly string TextExpressionMetadataRequiresCompilationKey = nameof(TextExpressionMetadataRequiresCompilationKey);
 
     private static readonly AttachableMemberIdentifier compiledExpressionRootProperty =
@@ -230,7 +232,10 @@ public class CompiledExpressionInvoker
         {
             foreach (LocationReference reference in environment.GetLocationReferences())
             {
-                _accessor.CreateLocationArgument(reference, false);
+                if (!DisableLocationArgumentCreation)
+                {
+                    _accessor.CreateLocationArgument(reference, false);
+                }
                 _locationReferences.Add(new InlinedLocationReference(reference, _metadata.CurrentActivity));
             }
         }
