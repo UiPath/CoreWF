@@ -36,7 +36,7 @@ stages:
       type: internal
 
 - stage: ReleasePublic
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
   dependsOn: BuildAndTest
   jobs:
   - template: .pipelines/release.yaml
