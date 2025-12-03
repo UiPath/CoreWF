@@ -8,6 +8,8 @@ using System.Globalization;
 namespace System.Activities;
 using Internals;
 using Runtime;
+using System.Activities.Expressions;
+using System.Text;
 using Tracking;
 
 #if DYNAMICUPDATE
@@ -857,10 +859,19 @@ public sealed class ActivityInstance
                 {
                     RuntimeArgument argument = runtimeArguments[i];
 
-                    if (!InternalTryPopulateArgumentValueOrScheduleExpression(argument, i, executor, argumentValueOverrides, resultLocation, false))
+                    try
                     {
-                        completedSynchronously = false;
-                        break;
+                        if (!InternalTryPopulateArgumentValueOrScheduleExpression(argument, i, executor, argumentValueOverrides, resultLocation, false))
+                        {
+                            completedSynchronously = false;
+                            break;
+                        }
+                    }
+                    catch (NotSupportedException ex) when (ex.Data.Contains(CompiledExpressionInvoker.TextExpressionMetadataRequiresCompilationKey) &&
+                        (ex.Data[CompiledExpressionInvoker.TextExpressionMetadataRequiresCompilationKey] as bool? == true))
+                    {
+                        var enrichedException = new NotSupportedException(CreateArgumentErrorMessage(argument, ex), ex);
+                        throw FxTrace.Exception.AsError(enrichedException);
                     }
                 }
             }
@@ -877,6 +888,33 @@ public sealed class ActivityInstance
         }
 
         return completedSynchronously;
+
+        static string CreateArgumentErrorMessage(RuntimeArgument argument, Exception exception)
+        {
+            if (argument is null)
+            {
+                return exception.Message;
+            }
+
+            string ownerDisplayName = argument.Owner?.DisplayName;
+            string argumentDisplayName = argument.DisplayName ?? argument.Name;
+            string exceptionMessage = exception.Message;
+
+            var messageBuilder = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(ownerDisplayName))
+            {
+                messageBuilder.Append(ownerDisplayName).Append(": ");
+            }
+
+            if (!string.IsNullOrEmpty(argumentDisplayName))
+            {
+                messageBuilder.Append(argumentDisplayName).Append(' ');
+            }
+
+            messageBuilder.Append(exceptionMessage);
+            return messageBuilder.ToString();
+        }
     }
 
     internal void ResolveNewVariableDefaultsDuringDynamicUpdate(ActivityExecutor executor, IList<int> dynamicUpdateVariableIndexes, bool forImplementation)

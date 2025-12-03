@@ -9,6 +9,8 @@ namespace System.Activities.Expressions;
 
 public class CompiledExpressionInvoker
 {
+    internal static readonly string TextExpressionMetadataRequiresCompilationKey = nameof(TextExpressionMetadataRequiresCompilationKey);
+
     private static readonly AttachableMemberIdentifier compiledExpressionRootProperty =
         new(typeof(CompiledExpressionInvoker), "CompiledExpressionRoot");
     private static readonly AttachableMemberIdentifier compiledExpressionRootForImplementationProperty =
@@ -57,7 +59,9 @@ public class CompiledExpressionInvoker
             {
                 if (!TryGetCurrentCompiledExpressionRoot(activityContext, out _compiledRoot, out _expressionId))
                 {
-                    throw FxTrace.Exception.AsError(new NotSupportedException(SR.TextExpressionMetadataRequiresCompilation(_expressionActivity.GetType().Name)));
+                    var exception = new NotSupportedException(SR.TextExpressionMetadataRequiresCompilation($"{_expressionActivity.GetType().Name} ({_textExpression.ExpressionText ?? string.Empty})"));
+                    exception.Data[TextExpressionMetadataRequiresCompilationKey] = true;
+                    throw FxTrace.Exception.AsError(exception);
                 }
             }
         }

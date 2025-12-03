@@ -12,6 +12,7 @@
     <PackageReference Include="AgileObjects.ReadableExpressions" Version="3.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="$(RoslynPackageVersion)" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="$(RoslynPackageVersion)" />
+	<PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" Version="$(RoslynPackageVersion)" />
   </ItemGroup>
   <ItemGroup>
     <None Update="TestData\CompilerMissingAssembly.dll">

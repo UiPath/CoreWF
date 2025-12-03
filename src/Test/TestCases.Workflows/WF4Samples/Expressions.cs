@@ -21,6 +21,12 @@ namespace TestCases.Workflows.WF4Samples
 {
     using StringDictionary = Dictionary<string, object>;
 
+    internal enum Language
+    {
+        VisualBasic,
+        CSharp
+    };
+
     public abstract class ExpressionsBaseCommon
     {
         protected abstract bool CompileExpressions { get; }
@@ -171,19 +177,32 @@ Iterate ArrayList
         public async Task WorkflowWithReadonlyValueTypeVar()
         {
             var activity = TestHelper.GetActivityFromXamlResource(TestXamls.WorkflowWithReadonlyValueTypeVar);
-            var compiledExpressionRoot = await GenerateAndLoadCompiledExpressionRoot(activity);
+            var compiledExpressionRoot = await GenerateAndLoadCompiledExpressionRoot(activity, "TestXamls_WorkflowWithReadonlyValueTypeVar", Language.CSharp);
             CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(activity, compiledExpressionRoot);
 
             TestHelper.InvokeWorkflow(activity).ShouldBe(string.Empty);
         }
-        private static async Task<ICompiledExpressionRoot> GenerateAndLoadCompiledExpressionRoot(Activity activity)
+        [Fact]
+        public async Task Assign_Value_RequiresCompilation()
+        {
+            var assignWithLiteral = TestHelper.GetActivityFromXamlResource(TestXamls.AssignWithLiteral);
+            var compiledExpressionRoot = await GenerateAndLoadCompiledExpressionRoot(assignWithLiteral, "TestXamls_Assign", Language.VisualBasic);
+
+            var assignWithExpressionNothing = TestHelper.GetActivityFromXamlResource(TestXamls.AssignWithExpressionNothing);
+            CompiledExpressionInvoker.SetCompiledExpressionRootForImplementation(assignWithExpressionNothing, compiledExpressionRoot);
+
+            var ex = Assert.Throws<NotSupportedException>(() => TestHelper.InvokeWorkflow(assignWithExpressionNothing));
+            ex.Message.ShouldBe(@"My Fancy Assign: Value Expression Activity type 'VisualBasicValue`1 (Nothing)' requires compilation in order to run.  Please ensure that the workflow has been compiled.");
+        }
+        private static async Task<ICompiledExpressionRoot> GenerateAndLoadCompiledExpressionRoot(Activity activity, string className,
+            Language language)
         {
             using var expressionsStringWriter = new StringWriter();
-            var activityName = $"{TestXamls.WorkflowWithReadonlyValueTypeVar}_CompiledExpressionRoot";
+            var activityName = $"{className}_CompiledExpressionRoot";
             TextExpressionCompilerSettings settings = new()
             {
                 Activity = activity,
-                Language = "C#",
+                Language = language == Language.VisualBasic ? "VB" : "C#",
                 ActivityName = activityName,
                 RootNamespace = null,
                 GenerateAsPartialClass = false,
@@ -194,7 +213,7 @@ Iterate ArrayList
 
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).Select(References.GetReference).ToArray();
             var project = new Project(assemblies);
-            var compiledExpressionsClassType = await project.Compile(expressionsStringWriter.ToString(), activityName);
+            var compiledExpressionsClassType = await project.Compile(expressionsStringWriter.ToString(), activityName, language);
             return (ICompiledExpressionRoot)Activator.CreateInstance(compiledExpressionsClassType, activity);
         }
         [Fact]
