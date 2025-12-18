@@ -896,24 +896,13 @@ public sealed class ActivityInstance
                 return exception.Message;
             }
 
-            string ownerDisplayName = argument.Owner?.DisplayName;
-            string argumentDisplayName = argument.DisplayName ?? argument.Name;
-            string exceptionMessage = exception.Message;
+            var owner = argument.Owner?.DisplayName;
+            var argName = argument.DisplayName ?? argument.Name;
 
-            var messageBuilder = new StringBuilder();
+            var ownerPart = string.IsNullOrEmpty(owner) ? "" : $"{owner}: ";
+            var argPart = string.IsNullOrEmpty(argName) ? "" : $"{argName} ";
 
-            if (!string.IsNullOrEmpty(ownerDisplayName))
-            {
-                messageBuilder.Append(ownerDisplayName).Append(": ");
-            }
-
-            if (!string.IsNullOrEmpty(argumentDisplayName))
-            {
-                messageBuilder.Append(argumentDisplayName).Append(' ');
-            }
-
-            messageBuilder.Append(exceptionMessage);
-            return messageBuilder.ToString();
+            return $"{ownerPart}{argPart}{exception.Message}";
         }
     }
 
