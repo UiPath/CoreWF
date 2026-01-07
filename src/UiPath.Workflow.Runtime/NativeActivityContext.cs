@@ -2110,7 +2110,7 @@ public class NativeActivityContext : ActivityContext
         }
 
 
-        /* Unmerged change from project 'System.Activities (net6.0-windows)'
+        /* Unmerged change from project 'System.Activities (net8.0-windows)'
         Before:
                 ActivityInstance declaringActivityInstance = FindDeclaringActivityInstance(CurrentInstance, activityDelegate.Owner);
         After:

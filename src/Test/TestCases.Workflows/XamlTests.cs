@@ -421,7 +421,7 @@ namespace TestCases.Workflows
             loadContext.LoadFromAssemblyPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TestData\JsonFileInstanceStore.dll"));
 
             var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(object), "new List<Dictionary<string, FileInstanceStore[]>>()", new[] { "System.Collections.Generic", "JsonFileInstanceStore" }, new[] { (AssemblyReference)new AssemblyName("JsonFileInstanceStore") }, location);
-            result.ReturnType.FullName.ShouldBe("System.Collections.Generic.List`1[[System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[JsonFileInstanceStore.FileInstanceStore[], JsonFileInstanceStore, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]");
+            result.ReturnType.FullName.ShouldBe("System.Collections.Generic.List`1[[System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[JsonFileInstanceStore.FileInstanceStore[], JsonFileInstanceStore, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]");
             result.SourceExpressionException?.Errors.ShouldBeEmpty();
             result.Activity.ShouldNotBeNull();
         }

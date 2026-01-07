@@ -1,4 +1,5 @@
-﻿using Microsoft.CSharp.Activities;
+﻿using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.CSharp.Activities;
 using Microsoft.VisualBasic.Activities;
 using Shouldly;
 using System;
@@ -8,6 +9,7 @@ using System.Activities.Statements;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -256,8 +258,8 @@ Iterate ArrayList
                     CreateVariable(name: "SalaryStats", @default: ctx => new SalaryStats()),
                     CreateVariable<double>(name: "average")},
                 activities: new Activity[]{
-                    CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee1").FirstName + " " + ctx.GetValue<Employee>("Employee1").LastName + " earns " + ctx.GetValue<Employee>("Employee1").Salary.ToString("$0.00")),
-                    CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee2").FirstName + " " + ctx.GetValue<Employee>("Employee2").LastName + " earns " + ctx.GetValue<Employee>("Employee2").Salary.ToString("$0.00")),
+                    CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee1").FirstName + " " + ctx.GetValue<Employee>("Employee1").LastName + " earns " + ctx.GetValue<Employee>("Employee1").Salary.ToString("$0.00", CultureInfo.InvariantCulture)),
+                    CreateWriteLine(text: ctx => ctx.GetValue<Employee>("Employee2").FirstName + " " + ctx.GetValue<Employee>("Employee2").LastName + " earns " + ctx.GetValue<Employee>("Employee2").Salary.ToString("$0.00", CultureInfo.InvariantCulture)),
                     CreateAssign(to: (OutArgument<double>)new FuncReference<SalaryStats, double>("SalaryStats", s => s.MinSalary, (s, value) =>
                     {
                         s.MinSalary = value;
@@ -275,8 +277,10 @@ Iterate ArrayList
                     }), value:  (InArgument<double>)(Func<ActivityContext, double>)(ctx => (ctx.GetValue<Employee>("Employee1").Salary + ctx.GetValue<Employee>("Employee2").Salary) / 2.0)),
                     CreateAssign(to: (OutArgument<double>)new Reference<double>("average"), value:  (InArgument<double>)(Func<ActivityContext, double>)
                         (ctx => ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary)),
-                    CreateWriteLine(text: ctx => string.Format("Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
-                        ctx.GetValue<SalaryStats>("SalaryStats").MinSalary, ctx.GetValue<SalaryStats>("SalaryStats").MaxSalary, ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary))});
+                    CreateWriteLine(text: ctx => string.Format("Salary statistics: minimum salary is {0}, maximum salary is {1}, average salary is {2}",
+                        ctx.GetValue<SalaryStats>("SalaryStats").MinSalary.ToString("$0.00", CultureInfo.InvariantCulture), 
+                        ctx.GetValue<SalaryStats>("SalaryStats").MaxSalary.ToString("$0.00", CultureInfo.InvariantCulture), 
+                        ctx.GetValue<SalaryStats>("SalaryStats").AvgSalary.ToString("$0.00", CultureInfo.InvariantCulture)))});
             static Variable<T> CreateVariable<T>(string name = null, Func<ActivityContext, T> @default = null)
             {
                 var variable = new Variable<T>();
@@ -402,11 +406,11 @@ Iterate ArrayList
                 {
                     new WriteLine()
                     {
-                        Text = new LambdaValue<string>(ctx => e1.Get(ctx).FirstName + " " + e1.Get(ctx).LastName + " earns " + e1.Get(ctx).Salary.ToString("$0.00")),
+                        Text = new LambdaValue<string>(ctx => e1.Get(ctx).FirstName + " " + e1.Get(ctx).LastName + " earns " + e1.Get(ctx).Salary.ToString("$0.00", CultureInfo.InvariantCulture)),
                     },
                     new WriteLine()
                     {
-                        Text = new LambdaValue<string>(ctx => e2.Get(ctx).FirstName + " " + e2.Get(ctx).LastName + " earns " + e2.Get(ctx).Salary.ToString("$0.00")),
+                        Text = new LambdaValue<string>(ctx => e2.Get(ctx).FirstName + " " + e2.Get(ctx).LastName + " earns " + e2.Get(ctx).Salary.ToString("$0.00", CultureInfo.InvariantCulture)),
                     },
                     new Assign<double>()
                     {
@@ -426,8 +430,10 @@ Iterate ArrayList
                     new WriteLine()
                     {
                         Text = new LambdaValue<string>(ctx => String.Format(
-                            "Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
-                            stats.Get(ctx).MinSalary, stats.Get(ctx).MaxSalary, stats.Get(ctx).AvgSalary))
+                            "Salary statistics: minimum salary is {0}, maximum salary is {1}, average salary is {2}",
+                            stats.Get(ctx).MinSalary.ToString("$0.00", CultureInfo.InvariantCulture), 
+                            stats.Get(ctx).MaxSalary.ToString("$0.00", CultureInfo.InvariantCulture), 
+                            stats.Get(ctx).AvgSalary.ToString("$0.00", CultureInfo.InvariantCulture)))
                     }
                 },
             };
@@ -458,11 +464,11 @@ Iterate ArrayList
                 {
                     new WriteLine()
                     {
-                        Text = ExpressionServices.Convert<string>(ctx => e1.Get(ctx).FirstName + " " + e1.Get(ctx).LastName + " earns " + e1.Get(ctx).Salary.ToString("$0.00")),
+                        Text = ExpressionServices.Convert<string>(ctx => e1.Get(ctx).FirstName + " " + e1.Get(ctx).LastName + " earns " + e1.Get(ctx).Salary.ToString("$0.00", CultureInfo.InvariantCulture)),
                     },
                     new WriteLine()
                     {
-                        Text = ExpressionServices.Convert<string>(ctx => e2.Get(ctx).FirstName + " " + e2.Get(ctx).LastName + " earns " + e2.Get(ctx).Salary.ToString("$0.00")),
+                        Text = ExpressionServices.Convert<string>(ctx => e2.Get(ctx).FirstName + " " + e2.Get(ctx).LastName + " earns " + e2.Get(ctx).Salary.ToString("$0.00", CultureInfo.InvariantCulture)),
                     },
                     new Assign<double>()
                     {
@@ -482,8 +488,10 @@ Iterate ArrayList
                     new WriteLine()
                     {
                         Text = ExpressionServices.Convert<string>(ctx => String.Format(
-                            "Salary statistics: minimum salary is {0:$0.00}, maximum salary is {1:$0.00}, average salary is {2:$0.00}",
-                            stats.Get(ctx).MinSalary, stats.Get(ctx).MaxSalary, stats.Get(ctx).AvgSalary))
+                            "Salary statistics: minimum salary is {0}, maximum salary is {1}, average salary is {2}",
+                            stats.Get(ctx).MinSalary.ToString("$0.00", CultureInfo.InvariantCulture),
+                            stats.Get(ctx).MaxSalary.ToString("$0.00", CultureInfo.InvariantCulture),
+                            stats.Get(ctx).AvgSalary.ToString("$0.00", CultureInfo.InvariantCulture)))
                     }
                 },
             };
