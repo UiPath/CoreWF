@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
 	<AssemblyName>System.Activities</AssemblyName>
 	<PackageId>UiPath.Workflow.Runtime</PackageId>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Title>Core WF ETW Tracking Provider</Title>
     <Description>Unofficial port of the Windows Workflow Foundation (WF) ETW tracking provider to .NET Core/Standard</Description>
     <Authors>Lucian Bargaoanu,Dustin Metzgar</Authors>

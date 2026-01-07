@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
+        <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
         <Description>Unofficial port of the Windows Workflow Foundation (WF) to .NET 6</Description>
         <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
