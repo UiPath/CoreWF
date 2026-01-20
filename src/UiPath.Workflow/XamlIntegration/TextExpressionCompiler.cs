@@ -1,6 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using Microsoft.VisualBasic.Activities;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
@@ -15,7 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.VisualBasic.Activities;
 
 namespace System.Activities.XamlIntegration;
 
@@ -2530,32 +2530,11 @@ public class TextExpressionCompiler
 
     private string FormatWithTypeCast(string coreExpressionText, Type resultType)
     {
-        if (resultType == null)
+        if (resultType == null || string.IsNullOrEmpty(coreExpressionText))
         {
             return coreExpressionText;
         }
-
-        if (CanUseSafeCastOperator(resultType))
-        {
-            return SafeCastText(coreExpressionText, resultType);
-        }
-
         return ExplicitCastText(coreExpressionText, resultType);
-    }
-
-    private static bool CanUseSafeCastOperator(Type targetType)
-        => !targetType.IsValueType || IsNullableValueType(targetType);
-
-    private string SafeCastText(string expressionText, Type targetType)
-    {
-        string typeName = GetFriendlyTypeName(targetType);
-        if (typeName == null)
-        {
-            return expressionText;
-        }
-
-        // Use 'as' operator for reference types and nullable value types
-        return $"{expressionText} as {typeName}";
     }
 
     private string ExplicitCastText(string expressionText, Type targetType)
@@ -2567,14 +2546,6 @@ public class TextExpressionCompiler
         }
 
         return $"(({typeName}){expressionText})";
-    }
-
-    /// <summary>
-    /// Helper method to check if a type is a nullable value type (e.g., int?, DateTime?)
-    /// </summary>
-    private static bool IsNullableValueType(Type type)
-    {
-        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 
     private string GetFriendlyTypeName(Type type)
