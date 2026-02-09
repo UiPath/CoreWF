@@ -4,6 +4,7 @@ trigger:
     - main
     - develop
     - support/*
+    - release/*
 pr:
   branches:
     include:
@@ -28,7 +29,7 @@ stages:
   - template: .pipelines/build.yaml
 
 - stage: ReleaseInternal
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), startsWith(variables['Build.SourceBranch'], 'refs/heads/support/')))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), startsWith(variables['Build.SourceBranch'], 'refs/heads/support/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')))
   dependsOn: BuildAndTest
   jobs:
   - template: .pipelines/release.yaml
