@@ -9,7 +9,7 @@ namespace System.Activities.Expressions;
 
 public class CompiledExpressionInvoker
 {
-    private static bool DisableLocationArgumentCreation = Environment.GetEnvironmentVariable("UIPATH_EXPRESSION_DISABLE_LOCATION_ARGUMENT") != null;
+    private bool DisableLocationArgumentCreation = Environment.GetEnvironmentVariable("UIPATH_EXPRESSION_DISABLE_LOCATION_ARGUMENT") != null;
 
     internal static readonly string TextExpressionMetadataRequiresCompilationKey = nameof(TextExpressionMetadataRequiresCompilationKey);
 
