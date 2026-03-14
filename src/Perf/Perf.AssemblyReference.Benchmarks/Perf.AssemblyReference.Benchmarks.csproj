@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="9.0.0" />
+		<PackageReference Include="AutoMapper" Version="16.1.1" />
 		<PackageReference Include="Azure.Identity" Version="1.14.0" />
 		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.24.1" />
@@ -42,7 +42,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.6" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.12.1" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.12.1" />
 		<PackageReference Include="MongoDB.Driver" Version="3.4.0" />
