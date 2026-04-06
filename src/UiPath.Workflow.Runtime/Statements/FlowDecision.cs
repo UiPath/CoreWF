@@ -56,7 +56,10 @@ public sealed class FlowDecision : FlowNode
     {
         if (Condition == null)
         {
-            metadata.AddValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName));
+            metadata.AddValidationError(new Validation.ValidationError(SR.FlowDecisionRequiresCondition(owner.DisplayName))
+            {
+                SourceDetail = new object[] { this }
+            });
         }
     }
 
