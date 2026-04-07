@@ -29,10 +29,7 @@ public abstract class FlowNode
             // We've already visited this node during this pass
             if (!ReferenceEquals(_owner, owner))
             {
-                metadata.AddValidationError(new Validation.ValidationError(SR.FlowNodeCannotBeShared(_owner.DisplayName, owner.DisplayName))
-            {
-                SourceDetail = new object[] { this }
-            });
+                metadata.AddValidationError(SR.FlowNodeCannotBeShared(_owner.DisplayName, owner.DisplayName));
             }
 
             // Whether we found an issue or not we don't want to change
