@@ -36,7 +36,10 @@ public sealed class FlowSwitch<T> : FlowNode, IFlowSwitch
     {
         if (Expression == null)
         {
-            metadata.AddValidationError(SR.FlowSwitchRequiresExpression(owner.DisplayName));
+            metadata.AddValidationError(new Validation.ValidationError(SR.FlowSwitchRequiresExpression(owner.DisplayName))
+            {
+                SourceDetail = new object[] { this }
+            });
         }
     }
 
