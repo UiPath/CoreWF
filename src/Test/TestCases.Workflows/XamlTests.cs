@@ -149,6 +149,55 @@ namespace TestCases.Workflows
             outputs["myOutput"].ShouldBe(1);
         }
 
+#if !WINDOWS
+        // The net6.0-windows build uses the WPF System.Xaml, which drops
+        // whitespace-only argument values; only the local System.Xaml keeps them.
+        [Theory]
+        [InlineData(" ")]
+        [InlineData("  ")]
+        [InlineData("\t")]
+        public void WhitespaceOnlyArgumentValueIsPreserved(string value)
+        {
+            var xamlString = $@"
+            <Activity x:Class='WFTemplate'
+                      xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                      xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>
+                <x:Members>
+                    <x:Property Name='myOutput' Type='OutArgument(x:String)' />
+                </x:Members>
+                <Assign>
+                    <Assign.To>
+                        <OutArgument x:TypeArguments='x:String'>[myOutput]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                        <InArgument x:TypeArguments='x:String' xml:space='preserve'>{value}</InArgument>
+                    </Assign.Value>
+                </Assign>
+            </Activity>";
+            var outputs = InvokeWorkflow(xamlString);
+            outputs["myOutput"].ShouldBe(value);
+        }
+#endif
+
+        [Fact]
+        public void WhitespaceAroundExpressionElementIsIgnoredWhenSpaceIsPreserved()
+        {
+            var xamlString = @"
+            <Activity x:Class='WFTemplate' xml:space='preserve'
+                      xmlns='http://schemas.microsoft.com/netfx/2009/xaml/activities'
+                      xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                      xmlns:mca='clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities'>
+                <Sequence>
+                    <WriteLine>
+                        <InArgument x:TypeArguments='x:String'>
+                            <mca:CSharpValue x:TypeArguments='x:String'>""constant""</mca:CSharpValue>
+                        </InArgument>
+                    </WriteLine>
+                </Sequence>
+            </Activity>";
+            Load(xamlString).ShouldNotBeNull();
+        }
+
         [Fact]
         public void XamlWorkflowWithInputObject()
         {

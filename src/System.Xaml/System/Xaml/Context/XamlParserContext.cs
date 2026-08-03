@@ -289,6 +289,12 @@ namespace MS.Internal.Xaml.Context
             set { _stack.CurrentFrame.PreviousChildType = value; }
         }
 
+        public bool CurrentContentPropertyAssigned
+        {
+            get { return _stack.CurrentFrame.ContentPropertyAssigned; }
+            set { _stack.CurrentFrame.ContentPropertyAssigned = value; }
+        }
+
         public bool CurrentMemberIsWriteVisible()
         {
             Type allowProtectedForType = null;
