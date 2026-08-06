@@ -856,6 +856,7 @@ namespace MS.Internal.Xaml.Parser
                 property = XamlLanguage.UnknownContent;
             }
             _context.CurrentMember = property;
+            _context.CurrentContentPropertyAssigned = true;
             var startProperty = new XamlNode(XamlNodeType.StartMember, property);
             // SetLineInfo(startProperty);  // No line number info for objects from members.
             return startProperty;
@@ -1131,12 +1132,17 @@ namespace MS.Internal.Xaml.Parser
                             // Theoretically we'd also like to support all type-convertible CPs.
                             // However, for non-string CPs, 3.0 only surfaced whitespace as text if
                             // the CP hadn't already been set. For string, it surfaced it in all cases.
-                            // So to avoid a breaking change, we only surface string right now.
                             if (prop.Type == XamlLanguage.String)
                             {
                                 return false;
                             }
                             if (prop.Type.IsWhitespaceSignificantCollection)
+                            {
+                                return false;
+                            }
+                            if (!_context.CurrentContentPropertyAssigned
+                                && _context.CurrentType.TypeConverter != null
+                                && !_context.CurrentForcedToUseConstructor)
                             {
                                 return false;
                             }
