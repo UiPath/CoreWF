@@ -35,6 +35,8 @@ jobs:
         Write-Host "##vso[task.setvariable variable=Version;]$fullVersion"
         Write-Host "Version that will be used is $fullVersion"
 
+        Write-Host "Salut :3"
+
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
