@@ -7,6 +7,10 @@
   <ItemGroup>
     <Page Remove="**\*.xaml" />
     <EmbeddedResource Include="TestXamls\*.xaml" />
+    <Page Remove="ExpressionCompilerResults\CS_ExpressionCompilerResult" />
+    <Page Remove="ExpressionCompilerResults\VB_ExpressionCompilerResult" />
+    <EmbeddedResource Include="ExpressionCompilerResults\CS_ExpressionCompilerResult" />
+    <EmbeddedResource Include="ExpressionCompilerResults\VB_ExpressionCompilerResult" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AgileObjects.ReadableExpressions" Version="3.1.0" />
