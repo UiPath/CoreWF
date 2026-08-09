@@ -10,6 +10,8 @@ namespace System.Activities;
 using Expressions;
 using Internals;
 using Runtime;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Validation;
 
 internal static class ActivityUtilities
@@ -47,6 +49,8 @@ internal static class ActivityUtilities
     private static readonly Type outArgumentOfObjectType = typeof(OutArgument<object>);
     private static readonly Type inOutArgumentOfObjectType = typeof(InOutArgument<object>);
     private static PropertyChangedEventArgs propertyChangedEventArgs;
+    
+    private static readonly ConcurrentDictionary<Type, ArgumentTypeInfo> argumentTypeCache = new();
 
     // Can't delay create this one because we use object.ReferenceEquals on it in WorkflowInstance
     private static readonly ReadOnlyDictionary<string, object> emptyParameters = new(new Dictionary<string, object>(0));
@@ -97,6 +101,19 @@ internal static class ActivityUtilities
 
     public static bool IsCompletedState(ActivityInstanceState state) => state != ActivityInstanceState.Executing;
 
+    private readonly struct ArgumentTypeInfo
+    {
+        public readonly ArgumentDirection Direction;
+        public readonly Type ArgumentType;
+
+        public ArgumentTypeInfo(ArgumentDirection direction, Type argumentType)
+        {
+            Direction = direction;
+            ArgumentType = argumentType;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryGetArgumentDirectionAndType(Type propertyType, out ArgumentDirection direction, out Type argumentType)
     {
         direction = ArgumentDirection.In; // default to In
@@ -104,24 +121,34 @@ internal static class ActivityUtilities
 
         if (propertyType.IsGenericType)
         {
+            if (argumentTypeCache.TryGetValue(propertyType, out ArgumentTypeInfo info))
+            {
+                direction = info.Direction;
+                argumentType = info.ArgumentType;
+                return true;
+            }
+
             argumentType = propertyType.GetGenericArguments()[0];
 
             Type genericType = propertyType.GetGenericTypeDefinition();
 
             if (genericType == inArgumentGenericType)
             {
+                argumentTypeCache.TryAdd(propertyType, new ArgumentTypeInfo(direction, argumentType));
                 return true;
             }
 
             if (genericType == outArgumentGenericType)
             {
                 direction = ArgumentDirection.Out;
+                argumentTypeCache.TryAdd(propertyType, new ArgumentTypeInfo(direction, argumentType));
                 return true;
             }
 
             if (genericType == inOutArgumentGenericType)
             {
                 direction = ArgumentDirection.InOut;
+                argumentTypeCache.TryAdd(propertyType, new ArgumentTypeInfo(direction, argumentType));
                 return true;
             }
         }
