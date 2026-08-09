@@ -159,6 +159,25 @@ public class ExpressionTests
     }
 
     [Fact]
+    public void Cs_CompareLambdas()
+    {
+        CSharpValue<string> csv = new(@$"string.Concat(""alpha "", b?.Substring(0, 10), ""beta "", 1)");
+        WriteLine writeLine = new();
+        writeLine.Text = new InArgument<string>(csv);
+        Sequence workflow = new();
+        workflow.Activities.Add(writeLine);
+        workflow.Variables.Add(new Variable<string>("b", "I'm a variable"));
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _forceCache);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+        validationResults.Errors[0].Message.ShouldContain("An expression tree lambda may not contain a null propagating operator.");
+
+        validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+        validationResults.Errors[0].Message.ShouldContain("An expression tree lambda may not contain a null propagating operator.");
+    }
+
+    [Fact]
     public void Vb_LambdaExtension()
     {
         VisualBasicValue<string> vbv = new("list.First()");
@@ -173,11 +192,39 @@ public class ExpressionTests
     }
 
     [Fact]
+    public void Cs_LambdaExtension()
+    {
+        CSharpValue<string> csv = new("list.First()");
+        WriteLine writeLine = new();
+        writeLine.Text = new InArgument<string>(csv);
+        Sequence workflow = new();
+        workflow.Activities.Add(writeLine);
+        workflow.Variables.Add(new Variable<List<string>>("list"));
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+    }
+
+    [Fact]
     public void Vb_Dictionary()
     {
         VisualBasicValue<string> vbv = new("something.FooDictionary(\"key\").ToString()");
         WriteLine writeLine = new();
         writeLine.Text = new InArgument<string>(vbv);
+        Sequence workflow = new();
+        workflow.Activities.Add(writeLine);
+        workflow.Variables.Add(new Variable<ClassWithCollectionProperties>("something"));
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(0, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+    }
+
+    [Fact]
+    public void Cs_Dictionary()
+    {
+        CSharpValue<string> csv = new("something.FooDictionary[\"key\"].ToString()");
+        WriteLine writeLine = new();
+        writeLine.Text = new InArgument<string>(csv);
         Sequence workflow = new();
         workflow.Activities.Add(writeLine);
         workflow.Variables.Add(new Variable<ClassWithCollectionProperties>("something"));
@@ -284,6 +331,20 @@ public class ExpressionTests
         Sequence workflow = new();
         workflow.Variables.Add(new Variable<int>("someint"));
         Assign assign = new() { To = new OutArgument<int>(workflow.Variables[0]), Value = new InArgument<int>(vbv) };
+        workflow.Activities.Add(assign);
+
+        ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
+        validationResults.Errors.Count.ShouldBe(1, string.Join("\n", validationResults.Errors.Select(e => e.Message)));
+        validationResults.Errors[0].Message.ShouldContain("Constant expression not representable in type 'Integer'");
+    }
+
+    [Fact]
+    public void Cs_IntOverflow()
+    {
+        VisualBasicValue<int> csv = new("2147483648");
+        Sequence workflow = new();
+        workflow.Variables.Add(new Variable<int>("someint"));
+        Assign assign = new() { To = new OutArgument<int>(workflow.Variables[0]), Value = new InArgument<int>(csv) };
         workflow.Activities.Add(assign);
 
         ValidationResults validationResults = ActivityValidationServices.Validate(workflow, _useValidator);
