@@ -10,6 +10,8 @@ using Validation;
 internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEnvironment
 {
     private Dictionary<string, LocationReference> _declarations;
+    private string _singleDeclarationName;
+    private LocationReference _singleDeclaration;
     private List<LocationReference> _unnamedDeclarations;
 
     public ActivityLocationReferenceEnvironment()
@@ -40,6 +42,12 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
             if (_declarations == null)
             {
                 _declarations = new Dictionary<string, LocationReference>();
+                if (_singleDeclaration != null)
+                {
+                    _declarations.Add(_singleDeclarationName, _singleDeclaration);
+                    _singleDeclarationName = null;
+                    _singleDeclaration = null;
+                }
             }
 
             return _declarations;
@@ -60,6 +68,10 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
 
             if (currentScope is ActivityLocationReferenceEnvironment activityEnvironment)
             {
+                if (locationReference == activityEnvironment._singleDeclaration)
+                {
+                    return true;
+                }
                 if (activityEnvironment._declarations != null)
                 {
                     foreach (LocationReference declaration in activityEnvironment._declarations.Values)
@@ -108,7 +120,7 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
         }
         else
         {
-            if (Declarations.ContainsKey(locationReference.Name))
+            if (TryGetLocalDeclaration(locationReference.Name, out _))
             {
                 string id = null;
 
@@ -127,7 +139,17 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
             }
             else
             {
-                Declarations.Add(locationReference.Name, locationReference);
+                string name = locationReference.Name;
+                if (_declarations == null && _singleDeclaration == null)
+                {
+                    ArgumentNullException.ThrowIfNull(name, "key");
+                    _singleDeclarationName = name;
+                    _singleDeclaration = locationReference;
+                }
+                else
+                {
+                    Declarations.Add(name, locationReference);
+                }
             }
         }
     }
@@ -156,7 +178,7 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
         }
         else
         {
-            if (_declarations != null && _declarations.TryGetValue(name, out result))
+            if (TryGetLocalDeclaration(name, out result))
             {
                 return true;
             }
@@ -168,7 +190,7 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
             while (currentEnvironment != null && currentEnvironment is ActivityLocationReferenceEnvironment environment)
             {
                 ActivityLocationReferenceEnvironment activityEnvironment = environment;
-                if (activityEnvironment._declarations != null && activityEnvironment._declarations.TryGetValue(name, out result))
+                if (activityEnvironment.TryGetLocalDeclaration(name, out result))
                 {
                     return true;
                 }
@@ -195,4 +217,20 @@ internal sealed class ActivityLocationReferenceEnvironment : LocationReferenceEn
     }
 
     public override IEnumerable<LocationReference> GetLocationReferences() => Declarations.Values;
+
+    private bool TryGetLocalDeclaration(string name, out LocationReference result)
+    {
+        ArgumentNullException.ThrowIfNull(name, "key");
+        if (_declarations != null)
+        {
+            return _declarations.TryGetValue(name, out result);
+        }
+        if (_singleDeclaration != null && string.Equals(_singleDeclarationName, name, StringComparison.Ordinal))
+        {
+            result = _singleDeclaration;
+            return true;
+        }
+        result = null;
+        return false;
+    }
 }
