@@ -1,3 +1,8 @@
+parameters:
+- name: stable
+  type: boolean
+  default: false
+
 jobs:
 - job: BuildAndTest
   displayName: Build and Test
@@ -26,12 +31,24 @@ jobs:
           $versionSuffix = ""
         }
 
+        $stable = "${{ parameters.stable }}" -eq "True"
+        if ($stable) {
+          if ("$(Build.SourceBranch)" -ne "refs/heads/develop") {
+            Write-Host "##vso[task.logissue type=error]A stable release can be built only from develop, not $(Build.SourceBranch)."
+            exit 1
+          }
+          $versionSuffix = ""
+        }
+
         $xml = [Xml] (Get-Content .\src\Directory.Build.props)
 
         $version = [String] $xml.Project.PropertyGroup.Version
         $version = $version.Trim()
         $fullVersion = "$version$versionSuffix"
 
+        if ($stable) {
+          Write-Host "##vso[build.addbuildtag]stable-$fullVersion"
+        }
         Write-Host "##vso[task.setvariable variable=Version;]$fullVersion"
         Write-Host "Version that will be used is $fullVersion"
 

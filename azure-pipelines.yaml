@@ -12,6 +12,16 @@ pr:
 
 name: $(Date:yyyyMMdd)$(Rev:-rr)
 
+# Manual develop runs only: builds UiPath.Workflow and UiPath.Workflow.Runtime as a stable release (the
+# Version from src/Directory.Build.props without the -<build number> suffix), which ReleaseInternal pushes
+# to UiPath-Internal. Bump Version after each stable release: a second run with the same Version fails
+# on push.
+parameters:
+- name: stable
+  displayName: 'Build a stable release (develop only)'
+  type: boolean
+  default: false
+
 resources:
   repositories:
     - repository: templates
@@ -27,6 +37,8 @@ stages:
 - stage: BuildAndTest
   jobs:
   - template: .pipelines/build.yaml
+    parameters:
+      stable: ${{ parameters.stable }}
 
 - stage: ReleaseInternal
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), startsWith(variables['Build.SourceBranch'], 'refs/heads/support/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')))
