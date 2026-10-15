@@ -1,6 +1,7 @@
 // This file is part of Core WF which is licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reflection;
@@ -1261,15 +1262,15 @@ internal static class ActivityUtilities
     private static class LocationAccessExpressionTypeDefinitionsCache
     {
         private static readonly object locationReferenceValueTypeDefinitionsLock = new();
-        private static readonly Dictionary<Type, ILocationReferenceExpression> locationReferenceValueTypeDefinitions = new();
+        private static readonly ConcurrentDictionary<Type, ILocationReferenceExpression> locationReferenceValueTypeDefinitions = new();
         private static readonly object environmentLocationReferenceTypeDefinitionsLock = new();
-        private static readonly Dictionary<Type, ILocationReferenceExpression> environmentLocationReferenceTypeDefinitions = new();
+        private static readonly ConcurrentDictionary<Type, ILocationReferenceExpression> environmentLocationReferenceTypeDefinitions = new();
         private static readonly object environmentLocationValueTypeDefinitionsLock = new();
-        private static readonly Dictionary<Type, ILocationReferenceExpression> environmentLocationValueTypeDefinitions = new();
+        private static readonly ConcurrentDictionary<Type, ILocationReferenceExpression> environmentLocationValueTypeDefinitions = new();
 
         public static ActivityWithResult CreateNewLocationAccessExpression(Type type, bool isReference, bool useLocationReferenceValue, LocationReference locationReference)
         {
-            Dictionary<Type, ILocationReferenceExpression> lookupTable;
+            ConcurrentDictionary<Type, ILocationReferenceExpression> lookupTable;
             object tableLock;
             if (useLocationReferenceValue)
             {
@@ -1282,21 +1283,23 @@ internal static class ActivityUtilities
                 tableLock = isReference ? environmentLocationReferenceTypeDefinitionsLock : environmentLocationValueTypeDefinitionsLock;
             }
 
-            ILocationReferenceExpression existingInstance;
-            lock (tableLock)
+            if (!lookupTable.TryGetValue(type, out ILocationReferenceExpression existingInstance))
             {
-                if (!lookupTable.TryGetValue(type, out existingInstance))
+                lock (tableLock)
                 {
-                    Type locationAccessExpressionType = CreateLocationAccessExpressionType(type, isReference, useLocationReferenceValue);
+                    if (!lookupTable.TryGetValue(type, out existingInstance))
+                    {
+                        Type locationAccessExpressionType = CreateLocationAccessExpressionType(type, isReference, useLocationReferenceValue);
 
-                    // Create an "empty" (locationReference = null) instance to put in the cache. This empty instance will only be used to create other instances,
-                    // including the instance returned from this method. The cached instance will never be included in an activity tree, so the cached instance's
-                    // rootActivity field will not be filled in and thus will not pin all the objects in the activity tree. The cached empty instance has a null
-                    // locationReference because locationReference also pins parts of activity tree.
-                    existingInstance = (ILocationReferenceExpression)Activator.CreateInstance(
-                        locationAccessExpressionType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { null }, null);
+                        // Create an "empty" (locationReference = null) instance to put in the cache. This empty instance will only be used to create other instances,
+                        // including the instance returned from this method. The cached instance will never be included in an activity tree, so the cached instance's
+                        // rootActivity field will not be filled in and thus will not pin all the objects in the activity tree. The cached empty instance has a null
+                        // locationReference because locationReference also pins parts of activity tree.
+                        existingInstance = (ILocationReferenceExpression)Activator.CreateInstance(
+                            locationAccessExpressionType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { null }, null);
 
-                    lookupTable[type] = existingInstance;
+                        lookupTable[type] = existingInstance;
+                    }
                 }
             }
 
