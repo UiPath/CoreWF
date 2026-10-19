@@ -945,6 +945,22 @@ public class TextExpressionCompiler
         }
 
         var cacheIndices = GetCacheIndices();
+        var shareCache = withLocationReferences && ShareDataContextCacheHelpers &&
+            _expressionDescriptors.Count > 0 &&
+            _expressionDescriptors.Select((descriptor, index) => descriptor.Id == index).All(matches => matches);
+        if (shareCache)
+        {
+            // Invalid IDs must return without accessing activityContext or its cache.
+            var invalidId = new CodeBinaryOperatorExpression(
+                new CodeBinaryOperatorExpression(new CodeVariableReferenceExpression("expressionId"),
+                    CodeBinaryOperatorType.LessThan, new CodePrimitiveExpression(0)),
+                CodeBinaryOperatorType.BooleanOr,
+                new CodeBinaryOperatorExpression(new CodeVariableReferenceExpression("expressionId"),
+                    CodeBinaryOperatorType.GreaterThanOrEqual, new CodePrimitiveExpression(_expressionDescriptors.Count)));
+            invokeExpressionMethod.Statements.Add(new CodeConditionStatement(invalidId,
+                new CodeMethodReturnStatement(new CodePrimitiveExpression(null))));
+            invokeExpressionMethod.Statements.Add(GenerateCachedDataContextArray(_rootDataContextTypeName, cacheIndices.Count));
+        }
 
         foreach (var descriptor in _expressionDescriptors)
         {
@@ -968,16 +984,16 @@ public class TextExpressionCompiler
             if (descriptor.IsReference)
             {
                 conditionStatements =
-                    GenerateReferenceExpressionInvocation(descriptor, withLocationReferences, cacheIndices);
+                    GenerateReferenceExpressionInvocation(descriptor, withLocationReferences, cacheIndices, shareCache);
             }
             else if (descriptor.IsValue)
             {
                 conditionStatements =
-                    GenerateValueExpressionInvocation(descriptor, withLocationReferences, cacheIndices);
+                    GenerateValueExpressionInvocation(descriptor, withLocationReferences, cacheIndices, shareCache);
             }
             else if (descriptor.IsStatement)
             {
-                conditionStatements = GenerateStatementInvocation(descriptor, withLocationReferences, cacheIndices);
+                conditionStatements = GenerateStatementInvocation(descriptor, withLocationReferences, cacheIndices, shareCache);
             }
 
             var idExpression = new CodeBinaryOperatorExpression(new CodeVariableReferenceExpression("expressionId"),
@@ -1046,7 +1062,7 @@ public class TextExpressionCompiler
 
     private void GenerateGetDataContextVariable(CompiledExpressionDescriptor descriptor,
         CodeVariableDeclarationStatement dataContextVariable, CodeStatementCollection statements,
-        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices)
+        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices, bool shareCache)
     {
         var dataContext = GenerateDataContextCreateExpression(descriptor.TypeName, withLocationReferences);
 
@@ -1067,25 +1083,6 @@ public class TextExpressionCompiler
             //   cachedCompiledDataContext[1] = new CompiledExpressions_TypedDataContext2(locations, activityContext);
             // }
             //
-            var cachedCompiledDataContextArray = new CodeVariableDeclarationStatement(
-                typeof(CompiledDataContext[]),
-                "cachedCompiledDataContext",
-                new CodeMethodInvokeExpression(
-                    new CodeMethodReferenceExpression(
-                        new CodeTypeReferenceExpression(cacheHelperTypeName),
-                        "GetCompiledDataContextCacheHelper"),
-                    new CodeFieldReferenceExpression(
-                        new CodeThisReferenceExpression(),
-                        DataContextActivitiesFieldName),
-                    new CodeVariableReferenceExpression("activityContext"),
-                    new CodeFieldReferenceExpression(
-                        new CodeThisReferenceExpression(),
-                        RootActivityFieldName),
-                    new CodeFieldReferenceExpression(
-                        new CodeThisReferenceExpression(),
-                        ForImplementationName),
-                    new CodePrimitiveExpression(cacheIndices.Count)));
-
             var compiledDataContextIndexer = new CodeIndexerExpression(
                 new CodeVariableReferenceExpression("cachedCompiledDataContext"),
                 new CodePrimitiveExpression(cacheIndices[descriptor.TypeName]));
@@ -1118,7 +1115,10 @@ public class TextExpressionCompiler
                 new CodeCastExpression(descriptor.TypeName, compiledDataContextIndexer);
 
 
-            statements.Add(cachedCompiledDataContextArray);
+            if (!shareCache)
+            {
+                statements.Add(GenerateCachedDataContextArray(cacheHelperTypeName, cacheIndices.Count));
+            }
             statements.Add(conditionStatement);
         }
         else
@@ -1131,8 +1131,30 @@ public class TextExpressionCompiler
         }
     }
 
+    private CodeVariableDeclarationStatement GenerateCachedDataContextArray(string cacheHelperTypeName, int cacheCount)
+    {
+        return new CodeVariableDeclarationStatement(
+            typeof(CompiledDataContext[]),
+            "cachedCompiledDataContext",
+            new CodeMethodInvokeExpression(
+                new CodeMethodReferenceExpression(
+                    new CodeTypeReferenceExpression(cacheHelperTypeName),
+                    "GetCompiledDataContextCacheHelper"),
+                new CodeFieldReferenceExpression(
+                    new CodeThisReferenceExpression(),
+                    DataContextActivitiesFieldName),
+                new CodeVariableReferenceExpression("activityContext"),
+                new CodeFieldReferenceExpression(
+                    new CodeThisReferenceExpression(),
+                    RootActivityFieldName),
+                new CodeFieldReferenceExpression(
+                    new CodeThisReferenceExpression(),
+                    ForImplementationName),
+                new CodePrimitiveExpression(cacheCount)));
+    }
+
     private CodeStatement[] GenerateReferenceExpressionInvocation(CompiledExpressionDescriptor descriptor,
-        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices)
+        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices, bool shareCache)
     {
         var indexString = descriptor.Id.ToString(CultureInfo.InvariantCulture);
         var dataContextVariableName = "refDataContext" + indexString;
@@ -1143,7 +1165,7 @@ public class TextExpressionCompiler
         var compiledDataContextStatements = new CodeStatementCollection();
 
         GenerateGetDataContextVariable(descriptor, dataContextVariable, compiledDataContextStatements,
-            withLocationReferences, cacheIndices);
+            withLocationReferences, cacheIndices, shareCache);
         compiledDataContextStatements.Add(dataContextVariable);
 
         CodeExpression getExpression = null;
@@ -1213,7 +1235,7 @@ public class TextExpressionCompiler
     }
 
     private CodeStatement[] GenerateValueExpressionInvocation(CompiledExpressionDescriptor descriptor,
-        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices)
+        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices, bool shareCache)
     {
         var compiledDataContextStatements = new CodeStatementCollection();
 
@@ -1224,7 +1246,7 @@ public class TextExpressionCompiler
             new CodeTypeReference(descriptor.TypeName), dataContextVariableName);
 
         GenerateGetDataContextVariable(descriptor, dataContextVariable, compiledDataContextStatements,
-            withLocationReferences, cacheIndices);
+            withLocationReferences, cacheIndices, shareCache);
         compiledDataContextStatements.Add(dataContextVariable);
 
         var expressionInvoke = new CodeMethodInvokeExpression(
@@ -1242,7 +1264,7 @@ public class TextExpressionCompiler
     }
 
     private CodeStatement[] GenerateStatementInvocation(CompiledExpressionDescriptor descriptor,
-        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices)
+        bool withLocationReferences, IReadOnlyDictionary<string, int> cacheIndices, bool shareCache)
     {
         var indexString = descriptor.Id.ToString(CultureInfo.InvariantCulture);
         var dataContextVariableName = "valDataContext" + indexString;
@@ -1253,7 +1275,7 @@ public class TextExpressionCompiler
         var compiledDataContextStatements = new CodeStatementCollection();
 
         GenerateGetDataContextVariable(descriptor, dataContextVariable, compiledDataContextStatements,
-            withLocationReferences, cacheIndices);
+            withLocationReferences, cacheIndices, shareCache);
         compiledDataContextStatements.Add(dataContextVariable);
 
         var expressionInvoke = new CodeMethodInvokeExpression(

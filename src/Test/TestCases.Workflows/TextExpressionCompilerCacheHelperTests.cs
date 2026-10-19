@@ -170,8 +170,63 @@ public class TextExpressionCompilerCacheHelperTests
         Assert.All(calls, call => call.ReceiverType.ShouldBe(call.ContextType));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task InvokeExpression_InvalidIds_DoNotAccessNullActivityContext(bool forImplementation)
+    {
+        var generated = Generate(NestedScopes(false, (_, _) => { }), "VB", forImplementation);
+        var compiled = await Compile(generated);
+        Attach(generated, compiled);
+        var field = compiled.GetType().GetField("dataContextActivities", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Data context activities field was not found.");
+        field.GetValue(compiled).ShouldBeNull();
+        var count = GetField<System.Collections.IList>(generated.Compiler, "_expressionDescriptors").Count;
+        count.ShouldBeGreaterThan(0);
+        var locations = new List<LocationReference>();
+
+        compiled.InvokeExpression(-1, locations, null).ShouldBeNull();
+        var activities = field.GetValue(compiled);
+        activities.ShouldNotBeNull();
+        foreach (var invalidId in new[] { int.MinValue, count, int.MaxValue })
+        {
+            compiled.InvokeExpression(invalidId, locations, null).ShouldBeNull();
+            field.GetValue(compiled).ShouldBeSameAs(activities);
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void GenerateSource_StatementActivity_PreservesExistingRejection(bool forImplementation)
+    {
+        var sequence = new Sequence
+        {
+            Variables = { new Variable<int>("value", 10) },
+            Activities = { new CompiledVbStatement("value = value + 7") }
+        };
+
+        // The existing typed CanExecuteExpression generator rejects a null statement result type.
+        var error = Assert.Throws<ArgumentNullException>(() => Generate(sequence, "VB", forImplementation));
+        error.ParamName.ShouldBe("type");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task InvokeExpression_NoExpressions_ReturnsNullWithoutContext(bool forImplementation)
+    {
+        var generated = Generate(new Sequence(), "VB", forImplementation);
+        var compiled = await Compile(generated);
+        Attach(generated, compiled);
+
+        GetField<System.Collections.IList>(generated.Compiler, "_expressionDescriptors").Count.ShouldBe(0);
+        compiled.InvokeExpression(0, new List<LocationReference>(), null).ShouldBeNull();
+        compiled.InvokeExpression(0, new List<Location>()).ShouldBeNull();
+    }
+
     [Fact]
-    public void GenerateSource_StandaloneVisualBasic_UsesOnlyRootForwarders()
+    public void GenerateSource_StandaloneVisualBasic_RetrievesCacheOnceAfterInvalidIdGuard()
     {
         var generated = Generate(NestedScopes(false, (_, _) => { }), "VB", true);
         var declaration = GetField<CodeTypeDeclaration>(generated.Compiler, "_classDeclaration");
@@ -191,23 +246,23 @@ public class TextExpressionCompilerCacheHelperTests
                 helpers.ShouldBeEmpty();
             }
         }
-        var calls = CacheCalls(declaration).ToArray();
-        calls.ShouldNotBeEmpty();
-        calls.ShouldContain(call => call.ContextType.EndsWith(ReadOnlySuffix, StringComparison.Ordinal));
-        calls.ShouldContain(call => !call.ContextType.EndsWith(ReadOnlySuffix, StringComparison.Ordinal));
-        foreach (var call in calls)
+        var method = Assert.Single(declaration.Members.OfType<CodeMemberMethod>()
+            .Where(item => item.Name == "InvokeExpression" && item.Parameters.Count == 3));
+        var retrieval = Assert.Single(method.Statements.OfType<CodeVariableDeclarationStatement>()
+            .Where(item => item.InitExpression is CodeMethodInvokeExpression call && call.Method.MethodName == CacheHelper));
+        var retrievalIndex = method.Statements.IndexOf(retrieval);
+        retrievalIndex.ShouldBeGreaterThan(0);
+        var guard = Assert.IsType<CodeConditionStatement>(method.Statements[retrievalIndex - 1]);
+        Assert.IsType<CodeBinaryOperatorExpression>(guard.Condition).Operator.ShouldBe(CodeBinaryOperatorType.BooleanOr);
+        Assert.IsType<CodeMethodReturnStatement>(Assert.Single(guard.TrueStatements.Cast<CodeStatement>()));
+        var expressionBranches = method.Statements.OfType<CodeConditionStatement>()
+            .Where(item => item.Condition is CodeBinaryOperatorExpression binary && binary.Operator == CodeBinaryOperatorType.ValueEquality).ToArray();
+        expressionBranches.Length.ShouldBe(GetField<System.Collections.IList>(generated.Compiler, "_expressionDescriptors").Count);
+        foreach (var branch in expressionBranches)
         {
-            var readOnly = call.ContextType.EndsWith(ReadOnlySuffix, StringComparison.Ordinal);
-            var root = Assert.Single(roots.Where(context => context.Name.EndsWith(ReadOnlySuffix, StringComparison.Ordinal) == readOnly));
-            call.ReceiverType.ShouldBe(root.Name);
-            call.Count.ShouldBe(GetCacheCount(generated.Compiler));
-            call.Index.ShouldBeInRange(0, call.Count - 1);
+            branch.TrueStatements.OfType<CodeVariableDeclarationStatement>()
+                .Where(item => item.Name == "cachedCompiledDataContext").ShouldBeEmpty();
         }
-        foreach (var group in calls.GroupBy(call => call.ContextType))
-        {
-            Assert.Single(group.Select(call => call.Index).Distinct());
-        }
-        calls.Select(call => call.Index).Distinct().Count().ShouldBe(calls.Select(call => call.ContextType).Distinct().Count());
     }
 
     private static Sequence NestedScopes(bool rootHasVariable, Action<int, CodeActivityContext> record)
@@ -350,6 +405,15 @@ public class TextExpressionCompilerCacheHelperTests
                 }
             }
         }
+    }
+
+    private sealed class CompiledVbStatement : CodeActivity, ITextExpression
+    {
+        public CompiledVbStatement(string expressionText) => ExpressionText = expressionText;
+        public string ExpressionText { get; }
+        public string Language => "VB";
+        public Expression GetExpressionTree() => throw new NotSupportedException("Statements have no expression tree.");
+        protected override void Execute(CodeActivityContext context) => throw new InvalidOperationException("Source generation must reject this statement before execution.");
     }
 
     private sealed class RecordValue : CodeActivity
