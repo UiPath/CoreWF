@@ -33,8 +33,9 @@ jobs:
 
         $stable = "${{ parameters.stable }}" -eq "True"
         if ($stable) {
-          if ("$(Build.SourceBranch)" -ne "refs/heads/develop") {
-            Write-Host "##vso[task.logissue type=error]A stable release can be built only from develop, not $(Build.SourceBranch)."
+          # Repeats ApproveStableRelease in azure-pipelines.yaml.
+          if ("$(Build.SourceBranch)" -notlike "refs/heads/release/*") {
+            Write-Host "##vso[task.logissue type=error]A stable release can be built only from release/*, not $(Build.SourceBranch)."
             exit 1
           }
           $versionSuffix = ""

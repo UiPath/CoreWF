@@ -12,13 +12,14 @@ pr:
 
 name: $(Date:yyyyMMdd)$(Rev:-rr)
 
-# Manual develop runs only: builds UiPath.Workflow and UiPath.Workflow.Runtime as a stable release (the
-# Version from src/Directory.Build.props without the -<build number> suffix), which ReleaseInternal pushes
-# to UiPath-Internal. Bump Version after each stable release: a second run with the same Version fails
-# on push.
+# Manual runs on release/* branches only: builds UiPath.Workflow and UiPath.Workflow.Runtime as a stable
+# release (the Version from src/Directory.Build.props without the -<build number> suffix), which
+# ReleaseInternal pushes to UiPath-Internal. The run first waits for an approval on the CoreWFStableRelease
+# environment (ApproveStableRelease below). One stable per Version: a second run with the same Version fails
+# on push, so bump Version on develop after each stable release.
 parameters:
 - name: stable
-  displayName: 'Build a stable release (develop only)'
+  displayName: 'Build and publish a stable release (release/* only)'
   type: boolean
   default: false
 
@@ -34,7 +35,42 @@ variables:
 - template: .pipelines/vars.yml
 
 stages:
+# Stable release. BuildAndTest, and through it both release stages, waits for this one, so nothing is built
+# until the run is approved on the CoreWFStableRelease environment. The job that asks for the approval exists
+# only on release/*; on any other branch the stage fails here instead.
+- ${{ if eq(parameters.stable, true) }}:
+  - stage: ApproveStableRelease
+    displayName: Approve stable release
+    dependsOn: []
+    jobs:
+    - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release/') }}:
+      - deployment: ApproveStableRelease
+        displayName: Approve stable release
+        environment: 'CoreWFStableRelease'
+        pool:
+          vmImage: ubuntu-latest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: none
+              - bash: echo "Stable release approved for $(Build.SourceBranch)."
+                displayName: Record the approval
+    - ${{ else }}:
+      - job: RejectStableRelease
+        displayName: Reject stable release
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+        - checkout: none
+        - bash: |
+            echo "##vso[task.logissue type=error]A stable release can be built only from release/*, not $(Build.SourceBranch)."
+            exit 1
+          displayName: Check the branch
+
 - stage: BuildAndTest
+  ${{ if eq(parameters.stable, true) }}:
+    dependsOn: [ ApproveStableRelease ]
   jobs:
   - template: .pipelines/build.yaml
     parameters:
