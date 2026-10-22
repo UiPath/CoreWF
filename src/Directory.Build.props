@@ -1,6 +1,9 @@
 <Project>
 	<PropertyGroup>
-		<Version>6.0.0</Version>
+		<!-- The package version. Bump it after each stable release; 6.0.0 to 6.0.3 already exist on nuget.org. -->
+		<Version>6.0.4</Version>
+		<!-- Keeps the assembly identity that consumers compile against while the package version moves. -->
+		<AssemblyVersion>6.0.0.0</AssemblyVersion>
 		<RoslynPackageVersion>4.13.0-3.24620.4</RoslynPackageVersion>
 		<WarningsAsErrors>true</WarningsAsErrors>
 		<UseWPF Condition="$(TargetFramework) == 'net6.0-windows'">true</UseWPF>
