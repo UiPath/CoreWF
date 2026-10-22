@@ -55,7 +55,7 @@ namespace System.Activities.Utils
         ///     reference needs no load.
         /// </summary>
         /// <remarks>A resolver that fails gives no metadata, so the reference loads by its name, as with no resolver.</remarks>
-        private static MetadataReference GetDesignTimeMetadataReference(AssemblyReference assemblyReference)
+        internal static MetadataReference GetDesignTimeMetadataReference(AssemblyReference assemblyReference)
         {
             if (assemblyReference.Assembly is not null || assemblyReference.AssemblyName is null)
             {
