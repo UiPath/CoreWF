@@ -1,5 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Activities.Expressions;
+using System.Activities.Internals;
+using System.Activities.Runtime;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +36,47 @@ namespace System.Activities.Utils
         }
 
         internal static IReadOnlyCollection<MetadataReference> GetMetadataReferences(IEnumerable<AssemblyReference> assemblyReferences)
-            => GetMetadataReferences(assemblyReferences.OfType<AssemblyReference>().Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
+        {
+            var result = new List<MetadataReference>();
+            foreach (var assemblyReference in assemblyReferences.OfType<AssemblyReference>())
+            {
+                var reference = GetDesignTimeMetadataReference(assemblyReference)
+                    ?? GetMetadataReferenceForAssembly(assemblyReference.Assembly ?? LoadAssemblyFromReference(assemblyReference));
+                if (reference is not null)
+                {
+                    result.Add(reference);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        ///     The metadata that <see cref="DesignTimeMetadataReferences.Resolver"/> gives for a reference with no assembly, so the
+        ///     reference needs no load.
+        /// </summary>
+        /// <remarks>A resolver that fails gives no metadata, so the reference loads by its name, as with no resolver.</remarks>
+        internal static MetadataReference GetDesignTimeMetadataReference(AssemblyReference assemblyReference)
+        {
+            if (assemblyReference.Assembly is not null || assemblyReference.AssemblyName is null)
+            {
+                return null;
+            }
+
+            try
+            {
+                return DesignTimeMetadataReferences.Resolver?.Invoke(assemblyReference.AssemblyName);
+            }
+            catch (Exception e)
+            {
+                if (Fx.IsFatal(e))
+                {
+                    throw;
+                }
+
+                ExceptionTrace.TraceUnhandledException(e);
+                return null;
+            }
+        }
 
         internal static IReadOnlyCollection<MetadataReference> GetMetadataReferences(IEnumerable<Assembly> assemblies)
         {

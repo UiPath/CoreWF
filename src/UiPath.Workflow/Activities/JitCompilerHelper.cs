@@ -5,6 +5,7 @@ using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
+using System.Activities.Utils;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Collections;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualBasic.Activities;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -58,6 +60,10 @@ internal abstract class JitCompilerHelper
     protected IReadOnlyCollection<string> NamespaceImports;
     protected CodeActivityPublicEnvironmentAccessor? PublicAccessor;
     protected HashSet<Assembly> ReferencedAssemblies;
+
+    // The name-only references that DesignTimeMetadataReferences.Resolver answers. The compile uses their metadata and does not load them.
+    protected readonly List<DesignTimeReference> DesignTimeReferences = new();
+
     public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
     protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
 
@@ -78,23 +84,46 @@ internal abstract class JitCompilerHelper
 
         foreach (var assemblyReference in assemblyReferences)
         {
-            try
+            var metadata = MetadataReferenceUtils.GetDesignTimeMetadataReference(assemblyReference);
+            if (metadata != null)
             {
-                var loaded = GetAssembly(assemblyReference);
-                if (loaded != null)
-                {
-                    ReferencedAssemblies.Add(loaded);
-                }
+                DesignTimeReferences.Add(new DesignTimeReference(assemblyReference, metadata));
+                continue;
             }
-            catch (Exception e)
-            {
-                if (Fx.IsFatal(e))
-                {
-                    throw;
-                }
 
-                ExceptionTrace.TraceUnhandledException(e);
+            AddReferencedAssembly(assemblyReference);
+        }
+    }
+
+    // A compiler that does not support metadata references gets the assemblies loaded.
+    protected void LoadDesignTimeReferences()
+    {
+        foreach (var designTimeReference in DesignTimeReferences)
+        {
+            AddReferencedAssembly(designTimeReference.Reference);
+        }
+
+        DesignTimeReferences.Clear();
+    }
+
+    private void AddReferencedAssembly(AssemblyReference assemblyReference)
+    {
+        try
+        {
+            var loaded = GetAssembly(assemblyReference);
+            if (loaded != null)
+            {
+                ReferencedAssemblies.Add(loaded);
             }
+        }
+        catch (Exception e)
+        {
+            if (Fx.IsFatal(e))
+            {
+                throw;
+            }
+
+            ExceptionTrace.TraceUnhandledException(e);
         }
     }
 
@@ -1132,6 +1161,8 @@ internal abstract class JitCompilerHelper
         public LambdaExpression Value { get; set; }
     }
 
+    protected record DesignTimeReference(AssemblyReference Reference, MetadataReference Metadata);
+
     protected class RawTreeCacheKey
     {
         private static readonly IEqualityComparer<HashSet<Assembly>> s_assemblySetEqualityComparer =
@@ -1141,6 +1172,8 @@ internal abstract class JitCompilerHelper
             HashSet<string>.CreateSetComparer();
 
         private readonly HashSet<Assembly> _assemblies;
+        // By reference: the resolver gives a new metadata object for new metadata, also with the same assembly name.
+        private readonly HashSet<MetadataReference> _designTimeMetadata;
 
         private readonly string _expressionText;
 
@@ -1149,16 +1182,18 @@ internal abstract class JitCompilerHelper
         private readonly Type _returnType;
 
         public RawTreeCacheKey(string expressionText, Type returnType, HashSet<Assembly> assemblies,
-            IReadOnlyCollection<string> namespaces)
+            IReadOnlyCollection<string> namespaces, IEnumerable<MetadataReference> designTimeMetadata)
         {
             _expressionText = expressionText;
             _returnType = returnType;
             _assemblies = new HashSet<Assembly>(assemblies);
             _namespaces = new HashSet<string>(namespaces);
+            _designTimeMetadata = new HashSet<MetadataReference>(designTimeMetadata, ReferenceEqualityComparer.Instance);
 
             _hashCode = expressionText?.GetHashCode() ?? 0;
             _hashCode = CombineHashCodes(_hashCode, s_assemblySetEqualityComparer.GetHashCode(assemblies));
             _hashCode = CombineHashCodes(_hashCode, s_namespaceSetEqualityComparer.GetHashCode(_namespaces));
+            _hashCode = CombineHashCodes(_hashCode, _designTimeMetadata.Aggregate(0, (hash, metadata) => hash ^ ReferenceEqualityComparer.Instance.GetHashCode(metadata)));
             if (returnType != null)
             {
                 _hashCode = CombineHashCodes(_hashCode, returnType.GetHashCode());
@@ -1175,7 +1210,8 @@ internal abstract class JitCompilerHelper
             return _expressionText == rtcKey._expressionText &&
                 _returnType == rtcKey._returnType &&
                 s_assemblySetEqualityComparer.Equals(_assemblies, rtcKey._assemblies) &&
-                s_namespaceSetEqualityComparer.Equals(_namespaces, rtcKey._namespaces);
+                s_namespaceSetEqualityComparer.Equals(_namespaces, rtcKey._namespaces) &&
+                _designTimeMetadata.SetEquals(rtcKey._designTimeMetadata);
         }
 
         public override int GetHashCode() => _hashCode;
@@ -1418,7 +1454,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             TextToCompile,
             null,
             ReferencedAssemblies,
-            NamespaceImports);
+            NamespaceImports,
+            DesignTimeMetadata);
 
         var rawTreeHolder = RawTreeCache.GetValue(s_rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
         if (rawTreeHolder != null)
@@ -1440,7 +1477,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         }
 
         var scriptAndTypeScope = new ScriptAndTypeScope(environment);
-        var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
+        var compilerWrapper = GetCompiler();
         var compiler = compilerWrapper.Compiler;
         LambdaExpression lambda = null;
 
@@ -1493,7 +1530,28 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
 
     private ExpressionToCompile ExpressionToCompile(Func<string, StringComparison, Type> variableTypeGetter, Type lambdaReturnType)
     {
-        return new ExpressionToCompile(TextToCompile, NamespaceImports, variableTypeGetter, lambdaReturnType);
+        return new ExpressionToCompile(TextToCompile, NamespaceImports, variableTypeGetter, lambdaReturnType)
+        {
+            MetadataReferences = DesignTimeReferences.Select(designTimeReference => designTimeReference.Metadata).ToArray()
+        };
+    }
+
+    private IEnumerable<MetadataReference> DesignTimeMetadata
+        => DesignTimeReferences.Select(designTimeReference => designTimeReference.Metadata);
+
+    private HostedCompilerWrapper GetCompiler()
+    {
+        var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
+        if (DesignTimeReferences.Count == 0 || compilerWrapper.Compiler.SupportsMetadataReferences)
+        {
+            return compilerWrapper;
+        }
+
+        compilerWrapper.Release();
+        // The compiler cache keeps the set as a key, so the loaded assemblies go into a copy.
+        ReferencedAssemblies = new HashSet<Assembly>(ReferencedAssemblies);
+        LoadDesignTimeReferences();
+        return GetCachedHostedCompiler(ReferencedAssemblies);
     }
 
     public Expression<Func<ActivityContext, T>> Compile<T>(CodeActivityPublicEnvironmentAccessor publicAccessor,
@@ -1526,7 +1584,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             TextToCompile,
             lambdaReturnType,
             ReferencedAssemblies,
-            NamespaceImports);
+            NamespaceImports,
+            DesignTimeMetadata);
 
         var rawTreeHolder = RawTreeCache.GetValue(s_rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
         if (rawTreeHolder != null)
@@ -1563,7 +1622,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         }
 
         var scriptAndTypeScope = new ScriptAndTypeScope(environment);
-        var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
+        var compilerWrapper = GetCompiler();
         var compiler = compilerWrapper.Compiler;
 
 

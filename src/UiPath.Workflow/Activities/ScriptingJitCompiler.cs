@@ -24,6 +24,12 @@ namespace System.Activities;
 public abstract class JustInTimeCompiler
 {
     public abstract LambdaExpression CompileExpression(ExpressionToCompile compilerRequest);
+
+    /// <summary>
+    /// True when the compiler adds <see cref="ExpressionToCompile.MetadataReferences"/> to the compile.
+    /// When false, the caller loads those assemblies and gives them to the compiler.
+    /// </summary>
+    public virtual bool SupportsMetadataReferences => false;
 }
 
 public record CompilerInput(string Code, IReadOnlyCollection<string> ImportedNamespaces) { }
@@ -31,7 +37,12 @@ public record CompilerInput(string Code, IReadOnlyCollection<string> ImportedNam
 public record ExpressionToCompile(string Code, IReadOnlyCollection<string> ImportedNamespaces,
     Func<string, StringComparison, Type> VariableTypeGetter, Type LambdaReturnType)
     : CompilerInput(Code, ImportedNamespaces)
-{ }
+{
+    /// <summary>
+    /// The metadata of the referenced assemblies that the compile does not load. See <see cref="DesignTimeMetadataReferences"/>.
+    /// </summary>
+    public IReadOnlyCollection<MetadataReference> MetadataReferences { get; init; } = Array.Empty<MetadataReference>();
+}
 
 public abstract class ScriptingJitCompiler : JustInTimeCompiler
 {
@@ -41,6 +52,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     }
 
     protected IReadOnlyCollection<MetadataReference> MetadataReferences { get; init; }
+    public override bool SupportsMetadataReferences => true;
     protected abstract string GetTypeName(Type type);
     protected abstract Script<object> Create(string code, ScriptOptions options);
     protected abstract CompilerHelper CompilerHelper { get; }
@@ -48,7 +60,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
     {
         var options = ScriptOptions.Default
-                                   .WithReferences(MetadataReferences)
+                                   .WithReferences(MetadataReferences.Concat(expressionToCompile.MetadataReferences))
                                    .WithImports(expressionToCompile.ImportedNamespaces)
                                    .WithOptimizationLevel(OptimizationLevel.Release);
         var untypedExpressionScript = Create(expressionToCompile.Code, options);
