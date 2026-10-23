@@ -20,13 +20,15 @@ namespace MS.Internal.Xaml.Context
             InCollectionFromMember = false;
             InImplicitArray = false;
             InContainerDirective = false;
+            ContentPropertyAssigned = false;
             TypeNamespace = null;
             LongestConstructorOfCurrentMarkupExtensionType = null;
             EscapeCharacterMapForMarkupExtension = null;
             BracketModeParseParameters = null;
         }
-        
+
         public XamlType PreviousChildType { get; set; }
+        public bool ContentPropertyAssigned { get; set; }
         public int CtorArgCount { get; set; }
         public bool ForcedToUseConstructor { get; set; }
         public bool InCollectionFromMember { get; set; }
