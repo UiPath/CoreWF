@@ -40,6 +40,53 @@ public class LiteralTests
         literal.CanConvertToString(null).ShouldBeFalse();
     }
 
+    [Theory]
+    [InlineData(" ")]
+    [InlineData("   ")]
+    [InlineData("\t")]
+    public void CanConvertToString_WhitespaceOnlyString_ReturnsFalse(string value)
+    {
+        var literal = new Literal<string>(value);
+        literal.CanConvertToString(null).ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData(" ")]
+    [InlineData("   ")]
+    [InlineData("\t")]
+    public void XamlSerialize_WhitespaceOnlyStringLiteral_WritesLiteralElement(string value)
+    {
+        var argument = new InArgument<string>(new Literal<string>(value));
+
+        var xaml = XamlServices.Save(argument);
+
+        // Literal declares Value - a string - as its content property, which the XAML parser
+        // keeps; InArgument declares Expression, which it does not.
+        xaml.ShouldContain("<Literal");
+    }
+
+    [Theory]
+    [InlineData(" ")]
+    [InlineData("   ")]
+    [InlineData("\t")]
+    public void XamlRoundTrip_WhitespaceOnlyStringLiteral_PreservesTheValue(string value)
+    {
+        var argument = new InArgument<string>(new Literal<string>(value));
+
+        var xaml = XamlServices.Save(argument);
+        var deserialized = (InArgument<string>)XamlServices.Load(new StringReader(xaml));
+
+        deserialized.Expression.ShouldBeOfType<Literal<string>>();
+        ((Literal<string>)deserialized.Expression).Value.ShouldBe(value);
+    }
+
+    [Fact]
+    public void CanConvertToString_StringWithSurroundingWhitespace_ReturnsTrue()
+    {
+        var literal = new Literal<string>(" x ");
+        literal.CanConvertToString(null).ShouldBeTrue();
+    }
+
     [Fact]
     public void CanConvertToString_IntValue_ReturnsTrue()
     {

@@ -61,7 +61,7 @@ public sealed class Literal<T> : CodeActivity<T>, ILiteral, IExpressionContainer
         if (valueType == TypeHelper.StringType)
         {
             string myValue = Value as string;
-            if (string.IsNullOrEmpty(myValue))
+            if (string.IsNullOrWhiteSpace(myValue))
             {
                 return false;
             }
