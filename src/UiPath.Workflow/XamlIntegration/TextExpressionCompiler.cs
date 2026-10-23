@@ -57,6 +57,8 @@ public class TextExpressionCompiler
 
     private string _activityFullName;
     private CodeTypeDeclaration _classDeclaration;
+    private string _rootDataContextTypeName;
+    private string _rootDataContextTypeNameForReadOnly;
 
     private CodeNamespace _codeNamespace;
     private CodeCompileUnit _compileUnit;
@@ -124,6 +126,8 @@ public class TextExpressionCompiler
     }
 
     private bool InVariableScopeArgument { get; set; }
+
+    private bool ShareDataContextCacheHelpers => IsVb && !_settings.GenerateAsPartialClass;
 
     private static CodeAttributeDeclaration GeneratedCodeAttribute
     {
@@ -1048,6 +1052,10 @@ public class TextExpressionCompiler
 
         if (withLocationReferences)
         {
+            var cacheHelperTypeName = ShareDataContextCacheHelpers
+                ? (descriptor.IsValue ? _rootDataContextTypeNameForReadOnly : _rootDataContextTypeName)
+                : descriptor.TypeName;
+
             //
             // System.Activities.XamlIntegration.CompiledDataContext[] cachedCompiledDataContext = CompiledExpressions_TypedDataContext2.GetCompiledDataContextCacheHelper(this, activityContext, 2);
             // if ((cachedCompiledDataContext[1] == null))
@@ -1064,7 +1072,7 @@ public class TextExpressionCompiler
                 "cachedCompiledDataContext",
                 new CodeMethodInvokeExpression(
                     new CodeMethodReferenceExpression(
-                        new CodeTypeReferenceExpression(descriptor.TypeName),
+                        new CodeTypeReferenceExpression(cacheHelperTypeName),
                         "GetCompiledDataContextCacheHelper"),
                     new CodeFieldReferenceExpression(
                         new CodeThisReferenceExpression(),
@@ -1832,6 +1840,15 @@ public class TextExpressionCompiler
         else
         {
             typedDataContext.BaseTypes.Add(typeof(CompiledDataContext));
+            if (forReadOnly)
+            {
+                _rootDataContextTypeNameForReadOnly = contextName;
+            }
+            else
+            {
+                _rootDataContextTypeName = contextName;
+            }
+
             //
             // We only generate the helper method on the root data context/context 0
             // No need to have it on all contexts.  This is just a slight of hand
@@ -1860,7 +1877,10 @@ public class TextExpressionCompiler
         typedDataContext.Members.Add(GenerateLocationReferenceActivityContextConstructor());
         typedDataContext.Members.Add(GenerateLocationConstructor());
         typedDataContext.Members.Add(GenerateLocationReferenceConstructor());
-        typedDataContext.Members.Add(GenerateCacheHelper());
+        if (!ShareDataContextCacheHelpers || _compiledDataContexts.Count == 0)
+        {
+            typedDataContext.Members.Add(GenerateCacheHelper());
+        }
         typedDataContext.Members.Add(GenerateSetLocationsOffsetMethod());
 
         //
