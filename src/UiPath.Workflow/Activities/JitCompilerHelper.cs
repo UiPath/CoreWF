@@ -64,6 +64,10 @@ internal abstract class JitCompilerHelper
     // The name-only references that DesignTimeMetadataReferences.Resolver answers. The compile uses their metadata and does not load them.
     protected readonly List<DesignTimeReference> DesignTimeReferences = new();
 
+    // True when the host declared its reference set complete, see DesignTimeMetadataReferences.HostReferencesAreComplete: the compile
+    // then adds neither the default assemblies nor the assembly of its return type. Read once, so one compile sees one answer.
+    protected bool HostReferencesAreComplete;
+
     public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
     protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
 
@@ -75,6 +79,7 @@ internal abstract class JitCompilerHelper
     {
         SanitizeNamespaces(namespaceImportsNames);
         NamespaceImports = namespaceImportsNames;
+        HostReferencesAreComplete = DesignTimeMetadataReferences.AreHostReferencesComplete();
         InitializeAssemblies(assemblyReferences);
     }
 
@@ -1447,8 +1452,10 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         Expression finalBody;
         Environment = environment;
         ReferencedAssemblies ??= new HashSet<Assembly>();
-
-        ReferencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+        if (!HostReferencesAreComplete)
+        {
+            ReferencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+        }
 
         var rawTreeKey = new RawTreeCacheKey(
             TextToCompile,
@@ -1477,7 +1484,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         }
 
         var scriptAndTypeScope = new ScriptAndTypeScope(environment);
-        var compilerWrapper = GetCompiler();
+        var compilerWrapper = GetCompiler(null);
         var compiler = compilerWrapper.Compiler;
         LambdaExpression lambda = null;
 
@@ -1532,26 +1539,51 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
     {
         return new ExpressionToCompile(TextToCompile, NamespaceImports, variableTypeGetter, lambdaReturnType)
         {
-            MetadataReferences = DesignTimeReferences.Select(designTimeReference => designTimeReference.Metadata).ToArray()
+            MetadataReferences = DesignTimeReferences.Select(designTimeReference => designTimeReference.Metadata).ToArray(),
+            HostReferencesAreComplete = HostReferencesAreComplete
         };
     }
 
     private IEnumerable<MetadataReference> DesignTimeMetadata
         => DesignTimeReferences.Select(designTimeReference => designTimeReference.Metadata);
 
-    private HostedCompilerWrapper GetCompiler()
+    private HostedCompilerWrapper GetCompiler(Type lambdaReturnType)
     {
         var compilerWrapper = GetCachedHostedCompiler(ReferencedAssemblies);
-        if (DesignTimeReferences.Count == 0 || compilerWrapper.Compiler.SupportsMetadataReferences)
+        if (compilerWrapper.Compiler.SupportsMetadataReferences || (DesignTimeReferences.Count == 0 && !HostReferencesAreComplete))
         {
             return compilerWrapper;
         }
 
+        // A compiler without metadata support gets the loaded set as before: the design time references loaded, and the assemblies
+        // that a complete host set left out. The set is then the one of the host no more.
         compilerWrapper.Release();
         // The compiler cache keeps the set as a key, so the loaded assemblies go into a copy.
         ReferencedAssemblies = new HashSet<Assembly>(ReferencedAssemblies);
         LoadDesignTimeReferences();
+        if (HostReferencesAreComplete)
+        {
+            HostReferencesAreComplete = false;
+            ReferencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+            if (lambdaReturnType != null)
+            {
+                AddReturnTypeReferences(lambdaReturnType);
+            }
+        }
+
         return GetCachedHostedCompiler(ReferencedAssemblies);
+    }
+
+    // The assembly of the return type, with the assemblies of its base types and interfaces.
+    private void AddReturnTypeReferences(Type lambdaReturnType)
+    {
+        HashSet<Type> allBaseTypes = null;
+        EnsureTypeReferenced(lambdaReturnType, ref allBaseTypes);
+        // allBaseTypes always contains lambdaReturnType
+        foreach (var baseType in allBaseTypes)
+        {
+            ReferencedAssemblies.Add(baseType.Assembly);
+        }
     }
 
     public Expression<Func<ActivityContext, T>> Compile<T>(CodeActivityPublicEnvironmentAccessor publicAccessor,
@@ -1578,7 +1610,10 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
 
         Environment = environment;
         ReferencedAssemblies ??= new HashSet<Assembly>();
-        ReferencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+        if (!HostReferencesAreComplete)
+        {
+            ReferencedAssemblies.UnionWith(DefaultReferencedAssemblies);
+        }
 
         var rawTreeKey = new RawTreeCacheKey(
             TextToCompile,
@@ -1613,16 +1648,13 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         }
 
         // ensure the return type's assembly is added to ref assembly list
-        HashSet<Type> allBaseTypes = null;
-        EnsureTypeReferenced(lambdaReturnType, ref allBaseTypes);
-        foreach (var baseType in allBaseTypes)
-            // allBaseTypes list always contains lambdaReturnType
+        if (!HostReferencesAreComplete)
         {
-            ReferencedAssemblies.Add(baseType.Assembly);
+            AddReturnTypeReferences(lambdaReturnType);
         }
 
         var scriptAndTypeScope = new ScriptAndTypeScope(environment);
-        var compilerWrapper = GetCompiler();
+        var compilerWrapper = GetCompiler(lambdaReturnType);
         var compiler = compilerWrapper.Compiler;
 
 
