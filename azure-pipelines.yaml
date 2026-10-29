@@ -17,7 +17,7 @@ resources:
     - repository: templates
       type: github
       name: UiPath/AzurePipelinesTemplates
-      ref: refs/tags/uipath.package-signing.2.0.6
+      ref: refs/tags/uipath.package-signing.2.1.1
       endpoint: UiPath
 
 variables:
