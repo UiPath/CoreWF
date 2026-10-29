@@ -47,7 +47,7 @@ public record ExpressionToCompile(string Code, IReadOnlyCollection<string> Impor
 
     /// <summary>
     /// True when the assemblies of the compiler and <see cref="MetadataReferences"/> are the whole reference set of the compile, see
-    /// <see cref="DesignTimeMetadataReferences.HostReferencesAreComplete"/>: the compiler then adds no assembly of the host, not even
+    /// <see cref="DesignTimeMetadataReferences.HostReferences"/>: the compiler then adds no assembly of the host, not even
     /// for a reference that a referenced assembly misses.
     /// </summary>
     public bool HostReferencesAreComplete { get; init; }

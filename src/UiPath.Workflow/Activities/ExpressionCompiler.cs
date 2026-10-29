@@ -15,10 +15,9 @@ namespace System.Activities
         public Compilation Compile(string expressionText, bool isLocation, Type returnType, IReadOnlyCollection<string> namespaces, IReadOnlyCollection<AssemblyReference> referencedAssemblies, LocationReferenceEnvironment environment)
         {
             var syntaxTree = GetSyntaxTreeForExpression(expressionText, isLocation, returnType, environment);
-            // A host with a complete reference set gets no default assembly, see DesignTimeMetadataReferences.HostReferencesAreComplete.
-            var assemblies = DesignTimeMetadataReferences.AreHostReferencesComplete()
-                ? referencedAssemblies
-                : JitCompilerHelper.DefaultReferencedAssemblies.Select(a => (AssemblyReference)a).Union(referencedAssemblies).ToList();
+            // A host that gives its reference set gets no default assembly, see DesignTimeMetadataReferences.HostReferences.
+            var assemblies = (IReadOnlyCollection<AssemblyReference>)DesignTimeMetadataReferences.GetHostReferences(referencedAssemblies)
+                ?? JitCompilerHelper.DefaultReferencedAssemblies.Select(a => (AssemblyReference)a).Union(referencedAssemblies).ToList();
             return GetCompilation(assemblies, namespaces).AddSyntaxTrees(syntaxTree);
         }
 

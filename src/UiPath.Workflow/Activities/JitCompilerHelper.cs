@@ -64,8 +64,8 @@ internal abstract class JitCompilerHelper
     // The name-only references that DesignTimeMetadataReferences.Resolver answers. The compile uses their metadata and does not load them.
     protected readonly List<DesignTimeReference> DesignTimeReferences = new();
 
-    // True when the host declared its reference set complete, see DesignTimeMetadataReferences.HostReferencesAreComplete: the compile
-    // then adds neither the default assemblies nor the assembly of its return type. Read once, so one compile sees one answer.
+    // True when the host gave its reference set, see DesignTimeMetadataReferences.HostReferences: the compile then adds neither the
+    // default assemblies nor the assembly of its return type. Read once, so one compile sees one answer.
     protected bool HostReferencesAreComplete;
 
     public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
@@ -79,11 +79,12 @@ internal abstract class JitCompilerHelper
     {
         SanitizeNamespaces(namespaceImportsNames);
         NamespaceImports = namespaceImportsNames;
-        HostReferencesAreComplete = DesignTimeMetadataReferences.AreHostReferencesComplete();
-        InitializeAssemblies(assemblyReferences);
+        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(assemblyReferences);
+        HostReferencesAreComplete = hostReferences != null;
+        InitializeAssemblies(hostReferences ?? (IEnumerable<AssemblyReference>)assemblyReferences);
     }
 
-    private void InitializeAssemblies(HashSet<AssemblyReference> assemblyReferences)
+    private void InitializeAssemblies(IEnumerable<AssemblyReference> assemblyReferences)
     {
         ReferencedAssemblies ??= new HashSet<Assembly>();
 

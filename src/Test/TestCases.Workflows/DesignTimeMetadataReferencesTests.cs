@@ -388,12 +388,12 @@ public class DesignTimeMetadataReferencesTests
         }
     }
 
-    // A declaration that fails counts as not made: the compile adds the loaded set of the host, as with no declaration.
+    // A set that fails counts as none: the compile adds the loaded set of the host, as with no set.
     [Fact]
-    public void CSharp_Sync_DeclarationThatThrows_CompilesAsBefore()
+    public void CSharp_Sync_HostReferencesThatThrow_CompileAsBefore()
     {
         using var designTime = UseResolverAndLoaderFor(EmitAssemblyNothingCanLoadByName());
-        DesignTimeMetadataReferences.HostReferencesAreComplete = () => throw new InvalidOperationException("The declaration failed.");
+        DesignTimeMetadataReferences.HostReferences = () => throw new InvalidOperationException("The set failed.");
         try
         {
             CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], [NameOnlyReference()], null, out _, out var compileError, out _);
@@ -402,8 +402,31 @@ public class DesignTimeMetadataReferencesTests
         }
         finally
         {
-            DesignTimeMetadataReferences.HostReferencesAreComplete = null;
+            DesignTimeMetadataReferences.HostReferences = null;
         }
+    }
+
+    // A caller that passes only some references, or none, still compiles against the host's set.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_CallerWithNoReferences_CompilesAgainstTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], Array.Empty<AssemblyReference>(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_CallerWithNoReferences_CompilesAgainstTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], Array.Empty<AssemblyReference>(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
     }
 
     // The asynchronous compile takes the same set.
@@ -464,17 +487,18 @@ public class DesignTimeMetadataReferencesTests
     }
 
     // The host holds the reference pack and the design time assembly as metadata, loads the design time assembly on first use, and
-    // declares its references complete or not.
+    // gives them as its whole reference set or gives no set.
     private IDisposable UseReferencePackFor(string path, bool hostReferencesAreComplete)
     {
         var loader = UseResolverAndLoaderFor(path);
         var designTimeMetadata = MetadataReference.CreateFromFile(path);
         var pack = s_referencePack.Value;
         DesignTimeMetadataReferences.Resolver = name => name.Name == _name ? designTimeMetadata : pack.GetValueOrDefault(name.Name);
-        DesignTimeMetadataReferences.HostReferencesAreComplete = () => hostReferencesAreComplete;
+        IReadOnlyCollection<AssemblyName> set = PackAndNameOnlyReferences().Select(reference => reference.AssemblyName).ToList();
+        DesignTimeMetadataReferences.HostReferences = hostReferencesAreComplete ? () => set : null;
         return new Restore(() =>
         {
-            DesignTimeMetadataReferences.HostReferencesAreComplete = null;
+            DesignTimeMetadataReferences.HostReferences = null;
             loader.Dispose();
         });
     }
