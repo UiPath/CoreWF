@@ -35,12 +35,12 @@ namespace System.Activities.Utils
             return meta;
         }
 
-        internal static IReadOnlyCollection<MetadataReference> GetMetadataReferences(IEnumerable<AssemblyReference> assemblyReferences)
+        internal static IReadOnlyCollection<MetadataReference> GetMetadataReferences(IEnumerable<AssemblyReference> assemblyReferences, Func<AssemblyName, MetadataReference> resolver = null)
         {
             var result = new List<MetadataReference>();
             foreach (var assemblyReference in assemblyReferences.OfType<AssemblyReference>())
             {
-                var reference = GetDesignTimeMetadataReference(assemblyReference)
+                var reference = GetDesignTimeMetadataReference(assemblyReference, resolver)
                     ?? GetMetadataReferenceForAssembly(assemblyReference.Assembly ?? LoadAssemblyFromReference(assemblyReference));
                 if (reference is not null)
                 {
@@ -51,11 +51,11 @@ namespace System.Activities.Utils
         }
 
         /// <summary>
-        ///     The metadata that <see cref="DesignTimeMetadataReferences.Resolver"/> gives for a reference with no assembly, so the
-        ///     reference needs no load.
+        ///     The metadata that the resolver of the compile's set, or else <see cref="DesignTimeMetadataReferences.Resolver"/>,
+        ///     gives for a reference with no assembly, so the reference needs no load.
         /// </summary>
         /// <remarks>A resolver that fails gives no metadata, so the reference loads by its name, as with no resolver.</remarks>
-        internal static MetadataReference GetDesignTimeMetadataReference(AssemblyReference assemblyReference)
+        internal static MetadataReference GetDesignTimeMetadataReference(AssemblyReference assemblyReference, Func<AssemblyName, MetadataReference> resolver = null)
         {
             if (assemblyReference.Assembly is not null || assemblyReference.AssemblyName is null)
             {
@@ -64,7 +64,7 @@ namespace System.Activities.Utils
 
             try
             {
-                return DesignTimeMetadataReferences.Resolver?.Invoke(assemblyReference.AssemblyName);
+                return (resolver ?? DesignTimeMetadataReferences.Resolver)?.Invoke(assemblyReference.AssemblyName);
             }
             catch (Exception e)
             {

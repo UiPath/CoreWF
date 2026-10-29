@@ -22,6 +22,14 @@ public class DesignTimeMetadataReferencesTests
 {
     private readonly string _name = "DesignTime.NotLoadable" + Guid.NewGuid().ToString("N");
 
+    // The net5 reference pack: the target framework of a project is older than the framework of the host, and its pack declares the
+    // framework types that the loaded core library of the host defines.
+    private static readonly Lazy<IReadOnlyDictionary<string, MetadataReference>> s_referencePack = new(() =>
+    {
+        var folder = typeof(DesignTimeMetadataReferencesTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(attribute => attribute.Key == "Net5ReferencePack").Value;
+        return Directory.GetFiles(folder, "*.dll").ToDictionary(path => Path.GetFileNameWithoutExtension(path), path => (MetadataReference)MetadataReference.CreateFromFile(path));
+    });
+
     [Fact]
     public async Task CSharp_NameOnlyReferenceThatTheResolverKnows_CompilesWithoutALoad()
     {
@@ -220,6 +228,289 @@ public class DesignTimeMetadataReferencesTests
         IsLoaded().ShouldBeTrue();
     }
 
+    // The host holds the whole reference set as metadata: the reference pack of the target framework of the project, its packages and
+    // its own assemblies. It declares the set complete, so the compile adds no loaded assembly of the host, and the framework types
+    // come from the pack alone.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_CompileAConstantAgainstThePackWithoutALoad()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_CompileAConstantAgainstThePackWithoutALoad()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
+    }
+
+    // Without the declaration, the loaded core library of the host sits next to the pack that declares the same types, and Visual Basic
+    // finds every one of them ambiguous. The C# script hides the duplicates of the core library, so its compile mixes the two.
+    [Fact]
+    public void VisualBasic_Sync_PackNextToTheLoadedHost_DoesNotCompile()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: false);
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldNotBeNull();
+    }
+
+    // A framework type comes from the pack alone, and the expression that the compile creates carries the type of the host.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_CompileAFrameworkTypeFromThePack()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        CSharpDesignerHelper.CreatePrecompiledValue(null, "new List<string>()", ["System.Collections.Generic"], PackAndNameOnlyReferences(), null, out var returnType, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        returnType.ShouldBe(typeof(List<string>));
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_CompileAFrameworkTypeFromThePack()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(null, "New List(Of String)()", ["System.Collections.Generic"], PackAndNameOnlyReferences(), null, out var returnType, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        returnType.ShouldBe(typeof(List<string>));
+    }
+
+    // The assembly of the target type is not added either: here it is the loaded core library of the host, which cannot sit next to the pack.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_CompileToATargetTypeFromThePack()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        var activity = CSharpDesignerHelper.CreatePrecompiledValue(typeof(List<string>), "new List<string>()", ["System.Collections.Generic"], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        activity.ShouldBeOfType<CSharpValue<List<string>>>();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_CompileToATargetTypeFromThePack_GiveTheCompilerNoLoadedAssembly()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+        var compilerFactory = VisualBasicSettings.Default.CompilerFactory;
+        HashSet<Assembly> loadedReferences = null;
+        VisualBasicSettings.Default.CompilerFactory = references => new VbJitCompiler(loadedReferences = references);
+        try
+        {
+            VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(List<string>), "New List(Of String)()", ["System.Collections.Generic"], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+            compileError.ShouldBeNull();
+            loadedReferences.ShouldBeEmpty();
+        }
+        finally
+        {
+            VisualBasicSettings.Default.CompilerFactory = compilerFactory;
+        }
+    }
+
+    // A member that the host has and the pack does not: the compile sees the pack, not the host.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_DoNotCompileAMemberOfTheHostAlone()
+    {
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(string), "System.Environment.ProcessPath", [], Array.Empty<AssemblyReference>(), null, out _, out var hostCompileError, out _);
+        hostCompileError.ShouldBeNull();
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(string), "System.Environment.ProcessPath", [], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_DoNotCompileAMemberOfTheHostAlone()
+    {
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(string), "System.Environment.ProcessPath", [], Array.Empty<AssemblyReference>(), null, out _, out var hostCompileError, out _);
+        hostCompileError.ShouldBeNull();
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(string), "System.Environment.ProcessPath", [], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldNotBeNull();
+    }
+
+    // The code that the compile runs binds the package by name, so the package loads when the expression is created, as with the loaded set.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_LoadTheAssemblyOfAMethodWhenTheExpressionIsCreated()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Get()", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeTrue();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_LoadTheAssemblyOfAMethodWhenTheExpressionIsCreated()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "Marker.Get()", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeTrue();
+    }
+
+    // A compiler without metadata support still gets the loaded set of before: the design time assembly, the defaults and the target type.
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_CompilerWithoutMetadataSupport_GetsTheLoadedSetAsBefore()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+        var compilerFactory = VisualBasicSettings.Default.CompilerFactory;
+        VisualBasicSettings.Default.CompilerFactory = references => new CompilerWithoutMetadataSupport(references);
+        try
+        {
+            VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], [NameOnlyReference()], null, out _, out var compileError, out _);
+
+            compileError.ShouldBeNull();
+            IsLoaded().ShouldBeTrue();
+        }
+        finally
+        {
+            VisualBasicSettings.Default.CompilerFactory = compilerFactory;
+        }
+    }
+
+    // A set that fails counts as none: the compile adds the loaded set of the host, as with no set.
+    [Fact]
+    public void CSharp_Sync_HostReferencesThatThrow_CompileAsBefore()
+    {
+        using var designTime = UseResolverAndLoaderFor(EmitAssemblyNothingCanLoadByName());
+        DesignTimeMetadataReferences.HostReferences = () => throw new InvalidOperationException("The set failed.");
+        try
+        {
+            CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], [NameOnlyReference()], null, out _, out var compileError, out _);
+
+            compileError.ShouldBeNull();
+        }
+        finally
+        {
+            DesignTimeMetadataReferences.HostReferences = null;
+        }
+    }
+
+    // One compile reads one state of the host: the set's resolver gives the metadata, also when Resolver already answers for a
+    // newer state, here a copy of the package without the constant.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_TakeTheMetadataOfTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+        UseNewerStateWithoutTheConstant();
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], Array.Empty<AssemblyReference>(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task VisualBasic_CompleteReferences_TakeTheMetadataOfTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+        UseNewerStateWithoutTheConstant();
+
+        var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null);
+
+        result.SourceExpressionException.ShouldBeNull();
+    }
+
+    // The same loaded assemblies with and without a set are two compiles: the complete one gets no help from the host, also when
+    // the other compile of the same text is cached. IWebProxy is in System.Net.Primitives, which the set lacks.
+    [Fact]
+    public void CSharp_Sync_SameAssembliesWithAndWithoutASet_DoNotShareACachedCompile()
+    {
+        const string expression = "System.Net.Http.HttpClient.DefaultProxy == null";
+        var assemblies = HostDefaults().Append(typeof(System.Net.Http.HttpClient).Assembly).Distinct().ToList();
+        var references = assemblies.Select(assembly => new AssemblyReference { Assembly = assembly }).ToArray();
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(bool), expression, [], references, null, out _, out var partialError, out _);
+        partialError.ShouldBeNull();
+
+        var set = new DesignTimeReferenceSet(assemblies.Select(assembly => assembly.GetName()).ToList(), null);
+        DesignTimeMetadataReferences.HostReferences = () => set;
+        try
+        {
+            CSharpDesignerHelper.CreatePrecompiledValue(typeof(bool), expression, [], references, null, out _, out var completeError, out _);
+
+            completeError.ShouldNotBeNull();
+        }
+        finally
+        {
+            DesignTimeMetadataReferences.HostReferences = null;
+        }
+    }
+
+    // A caller that passes only some references, or none, still compiles against the host's set.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_CallerWithNoReferences_CompilesAgainstTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], Array.Empty<AssemblyReference>(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_CallerWithNoReferences_CompilesAgainstTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], Array.Empty<AssemblyReference>(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
+    }
+
+    // The asynchronous compile takes the same set.
+    [Fact]
+    public async Task CSharp_CompleteReferences_CompileAConstantAgainstThePackWithoutALoad()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null);
+
+        result.SourceExpressionException.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task VisualBasic_CompleteReferences_CompileAConstantAgainstThePackWithoutALoad()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null);
+
+        result.SourceExpressionException.ShouldBeNull();
+        IsLoaded().ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task CSharp_CompleteReferences_DoNotCompileAMemberOfTheHostAlone()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+
+        var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(string), "System.Environment.ProcessPath", [], PackAndNameOnlyReferences(), null);
+
+        result.SourceExpressionException.ShouldNotBeNull();
+    }
+
     private sealed class CompilerWithoutMetadataSupport(HashSet<Assembly> references) : JustInTimeCompiler
     {
         private readonly VbJitCompiler _compiler = new(references);
@@ -244,6 +535,40 @@ public class DesignTimeMetadataReferencesTests
         });
     }
 
+    // The host holds the reference pack and the design time assembly as metadata, loads the design time assembly on first use, and
+    // gives them as its whole reference set or gives no set.
+    private IDisposable UseReferencePackFor(string path, bool hostReferencesAreComplete)
+    {
+        var loader = UseResolverAndLoaderFor(path);
+        var designTimeMetadata = MetadataReference.CreateFromFile(path);
+        var pack = s_referencePack.Value;
+        Func<AssemblyName, MetadataReference> resolver = name => name.Name == _name ? designTimeMetadata : pack.GetValueOrDefault(name.Name);
+        DesignTimeMetadataReferences.Resolver = resolver;
+        var set = new DesignTimeReferenceSet(PackAndNameOnlyReferences().Select(reference => reference.AssemblyName).ToList(), resolver);
+        DesignTimeMetadataReferences.HostReferences = hostReferencesAreComplete ? () => set : null;
+        return new Restore(() =>
+        {
+            DesignTimeMetadataReferences.HostReferences = null;
+            loader.Dispose();
+        });
+    }
+
+    // Resolver answers for a newer state of the host than the set: the package no longer has Marker.
+    private void UseNewerStateWithoutTheConstant()
+    {
+        var newer = MetadataReference.CreateFromFile(EmitAssemblyNothingCanLoadByName("namespace DesignTimeNamespace { public static class Other { } }", s_referencePack.Value["System.Runtime"]));
+        var pack = s_referencePack.Value;
+        DesignTimeMetadataReferences.Resolver = name => name.Name == _name ? newer : pack.GetValueOrDefault(name.Name);
+    }
+
+    // The assemblies that a compile with no set adds by itself.
+    private static IEnumerable<Assembly> HostDefaults()
+        => (IEnumerable<Assembly>)typeof(DesignTimeMetadataReferences).Assembly.GetType("System.Activities.JitCompilerHelper", throwOnError: true).GetField("DefaultReferencedAssemblies").GetValue(null);
+
+    // The references of a project: the whole reference pack and the design time assembly, all by name.
+    private IEnumerable<AssemblyReference> PackAndNameOnlyReferences()
+        => s_referencePack.Value.Keys.Select(name => new AssemblyReference { AssemblyName = new AssemblyName(name) }).Append(NameOnlyReference());
+
     private sealed class Restore(Action restore) : IDisposable
     {
         public void Dispose() => restore();
@@ -251,14 +576,18 @@ public class DesignTimeMetadataReferencesTests
 
     private bool IsLoaded() => AssemblyLoadContext.All.SelectMany(context => context.Assemblies).Any(assembly => assembly.GetName().Name == _name);
 
+    // A package of a project: built against the reference pack of its target framework, not against the core library of the host.
+    private string EmitAssemblyForThePack() => EmitAssemblyNothingCanLoadByName(coreLibrary: s_referencePack.Value["System.Runtime"]);
+
     private string EmitAssemblyNothingCanLoadByName(
-        string source = "namespace DesignTimeNamespace { public static class Marker { public const int Value = 42; public static int Get() => Value; } }")
+        string source = "namespace DesignTimeNamespace { public static class Marker { public const int Value = 42; public static int Get() => Value; } }",
+        MetadataReference coreLibrary = null)
     {
         var directory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), nameof(DesignTimeMetadataReferencesTests), Guid.NewGuid().ToString("N"))).FullName;
         var path = Path.Combine(directory, _name + ".dll");
         var compilation = CSharpCompilation.Create(_name,
             [CSharpSyntaxTree.ParseText(source)],
-            [MetadataReference.CreateFromFile(typeof(object).Assembly.Location)],
+            [coreLibrary ?? MetadataReference.CreateFromFile(typeof(object).Assembly.Location)],
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
         compilation.Emit(path).Success.ShouldBeTrue();
         return path;

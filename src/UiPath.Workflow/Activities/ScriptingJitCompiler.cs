@@ -5,12 +5,14 @@ using System.Activities.ExpressionParser;
 using System.Activities.Internals;
 using System.Activities.XamlIntegration;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.Loader;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.Hosting;
@@ -42,6 +44,13 @@ public record ExpressionToCompile(string Code, IReadOnlyCollection<string> Impor
     /// The metadata of the referenced assemblies that the compile does not load. See <see cref="DesignTimeMetadataReferences"/>.
     /// </summary>
     public IReadOnlyCollection<MetadataReference> MetadataReferences { get; init; } = Array.Empty<MetadataReference>();
+
+    /// <summary>
+    /// True when the assemblies of the compiler and <see cref="MetadataReferences"/> are the whole reference set of the compile, see
+    /// <see cref="DesignTimeMetadataReferences.HostReferences"/>: the compiler then adds no assembly of the host, not even
+    /// for a reference that a referenced assembly misses.
+    /// </summary>
+    public bool HostReferencesAreComplete { get; init; }
 }
 
 public abstract class ScriptingJitCompiler : JustInTimeCompiler
@@ -59,12 +68,20 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
 
     public override LambdaExpression CompileExpression(ExpressionToCompile expressionToCompile)
     {
+        var references = MetadataReferences.Concat(expressionToCompile.MetadataReferences).ToArray();
         var options = ScriptOptions.Default
-                                   .WithReferences(MetadataReferences.Concat(expressionToCompile.MetadataReferences))
+                                   .WithReferences(references)
                                    .WithImports(expressionToCompile.ImportedNamespaces)
                                    .WithOptimizationLevel(OptimizationLevel.Release);
+        if (expressionToCompile.HostReferencesAreComplete)
+        {
+            options = options.WithMetadataResolver(NoMissingAssemblyResolver.Instance);
+        }
+
         var untypedExpressionScript = Create(expressionToCompile.Code, options);
-        var compilation = untypedExpressionScript.GetCompilation();
+        var compilation = expressionToCompile.HostReferencesAreComplete
+            ? GetCompilationWithTheReferencesOnly(untypedExpressionScript, references)
+            : untypedExpressionScript.GetCompilation();
         var syntaxTree = compilation.SyntaxTrees.First();
         var identifiers = GetIdentifiers(syntaxTree);
         var resolvedIdentifiers =
@@ -107,6 +124,27 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
             }
 
         }
+    }
+
+    // The compilation of a script whose references are complete: it references the given assemblies and no other, and takes the result
+    // type of the submission from the core library among them. The scripts of this repository give their compilation, they never run.
+    protected virtual Compilation GetCompilationWithTheReferencesOnly(Script<object> script, IEnumerable<MetadataReference> references)
+        => script.GetCompilation();
+
+    // The resolver of a script takes a reference that a referenced assembly misses from the framework of the host. A complete set has
+    // nothing to add: the reference stays missing, and the compile reports a type from it as such.
+    private sealed class NoMissingAssemblyResolver : MetadataReferenceResolver
+    {
+        public static readonly MetadataReferenceResolver Instance = new NoMissingAssemblyResolver();
+
+        public override bool ResolveMissingAssemblies => false;
+
+        public override ImmutableArray<PortableExecutableReference> ResolveReference(string reference, string baseFilePath, MetadataReferenceProperties properties)
+            => ImmutableArray<PortableExecutableReference>.Empty;
+
+        public override bool Equals(object other) => ReferenceEquals(this, other);
+
+        public override int GetHashCode() => typeof(NoMissingAssemblyResolver).GetHashCode();
     }
 
     private Assembly CollectibleAlc_Resolving(AssemblyLoadContext loadContext, AssemblyName assemblyName)
@@ -164,6 +202,15 @@ public class CSharpJitCompiler : ScriptingJitCompiler
     protected override CompilerHelper CompilerHelper { get; } = new CSharpCompilerHelper();
 
     protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
+
+    // The C# script adds the core library of the host and binds the result type of the submission to it, which a compile against the
+    // reference pack of another framework cannot do. The script gives the options and the parsed code; with no result type given, the
+    // submission takes System.Object from the core library of the compile. The Visual Basic script of this repository does both by itself.
+    protected override Compilation GetCompilationWithTheReferencesOnly(Script<object> script, IEnumerable<MetadataReference> references)
+    {
+        var scriptCompilation = (CSharpCompilation)script.GetCompilation();
+        return CSharpCompilation.CreateScriptCompilation(scriptCompilation.AssemblyName, scriptCompilation.SyntaxTrees.Single(), references, scriptCompilation.Options);
+    }
 
     protected override string GetTypeName(Type type) => (string)s_typeNameFormatter.FormatTypeName(type, s_typeOptions);
 

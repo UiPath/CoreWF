@@ -22,4 +22,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <!-- The reference pack of a framework older than the one of the tests: the design time compiles against metadata only take it in place of the loaded framework. -->
+    <PackageDownload Include="Microsoft.NETCore.App.Ref" Version="[5.0.0]" />
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>Net5ReferencePack</_Parameter1>
+      <_Parameter2>$(NuGetPackageRoot)microsoft.netcore.app.ref/5.0.0/ref/net5.0</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

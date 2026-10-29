@@ -30,13 +30,13 @@ internal sealed class VisualBasicExpressionCompiler : ExpressionCompiler
         return GetSystemType(typeSymbol, GetAssemblyForType(typeSymbol));
     }
 
-    protected override Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces)
+    protected override Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces, Func<AssemblyName, MetadataReference> resolver)
     {
         var options = _compilerHelper.DefaultCompilationUnit.Options as VisualBasicCompilationOptions;
 
         return _compilerHelper.DefaultCompilationUnit
             .WithOptions(options!.WithGlobalImports(GlobalImport.Parse(namespaces.Union(CompilerHelper.DefaultNamespaces))))
-            .WithReferences(MetadataReferenceUtils.GetMetadataReferences(assemblies));
+            .WithReferences(MetadataReferenceUtils.GetMetadataReferences(assemblies, resolver));
     }
 
     protected override SyntaxTree GetSyntaxTreeForExpression(string expression, bool isLocation, Type returnType, LocationReferenceEnvironment environment)

@@ -98,8 +98,8 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
                     assemblyIdentityComparer:=DesktopAssemblyIdentityComparer.Default).
                     WithIgnoreCorLibraryDuplicatedTypes(True),
                 previousSubmission,
-                script.ReturnType,
-                script.GlobalsType)
+                returnType:=Nothing, ' The submission takes System.Object from the core library of the compile, so a compile against the reference pack of another framework needs no core library of the host. The scripts of this repository give their compilation, they never run.
+                globalsType:=script.GlobalsType)
 
             Return submission
         End Function
