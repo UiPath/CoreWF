@@ -16,9 +16,9 @@ namespace System.Activities
         {
             var syntaxTree = GetSyntaxTreeForExpression(expressionText, isLocation, returnType, environment);
             // A host that gives its reference set gets no default assembly, see DesignTimeMetadataReferences.HostReferences.
-            var assemblies = (IReadOnlyCollection<AssemblyReference>)DesignTimeMetadataReferences.GetHostReferences(referencedAssemblies)
+            var assemblies = (IReadOnlyCollection<AssemblyReference>)DesignTimeMetadataReferences.GetHostReferences(referencedAssemblies, out var resolver)
                 ?? JitCompilerHelper.DefaultReferencedAssemblies.Select(a => (AssemblyReference)a).Union(referencedAssemblies).ToList();
-            return GetCompilation(assemblies, namespaces).AddSyntaxTrees(syntaxTree);
+            return GetCompilation(assemblies, namespaces, resolver).AddSyntaxTrees(syntaxTree);
         }
 
         public abstract Type GetReturnType(Compilation compilation);
@@ -58,7 +58,7 @@ namespace System.Activities
             return assembly.GetType($"{typeSymbol.ContainingNamespace.ToDisplayString()}.{typeSymbol.MetadataName}");
         }
 
-        protected abstract Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces);
+        protected abstract Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces, Func<AssemblyName, MetadataReference> resolver);
 
         protected abstract SyntaxTree GetSyntaxTreeForExpression(string expression, bool isLocation, Type returnType, LocationReferenceEnvironment environment);
     }

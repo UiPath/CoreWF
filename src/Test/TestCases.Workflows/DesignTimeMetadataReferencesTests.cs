@@ -406,6 +406,55 @@ public class DesignTimeMetadataReferencesTests
         }
     }
 
+    // One compile reads one state of the host: the set's resolver gives the metadata, also when Resolver already answers for a
+    // newer state, here a copy of the package without the constant.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_TakeTheMetadataOfTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+        UseNewerStateWithoutTheConstant();
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], Array.Empty<AssemblyReference>(), null, out _, out var compileError, out _);
+
+        compileError.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task VisualBasic_CompleteReferences_TakeTheMetadataOfTheSet()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), hostReferencesAreComplete: true);
+        UseNewerStateWithoutTheConstant();
+
+        var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndNameOnlyReferences(), null);
+
+        result.SourceExpressionException.ShouldBeNull();
+    }
+
+    // The same loaded assemblies with and without a set are two compiles: the complete one gets no help from the host, also when
+    // the other compile of the same text is cached. IWebProxy is in System.Net.Primitives, which the set lacks.
+    [Fact]
+    public void CSharp_Sync_SameAssembliesWithAndWithoutASet_DoNotShareACachedCompile()
+    {
+        const string expression = "System.Net.Http.HttpClient.DefaultProxy == null";
+        var assemblies = HostDefaults().Append(typeof(System.Net.Http.HttpClient).Assembly).Distinct().ToList();
+        var references = assemblies.Select(assembly => new AssemblyReference { Assembly = assembly }).ToArray();
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(bool), expression, [], references, null, out _, out var partialError, out _);
+        partialError.ShouldBeNull();
+
+        var set = new DesignTimeReferenceSet(assemblies.Select(assembly => assembly.GetName()).ToList(), null);
+        DesignTimeMetadataReferences.HostReferences = () => set;
+        try
+        {
+            CSharpDesignerHelper.CreatePrecompiledValue(typeof(bool), expression, [], references, null, out _, out var completeError, out _);
+
+            completeError.ShouldNotBeNull();
+        }
+        finally
+        {
+            DesignTimeMetadataReferences.HostReferences = null;
+        }
+    }
+
     // A caller that passes only some references, or none, still compiles against the host's set.
     [Fact]
     public void CSharp_Sync_CompleteReferences_CallerWithNoReferences_CompilesAgainstTheSet()
@@ -493,8 +542,9 @@ public class DesignTimeMetadataReferencesTests
         var loader = UseResolverAndLoaderFor(path);
         var designTimeMetadata = MetadataReference.CreateFromFile(path);
         var pack = s_referencePack.Value;
-        DesignTimeMetadataReferences.Resolver = name => name.Name == _name ? designTimeMetadata : pack.GetValueOrDefault(name.Name);
-        IReadOnlyCollection<AssemblyName> set = PackAndNameOnlyReferences().Select(reference => reference.AssemblyName).ToList();
+        Func<AssemblyName, MetadataReference> resolver = name => name.Name == _name ? designTimeMetadata : pack.GetValueOrDefault(name.Name);
+        DesignTimeMetadataReferences.Resolver = resolver;
+        var set = new DesignTimeReferenceSet(PackAndNameOnlyReferences().Select(reference => reference.AssemblyName).ToList(), resolver);
         DesignTimeMetadataReferences.HostReferences = hostReferencesAreComplete ? () => set : null;
         return new Restore(() =>
         {
@@ -502,6 +552,18 @@ public class DesignTimeMetadataReferencesTests
             loader.Dispose();
         });
     }
+
+    // Resolver answers for a newer state of the host than the set: the package no longer has Marker.
+    private void UseNewerStateWithoutTheConstant()
+    {
+        var newer = MetadataReference.CreateFromFile(EmitAssemblyNothingCanLoadByName("namespace DesignTimeNamespace { public static class Other { } }", s_referencePack.Value["System.Runtime"]));
+        var pack = s_referencePack.Value;
+        DesignTimeMetadataReferences.Resolver = name => name.Name == _name ? newer : pack.GetValueOrDefault(name.Name);
+    }
+
+    // The assemblies that a compile with no set adds by itself.
+    private static IEnumerable<Assembly> HostDefaults()
+        => (IEnumerable<Assembly>)typeof(DesignTimeMetadataReferences).Assembly.GetType("System.Activities.JitCompilerHelper", throwOnError: true).GetField("DefaultReferencedAssemblies").GetValue(null);
 
     // The references of a project: the whole reference pack and the design time assembly, all by name.
     private IEnumerable<AssemblyReference> PackAndNameOnlyReferences()

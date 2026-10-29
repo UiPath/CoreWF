@@ -61,7 +61,8 @@ internal abstract class JitCompilerHelper
     protected CodeActivityPublicEnvironmentAccessor? PublicAccessor;
     protected HashSet<Assembly> ReferencedAssemblies;
 
-    // The name-only references that DesignTimeMetadataReferences.Resolver answers. The compile uses their metadata and does not load them.
+    // The name-only references that the resolver of the compile answers, the one of the host's set or else
+    // DesignTimeMetadataReferences.Resolver. The compile uses their metadata and does not load them.
     protected readonly List<DesignTimeReference> DesignTimeReferences = new();
 
     // True when the host gave its reference set, see DesignTimeMetadataReferences.HostReferences: the compile then adds neither the
@@ -79,18 +80,18 @@ internal abstract class JitCompilerHelper
     {
         SanitizeNamespaces(namespaceImportsNames);
         NamespaceImports = namespaceImportsNames;
-        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(assemblyReferences);
+        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(assemblyReferences, out var resolver);
         HostReferencesAreComplete = hostReferences != null;
-        InitializeAssemblies(hostReferences ?? (IEnumerable<AssemblyReference>)assemblyReferences);
+        InitializeAssemblies(hostReferences ?? (IEnumerable<AssemblyReference>)assemblyReferences, resolver);
     }
 
-    private void InitializeAssemblies(IEnumerable<AssemblyReference> assemblyReferences)
+    private void InitializeAssemblies(IEnumerable<AssemblyReference> assemblyReferences, Func<AssemblyName, MetadataReference> resolver)
     {
         ReferencedAssemblies ??= new HashSet<Assembly>();
 
         foreach (var assemblyReference in assemblyReferences)
         {
-            var metadata = MetadataReferenceUtils.GetDesignTimeMetadataReference(assemblyReference);
+            var metadata = MetadataReferenceUtils.GetDesignTimeMetadataReference(assemblyReference, resolver);
             if (metadata != null)
             {
                 DesignTimeReferences.Add(new DesignTimeReference(assemblyReference, metadata));
@@ -1186,17 +1187,21 @@ internal abstract class JitCompilerHelper
         private readonly int _hashCode;
         private readonly HashSet<string> _namespaces;
         private readonly Type _returnType;
+        // A complete set compiles without the help of the host: the same assemblies with and without it are two compiles.
+        private readonly bool _hostReferencesAreComplete;
 
         public RawTreeCacheKey(string expressionText, Type returnType, HashSet<Assembly> assemblies,
-            IReadOnlyCollection<string> namespaces, IEnumerable<MetadataReference> designTimeMetadata)
+            IReadOnlyCollection<string> namespaces, IEnumerable<MetadataReference> designTimeMetadata, bool hostReferencesAreComplete)
         {
             _expressionText = expressionText;
             _returnType = returnType;
             _assemblies = new HashSet<Assembly>(assemblies);
             _namespaces = new HashSet<string>(namespaces);
             _designTimeMetadata = new HashSet<MetadataReference>(designTimeMetadata, ReferenceEqualityComparer.Instance);
+            _hostReferencesAreComplete = hostReferencesAreComplete;
 
             _hashCode = expressionText?.GetHashCode() ?? 0;
+            _hashCode = CombineHashCodes(_hashCode, hostReferencesAreComplete.GetHashCode());
             _hashCode = CombineHashCodes(_hashCode, s_assemblySetEqualityComparer.GetHashCode(assemblies));
             _hashCode = CombineHashCodes(_hashCode, s_namespaceSetEqualityComparer.GetHashCode(_namespaces));
             _hashCode = CombineHashCodes(_hashCode, _designTimeMetadata.Aggregate(0, (hash, metadata) => hash ^ ReferenceEqualityComparer.Instance.GetHashCode(metadata)));
@@ -1214,6 +1219,7 @@ internal abstract class JitCompilerHelper
             }
 
             return _expressionText == rtcKey._expressionText &&
+                _hostReferencesAreComplete == rtcKey._hostReferencesAreComplete &&
                 _returnType == rtcKey._returnType &&
                 s_assemblySetEqualityComparer.Equals(_assemblies, rtcKey._assemblies) &&
                 s_namespaceSetEqualityComparer.Equals(_namespaces, rtcKey._namespaces) &&
@@ -1463,7 +1469,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             null,
             ReferencedAssemblies,
             NamespaceImports,
-            DesignTimeMetadata);
+            DesignTimeMetadata,
+            HostReferencesAreComplete);
 
         var rawTreeHolder = RawTreeCache.GetValue(s_rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
         if (rawTreeHolder != null)
@@ -1621,7 +1628,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             lambdaReturnType,
             ReferencedAssemblies,
             NamespaceImports,
-            DesignTimeMetadata);
+            DesignTimeMetadata,
+            HostReferencesAreComplete);
 
         var rawTreeHolder = RawTreeCache.GetValue(s_rawTreeCacheLock, rawTreeKey) as RawTreeCacheValueWrapper;
         if (rawTreeHolder != null)
