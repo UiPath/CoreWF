@@ -2,7 +2,6 @@
 // See LICENSE file in the project root for full license information.
 
 using Microsoft.CodeAnalysis;
-using Microsoft.VisualBasic.Activities;
 using System.Activities.Expressions;
 using System.Activities.Utils;
 using System.Collections.Generic;
@@ -58,7 +57,8 @@ public abstract class RoslynExpressionValidator
 
     /// <summary>
     ///     Assemblies required on the <see cref="Compilation"/> object. Use <see cref="AddRequiredAssembly(Assembly)"/>
-    ///     to add more assemblies.
+    ///     to add more assemblies. A validation with the host's set, see
+    ///     <see cref="DesignTimeMetadataReferences.HostReferences"/>, uses none of them: the set is the whole compile.
     /// </summary>
     protected IReadOnlySet<Assembly> RequiredAssemblies { get; private set; }
 
@@ -126,7 +126,11 @@ public abstract class RoslynExpressionValidator
     /// <summary>
     ///     Updates the <see cref="Compilation" /> object for the expression.
     /// </summary>
-    /// <param name="assemblies">The list of assemblies</param>
+    /// <param name="assemblies">
+    ///     The list of assemblies. With the host's set, see <see cref="DesignTimeMetadataReferences.HostReferences"/>, only the
+    ///     references that the set's resolver did not answer; the base implementation adds the set's metadata, so an override
+    ///     that does not call it compiles against its own references.
+    /// </param>
     /// <param name="namespaces">The list of namespaces</param>
     protected abstract Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null);
 
@@ -208,7 +212,7 @@ public abstract class RoslynExpressionValidator
 
         GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
         var references = localAssemblies.Where(aref => aref is not null);
-        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(WithoutDefaultImports(references));
+        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(references);
         HashSet<Assembly> requiredAssemblies;
         ValidationHostReferences validationHostReferences = null;
         if (hostReferences == null)
@@ -262,14 +266,6 @@ public abstract class RoslynExpressionValidator
         var errors = ProcessDiagnostics(diagnostics, expressionsTextBuilder.ToString(), validationScope).ToList();
         validationScope.Clear();
         return errors;
-    }
-
-    // The default import references of VisualBasicSettings name the loaded framework of the host, for a compile with no set; with a
-    // set, they would bring the core library of the host next to the set's. Their namespaces stay.
-    private static IEnumerable<AssemblyReference> WithoutDefaultImports(IEnumerable<AssemblyReference> references)
-    {
-        var defaults = VisualBasicSettings.Default.ImportReferences.Select(import => import.AssemblyName).ToHashSet(ReferenceEqualityComparer.Instance);
-        return references.Where(reference => !defaults.Contains(reference.AssemblyName));
     }
 
     /// <summary>

@@ -175,15 +175,16 @@ public class DesignTimeMetadataReferencesTests
     [Fact]
     public void VisualBasic_Sync_CompilerWithoutMetadataSupport_ManyCompiles_KeepTheCompilerCacheUsable()
     {
-        var designTime = UseHostSetFor(EmitAssemblyNothingCanLoadByName());
         using var compiler = UseCompiler(references => new CompilerWithoutMetadataSupport(references));
-        for (var i = 0; i < 15; i++)
+        using (UseHostSetFor(EmitAssemblyNothingCanLoadByName()))
         {
-            VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), $"Marker.Value + {i}", ["DesignTimeNamespace"], [NameOnlyReference()], null, out _, out var compileError, out _);
-            compileError.ShouldBeNull();
+            for (var i = 0; i < 15; i++)
+            {
+                VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), $"Marker.Value + {i}", ["DesignTimeNamespace"], [NameOnlyReference()], null, out _, out var compileError, out _);
+                compileError.ShouldBeNull();
+            }
         }
 
-        designTime.Dispose();
         VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "1 + 1", ["System"], Array.Empty<AssemblyReference>(), null, out _, out var otherCompileError, out _);
         otherCompileError.ShouldBeNull();
     }
@@ -540,6 +541,22 @@ public class DesignTimeMetadataReferencesTests
         Validate(new VisualBasicValue<string>("System.Environment.ProcessPath")).Errors.ShouldHaveSingleItem().Message.ShouldContain("ProcessPath");
     }
 
+    // With the expression cache forced, the validation compiles each expression through the JIT compile, which gets the default
+    // import references of VisualBasicSettings too: they must not bring the core library of the host next to the set's.
+    [Fact]
+    public void VisualBasic_Validation_ForceExpressionCache_CompleteReferences_RejectAMemberOfTheHostAlone()
+    {
+        var package = EmitAssemblyForThePack();
+        using (UseLoaderFor(package))
+        {
+            Validate(new VisualBasicValue<string>("System.Environment.ProcessPath"), forceExpressionCache: true).Errors.ShouldBeEmpty();
+        }
+
+        using var designTime = UseReferencePackFor(package);
+
+        Validate(new VisualBasicValue<string>("System.Environment.ProcessPath"), forceExpressionCache: true).Errors.ShouldHaveSingleItem().Message.ShouldContain("ProcessPath");
+    }
+
     [Fact]
     public void CSharp_Validation_CompleteReferences_RejectAMemberOfTheHostAlone()
     {
@@ -578,7 +595,7 @@ public class DesignTimeMetadataReferencesTests
         }
     }
 
-    private ValidationResults Validate(Activity<string> expression)
+    private ValidationResults Validate(Activity<string> expression, bool forceExpressionCache = false)
     {
         var workflow = new Sequence { Activities = { new WriteLine { Text = new InArgument<string>(expression) } } };
         TextExpression.SetReferencesForImplementation(workflow, [new AssemblyReference { AssemblyName = new AssemblyName(_name) }]);
@@ -588,7 +605,7 @@ public class DesignTimeMetadataReferencesTests
             SkipExpressionCompilation = false,
             SkipImplementationChildren = false,
             SkipValidatingRootConfiguration = false,
-            ForceExpressionCache = false
+            ForceExpressionCache = forceExpressionCache
         };
 
         return ActivityValidationServices.Validate(workflow, settings);

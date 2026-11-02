@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.VisualBasic.Activities;
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
@@ -23,7 +24,8 @@ public static class DesignTimeMetadataReferences
     /// </para>
     /// <para>
     /// With a set, every design time compile starts from its names: the JIT compile, the designer compile and the validation. A
-    /// caller's reference adds only a name the set lacks, and the compile adds no assembly of its own, so a host can compile against
+    /// caller's reference adds only a name the set lacks, and the compile adds no assembly of its own, nor those of the default import
+    /// references of <see cref="Microsoft.VisualBasic.Activities.VisualBasicSettings"/>, so a host can compile against
     /// the reference pack of another framework. The set's resolver gives the metadata of every name, and of every assembly that a
     /// referenced assembly needs and the names lack; the compile never takes one from the framework of the host. A name the
     /// resolver does not answer loads by its name; a dependency it does not answer stays missing. A compiler that does not
@@ -74,10 +76,17 @@ public static class DesignTimeMetadataReferences
             }
         }
 
+        // The default import references of VisualBasicSettings name the framework of the host, for a compile with no set; with a set,
+        // they would bring the core library of the host next to the set's. Their namespaces stay. Matched by reference, so that a
+        // workflow's own reference to the same name still counts.
+        var defaultImports = VisualBasicSettings.Default.ImportReferences
+            .Select(import => import.AssemblyName)
+            .Where(assemblyName => assemblyName != null)
+            .ToHashSet(ReferenceEqualityComparer.Instance);
         foreach (var reference in callerReferences)
         {
             var name = reference?.AssemblyName?.Name ?? reference?.Assembly?.GetName().Name;
-            if (name != null && !names.Contains(name))
+            if (name != null && !names.Contains(name) && !defaultImports.Contains(reference.AssemblyName))
             {
                 references.Add(reference);
             }
@@ -96,8 +105,9 @@ public static class DesignTimeMetadataReferences
 /// </param>
 /// <param name="Resolver">
 /// The metadata of an assembly by its name, for the state that gave <paramref name="Names"/>. The compile asks it for every name and
-/// for every assembly that a referenced assembly misses. Give the same object while the metadata does not change: the compiled
-/// expressions are cached by it. It must not load an assembly, and a null result means the host has none.
+/// for every assembly that a referenced assembly misses; that second answer must be a <see cref="PortableExecutableReference"/>, and
+/// any other kind counts as none. Give the same metadata object while the metadata does not change: the compiled expressions are
+/// cached by the metadata objects it returns. It must not load an assembly, and a null result means the host has none.
 /// </param>
 public sealed record DesignTimeReferenceSet(IReadOnlyCollection<AssemblyName> Names, Func<AssemblyName, MetadataReference> Resolver);
 
