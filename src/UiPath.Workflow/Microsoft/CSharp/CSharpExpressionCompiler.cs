@@ -16,13 +16,13 @@ internal sealed class CSharpExpressionCompiler : ExpressionCompiler
 {
     private readonly CSharpCompilerHelper _compilerHelper = new();
 
-    protected override Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces, Func<AssemblyName, MetadataReference> resolver)
+    protected override Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces, HostCompileReferences hostReferences)
     {
         var options = _compilerHelper.DefaultCompilationUnit.Options as CSharpCompilationOptions;
 
         return _compilerHelper.DefaultCompilationUnit
-            .WithOptions(options.WithUsings(namespaces.Union(CompilerHelper.DefaultNamespaces)))
-            .WithReferences(MetadataReferenceUtils.GetMetadataReferences(assemblies, resolver));
+            .WithOptions(options.WithUsings(namespaces.Union(CompilerHelper.DefaultNamespaces)).WithMetadataReferenceResolver(hostReferences?.MissingAssemblyResolver))
+            .WithReferences(MetadataReferenceUtils.GetMetadataReferences(assemblies, hostReferences?.Resolver));
     }
 
     public override Type GetReturnType(Compilation compilation)

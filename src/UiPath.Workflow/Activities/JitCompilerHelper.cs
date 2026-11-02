@@ -61,13 +61,14 @@ internal abstract class JitCompilerHelper
     protected CodeActivityPublicEnvironmentAccessor? PublicAccessor;
     protected HashSet<Assembly> ReferencedAssemblies;
 
-    // The name-only references that the resolver of the compile answers, the one of the host's set or else
-    // DesignTimeMetadataReferences.Resolver. The compile uses their metadata and does not load them.
+    // The name-only references that the resolver of the host's set answers. The compile uses their metadata and does not load them.
     protected readonly List<DesignTimeReference> DesignTimeReferences = new();
 
-    // True when the host gave its reference set, see DesignTimeMetadataReferences.HostReferences: the compile then adds neither the
-    // default assemblies nor the assembly of its return type. Read once, so one compile sees one answer.
-    protected bool HostReferencesAreComplete;
+    // The host's set, see DesignTimeMetadataReferences.HostReferences: the compile then adds neither the default assemblies nor the
+    // assembly of its return type. Read once, so one compile sees one state of the host.
+    private protected HostCompileReferences HostReferences;
+
+    private protected bool HostReferencesAreComplete => HostReferences != null;
 
     public abstract LambdaExpression CompileNonGeneric(LocationReferenceEnvironment environment);
     protected abstract JustInTimeCompiler CreateCompiler(HashSet<Assembly> references);
@@ -80,9 +81,8 @@ internal abstract class JitCompilerHelper
     {
         SanitizeNamespaces(namespaceImportsNames);
         NamespaceImports = namespaceImportsNames;
-        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(assemblyReferences, out var resolver);
-        HostReferencesAreComplete = hostReferences != null;
-        InitializeAssemblies(hostReferences ?? (IEnumerable<AssemblyReference>)assemblyReferences, resolver);
+        HostReferences = DesignTimeMetadataReferences.GetHostReferences(assemblyReferences);
+        InitializeAssemblies(HostReferences?.References ?? (IEnumerable<AssemblyReference>)assemblyReferences, HostReferences?.Resolver);
     }
 
     private void InitializeAssemblies(IEnumerable<AssemblyReference> assemblyReferences, Func<AssemblyName, MetadataReference> resolver)
@@ -1548,7 +1548,8 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         return new ExpressionToCompile(TextToCompile, NamespaceImports, variableTypeGetter, lambdaReturnType)
         {
             MetadataReferences = DesignTimeReferences.Select(designTimeReference => designTimeReference.Metadata).ToArray(),
-            HostReferencesAreComplete = HostReferencesAreComplete
+            HostReferencesAreComplete = HostReferencesAreComplete,
+            MetadataResolver = HostReferences?.MissingAssemblyResolver
         };
     }
 
@@ -1571,7 +1572,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         LoadDesignTimeReferences();
         if (HostReferencesAreComplete)
         {
-            HostReferencesAreComplete = false;
+            HostReferences = null;
             ReferencedAssemblies.UnionWith(DefaultReferencedAssemblies);
             if (lambdaReturnType != null)
             {

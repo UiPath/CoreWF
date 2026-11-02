@@ -42,13 +42,18 @@ public class CSharpExpressionValidator : RoslynExpressionValidator
 
     protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null)
     {
-        var metadataReferences = GetMetadataReferencesForExpression(assemblies);
+        var hostReferences = HostReferences;
+        var metadataReferences = (hostReferences?.Metadata ?? Enumerable.Empty<MetadataReference>()).Concat(GetMetadataReferencesForExpression(assemblies));
 
         var options = CompilerHelper.DefaultCompilationUnit.Options as CSharpCompilationOptions;
 
         options = options.WithUsings(namespaces);
 
-        if (validationSettings?.MissingAssemblyResolver is Func<AssemblyName, Assembly> resolver)
+        if (hostReferences != null)
+        {
+            options = options.WithMetadataReferenceResolver(hostReferences.MissingAssemblyResolver);
+        }
+        else if (validationSettings?.MissingAssemblyResolver is Func<AssemblyName, Assembly> resolver)
         {
             options = options.WithMetadataReferenceResolver(new ExternalMetadataReferenceResolver(resolver));
         }

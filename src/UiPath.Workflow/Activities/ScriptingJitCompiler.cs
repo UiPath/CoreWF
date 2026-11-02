@@ -47,10 +47,18 @@ public record ExpressionToCompile(string Code, IReadOnlyCollection<string> Impor
 
     /// <summary>
     /// True when the assemblies of the compiler and <see cref="MetadataReferences"/> are the whole reference set of the compile, see
-    /// <see cref="DesignTimeMetadataReferences.HostReferences"/>: the compiler then adds no assembly of the host, not even
-    /// for a reference that a referenced assembly misses.
+    /// <see cref="DesignTimeMetadataReferences.HostReferences"/>: the compiler then adds no assembly of the host, and takes an
+    /// assembly that a referenced assembly misses from <see cref="MetadataResolver"/> only. Compilers outside this library read it by
+    /// this name.
     /// </summary>
     public bool HostReferencesAreComplete { get; init; }
+
+    /// <summary>
+    /// With <see cref="HostReferencesAreComplete"/>, the resolver of the compile for an assembly that a referenced assembly misses: it
+    /// answers from the host's set and never from the framework of the host. Null otherwise. Compilers outside this library read it by
+    /// this name.
+    /// </summary>
+    public MetadataReferenceResolver MetadataResolver { get; init; }
 }
 
 public abstract class ScriptingJitCompiler : JustInTimeCompiler
@@ -75,7 +83,7 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
                                    .WithOptimizationLevel(OptimizationLevel.Release);
         if (expressionToCompile.HostReferencesAreComplete)
         {
-            options = options.WithMetadataResolver(NoMissingAssemblyResolver.Instance);
+            options = options.WithMetadataResolver(expressionToCompile.MetadataResolver ?? NoMissingAssemblyResolver.Instance);
         }
 
         var untypedExpressionScript = Create(expressionToCompile.Code, options);
@@ -131,8 +139,8 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
     protected virtual Compilation GetCompilationWithTheReferencesOnly(Script<object> script, IEnumerable<MetadataReference> references)
         => script.GetCompilation();
 
-    // The resolver of a script takes a reference that a referenced assembly misses from the framework of the host. A complete set has
-    // nothing to add: the reference stays missing, and the compile reports a type from it as such.
+    // The resolver of a script takes a reference that a referenced assembly misses from the framework of the host. A complete set
+    // given without a resolver has nothing to add: the reference stays missing, and the compile reports a type from it as such.
     private sealed class NoMissingAssemblyResolver : MetadataReferenceResolver
     {
         public static readonly MetadataReferenceResolver Instance = new NoMissingAssemblyResolver();

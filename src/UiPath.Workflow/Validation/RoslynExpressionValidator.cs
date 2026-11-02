@@ -2,6 +2,7 @@
 // See LICENSE file in the project root for full license information.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.VisualBasic.Activities;
 using System.Activities.Expressions;
 using System.Activities.Utils;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static System.Activities.JitCompilerHelper;
 
 namespace System.Activities.Validation;
@@ -22,6 +24,16 @@ public abstract class RoslynExpressionValidator
     private const string ErrorRegex = "((\\(.*\\)).*error )(.*)";
     protected abstract string ActivityIdentifierRegex { get; }
     private readonly object _lockRequiredAssemblies = new();
+
+    // The host's set of the validation in progress, see DesignTimeMetadataReferences.HostReferences. Read once per validation and
+    // handed to GetCompilation this way, so the signature that hosts override stays as it is.
+    private static readonly AsyncLocal<ValidationHostReferences> s_hostReferences = new();
+
+    // With the host's set: the metadata of its names, and the resolver of the assemblies that they need, in place of the default
+    // assemblies and of ValidationSettings.MissingAssemblyResolver. Null without a set.
+    private protected static ValidationHostReferences HostReferences => s_hostReferences.Value;
+
+    private protected sealed record ValidationHostReferences(IReadOnlyList<MetadataReference> Metadata, MetadataReferenceResolver MissingAssemblyResolver);
 
     protected abstract CompilerHelper CompilerHelper { get; }
 
@@ -194,13 +206,48 @@ public abstract class RoslynExpressionValidator
             return Array.Empty<ValidationError>();
         }
 
-        var requiredAssemblies = new HashSet<Assembly>(RequiredAssemblies);
-
         GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
-        requiredAssemblies.UnionWith(localAssemblies.Where(aref => aref is not null).Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
+        var references = localAssemblies.Where(aref => aref is not null);
+        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(WithoutDefaultImports(references));
+        HashSet<Assembly> requiredAssemblies;
+        ValidationHostReferences validationHostReferences = null;
+        if (hostReferences == null)
+        {
+            requiredAssemblies = new HashSet<Assembly>(RequiredAssemblies);
+            requiredAssemblies.UnionWith(references.Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
+        }
+        else
+        {
+            // As in the JIT compile: no default assembly, the set's metadata, and a load only for a name that the set does not answer.
+            requiredAssemblies = new HashSet<Assembly>();
+            var hostMetadata = new List<MetadataReference>();
+            foreach (var reference in hostReferences.References)
+            {
+                if (MetadataReferenceUtils.GetDesignTimeMetadataReference(reference, hostReferences.Resolver) is { } metadata)
+                {
+                    hostMetadata.Add(metadata);
+                }
+                else if ((reference.Assembly ?? LoadAssemblyFromReference(reference)) is { } assembly)
+                {
+                    requiredAssemblies.Add(assembly);
+                }
+            }
+
+            validationHostReferences = new ValidationHostReferences(hostMetadata, hostReferences.MissingAssemblyResolver);
+        }
+
         localNamespaces.AddRange(CompilerHelper.DefaultNamespaces);
 
-        var compilation = GetCompilation(requiredAssemblies, localNamespaces, validationSettings);
+        Compilation compilation;
+        s_hostReferences.Value = validationHostReferences;
+        try
+        {
+            compilation = GetCompilation(requiredAssemblies, localNamespaces, validationSettings);
+        }
+        finally
+        {
+            s_hostReferences.Value = null;
+        }
         var expressionsTextBuilder = new StringBuilder();
         int index = 0;
         foreach (var expressionToValidate in validationScope.GetAllExpressions())
@@ -215,6 +262,14 @@ public abstract class RoslynExpressionValidator
         var errors = ProcessDiagnostics(diagnostics, expressionsTextBuilder.ToString(), validationScope).ToList();
         validationScope.Clear();
         return errors;
+    }
+
+    // The default import references of VisualBasicSettings name the loaded framework of the host, for a compile with no set; with a
+    // set, they would bring the core library of the host next to the set's. Their namespaces stay.
+    private static IEnumerable<AssemblyReference> WithoutDefaultImports(IEnumerable<AssemblyReference> references)
+    {
+        var defaults = VisualBasicSettings.Default.ImportReferences.Select(import => import.AssemblyName).ToHashSet(ReferenceEqualityComparer.Instance);
+        return references.Where(reference => !defaults.Contains(reference.AssemblyName));
     }
 
     /// <summary>

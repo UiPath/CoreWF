@@ -2,41 +2,40 @@
 using System.Activities.Expressions;
 using System.Activities.Internals;
 using System.Activities.Runtime;
+using System.Activities.Utils;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Reflection;
 
 namespace System.Activities;
 
 /// <summary>
-/// The metadata of the assemblies that a design time expression compile references by name only.
+/// The reference set that a host gives to its design time expression compiles.
 /// </summary>
 public static class DesignTimeMetadataReferences
 {
     /// <summary>
-    /// Gives the metadata of an assembly that the compile references by name, so that the compile does not load it.
-    /// With no resolver, or a null result, the compile loads the assembly by its name.
-    /// Give the same object while the metadata does not change: the compiled expressions are cached by this object, so a new
-    /// object compiles the expression again.
-    /// </summary>
-    public static Func<AssemblyName, MetadataReference> Resolver { get; set; }
-
-    /// <summary>
-    /// Gives the whole reference set of a design time compile, or null when the host has none. With a set, every design time
-    /// compile starts from its names: a caller's reference adds only a name the set lacks, and the compile adds no assembly of
-    /// its own, neither its default assemblies, which are the loaded core library and framework of the host, nor the assembly
-    /// of the target type. A host can then compile against the reference pack of another framework, without the implementation
-    /// assemblies of its own framework next to it. The set's resolver, not <see cref="Resolver"/>, gives the metadata of every
-    /// name-only reference of that compile, so one compile reads one state of the host; a name it does not answer loads, as any
-    /// reference by name. A compiler that does not support metadata references still gets the loaded set as before. Evaluated
-    /// once per compile.
+    /// Gives the whole reference set of a design time compile, or null when the host has none. Evaluated once per compile.
+    /// <para>
+    /// With no set, the compile is the one of before: the caller's references, loaded, plus the default assemblies, which are the
+    /// loaded core library and framework of the host, and the assembly of the target type.
+    /// </para>
+    /// <para>
+    /// With a set, every design time compile starts from its names: the JIT compile, the designer compile and the validation. A
+    /// caller's reference adds only a name the set lacks, and the compile adds no assembly of its own, so a host can compile against
+    /// the reference pack of another framework. The set's resolver gives the metadata of every name, and of every assembly that a
+    /// referenced assembly needs and the names lack; the compile never takes one from the framework of the host. A name the
+    /// resolver does not answer loads by its name; a dependency it does not answer stays missing. A compiler that does not
+    /// support metadata references still gets the loaded set of before.
+    /// </para>
     /// </summary>
     public static Func<DesignTimeReferenceSet> HostReferences { get; set; }
 
-    // The references of one compile: the host's set, then the caller's references of the names it lacks, with the set's resolver.
-    // Null when the host gives no set; a set that fails counts as none, so the compile adds its own assemblies as before.
-    internal static List<AssemblyReference> GetHostReferences(IEnumerable<AssemblyReference> callerReferences, out Func<AssemblyName, MetadataReference> resolver)
+    // The references of one compile from the host's set. Null when the host gives no set; a set that fails, or that misses a part,
+    // counts as none, so the compile adds its own assemblies as before.
+    internal static HostCompileReferences GetHostReferences(IEnumerable<AssemblyReference> callerReferences)
     {
-        resolver = null;
         DesignTimeReferenceSet set;
         try
         {
@@ -53,12 +52,18 @@ public static class DesignTimeMetadataReferences
             return null;
         }
 
-        if (set?.Names == null)
+        if (set == null)
         {
             return null;
         }
 
-        resolver = set.Resolver;
+        if (set.Names == null || set.Resolver == null)
+        {
+            ExceptionTrace.AsWarning(new ArgumentException(
+                $"{nameof(HostReferences)} gave a set without {(set.Names == null ? nameof(set.Names) : nameof(set.Resolver))}; the compile uses no set."));
+            return null;
+        }
+
         var references = new List<AssemblyReference>(set.Names.Count);
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var hostName in set.Names)
@@ -78,16 +83,73 @@ public static class DesignTimeMetadataReferences
             }
         }
 
-        return references;
+        return new HostCompileReferences(references, set.Resolver);
     }
 }
 
 /// <summary>
-/// The whole reference set of one design time compile, read from one state of the host: the names, and the metadata of each.
+/// The whole reference set of one design time compile, read from one state of the host. Both parts are required.
 /// </summary>
-/// <param name="Names">The assemblies of the compile, by name.</param>
+/// <param name="Names">
+/// The assemblies of the compile, by name. They must include the core library, such as the System.Runtime of a reference pack, and
+/// every assembly that an expression can name; the resolver gives the assemblies that those need.
+/// </param>
 /// <param name="Resolver">
-/// The metadata of a name-only reference of the compile, as <see cref="DesignTimeMetadataReferences.Resolver"/> gives it, but for
-/// the state that gave <paramref name="Names"/>. A null result, or no resolver, loads the assembly by its name.
+/// The metadata of an assembly by its name, for the state that gave <paramref name="Names"/>. The compile asks it for every name and
+/// for every assembly that a referenced assembly misses. Give the same object while the metadata does not change: the compiled
+/// expressions are cached by it. It must not load an assembly, and a null result means the host has none.
 /// </param>
 public sealed record DesignTimeReferenceSet(IReadOnlyCollection<AssemblyName> Names, Func<AssemblyName, MetadataReference> Resolver);
+
+// The references of one compile from the host's set: its names, then the caller's references of the names it lacks, with the set's
+// resolver for their metadata and for an assembly that one of them misses.
+internal sealed class HostCompileReferences
+{
+    public HostCompileReferences(IReadOnlyList<AssemblyReference> references, Func<AssemblyName, MetadataReference> resolver)
+    {
+        References = references;
+        Resolver = resolver;
+        MissingAssemblyResolver = new HostMissingAssemblyResolver(resolver);
+    }
+
+    public IReadOnlyList<AssemblyReference> References { get; }
+
+    public Func<AssemblyName, MetadataReference> Resolver { get; }
+
+    // Answers the assemblies that a referenced assembly needs and the set does not name, from the set's resolver only.
+    public MetadataReferenceResolver MissingAssemblyResolver { get; }
+}
+
+// The resolver of a compile against the host's set: a reference that a referenced assembly misses comes from the set's resolver, never
+// from the framework of the host, and stays missing when the set has none.
+internal sealed class HostMissingAssemblyResolver : MetadataReferenceResolver
+{
+    private readonly Func<AssemblyName, MetadataReference> _resolver;
+
+    public HostMissingAssemblyResolver(Func<AssemblyName, MetadataReference> resolver) => _resolver = resolver;
+
+    public override bool ResolveMissingAssemblies => true;
+
+    public override PortableExecutableReference ResolveMissingAssembly(MetadataReference definition, AssemblyIdentity referenceIdentity)
+    {
+        if (referenceIdentity?.Name == null)
+        {
+            return null;
+        }
+
+        var assemblyName = new AssemblyName { Name = referenceIdentity.Name, Version = referenceIdentity.Version, CultureName = referenceIdentity.CultureName };
+        if (!referenceIdentity.PublicKeyToken.IsDefaultOrEmpty)
+        {
+            assemblyName.SetPublicKeyToken(referenceIdentity.PublicKeyToken.ToArray());
+        }
+
+        return MetadataReferenceUtils.Resolve(_resolver, assemblyName) as PortableExecutableReference;
+    }
+
+    public override ImmutableArray<PortableExecutableReference> ResolveReference(string reference, string baseFilePath, MetadataReferenceProperties properties)
+        => ImmutableArray<PortableExecutableReference>.Empty;
+
+    public override bool Equals(object other) => other is HostMissingAssemblyResolver resolver && resolver._resolver == _resolver;
+
+    public override int GetHashCode() => _resolver.GetHashCode();
+}
