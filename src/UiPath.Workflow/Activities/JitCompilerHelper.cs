@@ -61,11 +61,10 @@ internal abstract class JitCompilerHelper
     protected CodeActivityPublicEnvironmentAccessor? PublicAccessor;
     protected HashSet<Assembly> ReferencedAssemblies;
 
-    // The name-only references that the resolver of the host's set answers. The compile uses their metadata and does not load them.
+    // References that the host's set answers with metadata, so they are not loaded.
     protected readonly List<DesignTimeReference> DesignTimeReferences = new();
 
-    // The host's set, see DesignTimeMetadataReferences.HostReferences: the compile then adds neither the default assemblies nor the
-    // assembly of its return type. Read once, so one compile sees one state of the host.
+    // Read once per compile. With it, the default assemblies and the return type's assemblies are not added.
     private protected HostCompileReferences HostReferences;
 
     private protected bool HostReferencesAreComplete => HostReferences != null;
@@ -1187,7 +1186,7 @@ internal abstract class JitCompilerHelper
         private readonly int _hashCode;
         private readonly HashSet<string> _namespaces;
         private readonly Type _returnType;
-        // A complete set compiles without the help of the host: the same assemblies with and without it are two compiles.
+        // The same assemblies with and without the host's set can compile differently.
         private readonly bool _hostReferencesAreComplete;
 
         public RawTreeCacheKey(string expressionText, Type returnType, HashSet<Assembly> assemblies,
@@ -1564,8 +1563,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
             return compilerWrapper;
         }
 
-        // A compiler without metadata support gets the loaded set as before: the design time references loaded, and the assemblies
-        // that a complete host set left out. The set is then the one of the host no more.
+        // A compiler without metadata support gets loaded assemblies only, so the host's set no longer applies.
         compilerWrapper.Release();
         // The compiler cache keeps the set as a key, so the loaded assemblies go into a copy.
         ReferencedAssemblies = new HashSet<Assembly>(ReferencedAssemblies);
@@ -1583,7 +1581,7 @@ internal abstract class JitCompilerHelper<TLanguage> : JitCompilerHelper
         return GetCachedHostedCompiler(ReferencedAssemblies);
     }
 
-    // The assembly of the return type, with the assemblies of its base types and interfaces.
+    // Adds the assemblies of the return type, its base types and its interfaces.
     private void AddReturnTypeReferences(Type lambdaReturnType)
     {
         HashSet<Type> allBaseTypes = null;

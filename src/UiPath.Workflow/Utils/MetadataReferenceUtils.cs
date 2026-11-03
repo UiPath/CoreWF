@@ -51,8 +51,7 @@ namespace System.Activities.Utils
         }
 
         /// <summary>
-        ///     The metadata that the resolver of the compile's set gives for a reference with no assembly, so the reference needs
-        ///     no load. See <see cref="DesignTimeMetadataReferences.HostReferences"/>.
+        ///     The resolver's metadata for a reference with no assembly, so it needs no load.
         /// </summary>
         /// <remarks>With no resolver, or one that fails, the reference loads by its name.</remarks>
         internal static MetadataReference GetDesignTimeMetadataReference(AssemblyReference assemblyReference, Func<AssemblyName, MetadataReference> resolver)

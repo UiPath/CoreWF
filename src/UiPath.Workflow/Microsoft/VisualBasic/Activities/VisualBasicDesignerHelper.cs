@@ -56,8 +56,7 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
         GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out var localNamespaces,
             out var localAssemblies);
         var helper = new VisualBasicHelper(expressionText);
-        // A reference that holds its assembly goes through Initialize too, which adds that assembly with no resolution, so that the
-        // host's reference set sees every reference.
+        // Loaded references go through Initialize too, so the host's set sees them.
         var localReferenceAssemblies = new HashSet<AssemblyReference>(localAssemblies.Where(assemblyReference =>
             assemblyReference.Assembly != null || assemblyReference.AssemblyName != null));
         var localImports = new HashSet<string>(localNamespaces);

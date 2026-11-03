@@ -24,15 +24,14 @@ public class DesignTimeMetadataReferencesTests
 {
     private readonly string _name = "DesignTime.NotLoadable" + Guid.NewGuid().ToString("N");
 
-    // The net5 reference pack: the target framework of a project is older than the framework of the host, and its pack declares the
-    // framework types that the loaded core library of the host defines.
+    // A reference pack older than the test host's framework.
     private static readonly Lazy<IReadOnlyDictionary<string, MetadataReference>> s_referencePack = new(() =>
     {
         var folder = typeof(DesignTimeMetadataReferencesTests).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().Single(attribute => attribute.Key == "Net5ReferencePack").Value;
         return Directory.GetFiles(folder, "*.dll").ToDictionary(path => Path.GetFileNameWithoutExtension(path), path => (MetadataReference)MetadataReference.CreateFromFile(path));
     });
 
-    // The metadata of the assemblies that a compile with no set adds by itself, one object per assembly.
+    // Metadata of the default assemblies, one object per assembly.
     private static readonly Lazy<IReadOnlyDictionary<string, MetadataReference>> s_hostDefaults = new(() =>
         HostDefaults().ToDictionary(assembly => assembly.GetName().Name, assembly => (MetadataReference)MetadataReference.CreateFromFile(assembly.Location), StringComparer.OrdinalIgnoreCase));
 
@@ -58,7 +57,7 @@ public class DesignTimeMetadataReferencesTests
         IsLoaded().ShouldBeFalse();
     }
 
-    // With no set, a name-only reference still needs a load, and nothing can load this one.
+    // With no set, a name-only reference must load, and this one cannot.
     [Fact]
     public async Task CSharp_NameOnlyReferenceWithNoSet_DoesNotCompile()
     {
@@ -201,8 +200,7 @@ public class DesignTimeMetadataReferencesTests
         IsLoaded().ShouldBeTrue();
     }
 
-    // The host holds the whole reference set as metadata: the reference pack of the target framework of the project, its packages and
-    // its own assemblies. The compile adds no loaded assembly of the host, and the framework types come from the pack alone.
+    // The set holds the pack and the project's assemblies as metadata; nothing loads from the host.
     [Fact]
     public void CSharp_Sync_CompleteReferences_CompileAConstantAgainstThePackWithoutALoad()
     {
@@ -225,7 +223,7 @@ public class DesignTimeMetadataReferencesTests
         IsLoaded().ShouldBeFalse();
     }
 
-    // A framework type comes from the pack alone, and the expression that the compile creates carries the type of the host.
+    // The type compiles from the pack; the expression carries the host's type.
     [Fact]
     public void CSharp_Sync_CompleteReferences_CompileAFrameworkTypeFromThePack()
     {
@@ -248,7 +246,7 @@ public class DesignTimeMetadataReferencesTests
         returnType.ShouldBe(typeof(List<string>));
     }
 
-    // The assembly of the target type is not added either: here it is the loaded core library of the host, which cannot sit next to the pack.
+    // The target type's assembly, the host's core library, is not added.
     [Fact]
     public void CSharp_Sync_CompleteReferences_CompileToATargetTypeFromThePack()
     {
@@ -273,7 +271,7 @@ public class DesignTimeMetadataReferencesTests
         loadedReferences.ShouldBeEmpty();
     }
 
-    // A member that the host has and the pack does not: the compile sees the pack, not the host.
+    // A member that only the host's framework has.
     [Fact]
     public void CSharp_Sync_CompleteReferences_DoNotCompileAMemberOfTheHostAlone()
     {
@@ -298,7 +296,7 @@ public class DesignTimeMetadataReferencesTests
         compileError.ShouldNotBeNull();
     }
 
-    // The code that the compile runs binds the package by name, so the package loads when the expression is created, as with the loaded set.
+    // Creating the expression runs code that loads the package.
     [Fact]
     public void CSharp_Sync_CompleteReferences_LoadTheAssemblyOfAMethodWhenTheExpressionIsCreated()
     {
@@ -334,7 +332,7 @@ public class DesignTimeMetadataReferencesTests
         IsLoaded().ShouldBeTrue();
     }
 
-    // A set that fails counts as none: the compile adds the loaded set of the host, as with no set.
+    // A set that throws counts as none.
     [Fact]
     public void CSharp_Sync_HostReferencesThatThrow_CompileAsWithNoSet()
     {
@@ -346,8 +344,7 @@ public class DesignTimeMetadataReferencesTests
         compileError.ShouldBeNull();
     }
 
-    // Both parts of a set are required: a set without a resolver counts as none, so the compile gets the help of the host as with no
-    // set. IWebProxy is in System.Net.Primitives, which the names lack and the script of a compile with no set finds in the host.
+    // A set without a resolver counts as none. IWebProxy is in System.Net.Primitives, which only the host gives here.
     [Fact]
     public void CSharp_Sync_SetWithoutAResolver_CompilesAsWithNoSet()
     {
@@ -359,8 +356,7 @@ public class DesignTimeMetadataReferencesTests
         compileError.ShouldBeNull();
     }
 
-    // The same loaded assemblies with and without a set are two compiles: the complete one gets no help from the host, also when the
-    // other compile of the same text is cached. The set's resolver knows no System.Net.Primitives, so IWebProxy stays missing.
+    // A cached compile without the set is not reused with it; with the set, IWebProxy stays missing.
     [Fact]
     public void CSharp_Sync_SameAssembliesWithAndWithoutASet_DoNotShareACachedCompile()
     {
@@ -399,8 +395,7 @@ public class DesignTimeMetadataReferencesTests
         IsLoaded().ShouldBeFalse();
     }
 
-    // The names give the assemblies that an expression names; the resolver gives the assemblies that those need. Here the package
-    // returns a type of a dependency that the names lack.
+    // The package returns a type of a dependency outside the names; the resolver gives it.
     [Fact]
     public void CSharp_Sync_CompleteReferences_ADependencyThatTheNamesLack_ComesFromTheResolver()
     {
@@ -441,7 +436,7 @@ public class DesignTimeMetadataReferencesTests
         result.SourceExpressionException.ShouldBeNull();
     }
 
-    // A dependency that the resolver does not know stays missing: the compile takes none from the host.
+    // A dependency the resolver lacks stays missing, even if the host has it.
     [Fact]
     public void CSharp_Sync_CompleteReferences_ADependencyThatTheResolverLacks_StaysMissing()
     {
@@ -462,7 +457,7 @@ public class DesignTimeMetadataReferencesTests
         compileError.ShouldNotBeNull();
     }
 
-    // A compiler outside this library gets the set's resolver with the request, for the assemblies that the referenced ones need.
+    // A custom compiler gets the set's resolver with the request.
     [Fact]
     public void VisualBasic_Sync_CompleteReferences_GiveTheCompilerTheResolverOfTheSet()
     {
@@ -526,7 +521,7 @@ public class DesignTimeMetadataReferencesTests
         result.SourceExpressionException.ShouldNotBeNull();
     }
 
-    // The validation takes the same set, so the designer and the validation agree on an expression.
+    // The validation uses the same set as the designer.
     [Fact]
     public void VisualBasic_Validation_CompleteReferences_RejectAMemberOfTheHostAlone()
     {
@@ -541,8 +536,7 @@ public class DesignTimeMetadataReferencesTests
         Validate(new VisualBasicValue<string>("System.Environment.ProcessPath")).Errors.ShouldHaveSingleItem().Message.ShouldContain("ProcessPath");
     }
 
-    // With the expression cache forced, the validation compiles each expression through the JIT compile, which gets the default
-    // import references of VisualBasicSettings too: they must not bring the core library of the host next to the set's.
+    // With the cache forced, validation goes through the JIT compile, which also gets the VisualBasicSettings default imports.
     [Fact]
     public void VisualBasic_Validation_ForceExpressionCache_CompleteReferences_RejectAMemberOfTheHostAlone()
     {
@@ -595,8 +589,7 @@ public class DesignTimeMetadataReferencesTests
         }
     }
 
-    // A workflow of a host names the implementation assemblies of the host's framework, which no reference pack has. A set that lacks
-    // them does not answer them, so the compile drops them: loaded, they would bring a second core library next to the set's.
+    // Workflows reference System.Private.* assemblies, which no pack has. Loaded, they would add a second core library.
     [Fact]
     public void CSharp_Sync_CompleteReferences_ReferenceToTheHostFrameworkThatTheSetLacks_IsDropped()
     {
@@ -643,7 +636,7 @@ public class DesignTimeMetadataReferencesTests
         Validate(new VisualBasicValue<string>("Marker.Value.ToString()"), references: [NameOnlyReference(), .. HostFrameworkReferences()]).Errors.ShouldBeEmpty();
     }
 
-    // A loaded reference that the set lacks goes to the resolver by its name too, and the compile drops it when the resolver has none.
+    // A loaded reference outside the set is dropped too.
     [Fact]
     public void CSharp_Sync_CompleteReferences_LoadedReferenceThatTheSetLacks_IsDropped()
     {
@@ -654,7 +647,7 @@ public class DesignTimeMetadataReferencesTests
         compileError?.Message.ShouldBeNull();
     }
 
-    // A reference that the set lacks and that the resolver answers counts, with the metadata of the resolver.
+    // A reference outside the set counts when the resolver answers it.
     [Fact]
     public void CSharp_Sync_CompleteReferences_ReferenceThatTheSetLacksAndTheResolverAnswers_Counts()
     {
@@ -665,8 +658,7 @@ public class DesignTimeMetadataReferencesTests
         compileError?.Message.ShouldBeNull();
     }
 
-    // A compile with no set loads the references of a workflow in place, for example while the host builds its set. A later JIT compile
-    // with the set still takes them through the set.
+    // A compile without a set loads the workflow's references in place; a later compile with the set must still filter them.
     [Fact]
     public void VisualBasic_ForceExpressionCache_CompleteReferences_ReferenceThatAnEarlierCompileLoaded_GoesThroughTheSet()
     {
@@ -679,7 +671,7 @@ public class DesignTimeMetadataReferencesTests
         Validate(new VisualBasicValue<string>("Marker.Value.ToString()"), forceExpressionCache: true, references: references).Errors.ShouldBeEmpty();
     }
 
-    // The same, with a set that names the core library of the host and answers it, as a host does with a facade of that name.
+    // The same, with a set that answers System.Private.CoreLib, as a facade does.
     [Fact]
     public void VisualBasic_ForceExpressionCache_SetThatNamesTheHostCoreLibrary_ReferenceThatAnEarlierCompileLoaded_GoesThroughTheSet()
     {
@@ -729,7 +721,7 @@ public class DesignTimeMetadataReferencesTests
 
     private static AssemblyReference HostCoreLibraryReference() => new() { AssemblyName = new AssemblyName("System.Private.CoreLib") };
 
-    // The implementation assemblies of the host's framework that the workflows of a host name. No reference pack has them.
+    // Host framework assemblies that workflows reference and no pack has.
     private static IEnumerable<AssemblyReference> HostFrameworkReferences()
         => new[] { "System.Private.CoreLib", "System.Private.Uri", "System.Private.Xml", "System.Private.DataContractSerialization" }
             .Select(name => new AssemblyReference { AssemblyName = new AssemblyName(name) });
@@ -765,7 +757,7 @@ public class DesignTimeMetadataReferencesTests
         return new Restore(() => VisualBasicSettings.Default.CompilerFactory = previous);
     }
 
-    // The set of a host that runs on the framework of the project: its default assemblies and the design time assembly, as metadata.
+    // A set for a project on the host's framework: the defaults and the design time assembly.
     private IDisposable UseHostSetFor(string path)
     {
         var loader = UseLoaderFor(path);
@@ -780,12 +772,11 @@ public class DesignTimeMetadataReferencesTests
 
     private IEnumerable<AssemblyName> HostSetNames() => s_hostDefaults.Value.Keys.Select(name => new AssemblyName(name)).Append(new AssemblyName(_name));
 
-    // The host holds the reference pack, the workflow runtime and the design time assembly as metadata, gives them as its whole
-    // reference set, and loads the design time assembly on first use.
+    // A set of the pack, the workflow runtime and the design time assembly, which loads on first use.
     private IDisposable UseReferencePackFor(string path, params string[] dependencies)
         => UseReferencePack(path, dependencies, answerTheHostCoreLibrary: false);
 
-    // The set also names the core library of the host and answers it with the core library of the pack.
+    // Also answers System.Private.CoreLib with the pack's System.Runtime.
     private IDisposable UseReferencePackThatAnswersTheHostCoreLibraryFor(string path)
         => UseReferencePack(path, [], answerTheHostCoreLibrary: true);
 
@@ -812,7 +803,7 @@ public class DesignTimeMetadataReferencesTests
         });
     }
 
-    // The package returns a type of its dependency; the names hold the pack and the package, and the resolver may know the dependency.
+    // The package returns a type of its dependency, which only the resolver may know.
     private IDisposable UsePackageWithADependency(bool resolverKnowsTheDependency)
     {
         var dependencyName = _name + ".Dependency";
@@ -823,11 +814,11 @@ public class DesignTimeMetadataReferencesTests
         return resolverKnowsTheDependency ? UseReferencePackFor(package, dependency) : UseReferencePackFor(package);
     }
 
-    // The assemblies that a compile with no set adds by itself.
+    // The default assemblies.
     private static IEnumerable<Assembly> HostDefaults()
         => (IEnumerable<Assembly>)typeof(DesignTimeMetadataReferences).Assembly.GetType("System.Activities.JitCompilerHelper", throwOnError: true).GetField("DefaultReferencedAssemblies").GetValue(null);
 
-    // The references of a project: the whole reference pack and the design time assembly, all by name.
+    // The pack and the design time assembly, by name.
     private IEnumerable<AssemblyReference> PackAndNameOnlyReferences()
         => s_referencePack.Value.Keys.Select(name => new AssemblyReference { AssemblyName = new AssemblyName(name) }).Append(NameOnlyReference());
 
@@ -838,7 +829,7 @@ public class DesignTimeMetadataReferencesTests
 
     private bool IsLoaded() => AssemblyLoadContext.All.SelectMany(context => context.Assemblies).Any(assembly => assembly.GetName().Name == _name);
 
-    // A package of a project: built against the reference pack of its target framework, not against the core library of the host.
+    // A package built against the pack, not the host's core library.
     private string EmitAssemblyForThePack() => EmitAssemblyNothingCanLoadByName(coreLibrary: s_referencePack.Value["System.Runtime"]);
 
     private string EmitAssemblyNothingCanLoadByName(

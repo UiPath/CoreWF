@@ -16,29 +16,18 @@ namespace System.Activities;
 public static class DesignTimeMetadataReferences
 {
     /// <summary>
-    /// Gives the whole reference set of a design time compile, or null when the host has none. Evaluated once per compile, on the
-    /// execution context of the caller of the compile, so a host can scope its answer with its own <see cref="Threading.AsyncLocal{T}"/>.
+    /// Gives the whole reference set of a design time compile, or null for none. Called once per compile, on the caller's
+    /// execution context.
     /// <para>
-    /// With no set, the compile references the caller's references, loaded, plus the default assemblies, which are the loaded core
-    /// library and framework of the host, and the assembly of the target type.
-    /// </para>
-    /// <para>
-    /// With a set, every design time compile starts from its names: the JIT compile, the designer compile and the validation. The
-    /// compile adds no assembly of its own, so a host can compile against the reference pack of another framework. A caller's
-    /// reference whose name the set lacks counts only when the set's resolver answers it, also when the reference holds a loaded
-    /// assembly; else the compile drops it. The workflows of a host name implementation assemblies of the host's framework, such as
-    /// System.Private.CoreLib, System.Private.Uri and System.Private.Xml, so a set that answers them, for example with facades
-    /// that forward to the reference pack, keeps the types of those references. The set's resolver gives the metadata of every
-    /// name, and of every assembly that a referenced assembly needs and the names lack; the compile never takes one from the
-    /// framework of the host. A name of the set that the resolver does not answer loads by its name; a dependency that it does not
-    /// answer stays missing. A compiler that does not support metadata references gets the loaded assemblies: the names, the
-    /// default assemblies and the assembly of the target type.
+    /// With a set, the JIT compile, the designer compile and the validation reference the set only, never the host's framework,
+    /// so a host can compile against the reference pack of another framework. A caller's reference outside the set counts only
+    /// when the resolver answers it; else it is dropped. Workflows often reference System.Private.* assemblies, so a set for a
+    /// reference pack should answer them, for example with facades that forward to the pack.
     /// </para>
     /// </summary>
     public static Func<DesignTimeReferenceSet> HostReferences { get; set; }
 
-    // The references of one compile from the host's set. Null when the host gives no set; a set that fails, or that misses a part,
-    // counts as none, so the compile adds its own assemblies as with no set.
+    // Null when the host gives no set, or a set that throws or misses a part.
     internal static HostCompileReferences GetHostReferences(IEnumerable<AssemblyReference> callerReferences)
     {
         DesignTimeReferenceSet set;
@@ -79,9 +68,8 @@ public static class DesignTimeMetadataReferences
             }
         }
 
-        // A caller's reference that the names lack counts only when the set's resolver answers it, also when it holds a loaded assembly.
-        // The compile never loads one for it: the default import references of VisualBasicSettings and the workflows of a host name
-        // the framework of the host, such as System.Private.CoreLib, which would bring a second core library next to the set's.
+        // Never load a caller's reference outside the set: it can be an assembly of the host's framework, such as
+        // System.Private.CoreLib, which would add a second core library.
         foreach (var reference in callerReferences)
         {
             var assemblyName = reference?.AssemblyName ?? reference?.Assembly?.GetName();
@@ -98,24 +86,20 @@ public static class DesignTimeMetadataReferences
 }
 
 /// <summary>
-/// The whole reference set of one design time compile, read from one state of the host. Both parts are required.
+/// The whole reference set of one design time compile, from one state of the host. Both parts are required.
 /// </summary>
 /// <param name="Names">
-/// The assemblies of the compile, by name. They must include the core library, such as the System.Runtime of a reference pack, and
-/// every assembly that an expression can name; the resolver gives the assemblies that those need.
+/// The assemblies of the compile. They must include the core library and every assembly that an expression can name.
 /// </param>
 /// <param name="Resolver">
-/// The metadata of an assembly by its name, for the state that gave <paramref name="Names"/>. The compile asks it for every name, for
-/// every caller's reference that the names lack, and for every assembly that a referenced assembly misses; that last answer must be a
-/// <see cref="PortableExecutableReference"/>, and any other kind counts as none. Give the same metadata object while the metadata does
-/// not change: the compiled expressions are cached by the metadata objects of the names and of the caller's references. The cache does
-/// not see the assemblies that a referenced assembly misses, so give a name new metadata when an assembly that it needs changes. It
-/// must not load an assembly, and a null result means the host has none.
+/// The metadata of an assembly by name, or null for none. It is asked for the names, for caller references outside the set and for
+/// assemblies that a reference depends on; the last must be a <see cref="PortableExecutableReference"/>. A name of the set without
+/// an answer loads by name. Must not load assemblies. Compiled expressions are cached by the returned objects, so return the same
+/// object while the metadata, including that of its dependencies, does not change.
 /// </param>
 public sealed record DesignTimeReferenceSet(IReadOnlyCollection<AssemblyName> Names, Func<AssemblyName, MetadataReference> Resolver);
 
-// The references of one compile from the host's set: its names, then the caller's references of the names it lacks, with the set's
-// resolver for their metadata and for an assembly that one of them misses.
+// The references of one compile with the host's set.
 internal sealed class HostCompileReferences
 {
     public HostCompileReferences(IReadOnlyList<AssemblyReference> references, Func<AssemblyName, MetadataReference> resolver)
@@ -129,12 +113,10 @@ internal sealed class HostCompileReferences
 
     public Func<AssemblyName, MetadataReference> Resolver { get; }
 
-    // Answers the assemblies that a referenced assembly needs and the set does not name, from the set's resolver only.
     public MetadataReferenceResolver MissingAssemblyResolver { get; }
 }
 
-// The resolver of a compile against the host's set: a reference that a referenced assembly misses comes from the set's resolver, never
-// from the framework of the host, and stays missing when the set has none.
+// Resolves a missing dependency from the set's resolver only, never from the host's framework.
 internal sealed class HostMissingAssemblyResolver : MetadataReferenceResolver
 {
     private readonly Func<AssemblyName, MetadataReference> _resolver;

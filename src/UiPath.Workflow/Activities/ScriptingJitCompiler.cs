@@ -46,17 +46,14 @@ public record ExpressionToCompile(string Code, IReadOnlyCollection<string> Impor
     public IReadOnlyCollection<MetadataReference> MetadataReferences { get; init; } = Array.Empty<MetadataReference>();
 
     /// <summary>
-    /// True when the assemblies of the compiler and <see cref="MetadataReferences"/> are the whole reference set of the compile, see
-    /// <see cref="DesignTimeMetadataReferences.HostReferences"/>: the compiler then adds no assembly of the host, and takes an
-    /// assembly that a referenced assembly misses from <see cref="MetadataResolver"/> only. Compilers outside this library read it by
-    /// this name.
+    /// True when the compiler's assemblies and <see cref="MetadataReferences"/> are the whole reference set, see
+    /// <see cref="DesignTimeMetadataReferences.HostReferences"/>. The compiler then adds no host assembly and resolves missing
+    /// dependencies with <see cref="MetadataResolver"/> only. External compilers may read it by reflection, so keep the name.
     /// </summary>
     public bool HostReferencesAreComplete { get; init; }
 
     /// <summary>
-    /// With <see cref="HostReferencesAreComplete"/>, the resolver of the compile for an assembly that a referenced assembly misses: it
-    /// answers from the host's set and never from the framework of the host. Null otherwise. Compilers outside this library read it by
-    /// this name.
+    /// With <see cref="HostReferencesAreComplete"/>, resolves missing dependencies from the host's set. Null otherwise.
     /// </summary>
     public MetadataReferenceResolver MetadataResolver { get; init; }
 }
@@ -134,13 +131,11 @@ public abstract class ScriptingJitCompiler : JustInTimeCompiler
         }
     }
 
-    // The compilation of a script whose references are complete: it references the given assemblies and no other, and takes the result
-    // type of the submission from the core library among them. The scripts of this repository give their compilation, they never run.
-    protected virtual Compilation GetCompilationWithTheReferencesOnly(Script<object> script, IEnumerable<MetadataReference> references)
+    // A compilation that references the given assemblies only.
+    private protected virtual Compilation GetCompilationWithTheReferencesOnly(Script<object> script, IEnumerable<MetadataReference> references)
         => script.GetCompilation();
 
-    // The resolver of a script takes a reference that a referenced assembly misses from the framework of the host. A complete set
-    // given without a resolver has nothing to add: the reference stays missing, and the compile reports a type from it as such.
+    // Replaces the script's default resolver, which takes missing dependencies from the host's framework.
     private sealed class NoMissingAssemblyResolver : MetadataReferenceResolver
     {
         public static readonly MetadataReferenceResolver Instance = new NoMissingAssemblyResolver();
@@ -211,10 +206,9 @@ public class CSharpJitCompiler : ScriptingJitCompiler
 
     protected override Script<object> Create(string code, ScriptOptions options) => CSharpScript.Create(code, options);
 
-    // The C# script adds the core library of the host and binds the result type of the submission to it, which a compile against the
-    // reference pack of another framework cannot do. The script gives the options and the parsed code; with no result type given, the
-    // submission takes System.Object from the core library of the compile. The Visual Basic script of this repository does both by itself.
-    protected override Compilation GetCompilationWithTheReferencesOnly(Script<object> script, IEnumerable<MetadataReference> references)
+    // The C# script always adds the host's core library, so rebuild its compilation without it. With no result type, the
+    // submission takes System.Object from the given core library.
+    private protected override Compilation GetCompilationWithTheReferencesOnly(Script<object> script, IEnumerable<MetadataReference> references)
     {
         var scriptCompilation = (CSharpCompilation)script.GetCompilation();
         return CSharpCompilation.CreateScriptCompilation(scriptCompilation.AssemblyName, scriptCompilation.SyntaxTrees.Single(), references, scriptCompilation.Options);

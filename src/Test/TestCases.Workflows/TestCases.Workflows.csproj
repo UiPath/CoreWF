@@ -23,7 +23,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <!-- The reference pack of a framework older than the one of the tests: the design time compiles against metadata only take it in place of the loaded framework. -->
+    <!-- An older reference pack, for design time compiles against a framework that is not the host's. -->
     <PackageDownload Include="Microsoft.NETCore.App.Ref" Version="[5.0.0]" />
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
       <_Parameter1>Net5ReferencePack</_Parameter1>

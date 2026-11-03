@@ -74,6 +74,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
 
             Dim globalImports = GetGlobalImportsForCompilation(script)
 
+            ' With no return type, the submission takes System.Object from the compile's own core library, not the host's.
             Dim submission = VisualBasicCompilation.CreateScriptCompilation(
                 assemblyName,
                 tree,
@@ -98,7 +99,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
                     assemblyIdentityComparer:=DesktopAssemblyIdentityComparer.Default).
                     WithIgnoreCorLibraryDuplicatedTypes(True),
                 previousSubmission,
-                returnType:=Nothing, ' The submission takes System.Object from the core library of the compile, so a compile against the reference pack of another framework needs no core library of the host. The scripts of this repository give their compilation, they never run.
+                returnType:=Nothing,
                 globalsType:=script.GlobalsType)
 
             Return submission

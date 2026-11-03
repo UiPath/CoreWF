@@ -24,12 +24,10 @@ public abstract class RoslynExpressionValidator
     protected abstract string ActivityIdentifierRegex { get; }
     private readonly object _lockRequiredAssemblies = new();
 
-    // The host's set of the validation in progress, see DesignTimeMetadataReferences.HostReferences. Read once per validation and
-    // handed to GetCompilation this way, so the signature that hosts override stays as it is.
+    // Passes the host's set to GetCompilation without changing its overridable signature.
     private static readonly AsyncLocal<ValidationHostReferences> s_hostReferences = new();
 
-    // With the host's set: the metadata of its names, and the resolver of the assemblies that they need, in place of the default
-    // assemblies and of ValidationSettings.MissingAssemblyResolver. Null without a set.
+    // Replaces the default assemblies and ValidationSettings.MissingAssemblyResolver. Null without a set.
     private protected static ValidationHostReferences HostReferences => s_hostReferences.Value;
 
     private protected sealed record ValidationHostReferences(IReadOnlyList<MetadataReference> Metadata, MetadataReferenceResolver MissingAssemblyResolver);
@@ -57,8 +55,7 @@ public abstract class RoslynExpressionValidator
 
     /// <summary>
     ///     Assemblies required on the <see cref="Compilation"/> object. Use <see cref="AddRequiredAssembly(Assembly)"/>
-    ///     to add more assemblies. A validation with the host's set, see
-    ///     <see cref="DesignTimeMetadataReferences.HostReferences"/>, uses none of them: the set is the whole compile.
+    ///     to add more assemblies. Not used with <see cref="DesignTimeMetadataReferences.HostReferences"/>.
     /// </summary>
     protected IReadOnlySet<Assembly> RequiredAssemblies { get; private set; }
 
@@ -127,9 +124,8 @@ public abstract class RoslynExpressionValidator
     ///     Updates the <see cref="Compilation" /> object for the expression.
     /// </summary>
     /// <param name="assemblies">
-    ///     The list of assemblies. With the host's set, see <see cref="DesignTimeMetadataReferences.HostReferences"/>, only the
-    ///     references that the set's resolver did not answer; the base implementation adds the set's metadata, so an override
-    ///     that does not call it compiles against its own references.
+    ///     The list of assemblies. With <see cref="DesignTimeMetadataReferences.HostReferences"/>, only those the set did not
+    ///     answer; the built-in implementations add the set's metadata.
     /// </param>
     /// <param name="namespaces">The list of namespaces</param>
     protected abstract Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null);
@@ -222,7 +218,7 @@ public abstract class RoslynExpressionValidator
         }
         else
         {
-            // As in the JIT compile: no default assembly, the set's metadata, and a load only for a name that the set does not answer.
+            // As in the JIT compile: no default assemblies, and a load only for a name the set does not answer.
             requiredAssemblies = new HashSet<Assembly>();
             var hostMetadata = new List<MetadataReference>();
             foreach (var reference in hostReferences.References)

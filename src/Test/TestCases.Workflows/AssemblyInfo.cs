@@ -1,2 +1,2 @@
-﻿// The tests swap global compiler settings: the compiler factory, the design time hooks. They run one at a time, as in the other test projects.
+﻿// The tests change process-wide compiler settings, so they run one at a time.
 [assembly: Xunit.CollectionBehavior(Xunit.CollectionBehavior.CollectionPerAssembly, DisableTestParallelization = true)]
