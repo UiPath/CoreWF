@@ -243,6 +243,7 @@ public abstract class RoslynExpressionValidator
         localNamespaces.AddRange(CompilerHelper.DefaultNamespaces);
 
         Compilation compilation;
+        var outerHostReferences = s_hostReferences.Value;
         s_hostReferences.Value = validationHostReferences;
         try
         {
@@ -250,7 +251,7 @@ public abstract class RoslynExpressionValidator
         }
         finally
         {
-            s_hostReferences.Value = null;
+            s_hostReferences.Value = outerHostReferences;
         }
         var expressionsTextBuilder = new StringBuilder();
         int index = 0;
