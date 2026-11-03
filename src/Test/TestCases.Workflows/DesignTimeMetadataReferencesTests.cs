@@ -71,7 +71,7 @@ public class DesignTimeMetadataReferencesTests
 
     // A resolver that fails does not fail the compile: the reference loads by its name, as with no resolver.
     [Fact]
-    public async Task CSharp_ResolverThatThrows_LoadsTheAssemblyAsBefore()
+    public async Task CSharp_ResolverThatThrows_LoadsTheAssemblyByItsName()
     {
         using var loader = UseLoaderFor(EmitAssemblyNothingCanLoadByName());
         using var set = UseSet(HostSetNames(), _ => throw new InvalidOperationException("The resolver failed."));
@@ -158,7 +158,7 @@ public class DesignTimeMetadataReferencesTests
         withoutValueError.ShouldNotBeNull();
     }
 
-    // A compiler that does not declare metadata support gets the assembly loaded, as before.
+    // A compiler that does not declare metadata support gets the assembly loaded.
     [Fact]
     public void VisualBasic_Sync_CompilerWithoutMetadataSupport_GetsTheLoadedAssembly()
     {
@@ -190,7 +190,7 @@ public class DesignTimeMetadataReferencesTests
     }
 
     [Fact]
-    public void CSharp_Sync_ResolverThatThrows_LoadsTheAssemblyAsBefore()
+    public void CSharp_Sync_ResolverThatThrows_LoadsTheAssemblyByItsName()
     {
         using var loader = UseLoaderFor(EmitAssemblyNothingCanLoadByName());
         using var set = UseSet(HostSetNames(), _ => throw new InvalidOperationException("The resolver failed."));
@@ -321,9 +321,9 @@ public class DesignTimeMetadataReferencesTests
         IsLoaded().ShouldBeTrue();
     }
 
-    // A compiler without metadata support still gets the loaded set of before: the design time assembly, the defaults and the target type.
+    // A compiler without metadata support gets loaded assemblies: the design time assembly, the defaults and the target type.
     [Fact]
-    public void VisualBasic_Sync_CompleteReferences_CompilerWithoutMetadataSupport_GetsTheLoadedSetAsBefore()
+    public void VisualBasic_Sync_CompleteReferences_CompilerWithoutMetadataSupport_GetsLoadedAssemblies()
     {
         using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
         using var compiler = UseCompiler(references => new CompilerWithoutMetadataSupport(references));
@@ -336,7 +336,7 @@ public class DesignTimeMetadataReferencesTests
 
     // A set that fails counts as none: the compile adds the loaded set of the host, as with no set.
     [Fact]
-    public void CSharp_Sync_HostReferencesThatThrow_CompileAsBefore()
+    public void CSharp_Sync_HostReferencesThatThrow_CompileAsWithNoSet()
     {
         using var loader = UseLoaderFor(EmitAssemblyNothingCanLoadByName());
         using var set = UseHostReferences(() => throw new InvalidOperationException("The set failed."));
@@ -595,10 +595,107 @@ public class DesignTimeMetadataReferencesTests
         }
     }
 
-    private ValidationResults Validate(Activity<string> expression, bool forceExpressionCache = false)
+    // A workflow of a host names the implementation assemblies of the host's framework, which no reference pack has. A set that lacks
+    // them does not answer them, so the compile drops them: loaded, they would bring a second core library next to the set's.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_ReferenceToTheHostFrameworkThatTheSetLacks_IsDropped()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndHostFrameworkReferences(), null, out _, out var compileError, out _);
+
+        compileError?.Message.ShouldBeNull();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_ReferenceToTheHostFrameworkThatTheSetLacks_IsDropped()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndHostFrameworkReferences(), null, out _, out var compileError, out _);
+
+        compileError?.Message.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CSharp_CompleteReferences_ReferenceToTheHostFrameworkThatTheSetLacks_IsDropped()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(typeof(int), "Marker.Value", ["DesignTimeNamespace"], PackAndHostFrameworkReferences(), null);
+
+        result.SourceExpressionException?.Message.ShouldBeNull();
+    }
+
+    [Fact]
+    public void CSharp_Validation_CompleteReferences_ReferenceToTheHostFrameworkThatTheSetLacks_IsDropped()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        Validate(new CSharpValue<string>("Marker.Value.ToString()"), references: [NameOnlyReference(), .. HostFrameworkReferences()]).Errors.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void VisualBasic_Validation_CompleteReferences_ReferenceToTheHostFrameworkThatTheSetLacks_IsDropped()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        Validate(new VisualBasicValue<string>("Marker.Value.ToString()"), references: [NameOnlyReference(), .. HostFrameworkReferences()]).Errors.ShouldBeEmpty();
+    }
+
+    // A loaded reference that the set lacks goes to the resolver by its name too, and the compile drops it when the resolver has none.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_LoadedReferenceThatTheSetLacks_IsDropped()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "Marker.Value", ["DesignTimeNamespace"], [.. PackAndNameOnlyReferences(), new AssemblyReference { Assembly = typeof(object).Assembly }], null, out _, out var compileError, out _);
+
+        compileError?.Message.ShouldBeNull();
+    }
+
+    // A reference that the set lacks and that the resolver answers counts, with the metadata of the resolver.
+    [Fact]
+    public void CSharp_Sync_CompleteReferences_ReferenceThatTheSetLacksAndTheResolverAnswers_Counts()
+    {
+        using var designTime = UsePackageWithADependency(resolverKnowsTheDependency: true);
+
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(object), "new DependencyNamespace.Thing()", [], [.. PackAndNameOnlyReferences(), new AssemblyReference { AssemblyName = new AssemblyName(_name + ".Dependency") }], null, out _, out var compileError, out _);
+
+        compileError?.Message.ShouldBeNull();
+    }
+
+    // A compile with no set loads the references of a workflow in place, for example while the host builds its set. A later JIT compile
+    // with the set still takes them through the set.
+    [Fact]
+    public void VisualBasic_ForceExpressionCache_CompleteReferences_ReferenceThatAnEarlierCompileLoaded_GoesThroughTheSet()
+    {
+        var coreLibrary = HostCoreLibraryReference();
+        AssemblyReference[] references = [NameOnlyReference(), coreLibrary];
+        Validate(new VisualBasicValue<string>("1.ToString()"), references: references);
+        coreLibrary.Assembly.ShouldNotBeNull();
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        Validate(new VisualBasicValue<string>("Marker.Value.ToString()"), forceExpressionCache: true, references: references).Errors.ShouldBeEmpty();
+    }
+
+    // The same, with a set that names the core library of the host and answers it, as a host does with a facade of that name.
+    [Fact]
+    public void VisualBasic_ForceExpressionCache_SetThatNamesTheHostCoreLibrary_ReferenceThatAnEarlierCompileLoaded_GoesThroughTheSet()
+    {
+        var coreLibrary = HostCoreLibraryReference();
+        AssemblyReference[] references = [NameOnlyReference(), coreLibrary];
+        Validate(new VisualBasicValue<string>("1.ToString()"), references: references);
+        coreLibrary.Assembly.ShouldNotBeNull();
+        using var designTime = UseReferencePackThatAnswersTheHostCoreLibraryFor(EmitAssemblyForThePack());
+
+        Validate(new VisualBasicValue<string>("Marker.Value.ToString()"), forceExpressionCache: true, references: references).Errors.ShouldBeEmpty();
+    }
+
+    private ValidationResults Validate(Activity<string> expression, bool forceExpressionCache = false, AssemblyReference[] references = null)
     {
         var workflow = new Sequence { Activities = { new WriteLine { Text = new InArgument<string>(expression) } } };
-        TextExpression.SetReferencesForImplementation(workflow, [new AssemblyReference { AssemblyName = new AssemblyName(_name) }]);
+        TextExpression.SetReferencesForImplementation(workflow, references ?? [new AssemblyReference { AssemblyName = new AssemblyName(_name) }]);
         TextExpression.SetNamespacesForImplementation(workflow, ["DesignTimeNamespace"]);
         var settings = new ValidationSettings
         {
@@ -629,6 +726,15 @@ public class DesignTimeMetadataReferencesTests
     }
 
     private AssemblyReference NameOnlyReference() => new() { AssemblyName = new AssemblyName(_name) };
+
+    private static AssemblyReference HostCoreLibraryReference() => new() { AssemblyName = new AssemblyName("System.Private.CoreLib") };
+
+    // The implementation assemblies of the host's framework that the workflows of a host name. No reference pack has them.
+    private static IEnumerable<AssemblyReference> HostFrameworkReferences()
+        => new[] { "System.Private.CoreLib", "System.Private.Uri", "System.Private.Xml", "System.Private.DataContractSerialization" }
+            .Select(name => new AssemblyReference { AssemblyName = new AssemblyName(name) });
+
+    private AssemblyReference[] PackAndHostFrameworkReferences() => [.. PackAndNameOnlyReferences(), .. HostFrameworkReferences()];
 
     // The host loads a design time assembly only on first use, into its own context.
     private IDisposable UseLoaderFor(params string[] paths)
@@ -677,13 +783,28 @@ public class DesignTimeMetadataReferencesTests
     // The host holds the reference pack, the workflow runtime and the design time assembly as metadata, gives them as its whole
     // reference set, and loads the design time assembly on first use.
     private IDisposable UseReferencePackFor(string path, params string[] dependencies)
+        => UseReferencePack(path, dependencies, answerTheHostCoreLibrary: false);
+
+    // The set also names the core library of the host and answers it with the core library of the pack.
+    private IDisposable UseReferencePackThatAnswersTheHostCoreLibraryFor(string path)
+        => UseReferencePack(path, [], answerTheHostCoreLibrary: true);
+
+    private IDisposable UseReferencePack(string path, string[] dependencies, bool answerTheHostCoreLibrary)
     {
         var loader = UseLoaderFor([path, .. dependencies]);
         var metadata = new[] { path }.Concat(dependencies).ToDictionary(file => Path.GetFileNameWithoutExtension(file), file => (MetadataReference)MetadataReference.CreateFromFile(file), StringComparer.OrdinalIgnoreCase);
         var workflowRuntime = typeof(Activity).Assembly.GetName();
         metadata[workflowRuntime.Name] = s_hostDefaults.Value[workflowRuntime.Name];
         var pack = s_referencePack.Value;
-        var set = UseSet(PackAndNameOnlyReferences().Select(reference => reference.AssemblyName).Append(workflowRuntime), name => metadata.GetValueOrDefault(name.Name) ?? pack.GetValueOrDefault(name.Name));
+        var names = PackAndNameOnlyReferences().Select(reference => reference.AssemblyName).Append(workflowRuntime);
+        if (answerTheHostCoreLibrary)
+        {
+            var hostCoreLibrary = HostCoreLibraryReference().AssemblyName;
+            metadata[hostCoreLibrary.Name] = pack["System.Runtime"];
+            names = names.Append(hostCoreLibrary);
+        }
+
+        var set = UseSet(names, name => metadata.GetValueOrDefault(name.Name) ?? pack.GetValueOrDefault(name.Name));
         return new Restore(() =>
         {
             set.Dispose();
