@@ -31,25 +31,31 @@ jobs:
           $versionSuffix = ""
         }
 
-        $stable = "${{ parameters.stable }}" -eq "True"
-        if ($stable) {
-          # Repeats ApproveStableRelease in azure-pipelines.yaml.
-          if ("$(Build.SourceBranch)" -notlike "refs/heads/release/*") {
-            Write-Host "##vso[task.logissue type=error]A stable release can be built only from release/*, not $(Build.SourceBranch)."
-            exit 1
-          }
-          $versionSuffix = ""
-        }
-
         $xml = [Xml] (Get-Content .\src\Directory.Build.props)
 
         $version = [String] $xml.Project.PropertyGroup.Version
         $version = $version.Trim()
         $fullVersion = "$version$versionSuffix"
 
-        if ($stable) {
+        # A stable release adds the sprint of its release/s<sprint> branch as a fourth number, e.g. 6.0.0.206 on
+        # release/s206, and keeps the AssemblyVersion of a normal build of this Version, e.g. 6.0.0.0, which
+        # Studio and the Robot ship. Normal builds keep the version above. The branch check repeats
+        # ApproveStableRelease in azure-pipelines.yaml.
+        if ("${{ parameters.stable }}" -eq "True") {
+          if ("$(Build.SourceBranch)" -notmatch '^refs/heads/release/s([1-9][0-9]*)$') {
+            Write-Host "##vso[task.logissue type=error]A stable release can be built only from a release/s<sprint> branch, such as release/s206, not $(Build.SourceBranch)."
+            exit 1
+          }
+          $sprint = $Matches[1]
+          if ($version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+$') {
+            Write-Host "##vso[task.logissue type=error]A stable release needs a Version of three numbers in src/Directory.Build.props, not $version."
+            exit 1
+          }
+          $fullVersion = "$version.$sprint"
+          Write-Host "##vso[task.setvariable variable=AssemblyVersion;]$version.0"
           Write-Host "##vso[build.addbuildtag]stable-$fullVersion"
         }
+
         Write-Host "##vso[task.setvariable variable=Version;]$fullVersion"
         Write-Host "Version that will be used is $fullVersion"
 
@@ -58,7 +64,11 @@ jobs:
     inputs:
       command: test
       projects: src
-      arguments: --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings /p:Version="$(Version)"
+      ${{ if eq(parameters.stable, true) }}:
+        # Without AssemblyVersion, the SDK would derive it from the four numbers of the stable Version.
+        arguments: --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings /p:Version="$(Version)" /p:AssemblyVersion="$(AssemblyVersion)"
+      ${{ else }}:
+        arguments: --configuration $(BuildConfiguration) --collect "Code Coverage" --settings src/CodeCoverage.runsettings /p:Version="$(Version)"
 
   - task: CopyFiles@2
     displayName: 'Copy Files to: Build.ArtifactStagingDirectory'
