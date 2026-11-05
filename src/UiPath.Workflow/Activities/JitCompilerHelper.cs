@@ -80,7 +80,7 @@ internal abstract class JitCompilerHelper
     {
         SanitizeNamespaces(namespaceImportsNames);
         NamespaceImports = namespaceImportsNames;
-        HostReferences = DesignTimeMetadataReferences.GetHostReferences(assemblyReferences);
+        HostReferences = DesignTimeMetadataReferences.GetHostReferences();
         InitializeAssemblies(HostReferences?.References ?? (IEnumerable<AssemblyReference>)assemblyReferences, HostReferences?.Resolver);
     }
 

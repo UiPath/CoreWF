@@ -19,16 +19,19 @@ public static class DesignTimeMetadataReferences
     /// Gives the whole reference set of a design time compile, or null for none. Called once per compile, on the caller's
     /// execution context.
     /// <para>
-    /// With a set, the JIT compile, the designer compile and the validation reference the set only, never the host's framework,
-    /// so a host can compile against the reference pack of another framework. A caller's reference outside the set counts only
-    /// when the resolver answers it; else it is dropped. Workflows often reference System.Private.* assemblies, so a set for a
-    /// reference pack should answer them, for example with facades that forward to the pack.
+    /// With a set, the JIT compile, the designer compile and the validation reference the set only, so a host can compile against
+    /// the reference pack of another framework. Caller references outside the set do not count. A compiler without metadata
+    /// support ignores the set.
+    /// </para>
+    /// <para>
+    /// Assemblies built against a runtime, not a pack, depend on System.Private.*; the resolver should answer those, for example
+    /// with facades that forward to the pack.
     /// </para>
     /// </summary>
     public static Func<DesignTimeReferenceSet> HostReferences { get; set; }
 
     // Null when the host gives no set, or a set that throws or misses a part.
-    internal static HostCompileReferences GetHostReferences(IEnumerable<AssemblyReference> callerReferences)
+    internal static HostCompileReferences GetHostReferences()
     {
         DesignTimeReferenceSet set;
         try
@@ -68,19 +71,6 @@ public static class DesignTimeMetadataReferences
             }
         }
 
-        // Never load a caller's reference outside the set: it can be an assembly of the host's framework, such as
-        // System.Private.CoreLib, which would add a second core library.
-        foreach (var reference in callerReferences)
-        {
-            var assemblyName = reference?.AssemblyName ?? reference?.Assembly?.GetName();
-            if (assemblyName?.Name != null && !names.Contains(assemblyName.Name)
-                && MetadataReferenceUtils.Resolve(set.Resolver, assemblyName) != null)
-            {
-                names.Add(assemblyName.Name);
-                references.Add(new AssemblyReference { AssemblyName = assemblyName });
-            }
-        }
-
         return new HostCompileReferences(references, set.Resolver);
     }
 }
@@ -92,10 +82,10 @@ public static class DesignTimeMetadataReferences
 /// The assemblies of the compile. They must include the core library and every assembly that an expression can name.
 /// </param>
 /// <param name="Resolver">
-/// The metadata of an assembly by name, or null for none. It is asked for the names, for caller references outside the set and for
-/// assemblies that a reference depends on; the last must be a <see cref="PortableExecutableReference"/>. A name of the set without
-/// an answer loads by name. Must not load assemblies. Compiled expressions are cached by the returned objects, so return the same
-/// object while the metadata, including that of its dependencies, does not change.
+/// The metadata of an assembly by name, or null for none. It is asked for the names and for assemblies that a reference depends on;
+/// the latter must be a <see cref="PortableExecutableReference"/>. A name of the set without an answer loads by name. Must not load
+/// assemblies. Compiled expressions are cached by the returned objects, so return the same object while the metadata, including
+/// that of its dependencies, does not change.
 /// </param>
 public sealed record DesignTimeReferenceSet(IReadOnlyCollection<AssemblyName> Names, Func<AssemblyName, MetadataReference> Resolver);
 

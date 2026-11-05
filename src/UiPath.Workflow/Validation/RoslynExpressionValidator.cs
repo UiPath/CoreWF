@@ -208,7 +208,7 @@ public abstract class RoslynExpressionValidator
 
         GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
         var references = localAssemblies.Where(aref => aref is not null);
-        var hostReferences = DesignTimeMetadataReferences.GetHostReferences(references);
+        var hostReferences = DesignTimeMetadataReferences.GetHostReferences();
         HashSet<Assembly> requiredAssemblies;
         ValidationHostReferences validationHostReferences = null;
         if (hostReferences == null)

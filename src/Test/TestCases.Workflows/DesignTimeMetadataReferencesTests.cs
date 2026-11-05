@@ -647,15 +647,48 @@ public class DesignTimeMetadataReferencesTests
         compileError?.Message.ShouldBeNull();
     }
 
-    // A reference outside the set counts when the resolver answers it.
+    // A reference outside the names does not count, even when the resolver answers it.
     [Fact]
-    public void CSharp_Sync_CompleteReferences_ReferenceThatTheSetLacksAndTheResolverAnswers_Counts()
+    public void CSharp_Sync_CompleteReferences_ReferenceThatTheNamesLackAndTheResolverAnswers_IsDropped()
     {
-        using var designTime = UsePackageWithADependency(resolverKnowsTheDependency: true);
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), EmitExtraAssembly());
 
-        CSharpDesignerHelper.CreatePrecompiledValue(typeof(object), "new DependencyNamespace.Thing()", [], [.. PackAndNameOnlyReferences(), new AssemblyReference { AssemblyName = new AssemblyName(_name + ".Dependency") }], null, out _, out var compileError, out _);
+        CSharpDesignerHelper.CreatePrecompiledValue(typeof(int), "ExtraNamespace.Extra.Value", [], [.. PackAndNameOnlyReferences(), ExtraReference()], null, out _, out var compileError, out _);
 
-        compileError?.Message.ShouldBeNull();
+        compileError.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void VisualBasic_Sync_CompleteReferences_ReferenceThatTheNamesLackAndTheResolverAnswers_IsDropped()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack(), EmitExtraAssembly());
+
+        VisualBasicDesignerHelper.CreatePrecompiledVisualBasicValue(typeof(int), "ExtraNamespace.Extra.Value", [], [.. PackAndNameOnlyReferences(), ExtraReference()], null, out _, out var compileError, out _);
+
+        compileError.ShouldNotBeNull();
+    }
+
+    // The return type comes from the pack and maps to the host's type.
+    [Fact]
+    public async Task CSharp_CompleteReferences_InferAFrameworkReturnTypeFromThePack()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        var result = await CSharpDesignerHelper.CreatePrecompiledValueAsync(null, "new List<string>()", ["System.Collections.Generic"], PackAndNameOnlyReferences(), null);
+
+        result.SourceExpressionException?.Message.ShouldBeNull();
+        result.ReturnType.ShouldBe(typeof(List<string>));
+    }
+
+    [Fact]
+    public async Task VisualBasic_CompleteReferences_InferAFrameworkReturnTypeFromThePack()
+    {
+        using var designTime = UseReferencePackFor(EmitAssemblyForThePack());
+
+        var result = await VisualBasicDesignerHelper.CreatePrecompiledValueAsync(null, "New List(Of String)()", ["System.Collections.Generic"], PackAndNameOnlyReferences(), null);
+
+        result.SourceExpressionException?.Message.ShouldBeNull();
+        result.ReturnType.ShouldBe(typeof(List<string>));
     }
 
     // A compile without a set loads the workflow's references in place; a later compile with the set must still filter them.
@@ -727,6 +760,14 @@ public class DesignTimeMetadataReferencesTests
             .Select(name => new AssemblyReference { AssemblyName = new AssemblyName(name) });
 
     private AssemblyReference[] PackAndHostFrameworkReferences() => [.. PackAndNameOnlyReferences(), .. HostFrameworkReferences()];
+
+    private string ExtraName => _name + ".Extra";
+
+    private AssemblyReference ExtraReference() => new() { AssemblyName = new AssemblyName(ExtraName) };
+
+    // An assembly that nothing in the set depends on.
+    private string EmitExtraAssembly()
+        => EmitAssembly(ExtraName, "namespace ExtraNamespace { public static class Extra { public const int Value = 7; } }", s_referencePack.Value["System.Runtime"]);
 
     // The host loads a design time assembly only on first use, into its own context.
     private IDisposable UseLoaderFor(params string[] paths)

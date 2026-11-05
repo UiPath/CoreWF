@@ -53,7 +53,8 @@ public record ExpressionToCompile(string Code, IReadOnlyCollection<string> Impor
     public bool HostReferencesAreComplete { get; init; }
 
     /// <summary>
-    /// With <see cref="HostReferencesAreComplete"/>, resolves missing dependencies from the host's set. Null otherwise.
+    /// With <see cref="HostReferencesAreComplete"/>, resolves missing dependencies from the host's set. Null otherwise. External
+    /// compilers may read it by reflection, so keep the name.
     /// </summary>
     public MetadataReferenceResolver MetadataResolver { get; init; }
 }

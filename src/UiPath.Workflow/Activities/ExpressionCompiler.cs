@@ -16,7 +16,7 @@ namespace System.Activities
         {
             var syntaxTree = GetSyntaxTreeForExpression(expressionText, isLocation, returnType, environment);
             // With the host's set, no default assemblies.
-            var hostReferences = DesignTimeMetadataReferences.GetHostReferences(referencedAssemblies);
+            var hostReferences = DesignTimeMetadataReferences.GetHostReferences();
             var assemblies = hostReferences?.References
                 ?? JitCompilerHelper.DefaultReferencedAssemblies.Select(a => (AssemblyReference)a).Union(referencedAssemblies).ToList();
             return GetCompilation(assemblies, namespaces, hostReferences).AddSyntaxTrees(syntaxTree);
