@@ -15,7 +15,11 @@ namespace System.Activities
         public Compilation Compile(string expressionText, bool isLocation, Type returnType, IReadOnlyCollection<string> namespaces, IReadOnlyCollection<AssemblyReference> referencedAssemblies, LocationReferenceEnvironment environment)
         {
             var syntaxTree = GetSyntaxTreeForExpression(expressionText, isLocation, returnType, environment);
-            return GetCompilation(JitCompilerHelper.DefaultReferencedAssemblies.Select(a => (AssemblyReference)a).Union(referencedAssemblies).ToList(), namespaces).AddSyntaxTrees(syntaxTree);
+            // With the host's set, no default assemblies.
+            var hostReferences = DesignTimeMetadataReferences.GetHostReferences();
+            var assemblies = hostReferences?.References
+                ?? JitCompilerHelper.DefaultReferencedAssemblies.Select(a => (AssemblyReference)a).Union(referencedAssemblies).ToList();
+            return GetCompilation(assemblies, namespaces, hostReferences).AddSyntaxTrees(syntaxTree);
         }
 
         public abstract Type GetReturnType(Compilation compilation);
@@ -55,7 +59,7 @@ namespace System.Activities
             return assembly.GetType($"{typeSymbol.ContainingNamespace.ToDisplayString()}.{typeSymbol.MetadataName}");
         }
 
-        protected abstract Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces);
+        protected abstract Compilation GetCompilation(IReadOnlyCollection<AssemblyReference> assemblies, IReadOnlyCollection<string> namespaces, HostCompileReferences hostReferences);
 
         protected abstract SyntaxTree GetSyntaxTreeForExpression(string expression, bool isLocation, Type returnType, LocationReferenceEnvironment environment);
     }

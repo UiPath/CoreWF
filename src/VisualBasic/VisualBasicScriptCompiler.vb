@@ -74,6 +74,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
 
             Dim globalImports = GetGlobalImportsForCompilation(script)
 
+            ' With no return type, the submission takes System.Object from the compile's own core library, not the host's.
             Dim submission = VisualBasicCompilation.CreateScriptCompilation(
                 assemblyName,
                 tree,
@@ -98,8 +99,8 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Scripting
                     assemblyIdentityComparer:=DesktopAssemblyIdentityComparer.Default).
                     WithIgnoreCorLibraryDuplicatedTypes(True),
                 previousSubmission,
-                script.ReturnType,
-                script.GlobalsType)
+                returnType:=Nothing,
+                globalsType:=script.GlobalsType)
 
             Return submission
         End Function

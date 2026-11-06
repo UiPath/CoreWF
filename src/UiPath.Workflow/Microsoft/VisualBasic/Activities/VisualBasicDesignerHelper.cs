@@ -6,6 +6,7 @@ using System.Activities;
 using System.Activities.ExpressionParser;
 using System.Activities.Expressions;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -55,23 +56,10 @@ internal class VisualBasicHelper : JitCompilerHelper<VisualBasicHelper>
         GetAllImportReferences(publicAccessor.ActivityMetadata.CurrentActivity, false, out var localNamespaces,
             out var localAssemblies);
         var helper = new VisualBasicHelper(expressionText);
-        var localReferenceAssemblies = new HashSet<AssemblyReference>();
+        // Loaded references go through Initialize too, so the host's set replaces them.
+        var localReferenceAssemblies = new HashSet<AssemblyReference>(localAssemblies.Where(assemblyReference =>
+            assemblyReference.Assembly != null || assemblyReference.AssemblyName != null));
         var localImports = new HashSet<string>(localNamespaces);
-        foreach (var assemblyReference in localAssemblies)
-        {
-            if (assemblyReference.Assembly != null)
-            {
-                // directly add the Assembly to the list
-                // so that we don't have to go through 
-                // the assembly resolution process
-                helper.ReferencedAssemblies ??= new HashSet<Assembly>();
-                helper.ReferencedAssemblies.Add(assemblyReference.Assembly);
-            }
-            else if (assemblyReference.AssemblyName != null)
-            {
-                localReferenceAssemblies.Add(assemblyReference);
-            }
-        }
 
         helper.Initialize(localReferenceAssemblies, localImports);
         return helper.Compile<T>(publicAccessor, isLocationExpression);

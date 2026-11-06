@@ -49,12 +49,17 @@ public class VbExpressionValidator : RoslynExpressionValidator
     protected override Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null)
     {
         var globalImports = GlobalImport.Parse(namespaces);
-        var metadataReferences = GetMetadataReferencesForExpression(assemblies);
+        var hostReferences = HostReferences;
+        var metadataReferences = (hostReferences?.Metadata ?? Enumerable.Empty<MetadataReference>()).Concat(GetMetadataReferencesForExpression(assemblies));
 
         var options = CompilerHelper.DefaultCompilationUnit.Options as VisualBasicCompilationOptions;
         options = options.WithGlobalImports(globalImports);
 
-        if (validationSettings?.MissingAssemblyResolver is Func<AssemblyName, Assembly> resolver)
+        if (hostReferences != null)
+        {
+            options = options.WithMetadataReferenceResolver(hostReferences.MissingAssemblyResolver);
+        }
+        else if (validationSettings?.MissingAssemblyResolver is Func<AssemblyName, Assembly> resolver)
         {
             options = options.WithMetadataReferenceResolver(new ExternalMetadataReferenceResolver(resolver));
         }

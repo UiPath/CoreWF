@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static System.Activities.JitCompilerHelper;
 
 namespace System.Activities.Validation;
@@ -22,6 +23,14 @@ public abstract class RoslynExpressionValidator
     private const string ErrorRegex = "((\\(.*\\)).*error )(.*)";
     protected abstract string ActivityIdentifierRegex { get; }
     private readonly object _lockRequiredAssemblies = new();
+
+    // Passes the host's set to GetCompilation without changing its overridable signature.
+    private static readonly AsyncLocal<ValidationHostReferences> s_hostReferences = new();
+
+    // Replaces the default assemblies and ValidationSettings.MissingAssemblyResolver. Null without a set.
+    private protected static ValidationHostReferences HostReferences => s_hostReferences.Value;
+
+    private protected sealed record ValidationHostReferences(IReadOnlyList<MetadataReference> Metadata, MetadataReferenceResolver MissingAssemblyResolver);
 
     protected abstract CompilerHelper CompilerHelper { get; }
 
@@ -46,7 +55,7 @@ public abstract class RoslynExpressionValidator
 
     /// <summary>
     ///     Assemblies required on the <see cref="Compilation"/> object. Use <see cref="AddRequiredAssembly(Assembly)"/>
-    ///     to add more assemblies.
+    ///     to add more assemblies. Not used with <see cref="DesignTimeMetadataReferences.HostReferences"/>.
     /// </summary>
     protected IReadOnlySet<Assembly> RequiredAssemblies { get; private set; }
 
@@ -114,7 +123,10 @@ public abstract class RoslynExpressionValidator
     /// <summary>
     ///     Updates the <see cref="Compilation" /> object for the expression.
     /// </summary>
-    /// <param name="assemblies">The list of assemblies</param>
+    /// <param name="assemblies">
+    ///     The list of assemblies. With <see cref="DesignTimeMetadataReferences.HostReferences"/>, only those the set did not
+    ///     answer; the built-in implementations add the set's metadata.
+    /// </param>
     /// <param name="namespaces">The list of namespaces</param>
     protected abstract Compilation GetCompilation(IReadOnlyCollection<Assembly> assemblies, IReadOnlyCollection<string> namespaces, ValidationSettings validationSettings = null);
 
@@ -194,13 +206,49 @@ public abstract class RoslynExpressionValidator
             return Array.Empty<ValidationError>();
         }
 
-        var requiredAssemblies = new HashSet<Assembly>(RequiredAssemblies);
-
         GetAllImportReferences(currentActivity, true, out var localNamespaces, out var localAssemblies);
-        requiredAssemblies.UnionWith(localAssemblies.Where(aref => aref is not null).Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
+        var references = localAssemblies.Where(aref => aref is not null);
+        var hostReferences = DesignTimeMetadataReferences.GetHostReferences();
+        HashSet<Assembly> requiredAssemblies;
+        ValidationHostReferences validationHostReferences = null;
+        if (hostReferences == null)
+        {
+            requiredAssemblies = new HashSet<Assembly>(RequiredAssemblies);
+            requiredAssemblies.UnionWith(references.Select(aref => aref.Assembly ?? LoadAssemblyFromReference(aref)));
+        }
+        else
+        {
+            // As in the JIT compile: no default assemblies, and a load only for a name the set does not answer.
+            requiredAssemblies = new HashSet<Assembly>();
+            var hostMetadata = new List<MetadataReference>();
+            foreach (var reference in hostReferences.References)
+            {
+                if (MetadataReferenceUtils.GetDesignTimeMetadataReference(reference, hostReferences.Resolver) is { } metadata)
+                {
+                    hostMetadata.Add(metadata);
+                }
+                else if ((reference.Assembly ?? LoadAssemblyFromReference(reference)) is { } assembly)
+                {
+                    requiredAssemblies.Add(assembly);
+                }
+            }
+
+            validationHostReferences = new ValidationHostReferences(hostMetadata, hostReferences.MissingAssemblyResolver);
+        }
+
         localNamespaces.AddRange(CompilerHelper.DefaultNamespaces);
 
-        var compilation = GetCompilation(requiredAssemblies, localNamespaces, validationSettings);
+        Compilation compilation;
+        var outerHostReferences = s_hostReferences.Value;
+        s_hostReferences.Value = validationHostReferences;
+        try
+        {
+            compilation = GetCompilation(requiredAssemblies, localNamespaces, validationSettings);
+        }
+        finally
+        {
+            s_hostReferences.Value = outerHostReferences;
+        }
         var expressionsTextBuilder = new StringBuilder();
         int index = 0;
         foreach (var expressionToValidate in validationScope.GetAllExpressions())
