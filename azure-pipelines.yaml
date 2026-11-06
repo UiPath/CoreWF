@@ -12,6 +12,17 @@ pr:
 
 name: $(Date:yyyyMMdd)$(Rev:-rr)
 
+# Manual runs on release/s<sprint> branches only: builds UiPath.Workflow and UiPath.Workflow.Runtime as a
+# stable release, the Version from src/Directory.Build.props plus the sprint, e.g. 6.0.0.206 on release/s206
+# (.pipelines/build.yaml), which ReleaseInternal pushes to UiPath-Internal. The run first waits for an
+# approval on the CoreWFStableRelease environment (ApproveStableRelease below). One stable per release
+# branch: a second run on the same branch fails on push.
+parameters:
+- name: stable
+  displayName: 'Build and publish a stable release (release/s<sprint> only)'
+  type: boolean
+  default: false
+
 resources:
   repositories:
     - repository: templates
@@ -24,9 +35,47 @@ variables:
 - template: .pipelines/vars.yml
 
 stages:
+# Stable release. BuildAndTest, and through it both release stages, waits for this one, so nothing is built
+# until the run is approved on the CoreWFStableRelease environment. The job that asks for the approval exists
+# only on release/s*; on any other branch the stage fails here instead. .pipelines/build.yaml then checks
+# that the branch is exactly release/s<sprint>.
+- ${{ if eq(parameters.stable, true) }}:
+  - stage: ApproveStableRelease
+    displayName: Approve stable release
+    dependsOn: []
+    jobs:
+    - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release/s') }}:
+      - deployment: ApproveStableRelease
+        displayName: Approve stable release
+        environment: 'CoreWFStableRelease'
+        pool:
+          vmImage: ubuntu-latest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: none
+              - bash: echo "Stable release approved for $(Build.SourceBranch)."
+                displayName: Record the approval
+    - ${{ else }}:
+      - job: RejectStableRelease
+        displayName: Reject stable release
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+        - checkout: none
+        - bash: |
+            echo "##vso[task.logissue type=error]A stable release can be built only from a release/s<sprint> branch, such as release/s206, not $(Build.SourceBranch)."
+            exit 1
+          displayName: Check the branch
+
 - stage: BuildAndTest
+  ${{ if eq(parameters.stable, true) }}:
+    dependsOn: [ ApproveStableRelease ]
   jobs:
   - template: .pipelines/build.yaml
+    parameters:
+      stable: ${{ parameters.stable }}
 
 - stage: ReleaseInternal
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), startsWith(variables['Build.SourceBranch'], 'refs/heads/support/'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')))
